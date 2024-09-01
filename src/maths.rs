@@ -3,7 +3,23 @@
 // token using a U256, which is then divided by the decimals, and
 // converted to a float elsewhere.
 
+use stylus_sdk::alloy_primitives::U256;
+
 use astro_float::{BigFloat, Consts, RoundingMode};
+
+use crate::{assert_or, error::Error};
+
+pub fn u256_to_float(n: U256, decimals: u8) -> Result<BigFloat, Vec<u8>> {
+    let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
+    assert_or!(n > U256::ZERO, Error::TooSmallNumber);
+
+    let n: i128 = i128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
+    let rem: i128 = i128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
+
+    let rm = RoundingMode::Down;
+    let x = BigFloat::from(rem).div(&BigFloat::from(i128::pow(10, decimals.into())), 32, rm);
+    Ok(x.add(&BigFloat::from(n), 32, rm))
+}
 
 #[allow(non_snake_case)]
 pub fn price(
@@ -32,4 +48,16 @@ pub fn cost(
     let c = b.sub(&BigFloat::from(1), 32, rm);
     let p = M_1.mul(&c, 32, rm);
     p
+}
+
+#[test]
+fn test_u256_to_float() {
+    let f = u256_to_float(U256::from(55) * U256::from(10).pow(U256::from(17)), 18).unwrap();
+    dbg!(f.to_string());
+}
+
+#[test]
+fn test_swag() {
+    let f = BigFloat::from(100);
+    dbg!(f.as_raw_parts().unwrap());
 }

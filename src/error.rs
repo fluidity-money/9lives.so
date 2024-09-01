@@ -23,7 +23,15 @@ pub enum Error {
 
     // Some odds must be set beforehand.
     #[error("Odds must be set")]
-    OddsMustBeSet
+    OddsMustBeSet,
+
+    // The number that we're trying to make into a float is too large.
+    #[error("U256 is too high")]
+    U256TooLarge,
+
+    // The number is too small. Maybe you need to pass in 1e<decimals>.
+    #[error("The amount given is too small")]
+    TooSmallNumber,
 }
 
 impl From<Error> for Vec<u8> {

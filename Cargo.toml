@@ -31,7 +31,7 @@ alloy-sol-types = "0.7.6"
 alloy-sol-macro = "0.7.6"
 lol_alloc = "0.4.0"
 astro-float = "0.9.4"
-getrandom = {version = "0.2", features = ["js"]}
+getrandom = { version = "0.2.15", features = ["js"] }
 
 [dev-dependencies]
 proptest = "1.5.0"
@@ -39,3 +39,4 @@ proptest = "1.5.0"
 [features]
 factory = []
 trading = []
+testing-dbg = []

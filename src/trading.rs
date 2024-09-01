@@ -58,7 +58,9 @@ impl Trading {
         fusdc::take_from_sender(funder, fusdc_amount)?;
 
         // Start to go through each outcome, and seed it with its initial amount.
-        for (outcome_id, outcome_amount) in outcomes {}
+        for (outcome_id, outcome_amount) in outcomes {
+
+        }
 
         self.created.set(true);
         self.factory.set(msg::sender());
