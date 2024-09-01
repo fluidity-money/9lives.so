@@ -14,11 +14,13 @@ CARGO_BUILD_STYLUS := \
 build: factory.wasm trading.wasm
 
 factory.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f factory.wasm
 	@${CARGO_BUILD_STYLUS} factory
 	@mv ninelives.wasm factory.wasm
 	@rm liblib9lives.rlib
 
 trading.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f trading.wasm
 	@${CARGO_BUILD_STYLUS} trading
 	@mv ninelives.wasm trading.wasm
 	@rm liblib9lives.rlib

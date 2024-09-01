@@ -3,11 +3,12 @@
 
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
+    msg,
     prelude::*,
     storage::*,
 };
 
-use crate::{error::*, immutables::*, longtail, proxy, share};
+use crate::{error::*, immutables::*, longtail, proxy, share, trading_cd};
 
 #[solidity_storage]
 #[entrypoint]
@@ -50,19 +51,11 @@ impl Factory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.
     pub fn new_trading(&self, outcomes: Vec<(FixedBytes<8>, U256)>) -> Result<Address, Vec<u8>> {
-        // First, take the amounts used as the seed number from the user.
-        assert_or!(outcomes.len() > 1, Error::MustContainOutcomes);
-        let money = outcomes.iter().map(|(_, i)| i.clone()).sum::<U256>();
-        assert_or!(!money.is_zero(), Error::OddsMustBeSet);
-
-        let outcomes = outcomes
-            .into_iter()
-            .map(|(c, _)| c)
-            .collect::<Vec<FixedBytes<8>>>();
+        assert_or!(outcomes.len() > 0, Error::MustContainOutcomes);
 
         let outcome_identifiers = outcomes
             .iter()
-            .map(|c| c.as_slice())
+            .map(|(c, _)| c.as_slice())
             .collect::<Vec<&[u8]>>();
 
         // Create the trading identifier to derive the outcome addresses from.
@@ -105,6 +98,8 @@ impl Factory {
                 erc20Addr: erc20_addr,
             }); */
         }
+
+        trading_cd::ctor(trading_addr, oracle, msg::sender(), &outcomes)?;
 
         Ok(trading_addr)
     }

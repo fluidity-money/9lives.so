@@ -33,20 +33,3 @@ pub fn cost(
     let p = M_1.mul(&c, 32, rm);
     p
 }
-
-#[test]
-fn test_cost() {
-    use std::str::FromStr;
-    /* assert_eq!(
-        price(
-            BigFloat::from(100000),
-            BigFloat::from(200),
-            BigFloat::from(200),
-            BigFloat::from(200)
-        )
-        .to_string(),
-        BigFloat::from_str("1.6886237168345496e-19")
-            .unwrap()
-            .to_string()
-    ); */
-}

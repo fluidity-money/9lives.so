@@ -6,11 +6,12 @@ pub mod error;
 
 pub mod events;
 
-mod longtail;
-mod proxy;
-mod share;
-mod immutables;
-mod fusdc;
+pub mod longtail;
+pub mod proxy;
+pub mod share;
+pub mod immutables;
+pub mod fusdc;
+pub mod trading_cd;
 
 extern crate alloc;
 #[cfg(target_arch = "wasm32")]
