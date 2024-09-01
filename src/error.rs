@@ -1,0 +1,41 @@
+use alloc::vec::Vec;
+use thiserror::Error;
+
+#[macro_export]
+macro_rules! assert_or {
+    ($cond:expr, $err:expr) => {
+        if !($cond) {
+            Err($err)?; // question mark forces coercion
+        }
+    };
+}
+
+#[derive(Error, Debug)]
+#[repr(u8)]
+pub enum Error {
+    // Proxy already created.
+    #[error("Already constructed")]
+    AlreadyConstructed,
+
+    // Outcomes must be defined to create Trading.
+    #[error("Must contain outcomes")]
+    MustContainOutcomes,
+
+    // Some odds must be set beforehand.
+    #[error("Odds must be set")]
+    OddsMustBeSet
+}
+
+impl From<Error> for Vec<u8> {
+    // tests return the message
+    #[cfg(not(target_arch = "wasm32"))]
+    fn from(val: Error) -> Self {
+        val.to_string().into()
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    fn from(val: Error) -> Self {
+        let id = unsafe { *<*const _>::from(&val).cast::<u8>() };
+        vec![id]
+    }
+}

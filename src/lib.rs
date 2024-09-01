@@ -1,14 +1,16 @@
-use stylus_sdk::{
-    alloy_primitives::{aliases::*, *},
-    prelude::*,
-    storage::*,
-};
 
 pub mod maths;
 
-mod immutables;
+#[macro_use]
+pub mod error;
 
-use crate::immutables::*;
+pub mod events;
+
+mod longtail;
+mod proxy;
+mod share;
+mod immutables;
+mod fusdc;
 
 extern crate alloc;
 #[cfg(target_arch = "wasm32")]
@@ -20,32 +22,14 @@ mod allocator {
         unsafe { AssumeSingleThreaded::new(FreeListAllocator::new()) };
 }
 
-#[solidity_storage]
-#[entrypoint]
-pub struct Ninelives {
-    // Global amount invested to this pool of the native asset.
-    global_invested: StorageU256,
+#[cfg(feature = "factory")]
+pub use factory::user_entrypoint;
 
-    // Fee taken by the owners of the derivative token, sent to the fee recipient in immutables.
-    fee_derivative: StorageU8,
+#[cfg(feature = "factory")]
+mod factory;
 
-    // Outcome contracts that can be invested into.
-    contracts: StorageMap<FixedBytes<8>, Contract>,
-}
+#[cfg(feature = "trading")]
+mod trading;
 
-#[solidity_storage]
-struct Contract {
-    // Amount invested into this outcome.
-    invested: StorageU256,
-
-    // Amount of shares in existence in this outcome.
-    shares: StorageU256,
-}
-
-#[external]
-impl Ninelives {
-    // Seeds the pool with the first outcome.
-    fn ctor() -> Result<(), Vec<u8>> {
-        Ok(())
-    }
-}
+#[cfg(feature = "trading")]
+pub use trading::user_entrypoint;
