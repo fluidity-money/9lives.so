@@ -28,9 +28,10 @@ pub fn price(
     N_2: BigFloat, // Amount of shares in the other outcomes.
 ) -> BigFloat {
     //(M1 / N2) * math.exp(n / N2)
+    let mut cache = Consts::new().unwrap();
     let rm = RoundingMode::Down;
     let a = M_1.mul(&N_2, 32, rm);
-    let b = n.div(&N_2, 32, rm).sqrt(32, rm);
+    let b = n.div(&N_2, 32, rm).exp(32, rm, &mut cache);
     let p = a.mul(&b, 32, rm);
     p
 }

@@ -32,10 +32,17 @@ pub enum Error {
     // The number is too small. Maybe you need to pass in 1e<decimals>.
     #[error("The amount given is too small")]
     TooSmallNumber,
+
+    // Longtail had an error, we'll bubble up what happened.
+    #[error("Longtail had an error.")]
+    LongtailError(Vec<u8>),
+
+    // ERC20 error!) Bubble up.
+    #[error("ERC20 error")]
+    ERC20Error(Vec<u8>),
 }
 
 impl From<Error> for Vec<u8> {
-    // tests return the message
     #[cfg(not(target_arch = "wasm32"))]
     fn from(val: Error) -> Self {
         val.to_string().into()
@@ -43,7 +50,13 @@ impl From<Error> for Vec<u8> {
 
     #[cfg(target_arch = "wasm32")]
     fn from(val: Error) -> Self {
-        let id = unsafe { *<*const _>::from(&val).cast::<u8>() };
-        vec![id]
+        match val {
+            // Unpack the Longtail/ERC20 error as-is.
+            Error::LongtailError(b) | Error::ERC20Error(b) => b.to_vec(),
+            // Include a magic byte opening.
+            v => vec![0x09, 0x09, 0x09, unsafe {
+                *<*const _>::from(&v).cast::<u8>()
+            }],
+        }
     }
 }
