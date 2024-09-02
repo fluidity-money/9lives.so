@@ -1,8 +1,3 @@
-// Floating point numbers in this code are 64 bit integers with a
-// floating point precision of 64 bits. We track the amount of the native
-// token using a U256, which is then divided by the decimals, and
-// converted to a float elsewhere.
-
 use stylus_sdk::alloy_primitives::U256;
 
 use astro_float::{BigFloat, Consts, RoundingMode};
