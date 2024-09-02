@@ -1,3 +1,6 @@
 target
 *.rlib
 *.wasm
+out
+cache
+
