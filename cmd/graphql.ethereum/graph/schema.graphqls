@@ -1,0 +1,198 @@
+
+type Query {
+  """
+  Campaigns that are currently ongoing.
+  """
+  campaigns: [Campaign!]!
+}
+
+"""
+Outcome associated with a Campaign creation that's notified to the graph.
+"""
+input OutcomeInput {
+  """
+  Name of the campaign outcome. Ie, "Donald Trump" for the election.
+  """
+  name: String!
+
+  """
+  Text description of the outcome.
+  """
+  description: String!
+
+  """
+  Randomly chosen seed for the creation of the identifier.
+  """
+  seed: Int!
+
+  """
+  Identifier hex encoded associated with this outcome. Used to derive addresses.
+  """
+  identifier: String!
+}
+
+type Mutation {
+  explainCampaign(
+    """
+    Type of the modification to the campaign explanation.
+    """
+    type: Modification!,
+
+    """
+    Description of the campaign.
+    """
+    name: String!,
+
+    """
+    Outcomes associated with this campaign. An outcome can either be something like
+    Trump winning the election, or something else.
+    """
+    outcomes: [OutcomeInput!]!,
+
+    """
+    Expected ending timestamp.
+    """
+    ending: Int!,
+
+    """
+    Text that describes the campaign.
+    """
+    text: String!,
+
+    """
+    Seed that was used to create the campaign and outcomes in the identifier creation.
+    """
+    seed: Int!,
+
+    """
+    Creator address. Hex encoded. Verified to be the creator later.
+    """
+    creator: String!,
+
+    """
+    R encoded point for the signature. Renamed given the code generator
+    in Go (is r).
+    """
+    sR: String!,
+
+    """
+    S encoded secp256r1 point.
+    """
+    s: String!,
+
+    """
+    V encoded secp256r1 signature part.
+    """
+    v: String!
+  ): Boolean
+}
+
+"""
+Ongoing prediction market competition.
+"""
+type Campaign {
+  """
+  Name of the campaign.
+  """
+  name: String!
+
+  """
+  Description of the campaign in simple text.
+  """
+  description: String!
+
+  """
+  Creator of the campaign.
+  """
+  creator: Wallet!
+
+  """
+  Oracle that can decide if a winner happened.
+  """
+  oracle: String!
+
+  """
+  Identifier that's used to do offline derivation of the campaign pool,
+  and the outcome shares. Is keccak256(name . description . seed)[:8].
+  """
+  identifier: String!
+
+  """
+  Pool address to purchase shares, and to receive the cost function.
+  """
+  poolAddress: String!
+
+  """
+  Outcomes associated with this campaign.
+  """
+  outcomes: [Outcome!]!
+}
+
+type Outcome {
+  """
+  Campaign this outcome is associated with.
+  """
+  campaign: Campaign!
+
+  """
+  Name of this campaign.
+  """
+  name: String!
+
+  """
+  Text description of this campaign.
+  """
+  description: String!
+
+  """
+  Address of the creator.
+  """
+  creator: Wallet!
+
+  """
+  Identifier hex encoded associated with this outcome. Used to derive addresses.
+  Is of the form keccak256(name . description . seed)[:8]
+  """
+  identifier: String!
+
+  """
+  Share address to trade this outcome.
+  """
+  share: Share!
+}
+
+"""
+Wallet of the creator.
+"""
+type Wallet {
+  """
+  Wallet address of this wallet, in hex.
+  """
+  address: String!
+}
+
+"""
+Share representing the outcome of the current amount.
+"""
+type Share {
+  """
+  ERC20 address of this campaign.
+  """
+  address: String!
+}
+
+"""
+HTTP-like interface for mutation. Either a delete, a logical update, or a put for the
+first time.
+"""
+enum Modification {
+  """
+  Delete this modification.
+  """
+  DELETE,
+
+  """
+  Create this modification.
+  """
+  PUT
+}
