@@ -1,0 +1,32 @@
+name: Deploy features
+
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'features/**'
+
+jobs:
+  deploy-features:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Test the JSON is well-formed
+        uses: sergeysova/jq-action@v2
+        id: version
+        with:
+          cmd: 'jq . features/features.json >/dev/null'
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ secrets.CLOUDFLARE_FEATURES_PROJECT_NAME }}
+          directory: .
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          workingDirectory: features
