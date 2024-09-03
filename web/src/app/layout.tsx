@@ -10,8 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "9Lives.so",
-  description:
-    "9Lives.so, the Decenteralized Prediction Market to bet on predictions",
+  description: "The most capital efficient prediction market",
 };
 
 export default function RootLayout({
