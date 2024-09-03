@@ -3,7 +3,7 @@ name: Deploy features
 on:
   push:
     branches:
-      - development
+      - main
     paths:
       - 'features/**'
 
