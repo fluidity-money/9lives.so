@@ -71,7 +71,7 @@ func main() {
 	http.Handle("/playground", playground.Handler("9lives.so playground", "/"))
 	switch typ := os.Getenv(EnvBackendType); typ {
 	case "lambda":
-		lambda.Start(httpadapter.New(http.DefaultServeMux).ProxyWithContext)
+		lambda.Start(httpadapter.NewV2(http.DefaultServeMux).ProxyWithContext)
 	case "http":
 		err := http.ListenAndServe(os.Getenv(EnvListenAddr), nil)
 		setup.Exitf( // This should only return if there's an error.
