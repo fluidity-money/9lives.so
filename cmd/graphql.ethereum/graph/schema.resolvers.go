@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/fluidity-money/9lives.so/lib/features"
+
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 )
 
@@ -18,7 +20,10 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 
 // Campaigns is the resolver for the campaigns field.
 func (r *queryResolver) Campaigns(ctx context.Context) ([]model.Campaign, error) {
-	panic(fmt.Errorf("not implemented: Campaigns - campaigns"))
+	if r.F.Is(features.FeatureGraphqlMockGraph) {
+		return MockGraphCampaigns()
+	}
+	return nil, nil
 }
 
 // Mutation returns MutationResolver implementation.

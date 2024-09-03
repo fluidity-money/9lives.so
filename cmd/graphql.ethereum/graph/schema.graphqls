@@ -113,7 +113,7 @@ type Campaign {
 
   """
   Identifier that's used to do offline derivation of the campaign pool,
-  and the outcome shares. Is keccak256(name . description . seed)[:8].
+  and the outcome shares. Is keccak256("c" . name . "d" . description . "s" . seed)[:8].
   """
   identifier: String!
 
@@ -151,7 +151,7 @@ type Outcome {
 
   """
   Identifier hex encoded associated with this outcome. Used to derive addresses.
-  Is of the form keccak256(name . description . seed)[:8]
+  Is of the form keccak256("o" . name . "d" . description . "s" . seed)[:8]
   """
   identifier: String!
 
