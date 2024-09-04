@@ -1,0 +1,28 @@
+name: Deploy static
+
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'static/**'
+
+jobs:
+  deploy-static:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          lfs: 'true'
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ secrets.CLOUDFLARE_STATIC_PROJECT_NAME }}
+          directory: .
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          workingDirectory: static

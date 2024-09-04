@@ -1,1 +1,2 @@
 diagram.png filter=lfs diff=lfs merge=lfs -text
+static/privacy.pdf filter=lfs diff=lfs merge=lfs -text
