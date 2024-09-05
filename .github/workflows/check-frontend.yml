@@ -1,0 +1,39 @@
+name: Check Frontend Web App
+
+on:
+    push:
+        branches: 
+          - development
+        paths: 
+          - 'web/**'
+    pull_request:
+        branches: 
+          - development
+        paths: 
+          - 'web/**'
+
+jobs: 
+    format:
+        name: Check Format
+        uses: ./.github/workflows/format.yml
+        secrets: inherit
+    lint:
+        name: Check Linting
+        uses: ./.github/workflows/lint.yml
+        secrets: inherit
+    unit-test:
+        name: Unit Tests
+        uses: ./.github/workflows/tests-unit-js.yml
+        secrets: inherit
+    e2e-test:
+        name: E2E Tests
+        uses: ./.github/workflows/tests-e2e.yml
+        secrets: inherit
+    deploy:
+        name: Deploy to Cloudflare
+        uses: ./.github/workflows/deploy-webapp.yml
+        secrets: inherit
+        if: github.event_name == 'push'
+        needs: 
+            - unit-test
+            - e2e-test

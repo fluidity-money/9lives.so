@@ -1,0 +1,51 @@
+name: Playwright E2E Tests
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './web'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.15.0
+      - name: Enable pnpm
+        run: corepack enable pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Browsers
+        run: pnpm playwright install --with-deps
+
+      - name: Run Playwright tests
+        env:
+          NEXT_PUBLIC_LONGTAIL_GRAPHQL_URL: 'https://testnet-graph.long.so'
+          NEXT_PUBLIC_LONGTAIL_WALLETCONNECT_PROJECT_ID: 'cd720795a706b4092d3487ebfa62938a'
+        run: pnpm test:e2e
+        
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-coverage
+          path: web/playwright-coverage/
+          retention-days: 30
+
+      - name: Upload coverage reports to Codecov
+        if: ${{ !startsWith(github.head_ref, 'dependabot/') }}
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true 
+          flags: e2e
+          name: e2e-tests 
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true 

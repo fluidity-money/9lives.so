@@ -1,16 +1,16 @@
 name: Deploy webapp
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'web/**'
+  workflow_call:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: mainnet
+    env:
+      NEXT_PUBLIC_LONGTAIL_GRAPHQL_URL: https://testnet-graph.9lives.so
+      NEXT_PUBLIC_CONTRACT_ADDRESS: 0x0
+      NEXT_PUBLIC_THIRDWEB_ID: a0c2404b7e4441ef009953a93dc1e41f
     steps:
       - uses: actions/checkout@v3
         with:
