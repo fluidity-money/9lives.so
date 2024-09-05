@@ -1,15 +1,41 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { graphql } from "@/gql";
+import request from "graphql-request";
+
+export const CampaignList = graphql(`
+  query CampaignList {
+    campaigns {
+      name
+      identifier
+      description
+      oracle
+      poolAddress
+      outcomes {
+        name
+        share {
+          address
+        }
+      }
+    }
+  }
+`);
 
 export default function ReactQueryProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+  if (!backend) throw new Error("NEXT_PUBLIC_BACKEND_URL is not set");
+
   const [queryClient] = useState(() => {
     // eslint-disable-next-line @tanstack/query/stable-query-client
     const client = new QueryClient();
-    // We can set some defaults here
+
+    client.setQueryDefaults(["campaigns"], {
+      queryFn: () => request("https://testnet-graph.9lives.so", CampaignList),
+    });
 
     return client;
   });
