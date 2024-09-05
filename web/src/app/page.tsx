@@ -2,7 +2,7 @@ import CampaignList from "@/components/campaignList";
 
 export default function Home() {
   return (
-    <section className="">
+    <section>
       <CampaignList />
     </section>
   );

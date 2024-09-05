@@ -7,7 +7,7 @@ export default function Navigation() {
     },
     {
       title: "Portfolio",
-      page: "/porfolio",
+      page: "/portfolio",
     },
     {
       title: "Leaderboard",

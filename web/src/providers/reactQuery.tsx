@@ -12,6 +12,7 @@ export const CampaignList = graphql(`
       oracle
       poolAddress
       outcomes {
+        identifier
         name
         share {
           address

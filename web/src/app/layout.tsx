@@ -7,14 +7,14 @@ import Footer from "@/components/footer";
 import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import dynamic from "next/dynamic";
+import { config } from "@/config";
 const CookieBanner = dynamic(() => import("@/components/cookieBanner"), {
   ssr: false,
 });
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "9Lives.so",
-  description: "The most capital efficient prediction market",
+  ...config.metadata,
 };
 
 export default function RootLayout({
@@ -34,10 +34,10 @@ export default function RootLayout({
           <Header />
           <main className="flex flex-1 p-4">{children}</main>
           <Footer />
-          <CookieBanner />
         </Providers>
-        <GoogleAnalytics />
+        <CookieBanner />
       </body>
+      <GoogleAnalytics />
     </html>
   );
 }
