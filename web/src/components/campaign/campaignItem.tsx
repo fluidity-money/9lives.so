@@ -10,7 +10,7 @@ interface CampaignItemProps {
 export default function CampaignItem({ data }: CampaignItemProps) {
   return (
     <div className="rounded-md border border-black/10 p-3 shadow-md">
-      <CampaignItemHeader name={data.name} />
+      <CampaignItemHeader name={data.name} identifier={data.identifier} />
       <CampaignItemOutcomes outcomes={data.outcomes} />
       <CampaignItemFooter />
     </div>

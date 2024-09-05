@@ -1,4 +1,4 @@
-import CampaignList from "@/components/campaignList";
+import CampaignList from "@/components/campaign/campaignList";
 
 export default function Home() {
   return (
