@@ -29,8 +29,9 @@ jobs:
 
       - name: Run Playwright tests
         env:
-          NEXT_PUBLIC_LONGTAIL_GRAPHQL_URL: 'https://testnet-graph.long.so'
-          NEXT_PUBLIC_LONGTAIL_WALLETCONNECT_PROJECT_ID: 'cd720795a706b4092d3487ebfa62938a'
+          NEXT_PUBLIC_LONGTAIL_GRAPHQL_URL: 'https://testnet-graph.9lives.so'
+          NEXT_PUBLIC_CONTRACT_ADDRESS: '0x0'
+          NEXT_PUBLIC_THIRDWEB_ID: 'a0c2404b7e4441ef009953a93dc1e41f'
         run: pnpm test:e2e
         
       - uses: actions/upload-artifact@v4

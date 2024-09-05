@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  lint-format:
+  webapp-format:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     defaults:
