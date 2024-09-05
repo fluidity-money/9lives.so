@@ -3,12 +3,12 @@ name: Check Frontend Web App
 on:
     push:
         branches: 
-          - development
+          - main
         paths: 
           - 'web/**'
     pull_request:
         branches: 
-          - development
+          - main
         paths: 
           - 'web/**'
 
