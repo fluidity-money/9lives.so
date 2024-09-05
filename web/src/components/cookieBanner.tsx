@@ -41,7 +41,7 @@ export default function CookieBanner() {
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 mx-auto my-10 flex max-w-max flex-col items-center justify-between gap-4 rounded-lg bg-[#1E1E1E] p-3 shadow sm:flex-row md:max-w-screen-sm md:px-4">
       <div className="text-center text-white">
-        <Link href="https://static.purr.stream/privacy.pdf">
+        <Link href="https://static.9lives.so/privacy.pdf">
           <p>
             We use <span className="font-bold">cookies</span> on our site.
           </p>
