@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <Providers>
           <Header />
-          <main className="flex flex-1">{children}</main>
+          <main className="flex flex-1 p-4">{children}</main>
           <Footer />
           <CookieBanner />
         </Providers>
