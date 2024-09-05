@@ -3,7 +3,7 @@ name: Deploy static
 on:
   push:
     branches:
-      - development
+      - main
     paths:
       - 'static/**'
 

@@ -1,0 +1,56 @@
+name: Deploy webapp
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'features/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: mainnet
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          lfs: "true"
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          run_install: |
+            - recursive: true
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm
+            ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.15.0
+
+      - run: |
+          cd web
+          pnpm build
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_TOKEN }}
+          # update
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # update
+          projectName: ${{ secrets.CLOUDFLARE_APP_PROJECT_NAME }}
+          directory: out
+          # to enable Github Deployments
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          workingDirectory: web
