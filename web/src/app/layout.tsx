@@ -5,7 +5,11 @@ import Providers from "@/providers";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { combineClass } from "@/utils/combineClass";
-
+import GoogleAnalytics from "@/components/googleAnalytics";
+import dynamic from "next/dynamic";
+const CookieBanner = dynamic(() => import("@/components/cookieBanner"), {
+  ssr: false,
+});
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -30,7 +34,9 @@ export default function RootLayout({
           <Header />
           <main className="flex flex-1">{children}</main>
           <Footer />
+          <CookieBanner />
         </Providers>
+        <GoogleAnalytics />
       </body>
     </html>
   );
