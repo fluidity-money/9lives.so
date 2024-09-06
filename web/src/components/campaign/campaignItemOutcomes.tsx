@@ -43,10 +43,10 @@ export default function CampaignItemOutcomes({
           className="flex items-center justify-between text-xs"
         >
           <Link href={`/event?id=${campaignId}`}>
-            <span className="">{outcome.name}</span>
+            <span className="font-bold">{outcome.name}</span>
           </Link>
           <div className="flex items-center gap-1">
-            <span>{"%75"}</span>
+            <span className="font-bold">{"%75"}</span>
             <Button
               intent="yes"
               size="small"

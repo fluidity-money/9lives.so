@@ -16,19 +16,21 @@ export default function CampaignItemHeader({
   soloRatio,
 }: CampaignItemHeaderProps) {
   return (
-    <div className="flex items-center gap-2">
-      <Image
-        src={CatImage}
-        width={40}
-        height={40}
-        className="rounded-md"
-        alt={name}
-      />
-      <Link href={`/event?id=${identifier}`}>
-        <h4 className="text-sm font-bold">{name}</h4>
-      </Link>
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <Image
+          src={CatImage}
+          width={40}
+          height={40}
+          className="rounded-md"
+          alt={name}
+        />
+        <Link href={`/event?id=${identifier}`}>
+          <h4 className="text-sm font-bold">{name}</h4>
+        </Link>
+      </div>
       {solo && soloRatio && (
-        <span className="relative ml-1 flex items-center justify-center text-xs font-bold text-gray-500">
+        <span className="relative flex items-center justify-center text-xs font-bold text-gray-500">
           {soloRatio}%
           <div
             className="absolute z-[-1] size-10 rounded-full border-2 border-gray-200"

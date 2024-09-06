@@ -19,7 +19,11 @@ export default function CampaignItem({ data }: CampaignItemProps) {
   return (
     <CampaignItemWrapper>
       {selectedBet ? (
-        <SelectedBet data={selectedBet} setSelectedBet={setSelectedBet} />
+        <SelectedBet
+          campaignId={data.identifier}
+          data={selectedBet}
+          setSelectedBet={setSelectedBet}
+        />
       ) : (
         <>
           <CampaignItemHeader

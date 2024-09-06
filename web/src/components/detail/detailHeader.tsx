@@ -1,7 +1,13 @@
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
 import Button from "@/components/themed/button";
-export default function DetailHeader() {
+import { CampaignListQuery } from "@/gql/graphql";
+
+export default function DetailHeader({
+  data,
+}: {
+  data: CampaignListQuery["campaigns"][number];
+}) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -12,9 +18,11 @@ export default function DetailHeader() {
           className="rounded-md"
           src={CatImage}
         />
-        <h1>USA Election Winner 2024</h1>
+        <h1 className="text-3xl font-bold">{data.name}</h1>
       </div>
-      <Button>Watchlist</Button>
+      <Button onClick={() => window.alert("You clicked the button!")}>
+        Watchlist
+      </Button>
     </div>
   );
 }
