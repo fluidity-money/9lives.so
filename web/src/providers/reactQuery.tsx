@@ -34,6 +34,10 @@ export default function ReactQueryProvider({
     // eslint-disable-next-line @tanstack/query/stable-query-client
     const client = new QueryClient();
 
+    client.setQueryDefaults(["features"], {
+      queryFn: () => fetch("https://features.9lives.so/features.json"),
+    });
+
     client.setQueryDefaults(["campaigns"], {
       queryFn: () => request("https://testnet-graph.9lives.so", CampaignList),
     });
