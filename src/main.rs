@@ -1,5 +1,4 @@
-#![no_std]
-#![cfg_attr(target_arch = "wasm32", no_main)]
+#![cfg_attr(target_arch = "wasm32", no_main, no_std)]
 
 #[cfg(target_arch = "wasm32")]
 use lib9lives::user_entrypoint as stylus_entrypoint;

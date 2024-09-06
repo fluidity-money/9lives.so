@@ -13,10 +13,23 @@ def shares(M1,M2,N1,N2,m):
     n = m*(N1-N2)/T+N2*(T+m)/M2*math.log(T*(M1+m)/(M1*(T+m)))
     return n
 
+def price2(M1,M2,N1,N2,m):
+    T = M1+M2
+    print(f"T: {T}")
+    a = (M1+m)*M2*N1
+    print(f"a: {a}")
+    b = (M2-m)*M2*N2
+    print(f"b: {b}")
+    c = T*(M1+m)*N2
+    d = math.log(T*(M1+m)/(M1*(T+m)))
+    e = a+b+c*d
+    p = (M1+m)*M2*T/e
+    return p
+
 def place_order(outcome, cost, M1, M2, N1, N2):
     """
     Place an order in the DPM market.
-    
+
     :param outcome: 'A' or 'B'
     :param cost: amount of money to spend on shares
     :param M1: total amount of money wagered on outcome A

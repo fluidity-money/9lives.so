@@ -34,6 +34,5 @@ fn make_proxy_code(addr: Address) -> [u8; 124] {
 pub fn deploy(seed: FixedBytes<32>, contract_impl: Address) -> Result<Address, Vec<u8>> {
     let d = RawDeploy::new().salt(seed);
     let c = make_proxy_code(contract_impl);
-    let x = unsafe { d.deploy(&c, U256::ZERO) };
-    x
+    unsafe { d.deploy(&c, U256::ZERO) }
 }
