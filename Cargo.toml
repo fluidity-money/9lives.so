@@ -30,7 +30,7 @@ num-traits = "0.2.19"
 alloy-sol-types = "0.7.6"
 alloy-sol-macro = "0.7.6"
 lol_alloc = "0.4.0"
-astro-float = "0.9.4"
+astro-float = { version = "0.9.4", default-features = false }
 getrandom = { version = "0.2.15", features = ["js"] }
 
 [dev-dependencies]
