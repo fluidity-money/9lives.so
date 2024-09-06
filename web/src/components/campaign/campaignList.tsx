@@ -14,7 +14,10 @@ export default function CampaignList() {
 
   const mockData = [
     ...data.campaigns,
-    ...data.campaigns,
+    ...data.campaigns.map((item) => ({
+      ...item,
+      outcomes: [item.outcomes[0]],
+    })),
     ...data.campaigns,
     ...data.campaigns,
     ...data.campaigns,
