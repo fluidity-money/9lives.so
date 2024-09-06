@@ -3,13 +3,11 @@ import DetailCall2Action from "@/components/detail/detailAction";
 import DetailHeader from "@/components/detail/detailHeader";
 import { CampaignListQuery } from "@/gql/graphql";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { SelectedBet } from "@/components/campaign/campaignItem";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import DetailOutcomes from "@/components/detail/detailOutcomes";
-
-export default function DetailPage() {
+function Details() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id") as string;
   const router = useRouter();
@@ -52,5 +50,13 @@ export default function DetailPage() {
         )}
       </div>
     </section>
+  );
+}
+
+export default function DetailPage() {
+  return (
+    <Suspense fallback={<section>...Loading</section>}>
+      <Details />
+    </Suspense>
   );
 }
