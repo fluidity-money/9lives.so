@@ -6,7 +6,7 @@ use stylus_sdk::{
 use crate::{
     erc20_call::{permit, transfer_from},
     error::Error,
-    immutables::NATIVE_ASSET_ADDR,
+    immutables::FUSDC_ADDR,
 };
 
 pub fn take_from_sender(_amount: U256) -> Result<(), Error> {
@@ -14,7 +14,7 @@ pub fn take_from_sender(_amount: U256) -> Result<(), Error> {
 }
 
 pub fn take_from_funder(funder: Address, amount: U256) -> Result<(), Error> {
-    transfer_from(NATIVE_ASSET_ADDR, funder, contract::address(), amount)
+    transfer_from(FUSDC_ADDR, funder, contract::address(), amount)
 }
 
 pub fn take_from_sender_permit(
@@ -25,7 +25,7 @@ pub fn take_from_sender_permit(
     s: FixedBytes<32>,
 ) -> Result<(), Error> {
     permit(
-        NATIVE_ASSET_ADDR,
+        FUSDC_ADDR,
         contract::address(),
         msg::sender(),
         value,

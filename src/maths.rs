@@ -4,7 +4,7 @@ use astro_float::{BigFloat, Consts, RoundingMode};
 
 use crate::{assert_or, error::Error};
 
-pub fn u256_to_float(n: U256, decimals: u8) -> Result<BigFloat, Vec<u8>> {
+pub fn u256_to_float(n: U256, decimals: u8) -> Result<BigFloat, Error> {
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
     assert_or!(n > U256::ZERO, Error::TooSmallNumber);
 
@@ -14,6 +14,10 @@ pub fn u256_to_float(n: U256, decimals: u8) -> Result<BigFloat, Vec<u8>> {
     let rm = RoundingMode::Down;
     let x = BigFloat::from(rem).div(&BigFloat::from(i128::pow(10, decimals.into())), 128, rm);
     Ok(x.add(&BigFloat::from(n), 128, rm))
+}
+
+pub fn float_to_u256(n: BigFloat, decimals: u8) -> Result<U256, Error> {
+  Ok(U256::from(0))
 }
 
 #[allow(non_snake_case)]

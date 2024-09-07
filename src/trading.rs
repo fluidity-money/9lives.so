@@ -9,7 +9,7 @@ use stylus_sdk::{
     storage::*,
 };
 
-use crate::{error::*, fusdc_call};
+use crate::{error::*, fusdc_call, immutables::*, maths};
 
 #[solidity_storage]
 #[entrypoint]
@@ -25,6 +25,9 @@ pub struct Trading {
     // Factory that created this trading pool.
     factory: StorageAddress,
 
+    // Shares existing in every outcome.
+    shares: StorageU256,
+
     // Global amount invested to this pool of the native asset.
     invested: StorageU256,
 
@@ -37,10 +40,10 @@ struct Outcome {
     invested: StorageU256,
 
     // Amount of shares in existence in this outcome.
-    shares: StorageI64,
+    shares: StorageU256,
 
     // Was this outcome the correct outcome?
-    winning: StorageBool
+    winning: StorageBool,
 }
 
 #[external]
@@ -87,6 +90,38 @@ impl Trading {
         recipient: Address,
     ) -> Result<U256, Error> {
         assert_or!(!self.locked.get(), Error::DoneVoting);
+
+        // Assume we already took the user's balance. Get the state of
+        // everything else as u256s.
+        let outcome = self.outcomes.getter(outcome_id);
+        let m_1 = outcome.invested.get();
+        let n_1 = outcome.shares.get();
+        let n_2 = self.shares.get() - n_1;
+        let m_2 = self.invested.get() - m_1;
+
+        // Set the global states.
+        self.outcomes.setter(outcome_id).invested.set(m_1 + value);
+        self.invested.set(self.invested.get() + value);
+
+        // Convert everything to floats!
+        let m = maths::u256_to_float(value, FUSDC_DECIMALS)?;
+        let m_1 = maths::u256_to_float(m_1, FUSDC_DECIMALS)?;
+        let m_2 = maths::u256_to_float(m_2, FUSDC_DECIMALS)?;
+        let n_1_float = maths::u256_to_float(n_1, SHARE_DECIMALS)?;
+        let n_2 = maths::u256_to_float(n_2, SHARE_DECIMALS)?;
+
+        let shares = maths::float_to_u256(
+            maths::shares(&m_1, &m_2, &n_1_float, &n_2, &m),
+            SHARE_DECIMALS,
+        )?;
+
+        // Set the global states the output of shares.
+        self.outcomes.setter(outcome_id).shares.set(n_1 + shares);
+        self.shares.set(self.shares.get() + shares);
+
+        // Get the address of the share, then mint some in line with the
+        // shares we made to the user's address!
+
         Ok(U256::from(0))
     }
 
