@@ -8,7 +8,7 @@ use stylus_sdk::{
     storage::*,
 };
 
-use crate::{error::*, immutables::*, longtail, proxy, share, trading_cd};
+use crate::{error::*, immutables::*, longtail_call, proxy, share_call, trading_call};
 
 #[solidity_storage]
 #[entrypoint]
@@ -80,11 +80,11 @@ impl Factory {
             let erc20_addr = proxy::deploy(erc20_identifier, self.erc20_impl.get())?;
 
             // Set up the share ERC20 asset, with the description.
-            share::ctor(erc20_addr, outcome_identifier, trading_addr)?;
+            share_call::ctor(erc20_addr, outcome_identifier, trading_addr)?;
 
             // Use Longtail to create a pool for this share, then enable it with odds baked into
             // the contract. Use a volatile asset price.
-            longtail::create_pool(
+            longtail_call::create_pool(
                 erc20_addr,
                 U256::ZERO,
                 LONGTAIL_FEE,
@@ -99,7 +99,7 @@ impl Factory {
             }); */
         }
 
-        trading_cd::ctor(trading_addr, oracle, msg::sender(), &outcomes)?;
+        trading_call::ctor(trading_addr, oracle, msg::sender(), &outcomes)?;
 
         Ok(trading_addr)
     }

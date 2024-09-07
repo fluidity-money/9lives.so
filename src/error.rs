@@ -13,33 +13,45 @@ macro_rules! assert_or {
 #[derive(Error, Debug)]
 #[repr(u8)]
 pub enum Error {
-    // Proxy already created.
+    /// Proxy already created.
     #[error("Already constructed")]
     AlreadyConstructed,
 
-    // Outcomes must be defined to create Trading.
+    /// Outcomes must be defined to create Trading.
     #[error("Must contain outcomes")]
     MustContainOutcomes,
 
-    // Some odds must be set beforehand.
+    /// Some odds must be set beforehand.
     #[error("Odds must be set")]
     OddsMustBeSet,
 
-    // The number that we're trying to make into a float is too large.
+    /// The number that we're trying to make into a float is too large.
     #[error("U256 is too high")]
     U256TooLarge,
 
-    // The number is too small. Maybe you need to pass in 1e<decimals>.
+    /// The number is too small. Maybe you need to pass in 1e<decimals>.
     #[error("The amount given is too small")]
     TooSmallNumber,
 
-    // Longtail had an error, we'll bubble up what happened.
+    /// Longtail had an error, we'll bubble up what happened.
     #[error("Longtail had an error.")]
     LongtailError(Vec<u8>),
 
-    // ERC20 error!) Bubble up.
+    /// ERC20 error! Bubble up.
     #[error("ERC20 error")]
     ERC20Error(Vec<u8>),
+
+    /// ERC20 error! Returned false!
+    #[error("ERC20 returned false")]
+    ERC20ReturnedFalse,
+
+    /// You called a trusted function you shouldn't have.
+    #[error("Not oracle")]
+    NotOracle,
+
+    /// Done voting!
+    #[error("Done voting")]
+    DoneVoting,
 }
 
 impl From<Error> for Vec<u8> {

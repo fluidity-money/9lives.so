@@ -1,7 +1,9 @@
-use stylus_sdk::alloy_primitives::Address;
+use stylus_sdk::alloy_primitives::{Address, U256};
 
-// Construct the ERC20 with the description in bytes provided, and an
-// admin that can mint more tokens on request.
-pub fn ctor(_addr: Address, _description: &[u8], _admin: Address) -> Result<(), Vec<u8>> {
-    Ok(())
+pub fn pack_mint(_spender: Address, _amount: U256) -> [u8; 8 + 32 * 2] {
+    [0_u8; 8 + 32 * 2]
+}
+
+pub fn pack_burn(_spender: Address, _amount: U256) -> [u8; 8 + 32 * 2] {
+    [0_u8; 8 + 32 * 2]
 }

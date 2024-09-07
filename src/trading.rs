@@ -16,6 +16,12 @@ use crate::{error::*, fusdc};
 pub struct Trading {
     created: StorageBool,
 
+    // Outcome was determined! It should be impossible to mint, only to burn.
+    locked: StorageBool,
+
+    // Oracle responsible for determine the outcome.
+    oracle: StorageAddress,
+
     // Factory that created this trading pool.
     factory: StorageAddress,
 
@@ -32,6 +38,9 @@ struct Outcome {
 
     // Amount of shares in existence in this outcome.
     shares: StorageI64,
+
+    // Was this outcome the correct outcome?
+    winning: SharesBool
 }
 
 #[external]
@@ -71,22 +80,41 @@ impl Trading {
         Ok(())
     }
 
-    fn _mint(&mut self, recipient: Address, value: U256) -> Result<U256, Vec<u8>> {}
+    fn _mint(
+        &mut self,
+        outcome: FixedBytes<8>,
+        value: U256,
+        recipient: Address,
+    ) -> Result<U256, Error> {
+        assert_or!(!self.locked.get(), Error::DoneVoting);
+        Ok(U256::from(0))
+    }
 
-    pub fn mint(&mut self, recipient: Address, value: U256) -> Result<U256, Vec<u8>> {
+    pub fn mint(
+        &mut self,
+        outcome: FixedBytes<8>,
+        value: U256,
+        recipient: Address,
+    ) -> Result<U256, Error> {
         fusdc::take_from_sender(value)?;
-        self._mint(recipient, value)
+        self._mint(outcome, recipient, value)
     }
 
     pub fn mint_permit(
         &mut self,
-        recipient: Address,
+        outcome: FixedBytes<8>,
         value: U256,
+        recipient: Address,
         v: u8,
-        r: FixedBytes<8>,
-        s: FixedBytes<8>,
+        r: FixedBytes<32>,
+        s: FixedBytes<32>,
     ) -> Result<U256, Vec<u8>> {
-        fusdc::take_from_sender_permit(_value, v, r, s)?;
-        self._mint(recipient, value)
+        fusdc::take_from_sender_permit(value, v, r, s)?;
+        self._mint(outcome, recipient, value)
+    }
+
+    pub fn determine(&mut self, outcome: FixedBytes<u8>) -> Result<(), Error> {
+        assert_or!(msg::sender() == self.oracle.get(), Error::NotOracle);
+        Ok(())
     }
 }

@@ -5,13 +5,21 @@ pub mod error;
 
 pub mod events;
 
-pub mod fusdc;
 pub mod immutables;
-pub mod longtail;
 pub mod proxy;
+
+pub mod calldata;
 
 pub mod share_cd;
 pub mod trading_cd;
+pub mod erc20_cd;
+pub mod longtail_cd;
+
+pub mod trading_call;
+pub mod share_call;
+pub mod erc20_call;
+pub mod fusdc_call;
+pub mod longtail_call;
 
 extern crate alloc;
 #[cfg(target_arch = "wasm32")]
