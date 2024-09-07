@@ -9,7 +9,7 @@ use stylus_sdk::{
     storage::*,
 };
 
-use crate::{error::*, fusdc};
+use crate::{error::*, fusdc_call};
 
 #[solidity_storage]
 #[entrypoint]
@@ -40,7 +40,7 @@ struct Outcome {
     shares: StorageI64,
 
     // Was this outcome the correct outcome?
-    winning: SharesBool
+    winning: StorageBool
 }
 
 #[external]
@@ -64,7 +64,7 @@ impl Trading {
         // the details needed for this CREATE2.
         let fusdc_amount = outcomes.iter().map(|(_, i)| i).sum::<U256>();
         assert_or!(fusdc_amount > U256::ZERO, Error::OddsMustBeSet);
-        fusdc::take_from_funder(funder, fusdc_amount)?;
+        fusdc_call::take_from_funder(funder, fusdc_amount)?;
         self.invested.set(fusdc_amount);
 
         // Start to go through each outcome, and seed it with its initial amount.
@@ -96,8 +96,8 @@ impl Trading {
         value: U256,
         recipient: Address,
     ) -> Result<U256, Error> {
-        fusdc::take_from_sender(value)?;
-        self._mint(outcome, recipient, value)
+        fusdc_call::take_from_sender(value)?;
+        self._mint(outcome, value, recipient)
     }
 
     pub fn mint_permit(
@@ -108,12 +108,12 @@ impl Trading {
         v: u8,
         r: FixedBytes<32>,
         s: FixedBytes<32>,
-    ) -> Result<U256, Vec<u8>> {
-        fusdc::take_from_sender_permit(value, v, r, s)?;
-        self._mint(outcome, recipient, value)
+    ) -> Result<U256, Error> {
+        fusdc_call::take_from_sender_permit(value, v, r, s)?;
+        self._mint(outcome, value, recipient)
     }
 
-    pub fn determine(&mut self, outcome: FixedBytes<u8>) -> Result<(), Error> {
+    pub fn determine(&mut self, outcome: FixedBytes<8>) -> Result<(), Error> {
         assert_or!(msg::sender() == self.oracle.get(), Error::NotOracle);
         Ok(())
     }
