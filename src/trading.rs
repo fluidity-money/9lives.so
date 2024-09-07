@@ -20,15 +20,15 @@ pub struct Trading {
     factory: StorageAddress,
 
     // Global amount invested to this pool of the native asset.
-    money_invested: StorageU256,
+    invested: StorageU256,
 
     outcomes: StorageMap<FixedBytes<8>, Outcome>,
 }
 
 #[solidity_storage]
 struct Outcome {
-    // Amount invested into this outcome.
-    money_invested: StorageU256,
+    // Outstanding invested into this outcome.
+    invested: StorageU256,
 
     // Amount of shares in existence in this outcome.
     shares: StorageI64,
@@ -56,14 +56,30 @@ impl Trading {
         let fusdc_amount = outcomes.iter().map(|(_, i)| i).sum::<U256>();
         assert_or!(fusdc_amount > U256::ZERO, Error::OddsMustBeSet);
         fusdc::take_from_sender(funder, fusdc_amount)?;
+        self.invested.set(fusdc_amount);
 
         // Start to go through each outcome, and seed it with its initial amount.
         for (outcome_id, outcome_amount) in outcomes {
-
+            self.outcomes
+                .setter(outcome_id)
+                .invested
+                .set(outcome_amount);
         }
 
         self.created.set(true);
         self.factory.set(msg::sender());
         Ok(())
+    }
+
+    // Take fUSDC from the user, and mint shares to the recipient address.
+    pub fn mint(
+        &mut self,
+        recipient: Address,
+        value: U256,
+        v: u8,
+        r: FixedBytes<8>,
+        s: FixedBytes<8>,
+    ) -> Result<U256, Vec<u8>> {
+        fusdc::take_from_sender_permit(_value, v, r, s)?;
     }
 }
