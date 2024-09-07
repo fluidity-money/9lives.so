@@ -1,4 +1,4 @@
 [profile.default]
-src = "sol"
+src = "src"
 out = "out"
 libs = ["foundry-libs"]

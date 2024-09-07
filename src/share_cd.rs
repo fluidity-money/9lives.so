@@ -1,4 +1,4 @@
-use stylus_sdk::alloy_primitives::{Address};
+use stylus_sdk::alloy_primitives::Address;
 
 // Construct the ERC20 with the description in bytes provided, and an
 // admin that can mint more tokens on request.

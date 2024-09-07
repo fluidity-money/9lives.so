@@ -1,4 +1,3 @@
-
 pub mod maths;
 
 #[macro_use]
@@ -6,11 +5,12 @@ pub mod error;
 
 pub mod events;
 
+pub mod fusdc;
+pub mod immutables;
 pub mod longtail;
 pub mod proxy;
-pub mod share;
-pub mod immutables;
-pub mod fusdc;
+
+pub mod share_cd;
 pub mod trading_cd;
 
 extern crate alloc;
@@ -24,10 +24,10 @@ mod allocator {
 }
 
 #[cfg(feature = "factory")]
-pub use factory::user_entrypoint;
+mod factory;
 
 #[cfg(feature = "factory")]
-mod factory;
+pub use factory::user_entrypoint;
 
 #[cfg(feature = "trading")]
 mod trading;

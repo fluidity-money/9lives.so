@@ -55,7 +55,7 @@ impl Trading {
         // the details needed for this CREATE2.
         let fusdc_amount = outcomes.iter().map(|(_, i)| i).sum::<U256>();
         assert_or!(fusdc_amount > U256::ZERO, Error::OddsMustBeSet);
-        fusdc::take_from_sender(funder, fusdc_amount)?;
+        fusdc::take_from_funder(funder, fusdc_amount)?;
         self.invested.set(fusdc_amount);
 
         // Start to go through each outcome, and seed it with its initial amount.
@@ -71,8 +71,14 @@ impl Trading {
         Ok(())
     }
 
-    // Take fUSDC from the user, and mint shares to the recipient address.
-    pub fn mint(
+    fn _mint(&mut self, recipient: Address, value: U256) -> Result<U256, Vec<u8>> {}
+
+    pub fn mint(&mut self, recipient: Address, value: U256) -> Result<U256, Vec<u8>> {
+        fusdc::take_from_sender(value)?;
+        self._mint(recipient, value)
+    }
+
+    pub fn mint_permit(
         &mut self,
         recipient: Address,
         value: U256,
@@ -81,5 +87,6 @@ impl Trading {
         s: FixedBytes<8>,
     ) -> Result<U256, Vec<u8>> {
         fusdc::take_from_sender_permit(_value, v, r, s)?;
+        self._mint(recipient, value)
     }
 }

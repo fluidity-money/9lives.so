@@ -1,7 +1,7 @@
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes, U256},
     crypto,
-    deploy::RawDeploy
+    deploy::RawDeploy,
 };
 
 // Sort and concatenate the seeds given, ABI format them, then hash them,
