@@ -14,6 +14,7 @@ interface INineLivesTrading {
      * @notice mint some shares in exchange for fUSDC.
      * @param outcome to bet on.
      * @param value to spend of fUSDC.
+     * @param deadline to spend by.
      * @param recipient of the funds spent.
      * @param v to use for the permit signature
      * @param r to use for permit.
@@ -22,6 +23,7 @@ interface INineLivesTrading {
     function mintPermit(
         bytes8 outcome,
         uint256 value,
+        uint256 deadline,
         address recipient,
         uint8 v,
         bytes32 r,

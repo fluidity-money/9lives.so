@@ -1,9 +1,12 @@
-use stylus_sdk::alloy_primitives::{Address, U256};
+use stylus_sdk::alloy_primitives::{Address, U256, FixedBytes};
 
 use crate::calldata::*;
 
 //transferFrom(address,address,uint256)
 const TRANSFER_FROM_SELECTOR: [u8; 4] = [0x23, 0xb8, 0x72, 0xdd];
+
+//permit(address,address,uint256,uint256,uint8,bytes32,bytes32)
+const PERMIT_SELECTOR: [u8; 4] = [0xd5, 0x05, 0xac, 0xcf];
 
 pub fn pack_transfer_from(sender: Address, recipient: Address, amount: U256) -> [u8; 4 + 32 * 3] {
     let mut cd = [0_u8; 4 + 32 * 3];
@@ -11,6 +14,27 @@ pub fn pack_transfer_from(sender: Address, recipient: Address, amount: U256) -> 
     write_address(&mut cd, 0, sender);
     write_address(&mut cd, 1, recipient);
     write_u256(&mut cd, 2, amount);
+    cd
+}
+
+pub fn pack_permit(
+    owner: Address,
+    spender: Address,
+    value: U256,
+    deadline: U256,
+    v: u8,
+    r: FixedBytes<32>,
+    s: FixedBytes<32>,
+) -> [u8; 4 + 32 * 7] {
+    let mut cd = [0_u8; 4 + 32 * 7];
+    write_selector(&mut cd, &PERMIT_SELECTOR);
+    write_address(&mut cd, 0, owner);
+    write_address(&mut cd, 1, spender);
+    write_u256(&mut cd, 2, value);
+    write_u256(&mut cd, 3, deadline);
+    write_u8(&mut cd, 4, v);
+    write_b32(&mut cd, 5, r);
+    write_b32(&mut cd, 6, s);
     cd
 }
 

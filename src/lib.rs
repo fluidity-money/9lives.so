@@ -1,3 +1,5 @@
+#![feature(concat_idents)]
+
 pub mod maths;
 
 #[macro_use]

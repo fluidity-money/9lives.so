@@ -6,6 +6,6 @@ pub fn pack_create_pool(
     _fee: u32,
     _spacing: u8,
     _liq_per_tick: u128,
-) -> [u8; 8 + 32 * 5] {
-    [0_u8; 8 + 32 * 5]
+) -> [u8; 4 + 32 * 5] {
+    [0_u8; 4 + 32 * 5]
 }

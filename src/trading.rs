@@ -82,7 +82,7 @@ impl Trading {
 
     fn _mint(
         &mut self,
-        outcome: FixedBytes<8>,
+        outcome_id: FixedBytes<8>,
         value: U256,
         recipient: Address,
     ) -> Result<U256, Error> {
@@ -105,11 +105,12 @@ impl Trading {
         outcome: FixedBytes<8>,
         value: U256,
         recipient: Address,
+        deadline: U256,
         v: u8,
         r: FixedBytes<32>,
         s: FixedBytes<32>,
     ) -> Result<U256, Error> {
-        fusdc_call::take_from_sender_permit(value, v, r, s)?;
+        fusdc_call::take_from_sender_permit(value, deadline, v, r, s)?;
         self._mint(outcome, value, recipient)
     }
 
