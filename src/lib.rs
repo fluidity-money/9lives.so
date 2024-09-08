@@ -1,6 +1,7 @@
 #![feature(concat_idents)]
 
 pub mod maths;
+pub mod float;
 
 #[macro_use]
 pub mod error;

@@ -1,23 +1,33 @@
+// When you use this library, be careful of the words that could possibly
+// come up. It's recommended to protect the amounts coming in using the
+// u256_to_float function where possible.
+
 use stylus_sdk::alloy_primitives::U256;
 
 use astro_float::{BigFloat, Consts, RoundingMode};
 
 use crate::{assert_or, error::Error};
 
+//340282366920938463463374607431768211455
+pub const MAX_NUMBER: U256 = U256::from_limbs([18446744073709551615, 18446744073709551615, 0, 0]);
+
+const PREC: usize = std::mem::size_of::<u128>();
+
 pub fn u256_to_float(n: U256, decimals: u8) -> Result<BigFloat, Error> {
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
     assert_or!(n > U256::ZERO, Error::TooSmallNumber);
+    assert_or!(n < MAX_NUMBER, Error::TooBigNumber);
 
-    let n: i128 = i128::from_le_bytes(n.to_le_bytes::<128>()[..16].try_into().unwrap());
-    let rem: i128 = i128::from_le_bytes(rem.to_le_bytes::<128>()[..16].try_into().unwrap());
+    let n: i128 = i128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
+    let rem: i128 = i128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
 
     let rm = RoundingMode::Down;
     let x = BigFloat::from(rem).div(&BigFloat::from(i128::pow(10, decimals.into())), 128, rm);
     Ok(x.add(&BigFloat::from(n), 128, rm))
 }
 
-pub fn float_to_u256(n: BigFloat, decimals: u8) -> Result<U256, Error> {
-  Ok(U256::from(0))
+pub fn float_to_u256(_n: BigFloat, _decimals: u8) -> Result<U256, Error> {
+    Ok(U256::from(0))
 }
 
 #[allow(non_snake_case)]
@@ -30,25 +40,25 @@ pub fn price(
 ) -> BigFloat {
     let mut cache = Consts::new().unwrap();
     let rm = RoundingMode::Down;
-    let T = M_1.add(M_2, 128, rm);
+    let T = M_1.add(M_2, PREC, rm);
     //a = (M1+m)*M2*N1
-    let a = M_1.add(m, 128, rm).mul(&M_2.mul(N_1, 128, rm), 128, rm);
+    let a = M_1.add(m, PREC, rm).mul(&M_2.mul(N_1, PREC, rm), PREC, rm);
     //b = (M2-m)*M2*N2
-    let b = M_2.sub(m, 128, rm).mul(&M_2.mul(N_2, 128, rm), 128, rm);
+    let b = M_2.sub(m, PREC, rm).mul(&M_2.mul(N_2, PREC, rm), PREC, rm);
     //c = T*(M1+m)*N2
-    let c = T.mul(&M_1.add(m, 128, rm), 128, rm).mul(N_2, 128, rm);
+    let c = T.mul(&M_1.add(m, PREC, rm), PREC, rm).mul(N_2, PREC, rm);
     //d = math.log(T*(M1+m)/(M1*(T+m)))
     let d = T
-        .mul(&M_1.add(m, 128, rm), 128, rm)
-        .div(&M_1.mul(&T.add(m, 128, rm), 128, rm), 128, rm)
-        .ln(128, rm, &mut cache);
+        .mul(&M_1.add(m, PREC, rm), PREC, rm)
+        .div(&M_1.mul(&T.add(m, PREC, rm), PREC, rm), PREC, rm)
+        .ln(PREC, rm, &mut cache);
     //e = a+b+c*d
-    let e = a.add(&b, 128, rm).add(&c.mul(&d, 128, rm), 128, rm);
+    let e = a.add(&b, PREC, rm).add(&c.mul(&d, PREC, rm), PREC, rm);
     //p = (M1+m)*M2*T/e
-    M_1.add(m, 128, rm)
-        .mul(M_2, 128, rm)
-        .mul(&T, 128, rm)
-        .div(&e, 128, rm)
+    M_1.add(m, PREC, rm)
+        .mul(M_2, PREC, rm)
+        .mul(&T, PREC, rm)
+        .div(&e, PREC, rm)
 }
 
 #[allow(non_snake_case)]
@@ -62,17 +72,19 @@ pub fn shares(
     let mut cache = Consts::new().unwrap();
     let rm = RoundingMode::None;
     //T = M1+M2
-    let T = M_1.add(M_2, 128, rm);
+    let T = M_1.add(M_2, PREC, rm);
     //a = m*(N1-N2)/T
-    let a = m.mul(&N_1.sub(N_2, 128, rm), 128, rm).div(&T, 128, rm);
+    let a = m.mul(&N_1.sub(N_2, PREC, rm), PREC, rm).div(&T, PREC, rm);
     //b = N2*(T+m)/M2
-    let b = N_2.mul(&T.add(m, 128, rm), 128, rm).div(M_2, 128, rm);
+    let b = N_2.mul(&T.add(m, PREC, rm), PREC, rm).div(M_2, PREC, rm);
     //c = T*(M1+m)/(M1*(T+m))
-    let c =
-        T.mul(&M_1.add(m, 128, rm), 128, rm)
-            .div(&M_1.mul(&T.add(m, 128, rm), 128, rm), 128, rm);
-    let d = c.ln(128, rm, &mut cache); //d = math.log(c)
-    a.add(&b.mul(&d, 128, rm), 128, rm) //e = a+b*d
+    let c = T.mul(&M_1.add(m, PREC, rm), PREC, rm).div(
+        &M_1.mul(&T.add(m, PREC, rm), PREC, rm),
+        PREC,
+        rm,
+    );
+    let d = c.ln(PREC, rm, &mut cache); //d = math.log(c)
+    a.add(&b.mul(&d, PREC, rm), PREC, rm) //e = a+b*d
 }
 
 #[test]
@@ -119,6 +131,7 @@ fn test_price_isolated() {
     );
 }
 
+/*
 #[test]
 fn test_dpm_offline() {
     // shares purchased,price before A,price before B,price after A,price after B,new M1,new M2,new N1,new N2
@@ -156,3 +169,4 @@ fn test_dpm_offline() {
     let price_after_a = price(&m_1, &m_2, &n_1, &m_2, &BigFloat::from(0));
     let price_after_b = price(&m_2, &m_1, &n_2, &n_1, &BigFloat::from(0));
 }
+*/

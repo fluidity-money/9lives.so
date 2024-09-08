@@ -33,6 +33,10 @@ pub enum Error {
     #[error("The amount given is too small")]
     TooSmallNumber,
 
+    /// The number is too big!
+    #[error("Too big number")]
+    TooBigNumber,
+
     /// Longtail had an error, we'll bubble up what happened.
     #[error("Longtail had an error.")]
     LongtailError(Vec<u8>),
