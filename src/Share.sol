@@ -7,12 +7,11 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract Shares is
+contract Share is
     Initializable,
     ERC20Upgradeable,
     OwnableUpgradeable,
-    ERC20PermitUpgradeable,
-    ERC20VotesUpgradeable
+    ERC20PermitUpgradeable
 {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
