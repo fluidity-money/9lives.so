@@ -1,12 +1,12 @@
-use std::{collections::HashMap, ptr, time, cell::RefCell};
+use std::{cell::RefCell, collections::HashMap, ptr, time};
 
-use stylus_sdk::alloy_primitives::{Address, U256};
+use stylus_sdk::alloy_primitives::U256;
 
 const WORD_BYTES: usize = 32;
 pub type Word = [u8; WORD_BYTES];
 
 thread_local! {
-    pub static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
+    static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
 }
 
 unsafe fn read_word(key: *const u8) -> Word {
@@ -88,14 +88,14 @@ pub unsafe extern "C" fn msg_sender(_sender: *mut u8) {}
 pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}
 
 ///! Set up the storage access.
-pub fn with_storage<T, P: StorageNew, F: FnOnce(&mut P) -> T>(
-    pos_info: &[(Address, U256, i32, i32, u128)],
-    f: F,
-) -> T {
+#[allow(dead_code)]
+pub fn with_storage<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {
     STORAGE.with(|s| s.borrow_mut().clear());
     f(&mut P::new(U256::ZERO, 0))
 }
 
+#[cfg(feature = "testing")]
+#[allow(dead_code)]
 pub trait StorageNew {
     fn new(i: U256, v: u8) -> Self;
 }
