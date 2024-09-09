@@ -99,7 +99,6 @@ fn test_price_isolated() {
     );
 }
 
-/*
 #[test]
 fn test_dpm_offline() {
     // shares purchased,price before A,price before B,price after A,price after B,new M1,new M2,new N1,new N2
@@ -137,4 +136,3 @@ fn test_dpm_offline() {
     let price_after_a = price(&m_1, &m_2, &n_1, &m_2, &BigFloat::from(0));
     let price_after_b = price(&m_2, &m_1, &n_2, &n_1, &BigFloat::from(0));
 }
-*/

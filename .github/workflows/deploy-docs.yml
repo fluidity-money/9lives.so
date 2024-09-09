@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'pkg/**'
+      - 'src/**.sol'
+      - README.md
 
 jobs:
   deploy:
