@@ -19,9 +19,9 @@ contract Shares is
         _disableInitializers();
     }
 
-    function ctor(bytes8 identifier) initializer public {
+    function ctor(bytes8 identifier, address admin) initializer public {
         __ERC20_init("Shares", "");
-        __Ownable_init(msg.sender);
+        __Ownable_init(admin);
         __ERC20Permit_init("Shares");
     }
 

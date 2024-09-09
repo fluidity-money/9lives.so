@@ -43,6 +43,7 @@ pub const PROXY_BYTECODE: [u8; 114] = [
 pub const fn erc20_proxy_code() -> [u8; 134] {
     concat_arrays!(PROXY_BYTECODE, ERC20_IMPL_BYTES)
 }
+
 pub const fn trading_proxy_code() -> [u8; 134] {
     concat_arrays!(PROXY_BYTECODE, TRADING_IMPL_BYTES)
 }

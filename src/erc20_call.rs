@@ -1,10 +1,10 @@
 use stylus_sdk::{
-    alloy_primitives::{Address, U256, FixedBytes},
+    alloy_primitives::{Address, FixedBytes, U256},
     call::RawCall,
 };
 
 use crate::{
-    calldata::unpack_bool_safe,
+    calldata::{unpack_bool_safe},
     erc20_cd::{pack_permit, pack_transfer_from},
     error::Error,
 };

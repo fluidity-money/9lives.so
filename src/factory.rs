@@ -16,6 +16,9 @@ pub struct Factory {
     version: StorageU8,
     enabled: StorageBool,
     oracle: StorageAddress,
+
+    // Trading contracts that were created by this Factory
+    created: StorageMap<Address, StorageBool>,
 }
 
 #[external]
@@ -30,19 +33,26 @@ impl Factory {
 
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.
-    pub fn new_trading(&self, outcomes: Vec<(FixedBytes<8>, U256)>) -> Result<Address, Vec<u8>> {
+    pub fn new_trading(
+        &mut self,
+        outcomes: Vec<(FixedBytes<8>, U256)>,
+    ) -> Result<Address, Vec<u8>> {
         assert_or!(outcomes.len() > 0, Error::MustContainOutcomes);
 
-        let outcome_identifiers = outcomes
-            .iter()
-            .map(|(c, _)| c.as_slice())
-            .collect::<Vec<&[u8]>>();
+        let outcome_identifiers = outcomes.iter().map(|(c, _)| c).collect::<Vec<_>>();
 
         // Create the trading identifier to derive the outcome addresses from.
-        let trading_identifier = proxy::create_identifier(&outcome_identifiers);
+        let trading_identifier = proxy::create_identifier(
+            &outcome_identifiers
+                .iter()
+                .map(|c| c.as_slice())
+                .collect::<Vec<_>>(),
+        );
 
         // Deploy the contract, and emit a log that it was created.
         let trading_addr = proxy::deploy_trading(trading_identifier)?;
+
+        self.created.setter(trading_addr).set(true);
 
         let oracle = self.oracle.get();
 
@@ -53,14 +63,12 @@ impl Factory {
         });*/
 
         for outcome_identifier in outcome_identifiers {
-            // Create the share contract using the root identifier as the root, and the
-            // identifier for the share contract as the base.
             let erc20_identifier =
-                proxy::create_identifier(&[trading_addr.as_ref(), &outcome_identifier]);
+                proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(erc20_identifier)?;
 
             // Set up the share ERC20 asset, with the description.
-            share_call::ctor(erc20_addr, outcome_identifier, trading_addr)?;
+            share_call::ctor(erc20_addr, *outcome_identifier, trading_addr)?;
 
             // Use Longtail to create a pool for this share, then enable it with odds baked into
             // the contract. Use a volatile asset price.

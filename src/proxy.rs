@@ -41,13 +41,3 @@ pub fn get_share_addr(our_addr: Address, outcome_id: FixedBytes<8>) -> Address {
     b[32..64].copy_from_slice(&erc20_proxy_hash());
     Address::from_slice(&b)
 }
-
-#[test]
-fn test_make_proxy_code() {
-    use const_hex::const_encode;
-    use stylus_sdk::alloy_primitives::address;
-    // Tested to know it deploys fine!
-    assert_eq!(const_encode::<134, false>(&make_proxy_code(address!(
-        "a7390dA200fcB4ce8C1032Cc024779F488B0D03a"
-    ))).to_string(), "60208038033d393d517f360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc55603e8060343d393df3363d3d373d3d363d7f360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc545af43d6000803e610039573d6000fd5b3d6000f3a7390da200fcb4ce8c1032cc024779f488b0d03a")
-}

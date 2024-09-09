@@ -41,6 +41,10 @@ pub enum Error {
     #[error("Longtail had an error.")]
     LongtailError(Vec<u8>),
 
+    /// A share had an error!
+    #[error("Share had an error.")]
+    ShareError(Vec<u8>),
+
     /// ERC20 error! Bubble up.
     #[error("ERC20 error")]
     ERC20Error(Vec<u8>),
@@ -68,7 +72,7 @@ impl From<Error> for Vec<u8> {
     fn from(val: Error) -> Self {
         match val {
             // Unpack the Longtail/ERC20 error as-is.
-            Error::LongtailError(b) | Error::ERC20Error(b) => b.to_vec(),
+            Error::LongtailError(b) | Error::ERC20Error(b) | Error::ShareError(b) => b.to_vec(),
             // Include a magic byte opening.
             v => vec![0x09, 0x09, 0x09, unsafe {
                 *<*const _>::from(&v).cast::<u8>()
