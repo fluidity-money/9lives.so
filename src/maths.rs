@@ -130,9 +130,47 @@ fn test_dpm_offline() {
 
     let price_before_b = price(&m_2, &m_1, &m_2, &n_1, &BigFloat::from(0));
 
+    assert_eq!(
+        price_before_b,
+        BigFloat::from(1.108376770766981),
+        "{} != 1.108376770766981",
+        price_before_b
+    );
+
     let new_m_1 = m_1.add(&cost, 128, RoundingMode::None);
+
+    assert_eq!(
+        new_m_1,
+        BigFloat::from(1036),
+        "{} != 1036",
+        new_m_1
+    );
+
     let new_n_1 = n_1.add(&shares_purchased, 128, RoundingMode::None);
 
+    assert_eq!(
+        new_n_1,
+        BigFloat::from(3720.5319946499903),
+        "{} != 3720.5319946499903",
+        new_n_1
+    );
+
+
     let price_after_a = price(&m_1, &m_2, &n_1, &m_2, &BigFloat::from(0));
+
+    assert_eq!(
+        price_after_a,
+        BigFloat::from(0.35972257380850425),
+        "{} != 0.35972257380850425",
+        price_after_a
+    );
+
     let price_after_b = price(&m_2, &m_1, &n_2, &n_1, &BigFloat::from(0));
+
+    assert_eq!(
+        price_after_b,
+        BigFloat::from(0.11562511300987638),
+        "{} != 0.11562511300987638",
+        price_after_b
+    );
 }
