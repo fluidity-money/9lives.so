@@ -227,6 +227,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "array-concat"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "68b4d2c47ea522f4135657904891e533727daca3d2d852f29f5e4cc50960c77c"
+
+[[package]]
 name = "arrayvec"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -835,11 +841,14 @@ version = "0.1.0"
 dependencies = [
  "alloy-sol-macro",
  "alloy-sol-types",
+ "array-concat",
  "astro-float",
+ "const-hex",
  "getrandom",
  "lol_alloc",
  "num-traits",
  "proptest",
+ "sha3-const",
  "stylus-sdk",
  "thiserror",
  "tiny-keccak",
@@ -1297,6 +1306,12 @@ dependencies = [
  "cc",
  "cfg-if",
 ]
+
+[[package]]
+name = "sha3-const"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b04774de876479a8f712e787f8271b14712971329a4be66c6dff144db7cfc343"
 
 [[package]]
 name = "shlex"

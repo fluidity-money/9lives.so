@@ -7,6 +7,7 @@ use stylus_sdk::{
     msg,
     prelude::*,
     storage::*,
+    contract
 };
 
 use astro_float::RoundingMode;
@@ -17,20 +18,20 @@ use crate::{
     fusdc_call,
     immutables::*,
     maths,
+    proxy,
+    share_call
 };
 
 #[solidity_storage]
 #[entrypoint]
 pub struct Trading {
-    created: StorageBool,
-
     // Outcome was determined! It should be impossible to mint, only to burn.
     locked: StorageBool,
 
     // Oracle responsible for determine the outcome.
     oracle: StorageAddress,
 
-    // Factory that created this trading pool.
+    // Factory that created this trading pool. Empty if not created!
     factory: StorageAddress,
 
     // Shares existing in every outcome.
@@ -66,7 +67,7 @@ impl Trading {
         funder: Address,
         outcomes: Vec<(FixedBytes<8>, U256)>,
     ) -> Result<(), Vec<u8>> {
-        assert_or!(!self.created.get(), Error::AlreadyConstructed);
+        assert_or!(self.factory.get().is_zero(), Error::AlreadyConstructed);
 
         // A risk involved with this might be someone creating a EOA at
         // the address that would be derived with CREATE2, then
@@ -76,7 +77,8 @@ impl Trading {
         let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
         assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
         fusdc_call::take_from_funder(funder, fusdc_amt)?;
-        self.invested.set(float::u256_to_float(fusdc_amt, FUSDC_DECIMALS)?);
+        self.invested
+            .set(float::u256_to_float(fusdc_amt, FUSDC_DECIMALS)?);
 
         // Start to go through each outcome, and seed it with its initial amount.
         for (outcome_id, outcome_amt) in outcomes {
@@ -84,7 +86,6 @@ impl Trading {
             self.outcomes.setter(outcome_id).invested.set(outcome_amt);
         }
 
-        self.created.set(true);
         self.factory.set(msg::sender());
         Ok(())
     }
@@ -103,25 +104,46 @@ impl Trading {
         let m_1 = outcome.invested.get();
         let n_1 = outcome.shares.get();
         let n_2 = self.shares.get().sub(&n_1, float::PREC, RoundingMode::Down);
-        let m_2 = self.invested.get().sub(&m_1, float::PREC, RoundingMode::Down);
+        let m_2 = self
+            .invested
+            .get()
+            .sub(&m_1, float::PREC, RoundingMode::Down);
 
         // Convert everything to floats!
         let m = float::u256_to_float(value, FUSDC_DECIMALS)?;
 
         // Set the global states.
-        self.outcomes.setter(outcome_id).invested.set(m_1.add(&m, float::PREC, RoundingMode::Down));
-        self.invested.set(self.invested.get().add(&m, float::PREC, RoundingMode::Down));
+        self.outcomes
+            .setter(outcome_id)
+            .invested
+            .set(m_1.add(&m, float::PREC, RoundingMode::Down));
+        self.invested
+            .set(self.invested.get().add(&m, float::PREC, RoundingMode::Down));
 
         let shares = maths::shares(&m_1, &m_2, &n_1, &n_2, &m);
 
         // Set the global states the output of shares.
-        self.outcomes.setter(outcome_id).shares.set(n_1.add(&shares, float::PREC, RoundingMode::Down));
-        self.shares.set(self.shares.get().add(&shares, float::PREC, RoundingMode::Down));
+        self.outcomes.setter(outcome_id).shares.set(n_1.add(
+            &shares,
+            float::PREC,
+            RoundingMode::Down,
+        ));
+        self.shares.set(
+            self.shares
+                .get()
+                .add(&shares, float::PREC, RoundingMode::Down),
+        );
 
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
 
-        Ok(U256::from(0))
+        let share_addr = proxy::get_share_addr(contract::address(), outcome_id);
+
+        let shares = float::float_to_u256(shares, SHARE_DECIMALS)?;
+
+        share_call::mint(share_addr, recipient, shares)?;
+
+        Ok(shares)
     }
 
     pub fn mint(

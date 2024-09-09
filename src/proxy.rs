@@ -4,6 +4,8 @@ use stylus_sdk::{
     deploy::RawDeploy,
 };
 
+use crate::immutables::{erc20_proxy_code, trading_proxy_code, erc20_proxy_hash, FACTORY_ADDR};
+
 // Sort and concatenate the seeds given, ABI format them, then hash them,
 // using an offline keccak256 calculation with the native operation.
 pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
@@ -13,26 +15,39 @@ pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
     crypto::keccak(seeds.concat())
 }
 
-fn make_proxy_code(addr: Address) -> [u8; 124] {
-    //https://github.com/jtriley-eth/minimum-viable-proxy/blob/main/src/Deployer.sol#L8C31-L8C259
-    let mut b: [u8; 124] = [
-        0x60, 0x20, 0x80, 0x38, 0x03, 0x3d, 0x39, 0x3d, 0x51, 0x7f, 0x36, 0x08, 0x94, 0xa1, 0x3b,
-        0xa1, 0xa3, 0x21, 0x06, 0x67, 0xc8, 0x28, 0x49, 0x2d, 0xb9, 0x8d, 0xca, 0x3e, 0x20, 0x76,
-        0xcc, 0x37, 0x35, 0xa9, 0x20, 0xa3, 0xca, 0x50, 0x5d, 0x38, 0x2b, 0xbc, 0x55, 0x60, 0x3e,
-        0x80, 0x60, 0x34, 0x3d, 0x39, 0x3d, 0xf3, 0x36, 0x3d, 0x3d, 0x37, 0x3d, 0x3d, 0x36, 0x3d,
-        0x7f, 0x36, 0x08, 0x94, 0xa1, 0x3b, 0xa1, 0xa3, 0x21, 0x06, 0x67, 0xc8, 0x28, 0x49, 0x2d,
-        0xb9, 0x8d, 0xca, 0x3e, 0x20, 0x76, 0xcc, 0x37, 0x35, 0xa9, 0x20, 0xa3, 0xca, 0x50, 0x5d,
-        0x38, 0x2b, 0xbc, 0x54, 0x5a, 0xf4, 0x3d, 0x60, 0x00, 0x80, 0x3e, 0x61, 0x00, 0x39, 0x57,
-        0x3d, 0x60, 0x00, 0xfd, 0x5b, 0x3d, 0x60, 0x00, 0xf3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ];
-    b[114..].copy_from_slice(addr.as_slice());
-    b
+// Deploy a new ERC20 using CREATE2 and the seed given. Returns the
+// address.
+pub fn deploy_erc20(seed: FixedBytes<32>) -> Result<Address, Vec<u8>> {
+    let d = RawDeploy::new().salt(seed);
+    let c = erc20_proxy_code();
+    unsafe { d.deploy(&c, U256::ZERO) }
 }
 
-// Deploy a new proxy using CREATE2 and the seed given. Returns the
+// Deploy a new Trading contract using CREATE2 and the seed given. Returns the
 // address.
-pub fn deploy(seed: FixedBytes<32>, contract_impl: Address) -> Result<Address, Vec<u8>> {
+pub fn deploy_trading(seed: FixedBytes<32>) -> Result<Address, Vec<u8>> {
     let d = RawDeploy::new().salt(seed);
-    let c = make_proxy_code(contract_impl);
+    let c = trading_proxy_code();
     unsafe { d.deploy(&c, U256::ZERO) }
+}
+
+// Get the share address, using the address of the deployed Trading
+// contract, and the id associated with the winning outcome.
+pub fn get_share_addr(our_addr: Address, outcome_id: FixedBytes<8>) -> Address {
+    let erc20_id = create_identifier(&[our_addr.as_slice(), outcome_id.as_slice()]);
+    let mut b = [0xff_u8; 64];
+    b[1..20].copy_from_slice(FACTORY_ADDR.as_slice());
+    b[20..32].copy_from_slice(erc20_id.as_slice());
+    b[32..64].copy_from_slice(&erc20_proxy_hash());
+    Address::from_slice(&b)
+}
+
+#[test]
+fn test_make_proxy_code() {
+    use const_hex::const_encode;
+    use stylus_sdk::alloy_primitives::address;
+    // Tested to know it deploys fine!
+    assert_eq!(const_encode::<134, false>(&make_proxy_code(address!(
+        "a7390dA200fcB4ce8C1032Cc024779F488B0D03a"
+    ))).to_string(), "60208038033d393d517f360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc55603e8060343d393df3363d3d373d3d363d7f360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc545af43d6000803e610039573d6000fd5b3d6000f3a7390da200fcb4ce8c1032cc024779f488b0d03a")
 }

@@ -32,8 +32,11 @@ alloy-sol-macro = "0.7.6"
 lol_alloc = "0.4.0"
 astro-float = { version = "0.9.4", default-features = false }
 getrandom = { version = "0.2.15", features = ["js"] }
+array-concat = "0.5.3"
+sha3-const = "0.1.1"
 
 [dev-dependencies]
+const-hex = "1.12.0"
 proptest = "1.5.0"
 
 [features]

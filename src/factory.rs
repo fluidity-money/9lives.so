@@ -14,37 +14,17 @@ use crate::{error::*, immutables::*, longtail_call, proxy, share_call, trading_c
 #[entrypoint]
 pub struct Factory {
     version: StorageU8,
-
     enabled: StorageBool,
-
     oracle: StorageAddress,
-
-    // ERC20 implementation to create proxies in front of.
-    erc20_impl: StorageAddress,
-
-    // Trading implementation to create proxies in front of.
-    trading_impl: StorageAddress,
-
-    // Longtail to create pools with for trading.
-    longtail_addr: StorageAddress,
 }
 
 #[external]
 impl Factory {
-    pub fn ctor(
-        &mut self,
-        oracle_addr: Address,
-        erc20_impl: Address,
-        trading_impl: Address,
-        longtail_addr: Address,
-    ) -> Result<(), Vec<u8>> {
+    pub fn ctor(&mut self, oracle_addr: Address) -> Result<(), Vec<u8>> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);
         self.oracle.set(oracle_addr);
         self.version.set(U8::from(1));
-        self.erc20_impl.set(erc20_impl);
-        self.trading_impl.set(trading_impl);
-        self.longtail_addr.set(longtail_addr);
         Ok(())
     }
 
@@ -62,7 +42,7 @@ impl Factory {
         let trading_identifier = proxy::create_identifier(&outcome_identifiers);
 
         // Deploy the contract, and emit a log that it was created.
-        let trading_addr = proxy::deploy(trading_identifier, self.trading_impl.get())?;
+        let trading_addr = proxy::deploy_trading(trading_identifier)?;
 
         let oracle = self.oracle.get();
 
@@ -76,8 +56,8 @@ impl Factory {
             // Create the share contract using the root identifier as the root, and the
             // identifier for the share contract as the base.
             let erc20_identifier =
-                proxy::create_identifier(&[trading_identifier.as_ref(), &outcome_identifier]);
-            let erc20_addr = proxy::deploy(erc20_identifier, self.erc20_impl.get())?;
+                proxy::create_identifier(&[trading_addr.as_ref(), &outcome_identifier]);
+            let erc20_addr = proxy::deploy_erc20(erc20_identifier)?;
 
             // Set up the share ERC20 asset, with the description.
             share_call::ctor(erc20_addr, outcome_identifier, trading_addr)?;
