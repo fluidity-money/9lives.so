@@ -2,33 +2,9 @@
 // come up. It's recommended to protect the amounts coming in using the
 // u256_to_float function where possible.
 
-use stylus_sdk::alloy_primitives::U256;
-
 use astro_float::{BigFloat, Consts, RoundingMode};
 
-use crate::{assert_or, error::Error};
-
-//340282366920938463463374607431768211455
-pub const MAX_NUMBER: U256 = U256::from_limbs([18446744073709551615, 18446744073709551615, 0, 0]);
-
-const PREC: usize = std::mem::size_of::<u128>();
-
-pub fn u256_to_float(n: U256, decimals: u8) -> Result<BigFloat, Error> {
-    let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
-    assert_or!(n > U256::ZERO, Error::TooSmallNumber);
-    assert_or!(n < MAX_NUMBER, Error::TooBigNumber);
-
-    let n: i128 = i128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
-    let rem: i128 = i128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
-
-    let rm = RoundingMode::Down;
-    let x = BigFloat::from(rem).div(&BigFloat::from(i128::pow(10, decimals.into())), 128, rm);
-    Ok(x.add(&BigFloat::from(n), 128, rm))
-}
-
-pub fn float_to_u256(_n: BigFloat, _decimals: u8) -> Result<U256, Error> {
-    Ok(U256::from(0))
-}
+use crate::float::PREC;
 
 #[allow(non_snake_case)]
 pub fn price(
@@ -85,14 +61,6 @@ pub fn shares(
     );
     let d = c.ln(PREC, rm, &mut cache); //d = math.log(c)
     a.add(&b.mul(&d, PREC, rm), PREC, rm) //e = a+b*d
-}
-
-#[test]
-fn test_u256_to_float() {
-    assert_eq!(
-        u256_to_float(U256::from(55) * U256::from(10).pow(U256::from(17)), 18).unwrap(),
-        BigFloat::from(5.5)
-    );
 }
 
 #[test]
