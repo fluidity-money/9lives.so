@@ -23,6 +23,9 @@ pub mod erc20_call;
 pub mod fusdc_call;
 pub mod longtail_call;
 
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+mod host;
+
 extern crate alloc;
 #[cfg(target_arch = "wasm32")]
 mod allocator {

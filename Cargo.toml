@@ -46,3 +46,4 @@ alloy-primitives = { version = "0.7.6", features = ["getrandom"] }
 factory = []
 trading = []
 testing-dbg = []
+testing = []
