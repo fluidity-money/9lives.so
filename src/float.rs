@@ -189,6 +189,22 @@ mod propesting {
 }
 
 #[test]
+fn min_number_to_bytes() {
+    let i = U256::from(1);
+    let a = u256_to_float(i, 6).unwrap();
+    assert_eq!(a, BigFloat::from(1e-06), "{} != {}", a, 1e-06);
+    let d = a.as_raw_parts().unwrap();
+    let (words, sig_bits, sign, exp, inexact) = d;
+    let packed = pack_float_words(words, sig_bits, sign, exp, inexact);
+    let (u_words, u_sig_bits, u_sign, u_exp, u_inexact) = unpack_float_words(&packed);
+    assert_eq!(u_words, words);
+    assert_eq!(u_sig_bits, sig_bits);
+    assert_eq!(u_sign, sign);
+    assert_eq!(u_exp, exp);
+    assert_eq!(u_inexact, inexact);
+}
+
+#[test]
 fn test_max_number_to_bytes() {
     let i = MAX_NUMBER - U256::from(1);
     let a = u256_to_float(i, 6).unwrap();
@@ -205,7 +221,7 @@ fn test_max_number_to_bytes() {
 
 #[test]
 fn test_custom_words() {
-    // Add an extra word and see if it packs okay
+    // Add an extra word, and see if it packs okay.
 
     let i = MAX_NUMBER - U256::from(1);
     let a = u256_to_float(i, 6).unwrap();

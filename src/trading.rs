@@ -9,7 +9,15 @@ use stylus_sdk::{
     storage::*,
 };
 
-use crate::{error::*, fusdc_call, immutables::*, maths};
+use astro_float::RoundingMode;
+
+use crate::{
+    error::*,
+    float::{self, StorageBigFloat},
+    fusdc_call,
+    immutables::*,
+    maths,
+};
 
 #[solidity_storage]
 #[entrypoint]
@@ -26,10 +34,10 @@ pub struct Trading {
     factory: StorageAddress,
 
     // Shares existing in every outcome.
-    shares: StorageU256,
+    shares: StorageBigFloat,
 
     // Global amount invested to this pool of the native asset.
-    invested: StorageU256,
+    invested: StorageBigFloat,
 
     outcomes: StorageMap<FixedBytes<8>, Outcome>,
 }
@@ -37,10 +45,10 @@ pub struct Trading {
 #[solidity_storage]
 struct Outcome {
     // Outstanding invested into this outcome.
-    invested: StorageU256,
+    invested: StorageBigFloat,
 
     // Amount of shares in existence in this outcome.
-    shares: StorageU256,
+    shares: StorageBigFloat,
 
     // Was this outcome the correct outcome?
     winning: StorageBool,
@@ -65,17 +73,15 @@ impl Trading {
         // transferring money out. But that's not likely in practice as the
         // amount needed to seed is super low, and it's hard to predict
         // the details needed for this CREATE2.
-        let fusdc_amount = outcomes.iter().map(|(_, i)| i).sum::<U256>();
-        assert_or!(fusdc_amount > U256::ZERO, Error::OddsMustBeSet);
-        fusdc_call::take_from_funder(funder, fusdc_amount)?;
-        self.invested.set(fusdc_amount);
+        let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
+        assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
+        fusdc_call::take_from_funder(funder, fusdc_amt)?;
+        self.invested.set(float::u256_to_float(fusdc_amt, FUSDC_DECIMALS)?);
 
         // Start to go through each outcome, and seed it with its initial amount.
-        for (outcome_id, outcome_amount) in outcomes {
-            self.outcomes
-                .setter(outcome_id)
-                .invested
-                .set(outcome_amount);
+        for (outcome_id, outcome_amt) in outcomes {
+            let outcome_amt = float::u256_to_float(outcome_amt, FUSDC_DECIMALS)?;
+            self.outcomes.setter(outcome_id).invested.set(outcome_amt);
         }
 
         self.created.set(true);
@@ -96,28 +102,21 @@ impl Trading {
         let outcome = self.outcomes.getter(outcome_id);
         let m_1 = outcome.invested.get();
         let n_1 = outcome.shares.get();
-        let n_2 = self.shares.get() - n_1;
-        let m_2 = self.invested.get() - m_1;
-
-        // Set the global states.
-        self.outcomes.setter(outcome_id).invested.set(m_1 + value);
-        self.invested.set(self.invested.get() + value);
+        let n_2 = self.shares.get().sub(&n_1, float::PREC, RoundingMode::Down);
+        let m_2 = self.invested.get().sub(&m_1, float::PREC, RoundingMode::Down);
 
         // Convert everything to floats!
-        let m = maths::u256_to_float(value, FUSDC_DECIMALS)?;
-        let m_1 = maths::u256_to_float(m_1, FUSDC_DECIMALS)?;
-        let m_2 = maths::u256_to_float(m_2, FUSDC_DECIMALS)?;
-        let n_1_float = maths::u256_to_float(n_1, SHARE_DECIMALS)?;
-        let n_2 = maths::u256_to_float(n_2, SHARE_DECIMALS)?;
+        let m = float::u256_to_float(value, FUSDC_DECIMALS)?;
 
-        let shares = maths::float_to_u256(
-            maths::shares(&m_1, &m_2, &n_1_float, &n_2, &m),
-            SHARE_DECIMALS,
-        )?;
+        // Set the global states.
+        self.outcomes.setter(outcome_id).invested.set(m_1.add(&m, float::PREC, RoundingMode::Down));
+        self.invested.set(self.invested.get().add(&m, float::PREC, RoundingMode::Down));
+
+        let shares = maths::shares(&m_1, &m_2, &n_1, &n_2, &m);
 
         // Set the global states the output of shares.
-        self.outcomes.setter(outcome_id).shares.set(n_1 + shares);
-        self.shares.set(self.shares.get() + shares);
+        self.outcomes.setter(outcome_id).shares.set(n_1.add(&shares, float::PREC, RoundingMode::Down));
+        self.shares.set(self.shares.get().add(&shares, float::PREC, RoundingMode::Down));
 
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
