@@ -4,7 +4,7 @@ use stylus_sdk::{
 };
 
 use crate::{
-    erc20_call::{permit, transfer_from},
+    erc20_call::{self, permit, transfer_from},
     error::Error,
     immutables::FUSDC_ADDR,
 };
@@ -34,4 +34,8 @@ pub fn take_from_sender_permit(
         r,
         s,
     )
+}
+
+pub fn transfer(recipient: Address, value: U256) -> Result<(), Error> {
+    erc20_call::transfer(FUSDC_ADDR, recipient, value)
 }

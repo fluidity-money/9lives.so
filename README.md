@@ -10,9 +10,13 @@ then share holders can convert their positions to fUSDC on request.
 
 ![Diagram of the system](diagram.png)
 
-## Building
+## Building contracts
 
 	make build
+
+## Updating docs (after editing markdown files)
+
+	forge doc -b
 
 ## Testing
 

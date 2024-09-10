@@ -4,10 +4,18 @@ use stylus_sdk::{
 };
 
 use crate::{
-    calldata::{unpack_bool_safe},
-    erc20_cd::{pack_permit, pack_transfer_from},
+    calldata::{unpack_bool_safe, unpack_u256},
+    erc20_cd::{pack_transfer, pack_balance_of, pack_permit, pack_transfer_from},
     error::Error,
 };
+
+pub fn transfer(addr: Address, recipient: Address, value: U256) -> Result<(), Error> {
+    unpack_bool_safe(
+        &RawCall::new()
+            .call(addr, &pack_transfer(recipient, value))
+            .map_err(Error::ERC20Error)?,
+    )
+}
 
 pub fn transfer_from(
     addr: Address,
@@ -37,4 +45,13 @@ pub fn permit(
             .call(addr, &pack_permit(owner, spender, value, deadline, v, r, s))
             .map_err(Error::ERC20Error)?,
     )
+}
+
+pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
+    unpack_u256(
+        &RawCall::new()
+            .call(addr, &pack_balance_of(spender))
+            .map_err(Error::ERC20Error)?,
+    )
+    .ok_or(Error::ERC20UnableToUnpack)
 }

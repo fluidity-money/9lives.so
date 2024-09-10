@@ -193,6 +193,24 @@ impl Trading {
         self.decided.set(true);
         Ok(())
     }
+
+    pub fn payoff(&mut self, outcome_id: FixedBytes<8>, recipient: Address) -> Result<U256, Error> {
+        let outcome = self.outcomes.getter(outcome_id);
+        assert_or!(outcome.winner.get(), Error::NotWinner);
+        // Get the user's balance of the share they own for this outcome.
+        let share_addr = proxy::get_share_addr(contract::address(), outcome_id);
+        // Start to burn their share of the supply to convert to a payoff amount.
+        let share_bal = share_call::balance_of(share_addr, msg::sender())?;
+        share_call::burn(share_addr, msg::sender(), share_bal)?;
+        let n = float::u256_to_float(share_bal, SHARE_DECIMALS)?;
+        let n_1 = outcome.shares.get();
+        let M = self.invested.get();
+        let p = maths::payoff(n, n_1, M);
+        // Send the user some fUSDC now!
+        let fusdc = float::float_to_u256(p, FUSDC_DECIMALS)?;
+        fusdc_call::transfer(recipient, fusdc)?;
+        Ok(fusdc)
+    }
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]

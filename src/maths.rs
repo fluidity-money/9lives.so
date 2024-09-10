@@ -63,6 +63,12 @@ pub fn shares(
     a.add(&b.mul(&d, PREC, rm), PREC, rm) //e = a+b*d
 }
 
+#[allow(non_snake_case)]
+pub fn payoff(n: BigFloat, N_1: BigFloat, M: BigFloat) -> BigFloat {
+    let rm = RoundingMode::Down;
+    n.div(&N_1, PREC, rm).mul(&M, PREC, rm)
+}
+
 #[test]
 fn test_shares_isolated() {
     let m_1 = BigFloat::from(998);

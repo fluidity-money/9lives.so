@@ -49,6 +49,10 @@ pub enum Error {
     #[error("ERC20 error")]
     ERC20Error(Vec<u8>),
 
+    /// ERC20 unable to unpack a value!
+    #[error("ERC20 unable to unpack")]
+    ERC20UnableToUnpack,
+
     /// ERC20 error! Returned false!
     #[error("ERC20 returned false")]
     ERC20ReturnedFalse,
@@ -64,6 +68,10 @@ pub enum Error {
     /// The msg.sender isn't a trading contract that the Factory deployed!
     #[error("Not trading contract")]
     NotTradingContract,
+
+    /// Tried do a payoff for an outcome that didn't come true!
+    #[error("Not winner!")]
+    NotWinner,
 }
 
 impl From<Error> for Vec<u8> {

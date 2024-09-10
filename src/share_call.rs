@@ -3,7 +3,7 @@ use stylus_sdk::{
     call::RawCall,
 };
 
-use crate::{share_cd::*, error::Error};
+use crate::{error::Error, share_cd::*, erc20_call};
 
 // Construct the ERC20 with the description in bytes provided, and an
 // admin that can mint more tokens on request.
@@ -26,4 +26,8 @@ pub fn mint(addr: Address, spender: Address, amount: U256) -> Result<(), Error> 
         .call(addr, &pack_mint(spender, amount))
         .map_err(Error::ShareError)?;
     Ok(())
+}
+
+pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
+    erc20_call::balance_of(addr, spender)
 }

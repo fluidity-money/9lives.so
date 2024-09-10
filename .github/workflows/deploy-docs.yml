@@ -28,4 +28,4 @@ jobs:
           # to enable Github Deployments
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           branch: main
-          workingDirectory: pkg/docs-out/book
+          workingDirectory: docs/book

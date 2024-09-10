@@ -1,12 +1,26 @@
-use stylus_sdk::alloy_primitives::{Address, U256, FixedBytes};
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use crate::calldata::*;
+
+//transfer(address,uint256)
+const TRANSFER_SELECTOR: [u8; 4] = [0xa9, 0x05, 0x9c, 0xbb];
 
 //transferFrom(address,address,uint256)
 const TRANSFER_FROM_SELECTOR: [u8; 4] = [0x23, 0xb8, 0x72, 0xdd];
 
 //permit(address,address,uint256,uint256,uint8,bytes32,bytes32)
 const PERMIT_SELECTOR: [u8; 4] = [0xd5, 0x05, 0xac, 0xcf];
+
+//balanceOf(address)
+const BALANCE_OF_SELECTOR: [u8; 4] = [0x70, 0xa0, 0x82, 0x31];
+
+pub fn pack_transfer(recipient: Address, value: U256) -> [u8; 4 + 32 * 2] {
+    let mut cd = [0_u8; 4 + 32 * 2];
+    write_selector(&mut cd, &TRANSFER_SELECTOR);
+    write_address(&mut cd, 0, recipient);
+    write_u256(&mut cd, 1, value);
+    cd
+}
 
 pub fn pack_transfer_from(sender: Address, recipient: Address, amount: U256) -> [u8; 4 + 32 * 3] {
     let mut cd = [0_u8; 4 + 32 * 3];
@@ -38,6 +52,29 @@ pub fn pack_permit(
     cd
 }
 
+pub fn pack_balance_of(spender: Address) -> [u8; 4 + 32] {
+    let mut cd = [0_u8; 4 + 32];
+    write_selector(&mut cd, &BALANCE_OF_SELECTOR);
+    write_address(&mut cd, 0, spender);
+    cd
+}
+
+#[test]
+fn test_transfer() {
+    use stylus_sdk::alloy_primitives::address;
+
+    use const_hex;
+
+    assert_eq!(
+        &pack_transfer(
+            address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7"),
+            U256::from(123)
+        ),
+            //cast calldata 'transfer(address,uint256)' `{bayge} 123
+            "a9059cbb0000000000000000000000006221a9c005f6e47eb398fd867784cacfdcfff4e7000000000000000000000000000000000000000000000000000000000000007b"
+    );
+}
+
 #[test]
 fn test_pack_transfer_from() {
     use stylus_sdk::alloy_primitives::address;
@@ -59,5 +96,23 @@ fn test_pack_transfer_from() {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x64,
         ]
+    );
+}
+
+#[test]
+fn test_pack_permit() {
+    use stylus_sdk::alloy_primitives::address;
+
+    use const_hex;
+
+    //cast calldata 'permit(address,address,uint256,uint256,uint8,bytes32,bytes32)' 0x6221a9c005f6e47eb398fd867784cacfdcfff4e7 0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5 123 456 9 1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8 8452c9b9140222b08593a26daa782707297be9f7b3e8281d7b4974769f19afd0
+    let b = const_hex::encode(&pack_permit(
+        address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7"),
+        address!("feb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5"),
+        U256::from(100),
+    ));
+    assert_eq!(
+        b,
+        "0xd505accf0000000000000000000000006221a9c005f6e47eb398fd867784cacfdcfff4e7000000000000000000000000feb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5000000000000000000000000000000000000000000000000000000000000007b00000000000000000000000000000000000000000000000000000000000001c800000000000000000000000000000000000000000000000000000000000000091c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac88452c9b9140222b08593a26daa782707297be9f7b3e8281d7b4974769f19afd0"
     );
 }
