@@ -36,7 +36,7 @@ array-concat = "0.5.3"
 sha3-const = "0.1.1"
 
 [dev-dependencies]
-const-hex = "1.12.0"
+const-hex = { version = "1.12.0", features = ["alloc"] }
 proptest = "1.5.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]

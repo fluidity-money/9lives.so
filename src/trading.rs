@@ -13,11 +13,11 @@ use astro_float::RoundingMode;
 
 use crate::{
     error::*,
+    factory_call,
     float::{self, StorageBigFloat},
     fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    longtail_call
 };
 
 #[solidity_storage]
@@ -42,6 +42,9 @@ pub struct Trading {
 
     // Outcomes tracked to be disabled with Longtail once a winner is found.
     outcome_list: StorageVec<StorageFixedBytes<8>>,
+
+    // Has the outcome here been determined using the determine function?
+    decided: StorageBool
 }
 
 #[solidity_storage]
@@ -53,7 +56,7 @@ struct Outcome {
     shares: StorageBigFloat,
 
     // Was this outcome the correct outcome?
-    winning: StorageBool,
+    winner: StorageBool,
 }
 
 #[external]
@@ -177,13 +180,17 @@ impl Trading {
 
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> Result<(), Error> {
         assert_or!(msg::sender() == self.oracle.get(), Error::NotOracle);
-
+        assert_or!(!self.decided.get(), Error::NotTradingContract);
         // Notify Longtail to pause trading on every outcome pool.
-        for i in 0..self.outcome_list.len() {
-            let v = self.outcome_list.get(i).unwrap();
-            longtail_call::pause_pool(proxy::get_share_addr(contract::address(), v))?;
-        }
-
+        factory_call::disable_shares(
+            self.factory.get(),
+            &(0..self.outcome_list.len())
+                .map(|i| self.outcome_list.get(i).unwrap())
+                .collect::<Vec<_>>(),
+        )?;
+        // Set the outcome that's winning as the winner!
+        self.outcomes.setter(outcome).winner.set(true);
+        self.decided.set(true);
         Ok(())
     }
 }

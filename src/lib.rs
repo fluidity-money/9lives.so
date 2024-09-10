@@ -16,12 +16,14 @@ pub mod share_cd;
 pub mod trading_cd;
 pub mod erc20_cd;
 pub mod longtail_cd;
+pub mod factory_cd;
 
 pub mod trading_call;
 pub mod share_call;
 pub mod erc20_call;
 pub mod fusdc_call;
 pub mod longtail_call;
+pub mod factory_call;
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 mod host;

@@ -6,6 +6,7 @@ use stylus_sdk::{
     msg,
     prelude::*,
     storage::*,
+    contract
 };
 
 use crate::{error::*, immutables::*, longtail_call, proxy, share_call, trading_call};
@@ -90,6 +91,19 @@ impl Factory {
         trading_call::ctor(trading_addr, oracle, msg::sender(), &outcomes)?;
 
         Ok(trading_addr)
+    }
+
+    /// Disable shares from being traded via Longtail.
+    pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> Result<(), Error> {
+        assert_or!(
+            self.created.getter(msg::sender()).get(),
+            Error::NotTradingContract
+        );
+        // Start to derive the outcomes that were given to find the share addresses.
+        for outcome_id in outcomes {
+            longtail_call::pause_pool(proxy::get_share_addr(contract::address(), outcome_id))?;
+        }
+        Ok(())
     }
 }
 

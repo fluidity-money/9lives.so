@@ -2,7 +2,6 @@
 ///! variable, and are in some cases (ie, the Factory), configured based on
 ///! nonce management. We have a preference for online keccak256,
 ///! but we use a constant function here to simplify CREATE2 interaction.
-
 use stylus_sdk::alloy_primitives::{address, Address};
 
 use array_concat::concat_arrays;
@@ -22,10 +21,10 @@ pub const ERC20_IMPL_BYTES: [u8; 20] = [
     0xd3, 0xdc, 0xb6, 0xd5,
 ];
 
-pub const TRADING_IMPL_ADDR: Address = address!("feb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5");
+pub const TRADING_IMPL_ADDR: Address = address!("0000000000000000000000000000000000000000");
 pub const TRADING_IMPL_BYTES: [u8; 20] = [
-    0xfe, 0xb6, 0x03, 0x4f, 0xc7, 0xdf, 0x27, 0xdf, 0x18, 0xa3, 0xa6, 0xba, 0xd5, 0xfb, 0x94, 0xc0,
-    0xd3, 0xdc, 0xb6, 0xd5,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00,
 ];
 
 // Minimal viable proxy bytecode.
@@ -67,3 +66,12 @@ pub const LONGTAIL_FEE: u32 = 3000;
 pub const LONGTAIL_TICK_SPACING: u8 = 10;
 
 pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
+
+#[test]
+#[ignore]
+fn print_proxy_hashes() {
+    dbg!(
+        const_hex::encode(erc20_proxy_hash()),
+        const_hex::encode(trading_proxy_hash())
+    );
+}

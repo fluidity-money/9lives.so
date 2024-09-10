@@ -60,6 +60,10 @@ pub enum Error {
     /// Done voting!
     #[error("Done voting")]
     DoneVoting,
+
+    /// The msg.sender isn't a trading contract that the Factory deployed!
+    #[error("Not trading contract")]
+    NotTradingContract,
 }
 
 impl From<Error> for Vec<u8> {
