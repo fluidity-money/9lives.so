@@ -23,4 +23,8 @@ export SPN_ERC20_IMPL="${SPN_ERC20_IMPL:-$(./deploy-erc20-impl.sh)}"
 
 echo "export SPN_ERC20_IMPL=$SPN_ERC20_IMPL" >&2
 
-forge script --broadcast --json scripts/DeployFactoryTransparentProxy.s.sol
+forge script \
+	--broadcast \
+	--json scripts/DeployFactoryTransparentProxy.s.sol \
+	--rpc-url "$SPN_SUPERPOSITION_URL" \
+	--private-key "$SPN_DEPLOYER_KEY"

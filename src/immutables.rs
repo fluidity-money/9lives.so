@@ -32,7 +32,7 @@ macro_rules! env_addr {
 }
 
 // Longtail address deployed.
-env_addr!(LONGTAIL_ADDR,"SPN_LONGTAIL_ADDR");
+env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR");
 
 // fUSDC address to use as the base asset for everything.
 env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR");
@@ -90,7 +90,11 @@ pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 #[ignore]
 fn print_deployment_bytecode() {
     use const_hex::encode;
-    dbg!(encode(PROXY_BYTECODE), encode(erc20_proxy_code()), encode(trading_proxy_code()));
+    dbg!(
+        encode(PROXY_BYTECODE),
+        encode(erc20_proxy_code()),
+        encode(trading_proxy_code())
+    );
 }
 
 #[test]
