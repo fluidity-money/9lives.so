@@ -31,14 +31,17 @@ func main() {
 		panic(fmt.Errorf("failed to get nonce for %v: %v", addr, err))
 	}
 	var (
-		trading = ethCrypto.CreateAddress(addr, nonce+1)
-		erc20 = ethCrypto.CreateAddress(addr, nonce+2)
+		factory = ethCrypto.CreateAddress(addr, nonce+1)
+		trading = ethCrypto.CreateAddress(addr, nonce+2)
+		erc20   = ethCrypto.CreateAddress(addr, nonce+3)
 	)
 	fmt.Printf(`export \
-	SPN_TRADING_IMPL=%v \
-	SPN_FACTORY_IMPL=%v
+	SPN_FACTORY_ADDR=%v \
+	SPN_ERC20_IMPL_ADDR=%v \
+	SPN_TRADING_IMPL_ADDR=%v
 `,
-		trading,
+		factory,
 		erc20,
+		trading,
 	)
 }

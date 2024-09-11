@@ -849,6 +849,7 @@ dependencies = [
  "getrandom",
  "lol_alloc",
  "num-traits",
+ "paste",
  "proptest",
  "sha3-const",
  "stylus-sdk",

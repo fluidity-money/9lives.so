@@ -6,26 +6,45 @@ use stylus_sdk::alloy_primitives::{address, Address};
 
 use array_concat::concat_arrays;
 
+use paste::paste;
+
 use sha3_const::Keccak256;
 
-pub const LONGTAIL_ADDR: Address = address!("feb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5");
+#[cfg(not(feature = "testing"))]
+macro_rules! env_addr {
+    ($name:ident, $input:literal) => {
+        paste! {
+            const [<$name _BYTES>]: [u8; 20] = match const_hex::const_decode_to_array::<20>(env!($input).as_bytes()) {
+                Ok(res) => res,
+                Err(_) => panic!(),
+            };
+            pub const $name: Address = Address::new([<$name _BYTES>]);
+        }
+    };
+}
 
-pub const FUSDC_ADDR: Address = address!("feb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5");
+#[cfg(feature = "testing")]
+macro_rules! env_addr {
+    ($name:ident, $input:literal) => {
+        const [<$name _BYTES>]: [u8; 20] = [0xfe,0xb6,0x03,0x4f,0xc7,0xdf,0x27,0xdf,0x18,0xa3,0xa6,0xba,0xd5,0xfb,0x94,0xc0,0xd3,0xdc,0xb6,0xd5,];
+        const $name: Address = Address::new(<$name _BYTES>);
+    }
+}
+
+// Longtail address deployed.
+env_addr!(LONGTAIL_ADDR,"SPN_LONGTAIL_ADDR");
+
+// fUSDC address to use as the base asset for everything.
+env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR");
 
 // Factory address, derived using the next nonce of the deployer to store in bytecode.
-pub const FACTORY_ADDR: Address = address!("feb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5");
+env_addr!(FACTORY_ADDR, "SPN_FACTORY_ADDR");
 
-pub const ERC20_IMPL_ADDR: Address = address!("feb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5");
-pub const ERC20_IMPL_BYTES: [u8; 20] = [
-    0xfe, 0xb6, 0x03, 0x4f, 0xc7, 0xdf, 0x27, 0xdf, 0x18, 0xa3, 0xa6, 0xba, 0xd5, 0xfb, 0x94, 0xc0,
-    0xd3, 0xdc, 0xb6, 0xd5,
-];
+// Implementation of the ERC20 token for proxy deployment of shares.
+env_addr!(ERC20_IMPL_ADDR, "SPN_ERC20_IMPL_ADDR");
 
-pub const TRADING_IMPL_ADDR: Address = address!("0000000000000000000000000000000000000000");
-pub const TRADING_IMPL_BYTES: [u8; 20] = [
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00,
-];
+// Implementation of the trading code deployment.
+env_addr!(TRADING_IMPL_ADDR, "SPN_TRADING_IMPL_ADDR");
 
 // Minimal viable proxy bytecode.
 pub const PROXY_BYTECODE: [u8; 114] = [
@@ -40,11 +59,11 @@ pub const PROXY_BYTECODE: [u8; 114] = [
 ];
 
 pub const fn erc20_proxy_code() -> [u8; 134] {
-    concat_arrays!(PROXY_BYTECODE, ERC20_IMPL_BYTES)
+    concat_arrays!(PROXY_BYTECODE, ERC20_IMPL_ADDR_BYTES)
 }
 
 pub const fn trading_proxy_code() -> [u8; 134] {
-    concat_arrays!(PROXY_BYTECODE, TRADING_IMPL_BYTES)
+    concat_arrays!(PROXY_BYTECODE, TRADING_IMPL_ADDR_BYTES)
 }
 
 pub const fn erc20_proxy_hash() -> [u8; 32] {
