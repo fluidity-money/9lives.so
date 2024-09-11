@@ -44,7 +44,7 @@ pub struct Trading {
     outcome_list: StorageVec<StorageFixedBytes<8>>,
 
     // Has the outcome here been determined using the determine function?
-    decided: StorageBool
+    decided: StorageBool,
 }
 
 #[solidity_storage]
@@ -145,7 +145,7 @@ impl Trading {
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
 
-        let share_addr = proxy::get_share_addr(contract::address(), outcome_id);
+        let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
 
         let shares = float::float_to_u256(shares, SHARE_DECIMALS)?;
 
@@ -198,7 +198,7 @@ impl Trading {
         let outcome = self.outcomes.getter(outcome_id);
         assert_or!(outcome.winner.get(), Error::NotWinner);
         // Get the user's balance of the share they own for this outcome.
-        let share_addr = proxy::get_share_addr(contract::address(), outcome_id);
+        let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
         // Start to burn their share of the supply to convert to a payoff amount.
         let share_bal = share_call::balance_of(share_addr, msg::sender())?;
         share_call::burn(share_addr, msg::sender(), share_bal)?;
@@ -210,6 +210,19 @@ impl Trading {
         let fusdc = float::float_to_u256(p, FUSDC_DECIMALS)?;
         fusdc_call::transfer(recipient, fusdc)?;
         Ok(fusdc)
+    }
+
+    pub fn details(&self, outcome_id: FixedBytes<8>) -> Result<(U256, U256, bool), Error> {
+        let outcome = self.outcomes.getter(outcome_id);
+        Ok((
+            float::float_to_u256(outcome.shares.get(), SHARE_DECIMALS)?,
+            float::float_to_u256(outcome.invested.get(), FUSDC_DECIMALS)?,
+            outcome.winner.get(),
+        ))
+    }
+
+    pub fn invested(&self) -> Result<U256, Error> {
+        float::float_to_u256(self.invested.get(), FUSDC_DECIMALS)
     }
 }
 

@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract Share is
     Initializable,
@@ -13,15 +14,22 @@ contract Share is
     OwnableUpgradeable,
     ERC20PermitUpgradeable
 {
-    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
     function ctor(bytes8 identifier, address admin) initializer public {
-        __ERC20_init("Shares", "");
+        string memory name = string.concat(
+            "9lives Share #",
+            Strings.toString(uint256(uint64(identifier)))
+        );
+        string memory symbol = string.concat(
+            "9#",
+            Strings.toString(uint256(uint64(identifier)))
+        );
+        __ERC20_init(name, symbol);
         __Ownable_init(admin);
-        __ERC20Permit_init("Shares");
+        __ERC20Permit_init(name);
     }
 
     function mint(address to, uint256 amount) public onlyOwner {

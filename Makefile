@@ -9,7 +9,7 @@ CARGO_BUILD_STYLUS := \
 		--artifact-dir . \
 		--features
 
-.PHONY: build clean
+.PHONY: build clean docs
 
 OUT_SHARE := out/Share.sol/Share.json
 

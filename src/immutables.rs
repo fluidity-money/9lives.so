@@ -69,9 +69,14 @@ pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 
 #[test]
 #[ignore]
+fn print_deployment_bytecode() {
+    use const_hex::encode;
+    dbg!(encode(PROXY_BYTECODE), encode(erc20_proxy_code()), encode(trading_proxy_code()));
+}
+
+#[test]
+#[ignore]
 fn print_proxy_hashes() {
-    dbg!(
-        const_hex::encode(erc20_proxy_hash()),
-        const_hex::encode(trading_proxy_hash())
-    );
+    use const_hex::encode;
+    dbg!(encode(erc20_proxy_hash()), encode(trading_proxy_hash()));
 }

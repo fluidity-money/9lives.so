@@ -29,4 +29,32 @@ interface INineLivesTrading {
         bytes32 r,
         bytes32 s
     ) external returns (uint256);
+
+    /**
+     * @notice decide an outcome. Only callable by the oracle!
+     * @param outcome to set as the winner.
+     */
+    function decide(bytes8 outcome) external;
+
+    /**
+     * @notice collect the payoff if holding winning shares!
+     * @param outcomeId to collect the payoff for.
+     * @param recipient to send the winnings to.
+     */
+    function payoff(bytes8 outcomeId, address recipient) external returns (uint256);
+
+    /**
+     * @notice details that're available for this outcome.
+     * @param outcomeId to get the details for
+     */
+    function details(bytes8 outcomeId) external view returns (
+        uint256 shares,
+        uint256 invested,
+        bool isWinner
+    );
+
+    /**
+     * @notice invested amount of fusdc in the betting pool
+     */
+    function invested() external view returns (uint256);
 }

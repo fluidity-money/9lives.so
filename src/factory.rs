@@ -3,10 +3,9 @@
 
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
-    msg,
+    contract, msg,
     prelude::*,
     storage::*,
-    contract
 };
 
 use crate::{error::*, immutables::*, longtail_call, proxy, share_call, trading_call};
@@ -101,7 +100,11 @@ impl Factory {
         );
         // Start to derive the outcomes that were given to find the share addresses.
         for outcome_id in outcomes {
-            longtail_call::pause_pool(proxy::get_share_addr(contract::address(), outcome_id))?;
+            longtail_call::pause_pool(proxy::get_share_addr(
+                contract::address(),
+                msg::sender(),
+                outcome_id,
+            ))?;
         }
         Ok(())
     }
