@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import math
 
 def price(M1,M2,N1,N2,m):
@@ -59,15 +61,16 @@ def place_order(outcome, cost, M1, M2, N1, N2):
         'new_N2': N2
     }
 
-# Seed liquidity
-initial_M1 = 100.0
-initial_M2 = 100.0
-initial_N1 = 100.0
-initial_N2 = 100.0
+if __name__ == "__main__":
+	# Seed liquidity
+	initial_M1 = 100.0
+	initial_M2 = 100.0
+	initial_N1 = 100.0
+	initial_N2 = 100.0
 
-# Place an order for outcome A with a cost of 50
-order_result = place_order('A', 50, initial_M1, initial_M2, initial_N1, initial_N2)
+	# Place an order for outcome A with a cost of 50
+	order_result = place_order('A', 50, initial_M1, initial_M2, initial_N1, initial_N2)
 
-print("Order Result:")
-for key, value in order_result.items():
-    print(f"{key}: {value}")
+	print("Order Result:")
+	for key, value in order_result.items():
+	    print(f"{key}: {value}")
