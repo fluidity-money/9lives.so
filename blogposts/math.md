@@ -19,6 +19,7 @@ To start off, we introduce some variables. Let’s say we have a prediction mark
 In the case that all money is redistributed, the respective payoffs per share are as follows:
 
 $$ P_1 = \frac{M_1+M_2}{N_1} = \frac{T}{N_1} .$$
+
 All equations for $B$ are symmetric. In this case, if $A$ occurs, shareholders of $A$ lose their initial wager but receive $P_1$ per share owned, while shareholders of $B$ lose all of their money wagered. 
 
 To derive the price function, we require that the ratio of prices is equal to the ratio of money wagered, i.e. 
