@@ -10,6 +10,8 @@ then share holders can convert their positions to fUSDC on request.
 
 ![Diagram of the system](diagram.png)
 
+This current version of 9lives is not based on the beauty pageant concept!
+
 ## Building contracts
 
 	make build

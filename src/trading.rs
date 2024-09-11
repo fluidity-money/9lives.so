@@ -20,7 +20,7 @@ use crate::{
     maths, proxy, share_call,
 };
 
-#[solidity_storage]
+#[storage]
 #[entrypoint]
 pub struct Trading {
     // Outcome was determined! It should be impossible to mint, only to burn.
@@ -47,7 +47,7 @@ pub struct Trading {
     decided: StorageBool,
 }
 
-#[solidity_storage]
+#[storage]
 struct Outcome {
     // Outstanding invested into this outcome.
     invested: StorageBigFloat,
@@ -59,7 +59,7 @@ struct Outcome {
     winner: StorageBool,
 }
 
-#[external]
+#[public]
 impl Trading {
     // Seeds the pool with the first outcome. Assumes msg.sender is
     // the factory. Seeder is the address to take the money from. It

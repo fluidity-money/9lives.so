@@ -29,14 +29,6 @@ pub mod factory_call;
 mod host;
 
 extern crate alloc;
-#[cfg(target_arch = "wasm32")]
-mod allocator {
-    use lol_alloc::{AssumeSingleThreaded, FreeListAllocator};
-    // SAFETY: This application is single threaded, so using AssumeSingleThreaded is allowed.
-    #[global_allocator]
-    static ALLOCATOR: AssumeSingleThreaded<FreeListAllocator> =
-        unsafe { AssumeSingleThreaded::new(FreeListAllocator::new()) };
-}
 
 #[cfg(feature = "factory")]
 mod factory;

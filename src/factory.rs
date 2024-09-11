@@ -10,7 +10,7 @@ use stylus_sdk::{
 
 use crate::{error::*, immutables::*, longtail_call, proxy, share_call, trading_call};
 
-#[solidity_storage]
+#[storage]
 #[entrypoint]
 pub struct Factory {
     version: StorageU8,
@@ -21,7 +21,7 @@ pub struct Factory {
     created: StorageMap<Address, StorageBool>,
 }
 
-#[external]
+#[public]
 impl Factory {
     pub fn ctor(&mut self, oracle_addr: Address) -> Result<(), Vec<u8>> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
