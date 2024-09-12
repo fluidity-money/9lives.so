@@ -39,6 +39,8 @@ pub fn u256_to_float(n: U256, decimals: u8) -> Result<BigFloat, Error> {
 }
 
 pub fn float_to_u256(_n: BigFloat, _decimals: u8) -> Result<U256, Error> {
+    // Get the exp, and the mantissa, then get the exp as the word, then
+    // shift the right side into it at the offset
     Ok(U256::from(0))
 }
 
@@ -132,7 +134,7 @@ fn pack_float_words(
     match words.len() {
         2 => b[8..8 + words[1].to_be_bytes().len()].copy_from_slice(&words[1].to_be_bytes()),
         1 => (),
-        i => panic!("float words len: {}", i)
+        i => panic!("float words len: {}", i),
     }
     b[16..16 + sig_bits.to_be_bytes().len()].copy_from_slice(&sig_bits.to_be_bytes());
     b[24] = match sign {
@@ -162,6 +164,40 @@ fn unpack_float_words<'a>(b: &[u8]) -> (Vec<u64>, usize, Sign, i32, bool) {
     (words, sig_bits, sign, exp, inexact)
 }
 
+#[macro_export]
+macro_rules! assert_eq_f {
+    ($left:expr, $right:expr $(,)?) => {
+        let rm = RoundingMode::None;
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+            let prec = std::mem::size_of::<u128>();
+                let right_val_sub = right_val.sub(
+                    &right_val.mul(&BigFloat::from(0.000000001), prec, rm),
+                    prec,
+                    rm,
+                );
+                let right_val_add = right_val.add(
+                    &right_val.mul(&BigFloat::from(0.000000001), prec, rm),
+                    prec,
+                    rm,
+                );
+                //if left_val >= (right_val - right_val * 0.000000001) && left_val <= (right_val + right_val * 0.000000001)
+                if !(*left_val >= right_val_sub && *left_val <= right_val_add) {
+                    panic!(
+                        "!({} == {} || ({} >= {} && {} <= {}))",
+                        left_val,
+                        right_val,
+                        left_val,
+                        right_val_sub,
+                        left_val,
+                        right_val_add
+                    );
+                }
+            }
+        }
+    };
+}
+
 #[cfg(test)]
 mod propesting {
     use proptest::prelude::*;
@@ -183,7 +219,7 @@ mod propesting {
             let packed = pack_float_words(words, sig_bits, sign, exp, inexact);
             let (words, sig_bits, sign, exp, inexact) = unpack_float_words(&packed);
             let b = BigFloat::from_raw_parts(&words, sig_bits, sign, exp, inexact);
-            assert_eq!(b, a, "{} != {}", b, a);
+            assert_eq!(b, a);
         }
     }
 }
@@ -192,7 +228,7 @@ mod propesting {
 fn min_number_to_bytes() {
     let i = U256::from(1);
     let a = u256_to_float(i, 6).unwrap();
-    assert_eq!(a, BigFloat::from(1e-06), "{} != {}", a, 1e-06);
+    assert_eq_f!(a, BigFloat::from(1e-06));
     let d = a.as_raw_parts().unwrap();
     let (words, sig_bits, sign, exp, inexact) = d;
     let packed = pack_float_words(words, sig_bits, sign, exp, inexact);

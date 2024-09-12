@@ -1,31 +1,8 @@
 use astro_float::BigFloat;
 
-use lib9lives::{float, maths};
+use lib9lives::{assert_eq_f, float, maths};
 
 use astro_float::RoundingMode;
-
-macro_rules! assert_f {
-    ($left:expr, $right:expr $(,)?) => {
-        let rm = RoundingMode::None;
-        match (&$left, &$right) {
-            (left_val, right_val) => {
-                let right_val_sub = right_val.sub(
-                    &right_val.mul(&BigFloat::from(0.0000001), float::PREC, rm),
-                    float::PREC,
-                    rm,
-                );
-                let right_val_add = right_val.add(
-                    &right_val.mul(&BigFloat::from(0.0000001), float::PREC, rm),
-                    float::PREC,
-                    rm,
-                );
-                if !(*left_val > right_val_sub && *left_val < right_val_add) {
-                    panic!("{} != {}", &*left_val, &*right_val,);
-                }
-            }
-        }
-    };
-}
 
 fn test_maths_row(
     (
@@ -40,9 +17,9 @@ fn test_maths_row(
         price_after_a,
         price_after_b,
         new_m1,
-        new_m2,
+        _new_m2,
         new_n1,
-        new_n2,
+        _new_n2,
     ): (
         f64,
         f64,
@@ -71,35 +48,33 @@ fn test_maths_row(
     let price_after_a = BigFloat::from(price_after_a);
     let price_after_b = BigFloat::from(price_after_b);
     let new_m1 = BigFloat::from(new_m1);
-    let new_m2 = BigFloat::from(new_m2);
     let new_n1 = BigFloat::from(new_n1);
-    let new_n2 = BigFloat::from(new_n2);
 
     //price_before_A = price(M1, M2, N1, N2, 0)
-    assert_f!(
+    assert_eq_f!(
         maths::price(&m1, &m2, &n1, &n2, &BigFloat::from(0)),
         price_before_a
     );
     //price_before_B = price(M2, M1, N2, N1, 0)
-    assert_f!(
+    assert_eq_f!(
         maths::price(&m2, &m1, &n2, &n1, &BigFloat::from(0)),
         price_before_b
     );
     //shares_purchased = shares(M1, M2, N1, N2, cost)
     let our_shares_purchased = maths::shares(&m1, &m2, &n1, &n2, &cost);
-    assert_f!(our_shares_purchased, shares_purchased);
+    assert_eq_f!(our_shares_purchased, shares_purchased);
 
     let our_m1 = cost.add(&m1, float::PREC, RoundingMode::None);
-    assert_f!(our_m1, new_m1);
+    assert_eq_f!(our_m1, new_m1);
     let our_n1 = n1.add(&our_shares_purchased, float::PREC, RoundingMode::None);
-    assert_f!(our_n1, new_n1);
+    assert_eq_f!(our_n1, new_n1);
 
     //price_after_A = price(M1, M2, N1, N2, 0)
-    assert_f!(
+    assert_eq_f!(
         maths::price(&our_m1, &m2, &our_n1, &n2, &BigFloat::from(0)),
         price_after_a
     );
-    assert_f!(
+    assert_eq_f!(
         maths::price(&m2, &our_m1, &n2, &our_n1, &BigFloat::from(0)),
         price_after_b
     );

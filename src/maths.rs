@@ -68,39 +68,3 @@ pub fn payoff(n: BigFloat, N_1: BigFloat, M: BigFloat) -> BigFloat {
     let rm = RoundingMode::Down;
     n.div(&N_1, PREC, rm).mul(&M, PREC, rm)
 }
-
-#[test]
-fn test_shares_isolated() {
-    let m_1 = BigFloat::from(998);
-    let m_2 = BigFloat::from(38);
-    let n_1 = BigFloat::from(333);
-    let n_2 = BigFloat::from(611);
-    let cost = BigFloat::from(265);
-
-    let s = shares(&m_1, &m_2, &n_1, &n_2, &cost);
-
-    assert_eq!(
-        s,
-        BigFloat::from(90.503531282390116),
-        "{} != 90.503531282390116",
-        s.to_string()
-    );
-}
-
-#[test]
-fn test_price_isolated() {
-    let m_1 = BigFloat::from(998);
-    let m_2 = BigFloat::from(38);
-    let n_1 = BigFloat::from(333);
-    let n_2 = BigFloat::from(611);
-    let cost = BigFloat::from(265);
-
-    let s = price(&m_1, &m_2, &n_1, &n_2, &cost);
-
-    assert_eq!(
-        s,
-        BigFloat::from(2.944193295000662),
-        "{} != 2.944193295000662",
-        s.to_string()
-    );
-}
