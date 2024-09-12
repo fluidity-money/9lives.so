@@ -1,4 +1,4 @@
-use fixed::types::U64F64;
+use fixed::types::I64F64;
 
 use stylus_sdk::storage::{GlobalStorage, StorageCache, StorageGuardMut, StorageType};
 
@@ -8,10 +8,10 @@ use stylus_sdk::alloy_primitives::{FixedBytes, U256};
 
 use crate::{assert_or, error::Error};
 
-pub const MAX_NUMBER: U256 = U256::from_limbs([18446744073709551615, 0, 0, 0]);
+pub const MAX_NUMBER: U256 = U256::from_limbs([9223372036854775807, 0, 0, 0]);
 
-fn pow(base: U64F64, mut exp: u8) -> U64F64 {
-    let one = U64F64::from_num(1);
+fn pow(base: I64F64, mut exp: u8) -> I64F64 {
+    let one = I64F64::from_num(1);
     let mut res = one;
     let mut base = base;
     while exp > 0 {
@@ -24,7 +24,7 @@ fn pow(base: U64F64, mut exp: u8) -> U64F64 {
     res
 }
 
-pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<U64F64, Error> {
+pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
     assert_or!(n > U256::ZERO, Error::TooSmallNumber);
     assert_or!(n < MAX_NUMBER, Error::TooBigNumber);
 
@@ -33,13 +33,13 @@ pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<U64F64, Error> {
     let n: u128 = u128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
     let rem: u128 = u128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
 
-    let n = U64F64::from_num(n);
-    let rem = U64F64::from_num(rem);
+    let n = I64F64::from_num(n);
+    let rem = I64F64::from_num(rem);
 
-    Ok(n + rem / pow(U64F64::from_num(10), decimals))
+    Ok(n + rem / pow(I64F64::from_num(10), decimals))
 }
 
-pub fn fixed_to_u256(_n: U64F64, _decimals: u8) -> Result<U256, Error> {
+pub fn fixed_to_u256(_n: I64F64, _decimals: u8) -> Result<U256, Error> {
     // Get the exp, and the mantissa, then get the exp as the word, then
     // shift the right side into it at the offset
     Ok(U256::from(0))
@@ -49,15 +49,15 @@ pub fn fixed_to_u256(_n: U64F64, _decimals: u8) -> Result<U256, Error> {
 pub struct StorageFixed {
     slot: U256,
     offset: u8,
-    cached: OnceCell<U64F64>,
+    cached: OnceCell<I64F64>,
 }
 
 impl StorageFixed {
-    pub fn get(&self) -> U64F64 {
+    pub fn get(&self) -> I64F64 {
         self.clone().into()
     }
 
-    pub fn set(&mut self, v: U64F64) {
+    pub fn set(&mut self, v: I64F64) {
         self.cached.take();
         _ = self.cached.set(v.clone());
         let mut b = [0_u8; 32];
@@ -73,7 +73,7 @@ impl StorageFixed {
 }
 
 impl StorageType for StorageFixed {
-    type Wraps<'a> = U64F64;
+    type Wraps<'a> = I64F64;
     type WrapsMut<'a> = StorageGuardMut<'a, Self>;
 
     const SLOT_BYTES: usize = 32;
@@ -96,17 +96,17 @@ impl StorageType for StorageFixed {
 }
 
 impl Deref for StorageFixed {
-    type Target = U64F64;
+    type Target = I64F64;
 
     fn deref(&self) -> &Self::Target {
         self.cached.get_or_init(|| unsafe {
             let b = StorageCache::get::<32>(self.slot, self.offset.into());
-            U64F64::from_be_bytes(b.as_slice().try_into().unwrap())
+            I64F64::from_be_bytes(b.as_slice().try_into().unwrap())
         })
     }
 }
 
-impl From<StorageFixed> for U64F64 {
+impl From<StorageFixed> for I64F64 {
     fn from(v: StorageFixed) -> Self {
         v.into()
     }
@@ -117,8 +117,8 @@ macro_rules! assert_eq_f {
     ($left:expr, $right:expr $(,)?) => {
         match (&$left, &$right) {
             (left_val, right_val) => {
-                let right_val_sub =  right_val - (right_val * U64F64::from_num(0.000000001));
-                let right_val_add = right_val + (right_val * U64F64::from_num(0.000000001));
+                let right_val_sub =  right_val - (right_val * I64F64::from_num(0.000000001));
+                let right_val_add = right_val + (right_val * I64F64::from_num(0.000000001));
                 //if left_val >= (right_val - right_val * 0.000000001) && left_val <= (right_val + right_val * 0.000000001)
                 if !(*left_val >= right_val_sub && *left_val <= right_val_add) {
                     panic!(

@@ -1,6 +1,6 @@
 use lib9lives::{assert_eq_f, error::Error, maths};
 
-use fixed::types::U64F64;
+use fixed::types::I64F64;
 
 fn test_maths_row(
     (
@@ -35,27 +35,27 @@ fn test_maths_row(
         f64,
     ),
 ) -> Result<(), Error> {
-    let cost = U64F64::from_num(cost);
-    let m1 = U64F64::from_num(m1);
-    let m2 = U64F64::from_num(m2);
-    let n1 = U64F64::from_num(n1);
-    let n2 = U64F64::from_num(n2);
-    let shares_purchased = U64F64::from_num(shares_purchased);
-    let price_before_a = U64F64::from_num(price_before_a);
-    let price_before_b = U64F64::from_num(price_before_b);
-    let price_after_a = U64F64::from_num(price_after_a);
-    let price_after_b = U64F64::from_num(price_after_b);
-    let new_m1 = U64F64::from_num(new_m1);
-    let new_n1 = U64F64::from_num(new_n1);
+    let cost = I64F64::from_num(cost);
+    let m1 = I64F64::from_num(m1);
+    let m2 = I64F64::from_num(m2);
+    let n1 = I64F64::from_num(n1);
+    let n2 = I64F64::from_num(n2);
+    let shares_purchased = I64F64::from_num(shares_purchased);
+    let price_before_a = I64F64::from_num(price_before_a);
+    let price_before_b = I64F64::from_num(price_before_b);
+    let price_after_a = I64F64::from_num(price_after_a);
+    let price_after_b = I64F64::from_num(price_after_b);
+    let new_m1 = I64F64::from_num(new_m1);
+    let new_n1 = I64F64::from_num(new_n1);
 
     //price_before_A = price(M1, M2, N1, N2, 0)
     assert_eq_f!(
-        maths::price(m1, m2, n1, n2, U64F64::from_num(0))?,
+        maths::price(m1, m2, n1, n2, I64F64::from_num(0))?,
         price_before_a
     );
     //price_before_B = price(M2, M1, N2, N1, 0)
     assert_eq_f!(
-        maths::price(m2, m1, n2, n1, U64F64::from_num(0))?,
+        maths::price(m2, m1, n2, n1, I64F64::from_num(0))?,
         price_before_b
     );
     //shares_purchased = shares(M1, M2, N1, N2, cost)
@@ -69,11 +69,11 @@ fn test_maths_row(
 
     //price_after_A = price(M1, M2, N1, N2, 0)
     assert_eq_f!(
-        maths::price(our_m1, m2, our_n1, n2, U64F64::from_num(0))?,
+        maths::price(our_m1, m2, our_n1, n2, I64F64::from_num(0))?,
         price_after_a
     );
     assert_eq_f!(
-        maths::price(m2, our_m1, n2, our_n1, U64F64::from_num(0))?,
+        maths::price(m2, our_m1, n2, our_n1, I64F64::from_num(0))?,
         price_after_b
     );
     Ok(())
