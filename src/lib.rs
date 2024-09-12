@@ -25,7 +25,7 @@ pub mod fusdc_call;
 pub mod longtail_call;
 pub mod factory_call;
 
-#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+#[cfg(all(test, not(target_arch = "wasm32")))]
 mod host;
 
 extern crate alloc;
