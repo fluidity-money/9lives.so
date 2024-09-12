@@ -8052,10 +8052,11 @@ fn end_to_end_maths() {
             428.,
         ),
     ];
-    for r in test_data {
-        if let Err(err) = test_maths_row(r) {
+    for (i, r) in test_data.iter().enumerate() {
+        if let Err(err) = test_maths_row(*r) {
             let (cost, m1, m2, n1, n2, _, _, _, _, _, _, _, _, _) = r;
-            panic!("{err}: {cost}, {m1}, {m2}, {n1}, {n2}")
+            let i = i + 1;
+            panic!("line,error,cost,m1,m2,n1,n2\n{i},{err},{cost},{m1},{m2},{n1},{n2}")
         }
     }
 }
