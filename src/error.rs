@@ -37,6 +37,10 @@ pub enum Error {
     #[error("Too big number")]
     TooBigNumber,
 
+    /// Somehow, the number became negative!
+    #[error("Number is negative")]
+    NegNumber,
+
     /// Longtail had an error, we'll bubble up what happened.
     #[error("Longtail had an error.")]
     LongtailError(Vec<u8>),
@@ -72,6 +76,10 @@ pub enum Error {
     /// Tried do a payoff for an outcome that didn't come true!
     #[error("Not winner!")]
     NotWinner,
+
+    /// Checked sub error in the math!
+    #[error("Checked sub")]
+    CheckedSub,
 }
 
 impl From<Error> for Vec<u8> {

@@ -1,6 +1,6 @@
 
 pub mod maths;
-pub mod float;
+pub mod fixed;
 
 #[macro_use]
 pub mod error;

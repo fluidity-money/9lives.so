@@ -44,6 +44,7 @@ def place_order(outcome, cost, M1, M2, N1, N2):
         N2 += shares_purchased
 
     # Calculate price after purchase
+    print(M1, M2, N1, N2, 0)
     price_after_A = price(M1, M2, N1, N2, 0)
     price_after_B = price(M2, M1, N2, N1, 0)
 
@@ -67,6 +68,8 @@ if __name__ == "__main__":
 	initial_M2 = 100.0
 	initial_N1 = 100.0
 	initial_N2 = 100.0
+
+	print("shares: ", shares(524, 387, 173, 411, 182))
 
 	# Place an order for outcome A with a cost of 50
 	order_result = place_order('A', 50, initial_M1, initial_M2, initial_N1, initial_N2)

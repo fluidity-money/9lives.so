@@ -29,12 +29,11 @@ tiny-keccak = "2.0.2"
 num-traits = "0.2.19"
 alloy-sol-types = "=0.7.6"
 alloy-sol-macro = "=0.7.6"
-astro-float = { version = "0.9.4", default-features = false }
-getrandom = { version = "0.2.15", features = ["js"] }
 array-concat = "0.5.3"
 sha3-const = "0.1.1"
 const-hex = { version = "1.12.0" }
 paste = "1.0.15"
+fixed = "1.28.0"
 
 [dev-dependencies]
 proptest = "1.5.0"

@@ -9,12 +9,10 @@ use stylus_sdk::{
     storage::*,
 };
 
-use astro_float::RoundingMode;
-
 use crate::{
     error::*,
     factory_call,
-    float::{self, StorageBigFloat},
+    fixed::{self, StorageFixed},
     fusdc_call,
     immutables::*,
     maths, proxy, share_call,
@@ -33,10 +31,10 @@ pub struct Trading {
     factory: StorageAddress,
 
     // Shares existing in every outcome.
-    shares: StorageBigFloat,
+    shares: StorageFixed,
 
     // Global amount invested to this pool of the native asset.
-    invested: StorageBigFloat,
+    invested: StorageFixed,
 
     outcomes: StorageMap<FixedBytes<8>, Outcome>,
 
@@ -50,10 +48,10 @@ pub struct Trading {
 #[storage]
 struct Outcome {
     // Outstanding invested into this outcome.
-    invested: StorageBigFloat,
+    invested: StorageFixed,
 
     // Amount of shares in existence in this outcome.
-    shares: StorageBigFloat,
+    shares: StorageFixed,
 
     // Was this outcome the correct outcome?
     winner: StorageBool,
@@ -83,12 +81,12 @@ impl Trading {
         assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
         fusdc_call::take_from_funder(funder, fusdc_amt)?;
         self.invested
-            .set(float::u256_to_float(fusdc_amt, FUSDC_DECIMALS)?);
+            .set(fixed::u256_to_fixed(fusdc_amt, FUSDC_DECIMALS)?);
 
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
         for (outcome_id, outcome_amt) in outcomes {
-            let outcome_amt = float::u256_to_float(outcome_amt, FUSDC_DECIMALS)?;
+            let outcome_amt = fixed::u256_to_fixed(outcome_amt, FUSDC_DECIMALS)?;
             self.outcomes.setter(outcome_id).invested.set(outcome_amt);
             self.outcome_list.push(outcome_id);
         }
@@ -111,43 +109,32 @@ impl Trading {
         let outcome = self.outcomes.getter(outcome_id);
         let m_1 = outcome.invested.get();
         let n_1 = outcome.shares.get();
-        let n_2 = self.shares.get().sub(&n_1, float::PREC, RoundingMode::Down);
+        let n_2 = self.shares.get().checked_sub(n_1).ok_or(Error::CheckedSub)?;
         let m_2 = self
             .invested
             .get()
-            .sub(&m_1, float::PREC, RoundingMode::Down);
+            .checked_sub(m_1)
+            .ok_or(Error::CheckedSub)?;
 
         // Convert everything to floats!
-        let m = float::u256_to_float(value, FUSDC_DECIMALS)?;
+        let m = fixed::u256_to_fixed(value, FUSDC_DECIMALS)?;
 
         // Set the global states.
-        self.outcomes
-            .setter(outcome_id)
-            .invested
-            .set(m_1.add(&m, float::PREC, RoundingMode::Down));
-        self.invested
-            .set(self.invested.get().add(&m, float::PREC, RoundingMode::Down));
+        self.outcomes.setter(outcome_id).invested.set(m_1 + m);
+        self.invested.set(self.invested.get() + m);
 
-        let shares = maths::shares(&m_1, &m_2, &n_1, &n_2, &m);
+        let shares = maths::shares(m_1, m_2, n_1, n_2, m)?;
 
         // Set the global states as the output of shares.
-        self.outcomes.setter(outcome_id).shares.set(n_1.add(
-            &shares,
-            float::PREC,
-            RoundingMode::Down,
-        ));
-        self.shares.set(
-            self.shares
-                .get()
-                .add(&shares, float::PREC, RoundingMode::Down),
-        );
+        self.outcomes.setter(outcome_id).shares.set(n_1 + shares);
+        self.shares.set(self.shares.get() + shares);
 
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
 
         let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
 
-        let shares = float::float_to_u256(shares, SHARE_DECIMALS)?;
+        let shares = fixed::fixed_to_u256(shares, SHARE_DECIMALS)?;
 
         share_call::mint(share_addr, recipient, shares)?;
 
@@ -202,12 +189,12 @@ impl Trading {
         // Start to burn their share of the supply to convert to a payoff amount.
         let share_bal = share_call::balance_of(share_addr, msg::sender())?;
         share_call::burn(share_addr, msg::sender(), share_bal)?;
-        let n = float::u256_to_float(share_bal, SHARE_DECIMALS)?;
+        let n = fixed::u256_to_fixed(share_bal, SHARE_DECIMALS)?;
         let n_1 = outcome.shares.get();
         let M = self.invested.get();
         let p = maths::payoff(n, n_1, M);
         // Send the user some fUSDC now!
-        let fusdc = float::float_to_u256(p, FUSDC_DECIMALS)?;
+        let fusdc = fixed::fixed_to_u256(p, FUSDC_DECIMALS)?;
         fusdc_call::transfer(recipient, fusdc)?;
         Ok(fusdc)
     }
@@ -215,14 +202,14 @@ impl Trading {
     pub fn details(&self, outcome_id: FixedBytes<8>) -> Result<(U256, U256, bool), Error> {
         let outcome = self.outcomes.getter(outcome_id);
         Ok((
-            float::float_to_u256(outcome.shares.get(), SHARE_DECIMALS)?,
-            float::float_to_u256(outcome.invested.get(), FUSDC_DECIMALS)?,
+            fixed::fixed_to_u256(outcome.shares.get(), SHARE_DECIMALS)?,
+            fixed::fixed_to_u256(outcome.invested.get(), FUSDC_DECIMALS)?,
             outcome.winner.get(),
         ))
     }
 
     pub fn invested(&self) -> Result<U256, Error> {
-        float::float_to_u256(self.invested.get(), FUSDC_DECIMALS)
+        fixed::fixed_to_u256(self.invested.get(), FUSDC_DECIMALS)
     }
 }
 
