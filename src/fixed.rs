@@ -44,12 +44,6 @@ pub fn fixed_to_u256(n: I64F64, decimals: u8) -> U256 {
     n * U256::from(10).pow(U256::from(decimals))
 }
 
-#[test]
-fn fuckmylife() {
-    let n = I64F64::from_num(1000000.12345);
-    dbg!(fixed_to_u256(n, 6));
-}
-
 #[derive(Debug, Clone)]
 pub struct StorageFixed {
     slot: U256,
