@@ -20,13 +20,13 @@ ${OUT_SHARE}: $(shell find src -name '*.sol')
 
 factory.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f factory.wasm
-	@${CARGO_BUILD_STYLUS} factory,testing
+	@${CARGO_BUILD_STYLUS} factory
 	@mv ninelives.wasm factory.wasm
 	@rm liblib9lives.rlib
 
 trading.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading.wasm
-	@${CARGO_BUILD_STYLUS} trading,testing
+	@${CARGO_BUILD_STYLUS} trading
 	@mv ninelives.wasm trading.wasm
 	@rm liblib9lives.rlib
 
