@@ -70,11 +70,10 @@ impl Factory {
             // Set up the share ERC20 asset, with the description.
             share_call::ctor(erc20_addr, *outcome_identifier, trading_addr)?;
 
-            // Use Longtail to create a pool for this share, then enable it with odds baked into
-            // the contract. Use a volatile asset price.
+            // Use Longtail to create a pool for this share, then enable it with a 50/50 price.
             longtail_call::create_pool(
                 erc20_addr,
-                U256::ZERO,
+                LONGTAIL_PRICE,
                 LONGTAIL_FEE,
                 LONGTAIL_TICK_SPACING,
                 LONGTAIL_MAX_LIQ_PER_TICK,

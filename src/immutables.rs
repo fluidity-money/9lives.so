@@ -80,7 +80,9 @@ pub const FUSDC_DECIMALS: u8 = 6;
 
 pub const SHARE_DECIMALS: u8 = 18;
 
-pub const FEE_RECIPIENT: Address = address!("0000000000000000000000000000000000000000");
+pub const FEE_RECIPIENT: Address = address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7");
+
+pub const LONGTAIL_PRICE: U256 = U256::from_limbs([1, 0, 0, 0]);
 
 pub const LONGTAIL_FEE: u32 = 3000;
 
