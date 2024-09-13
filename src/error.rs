@@ -80,6 +80,10 @@ pub enum Error {
     /// Checked sub error in the math!
     #[error("Checked sub")]
     CheckedSub,
+
+    /// Negative amount was attempted to be made a uint256!
+    #[error("Negative amount to uint256")]
+    NegU256,
 }
 
 impl From<Error> for Vec<u8> {

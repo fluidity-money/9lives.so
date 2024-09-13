@@ -25,7 +25,6 @@ fn pow(base: I64F64, mut exp: u8) -> I64F64 {
 }
 
 pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
-    assert_or!(n > U256::ZERO, Error::TooSmallNumber);
     assert_or!(n < MAX_NUMBER, Error::TooBigNumber);
 
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
@@ -39,10 +38,16 @@ pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
     Ok(n + rem / pow(I64F64::from_num(10), decimals))
 }
 
-pub fn fixed_to_u256(_n: I64F64, _decimals: u8) -> Result<U256, Error> {
-    // Get the exp, and the mantissa, then get the exp as the word, then
-    // shift the right side into it at the offset
-    Ok(U256::from(0))
+// Return the fixed amount, cutting off the decimals.
+pub fn fixed_to_u256(n: I64F64, decimals: u8) -> U256 {
+    let n = U256::from(n.to_bits() >> 64);
+    n * U256::from(10).pow(U256::from(decimals))
+}
+
+#[test]
+fn fuckmylife() {
+    let n = I64F64::from_num(1000000.12345);
+    dbg!(fixed_to_u256(n, 6));
 }
 
 #[derive(Debug, Clone)]

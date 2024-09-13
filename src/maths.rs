@@ -17,10 +17,10 @@ fn exp(x: I64F64) -> I64F64 {
 
 fn log10(x: I64F64) -> I64F64 {
     let one = I64F64::from_num(1);
-    let mut guess = x - one; // Initial guess
+    let mut guess = x - one;
     let mut diff;
     loop {
-        let e_guess = exp(guess); // Exp(guess)
+        let e_guess = exp(guess);
         diff = (e_guess - x) / e_guess;
         guess = guess - diff;
         if diff < I64F64::from_num(1e-10) {
