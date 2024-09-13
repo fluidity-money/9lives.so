@@ -2,7 +2,7 @@
 ///! variable, and are in some cases (ie, the Factory), configured based on
 ///! nonce management. We have a preference for online keccak256,
 ///! but we use a constant function here to simplify CREATE2 interaction.
-use stylus_sdk::alloy_primitives::{address, Address};
+use stylus_sdk::alloy_primitives::{address, Address, U256};
 
 use array_concat::concat_arrays;
 

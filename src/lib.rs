@@ -26,7 +26,7 @@ pub mod longtail_call;
 pub mod factory_call;
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
-mod host;
+pub(crate) mod host;
 
 extern crate alloc;
 

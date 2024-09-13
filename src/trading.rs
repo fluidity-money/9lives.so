@@ -195,6 +195,7 @@ impl Trading {
         share_call::burn(share_addr, msg::sender(), share_bal)?;
         let n = fixed::u256_to_fixed(share_bal, SHARE_DECIMALS)?;
         let n_1 = outcome.shares.get();
+        #[allow(non_snake_case)]
         let M = self.invested.get();
         let p = maths::payoff(n, n_1, M);
         // Send the user some fUSDC now!
