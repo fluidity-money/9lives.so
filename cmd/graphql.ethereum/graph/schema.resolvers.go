@@ -15,7 +15,27 @@ import (
 
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string, sR string, s string, v string) (*bool, error) {
-	panic(fmt.Errorf("not implemented: ExplainCampaign - explainCampaign"))
+	/*
+	Do the following:
+
+	1. Check the user's signature. Check that they created the campaign details.
+	2. Check that the campaign exists on-chain. Check that the factory knows of its existence.
+	3. Take the information that was given, and add it to the database!
+
+	Later, a member of the moderation team will configure the display of the frontpage column.
+	*/
+
+	// First, concatenate the outcome details that were submitted.
+
+	// Then, get the keccak256 hash of the sorting and concatenation.
+
+	// Then, derive the on-chain address from this info of the trading pool.
+
+	// Then, check on-chain to see if it exists.
+
+	// If it does, then log the existence of the pool in the database!
+
+	return false, nil
 }
 
 // Campaigns is the resolver for the campaigns field.
