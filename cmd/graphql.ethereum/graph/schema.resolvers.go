@@ -8,9 +8,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fluidity-money/9lives.so/lib/features"
-
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
+	"github.com/fluidity-money/9lives.so/lib/features"
+	"github.com/fluidity-money/9lives.so/lib/types"
 )
 
 // ExplainCampaign is the resolver for the explainCampaign field.
@@ -19,7 +19,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 }
 
 // Campaigns is the resolver for the campaigns field.
-func (r *queryResolver) Campaigns(ctx context.Context) ([]model.Campaign, error) {
+func (r *queryResolver) Campaigns(ctx context.Context) ([]types.Campaign, error) {
 	if r.F.Is(features.FeatureGraphqlMockGraph) {
 		return MockGraphCampaigns()
 	}

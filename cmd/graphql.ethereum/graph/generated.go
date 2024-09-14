@@ -15,6 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
+	"github.com/fluidity-money/9lives.so/lib/types"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -87,7 +88,7 @@ type MutationResolver interface {
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string, sR string, s string, v string) (*bool, error)
 }
 type QueryResolver interface {
-	Campaigns(ctx context.Context) ([]model.Campaign, error)
+	Campaigns(ctx context.Context) ([]types.Campaign, error)
 }
 
 type executableSchema struct {
@@ -507,7 +508,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Campaign_name(ctx context.Context, field graphql.CollectedField, obj *model.Campaign) (ret graphql.Marshaler) {
+func (ec *executionContext) _Campaign_name(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Campaign_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -551,7 +552,7 @@ func (ec *executionContext) fieldContext_Campaign_name(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Campaign_description(ctx context.Context, field graphql.CollectedField, obj *model.Campaign) (ret graphql.Marshaler) {
+func (ec *executionContext) _Campaign_description(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Campaign_description(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -595,7 +596,7 @@ func (ec *executionContext) fieldContext_Campaign_description(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Campaign_creator(ctx context.Context, field graphql.CollectedField, obj *model.Campaign) (ret graphql.Marshaler) {
+func (ec *executionContext) _Campaign_creator(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Campaign_creator(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -621,9 +622,9 @@ func (ec *executionContext) _Campaign_creator(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Wallet)
+	res := resTmp.(*types.Wallet)
 	fc.Result = res
-	return ec.marshalNWallet2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐWallet(ctx, field.Selections, res)
+	return ec.marshalNWallet2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐWallet(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Campaign_creator(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -643,7 +644,7 @@ func (ec *executionContext) fieldContext_Campaign_creator(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Campaign_oracle(ctx context.Context, field graphql.CollectedField, obj *model.Campaign) (ret graphql.Marshaler) {
+func (ec *executionContext) _Campaign_oracle(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Campaign_oracle(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -687,7 +688,7 @@ func (ec *executionContext) fieldContext_Campaign_oracle(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Campaign_identifier(ctx context.Context, field graphql.CollectedField, obj *model.Campaign) (ret graphql.Marshaler) {
+func (ec *executionContext) _Campaign_identifier(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Campaign_identifier(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -731,7 +732,7 @@ func (ec *executionContext) fieldContext_Campaign_identifier(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Campaign_poolAddress(ctx context.Context, field graphql.CollectedField, obj *model.Campaign) (ret graphql.Marshaler) {
+func (ec *executionContext) _Campaign_poolAddress(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Campaign_poolAddress(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -775,7 +776,7 @@ func (ec *executionContext) fieldContext_Campaign_poolAddress(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Campaign_outcomes(ctx context.Context, field graphql.CollectedField, obj *model.Campaign) (ret graphql.Marshaler) {
+func (ec *executionContext) _Campaign_outcomes(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Campaign_outcomes(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -801,9 +802,9 @@ func (ec *executionContext) _Campaign_outcomes(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]model.Outcome)
+	res := resTmp.([]types.Outcome)
 	fc.Result = res
-	return ec.marshalNOutcome2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeᚄ(ctx, field.Selections, res)
+	return ec.marshalNOutcome2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐOutcomeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Campaign_outcomes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -885,7 +886,7 @@ func (ec *executionContext) fieldContext_Mutation_explainCampaign(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _Outcome_campaign(ctx context.Context, field graphql.CollectedField, obj *model.Outcome) (ret graphql.Marshaler) {
+func (ec *executionContext) _Outcome_campaign(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_campaign(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -911,9 +912,9 @@ func (ec *executionContext) _Outcome_campaign(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Campaign)
+	res := resTmp.(*types.Campaign)
 	fc.Result = res
-	return ec.marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐCampaign(ctx, field.Selections, res)
+	return ec.marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Outcome_campaign(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -945,7 +946,7 @@ func (ec *executionContext) fieldContext_Outcome_campaign(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Outcome_name(ctx context.Context, field graphql.CollectedField, obj *model.Outcome) (ret graphql.Marshaler) {
+func (ec *executionContext) _Outcome_name(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -989,7 +990,7 @@ func (ec *executionContext) fieldContext_Outcome_name(_ context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Outcome_description(ctx context.Context, field graphql.CollectedField, obj *model.Outcome) (ret graphql.Marshaler) {
+func (ec *executionContext) _Outcome_description(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_description(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1033,7 +1034,7 @@ func (ec *executionContext) fieldContext_Outcome_description(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Outcome_creator(ctx context.Context, field graphql.CollectedField, obj *model.Outcome) (ret graphql.Marshaler) {
+func (ec *executionContext) _Outcome_creator(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_creator(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1059,9 +1060,9 @@ func (ec *executionContext) _Outcome_creator(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Wallet)
+	res := resTmp.(*types.Wallet)
 	fc.Result = res
-	return ec.marshalNWallet2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐWallet(ctx, field.Selections, res)
+	return ec.marshalNWallet2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐWallet(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Outcome_creator(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1081,7 +1082,7 @@ func (ec *executionContext) fieldContext_Outcome_creator(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Outcome_identifier(ctx context.Context, field graphql.CollectedField, obj *model.Outcome) (ret graphql.Marshaler) {
+func (ec *executionContext) _Outcome_identifier(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_identifier(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1125,7 +1126,7 @@ func (ec *executionContext) fieldContext_Outcome_identifier(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Outcome_share(ctx context.Context, field graphql.CollectedField, obj *model.Outcome) (ret graphql.Marshaler) {
+func (ec *executionContext) _Outcome_share(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_share(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1151,9 +1152,9 @@ func (ec *executionContext) _Outcome_share(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Share)
+	res := resTmp.(*types.Share)
 	fc.Result = res
-	return ec.marshalNShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐShare(ctx, field.Selections, res)
+	return ec.marshalNShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐShare(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Outcome_share(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1199,9 +1200,9 @@ func (ec *executionContext) _Query_campaigns(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]model.Campaign)
+	res := resTmp.([]types.Campaign)
 	fc.Result = res
-	return ec.marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐCampaignᚄ(ctx, field.Selections, res)
+	return ec.marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaignᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_campaigns(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1362,7 +1363,7 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Share_address(ctx context.Context, field graphql.CollectedField, obj *model.Share) (ret graphql.Marshaler) {
+func (ec *executionContext) _Share_address(ctx context.Context, field graphql.CollectedField, obj *types.Share) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Share_address(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1406,7 +1407,7 @@ func (ec *executionContext) fieldContext_Share_address(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Wallet_address(ctx context.Context, field graphql.CollectedField, obj *model.Wallet) (ret graphql.Marshaler) {
+func (ec *executionContext) _Wallet_address(ctx context.Context, field graphql.CollectedField, obj *types.Wallet) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Wallet_address(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3281,7 +3282,7 @@ func (ec *executionContext) unmarshalInputOutcomeInput(ctx context.Context, obj 
 
 var campaignImplementors = []string{"Campaign"}
 
-func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet, obj *model.Campaign) graphql.Marshaler {
+func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet, obj *types.Campaign) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, campaignImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3396,7 +3397,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 var outcomeImplementors = []string{"Outcome"}
 
-func (ec *executionContext) _Outcome(ctx context.Context, sel ast.SelectionSet, obj *model.Outcome) graphql.Marshaler {
+func (ec *executionContext) _Outcome(ctx context.Context, sel ast.SelectionSet, obj *types.Outcome) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, outcomeImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3532,7 +3533,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var shareImplementors = []string{"Share"}
 
-func (ec *executionContext) _Share(ctx context.Context, sel ast.SelectionSet, obj *model.Share) graphql.Marshaler {
+func (ec *executionContext) _Share(ctx context.Context, sel ast.SelectionSet, obj *types.Share) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, shareImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3571,7 +3572,7 @@ func (ec *executionContext) _Share(ctx context.Context, sel ast.SelectionSet, ob
 
 var walletImplementors = []string{"Wallet"}
 
-func (ec *executionContext) _Wallet(ctx context.Context, sel ast.SelectionSet, obj *model.Wallet) graphql.Marshaler {
+func (ec *executionContext) _Wallet(ctx context.Context, sel ast.SelectionSet, obj *types.Wallet) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, walletImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3949,11 +3950,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCampaign2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐCampaign(ctx context.Context, sel ast.SelectionSet, v model.Campaign) graphql.Marshaler {
+func (ec *executionContext) marshalNCampaign2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx context.Context, sel ast.SelectionSet, v types.Campaign) graphql.Marshaler {
 	return ec._Campaign(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐCampaignᚄ(ctx context.Context, sel ast.SelectionSet, v []model.Campaign) graphql.Marshaler {
+func (ec *executionContext) marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaignᚄ(ctx context.Context, sel ast.SelectionSet, v []types.Campaign) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3977,7 +3978,7 @@ func (ec *executionContext) marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoney�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCampaign2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐCampaign(ctx, sel, v[i])
+			ret[i] = ec.marshalNCampaign2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3997,7 +3998,7 @@ func (ec *executionContext) marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoney�
 	return ret
 }
 
-func (ec *executionContext) marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐCampaign(ctx context.Context, sel ast.SelectionSet, v *model.Campaign) graphql.Marshaler {
+func (ec *executionContext) marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx context.Context, sel ast.SelectionSet, v *types.Campaign) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4032,11 +4033,11 @@ func (ec *executionContext) marshalNModification2githubᚗcomᚋfluidityᚑmoney
 	return v
 }
 
-func (ec *executionContext) marshalNOutcome2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcome(ctx context.Context, sel ast.SelectionSet, v model.Outcome) graphql.Marshaler {
+func (ec *executionContext) marshalNOutcome2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐOutcome(ctx context.Context, sel ast.SelectionSet, v types.Outcome) graphql.Marshaler {
 	return ec._Outcome(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNOutcome2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeᚄ(ctx context.Context, sel ast.SelectionSet, v []model.Outcome) graphql.Marshaler {
+func (ec *executionContext) marshalNOutcome2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐOutcomeᚄ(ctx context.Context, sel ast.SelectionSet, v []types.Outcome) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4060,7 +4061,7 @@ func (ec *executionContext) marshalNOutcome2ᚕgithubᚗcomᚋfluidityᚑmoney�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNOutcome2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcome(ctx, sel, v[i])
+			ret[i] = ec.marshalNOutcome2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐOutcome(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4102,7 +4103,7 @@ func (ec *executionContext) unmarshalNOutcomeInput2ᚕgithubᚗcomᚋfluidityᚑ
 	return res, nil
 }
 
-func (ec *executionContext) marshalNShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐShare(ctx context.Context, sel ast.SelectionSet, v *model.Share) graphql.Marshaler {
+func (ec *executionContext) marshalNShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐShare(ctx context.Context, sel ast.SelectionSet, v *types.Share) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4127,7 +4128,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNWallet2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐWallet(ctx context.Context, sel ast.SelectionSet, v *model.Wallet) graphql.Marshaler {
+func (ec *executionContext) marshalNWallet2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐWallet(ctx context.Context, sel ast.SelectionSet, v *types.Wallet) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

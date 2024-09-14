@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="643pt" height="533pt" viewBox="0.00 0.00 643.33 533.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 529)">
+<title>%0</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-529 639.329,-529 639.329,4 -4,4"/>
+<!-- Create campaign pool -->
+<g id="node1" class="node">
+<title>Create campaign pool</title>
+<polygon fill="none" stroke="#000000" points="166.505,-403.5 166.505,-439.5 270.253,-439.5 270.253,-403.5 166.505,-403.5"/>
+<text text-anchor="middle" x="218.379" y="-418.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create campaign pool</text>
+</g>
+<!-- Create Longtail pool -->
+<g id="node2" class="node">
+<title>Create Longtail pool</title>
+<polygon fill="none" stroke="#000000" points="0,-318.5 0,-354.5 98.758,-354.5 98.758,-318.5 0,-318.5"/>
+<text text-anchor="middle" x="49.379" y="-333.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create Longtail pool</text>
+</g>
+<!-- Create campaign pool&#45;&gt;Create Longtail pool -->
+<g id="edge1" class="edge">
+<title>Create campaign pool-&gt;Create Longtail pool</title>
+<path fill="none" stroke="#000000" d="M166.3066,-414.2969C128.5515,-408.108 81.6526,-398.1096 66.99,-385 60.9536,-379.603 56.9844,-371.9707 54.3752,-364.3544"/>
+<polygon fill="#000000" stroke="#000000" points="57.7014,-363.2504 51.6689,-354.5407 50.9533,-365.1113 57.7014,-363.2504"/>
+<text text-anchor="middle" x="122.0735" y="-376" font-family="Times,serif" font-size="10.00" fill="#000000">Creates aftermarket trading</text>
+</g>
+<!-- Create shares -->
+<g id="node3" class="node">
+<title>Create shares</title>
+<polygon fill="none" stroke="#000000" points="145.5895,-318.5 145.5895,-354.5 215.1685,-354.5 215.1685,-318.5 145.5895,-318.5"/>
+<text text-anchor="middle" x="180.379" y="-333.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create shares</text>
+</g>
+<!-- Create campaign pool&#45;&gt;Create shares -->
+<g id="edge2" class="edge">
+<title>Create campaign pool-&gt;Create shares</title>
+<path fill="none" stroke="#000000" d="M195.7943,-403.4393C190.6141,-398.0871 185.7607,-391.8147 182.789,-385 180.091,-378.813 178.8449,-371.7521 178.4063,-364.9692"/>
+<polygon fill="#000000" stroke="#000000" points="181.9032,-364.664 178.2894,-354.7045 174.9036,-364.7438 181.9032,-364.664"/>
+<text text-anchor="middle" x="212.674" y="-376" font-family="Times,serif" font-size="10.00" fill="#000000">Creates tokens</text>
+</g>
+<!-- Create trading contract -->
+<g id="node4" class="node">
+<title>Create trading contract</title>
+<polygon fill="none" stroke="#000000" points="163.567,-233.5 163.567,-269.5 271.191,-269.5 271.191,-233.5 163.567,-233.5"/>
+<text text-anchor="middle" x="217.379" y="-248.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create trading contract</text>
+</g>
+<!-- Create campaign pool&#45;&gt;Create trading contract -->
+<g id="edge3" class="edge">
+<title>Create campaign pool-&gt;Create trading contract</title>
+<path fill="none" stroke="#000000" d="M232.7314,-403.1552C236.261,-397.6243 239.5503,-391.3324 241.379,-385 253.3403,-343.5815 253.7409,-329.3008 241.379,-288 240.4222,-284.8032 239.0852,-281.627 237.5272,-278.5589"/>
+<polygon fill="#000000" stroke="#000000" points="240.4391,-276.6062 232.3484,-269.7657 234.4074,-280.1586 240.4391,-276.6062"/>
+<text text-anchor="middle" x="319.139" y="-333.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create Pool contract with custody</text>
+</g>
+<!-- Verify signature and creation -->
+<g id="node5" class="node">
+<title>Verify signature and creation</title>
+<polygon fill="none" stroke="#000000" points="408.933,-318.5 408.933,-354.5 541.825,-354.5 541.825,-318.5 408.933,-318.5"/>
+<text text-anchor="middle" x="475.379" y="-333.5" font-family="Times,serif" font-size="10.00" fill="#000000">Verify signature and creation</text>
+</g>
+<!-- Create campaign pool&#45;&gt;Verify signature and creation -->
+<g id="edge9" class="edge">
+<title>Create campaign pool-&gt;Verify signature and creation</title>
+<path fill="none" stroke="#000000" d="M270.3868,-404.299C311.0219,-390.8594 367.7022,-372.113 411.1655,-357.7379"/>
+<polygon fill="#000000" stroke="#000000" points="412.3923,-361.0187 420.7875,-354.5556 410.1942,-354.3728 412.3923,-361.0187"/>
+<text text-anchor="middle" x="441.511" y="-376" font-family="Times,serif" font-size="10.00" fill="#000000">Verifies the creation signature on-chain</text>
+</g>
+<!-- Create shares&#45;&gt;Create trading contract -->
+<g id="edge4" class="edge">
+<title>Create shares-&gt;Create trading contract</title>
+<path fill="none" stroke="#000000" d="M176.5735,-318.3171C175.4471,-308.9122 175.424,-297.4541 179.447,-288 181.0517,-284.2289 183.2581,-280.659 185.8063,-277.3355"/>
+<polygon fill="#000000" stroke="#000000" points="188.6539,-279.4009 192.696,-269.6075 183.4288,-274.7427 188.6539,-279.4009"/>
+<text text-anchor="middle" x="211.345" y="-291" font-family="Times,serif" font-size="10.00" fill="#000000">Sent ownership</text>
+</g>
+<!-- Create campaign -->
+<g id="node6" class="node">
+<title>Create campaign</title>
+<polygon fill="none" stroke="#000000" points="433.6445,-233.5 433.6445,-269.5 517.1135,-269.5 517.1135,-233.5 433.6445,-233.5"/>
+<text text-anchor="middle" x="475.379" y="-248.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create campaign</text>
+</g>
+<!-- Verify signature and creation&#45;&gt;Create campaign -->
+<g id="edge5" class="edge">
+<title>Verify signature and creation-&gt;Create campaign</title>
+<path fill="none" stroke="#000000" d="M475.379,-318.4737C475.379,-307.2043 475.379,-292.4524 475.379,-279.6627"/>
+<polygon fill="#000000" stroke="#000000" points="478.8791,-279.5003 475.379,-269.5003 471.8791,-279.5004 478.8791,-279.5003"/>
+</g>
+<!-- Pending campaign inclusion -->
+<g id="node7" class="node">
+<title>Pending campaign inclusion</title>
+<polygon fill="none" stroke="#000000" points="410.7205,-159.5 410.7205,-195.5 540.0375,-195.5 540.0375,-159.5 410.7205,-159.5"/>
+<text text-anchor="middle" x="475.379" y="-174.5" font-family="Times,serif" font-size="10.00" fill="#000000">Pending campaign inclusion</text>
+</g>
+<!-- Create campaign&#45;&gt;Pending campaign inclusion -->
+<g id="edge6" class="edge">
+<title>Create campaign-&gt;Pending campaign inclusion</title>
+<path fill="none" stroke="#000000" d="M475.379,-233.2079C475.379,-224.9635 475.379,-215.0376 475.379,-205.8622"/>
+<polygon fill="#000000" stroke="#000000" points="478.8791,-205.5817 475.379,-195.5817 471.8791,-205.5818 478.8791,-205.5817"/>
+</g>
+<!-- Frontpage -->
+<g id="node8" class="node">
+<title>Frontpage</title>
+<polygon fill="none" stroke="#000000" points="447.1065,-74.5 447.1065,-110.5 503.6515,-110.5 503.6515,-74.5 447.1065,-74.5"/>
+<text text-anchor="middle" x="475.379" y="-89.5" font-family="Times,serif" font-size="10.00" fill="#000000">Frontpage</text>
+</g>
+<!-- Pending campaign inclusion&#45;&gt;Frontpage -->
+<g id="edge7" class="edge">
+<title>Pending campaign inclusion-&gt;Frontpage</title>
+<path fill="none" stroke="#000000" d="M475.379,-159.4737C475.379,-148.2043 475.379,-133.4524 475.379,-120.6627"/>
+<polygon fill="#000000" stroke="#000000" points="478.8791,-120.5003 475.379,-110.5003 471.8791,-120.5004 478.8791,-120.5003"/>
+<text text-anchor="middle" x="555.354" y="-132" font-family="Times,serif" font-size="10.00" fill="#000000">Moderator chooses to include campaign</text>
+</g>
+<!-- Displayed to everyone on the landing page -->
+<g id="node10" class="node">
+<title>Displayed to everyone on the landing page</title>
+<polygon fill="none" stroke="#000000" points="381.848,-.5 381.848,-36.5 568.91,-36.5 568.91,-.5 381.848,-.5"/>
+<text text-anchor="middle" x="475.379" y="-15.5" font-family="Times,serif" font-size="10.00" fill="#000000">Displayed to everyone on the landing page</text>
+</g>
+<!-- Frontpage&#45;&gt;Displayed to everyone on the landing page -->
+<g id="edge10" class="edge">
+<title>Frontpage-&gt;Displayed to everyone on the landing page</title>
+<path fill="none" stroke="#000000" d="M475.379,-74.2079C475.379,-65.9635 475.379,-56.0376 475.379,-46.8622"/>
+<polygon fill="#000000" stroke="#000000" points="478.8791,-46.5817 475.379,-36.5817 471.8791,-46.5818 478.8791,-46.5817"/>
+</g>
+<!-- User -->
+<g id="node9" class="node">
+<title>User</title>
+<polygon fill="none" stroke="#000000" points="191.379,-488.5 191.379,-524.5 245.379,-524.5 245.379,-488.5 191.379,-488.5"/>
+<text text-anchor="middle" x="218.317" y="-503.5" font-family="Times,serif" font-size="10.00" fill="#000000">User</text>
+</g>
+<!-- User&#45;&gt;Create campaign pool -->
+<g id="edge8" class="edge">
+<title>User-&gt;Create campaign pool</title>
+<path fill="none" stroke="#000000" d="M218.379,-488.4737C218.379,-477.2043 218.379,-462.4524 218.379,-449.6627"/>
+<polygon fill="#000000" stroke="#000000" points="221.8791,-449.5003 218.379,-439.5003 214.8791,-449.5004 221.8791,-449.5003"/>
+<text text-anchor="middle" x="276.8245" y="-461" font-family="Times,serif" font-size="10.00" fill="#000000">Creates the contract on-chain</text>
+</g>
+</g>
+</svg>
