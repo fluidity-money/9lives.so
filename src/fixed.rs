@@ -40,6 +40,9 @@ pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
 
 // Return the fixed amount, cutting off the decimals.
 pub fn fixed_to_u256(n: I64F64, decimals: u8) -> U256 {
+    if n.is_zero() {
+        return U256::ZERO;
+    }
     let n = U256::from(n.to_bits() >> 64);
     n * U256::from(10).pow(U256::from(decimals))
 }
@@ -53,7 +56,7 @@ pub struct StorageFixed {
 
 impl StorageFixed {
     pub fn get(&self) -> I64F64 {
-        self.clone().into()
+        *self.clone()
     }
 
     pub fn set(&mut self, v: I64F64) {
@@ -100,7 +103,11 @@ impl Deref for StorageFixed {
     fn deref(&self) -> &Self::Target {
         self.cached.get_or_init(|| unsafe {
             let b = StorageCache::get::<32>(self.slot, self.offset.into());
-            I64F64::from_be_bytes(b.as_slice().try_into().unwrap())
+            if b.is_zero() {
+                I64F64::from(0)
+            } else {
+                I64F64::from_be_bytes(b.as_slice().try_into().unwrap())
+            }
         })
     }
 }
@@ -133,4 +140,40 @@ macro_rules! assert_eq_f {
             }
         }
     };
+}
+
+#[cfg(test)]
+mod test {
+    use fixed::types::I64F64;
+
+    use stylus_sdk::alloy_primitives::U256;
+
+    use crate::host;
+
+    use super::*;
+
+    use std::cell::OnceCell;
+
+    #[stylus_sdk::prelude::storage]
+    struct Stubbed {}
+
+    impl host::StorageNew for Stubbed {
+        fn new(i: U256, v: u8) -> Self {
+            unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
+        }
+    }
+
+    #[test]
+    fn test_storage_behaviour() {
+        host::with_storage::<_, Stubbed, _>(|_| {
+            let mut f = StorageFixed {
+                slot: U256::from(0),
+                offset: 0,
+                cached: OnceCell::new(),
+            };
+            assert_eq!(f.get(), I64F64::from(0));
+            f.set(I64F64::MAX);
+            assert_eq!(f.get(), I64F64::MAX);
+        })
+    }
 }

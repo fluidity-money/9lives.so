@@ -31,6 +31,11 @@ impl Factory {
         Ok(())
     }
 
+    pub fn deploy_trading(&self) -> Result<Address, Vec<u8>> {
+        // Deploy the contract, and emit a log that it was created.
+        proxy::deploy_trading(FixedBytes::<8>::from_slice(&[0xa9, 0x05, 0x9c, 0xbb]))
+    }
+
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.
     pub fn new_trading(
