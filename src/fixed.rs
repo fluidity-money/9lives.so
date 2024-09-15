@@ -142,7 +142,7 @@ macro_rules! assert_eq_f {
     };
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "testing"))]
 mod test {
     use fixed::types::I64F64;
 

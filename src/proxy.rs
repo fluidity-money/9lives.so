@@ -1,13 +1,18 @@
 use stylus_sdk::{
-    alloy_primitives::{Address, FixedBytes, U256},
+    alloy_primitives::{Address, FixedBytes},
     crypto,
-    deploy::RawDeploy,
 };
 
 use crate::{
-    immutables::{erc20_proxy_code, erc20_proxy_hash, trading_proxy_code, trading_proxy_hash},
+    immutables::{erc20_proxy_hash, trading_proxy_hash},
     proxy,
 };
+
+#[cfg(target_arch = "wasm32")]
+pub use crate::wasm_proxy::*;
+
+#[cfg(not(target_arch = "wasm32"))]
+pub use crate::host_proxy::*;
 
 // Sort and concatenate the seeds given, ABI format them, then hash them,
 // using an offline keccak256 calculation with the native operation.
@@ -16,22 +21,6 @@ pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<8> {
     let mut seeds = Vec::from(seeds);
     seeds.sort();
     FixedBytes::<8>::from_slice(&crypto::keccak(seeds.concat())[..8])
-}
-
-// Deploy a new ERC20 using CREATE2 and the seed given. Returns the
-// address.
-pub fn deploy_erc20(seed: FixedBytes<8>) -> Result<Address, Vec<u8>> {
-    let d = RawDeploy::new().salt(pad_seed(seed));
-    let c = erc20_proxy_code();
-    unsafe { d.deploy(&c, U256::ZERO) }
-}
-
-// Deploy a new Trading contract using CREATE2 and the seed given. Returns the
-// address.
-pub fn deploy_trading(seed: FixedBytes<8>) -> Result<Address, Vec<u8>> {
-    let d = RawDeploy::new().salt(pad_seed(seed));
-    let c = trading_proxy_code();
-    unsafe { d.deploy(&c, U256::ZERO) }
 }
 
 pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) -> Address {
@@ -44,12 +33,6 @@ pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) ->
     b[21..29].copy_from_slice(&trading_id.as_slice());
     b[53..85].copy_from_slice(&trading_proxy_hash());
     Address::from_slice(&crypto::keccak(&b).as_slice()[12..])
-}
-
-fn pad_seed(seed: FixedBytes<8>) -> FixedBytes<32> {
-    let mut b = [0_u8; 32];
-    b[12..].copy_from_slice(seed.as_slice());
-    FixedBytes::from_slice(&b)
 }
 
 // Get the share address, using the address of the deployed Trading

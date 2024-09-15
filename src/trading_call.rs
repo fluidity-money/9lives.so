@@ -1,12 +1,6 @@
-use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
-use crate::error::Error;
+#[cfg(target_arch = "wasm32")]
+pub use crate::wasm_trading_call::*;
 
-pub fn ctor(
-    _contract: Address,
-    _funder: Address,
-    _oracle: Address,
-    _outcomes: &[(FixedBytes<8>, U256)],
-) -> Result<(), Error> {
-    Ok(())
-}
+#[cfg(not(target_arch = "wasm32"))]
+pub use crate::host_trading_call::*;

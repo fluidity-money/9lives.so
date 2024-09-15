@@ -11,7 +11,7 @@ use stylus_sdk::{
 use crate::{error::*, immutables::*, longtail_call, proxy, share_call, trading_call};
 
 #[storage]
-#[entrypoint]
+#[cfg_attr(all(target_arch = "wasm32", feature = "factory"), entrypoint)]
 pub struct Factory {
     version: StorageU8,
     enabled: StorageBool,
@@ -115,7 +115,7 @@ impl Factory {
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-impl host::StorageNew for Factory {
+impl crate::host::StorageNew for Factory {
     fn new(i: U256, v: u8) -> Self {
         unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
     }

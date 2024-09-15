@@ -20,6 +20,9 @@ then share holders can convert their positions to fUSDC on request.
 
 ## Testing
 
+Testing must be done with no trading or contract feature enabled. Testing is only possible
+on the local environment, or with end to end tests with an Arbitrum node.
+
 	./tests.sh
 
 ## Deployments

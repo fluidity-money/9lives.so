@@ -19,7 +19,7 @@ use crate::{
 };
 
 #[storage]
-#[entrypoint]
+#[cfg_attr(all(target_arch = "wasm32", feature = "trading"), entrypoint)]
 pub struct Trading {
     // Outcome was determined! It should be impossible to mint, only to burn.
     locked: StorageBool,
@@ -219,7 +219,7 @@ impl Trading {
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-impl host::StorageNew for Trading {
+impl crate::host::StorageNew for Trading {
     fn new(i: U256, v: u8) -> Self {
         unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
     }
