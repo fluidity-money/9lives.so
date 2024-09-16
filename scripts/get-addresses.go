@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -32,18 +33,24 @@ func main() {
 	}
 	var (
 		factoryImpl  = ethCrypto.CreateAddress(addr, nonce)
-		erc20        = ethCrypto.CreateAddress(addr, nonce+2)
+		erc20Impl    = ethCrypto.CreateAddress(addr, nonce+2)
 		tradingImpl  = ethCrypto.CreateAddress(addr, nonce+3)
 		factoryProxy = ethCrypto.CreateAddress(addr, nonce+5)
 	)
-	fmt.Printf(`export \
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"factoryImpl":  factoryImpl,
+		"erc20Impl":    erc20Impl,
+		"tradingImpl":  tradingImpl,
+		"factoryProxy": factoryProxy,
+	})
+	fmt.Fprintf(os.Stderr, `export \
 	SPN_FACTORY_IMPL_ADDR=%v \
 	SPN_ERC20_IMPL_ADDR=%v \
 	SPN_TRADING_IMPL_ADDR=%v \
 	SPN_FACTORY_PROXY_ADDR=%v
 `,
 		factoryImpl,
-		erc20,
+		erc20Impl,
 		tradingImpl,
 		factoryProxy,
 	)
