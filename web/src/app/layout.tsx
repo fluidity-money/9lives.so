@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "@/providers";
 import Header from "@/components/header";
@@ -8,10 +8,34 @@ import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import dynamic from "next/dynamic";
 import { config } from "@/config";
+
 const CookieBanner = dynamic(() => import("@/components/cookieBanner"), {
   ssr: false,
 });
-const inter = Inter({ subsets: ["latin"] });
+
+const chicago = localFont({
+  src: [
+    {
+      path: "../../public/fonts/chicago.ttf",
+      weight: "500",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+  variable: "--font-chicago",
+});
+
+const geneva = localFont({
+  src: [
+    {
+      path: "../../public/fonts/geneva.ttf",
+      weight: "500",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+  variable: "--font-geneva",
+});
 
 export const metadata: Metadata = {
   ...config.metadata,
@@ -26,7 +50,8 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={combineClass([
-          inter.className,
+          chicago.variable,
+          geneva.variable,
           "flex min-h-screen flex-col",
         ])}
       >
