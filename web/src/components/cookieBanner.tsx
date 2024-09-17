@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import Button from "./themed/button";
 
 function allowGtag() {
   window.gtag("consent", "update", {
@@ -39,28 +40,21 @@ export default function CookieBanner() {
   if (!showConsentDialog) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 mx-auto my-10 flex max-w-max flex-col items-center justify-between gap-4 rounded-lg bg-[#1E1E1E] p-3 shadow sm:flex-row md:max-w-screen-sm md:px-4">
-      <div className="text-center text-white">
-        <Link href="https://static.9lives.so/privacy.pdf">
-          <p>
-            We use <span className="font-bold">cookies</span> on our site.
-          </p>
+    <div className="shadow-9cookieCard fixed inset-x-0 bottom-0 z-50 mx-auto my-10 flex max-w-max flex-col items-center justify-between gap-4 border border-9black bg-9yellow p-3 text-xs text-9black shadow sm:flex-row md:max-w-[480px] md:px-4">
+      <div className="text-center">
+        <Link target="_blank" href="https://static.9lives.so/privacy.pdf">
+          <p className="font-bold tracking-wide">We use cookies on our site.</p>
         </Link>
       </div>
 
       <div className="flex gap-2">
         <button
-          className="rounded-md border-gray-900 px-5 py-2 text-gray-300"
+          className="px-5 py-2 font-chicago underline"
           onClick={denyCookies}
         >
           Decline
         </button>
-        <button
-          className="rounded-lg bg-white px-5 py-2 text-black"
-          onClick={allowCookies}
-        >
-          Allow Cookies
-        </button>
+        <Button onClick={allowCookies}>Allow Cookies</Button>
       </div>
     </div>
   );

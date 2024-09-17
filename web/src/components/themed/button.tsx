@@ -10,9 +10,9 @@ const button = cva(
   {
     variants: {
       intent: {
-        yes: "bg-9green  hover:bg-green-300 active:bg-green-400",
-        no: "bg-9red  hover:bg-red-300 active:bg-red-400",
-        cta: "bg-9blueLight  hover:bg-blue-300 active:bg-blue-400",
+        yes: "bg-9green",
+        no: "bg-9red",
+        cta: "bg-9blueLight",
         default: "",
       },
       cat: {
