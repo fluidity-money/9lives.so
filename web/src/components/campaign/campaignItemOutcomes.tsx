@@ -43,18 +43,20 @@ export default function CampaignItemOutcomes({
           className="flex items-center justify-between text-xs"
         >
           <Link href={`/event?id=${campaignId}`}>
-            <span className="font-bold">{outcome.name}</span>
+            <span className="text-xs font-normal">{outcome.name}</span>
           </Link>
           <div className="flex items-center gap-1">
-            <span className="font-bold">{"%75"}</span>
+            <span className="font-chicago text-sm font-normal">{"%75"}</span>
             <Button
               intent="yes"
+              cat="secondary"
               size="small"
               title="Yes"
               onClick={() => handleSelect(outcome, true)}
             />
             <Button
               intent="no"
+              cat="secondary"
               size="small"
               title="No"
               onClick={() => handleSelect(outcome, true)}

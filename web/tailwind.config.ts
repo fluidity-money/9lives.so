@@ -12,13 +12,34 @@ const config: Config = {
         geneva: ["var(--font-geneva)"],
       },
       colors: {
-        primary9: "#B8F2AA",
-        secondary9: "#FFB3B3",
-        ctaLight9: "#DDEAEF",
-        ctaDark9: "#52AACC",
-        alert9: "#FFD699",
-        black9: "#0C0C0C",
-        gray9: "#EEEEEE",
+        "9green": "#B8F2AA",
+        "9red": "#FFB3B3",
+        "9blueLight": "#DDEAEF",
+        "9blueDark": "#52AACC",
+        "9yellow": "#FFD699",
+        "9black": "#0C0C0C",
+        "9gray": "#EEEEEE",
+      },
+      boxShadow: {
+        "9btnPrimaryIdle":
+          "-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)",
+        "9btnPrimaryFocus":
+          "-3px -3px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)",
+        "9btnPrimaryHover":
+          "4px 4px 0px rgba(232.38, 232.38, 232.38, 0.60) inset, 1px 1px 0 rgba(0, 0, 0, 0.25)",
+        "9btnPrimaryActive":
+          "3px 3px 0px rgba(0, 0, 0, 0.30) inset, 1px 1px 0 rgba(0, 0, 0, 0.25)",
+        "9btnPrimaryDisabled":
+          "-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)",
+        "9btnSecondaryIdle": "-2px -2px 0 rgba(68, 68, 68, 0.20) inset",
+        "9btnSecondaryFocus": "-3px -3px 0 rgba(68, 68, 68, 0.20) inset",
+        "9btnSecondaryHover":
+          "-4px -4px 0 rgba(235, 235, 235, 0.20) inset,  1px 1px 0 rgba(0, 0, 0, 0.25)",
+        "9btnSecondaryActive":
+          "-3px -3px 0 rgba(0, 0, 0, 0.25) inset, -2px -2px 0 rgba(0, 0, 0, 0.30) inset, 1px 1px 0 rgba(0, 0, 0, 0.25)",
+        "9btnSecondaryDisabled":
+          "-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)",
+        "9card": "5px 5px 0 rgba(12, 12, 12, 0.20)",
       },
     },
   },

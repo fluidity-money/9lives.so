@@ -5,3 +5,25 @@
 section {
   flex-grow: 1;
 }
+/* Scrollbar Track */
+::-webkit-scrollbar-track {
+  background-color: #cccccc; /* Background color of the track */
+}
+
+/* Scrollbar Thumb */
+::-webkit-scrollbar-thumb {
+  background-color: #999999; /* Background color of the thumb */
+  border-radius: 0px; /* Round the corners of the thumb */
+  border: 2px solid #cccccc;
+}
+
+/* Scrollbar Width */
+::-webkit-scrollbar {
+  width: 7px; /* Set scrollbar width */
+}
+
+/* Firefox */
+/* html {
+  scrollbar-color: #999999 #cccccc;
+  scrollbar-width: thin;
+} */

@@ -17,7 +17,7 @@
     "test:unit": "jest",
     "test:e2e": "playwright test",
     "format:check": "prettier --check 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
-    "format:fix": "prettier --fix 'src/**/*.{ts,tsx,js,jsx,json,css,md}'"
+    "format:fix": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,md}'"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.8",

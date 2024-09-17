@@ -18,15 +18,9 @@ export default function CampaignItemHeader({
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-2">
-        <Image
-          src={CatImage}
-          width={40}
-          height={40}
-          className="rounded-md"
-          alt={name}
-        />
+        <Image src={CatImage} width={40} height={40} alt={name} />
         <Link href={`/event?id=${identifier}`}>
-          <h4 className="text-sm font-bold">{name}</h4>
+          <h4 className="font-chicago text-sm font-bold">{name}</h4>
         </Link>
       </div>
       {solo && soloRatio && (

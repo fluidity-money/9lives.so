@@ -1,5 +1,5 @@
 import Link from "next/link";
-export default function Navigation() {
+export default function NavigationMenu() {
   const menu = [
     {
       title: "Markets",
@@ -16,9 +16,13 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="flex items-center gap-4">
+    <nav className="flex h-10 flex-1 items-center justify-center gap-4 border-x-2 border-x-black">
       {menu.map((item) => (
-        <Link key={item.page} href={item.page}>
+        <Link
+          key={item.page}
+          href={item.page}
+          className="font-chicago text-neutral-800 hover:underline"
+        >
           {item.title}
         </Link>
       ))}

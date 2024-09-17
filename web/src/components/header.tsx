@@ -1,15 +1,21 @@
 import ConnectButton from "@/components/connectButton";
-import Navigation from "@/components/navigation";
+import NavigationMenu from "@/components/navMenu";
 import Link from "next/link";
-
+import HeaderLogo from "./headerLogo";
+import Clock from "@/components/clock";
 export default function Header() {
   return (
-    <header className="flex items-center justify-between px-4 py-3">
-      <Link href="/">
-        <div data-test="header-logo">Logo</div>
+    <header className="flex items-center justify-between border-b-2 border-b-black bg-9blueLight text-xs">
+      <Link
+        data-test="header-logo"
+        href="/"
+        className="flex h-10 items-center justify-center px-4"
+      >
+        <HeaderLogo />
       </Link>
-      <Navigation />
+      <NavigationMenu />
       <ConnectButton />
+      <Clock />
     </header>
   );
 }
