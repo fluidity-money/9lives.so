@@ -1,4 +1,4 @@
-# 9Lives: Deep Dive into Dynamic Pari-Mutuel Markets
+## 9Lives: Deep Dive into Dynamic Pari-Mutuel Markets
 
 This is the second entry in a three part blog series on 9Lives: The most capital efficient prediction market, built by the Superposition team. In this part, we’ll do a deep dive into dynamic pari-mutuel markets and the math behind them. Click here to read the first part.
 
