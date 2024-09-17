@@ -28,7 +28,7 @@ const chicago = localFont({
 const geneva = localFont({
   src: [
     {
-      path: "../../public/fonts/geneva.ttf",
+      path: "../../public/fonts/geneva-9.ttf",
       weight: "500",
       style: "normal",
     },

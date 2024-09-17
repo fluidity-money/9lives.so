@@ -25,13 +25,15 @@ export default function SelectedBet({
         <div className="flex items-center gap-2">
           <Image
             src={CatImage}
-            width={30}
-            height={30}
+            width={28}
+            height={28}
             alt={data!.name}
             className="rounded-md"
           />
           <Link href={`/event?id=${campaignId}`}>
-            <span className="font-bold">{data!.name}</span>
+            <span className="font-chicago text-sm font-normal text-9black">
+              {data!.name}
+            </span>
           </Link>
         </div>
         <button
@@ -51,6 +53,7 @@ export default function SelectedBet({
         />
         <Input
           type="range"
+          intent={"range"}
           value={deposit}
           min={0}
           max={10}

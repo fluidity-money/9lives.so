@@ -25,6 +25,7 @@ const button = cva(
         small: "px-2 py-1 text-xs",
         medium: "px-4 py-2 text-base",
         large: "p-4 text-lg",
+        xlarge: "px-4 py-5 text-xl",
       },
     },
     defaultVariants: {

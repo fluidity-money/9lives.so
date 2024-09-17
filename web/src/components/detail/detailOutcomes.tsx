@@ -49,7 +49,7 @@ function DetailOutcomeItem({
       <td
         className={combineClass(
           borderStyle,
-          "flex items-end justify-end gap-2 px-4 py-2",
+          "flex items-end justify-end gap-2 p-4",
         )}
       >
         <Button

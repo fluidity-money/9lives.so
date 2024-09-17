@@ -15,7 +15,7 @@ export default function DetailCall2Action({
 }) {
   const [side, setSide] = useState<"buy" | "sell">("buy");
   return (
-    <div className="sticky top-0 flex flex-col gap-4 rounded-md border border-black/10 p-4 shadow-md">
+    <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black p-4 shadow-9card">
       <div className="flex items-center gap-4">
         <Image
           width={40}
@@ -24,7 +24,9 @@ export default function DetailCall2Action({
           src={CatImage}
           className="rounded-full"
         />
-        <h3 className="font-bold">{data.name}</h3>
+        <h3 className="font-chicago text-base font-normal text-9black">
+          {data.name}
+        </h3>
       </div>
       <div className="flex items-center gap-2">
         <Button
@@ -32,7 +34,7 @@ export default function DetailCall2Action({
           size={"small"}
           title="Buy"
           className={combineClass(
-            side === "buy" && "bg-blue-500 text-white hover:bg-blue-500",
+            side === "buy" && "hover:bg-bg-neutral-50 bg-neutral-50",
           )}
           onClick={() => setSide("buy")}
         />
@@ -41,18 +43,20 @@ export default function DetailCall2Action({
           size={"small"}
           title="Sell"
           className={combineClass(
-            side === "sell" && "bg-blue-500 text-white hover:bg-blue-500",
+            side === "sell" && "bg-neutral-50 hover:bg-neutral-50",
           )}
           onClick={() => setSide("sell")}
         />
       </div>
       <div>
-        <span className="text-base font-bold">Outcome</span>
-        <div className="flex items-center gap-2">
+        <span className="font-chicago text-xs font-normal text-9black">
+          Outcome
+        </span>
+        <div className="mt-2 flex items-center gap-2">
           <Button
             title="Bet Yes"
             intent={"yes"}
-            size={"medium"}
+            size={"large"}
             className={combineClass(
               data.bet && "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
@@ -62,7 +66,7 @@ export default function DetailCall2Action({
           <Button
             title="Bet No"
             intent={"no"}
-            size={"medium"}
+            size={"large"}
             className={combineClass(
               !data.bet && "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
@@ -72,21 +76,30 @@ export default function DetailCall2Action({
         </div>
       </div>
       <div className="flex flex-col">
-        <span className="text-base font-bold">Limit</span>
+        <span className="font-chicago text-xs font-normal text-9black">
+          Limit
+        </span>
         <Input
           type="number"
-          className={"flex-1 text-center"}
+          className={"mt-2 flex-1 text-center"}
           defaultValue={0}
         />
       </div>
       <div className="flex flex-col">
-        <span className="text-base font-bold">Leverage</span>
-        <Input type="range" className={"flex-1"} disabled />
+        <span className="font-chicago text-xs font-normal text-9black">
+          Leverage
+        </span>
+        <Input
+          type="range"
+          className={"mt-2 flex-1"}
+          disabled
+          intent={"range"}
+        />
       </div>
       <Button
         title={side}
         className={"uppercase"}
-        size={"large"}
+        size={"xlarge"}
         intent={"cta"}
         onClick={() => window.alert("You clicked the button!")}
       />

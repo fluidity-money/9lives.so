@@ -5,10 +5,11 @@ import {
 import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-const input = cva("rounded-md border border-black/10", {
+const input = cva("border-9black font-geneva bg-9gray border text-xl", {
   variants: {
     intent: {
-      primary: "bg-gray-100",
+      primary: "shadow-9input",
+      range: "",
     },
     size: {
       medium: "px-4 py-2",
