@@ -28,7 +28,7 @@ export default function DetailCall2Action({
       </div>
       <div className="flex items-center gap-2">
         <Button
-          intent={"cta"}
+          cat={"secondary"}
           size={"small"}
           title="Buy"
           className={combineClass(
@@ -37,7 +37,7 @@ export default function DetailCall2Action({
           onClick={() => setSide("buy")}
         />
         <Button
-          intent={"cta"}
+          cat={"secondary"}
           size={"small"}
           title="Sell"
           className={combineClass(
@@ -85,7 +85,7 @@ export default function DetailCall2Action({
       </div>
       <Button
         title={side}
-        className={"capitalize"}
+        className={"uppercase"}
         size={"large"}
         intent={"cta"}
         onClick={() => window.alert("You clicked the button!")}

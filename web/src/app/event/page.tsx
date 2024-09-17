@@ -33,7 +33,7 @@ function Details() {
 
   return (
     <section className="flex h-full gap-4">
-      <div className="flex flex-[2] flex-col gap-4">
+      <div className="flex flex-[2] flex-col gap-8">
         <DetailHeader data={data!} />
         <DetailOutcomes
           data={data!.outcomes}

@@ -13,15 +13,15 @@ export default function DetailHeader({
       <div className="flex items-center gap-4">
         <Image
           alt="tldr"
-          width={80}
-          height={80}
-          className="rounded-md"
+          width={60}
+          height={60}
+          className="border border-9black"
           src={CatImage}
         />
-        <h1 className="text-3xl font-bold">{data.name}</h1>
+        <h1 className="font-chicago text-2xl">{data.name}</h1>
       </div>
       <Button onClick={() => window.alert("You clicked the button!")}>
-        Watchlist
+        + Add to Watchlist
       </Button>
     </div>
   );

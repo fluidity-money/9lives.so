@@ -27,29 +27,29 @@ function DetailOutcomeItem({
       onClick={() => handleSelect(data, true)}
       key={data.identifier}
       className={combineClass(
-        isSelected && "bg-gray-100/50",
-        "cursor-pointer hover:bg-gray-100/50",
+        isSelected ? "rounded-xl bg-9blueLight" : "hover:bg-9blueLight/50",
+        "cursor-pointer",
       )}
     >
       <td className={borderStyle}>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
           <Image
             width={40}
             height={40}
             alt={data.name}
             src={CatImage}
-            className="rounded-full"
+            className="border border-9black"
           />
-          <h2>{data.name}</h2>
+          <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
         </div>
       </td>
       <td className={borderStyle}>
-        <span className="text-xl font-bold">75%</span>
+        <span className="font-chicago text-xs font-normal">75%</span>
       </td>
       <td
         className={combineClass(
           borderStyle,
-          "flex items-end justify-end gap-2 py-2",
+          "flex items-end justify-end gap-2 px-4 py-2",
         )}
       >
         <Button
@@ -98,10 +98,10 @@ export default function DetailOutcomes({
     <table className="w-full">
       <thead className={"border-y border-y-gray-200"}>
         <tr>
-          <th className="py-3 text-left text-sm font-semibold text-gray-400">
+          <th className="py-3 text-left font-chicago text-xs font-normal uppercase text-gray-400">
             Outcome
           </th>
-          <th className="text-left text-sm font-semibold text-gray-400">
+          <th className="text-left font-chicago text-xs font-normal uppercase text-gray-400">
             Chance %
           </th>
           <th></th>
