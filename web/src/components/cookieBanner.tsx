@@ -40,7 +40,7 @@ export default function CookieBanner() {
   if (!showConsentDialog) return null;
 
   return (
-    <div className="shadow-9cookieCard fixed inset-x-0 bottom-0 z-50 mx-auto my-10 flex max-w-max flex-col items-center justify-between gap-4 border border-9black bg-9yellow p-3 text-xs text-9black shadow sm:flex-row md:max-w-[480px] md:px-4">
+    <div className="fixed inset-x-0 bottom-0 z-50 mx-auto my-10 flex max-w-max flex-col items-center justify-between gap-4 border border-9black bg-9yellow p-3 text-xs text-9black shadow-9cookieCard sm:flex-row md:max-w-[480px] md:px-4">
       <div className="text-center">
         <Link target="_blank" href="https://static.9lives.so/privacy.pdf">
           <p className="font-bold tracking-wide">We use cookies on our site.</p>

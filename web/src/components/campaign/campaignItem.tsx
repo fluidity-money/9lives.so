@@ -46,7 +46,7 @@ export default function CampaignItem({ data }: CampaignItemProps) {
 
 function CampaignItemWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="shadow-9card flex flex-col gap-2 rounded-[3px] border-2 border-9black bg-9gray p-3">
+    <div className="flex flex-col gap-2 rounded-[3px] border-2 border-9black bg-9gray p-3 shadow-9card">
       {children}
     </div>
   );
