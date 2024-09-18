@@ -7,6 +7,7 @@ import Button from "../themed/button";
 import Input from "../themed/input";
 import { useState } from "react";
 import Link from "next/link";
+import CloseButton from "../closeButton";
 
 export default function SelectedBet({
   campaignId,
@@ -36,12 +37,7 @@ export default function SelectedBet({
             </span>
           </Link>
         </div>
-        <button
-          className="rounded-md bg-gray-200 px-2 py-1 text-xs"
-          onClick={() => setSelectedBet(undefined)}
-        >
-          X
-        </button>
+        <CloseButton onClick={() => setSelectedBet(undefined)} />
       </div>
       <div className="flex items-center justify-center gap-1">
         <Input

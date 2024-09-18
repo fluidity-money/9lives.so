@@ -11,6 +11,10 @@ const config: Config = {
         chicago: ["var(--font-chicago)"],
         geneva: ["var(--font-geneva)"],
       },
+      backgroundImage: {
+        closeIdle: "url('/icons/close.svg')",
+        closePressed: "url('/icons/close-pressed.svg')",
+      },
       colors: {
         "9green": "#B8F2AA",
         "9red": "#FFB3B3",
