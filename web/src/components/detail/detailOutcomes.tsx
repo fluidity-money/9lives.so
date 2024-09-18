@@ -28,7 +28,7 @@ function DetailOutcomeItem({
       key={data.identifier}
       className={combineClass(
         isSelected
-          ? "shadow-9selectedOutcome rounded-sm bg-9blueLight"
+          ? "rounded-sm bg-9blueLight shadow-9selectedOutcome"
           : "hover:bg-9blueLight/50",
         "cursor-pointer",
       )}
