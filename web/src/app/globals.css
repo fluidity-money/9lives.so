@@ -105,6 +105,10 @@ input[type="range"]:focus::-moz-range-thumb {
   border-radius: 3px;
 }
 
+.tw-connect-wallet > svg > circle {
+  stroke: #0c0c0c !important;
+}
+
 .tw-connected-wallet > div:first-child {
   height: 30px !important;
   width: 30px !important;
@@ -118,7 +122,7 @@ input[type="range"]:focus::-moz-range-thumb {
 div[id^="radix"][role="dialog"][data-state="open"] {
   background-color: #f5f5f5;
   border-radius: 3px;
-  border: 1.5px solid #0c0c0c;
+  border: 2px solid #0c0c0c;
   box-shadow: 5px 5px 0 rgba(12, 12, 12, 0.2);
   @apply font-chicago;
 }
