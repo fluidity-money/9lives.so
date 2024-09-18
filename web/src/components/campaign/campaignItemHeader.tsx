@@ -2,7 +2,7 @@ import Image from "next/image";
 import CatImage from "#/images/cat.png";
 import { Campaign } from "@/gql/graphql";
 import Link from "next/link";
-
+import PixelRing from "#/icons/pixel-ring.svg";
 interface CampaignItemHeaderProps {
   name: Campaign["name"];
   identifier: Campaign["identifier"];
@@ -24,15 +24,18 @@ export default function CampaignItemHeader({
         </Link>
       </div>
       {solo && soloRatio && (
-        <span className="relative flex items-center justify-center text-xs font-bold text-gray-500">
-          {soloRatio}%
+        <div className="relative flex size-14 shrink-0 items-center justify-center">
+          <span className="z-20 font-chicago text-xs font-normal text-gray-500">
+            {soloRatio}%
+          </span>
           <div
-            className="absolute z-[-1] size-10 rounded-full border-2 border-gray-200"
+            className="absolute z-0 size-[70%] rounded-full"
             style={{
               background: `conic-gradient(transparent ${100 - soloRatio}%, ${"#ff000052"} 0)`,
             }}
           />
-        </span>
+          <Image src={PixelRing} fill={true} alt="pixel-ring z-10" />
+        </div>
       )}
     </div>
   );
