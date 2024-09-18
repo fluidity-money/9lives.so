@@ -8,8 +8,8 @@ export default function ConnectButton() {
       chain={config.thirdweb.chain}
       appMetadata={config.thirdweb.appMetadata}
       accountAbstraction={config.thirdweb.accountAbstraction}
-      connectButton={{
-        label: "Connect Wallet",
+      theme={"light"}
+      detailsButton={{
         style: {
           backgroundColor: "transparent",
           fontFamily: "var(--font-chicago)",
@@ -17,6 +17,20 @@ export default function ConnectButton() {
           fontSize: 12,
           lineHeight: 16,
         },
+      }}
+      connectButton={{
+        label: "Connect Wallet",
+        style: {
+          color: "#0c0c0c",
+          backgroundColor: "transparent",
+          fontFamily: "var(--font-chicago)",
+          height: 40,
+          fontSize: 12,
+          lineHeight: 16,
+        },
+      }}
+      connectModal={{
+        showThirdwebBranding: false,
       }}
     />
   );

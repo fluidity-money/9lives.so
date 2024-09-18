@@ -47,14 +47,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={combineClass([
-          chicago.variable,
-          geneva.variable,
-          "flex min-h-screen flex-col",
-        ])}
-      >
+    <html
+      lang="en"
+      className={combineClass([chicago.variable, geneva.variable])}
+    >
+      <body className="flex min-h-screen flex-col">
         <Providers>
           <Header />
           <main className="flex flex-1 p-4">{children}</main>
