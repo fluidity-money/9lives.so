@@ -10,16 +10,12 @@ const input = cva(
   {
     variants: {
       intent: {
-        primary: "shadow-9input",
-        range: "",
-      },
-      size: {
-        medium: "px-4 py-2",
+        default: "shadow-9input px-4 py-2",
+        range: "h-[17px] p-[3px]",
       },
     },
     defaultVariants: {
-      intent: "primary",
-      size: "medium",
+      intent: "default",
     },
   },
 );
@@ -28,16 +24,11 @@ export interface InputProps
   extends Omit<BasicInputProps, "size">,
     VariantProps<typeof input> {}
 
-export default function Input({
-  className,
-  intent,
-  size,
-  ...props
-}: InputProps) {
+export default function Input({ className, intent, ...props }: InputProps) {
   return (
     <BasicInput
       {...props}
-      className={input({ intent, size, className })}
+      className={input({ intent, className })}
     ></BasicInput>
   );
 }

@@ -54,7 +54,7 @@ export default function SelectedBet({
         />
         <Input
           type="range"
-          intent={"range"}
+          intent="range"
           value={deposit}
           min={0}
           max={10}

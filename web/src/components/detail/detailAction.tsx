@@ -89,12 +89,7 @@ export default function DetailCall2Action({
         <span className="font-chicago text-xs font-normal text-9black">
           Leverage
         </span>
-        <Input
-          type="range"
-          className={"mt-2 flex-1"}
-          disabled
-          intent={"range"}
-        />
+        <Input type="range" intent="range" className={"mt-2 w-full"} disabled />
       </div>
       <Button
         title={side}

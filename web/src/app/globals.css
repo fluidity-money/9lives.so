@@ -27,3 +27,80 @@ section {
   scrollbar-color: #999999 #cccccc;
   scrollbar-width: thin;
 } */
+
+/********** Range Input Styles **********/
+/*Range Reset*/
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Removes default focus */
+input[type="range"]:focus {
+  outline: none;
+}
+
+/***** Chrome, Safari, Opera and Edge Chromium styles *****/
+/* slider track */
+input[type="range"]::-webkit-slider-runnable-track {
+  background-color: #0c0c0c;
+  height: 9px;
+}
+input[type="range"]:disabled {
+  opacity: 0.5;
+}
+input[type="range"]:disabled::-webkit-slider-runnable-track {
+  background-color: #999999;
+}
+
+/* slider thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  margin-top: -9px; /* Centers thumb on the track */
+
+  /*custom styles*/
+  border: 1px solid #0c0c0c;
+  border-radius: 2px;
+  background:
+    url("/icons/horizontal-arrows.svg") no-repeat center,
+    #dddddd;
+  height: 26px;
+  width: 30px;
+  box-shadow: -2px -2px 0 rgba(68, 68, 68, 0.2) inset;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+  border: 1px solid #0c0c0c;
+  border-radius: 3px;
+}
+
+/******** Firefox styles ********/
+/* slider track */
+input[type="range"]::-moz-range-track {
+  background-color: #0c0c0c;
+  height: 9px;
+}
+
+/* slider thumb */
+input[type="range"]::-moz-range-thumb {
+  border: none; /*Removes extra border that FF applies*/
+  border-radius: 0; /*Removes default border-radius that FF applies*/
+
+  /*custom styles*/
+  border: 1px solid #0c0c0c;
+  border-radius: 2px;
+  background:
+    url("/icons/horizontal-arrows.svg") no-repeat center,
+    #dddddd;
+  height: 26px;
+  width: 30px;
+  box-shadow: -2px -2px 0 rgba(68, 68, 68, 0.2) inset;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+  border: 1px solid #0c0c0c;
+  border-radius: 3px;
+}
