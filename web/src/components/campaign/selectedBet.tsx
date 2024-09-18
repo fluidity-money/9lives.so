@@ -47,6 +47,7 @@ export default function SelectedBet({
         <Input
           className={"w-full"}
           defaultValue={0}
+          min={0}
           type="number"
           value={deposit}
           onChange={(e) => setDeposit(Number(e.target.value))}

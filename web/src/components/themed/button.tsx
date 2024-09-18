@@ -6,7 +6,7 @@ import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const button = cva(
-  "border-9black disabled:bg-9gray font-chicago text-9black  rounded-sm border text-xs focus:border-2  disabled:opacity-40",
+  "border-9black disabled:bg-9gray font-chicago text-9black  rounded-sm border text-xs focus-visible:border-2  disabled:opacity-40",
   {
     variants: {
       intent: {
@@ -17,9 +17,9 @@ const button = cva(
       },
       cat: {
         primary:
-          "shadow-9btnPrimaryIdle focus:shadow-9btnPrimaryFocus hover:shadow-9btnPrimaryHover active:shadow-9btnPrimaryActive disabled:shadow-9btnPrimaryDisabled ",
+          "shadow-9btnPrimaryIdle focus-visible:shadow-9btnPrimaryFocus hover:shadow-9btnPrimaryHover active:shadow-9btnPrimaryActive disabled:shadow-9btnPrimaryDisabled focus:outline-none ",
         secondary:
-          "9btnSecondaryIdle focus:shadow-9btnSecondaryFocus hover:shadow-9btnSecondaryHover active:shadow-9btnSecondaryActive disabled:shadow-9btnSecondaryDisabled ",
+          "shadow-9btnSecondaryIdle focus-visible:shadow-9btnSecondaryFocus hover:shadow-9btnSecondaryHover active:shadow-9btnSecondaryActive disabled:shadow-9btnSecondaryDisabled focus:outline-none",
       },
       size: {
         small: "px-2 py-1 text-xs",
