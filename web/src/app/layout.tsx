@@ -16,7 +16,7 @@ const CookieBanner = dynamic(() => import("@/components/cookieBanner"), {
 const chicago = localFont({
   src: [
     {
-      path: "../../public/fonts/chicago.ttf",
+      path: "../../public/fonts/chicago-12.ttf",
       weight: "500",
       style: "normal",
     },

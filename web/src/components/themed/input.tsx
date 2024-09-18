@@ -5,21 +5,24 @@ import {
 import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-const input = cva("border-9black font-geneva bg-9gray border text-xl", {
-  variants: {
-    intent: {
-      primary: "shadow-9input",
-      range: "",
+const input = cva(
+  "border-9black font-geneva bg-9gray focus:ring-9black border text-sm focus:outline-none focus:ring-1",
+  {
+    variants: {
+      intent: {
+        primary: "shadow-9input",
+        range: "",
+      },
+      size: {
+        medium: "px-4 py-2",
+      },
     },
-    size: {
-      medium: "px-4 py-2",
+    defaultVariants: {
+      intent: "primary",
+      size: "medium",
     },
   },
-  defaultVariants: {
-    intent: "primary",
-    size: "medium",
-  },
-});
+);
 
 export interface InputProps
   extends Omit<BasicInputProps, "size">,
