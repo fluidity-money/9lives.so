@@ -6,7 +6,7 @@ import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const input = cva(
-  "border-9black font-geneva bg-9gray focus:ring-9black border text-sm focus:outline-none focus:ring-1",
+  "border-9black font-geneva bg-9gray focus-visible:ring-9black border text-sm focus:outline-none focus-visible:ring-1",
   {
     variants: {
       intent: {
