@@ -27,11 +27,19 @@ function DetailOutcomeItem({
       onClick={() => handleSelect(data, true)}
       key={data.identifier}
       className={combineClass(
-        isSelected ? "rounded-xl bg-9blueLight" : "hover:bg-9blueLight/50",
+        isSelected
+          ? "shadow-9selectedOutcome rounded-sm bg-9blueLight"
+          : "hover:bg-9blueLight/50",
         "cursor-pointer",
       )}
     >
-      <td className={borderStyle}>
+      <td
+        className={combineClass(
+          borderStyle,
+          isSelected &&
+            "rounded-l-sm border-y border-l border-y-9black border-l-9black",
+        )}
+      >
         <div className="flex items-center gap-2 px-4">
           <Image
             width={40}
@@ -43,13 +51,20 @@ function DetailOutcomeItem({
           <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
         </div>
       </td>
-      <td className={borderStyle}>
+      <td
+        className={combineClass(
+          borderStyle,
+          isSelected && "border-y border-y-9black",
+        )}
+      >
         <span className="font-chicago text-xs font-normal">75%</span>
       </td>
       <td
         className={combineClass(
           borderStyle,
           "flex items-end justify-end gap-2 p-4",
+          isSelected &&
+            "rounded-r-sm border-y border-r border-y-9black border-r-9black",
         )}
       >
         <Button
@@ -94,17 +109,28 @@ export default function DetailOutcomes({
   selectedBet?: SelectedBet;
   setSelectedBet: React.Dispatch<SelectedBet>;
 }) {
+  const borderStyle = "border-y border-y-gray-200";
   return (
-    <table className="w-full">
-      <thead className={"border-y border-y-gray-200"}>
+    <table className="w-full border-separate border-spacing-0">
+      <thead>
         <tr>
-          <th className="py-3 text-left font-chicago text-xs font-normal uppercase text-gray-400">
+          <th
+            className={combineClass(
+              borderStyle,
+              "py-3 text-left font-chicago text-xs font-normal uppercase text-gray-400",
+            )}
+          >
             Outcome
           </th>
-          <th className="text-left font-chicago text-xs font-normal uppercase text-gray-400">
+          <th
+            className={combineClass(
+              borderStyle,
+              "text-left font-chicago text-xs font-normal uppercase text-gray-400",
+            )}
+          >
             Chance %
           </th>
-          <th></th>
+          <th className={borderStyle}></th>
         </tr>
       </thead>
       <tbody>

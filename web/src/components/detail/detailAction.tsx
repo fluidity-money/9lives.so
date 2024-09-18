@@ -55,7 +55,7 @@ export default function DetailCall2Action({
         <div className="mt-2 flex items-center gap-2">
           <Button
             title="Bet Yes"
-            intent={"yes"}
+            intent={data.bet ? "yes" : "default"}
             size={"large"}
             className={combineClass(
               data.bet && "bg-green-500 text-white hover:bg-green-500",
@@ -65,7 +65,7 @@ export default function DetailCall2Action({
           />
           <Button
             title="Bet No"
-            intent={"no"}
+            intent={!data.bet ? "no" : "default"}
             size={"large"}
             className={combineClass(
               !data.bet && "bg-red-500 text-white hover:bg-red-500",
