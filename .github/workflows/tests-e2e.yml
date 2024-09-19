@@ -29,9 +29,9 @@ jobs:
 
       - name: Run Playwright tests
         env:
-          NEXT_PUBLIC_BACKEND_URL: 'https://testnet-graph.9lives.so'
-          NEXT_PUBLIC_CONTRACT_ADDRESS: '0x0'
-          NEXT_PUBLIC_THIRDWEB_ID: 'a0c2404b7e4441ef009953a93dc1e41f'
+          NEXT_PUBLIC_THIRDWEB_ID: ${{ vars.NEXT_PUBLIC_THIRDWEB_ID }}
+          NEXT_PUBLIC_GRAPHQL_URL: "https://testnet-graph.9lives.so"
+          NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
         run: pnpm test:e2e
         
       - uses: actions/upload-artifact@v4
