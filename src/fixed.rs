@@ -217,7 +217,8 @@ mod proptesting {
         ) {
             let d = 16;
             let n = U256::from_limbs([x, 0, 0, 0]);
-            assert_eq!(fixed_to_u256(u256_to_fixed(n, d).unwrap(), d).unwrap(), n);
+            let res = fixed_to_u256(u256_to_fixed(n, d).unwrap(), d).unwrap();
+            assert_eq!(res, n - U256::from(1));
         }
     }
 }

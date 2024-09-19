@@ -91,7 +91,7 @@ pub enum Error {
 
     /// Checked overflow in a multiplication!
     #[error("Checked mul overflow")]
-    CheckedMulOverflow
+    CheckedMulOverflow,
 }
 
 impl From<Error> for Vec<u8> {

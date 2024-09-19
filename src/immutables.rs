@@ -78,8 +78,10 @@ pub const fn trading_proxy_hash() -> [u8; 32] {
     Keccak256::new().update(&trading_proxy_code()).finalize()
 }
 
+// fUSDC decimals should be this low!
 pub const FUSDC_DECIMALS: u8 = 6;
 
+// Share decimals should be this low!
 pub const SHARE_DECIMALS: u8 = 18;
 
 pub const FEE_RECIPIENT: Address = address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7");
