@@ -3,12 +3,12 @@
 
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
-    contract, msg,
+    contract, evm, msg,
     prelude::*,
     storage::*,
 };
 
-use crate::{error::*, immutables::*, longtail_call, proxy, share_call, trading_call};
+use crate::{error::*, events, immutables::*, longtail_call, proxy, share_call, trading_call};
 
 #[storage]
 #[cfg_attr(all(target_arch = "wasm32", feature = "factory"), entrypoint)]
@@ -56,11 +56,11 @@ impl Factory {
 
         let oracle = self.oracle.get();
 
-        /*evm::log(events::NewTrading {
+        evm::log(events::NewTrading {
             identifier: trading_identifier,
             addr: trading_addr,
             oracle,
-        });*/
+        });
 
         for outcome_identifier in outcome_identifiers {
             let erc20_identifier =
@@ -79,11 +79,11 @@ impl Factory {
                 LONGTAIL_MAX_LIQ_PER_TICK,
             )?;
 
-            /*evm::log(events::OutcomeCreated {
+            evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_identifier,
                 erc20Identifier: erc20_identifier,
                 erc20Addr: erc20_addr,
-            }); */
+            });
         }
 
         trading_call::ctor(trading_addr, oracle, msg::sender(), &outcomes)?;

@@ -8,12 +8,12 @@ const MockLongtail = require("../out/MockLongtail.sol/MockLongtail.json");
 const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
 const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 
-const DEPLOY_KEY = "0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659";
-
 describe("End to end tests", async () => {
   const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
+  const DEPLOY_KEY = process.env.SPN_SUPERPOSITION_KEY;
 
   if (!RPC_URL) throw new Error("SPN_SUPERPOSITION_URL unset");
+  if (!DEPLOY_KEY) throw new Error("SPN_SUPERPOSITION_KEY unset");
 
   const provider = new JsonRpcProvider(RPC_URL);
 
@@ -108,18 +108,31 @@ describe("End to end tests", async () => {
 
   await (await factory.ctor(defaultAccount)).wait();
 
-  it("Should create a Trading contract fine", async () => {
-    const tx = await factory.newTrading([
-      {
-        identifier: "0x1e9e51837f3ea6ea",
-        seed: 100
-      },
-      {
-        identifier: "0x1e9e51837f3ea6eb",
-        seed: 100
-      },
-    ]);
-    await tx.wait();
-    console.log(tx);
+  const tradingAddr = await factory.newTrading.callStatic([
+    {
+      identifier: "0x1e9e51837f3ea6ea",
+      seed: 100
+    },
+    {
+      identifier: "0x1e9e51837f3ea6eb",
+      seed: 100
+    },
+  ]);
+  const tx = await factory.newTrading([
+    {
+      identifier: "0x1e9e51837f3ea6ea",
+      seed: 100
+    },
+    {
+      identifier: "0x1e9e51837f3ea6eb",
+      seed: 100
+    },
+  ]);
+  await tx.wait();
+
+  const trading = new Contract(tradingAddr, Trading.abi, signer);
+
+  it("Should support querying odds fine", async () => {
+    console.log(await trading.details("0x1e9e51837f3ea6ea"));
   });
 });

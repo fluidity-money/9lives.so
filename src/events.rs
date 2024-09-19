@@ -1,5 +1,5 @@
-//use stylus_sdk::alloy_sol_types::sol;
+use stylus_sdk::alloy_sol_types::sol;
 
-//sol!("interfaces/IEvents.sol");
+sol!("src/IEvents.sol");
 
-//pub use IEvents::*;
+pub use IEvents::*;

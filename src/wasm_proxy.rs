@@ -3,13 +3,10 @@ use stylus_sdk::{
     deploy::RawDeploy,
 };
 
-use crate::immutables::{erc20_proxy_code, trading_proxy_code};
-
-fn pad_seed(seed: FixedBytes<8>) -> FixedBytes<32> {
-    let mut b = [0_u8; 32];
-    b[12..].copy_from_slice(seed.as_slice());
-    FixedBytes::from_slice(&b)
-}
+use crate::{
+    calldata::pad_seed,
+    immutables::{erc20_proxy_code, trading_proxy_code},
+};
 
 // Deploy a new ERC20 using CREATE2 and the seed given. Returns the
 // address.
