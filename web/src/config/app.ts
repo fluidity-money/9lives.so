@@ -1,8 +1,28 @@
 import z from "zod";
-import { createThirdwebClient } from "thirdweb";
+import { createThirdwebClient, getContract } from "thirdweb";
 import clientEnv from "./clientEnv";
+import DPMAbi from "./abi/dpm";
+import { superpositionTestnet } from "@/config/chains";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
+
+const thirdwebClient = createThirdwebClient({
+  clientId: thirdwebClientId,
+});
+const metadata = {
+  title: "9Lives.so",
+  description: "The most capital efficient prediction market",
+  metadataBase: new URL("https://9lives.so"),
+  keywords: [
+    "prediction market",
+    "bet",
+    "stream",
+    "cats",
+    "onchain",
+    "superposition",
+    "blockchain",
+  ],
+};
 
 const thirdWebClientSchema = z.object({
   clientId: z.string(),
@@ -13,10 +33,6 @@ const thirdWebClientSchema = z.object({
       storage: z.object({}).optional(),
     })
     .optional(),
-});
-
-const thirdwebClient = createThirdwebClient({
-  clientId: thirdwebClientId,
 });
 
 const appSchema = z.object({
@@ -42,21 +58,6 @@ const appSchema = z.object({
   thirdwebSponsorGas: z.boolean(),
 });
 
-const metadata = {
-  title: "9Lives.so",
-  description: "The most capital efficient prediction market",
-  metadataBase: new URL("https://9lives.so"),
-  keywords: [
-    "prediction market",
-    "bet",
-    "stream",
-    "cats",
-    "onchain",
-    "superposition",
-    "blockchain",
-  ],
-};
-
 const appVars = appSchema.safeParse({
   metadata,
   thirdwebMetadata: {
@@ -67,6 +68,14 @@ const appVars = appSchema.safeParse({
   },
   thirdwebClient,
   thirdwebSponsorGas: true,
+  contracts: {
+    dpm: getContract({
+      abi: DPMAbi,
+      address: "0x0",
+      chain: superpositionTestnet,
+      client: thirdwebClient,
+    }),
+  },
 });
 
 if (!appVars.success) {

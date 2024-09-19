@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { graphql } from "@/gql";
 import request from "graphql-request";
-
+import appConfig from "@/config";
 export const CampaignList = graphql(`
   query CampaignList {
     campaigns {
@@ -32,11 +32,11 @@ export default function ReactQueryProvider({
     const client = new QueryClient();
 
     client.setQueryDefaults(["features"], {
-      queryFn: () => fetch("https://features.9lives.so/features.json"),
+      queryFn: () => fetch(appConfig.NEXT_PUBLIC_FEATURES_URL),
     });
 
     client.setQueryDefaults(["campaigns"], {
-      queryFn: () => request("https://testnet-graph.9lives.so", CampaignList),
+      queryFn: () => request(appConfig.NEXT_PUBLIC_GRAPHQL_URL, CampaignList),
     });
 
     return client;
