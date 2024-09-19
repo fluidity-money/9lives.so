@@ -11,9 +11,13 @@ use stylus_sdk::alloy_primitives::{FixedBytes, U256};
 
 use crate::{assert_or, error::Error};
 
+pub const MIN_NUMBER_FIXED: I64F64 = I64F64::from_le_bytes([
+    0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+]);
+
 pub const MAX_NUMBER: U256 = U256::from_limbs([9223372036854775807, 0, 0, 0]);
 
-fn pow(base: I64F64, exp: u8) -> Result<I64F64, Error> {
+pub(crate) fn pow(base: I64F64, exp: u8) -> Result<I64F64, Error> {
     let mut r = I64F64::from(1);
     for _ in 0..exp {
         r = r.checked_mul(base).ok_or(Error::CheckedPowOverflow)?;
@@ -21,12 +25,12 @@ fn pow(base: I64F64, exp: u8) -> Result<I64F64, Error> {
     Ok(r)
 }
 
-pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
-    assert_or!(
-        n > U256::from(10).pow(U256::from(decimals)),
-        Error::TooSmallNumber
-    );
+pub(crate) fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
     assert_or!(n < MAX_NUMBER, Error::TooBigNumber);
+
+    if n.is_zero() {
+        return Ok(I64F64::ZERO);
+    }
 
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
 
@@ -36,11 +40,13 @@ pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
     let n = I64F64::from_num(n);
     let rem = I64F64::from_num(rem);
 
-    Ok(n + rem / pow(I64F64::from_num(10), decimals)?)
+    let x = n + rem / pow(I64F64::from_num(10), decimals)?;
+    assert_or!(x >= MIN_NUMBER_FIXED, Error::TooSmallNumber);
+    Ok(x)
 }
 
 // Return the fixed amount, cutting off the decimals.
-pub fn fixed_to_u256(n: I64F64, decimals: u8) -> Result<U256, Error> {
+pub(crate) fn fixed_to_u256(n: I64F64, decimals: u8) -> Result<U256, Error> {
     if n.is_zero() {
         return Ok(U256::ZERO);
     }
@@ -196,7 +202,7 @@ fn pow_10_16() {
 
 #[test]
 fn fixed_min_input() {
-    let x = U256::from_limbs([100000000000000000, 0, 0, 0]);
+    let x = U256::from_limbs([10, 0, 0, 0]);
     let d = 16;
     let n = u256_to_fixed(x, d).unwrap();
     assert_eq!(fixed_to_u256(n, d).unwrap(), x);
@@ -213,7 +219,7 @@ mod proptesting {
     proptest! {
         #[test]
         fn test_decoding_to_and_from(
-            x in 100000000000000000..9223372036854775807_u64
+            x in 1..9223372036854775807_u64
         ) {
             let d = 16;
             let n = U256::from_limbs([x, 0, 0, 0]);

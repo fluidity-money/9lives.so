@@ -77,10 +77,6 @@ pub enum Error {
     #[error("Not winner!")]
     NotWinner,
 
-    /// Checked sub error in the math!
-    #[error("Checked sub")]
-    CheckedSub,
-
     /// Negative amount was attempted to be made a uint256!
     #[error("Negative amount to uint256")]
     NegU256,
@@ -92,6 +88,18 @@ pub enum Error {
     /// Checked overflow in a multiplication!
     #[error("Checked mul overflow")]
     CheckedMulOverflow,
+
+    /// Checked addition overflowed!
+    #[error("Checked add overflow")]
+    CheckedAddOverflow,
+
+    /// Checked subtraction overflowed!
+    #[error("Checked sub overflow")]
+    CheckedSubOverflow,
+
+    /// Checked division overflowed!
+    #[error("Checked div overflow")]
+    CheckedDivOverflow,
 }
 
 impl From<Error> for Vec<u8> {
