@@ -27,9 +27,6 @@ export default function ReactQueryProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
-  if (!backend) throw new Error("NEXT_PUBLIC_BACKEND_URL is not set");
-
   const [queryClient] = useState(() => {
     // eslint-disable-next-line @tanstack/query/stable-query-client
     const client = new QueryClient();

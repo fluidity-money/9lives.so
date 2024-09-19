@@ -7,7 +7,7 @@ import Footer from "@/components/footer";
 import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import dynamic from "next/dynamic";
-import { config } from "@/config";
+import appConfig from "@/config";
 
 const CookieBanner = dynamic(() => import("@/components/cookieBanner"), {
   ssr: false,
@@ -38,7 +38,7 @@ const geneva = localFont({
 });
 
 export const metadata: Metadata = {
-  ...config.metadata,
+  ...appConfig.metadata,
 };
 
 export default function RootLayout({
