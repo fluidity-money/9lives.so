@@ -87,7 +87,6 @@ pub unsafe extern "C" fn msg_sender(_sender: *mut u8) {}
 #[no_mangle]
 pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}
 
-///! Set up the storage access.
 #[allow(dead_code)]
 pub fn with_storage<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {
     STORAGE.with(|s| s.borrow_mut().clear());

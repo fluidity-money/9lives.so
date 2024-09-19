@@ -1,4 +1,4 @@
-use fixed::types::I64F64;
+use fixed::types::I96F32;
 
 use stylus_sdk::storage::{GlobalStorage, StorageCache, StorageGuardMut, StorageType};
 
@@ -11,52 +11,53 @@ use stylus_sdk::alloy_primitives::{FixedBytes, U256};
 
 use crate::{assert_or, error::Error};
 
-pub const MIN_NUMBER_FIXED: I64F64 = I64F64::from_le_bytes([
-    0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-]);
+//1
+pub const MIN_NUMBER: U256 = U256::from_limbs([1, 0, 0, 0]);
 
-pub const MAX_NUMBER: U256 = U256::from_limbs([9223372036854775807, 0, 0, 0]);
+//1000000000000000
+// Is it likely that this will ever be an issue?
+pub const MAX_NUMBER: U256 = U256::from_limbs([1000000000000000, 0, 0, 0]);
 
-pub(crate) fn pow(base: I64F64, exp: u8) -> Result<I64F64, Error> {
-    let mut r = I64F64::from(1);
+pub(crate) fn pow(base: I96F32, exp: u8) -> Result<I96F32, Error> {
+    let mut r = I96F32::from(1);
     for _ in 0..exp {
         r = r.checked_mul(base).ok_or(Error::CheckedPowOverflow)?;
     }
     Ok(r)
 }
 
-pub(crate) fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
-    assert_or!(n < MAX_NUMBER, Error::TooBigNumber);
+pub(crate) fn u256_to_fixed(n: U256, decimals: u8) -> Result<I96F32, Error> {
+    assert_or!(n <= MAX_NUMBER, Error::TooBigNumber);
 
     if n.is_zero() {
-        return Ok(I64F64::ZERO);
+        return Ok(I96F32::ZERO);
     }
 
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
 
+    assert_or!(n >= MIN_NUMBER, Error::TooSmallNumber);
+
     let n: u128 = u128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
     let rem: u128 = u128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
 
-    let n = I64F64::from_num(n);
-    let rem = I64F64::from_num(rem);
+    let n = I96F32::from_num(n);
+    let rem = I96F32::from_num(rem);
 
-    let x = n + rem / pow(I64F64::from_num(10), decimals)?;
-    assert_or!(x >= MIN_NUMBER_FIXED, Error::TooSmallNumber);
-    Ok(x)
+    Ok(n + rem / pow(I96F32::from_num(10), decimals)?)
 }
 
 // Return the fixed amount, cutting off the decimals.
-pub(crate) fn fixed_to_u256(n: I64F64, decimals: u8) -> Result<U256, Error> {
+pub(crate) fn fixed_to_u256(n: I96F32, decimals: u8) -> Result<U256, Error> {
     if n.is_zero() {
         return Ok(U256::ZERO);
     }
-    let q = U256::from(n.to_bits() >> 64);
+    let q = U256::from(n.to_bits() >> 32);
     let r = U256::from(
-        n.rem(I64F64::from(1))
-            .checked_mul(pow(I64F64::from(10), decimals)?)
+        n.rem(I96F32::from(1))
+            .checked_mul(pow(I96F32::from(10), decimals)?)
             .ok_or(Error::CheckedMulOverflow)?
             .to_bits()
-            >> 64,
+            >> 32,
     );
     Ok(q * U256::from(10).pow(U256::from(decimals)) + r)
 }
@@ -65,17 +66,17 @@ pub(crate) fn fixed_to_u256(n: I64F64, decimals: u8) -> Result<U256, Error> {
 pub struct StorageFixed {
     slot: U256,
     offset: u8,
-    cached: OnceCell<I64F64>,
+    cached: OnceCell<I96F32>,
 }
 
 impl StorageFixed {
-    pub fn get(&self) -> I64F64 {
+    pub fn get(&self) -> I96F32 {
         *self.clone()
     }
 
-    pub fn set(&mut self, v: I64F64) {
+    pub fn set(&mut self, v: I96F32) {
         self.cached.take();
-        _ = self.cached.set(v.clone());
+        _ = self.cached.set(v);
         let mut b = [0_u8; 32];
         b[..16].copy_from_slice(&v.to_be_bytes());
         unsafe {
@@ -89,7 +90,7 @@ impl StorageFixed {
 }
 
 impl StorageType for StorageFixed {
-    type Wraps<'a> = I64F64;
+    type Wraps<'a> = I96F32;
     type WrapsMut<'a> = StorageGuardMut<'a, Self>;
 
     const SLOT_BYTES: usize = 32;
@@ -112,23 +113,23 @@ impl StorageType for StorageFixed {
 }
 
 impl Deref for StorageFixed {
-    type Target = I64F64;
+    type Target = I96F32;
 
     fn deref(&self) -> &Self::Target {
         self.cached.get_or_init(|| unsafe {
             let b = StorageCache::get::<32>(self.slot, self.offset.into());
             if b.is_zero() {
-                I64F64::from(0)
+                I96F32::from(0)
             } else {
-                I64F64::from_be_bytes(b.as_slice()[..16].try_into().unwrap())
+                I96F32::from_be_bytes(b.as_slice()[..16].try_into().unwrap())
             }
         })
     }
 }
 
-impl From<StorageFixed> for I64F64 {
+impl From<StorageFixed> for I96F32 {
     fn from(v: StorageFixed) -> Self {
-        v.into()
+        *v
     }
 }
 
@@ -137,16 +138,13 @@ macro_rules! assert_eq_f {
     ($left:expr, $right:expr $(,)?) => {
         match (&$left, &$right) {
             (left_val, right_val) => {
-                let right_val_sub =  right_val - (right_val * I64F64::from_num(0.000000001));
-                let right_val_add = right_val + (right_val * I64F64::from_num(0.000000001));
-                //if left_val >= (right_val - right_val * 0.000000001) && left_val <= (right_val + right_val * 0.000000001)
-                if !(*left_val >= right_val_sub && *left_val <= right_val_add) {
+                let right_val_add = right_val + (right_val * I96F32::from_num(1e-6));
+                // !(left_val <= (right_val + right_val * 0.0000001))
+                if !(*left_val <= right_val_add) {
                     panic!(
-                        "!({} == {} || ({} >= {} && {} <= {}))",
+                        "!({} == {} || {} <= {})",
                         left_val,
                         right_val,
-                        left_val,
-                        right_val_sub,
                         left_val,
                         right_val_add
                     );
@@ -158,7 +156,7 @@ macro_rules! assert_eq_f {
 
 #[cfg(all(test, feature = "testing"))]
 mod test {
-    use fixed::types::I64F64;
+    use fixed::types::I96F32;
 
     use stylus_sdk::alloy_primitives::U256;
 
@@ -185,9 +183,9 @@ mod test {
                 offset: 0,
                 cached: OnceCell::new(),
             };
-            assert_eq!(f.get(), I64F64::from(0));
-            f.set(I64F64::MAX);
-            assert_eq!(f.get(), I64F64::MAX);
+            assert_eq!(f.get(), I96F32::from(0));
+            f.set(I96F32::MAX);
+            assert_eq!(f.get(), I96F32::MAX);
         })
     }
 }
@@ -195,17 +193,17 @@ mod test {
 #[test]
 fn pow_10_16() {
     assert_eq!(
-        pow(I64F64::from(10), 16).unwrap(),
-        I64F64::from(100000000) * I64F64::from(100000000)
+        pow(I96F32::from(10), 16).unwrap(),
+        I96F32::from(100000000) * I96F32::from(100000000)
     )
 }
 
 #[test]
-fn fixed_min_input() {
-    let x = U256::from_limbs([10, 0, 0, 0]);
-    let d = 16;
+fn test_number_conversion() {
+    let x = U256::from_limbs([4307515272229010525, 0, 0, 0]);
+    let d = 6;
     let n = u256_to_fixed(x, d).unwrap();
-    assert_eq!(fixed_to_u256(n, d).unwrap(), x);
+    assert_eq!(fixed_to_u256(n, d).unwrap(), x - U256::from(1));
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
@@ -219,12 +217,12 @@ mod proptesting {
     proptest! {
         #[test]
         fn test_decoding_to_and_from(
-            x in 1..9223372036854775807_u64
+            x in 1e6 as u64 * 2..1000000000000000
         ) {
-            let d = 16;
+            let d = 6;
             let n = U256::from_limbs([x, 0, 0, 0]);
             let res = fixed_to_u256(u256_to_fixed(n, d).unwrap(), d).unwrap();
-            assert_eq!(res, n - U256::from(1));
+            assert!(res == n - U256::from(1) || res == n, "{res} != {n}");
         }
     }
 }

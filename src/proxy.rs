@@ -30,9 +30,9 @@ pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) ->
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());
     // Leaving some spacing so that we can have an empty part of the word.
-    b[21..29].copy_from_slice(&trading_id.as_slice());
+    b[21..29].copy_from_slice(trading_id.as_slice());
     b[53..85].copy_from_slice(&trading_proxy_hash());
-    Address::from_slice(&crypto::keccak(&b).as_slice()[12..])
+    Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
 
 // Get the share address, using the address of the deployed Trading
@@ -47,9 +47,9 @@ pub fn get_share_addr(
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());
     // Leaving some spacing so that we can have an empty part of the word.
-    b[21..29].copy_from_slice(&erc20_id.as_slice());
+    b[21..29].copy_from_slice(erc20_id.as_slice());
     b[53..85].copy_from_slice(&erc20_proxy_hash());
-    Address::from_slice(&crypto::keccak(&b).as_slice()[12..])
+    Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
 
 #[test]

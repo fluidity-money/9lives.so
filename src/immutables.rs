@@ -1,7 +1,7 @@
-///! All of these immutable variables should be set with an environment
-///! variable, and are in some cases (ie, the Factory), configured based on
-///! nonce management. We have a preference for online keccak256,
-///! but we use a constant function here to simplify CREATE2 interaction.
+/// All of these immutable variables should be set with an environment
+/// variable, and are in some cases (ie, the Factory), configured based on
+/// nonce management. We have a preference for online keccak256,
+/// but we use a constant function here to simplify CREATE2 interaction.
 use stylus_sdk::alloy_primitives::{address, Address, U256};
 
 use array_concat::{concat_arrays, concat_arrays_size};
@@ -32,7 +32,7 @@ macro_rules! env_addr {
             #[allow(unused)]
             pub const $name: Address = Address::ZERO;
         }
-    }
+    };
 }
 
 // Longtail address deployed.
@@ -82,7 +82,7 @@ pub const fn trading_proxy_hash() -> [u8; 32] {
 pub const FUSDC_DECIMALS: u8 = 6;
 
 // Share decimals should be this low!
-pub const SHARE_DECIMALS: u8 = 18;
+pub const SHARE_DECIMALS: u8 = 6;
 
 pub const FEE_RECIPIENT: Address = address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7");
 

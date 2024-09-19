@@ -41,13 +41,13 @@ pub fn write_selector(bytes: &mut [u8], selector: &[u8; 4]) {
 }
 
 pub fn unpack_u256(data: &[u8]) -> Option<U256> {
-    U256::try_from_be_slice(&data)
+    U256::try_from_be_slice(data)
 }
 
 pub fn unpack_bool_safe(data: &[u8]) -> Result<(), Error> {
     match data.get(31) {
         None | Some(1) => Ok(()),
-        Some(0) | _ => Err(Error::ERC20ReturnedFalse.into()),
+        _ => Err(Error::ERC20ReturnedFalse),
     }
 }
 

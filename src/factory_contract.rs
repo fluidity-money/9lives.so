@@ -37,7 +37,7 @@ impl Factory {
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256)>,
     ) -> Result<Address, Vec<u8>> {
-        assert_or!(outcomes.len() > 0, Error::MustContainOutcomes);
+        assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
         let outcome_identifiers = outcomes.iter().map(|(c, _)| c).collect::<Vec<_>>();
 

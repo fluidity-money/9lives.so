@@ -100,6 +100,14 @@ pub enum Error {
     /// Checked division overflowed!
     #[error("Checked div overflow")]
     CheckedDivOverflow,
+
+    /// Two outcomes only!
+    #[error("Two outcomes only")]
+    TwoOutcomesOnly,
+
+    /// Infinity log!
+    #[error("Infinity")]
+    Infinity,
 }
 
 impl From<Error> for Vec<u8> {

@@ -31,4 +31,4 @@ trading.wasm: $(shell find src -type f -name '*.rs')
 	@rm liblib9lives.rlib
 
 clean:
-	@rm -f ninelives.wasm factory.wasm trading.wasm target liblib9lives.rlib
+	@rm -rf ninelives.wasm factory.wasm trading.wasm target liblib9lives.rlib

@@ -18,7 +18,7 @@ use crate::{
     maths, proxy, share_call,
 };
 
-use fixed::types::I64F64;
+use fixed::types::I96F32;
 
 #[storage]
 #[cfg_attr(all(target_arch = "wasm32", feature = "trading"), entrypoint)]
@@ -85,7 +85,10 @@ impl Trading {
         self.invested.set(u256_to_fixed(fusdc_amt, FUSDC_DECIMALS)?);
 
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
-        self.shares.set(I64F64::from(outcomes_len));
+
+        assert_or!(outcomes_len == 2, Error::TwoOutcomesOnly);
+
+        self.shares.set(I96F32::from(outcomes_len));
 
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
@@ -94,7 +97,7 @@ impl Trading {
             let outcome_amt = u256_to_fixed(outcome_amt, FUSDC_DECIMALS)?;
             let mut outcome = self.outcomes.setter(outcome_id);
             outcome.invested.set(outcome_amt);
-            outcome.shares.set(I64F64::from(1));
+            outcome.shares.set(I96F32::from(1));
 
             self.outcome_list.push(outcome_id);
         }
@@ -155,6 +158,7 @@ impl Trading {
         self.internal_mint(outcome, value, recipient)
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn mint_permit(
         &mut self,
         outcome: FixedBytes<8>,

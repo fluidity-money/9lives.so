@@ -5,3 +5,7 @@
 # It is recommended to check this file in to source control so that
 # everyone who runs the test benefits from these saved cases.
 cc 85b3022476c8d8bf3992f89512d7a4598b4f225a13da9c438f0d46d1c748db08 # shrinks to amount_0 = 1, amount_1 = 43, mint_amount = 6470
+cc a83e1d17843bc64cd124a0814afca83dc0158c6ac3618732ee0108134992d9f7 # shrinks to amount_0 = 304185480574790665, amount_1 = 8919186556279985142, mint_amount = 100000
+cc a24024a34c759b97a7d1a49f6eaad58fd40804b476f464f3c6cdeb2ace0d40ee # shrinks to amount_0 = 85349232150191675, amount_1 = 1000000, mint_amount = 64682786
+cc bb21c6bd4c5ef6413ae57e78dd72489bb24a5e02295a331a1b0728171248a71d # shrinks to amount_0 = 1000000, amount_1 = 1000000, mint_amount = 1000000000000001
+cc 9f3dd098bd632988da8d85ab3c3549906ec8d22f8653e6c14e8b1086b289c169 # shrinks to amount_0 = 23560214097017, amount_1 = 1000000, mint_amount = 64682966
