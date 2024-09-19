@@ -14,6 +14,9 @@ const config: Config = {
       backgroundImage: {
         closeIdle: "url('/icons/close.svg')",
         closePressed: "url('/icons/close-pressed.svg')",
+        watchlistAdd: "url('/icons/plus.svg')",
+        watchlistIn: "url('/icons/watching.svg')",
+        watchlistRemove: "url('/icons/x.svg')",
       },
       colors: {
         "9green": "#B8F2AA",

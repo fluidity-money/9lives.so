@@ -2,6 +2,7 @@ import Image from "next/image";
 import CatImage from "#/images/cat.png";
 import Button from "@/components/themed/button";
 import { CampaignListQuery } from "@/gql/graphql";
+import WatchlistButton from "../watchlistButton";
 
 export default function DetailHeader({
   data,
@@ -20,9 +21,7 @@ export default function DetailHeader({
         />
         <h1 className="font-chicago text-2xl">{data.name}</h1>
       </div>
-      <Button onClick={() => window.alert("You clicked the button!")}>
-        + Add to Watchlist
-      </Button>
+      <WatchlistButton id={data.identifier} />
     </div>
   );
 }
