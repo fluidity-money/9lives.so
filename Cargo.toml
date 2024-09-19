@@ -41,6 +41,7 @@ const-hex = { version = "1.12.0", features = ["alloc"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 alloy-primitives = { version = "0.7.6", features = ["getrandom"] }
+proptest = "1.5.0"
 
 [patch.crates-io]
 alloy-sol-types = { git = "https://github.com/fluidity-money/alloy-core" }

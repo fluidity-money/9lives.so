@@ -3,7 +3,7 @@ pragma solidity ^0.8.18;
 
 interface INineLivesTrading {
     /**
-     * @notice mint some shares in exchange for fUSDC.
+     * @notice Mint some shares in exchange for fUSDC.
      * @param outcome to bet on.
      * @param value to spend of fUSDC.
      * @param recipient of the funds spent.
@@ -11,7 +11,7 @@ interface INineLivesTrading {
     function mint(bytes8 outcome, uint256 value, address recipient) external returns (uint256);
 
     /**
-     * @notice mint some shares in exchange for fUSDC.
+     * @notice Mint some shares in exchange for fUSDC.
      * @param outcome to bet on.
      * @param value to spend of fUSDC.
      * @param deadline to spend by.
@@ -31,20 +31,20 @@ interface INineLivesTrading {
     ) external returns (uint256);
 
     /**
-     * @notice decide an outcome. Only callable by the oracle!
+     * @notice Decide an outcome. Only callable by the oracle!
      * @param outcome to set as the winner.
      */
     function decide(bytes8 outcome) external;
 
     /**
-     * @notice collect the payoff if holding winning shares!
+     * @notice Collect the payoff if holding winning shares!
      * @param outcomeId to collect the payoff for.
      * @param recipient to send the winnings to.
      */
     function payoff(bytes8 outcomeId, address recipient) external returns (uint256);
 
     /**
-     * @notice details that're available for this outcome.
+     * @notice Details that're available for this outcome.
      * @param outcomeId to get the details for
      */
     function details(bytes8 outcomeId) external view returns (
@@ -54,7 +54,12 @@ interface INineLivesTrading {
     );
 
     /**
-     * @notice invested amount of fusdc in the betting pool
+     * @notice Invested amount of fusdc in the betting pool.
      */
     function invested() external view returns (uint256);
+
+    /**
+     * @notice get a share address using the identifier given instead of an online check.
+     */
+    function shareAddr(bytes8 outcomeId) external view returns (address);
 }

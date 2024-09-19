@@ -138,7 +138,7 @@ impl Trading {
 
         let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
 
-        let shares = fixed::fixed_to_u256(shares, SHARE_DECIMALS);
+        let shares = fixed::fixed_to_u256(shares, SHARE_DECIMALS)?;
 
         share_call::mint(share_addr, recipient, shares)?;
 
@@ -199,7 +199,7 @@ impl Trading {
         let M = self.invested.get();
         let p = maths::payoff(n, n_1, M);
         // Send the user some fUSDC now!
-        let fusdc = fixed::fixed_to_u256(p, FUSDC_DECIMALS);
+        let fusdc = fixed::fixed_to_u256(p, FUSDC_DECIMALS)?;
         fusdc_call::transfer(recipient, fusdc)?;
         Ok(fusdc)
     }
@@ -207,14 +207,22 @@ impl Trading {
     pub fn details(&self, outcome_id: FixedBytes<8>) -> Result<(U256, U256, bool), Error> {
         let outcome = self.outcomes.getter(outcome_id);
         Ok((
-            fixed::fixed_to_u256(outcome.shares.get(), SHARE_DECIMALS),
-            fixed::fixed_to_u256(outcome.invested.get(), FUSDC_DECIMALS),
+            fixed::fixed_to_u256(outcome.shares.get(), SHARE_DECIMALS)?,
+            fixed::fixed_to_u256(outcome.invested.get(), FUSDC_DECIMALS)?,
             outcome.winner.get(),
         ))
     }
 
     pub fn invested(&self) -> Result<U256, Error> {
-        Ok(fixed::fixed_to_u256(self.invested.get(), FUSDC_DECIMALS))
+        fixed::fixed_to_u256(self.invested.get(), FUSDC_DECIMALS)
+    }
+
+    pub fn share_addr(&self, outcome: FixedBytes<8>) -> Result<Address, Error> {
+        Ok(proxy::get_share_addr(
+            FACTORY_ADDR,
+            contract::address(),
+            outcome,
+        ))
     }
 }
 

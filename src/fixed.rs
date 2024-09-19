@@ -2,7 +2,10 @@ use fixed::types::I64F64;
 
 use stylus_sdk::storage::{GlobalStorage, StorageCache, StorageGuardMut, StorageType};
 
-use std::{cell::OnceCell, ops::Deref};
+use std::{
+    cell::OnceCell,
+    ops::{Deref, Rem},
+};
 
 use stylus_sdk::alloy_primitives::{FixedBytes, U256};
 
@@ -10,21 +13,19 @@ use crate::{assert_or, error::Error};
 
 pub const MAX_NUMBER: U256 = U256::from_limbs([9223372036854775807, 0, 0, 0]);
 
-fn pow(base: I64F64, mut exp: u8) -> I64F64 {
-    let one = I64F64::from_num(1);
-    let mut res = one;
-    let mut base = base;
-    while exp > 0 {
-        if exp % 2 == 1 {
-            res *= base;
-        }
-        base *= base;
-        exp /= 2;
+fn pow(base: I64F64, exp: u8) -> Result<I64F64, Error> {
+    let mut r = I64F64::from(1);
+    for _ in 0..exp {
+        r = r.checked_mul(base).ok_or(Error::CheckedPowOverflow)?;
     }
-    res
+    Ok(r)
 }
 
 pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
+    assert_or!(
+        n > U256::from(10).pow(U256::from(decimals)),
+        Error::TooSmallNumber
+    );
     assert_or!(n < MAX_NUMBER, Error::TooBigNumber);
 
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
@@ -35,16 +36,23 @@ pub fn u256_to_fixed(n: U256, decimals: u8) -> Result<I64F64, Error> {
     let n = I64F64::from_num(n);
     let rem = I64F64::from_num(rem);
 
-    Ok(n + rem / pow(I64F64::from_num(10), decimals))
+    Ok(n + rem / pow(I64F64::from_num(10), decimals)?)
 }
 
 // Return the fixed amount, cutting off the decimals.
-pub fn fixed_to_u256(n: I64F64, decimals: u8) -> U256 {
+pub fn fixed_to_u256(n: I64F64, decimals: u8) -> Result<U256, Error> {
     if n.is_zero() {
-        return U256::ZERO;
+        return Ok(U256::ZERO);
     }
-    let n = U256::from(n.to_bits() >> 64);
-    n * U256::from(10).pow(U256::from(decimals))
+    let q = U256::from(n.to_bits() >> 64);
+    let r = U256::from(
+        n.rem(I64F64::from(1))
+            .checked_mul(pow(I64F64::from(10), decimals)?)
+            .ok_or(Error::CheckedMulOverflow)?
+            .to_bits()
+            >> 64,
+    );
+    Ok(q * U256::from(10).pow(U256::from(decimals)) + r)
 }
 
 #[derive(Debug, Clone)]
@@ -106,7 +114,7 @@ impl Deref for StorageFixed {
             if b.is_zero() {
                 I64F64::from(0)
             } else {
-                I64F64::from_be_bytes(b.as_slice().try_into().unwrap())
+                I64F64::from_be_bytes(b.as_slice()[..16].try_into().unwrap())
             }
         })
     }
@@ -175,5 +183,41 @@ mod test {
             f.set(I64F64::MAX);
             assert_eq!(f.get(), I64F64::MAX);
         })
+    }
+}
+
+#[test]
+fn pow_10_16() {
+    assert_eq!(
+        pow(I64F64::from(10), 16).unwrap(),
+        I64F64::from(100000000) * I64F64::from(100000000)
+    )
+}
+
+#[test]
+fn fixed_min_input() {
+    let x = U256::from_limbs([100000000000000000, 0, 0, 0]);
+    let d = 16;
+    let n = u256_to_fixed(x, d).unwrap();
+    assert_eq!(fixed_to_u256(n, d).unwrap(), x);
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod proptesting {
+    use super::*;
+
+    use proptest::prelude::*;
+
+    use stylus_sdk::alloy_primitives::U256;
+
+    proptest! {
+        #[test]
+        fn test_decoding_to_and_from(
+            x in 100000000000000000..9223372036854775807_u64
+        ) {
+            let d = 16;
+            let n = U256::from_limbs([x, 0, 0, 0]);
+            assert_eq!(fixed_to_u256(u256_to_fixed(n, d).unwrap(), d).unwrap(), n);
+        }
     }
 }

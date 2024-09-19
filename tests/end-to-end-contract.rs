@@ -20,11 +20,10 @@ fn test_factory_new_trading() {
 fn test_trading_ctor() {
     use lib9lives::trading_contract::Trading;
     host::with_storage::<_, Trading, _>(|c| {
+        let outcome_1 =
+            FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let outcomes = [
-            (
-                FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]),
-                U256::from(1),
-            ),
+            (outcome_1, U256::from(1)),
             (
                 FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]),
                 U256::from(2),
@@ -32,5 +31,8 @@ fn test_trading_ctor() {
         ];
         c.ctor(Address::ZERO, Address::ZERO, outcomes.to_vec())
             .unwrap();
+        dbg!(c
+            .mint(outcome_1, U256::from(100000000), Address::ZERO)
+            .unwrap());
     })
 }

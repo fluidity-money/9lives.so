@@ -1,6 +1,13 @@
 const {describe, it} = require("node:test");
 
-const {Contract, ContractFactory, JsonRpcProvider, Log, MaxUint256, Provider, TypedDataDomain, Wallet, id } = require("ethers");
+const {
+  Contract,
+  ContractFactory,
+  JsonRpcProvider,
+  MaxUint256,
+  Provider,
+  Wallet } = require("ethers");
+
 const {execSync} = require("node:child_process");
 
 const TestERC20 = require("../out/TestERC20.sol/TestERC20.json");
@@ -21,7 +28,7 @@ describe("End to end tests", async () => {
 
   const signer = new Wallet(DEPLOY_KEY, provider);
 
-  const defaultAccount = await signer.getAddress();
+  const defaultAccountAddr = await signer.getAddress();
 
   // Deploy a test ERC20.
 
@@ -32,7 +39,8 @@ describe("End to end tests", async () => {
   );
   const erc20Deploy = await erc20Factory.deploy();
   await erc20Deploy.waitForDeployment();
-  const erc20Address = await erc20Deploy.getAddress();
+  const fusdcAddress = await erc20Deploy.getAddress();
+  const fusdc = new Contract(fusdcAddress, TestERC20.abi, signer);
 
   // Deploy a mocked out Longtail.
 
@@ -49,7 +57,7 @@ describe("End to end tests", async () => {
 
   const { factoryImpl, erc20Impl, tradingImpl } =
     JSON.parse(execSync(
-      `go run scripts/get-addresses.go ${defaultAccount}`,
+      `go run scripts/get-addresses.go ${defaultAccountAddr}`,
       {
         env: {
           ...process.env,
@@ -71,7 +79,7 @@ describe("End to end tests", async () => {
         "SPN_TRADING_IMPL_ADDR": tradingImpl,
         "SPN_FACTORY_PROXY_ADDR": factoryImpl, // Impl instead of proxy.
         "SPN_LONGTAIL_ADDR": longtailAddress,
-        "SPN_FUSDC_ADDR": erc20Address,
+        "SPN_FUSDC_ADDR": fusdcAddress,
     } },
   );
 
@@ -106,33 +114,36 @@ describe("End to end tests", async () => {
 
   const factory = new Contract(factoryImpl, Factory.abi, signer);
 
-  await (await factory.ctor(defaultAccount)).wait();
+  await (await factory.ctor(defaultAccountAddr)).wait();
 
-  const tradingAddr = await factory.newTrading.callStatic([
+  const outcome1 = "0x1e9e51837f3ea6ea";
+  const outcome2 = "0x1e9e51837f3ea6eb";
+
+  const outcomes = [
     {
-      identifier: "0x1e9e51837f3ea6ea",
+      identifier: outcome1,
       seed: 100
     },
     {
-      identifier: "0x1e9e51837f3ea6eb",
+      identifier: outcome2,
       seed: 100
     },
-  ]);
-  const tx = await factory.newTrading([
-    {
-      identifier: "0x1e9e51837f3ea6ea",
-      seed: 100
-    },
-    {
-      identifier: "0x1e9e51837f3ea6eb",
-      seed: 100
-    },
-  ]);
+  ];
+
+  const tradingAddr = await factory.newTrading.staticCall(outcomes);
+  const tx = await factory.newTrading(outcomes);
   await tx.wait();
 
   const trading = new Contract(tradingAddr, Trading.abi, signer);
 
-  it("Should support querying odds fine", async () => {
-    console.log(await trading.details("0x1e9e51837f3ea6ea"));
+  const share1Addr = await trading.shareAddr(outcome1);
+  const share1 = new Contract(share1Addr, TestERC20.abi, signer);
+
+  await (await fusdc.approve(tradingAddr, MaxUint256)).wait();
+
+  it("Should support minting shares", async () => {
+    const balBefore = await share1.balanceOf(defaultAccountAddr);
+    await (await trading.mint.staticCall(outcome1, 100000000, defaultAccountAddr)).wait();
+    const balAfter = await share1.balanceOf(defaultAccountAddr);
   });
 });

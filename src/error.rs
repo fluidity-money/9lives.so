@@ -84,6 +84,14 @@ pub enum Error {
     /// Negative amount was attempted to be made a uint256!
     #[error("Negative amount to uint256")]
     NegU256,
+
+    /// Checked overflow in the pow function!
+    #[error("Checked pow overflow")]
+    CheckedPowOverflow,
+
+    /// Checked overflow in a multiplication!
+    #[error("Checked mul overflow")]
+    CheckedMulOverflow
 }
 
 impl From<Error> for Vec<u8> {
