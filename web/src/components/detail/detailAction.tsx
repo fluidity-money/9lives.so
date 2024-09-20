@@ -26,7 +26,7 @@ export default function DetailCall2Action({
   }, [reset]);
 
   return (
-    <div className="border-9black shadow-9card sticky top-0 flex flex-col gap-4 rounded-[3px] border p-4">
+    <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black p-4 shadow-9card">
       <div className="flex items-center gap-4">
         <Image
           width={40}
@@ -35,7 +35,7 @@ export default function DetailCall2Action({
           src={CatImage}
           className="rounded-full"
         />
-        <h3 className="font-chicago text-9black text-base font-normal">
+        <h3 className="font-chicago text-base font-normal text-9black">
           {outcome.name}
         </h3>
       </div>
@@ -60,7 +60,7 @@ export default function DetailCall2Action({
         />
       </div>
       <div>
-        <span className="font-chicago text-9black text-xs font-normal">
+        <span className="font-chicago text-xs font-normal text-9black">
           Outcome
         </span>
         <div className="mt-2 flex items-center gap-2">
@@ -89,7 +89,7 @@ export default function DetailCall2Action({
         </div>
       </div>
       <div className="flex flex-col">
-        <span className="font-chicago text-9black text-xs font-normal">
+        <span className="font-chicago text-xs font-normal text-9black">
           Limit
         </span>
         <Input
@@ -99,7 +99,7 @@ export default function DetailCall2Action({
         />
       </div>
       <div className="flex flex-col">
-        <span className="font-chicago text-9black text-xs font-normal">
+        <span className="font-chicago text-xs font-normal text-9black">
           Leverage
         </span>
         <Input type="range" intent="range" className={"mt-2 w-full"} disabled />
