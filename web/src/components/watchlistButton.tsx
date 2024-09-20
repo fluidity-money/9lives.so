@@ -1,9 +1,12 @@
+"use client";
 import { useUserStore } from "@/stores/userStore";
 import Button from "./themed/button";
 import { combineClass } from "@/utils/combineClass";
 
 export default function WatchlistButton({ id }: { id: string }) {
-  const { watchlist, removeFromWatchlist, addToWatchlist } = useUserStore();
+  const watchlist = useUserStore((s) => s.watchlist);
+  const addToWatchlist = useUserStore((s) => s.addToWatchlist);
+  const removeFromWatchlist = useUserStore((s) => s.removeFromWatchlist);
 
   const isInWatchlist = watchlist.includes(id);
   function handleToggle() {

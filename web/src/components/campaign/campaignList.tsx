@@ -1,27 +1,31 @@
-"use client";
-import { CampaignListQuery } from "@/gql/graphql";
-import { useQuery } from "@tanstack/react-query";
 import CampaignItem from "./campaignItem";
+import { unstable_cache } from "next/cache";
+import { requestCampaignList } from "@/providers/graphqlClient";
+import appConfig from "@/config";
 
-export default function CampaignList() {
-  const { data, isLoading } = useQuery<CampaignListQuery>({
-    queryKey: ["campaigns"],
-  });
+const getCampaigns = unstable_cache(
+  async () => {
+    return (await requestCampaignList).campaigns;
+  },
+  ["campaigns"],
+  { revalidate: appConfig.cacheRevalidation.homePage, tags: ["campaigns"] },
+);
 
-  if (isLoading) return <div>Loading...</div>;
+export default async function CampaignList() {
+  const data = await getCampaigns();
 
-  if (!data || !data?.campaigns.length) return <div>No item</div>;
+  if (!data || !data?.length) return <div>No item</div>;
 
   const mockData = [
-    ...data.campaigns,
-    ...data.campaigns.map((item) => ({
+    ...data,
+    ...data.map((item) => ({
       ...item,
       outcomes: [item.outcomes[0]],
     })),
-    ...data.campaigns,
-    ...data.campaigns,
-    ...data.campaigns,
-    ...data.campaigns,
+    ...data,
+    ...data,
+    ...data,
+    ...data,
   ];
 
   return (

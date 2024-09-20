@@ -1,31 +1,42 @@
+"use client";
 import Button from "@/components/themed/button";
-import { SelectedBet } from "../campaign/campaignItem";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
+import { Outcome } from "@/types";
+import { useOutcomeStore } from "@/stores/outcomeStore";
 
 export default function DetailCall2Action({
-  data,
-  setSelectedBet,
+  initalData,
 }: {
-  data: SelectedBet;
-  setSelectedBet: React.Dispatch<SelectedBet>;
+  initalData: Outcome[];
 }) {
   const [side, setSide] = useState<"buy" | "sell">("buy");
+  const selectOutcome = useOutcomeStore((s) => s.selectOutcome);
+  const selectedOutcome = useOutcomeStore((s) => s.selectedOutcome);
+  const reset = useOutcomeStore((s) => s.reset);
+  const outcome = initalData[selectedOutcome.outcomeIdx];
+
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [reset]);
+
   return (
-    <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black p-4 shadow-9card">
+    <div className="border-9black shadow-9card sticky top-0 flex flex-col gap-4 rounded-[3px] border p-4">
       <div className="flex items-center gap-4">
         <Image
           width={40}
           height={40}
-          alt={data.name}
+          alt={outcome.name}
           src={CatImage}
           className="rounded-full"
         />
-        <h3 className="font-chicago text-base font-normal text-9black">
-          {data.name}
+        <h3 className="font-chicago text-9black text-base font-normal">
+          {outcome.name}
         </h3>
       </div>
       <div className="flex items-center gap-2">
@@ -49,34 +60,36 @@ export default function DetailCall2Action({
         />
       </div>
       <div>
-        <span className="font-chicago text-xs font-normal text-9black">
+        <span className="font-chicago text-9black text-xs font-normal">
           Outcome
         </span>
         <div className="mt-2 flex items-center gap-2">
           <Button
             title="Bet Yes"
-            intent={data.bet ? "yes" : "default"}
+            intent={!!selectedOutcome.state ? "yes" : "default"}
             size={"large"}
             className={combineClass(
-              data.bet && "bg-green-500 text-white hover:bg-green-500",
+              !!selectedOutcome.state &&
+                "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}
-            onClick={() => setSelectedBet({ ...data, bet: true })}
+            onClick={() => selectOutcome({ ...selectedOutcome, state: 1 })}
           />
           <Button
             title="Bet No"
-            intent={!data.bet ? "no" : "default"}
+            intent={!!selectedOutcome.state ? "no" : "default"}
             size={"large"}
             className={combineClass(
-              !data.bet && "bg-red-500 text-white hover:bg-red-500",
+              !selectedOutcome.state &&
+                "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
-            onClick={() => setSelectedBet({ ...data, bet: false })}
+            onClick={() => selectOutcome({ ...selectedOutcome, state: 0 })}
           />
         </div>
       </div>
       <div className="flex flex-col">
-        <span className="font-chicago text-xs font-normal text-9black">
+        <span className="font-chicago text-9black text-xs font-normal">
           Limit
         </span>
         <Input
@@ -86,7 +99,7 @@ export default function DetailCall2Action({
         />
       </div>
       <div className="flex flex-col">
-        <span className="font-chicago text-xs font-normal text-9black">
+        <span className="font-chicago text-9black text-xs font-normal">
           Leverage
         </span>
         <Input type="range" intent="range" className={"mt-2 w-full"} disabled />

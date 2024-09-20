@@ -1,26 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
-import { graphql } from "@/gql";
-import request from "graphql-request";
+import { requestCampaignList } from "./graphqlClient";
 import appConfig from "@/config";
-export const CampaignList = graphql(`
-  query CampaignList {
-    campaigns {
-      name
-      identifier
-      description
-      oracle
-      poolAddress
-      outcomes {
-        identifier
-        name
-        share {
-          address
-        }
-      }
-    }
-  }
-`);
 
 export default function ReactQueryProvider({
   children,
@@ -36,7 +17,7 @@ export default function ReactQueryProvider({
     });
 
     client.setQueryDefaults(["campaigns"], {
-      queryFn: () => request(appConfig.NEXT_PUBLIC_GRAPHQL_URL, CampaignList),
+      queryFn: () => requestCampaignList,
     });
 
     return client;

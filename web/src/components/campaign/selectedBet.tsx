@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
-import type { SelectedBet } from "./campaignItem";
 import Button from "../themed/button";
 import Input from "../themed/input";
 import { useState } from "react";
 import Link from "next/link";
 import CloseButton from "../closeButton";
+import { SelectedOutcome } from "@/types";
 
 export default function SelectedBet({
   campaignId,
@@ -15,8 +15,8 @@ export default function SelectedBet({
   setSelectedBet,
 }: {
   campaignId: string;
-  data: SelectedBet;
-  setSelectedBet: React.Dispatch<SelectedBet | undefined>;
+  data: SelectedOutcome;
+  setSelectedBet: React.Dispatch<SelectedOutcome | undefined>;
 }) {
   const [deposit, setDeposit] = useState(0);
 
@@ -31,7 +31,7 @@ export default function SelectedBet({
             alt={data!.name}
             className="rounded-md"
           />
-          <Link href={`/event?id=${campaignId}`}>
+          <Link href={`/campaign/${campaignId}`}>
             <span className="font-chicago text-sm font-normal text-9black">
               {data!.name}
             </span>

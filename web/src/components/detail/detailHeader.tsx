@@ -1,14 +1,9 @@
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
-import Button from "@/components/themed/button";
-import { CampaignListQuery } from "@/gql/graphql";
 import WatchlistButton from "../watchlistButton";
+import { Campaign } from "@/types";
 
-export default function DetailHeader({
-  data,
-}: {
-  data: CampaignListQuery["campaigns"][number];
-}) {
+export default function DetailHeader({ data }: { data: Campaign }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">

@@ -56,6 +56,10 @@ const appSchema = z.object({
    */
   thirdwebClient: thirdWebClientSchema,
   thirdwebSponsorGas: z.boolean(),
+  cacheRevalidation: z.object({
+    homePage: z.number(),
+    detailPages: z.number(),
+  }),
 });
 
 const appVars = appSchema.safeParse({
@@ -75,6 +79,10 @@ const appVars = appSchema.safeParse({
       chain: superpositionTestnet,
       client: thirdwebClient,
     }),
+  },
+  cacheRevalidation: {
+    homePage: 86400000, // 1 day
+    detailPages: 300000, // 5 minutes
   },
 });
 

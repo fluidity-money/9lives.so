@@ -1,19 +1,19 @@
 import { CampaignListQuery } from "@/gql/graphql";
 import Button from "../themed/button";
 import React from "react";
-import type { SelectedBet } from "./campaignItem";
 import Link from "next/link";
+import { SelectedOutcome } from "@/types";
 interface CampaignItemOutcomesProps {
   campaignId: string;
   outcomes: CampaignListQuery["campaigns"][number]["outcomes"];
-  setSelectedBet: React.Dispatch<SelectedBet>;
+  setSelectedBet: React.Dispatch<SelectedOutcome>;
 }
 export default function CampaignItemOutcomes({
   campaignId,
   outcomes,
   setSelectedBet,
 }: CampaignItemOutcomesProps) {
-  function handleSelect(data: Omit<SelectedBet, "bet">, bet: boolean) {
+  function handleSelect(data: Omit<SelectedOutcome, "bet">, bet: boolean) {
     setSelectedBet({ ...data, bet });
   }
 
@@ -42,7 +42,7 @@ export default function CampaignItemOutcomes({
           key={outcome.identifier}
           className="flex items-center justify-between text-xs"
         >
-          <Link href={`/event?id=${campaignId}`}>
+          <Link href={`/campaign/${campaignId}`}>
             <span className="text-xs font-normal">{outcome.name}</span>
           </Link>
           <div className="flex items-center gap-1">
