@@ -108,6 +108,10 @@ pub enum Error {
     /// Infinity log!
     #[error("Infinity")]
     Infinity,
+
+    /// Negative number that was attempted to be converted to U256
+    #[error("Negative number")]
+    NegativeFixedToUintConv,
 }
 
 impl From<Error> for Vec<u8> {

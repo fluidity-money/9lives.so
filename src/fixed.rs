@@ -51,6 +51,7 @@ pub(crate) fn fixed_to_u256(n: I96F32, decimals: u8) -> Result<U256, Error> {
     if n.is_zero() {
         return Ok(U256::ZERO);
     }
+    assert_or!(n > 0, Error::NegativeFixedToUintConv);
     let q = U256::from(n.to_bits() >> 32);
     let r = U256::from(
         n.rem(I96F32::from(1))
