@@ -82,6 +82,6 @@ fn test_get_trading_addr() {
     );
     assert_eq!(
         get_trading_addr(factory, &outcomes),
-        address!("6e1df4495afe7b1d9068ce0d8d99c394bea1d0d9")
+        address!("004e4802a96792dabd528f0112d12e4cd31e5FAf")
     )
 }

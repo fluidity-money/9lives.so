@@ -8,7 +8,7 @@ import "forge-std/console.sol";
 // Trading contracts and the offline derivation after.
 
 contract TestCreate2Trading is Test {
-    bytes TRADING_CREATE_BYTECODE = hex"3d602d80600a3d3981f3363d3d373d3d3d363d7300000000000000000000000000000000000000005af43d82803e903d91602b57fd5bf3";
+    bytes TRADING_CREATE_BYTECODE = hex"602d5f8160095f39f35f5f365f5f37365f7300000000000000000000000000000000000000005af43d5f5f3e6029573d5ffd5b3d5ff3";
     bytes8 OUTCOME_1 = 0x1234123412341234;
     bytes8 OUTCOME_2 = 0x2234123412341234;
     function testCreate2Create() public {

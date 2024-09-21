@@ -100,7 +100,8 @@ pub fn payoff(n: I96F32, N_1: I96F32, M: I96F32) -> Result<I96F32, Error> {
 
 #[test]
 fn test_exp() {
-    assert_eq!(
+    use crate::assert_eq_f;
+    assert_eq_f!(
         exp(I96F32::from(32)).unwrap(),
         I96F32::unwrapped_from_str("78962960182680.69")
     )
