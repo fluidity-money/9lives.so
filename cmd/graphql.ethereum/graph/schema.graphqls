@@ -1,7 +1,60 @@
 
 type Query {
   """
-  Campaigns that are currently ongoing.
+  Details that should be sent to the users (ie, where are the contracts living?)
+  """
+  contracts: Contracts!
+
+  """
+  Frontpage display. Should have a timeline as to when it should and should
+  not be displayed.
+  """
+  frontpage: [Frontpage!]!
+}
+
+"""
+Contracts that are relevant to the frontend for tasks including deriving
+addresses of contracts to question for contract details without the graph.
+Also needed to create new campaigns.
+"""
+type Contracts {
+  """
+  fUSDC address that's used to settle all transactions.
+  """
+  fusdcAddr: String!
+
+  """
+  Factory address that creates Trading contracts.
+  """
+  factoryAddr: String!
+}
+
+"""
+Frontpage that should be displayed for a time window.
+"""
+type Frontpage {
+  """
+  ID that's used to cache this frontend data.
+  """
+  id: ID!
+
+  """
+  From when this should be displayed (timestamp)!
+  """
+  from: Int!
+
+  """
+  Until when this should be displayed (timestamp)!
+  """
+  until: Int!
+
+  """
+  Categories that should be displayed on the frontend in the list.
+  """
+  categories: [String!]!
+
+  """
+  Campaigns displayed left from right in the grid format.
   """
   campaigns: [Campaign!]!
 }
@@ -32,6 +85,9 @@ input OutcomeInput {
 }
 
 type Mutation {
+  """
+  "Explain" a campaign, so an on-chain campaign creation is listed in the frontend. Campaign is then spooled in a would-be frontend aggregation table.
+  """
   explainCampaign(
     """
     Type of the modification to the campaign explanation.
@@ -92,7 +148,8 @@ Ongoing prediction market competition.
 """
 type Campaign {
   """
-  Name of the campaign.
+  Name of the campaign. Also used to look up the campaign based on the slug
+  if needed (hyphenated).
   """
   name: String!
 
@@ -123,7 +180,8 @@ type Campaign {
   poolAddress: String!
 
   """
-  Outcomes associated with this campaign.
+  Outcomes associated with this campaign. If there are only two, it defaults
+  to a "yes", or "no".
   """
   outcomes: [Outcome!]!
 }
