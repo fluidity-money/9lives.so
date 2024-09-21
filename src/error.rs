@@ -112,6 +112,11 @@ pub enum Error {
     /// Negative number that was attempted to be converted to U256
     #[error("Negative number")]
     NegativeFixedToUintConv,
+
+    /// Unusual amounts (more than 10 million liquidity at first?) were
+    /// supplied.
+    #[error("Unusual amount supplied at first")]
+    UnusualAmountCreated,
 }
 
 impl From<Error> for Vec<u8> {

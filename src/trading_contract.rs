@@ -143,6 +143,10 @@ impl Trading {
 
         let shares = fixed_to_u256(shares, SHARE_DECIMALS)?;
 
+        // This can happen where someone supplies too much at first. FIXME
+
+        assert_or!(shares > 0, Error::UnusualAmountCreated);
+
         share_call::mint(share_addr, recipient, shares)?;
 
         Ok(shares)
