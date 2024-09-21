@@ -145,7 +145,7 @@ impl Trading {
 
         // This can happen where someone supplies too much at first. FIXME
 
-        assert_or!(shares > 0, Error::UnusualAmountCreated);
+        assert_or!(shares > U256::ZERO, Error::UnusualAmountCreated);
 
         share_call::mint(share_addr, recipient, shares)?;
 

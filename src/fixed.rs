@@ -78,13 +78,13 @@ impl StorageFixed {
     pub fn set(&mut self, v: I96F32) {
         self.cached.take();
         _ = self.cached.set(v);
-        let mut b = [0_u8; 32];
-        b[..16].copy_from_slice(&v.to_be_bytes());
+        let mut b = [0_u8; 16];
+        b.copy_from_slice(&v.to_be_bytes());
         unsafe {
-            StorageCache::set::<32>(
+            StorageCache::set::<16>(
                 self.slot,
                 self.offset.into(),
-                FixedBytes::<32>::from_slice(&b),
+                FixedBytes::<16>::from_slice(&b),
             )
         }
     }
@@ -118,11 +118,11 @@ impl Deref for StorageFixed {
 
     fn deref(&self) -> &Self::Target {
         self.cached.get_or_init(|| unsafe {
-            let b = StorageCache::get::<32>(self.slot, self.offset.into());
+            let b = StorageCache::get::<16>(self.slot, self.offset.into());
             if b.is_zero() {
                 I96F32::from(0)
             } else {
-                I96F32::from_be_bytes(b.as_slice()[..16].try_into().unwrap())
+                I96F32::from_be_bytes(b.as_slice().try_into().unwrap())
             }
         })
     }
