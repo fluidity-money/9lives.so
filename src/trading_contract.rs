@@ -88,7 +88,7 @@ impl Trading {
 
         assert_or!(outcomes_len == 2, Error::TwoOutcomesOnly);
 
-        self.shares.set(I96F32::from(outcomes_len));
+        self.shares.set(I96F32::from(outcomes_len) * I96F32::from(100));
 
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
@@ -96,7 +96,7 @@ impl Trading {
             assert_or!(!outcome_amt.is_zero(), Error::OddsMustBeSet);
             let outcome_amt = u256_to_fixed(outcome_amt, FUSDC_DECIMALS)?;
             let mut outcome = self.outcomes.setter(outcome_id);
-            outcome.invested.set(outcome_amt);
+            outcome.invested.set(outcome_amt * I96F32::from(100));
             outcome.shares.set(I96F32::from(1));
 
             self.outcome_list.push(outcome_id);

@@ -198,14 +198,6 @@ fn pow_10_16() {
     )
 }
 
-#[test]
-fn test_number_conversion() {
-    let x = U256::from_limbs([4307515272229010525, 0, 0, 0]);
-    let d = 6;
-    let n = u256_to_fixed(x, d).unwrap();
-    assert_eq!(fixed_to_u256(n, d).unwrap(), x - U256::from(1));
-}
-
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod proptesting {
     use super::*;

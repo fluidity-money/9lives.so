@@ -51,7 +51,7 @@ proptest! {
         let amount_0 = U256::from(amount_0);
         let amount_1 = U256::from(amount_1);
         let mint_amount = U256::from(mint_amount);
-        prop_assume!(amount_0 + amount_1 + mint_amount <= MAX_NUMBER);
+        prop_assume!(amount_0 + amount_1 <= MAX_NUMBER);
         use lib9lives::trading_contract::Trading;
         host::with_storage::<_, Trading, _>(|c| {
             let outcome_0 =
@@ -63,9 +63,9 @@ proptest! {
             ];
             c.ctor(Address::ZERO, Address::ZERO, outcomes.to_vec())
                 .unwrap();
-            dbg!(c
+            c
                 .mint(outcome_1, mint_amount, Address::ZERO)
-                .unwrap());
+                .unwrap();
         })
     }
 }

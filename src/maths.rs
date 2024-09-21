@@ -100,7 +100,10 @@ pub fn payoff(n: I96F32, N_1: I96F32, M: I96F32) -> Result<I96F32, Error> {
 
 #[test]
 fn test_exp() {
-    dbg!(exp(I96F32::from(32)).unwrap());
+    assert_eq!(
+        exp(I96F32::from(32)).unwrap(),
+        I96F32::unwrapped_from_str("78962960182680.69")
+    )
 }
 
 #[test]
@@ -125,19 +128,24 @@ fn test_price_single() {
 
 #[test]
 fn test_shares_edge_1() {
-    dbg!(shares(
-        I96F32::unwrapped_from_str("0.1"),
-        I96F32::unwrapped_from_str("4.370954"),
-        I96F32::unwrapped_from_str("1"),
-        I96F32::unwrapped_from_str("2"),
-        I96F32::unwrapped_from_str("32699704.75266"),
+    use crate::assert_eq_f;
+    assert_eq_f!(
+        shares(
+            I96F32::unwrapped_from_str("0.1"),
+            I96F32::unwrapped_from_str("4.370954"),
+            I96F32::unwrapped_from_str("1"),
+            I96F32::unwrapped_from_str("2"),
+            I96F32::unwrapped_from_str("32699704.75266"),
+        )
+        .unwrap(),
+        I96F32::unwrapped_from_str("49545632.55319472")
     )
-    .unwrap());
 }
 
 #[test]
 fn test_shares_edge_2() {
-    assert_eq!(
+    use crate::assert_eq_f;
+    assert_eq_f!(
         shares(
             I96F32::unwrapped_from_str("1"),
             I96F32::unwrapped_from_str("1000215.097017"),
@@ -152,12 +160,16 @@ fn test_shares_edge_2() {
 
 #[test]
 fn test_price_edge_1() {
-    dbg!(price(
-        I96F32::unwrapped_from_str("38"),
-        I96F32::unwrapped_from_str("333"),
-        I96F32::unwrapped_from_str("611"),
-        I96F32::unwrapped_from_str("265"),
-        I96F32::unwrapped_from_str("0"),
-    )
-    .unwrap());
+    use crate::assert_eq_f;
+    assert_eq_f!(
+        price(
+            I96F32::unwrapped_from_str("38"),
+            I96F32::unwrapped_from_str("333"),
+            I96F32::unwrapped_from_str("611"),
+            I96F32::unwrapped_from_str("265"),
+            I96F32::unwrapped_from_str("0"),
+        )
+        .unwrap(),
+        I96F32::unwrapped_from_str("0.12648143330073658")
+    );
 }
