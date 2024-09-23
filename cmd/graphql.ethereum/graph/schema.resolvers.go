@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/features"
@@ -18,8 +17,8 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	/*
 	Do the following:
 
-	1. Check the user's signature. Check that they created the campaign details.
-	2. Check that the campaign exists on-chain. Check that the factory knows of its existence.
+	1. Check the user's signature. Derive the addresses of the trading and share contracts 
+	2. Check that the trading & share contracts exists on-chain. Check that the factory knows of their existence.
 	3. Take the information that was given, and add it to the database!
 
 	Later, a member of the moderation team will configure the display of the frontpage column.
