@@ -1,32 +1,47 @@
 "use client";
 import Script from "next/script";
+import { GoogleTagManager } from "@next/third-parties/google";
+
+export const grantedConsent = {
+  ad_storage: "granted",
+  analytics_storage: "granted",
+  functionality_storage: "granted",
+  personalization_storage: "granted",
+  security_storage: "granted",
+} as const;
+
+export const deniedConsent = {
+  ad_storage: "denied",
+  analytics_storage: "denied",
+  functionality_storage: "denied",
+  personalization_storage: "denied",
+  security_storage: "denied",
+} as const;
 
 export default function GoogleAnalytics() {
-  const id = "GTM-WTCHD5T9";
+  const gtmId = "GTM-WTCHD5T9";
+
   return (
     <>
-      <Script
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
+      <Script id="google-consent" strategy="afterInteractive">
         {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
 
-                gtag('consent', 'default', {
-                  'ad_storage': 'denied',
-                  'ad_user_data': 'denied',
-                  'ad_personalization': 'denied',
-                  'analytics_storage': 'denied'
-                });
+                if (localStorage.getItem('consentMode') === null) {
+                  gtag('consent', 'default', ${JSON.stringify(deniedConsent)});
+                } else {
+                    gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
+                }
 
-                gtag('config', '${id}', {
-                    page_path: window.location.pathname,
+                if (localStorage.getItem('userId') != null) {
+                  window.dataLayer.push({
+                    'walletAddress': localStorage.getItem('walletAddress')
                 });
+        }
                 `}
       </Script>
+      <GoogleTagManager gtmId={gtmId} />
     </>
   );
 }
