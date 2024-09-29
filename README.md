@@ -31,8 +31,8 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 |    Deployment name     |              Deployment address            |
 |------------------------|--------------------------------------------|
-| Proxy admin            | 0x3c09d0c7f5448d08c5c386289c628305a54cc6df |
-| Factory implementation | 0xa73684fa6fd8fafcab161d283c7cd64e71ff1944 |
-| ERC20 implementation   | 0xbcc8578d4DB503386Bcc0A07be3FdE270f4bcE7F |
-| Trading implementation | 0xb465a90D16d2EC36410ec68Ae7Dc0d7D2a821728 |
-| Factory proxy          | 0x284bD1291E472f2178808145Feb741D3718CA2C9 |
+| Proxy admin            | 0x6ca2944c0b4496e22f9cba80bd4c2309b4cb5e00 |
+| Factory implementation | 0x0eb9c6a66f1c12935d53efe98f0ae27ef886685a |
+| ERC20 implementation   | 0xd7d7e74907A5Ddf704Bb8CA16aa6BAc583560B8f |
+| Trading implementation | 0xaf877eb0966702a777af28a6239aabbdf1b272c0 |
+| Factory proxy          | 0xcefe59A5809B91C452bd2Ce239140F9914cf82D4 |
