@@ -122,11 +122,11 @@ describe("End to end tests", async () => {
   const outcomes = [
     {
       identifier: outcome1,
-      seed: 10000000000000
+      seed: 1000000
     },
     {
       identifier: outcome2,
-      seed: 10000000000000
+      seed: 1000000
     },
   ];
 
