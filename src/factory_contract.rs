@@ -8,7 +8,9 @@ use stylus_sdk::{
     storage::*,
 };
 
-use crate::{error::*, events, immutables::*, longtail_call, proxy, share_call, trading_call};
+use crate::{
+    error::*, events, fusdc_call, immutables::*, longtail_call, proxy, share_call, trading_call,
+};
 
 #[storage]
 #[cfg_attr(all(target_arch = "wasm32", feature = "factory"), entrypoint)]
@@ -62,6 +64,13 @@ impl Factory {
             oracle,
         });
 
+        // We take the amount that the user has allocated to the outcomes, and
+        // send it to the trading contract, which assumes it has the money it's entitled to.
+
+        let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
+        assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
+        fusdc_call::take_from_sender_to(trading_addr, fusdc_amt)?;
+
         for outcome_identifier in outcome_identifiers {
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
@@ -86,7 +95,13 @@ impl Factory {
             });
         }
 
-        trading_call::ctor(trading_addr, oracle, msg::sender(), &outcomes)?;
+        // Amount of fUSDC to take from the sender for the trading environment.
+        let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
+
+        assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
+        fusdc_call::take_from_sender_to(trading_addr, fusdc_amt)?;
+
+        trading_call::ctor(trading_addr, oracle, outcomes)?;
 
         Ok(trading_addr)
     }

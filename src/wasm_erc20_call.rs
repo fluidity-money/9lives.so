@@ -49,7 +49,7 @@ pub fn permit(
 
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
     unpack_u256(
-        &RawCall::new()
+        &RawCall::new_static()
             .call(addr, &pack_balance_of(spender))
             .map_err(Error::ERC20Error)?,
     )

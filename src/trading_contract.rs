@@ -69,19 +69,14 @@ impl Trading {
     pub fn ctor(
         &mut self,
         oracle: Address,
-        funder: Address,
         outcomes: Vec<(FixedBytes<8>, U256)>,
     ) -> Result<(), Vec<u8>> {
         assert_or!(self.factory.get().is_zero(), Error::AlreadyConstructed);
 
-        // A risk involved with this might be someone creating a EOA at
-        // the address that would be derived with CREATE2, then
-        // transferring money out. But that's not likely in practice as the
-        // amount needed to seed is super low, and it's hard to predict
-        // the details needed for this CREATE2.
         let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
-        assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
-        fusdc_call::take_from_funder(funder, fusdc_amt)?;
+
+        // We assume that the Factory already supplied the liquidity to us.
+
         self.invested.set(u256_to_fixed(fusdc_amt, FUSDC_DECIMALS)?);
 
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();

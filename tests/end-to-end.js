@@ -122,13 +122,15 @@ describe("End to end tests", async () => {
   const outcomes = [
     {
       identifier: outcome1,
-      seed: 100
+      seed: 10000000000000
     },
     {
       identifier: outcome2,
-      seed: 100
+      seed: 10000000000000
     },
   ];
+
+  await (await fusdc.approve(factoryImpl, MaxUint256)).wait();
 
   const tradingAddr = await factory.newTrading.staticCall(outcomes);
   const tx = await factory.newTrading(outcomes);
@@ -143,7 +145,7 @@ describe("End to end tests", async () => {
 
   it("Should support minting shares", async () => {
     const balBefore = await share1.balanceOf(defaultAccountAddr);
-    await (await trading.mint.staticCall(outcome1, 100000000, defaultAccountAddr)).wait();
+    await trading.mint.staticCall(outcome1, 10000000, defaultAccountAddr);
     const balAfter = await share1.balanceOf(defaultAccountAddr);
   });
 });

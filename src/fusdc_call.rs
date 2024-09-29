@@ -9,12 +9,16 @@ use crate::{
     immutables::FUSDC_ADDR,
 };
 
-pub fn take_from_sender(_amount: U256) -> Result<(), Error> {
-    take_from_funder(msg::sender(), _amount)
+pub fn take_from_funder_to(funder: Address, recipient: Address, amount: U256) -> Result<(), Error> {
+    transfer_from(FUSDC_ADDR, funder, recipient, amount)
 }
 
-pub fn take_from_funder(funder: Address, amount: U256) -> Result<(), Error> {
-    transfer_from(FUSDC_ADDR, funder, contract::address(), amount)
+pub fn take_from_sender_to(recipient: Address, amount: U256) -> Result<(), Error> {
+    take_from_funder_to(msg::sender(), recipient, amount)
+}
+
+pub fn take_from_sender(amount: U256) -> Result<(), Error> {
+    take_from_funder_to(msg::sender(), contract::address(), amount)
 }
 
 pub fn take_from_sender_permit(

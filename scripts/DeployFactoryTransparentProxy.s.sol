@@ -9,7 +9,7 @@ import {
 
 contract DeployFactoryTransparentProxy is Script {
     function run() public {
-        // TODO broken somehow
+        vm.broadcast();
         address impl = vm.envAddress("SPN_FACTORY_IMPL");
         address admin = vm.envAddress("SPN_PROXY_ADMIN_ADDR");
         bytes memory data = vm.envBytes("SPN_DEPLOY_DATA");
