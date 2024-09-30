@@ -10,11 +10,6 @@ macro_rules! assert_or {
     };
 }
 
-const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
-const ERR_ERC20_PREAMBLE: [u8; 2] = [0x99, 0x01];
-const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];
-const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x03];
-
 #[derive(Error, Debug)]
 #[repr(u8)]
 pub enum Error {
@@ -169,6 +164,11 @@ impl From<Error> for Vec<u8> {
 
     #[cfg(target_arch = "wasm32")]
     fn from(val: Error) -> Self {
+        const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
+        const ERR_ERC20_PREAMBLE: [u8; 2] = [0x99, 0x01];
+        const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];
+        const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x03];
+
         match val {
             Error::LongtailError(b) => ext(ERR_LONGTAIL_PREAMBLE, b),
             Error::ERC20Error(b) => ext(ERR_ERC20_PREAMBLE, b),

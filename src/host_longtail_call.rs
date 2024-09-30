@@ -12,6 +12,10 @@ pub fn create_pool(
     Ok(())
 }
 
+pub fn enable_pool(_erc20: Address) -> Result<(), Error> {
+    Ok(())
+}
+
 pub fn pause_pool(_erc20: Address) -> Result<(), Error> {
     Ok(())
 }
