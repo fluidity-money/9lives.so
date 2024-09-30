@@ -10,6 +10,11 @@ macro_rules! assert_or {
     };
 }
 
+const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
+const ERR_ERC20_PREAMBLE: [u8; 2] = [0x99, 0x01];
+const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];
+const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x03];
+
 #[derive(Error, Debug)]
 #[repr(u8)]
 pub enum Error {
@@ -150,6 +155,12 @@ pub enum Error {
     UnusualAmountCreated,
 }
 
+fn ext(preamble: [u8; 2], b: Vec<u8>) -> Vec<u8> {
+    let mut x = preamble.to_vec();
+    x.extend(b);
+    x
+}
+
 impl From<Error> for Vec<u8> {
     #[cfg(not(target_arch = "wasm32"))]
     fn from(val: Error) -> Self {
@@ -159,11 +170,10 @@ impl From<Error> for Vec<u8> {
     #[cfg(target_arch = "wasm32")]
     fn from(val: Error) -> Self {
         match val {
-            Error::LongtailError(b)
-            | Error::ERC20Error(b)
-            | Error::ShareError(b)
-            | Error::TradingError(b) => b.to_vec(),
-            // Unpack the Longtail/ERC20 error with a preamble (0x999)
+            Error::LongtailError(b) => ext(ERR_LONGTAIL_PREAMBLE, b),
+            Error::ERC20Error(b) => ext(ERR_ERC20_PREAMBLE, b),
+            Error::ShareError(b) => ext(ERR_SHARE_PREAMBLE, b),
+            Error::TradingError(b) => ext(ERR_TRADING_PREAMBLE, b),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
         }
     }

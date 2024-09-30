@@ -25,6 +25,13 @@ pub fn create_pool(
     Ok(())
 }
 
+pub fn enable_pool(erc20: Address) -> Result<(), Error> {
+    RawCall::new()
+        .call(LONGTAIL_ADDR, &pack_enable_pool(erc20, true))
+        .map_err(Error::LongtailError)?;
+    Ok(())
+}
+
 pub fn pause_pool(erc20: Address) -> Result<(), Error> {
     RawCall::new()
         .call(LONGTAIL_ADDR, &pack_enable_pool(erc20, false))

@@ -88,6 +88,8 @@ impl Factory {
                 LONGTAIL_MAX_LIQ_PER_TICK,
             )?;
 
+            longtail_call::enable_pool(erc20_addr)?;
+
             evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_identifier,
                 erc20Identifier: erc20_identifier,

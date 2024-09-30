@@ -85,7 +85,8 @@ pub const SHARE_DECIMALS: u8 = 6;
 
 pub const FEE_RECIPIENT: Address = address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7");
 
-pub const LONGTAIL_PRICE: U256 = U256::from_limbs([1, 0, 0, 0]);
+//79228162514264337593543950336
+pub const LONGTAIL_PRICE: U256 = U256::from_limbs([0, 4294967296, 0, 0]);
 
 pub const LONGTAIL_FEE: u32 = 3000;
 
