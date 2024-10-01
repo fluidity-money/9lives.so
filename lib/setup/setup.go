@@ -4,11 +4,11 @@
 package setup
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"log/slog"
 	"os"
-	"context"
 	"runtime/debug"
 	"strings"
 	"time"
@@ -40,7 +40,7 @@ func (h Multihandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	}
 	return Multihandler{
 		sentry: s,
-		json: h.json.WithAttrs(attrs),
+		json:   h.json.WithAttrs(attrs),
 	}
 }
 func (h Multihandler) WithGroup(name string) slog.Handler {
@@ -50,7 +50,7 @@ func (h Multihandler) WithGroup(name string) slog.Handler {
 	}
 	return Multihandler{
 		sentry: s,
-		json: h.json.WithGroup(name),
+		json:   h.json.WithGroup(name),
 	}
 }
 func (h Multihandler) Handle(ctx context.Context, record slog.Record) error {

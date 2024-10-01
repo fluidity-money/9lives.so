@@ -40,6 +40,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Frontpage() FrontpageResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
@@ -58,8 +59,21 @@ type ComplexityRoot struct {
 		PoolAddress func(childComplexity int) int
 	}
 
+	Contracts struct {
+		FactoryAddr func(childComplexity int) int
+		FusdcAddr   func(childComplexity int) int
+	}
+
+	Frontpage struct {
+		Campaigns  func(childComplexity int) int
+		Categories func(childComplexity int) int
+		From       func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Until      func(childComplexity int) int
+	}
+
 	Mutation struct {
-		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string, sR string, s string, v string) int
+		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string) int
 	}
 
 	Outcome struct {
@@ -72,7 +86,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Campaigns func(childComplexity int) int
+		Contracts func(childComplexity int) int
+		Frontpage func(childComplexity int) int
 	}
 
 	Share struct {
@@ -84,11 +99,18 @@ type ComplexityRoot struct {
 	}
 }
 
+type FrontpageResolver interface {
+	ID(ctx context.Context, obj *types.Frontpage) (string, error)
+	From(ctx context.Context, obj *types.Frontpage) (int, error)
+	Until(ctx context.Context, obj *types.Frontpage) (int, error)
+	Categories(ctx context.Context, obj *types.Frontpage) ([]string, error)
+}
 type MutationResolver interface {
-	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string, sR string, s string, v string) (*bool, error)
+	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string) (*bool, error)
 }
 type QueryResolver interface {
-	Campaigns(ctx context.Context) ([]types.Campaign, error)
+	Contracts(ctx context.Context) (*model.Contracts, error)
+	Frontpage(ctx context.Context) ([]types.Frontpage, error)
 }
 
 type executableSchema struct {
@@ -159,6 +181,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Campaign.PoolAddress(childComplexity), true
 
+	case "Contracts.factoryAddr":
+		if e.complexity.Contracts.FactoryAddr == nil {
+			break
+		}
+
+		return e.complexity.Contracts.FactoryAddr(childComplexity), true
+
+	case "Contracts.fusdcAddr":
+		if e.complexity.Contracts.FusdcAddr == nil {
+			break
+		}
+
+		return e.complexity.Contracts.FusdcAddr(childComplexity), true
+
+	case "Frontpage.campaigns":
+		if e.complexity.Frontpage.Campaigns == nil {
+			break
+		}
+
+		return e.complexity.Frontpage.Campaigns(childComplexity), true
+
+	case "Frontpage.categories":
+		if e.complexity.Frontpage.Categories == nil {
+			break
+		}
+
+		return e.complexity.Frontpage.Categories(childComplexity), true
+
+	case "Frontpage.from":
+		if e.complexity.Frontpage.From == nil {
+			break
+		}
+
+		return e.complexity.Frontpage.From(childComplexity), true
+
+	case "Frontpage.id":
+		if e.complexity.Frontpage.ID == nil {
+			break
+		}
+
+		return e.complexity.Frontpage.ID(childComplexity), true
+
+	case "Frontpage.until":
+		if e.complexity.Frontpage.Until == nil {
+			break
+		}
+
+		return e.complexity.Frontpage.Until(childComplexity), true
+
 	case "Mutation.explainCampaign":
 		if e.complexity.Mutation.ExplainCampaign == nil {
 			break
@@ -169,7 +240,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["text"].(string), args["seed"].(int), args["creator"].(string), args["sR"].(string), args["s"].(string), args["v"].(string)), true
+		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["text"].(string), args["seed"].(int), args["creator"].(string)), true
 
 	case "Outcome.campaign":
 		if e.complexity.Outcome.Campaign == nil {
@@ -213,12 +284,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Outcome.Share(childComplexity), true
 
-	case "Query.campaigns":
-		if e.complexity.Query.Campaigns == nil {
+	case "Query.contracts":
+		if e.complexity.Query.Contracts == nil {
 			break
 		}
 
-		return e.complexity.Query.Campaigns(childComplexity), true
+		return e.complexity.Query.Contracts(childComplexity), true
+
+	case "Query.frontpage":
+		if e.complexity.Query.Frontpage == nil {
+			break
+		}
+
+		return e.complexity.Query.Frontpage(childComplexity), true
 
 	case "Share.address":
 		if e.complexity.Share.Address == nil {
@@ -380,78 +458,60 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 		}
 	}
 	args["name"] = arg1
-	var arg2 []model.OutcomeInput
+	var arg2 string
+	if tmp, ok := rawArgs["description"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["description"] = arg2
+	var arg3 []model.OutcomeInput
 	if tmp, ok := rawArgs["outcomes"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outcomes"))
-		arg2, err = ec.unmarshalNOutcomeInput2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeInputᚄ(ctx, tmp)
+		arg3, err = ec.unmarshalNOutcomeInput2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["outcomes"] = arg2
-	var arg3 int
+	args["outcomes"] = arg3
+	var arg4 int
 	if tmp, ok := rawArgs["ending"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ending"))
-		arg3, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg4, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["ending"] = arg3
-	var arg4 string
+	args["ending"] = arg4
+	var arg5 string
 	if tmp, ok := rawArgs["text"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
-		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		arg5, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["text"] = arg4
-	var arg5 int
+	args["text"] = arg5
+	var arg6 int
 	if tmp, ok := rawArgs["seed"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seed"))
-		arg5, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg6, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["seed"] = arg5
-	var arg6 string
+	args["seed"] = arg6
+	var arg7 string
 	if tmp, ok := rawArgs["creator"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("creator"))
-		arg6, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["creator"] = arg6
-	var arg7 string
-	if tmp, ok := rawArgs["sR"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sR"))
 		arg7, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["sR"] = arg7
-	var arg8 string
-	if tmp, ok := rawArgs["s"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
-		arg8, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["s"] = arg8
-	var arg9 string
-	if tmp, ok := rawArgs["v"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
-		arg9, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["v"] = arg9
+	args["creator"] = arg7
 	return args, nil
 }
 
@@ -834,6 +894,330 @@ func (ec *executionContext) fieldContext_Campaign_outcomes(_ context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Contracts_fusdcAddr(ctx context.Context, field graphql.CollectedField, obj *model.Contracts) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Contracts_fusdcAddr(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FusdcAddr, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Contracts_fusdcAddr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Contracts",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Contracts_factoryAddr(ctx context.Context, field graphql.CollectedField, obj *model.Contracts) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Contracts_factoryAddr(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FactoryAddr, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Contracts_factoryAddr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Contracts",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Frontpage_id(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Frontpage_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Frontpage().ID(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Frontpage_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Frontpage",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Frontpage_from(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Frontpage_from(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Frontpage().From(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Frontpage_from(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Frontpage",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Frontpage_until(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Frontpage_until(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Frontpage().Until(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Frontpage_until(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Frontpage",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Frontpage_categories(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Frontpage_categories(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Frontpage().Categories(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Frontpage_categories(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Frontpage",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Frontpage_campaigns(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Frontpage_campaigns(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Campaigns, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]types.Campaign)
+	fc.Result = res
+	return ec.marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaignᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Frontpage_campaigns(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Frontpage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_Campaign_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Campaign_description(ctx, field)
+			case "creator":
+				return ec.fieldContext_Campaign_creator(ctx, field)
+			case "oracle":
+				return ec.fieldContext_Campaign_oracle(ctx, field)
+			case "identifier":
+				return ec.fieldContext_Campaign_identifier(ctx, field)
+			case "poolAddress":
+				return ec.fieldContext_Campaign_poolAddress(ctx, field)
+			case "outcomes":
+				return ec.fieldContext_Campaign_outcomes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_explainCampaign(ctx, field)
 	if err != nil {
@@ -848,7 +1232,7 @@ func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["text"].(string), fc.Args["seed"].(int), fc.Args["creator"].(string), fc.Args["sR"].(string), fc.Args["s"].(string), fc.Args["v"].(string))
+		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["text"].(string), fc.Args["seed"].(int), fc.Args["creator"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1174,8 +1558,8 @@ func (ec *executionContext) fieldContext_Outcome_share(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_campaigns(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_campaigns(ctx, field)
+func (ec *executionContext) _Query_contracts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_contracts(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1188,7 +1572,7 @@ func (ec *executionContext) _Query_campaigns(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Campaigns(rctx)
+		return ec.resolvers.Query().Contracts(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1200,12 +1584,12 @@ func (ec *executionContext) _Query_campaigns(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]types.Campaign)
+	res := resTmp.(*model.Contracts)
 	fc.Result = res
-	return ec.marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaignᚄ(ctx, field.Selections, res)
+	return ec.marshalNContracts2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐContracts(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_campaigns(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_contracts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1213,22 +1597,68 @@ func (ec *executionContext) fieldContext_Query_campaigns(_ context.Context, fiel
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "name":
-				return ec.fieldContext_Campaign_name(ctx, field)
-			case "description":
-				return ec.fieldContext_Campaign_description(ctx, field)
-			case "creator":
-				return ec.fieldContext_Campaign_creator(ctx, field)
-			case "oracle":
-				return ec.fieldContext_Campaign_oracle(ctx, field)
-			case "identifier":
-				return ec.fieldContext_Campaign_identifier(ctx, field)
-			case "poolAddress":
-				return ec.fieldContext_Campaign_poolAddress(ctx, field)
-			case "outcomes":
-				return ec.fieldContext_Campaign_outcomes(ctx, field)
+			case "fusdcAddr":
+				return ec.fieldContext_Contracts_fusdcAddr(ctx, field)
+			case "factoryAddr":
+				return ec.fieldContext_Contracts_factoryAddr(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Contracts", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_frontpage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_frontpage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Frontpage(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]types.Frontpage)
+	fc.Result = res
+	return ec.marshalNFrontpage2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐFrontpageᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_frontpage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Frontpage_id(ctx, field)
+			case "from":
+				return ec.fieldContext_Frontpage_from(ctx, field)
+			case "until":
+				return ec.fieldContext_Frontpage_until(ctx, field)
+			case "categories":
+				return ec.fieldContext_Frontpage_categories(ctx, field)
+			case "campaigns":
+				return ec.fieldContext_Frontpage_campaigns(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Frontpage", field.Name)
 		},
 	}
 	return fc, nil
@@ -3349,6 +3779,233 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var contractsImplementors = []string{"Contracts"}
+
+func (ec *executionContext) _Contracts(ctx context.Context, sel ast.SelectionSet, obj *model.Contracts) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, contractsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Contracts")
+		case "fusdcAddr":
+			out.Values[i] = ec._Contracts_fusdcAddr(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "factoryAddr":
+			out.Values[i] = ec._Contracts_factoryAddr(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var frontpageImplementors = []string{"Frontpage"}
+
+func (ec *executionContext) _Frontpage(ctx context.Context, sel ast.SelectionSet, obj *types.Frontpage) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, frontpageImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Frontpage")
+		case "id":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Frontpage_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "from":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Frontpage_from(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "until":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Frontpage_until(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "categories":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Frontpage_categories(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "campaigns":
+			out.Values[i] = ec._Frontpage_campaigns(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -3478,7 +4135,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "campaigns":
+		case "contracts":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -3487,7 +4144,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_campaigns(ctx, field)
+				res = ec._Query_contracts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "frontpage":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_frontpage(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -4008,6 +4687,83 @@ func (ec *executionContext) marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoney�
 	return ec._Campaign(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNContracts2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐContracts(ctx context.Context, sel ast.SelectionSet, v model.Contracts) graphql.Marshaler {
+	return ec._Contracts(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNContracts2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐContracts(ctx context.Context, sel ast.SelectionSet, v *model.Contracts) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Contracts(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNFrontpage2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐFrontpage(ctx context.Context, sel ast.SelectionSet, v types.Frontpage) graphql.Marshaler {
+	return ec._Frontpage(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFrontpage2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐFrontpageᚄ(ctx context.Context, sel ast.SelectionSet, v []types.Frontpage) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNFrontpage2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐFrontpage(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalID(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4126,6 +4882,38 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNWallet2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐWallet(ctx context.Context, sel ast.SelectionSet, v *types.Wallet) graphql.Marshaler {

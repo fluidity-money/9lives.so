@@ -6,44 +6,104 @@ package graph
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
 )
 
+// ID is the resolver for the id field.
+func (r *frontpageResolver) ID(ctx context.Context, obj *types.Frontpage) (string, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// From is the resolver for the from field.
+func (r *frontpageResolver) From(ctx context.Context, obj *types.Frontpage) (int, error) {
+	panic(fmt.Errorf("not implemented: From - from"))
+}
+
+// Until is the resolver for the until field.
+func (r *frontpageResolver) Until(ctx context.Context, obj *types.Frontpage) (int, error) {
+	panic(fmt.Errorf("not implemented: Until - until"))
+}
+
+// Categories is the resolver for the categories field.
+func (r *frontpageResolver) Categories(ctx context.Context, obj *types.Frontpage) ([]string, error) {
+	panic(fmt.Errorf("not implemented: Categories - categories"))
+}
+
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string, sR string, s string, v string) (*bool, error) {
-	/*
-	Do the following:
-
-	1. Check the user's signature. Derive the addresses of the trading and share contracts 
-	2. Check that the trading & share contracts exists on-chain. Check that the factory knows of their existence.
-	3. Take the information that was given, and add it to the database!
-
-	Later, a member of the moderation team will configure the display of the frontpage column.
-	*/
-
-	// First, concatenate the outcome details that were submitted.
-
-	// Then, get the keccak256 hash of the sorting and concatenation.
-
-	// Then, derive the on-chain address from this info of the trading pool.
-
-	// Then, check on-chain to see if it exists.
-
-	// If it does, then log the existence of the pool in the database!
-
-	return false, nil
-}
-
-// Campaigns is the resolver for the campaigns field.
-func (r *queryResolver) Campaigns(ctx context.Context) ([]types.Campaign, error) {
-	if r.F.Is(features.FeatureGraphqlMockGraph) {
-		return MockGraphCampaigns()
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string) (*bool, error) {
+	// Check the user's signature
+	authHeader, ok := ctx.Value("authHeader").(string)
+	if !ok || authHeader == "" {
+		return nil, fmt.Errorf("authorization token is missing")
 	}
-	return nil, nil
+	signerWallet, err := verifyAuthTokenAddress(authHeader)
+	if err != nil {
+		return nil, err
+	}
+	if creator != signerWallet {
+		slog.Error("Creator address does not match the signer wallet",
+			"creator address", creator,
+			"signer wallet", signerWallet,
+		)
+		return nil, fmt.Errorf("creator address does not match the signer wallet")
+	}
+	slog.Debug("Check authentication",
+		"validated wallet", signerWallet,
+	)
+
+	tradingContractAddress, outcomeHashes, err := getTradingAddress(outcomes, r.FactoryAddr, r.TradingBytecode)
+	if err != nil {
+		slog.Error("Error while getting trading contract address",
+			"trading contract address", tradingContractAddress,
+			"factory address", r.FactoryAddr,
+			"outcomes hashes", outcomeHashes,
+			"error", err,
+		)
+		return nil, err
+	}
+
+	// Check that the trading contract exists on-chain
+	isTradingContracDeployed, err := isContractDeployed(r.Geth, ctx, tradingContractAddress)
+	if err != nil {
+		slog.Error("Error checking if trading contract is deployed",
+			"trading contract", tradingContractAddress,
+			"factory address", r.FactoryAddr,
+			"outcome hashes", outcomeHashes,
+			"error", err,
+		)
+		return nil, fmt.Errorf("missing contract code")
+	}
+	if !isTradingContracDeployed {
+		slog.Error("Bytecode is not deployed",
+			"trading contract", tradingContractAddress,
+			"factory address", r.FactoryAddr,
+			"outcome hashes", outcomeHashes,
+		)
+		return nil, fmt.Errorf("missing contract code")
+	}
+
+	// res := r.DB.Table("campaigns_1").Create()
+	res := true
+	return &res, nil
 }
+
+// Contracts is the resolver for the contracts field.
+func (r *queryResolver) Contracts(ctx context.Context) (*model.Contracts, error) {
+	panic(fmt.Errorf("not implemented: Contracts - contracts"))
+}
+
+// Frontpage is the resolver for the frontpage field.
+func (r *queryResolver) Frontpage(ctx context.Context) ([]types.Frontpage, error) {
+	panic(fmt.Errorf("not implemented: Frontpage - frontpage"))
+}
+
+// Frontpage returns FrontpageResolver implementation.
+func (r *Resolver) Frontpage() FrontpageResolver { return &frontpageResolver{r} }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
@@ -51,5 +111,19 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type frontpageResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) Campaigns(ctx context.Context) ([]types.Campaign, error) {
+	if r.F.Is(features.FeatureGraphqlMockGraph) {
+		return MockGraphCampaigns()
+	}
+	return nil, nil
+}

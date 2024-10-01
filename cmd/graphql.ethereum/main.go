@@ -3,6 +3,7 @@ package main
 //go:generate go run github.com/99designs/gqlgen generate
 
 import (
+	"encoding/hex"
 	"net/http"
 	"os"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 
+	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
 	gormSlog "github.com/orandin/slog-gorm"
@@ -33,6 +35,9 @@ const (
 	// EnvListenAddr to listen the HTTP server on.
 	EnvListenAddr = "SPN_LISTEN_ADDR"
 )
+
+// TradingBytecode is the bytecode of the trading contract.
+var TradingBytecode, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f7300000000000000000000000000000000000000005af43d5f5f3e6029573d5ffd5b3d5ff3")
 
 type corsMiddleware struct {
 	srv *handler.Server
@@ -61,10 +66,12 @@ func main() {
 	defer geth.Close()
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB:          db,
-			F:           features.Get(),
-			Geth:        geth,
-			C:           config,
+			DB:              db,
+			F:               features.Get(),
+			Geth:            geth,
+			C:               config,
+			FactoryAddr:     ethCommon.HexToAddress(config.FactoryAddress),
+			TradingBytecode: TradingBytecode,
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})

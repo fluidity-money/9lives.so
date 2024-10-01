@@ -95,9 +95,14 @@ type Mutation {
     type: Modification!,
 
     """
-    Description of the campaign.
+    Name of the campaign.
     """
     name: String!,
+
+    """
+    Description of the campaign.
+    """
+    description: String!,
 
     """
     Outcomes associated with this campaign. An outcome can either be something like
@@ -123,23 +128,7 @@ type Mutation {
     """
     Creator address. Hex encoded. Verified to be the creator later.
     """
-    creator: String!,
-
-    """
-    R encoded point for the signature. Renamed given the code generator
-    in Go (is r).
-    """
-    sR: String!,
-
-    """
-    S encoded secp256r1 point.
-    """
-    s: String!,
-
-    """
-    V encoded secp256r1 signature part.
-    """
-    v: String!
+    creator: String!
   ): Boolean
 }
 
