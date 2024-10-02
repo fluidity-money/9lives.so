@@ -12,7 +12,7 @@ interface INineLivesFactory {
 
     struct Outcome {
         bytes8 identifier;
-        uint256 seed;
+        uint256 amount;
     }
 
     /**
