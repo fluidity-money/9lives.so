@@ -150,12 +150,6 @@ pub enum Error {
     UnusualAmountCreated,
 }
 
-fn ext(preamble: [u8; 2], b: Vec<u8>) -> Vec<u8> {
-    let mut x = preamble.to_vec();
-    x.extend(b);
-    x
-}
-
 impl From<Error> for Vec<u8> {
     #[cfg(not(target_arch = "wasm32"))]
     fn from(val: Error) -> Self {
@@ -164,6 +158,12 @@ impl From<Error> for Vec<u8> {
 
     #[cfg(target_arch = "wasm32")]
     fn from(val: Error) -> Self {
+        fn ext(preamble: [u8; 2], b: Vec<u8>) -> Vec<u8> {
+            let mut x = preamble.to_vec();
+            x.extend(b);
+            x
+        }
+
         const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
         const ERR_ERC20_PREAMBLE: [u8; 2] = [0x99, 0x01];
         const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];

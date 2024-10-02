@@ -4,14 +4,14 @@
 
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
-    contract, msg,
+    contract, evm, msg,
     prelude::*,
     storage::*,
 };
 
 use crate::{
     error::*,
-    factory_call,
+    events, factory_call,
     fixed::{fixed_to_u256, u256_to_fixed, StorageFixed},
     fusdc_call,
     immutables::*,
@@ -83,7 +83,8 @@ impl Trading {
 
         assert_or!(outcomes_len == 2, Error::TwoOutcomesOnly);
 
-        self.shares.set(I96F32::from(outcomes_len) * I96F32::from(100));
+        self.shares
+            .set(I96F32::from(outcomes_len) * I96F32::from(100));
 
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
@@ -143,6 +144,14 @@ impl Trading {
         assert_or!(shares > U256::ZERO, Error::UnusualAmountCreated);
 
         share_call::mint(share_addr, recipient, shares)?;
+
+        evm::log(events::SharesMinted {
+            identifier: outcome_id,
+            shareAmount: shares,
+            spender: msg::sender(),
+            recipient,
+            fusdcSpent: value,
+        });
 
         Ok(shares)
     }
@@ -204,6 +213,13 @@ impl Trading {
         // Send the user some fUSDC now!
         let fusdc = fixed_to_u256(p, FUSDC_DECIMALS)?;
         fusdc_call::transfer(recipient, fusdc)?;
+        evm::log(events::PayoffActivated {
+            identifier: outcome_id,
+            sharesSpent: share_bal,
+            spender: msg::sender(),
+            recipient,
+            fusdcReceived: fusdc,
+        });
         Ok(fusdc)
     }
 

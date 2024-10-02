@@ -17,6 +17,16 @@ interface IEvents {
     event SharesMinted(
         bytes8 indexed identifier,
         uint256 indexed shareAmount,
-        uint256 indexed fusdcSpent
+        address indexed spender,
+        address recipient,
+        uint256 fusdcSpent
+    );
+
+    event PayoffActivated(
+        bytes8 indexed identifier,
+        uint256 indexed sharesSpent,
+        address indexed spender,
+        address recipient,
+        uint256 fusdcReceived
     );
 }
