@@ -14,6 +14,11 @@ interface IEvents {
         address indexed erc20Addr
     );
 
+    event OutcomeDecided(
+        bytes8 indexed identifier,
+        address indexed oracle
+    );
+
     event SharesMinted(
         bytes8 indexed identifier,
         uint256 indexed shareAmount,

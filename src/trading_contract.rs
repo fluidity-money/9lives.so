@@ -182,7 +182,8 @@ impl Trading {
     }
 
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> Result<(), Error> {
-        assert_or!(msg::sender() == self.oracle.get(), Error::NotOracle);
+        let oracle_addr = self.oracle.get();
+        assert_or!(msg::sender() == oracle_addr, Error::NotOracle);
         assert_or!(!self.decided.get(), Error::NotTradingContract);
         // Notify Longtail to pause trading on every outcome pool.
         factory_call::disable_shares(
@@ -194,6 +195,10 @@ impl Trading {
         // Set the outcome that's winning as the winner!
         self.outcomes.setter(outcome).winner.set(true);
         self.decided.set(true);
+        evm::log(events::OutcomeDecided{
+            identifier: outcome,
+            oracle: oracle_addr
+        });
         Ok(())
     }
 
