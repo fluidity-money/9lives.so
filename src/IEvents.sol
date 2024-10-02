@@ -13,4 +13,10 @@ interface IEvents {
         bytes8 indexed erc20Identifier,
         address indexed erc20Addr
     );
+
+    event SharesMinted(
+        bytes8 indexed identifier,
+        uint256 indexed shareAmount,
+        uint256 indexed fusdcSpent
+    );
 }

@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - docs/**
+      - src/**
+      - README.md
 
 jobs:
   deploy:
@@ -15,6 +17,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+
+      - name: Install Foundry toolchain
+        run: |
+          curl -OL https://github.com/foundry-rs/foundry/releases/download/nightly/foundry_nightly_linux_amd64.tar.gz
+          tar -xzf foundry_nightly_linux_amd64.tar.gz
+          sudo mv forge /usr/local/bin
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
