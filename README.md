@@ -32,7 +32,7 @@ on the local environment, or with end to end tests with an Arbitrum node.
 |    Deployment name     |              Deployment address            |
 |------------------------|--------------------------------------------|
 | Proxy admin            | 0x85d9f575c2085357b54a385838ee9d4a49f6c93a |
-| Factory implementation | 0xc33b79184af71f454c18584b4f9d7b113790e5db |
+| Factory implementation | 0x3f6cb448aafd7153f6dd654c5d9793c777e85909 |
 | ERC20 implementation   | 0x526Ce74aC8c69F379CC27212A4fb35ad211502fB |
 | Trading implementation | 0xf7b24649ab2bb4905a2da2940afc49b80156f4bc |
 | Factory proxy          | 0x8D3cD4D05DCeb276c6f33AAdC45141BFCB58BAC8 |
