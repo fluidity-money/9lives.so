@@ -11,7 +11,6 @@ import (
 	"log/slog"
 	"sort"
 
-	"github.com/ethereum/go-ethereum/common"
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -90,7 +89,7 @@ func verifyAuthTokenAddress(data string) (string, error) {
 	}
 	// fmt.Println("VERIFIED:", verified)
 
-	tokenAddress := common.HexToAddress(authToken.Address)
+	tokenAddress := ethCommon.HexToAddress(authToken.Address)
 	if subtle.ConstantTimeCompare(address.Bytes(), tokenAddress.Bytes()) == 0 {
 		return "", errors.New("address mismatch")
 	}
@@ -101,7 +100,7 @@ func hashOutcomes(outcomes []model.OutcomeInput) ([][]byte, error) {
 	outcomeHashes := make([][]byte, len(outcomes))
 	for i, outcome := range outcomes {
 		intBuf := new(bytes.Buffer)
-		err := binary.Write(intBuf, binary.BigEndian, int8(outcome.Seed))
+		err := binary.Write(intBuf, binary.BigEndian, uint8(outcome.Seed))
 		if err != nil {
 			slog.Error("Error writing seed to buffer",
 				"error", err,
@@ -109,7 +108,7 @@ func hashOutcomes(outcomes []model.OutcomeInput) ([][]byte, error) {
 			return nil, err
 		}
 
-		outcomeHashes[i] = crypto.Keccak256([]byte(outcome.Name), []byte(outcome.Description), intBuf.Bytes())
+		outcomeHashes[i] = crypto.Keccak256([]byte(outcome.Name), []byte(outcome.Description), intBuf.Bytes())[:8]
 	}
 
 	return outcomeHashes, nil
@@ -119,7 +118,7 @@ func SortByteSlices(byteSlices [][]byte) {
 		return string(byteSlices[i]) < string(byteSlices[j])
 	})
 }
-func getTradingAddress(outcomes []model.OutcomeInput, factoryAddress common.Address, contractBytecode []byte) (*ethCommon.Address, []byte, error) {
+func getTradingAddress(outcomes []model.OutcomeInput, factoryAddress ethCommon.Address, contractBytecode []byte) (*ethCommon.Address, []byte, error) {
 	outcomeHashes, err := hashOutcomes(outcomes)
 	if err != nil {
 		slog.Error("Error hashing outcomes",
