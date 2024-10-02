@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --test tests/end-to-end.js"
+    "test": "node tests/end-to-end.js",
+    "test:trading": "node tests/tradingContract.js"
   },
   "keywords": [],
   "author": "",
