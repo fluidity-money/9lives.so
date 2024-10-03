@@ -35,7 +35,7 @@ func (r *frontpageResolver) Categories(ctx context.Context, obj *types.Frontpage
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error) {
 	// Check the user's signature
 	authHeader, ok := ctx.Value("authHeader").(string)
 	if !ok || authHeader == "" {
@@ -56,40 +56,28 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		"validated wallet", signerWallet,
 	)
 
-	tradingContractAddress, outcomeHashes, err := getTradingAddress(outcomes, r.FactoryAddr, r.TradingBytecode)
+	tradingContractAddress, hashedOutcomes, err := getTradingAddress(outcomes, r.FactoryAddr, r.TradingBytecode)
 	if err != nil {
 		slog.Error("Error while getting trading contract address",
 			"trading contract address", tradingContractAddress,
 			"factory address", r.FactoryAddr,
-			"outcomes hashes", outcomeHashes,
 			"error", err,
 		)
 		return nil, err
 	}
 
-	// Check that the trading contract exists on-chain
-	isTradingContracDeployed, err := isContractDeployed(r.Geth, ctx, tradingContractAddress)
+	// Check that the trading and share contracts created on-chain
+	isTradingContracDeployed, err := areContractsCreated(r.Geth, r.FactoryAddr, *tradingContractAddress)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
 			"trading contract", tradingContractAddress,
 			"factory address", r.FactoryAddr,
-			"outcome hashes", outcomeHashes,
+			"hashed outcomes", hashedOutcomes,
 			"error", err,
 		)
 		return nil, fmt.Errorf("missing contract code")
 	}
-	if !isTradingContracDeployed {
-		slog.Error("Bytecode is not deployed",
-			"trading contract", tradingContractAddress,
-			"factory address", r.FactoryAddr,
-			"outcome hashes", outcomeHashes,
-		)
-		return nil, fmt.Errorf("missing contract code")
-	}
-
-	// res := r.DB.Table("campaigns_1").Create()
-	res := true
-	return &res, nil
+	return isTradingContracDeployed, nil
 }
 
 // Contracts is the resolver for the contracts field.

@@ -73,7 +73,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string) int
+		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, creator string) int
 	}
 
 	Outcome struct {
@@ -106,7 +106,7 @@ type FrontpageResolver interface {
 	Categories(ctx context.Context, obj *types.Frontpage) ([]string, error)
 }
 type MutationResolver interface {
-	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, text string, seed int, creator string) (*bool, error)
+	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error)
 }
 type QueryResolver interface {
 	Contracts(ctx context.Context) (*model.Contracts, error)
@@ -240,7 +240,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["text"].(string), args["seed"].(int), args["creator"].(string)), true
+		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["creator"].(string)), true
 
 	case "Outcome.campaign":
 		if e.complexity.Outcome.Campaign == nil {
@@ -486,32 +486,14 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 	}
 	args["ending"] = arg4
 	var arg5 string
-	if tmp, ok := rawArgs["text"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
+	if tmp, ok := rawArgs["creator"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("creator"))
 		arg5, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["text"] = arg5
-	var arg6 int
-	if tmp, ok := rawArgs["seed"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seed"))
-		arg6, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["seed"] = arg6
-	var arg7 string
-	if tmp, ok := rawArgs["creator"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("creator"))
-		arg7, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["creator"] = arg7
+	args["creator"] = arg5
 	return args, nil
 }
 
@@ -1232,7 +1214,7 @@ func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["text"].(string), fc.Args["seed"].(int), fc.Args["creator"].(string))
+		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["creator"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

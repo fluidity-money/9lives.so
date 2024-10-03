@@ -116,16 +116,6 @@ type Mutation {
     ending: Int!,
 
     """
-    Text that describes the campaign.
-    """
-    text: String!,
-
-    """
-    Seed that was used to create the campaign and outcomes in the identifier creation.
-    """
-    seed: Int!,
-
-    """
     Creator address. Hex encoded. Verified to be the creator later.
     """
     creator: String!
@@ -159,7 +149,7 @@ type Campaign {
 
   """
   Identifier that's used to do offline derivation of the campaign pool,
-  and the outcome shares. Is keccak256("c" . name . "d" . description . "s" . seed)[:8].
+  and the outcome shares. Is keccak256(concatenated outcome ids)[:8].
   """
   identifier: String!
 
