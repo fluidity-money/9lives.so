@@ -20,4 +20,10 @@ interface INineLivesFactory {
      * @param outcomes to set up as the default
      */
     function newTrading(Outcome[] memory outcomes) external returns (address);
+
+    /**
+     * @notice checks if the address created any contracts
+     * @param addr to check if the address is the creator
+     */
+    function wasCreated(address addr) external view returns (bool);
 }
