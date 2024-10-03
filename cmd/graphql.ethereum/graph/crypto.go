@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log/slog"
 	"sort"
+	"strings"
 
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -118,17 +119,26 @@ func SortByteSlices(byteSlices [][]byte) {
 		return string(byteSlices[i]) < string(byteSlices[j])
 	})
 }
-func getTradingAddress(outcomes []model.OutcomeInput, factoryAddress ethCommon.Address, contractBytecode []byte) (*ethCommon.Address, []byte, error) {
-	outcomeHashes, err := hashOutcomes(outcomes)
-	if err != nil {
-		slog.Error("Error hashing outcomes",
-			"error", err,
-		)
-		return nil, nil, err
+func getTradingAddress(outcomes []model.OutcomeInput, factoryAddr ethCommon.Address, contractBytecode []byte) (*ethCommon.Address, error) {
+	outcomeIds := make([]string, len(outcomes))
+	for i, outcome := range outcomes {
+		outcomeIds[i] = outcome.Identifier
 	}
-	SortByteSlices(outcomeHashes)
-	concatenatedHash := crypto.Keccak256(outcomeHashes...)
-	hash := crypto.Keccak256(ethCommon.FromHex("ff"), factoryAddress.Bytes(), concatenatedHash, crypto.Keccak256(contractBytecode))
+	sort.Strings(outcomeIds)
+	concatenated := strings.Join(outcomeIds, "")
+	tradingId := crypto.Keccak256([]byte(concatenated))[:8]
+	bytecode := crypto.Keccak256(contractBytecode)
+
+	// var b [85]byte
+	// b[0] = 0xff
+	// copy(b[1:21], factoryAddr.Bytes())
+	// copy(b[21:29], tradingId)
+	// copy(b[53:85], bytecode)
+
+	hash := crypto.Keccak256([]byte("0xff"), factoryAddr.Bytes(), tradingId, bytecode)
 	address := ethCommon.BytesToAddress(hash)
-	return &address, concatenatedHash, nil
+
+	fmt.Print("address", address)
+
+	return &address, nil
 }

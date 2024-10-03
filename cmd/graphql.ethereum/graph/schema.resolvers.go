@@ -56,7 +56,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		"validated wallet", signerWallet,
 	)
 
-	tradingContractAddress, hashedOutcomes, err := getTradingAddress(outcomes, r.FactoryAddr, r.TradingBytecode)
+	tradingContractAddress, err := getTradingAddress(outcomes, r.FactoryAddr, r.TradingBytecode)
 	if err != nil {
 		slog.Error("Error while getting trading contract address",
 			"trading contract address", tradingContractAddress,
@@ -72,7 +72,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		slog.Error("Error checking if trading contract is deployed",
 			"trading contract", tradingContractAddress,
 			"factory address", r.FactoryAddr,
-			"hashed outcomes", hashedOutcomes,
 			"error", err,
 		)
 		return nil, fmt.Errorf("missing contract code")
