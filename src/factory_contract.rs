@@ -108,6 +108,10 @@ impl Factory {
         Ok(trading_addr)
     }
 
+    pub fn was_created(&self, addr: Address) -> Result<bool, Error> {
+        Ok(self.created.getter(addr).get())
+    }
+
     /// Disable shares from being traded via Longtail.
     pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> Result<(), Error> {
         assert_or!(
