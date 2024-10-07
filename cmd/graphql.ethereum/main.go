@@ -37,7 +37,7 @@ const (
 )
 
 // TradingBytecode is the bytecode of the trading contract.
-var TradingBytecode, _ = hex.DecodeString("0x602d5f8160095f39f35f5f365f5f37365f73934b4f2c3a08b864a174800d5349e676d2228fa45af43d5f5f3e6029573d5ffd5b3d5ff3")
+var tradingBytecode, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f73934b4f2c3a08b864a174800d5349e676d2228fa45af43d5f5f3e6029573d5ffd5b3d5ff3")
 
 type corsMiddleware struct {
 	srv *handler.Server
@@ -71,7 +71,7 @@ func main() {
 			Geth:            geth,
 			C:               config,
 			FactoryAddr:     ethCommon.HexToAddress(config.FactoryAddress),
-			TradingBytecode: TradingBytecode,
+			TradingBytecode: tradingBytecode,
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})

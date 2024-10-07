@@ -93,6 +93,6 @@ func getTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCo
 	if err != nil {
 		return nil
 	}
-	x := crypto.GetTradingAddr(ids, factoryAddr, b)
+	x := crypto.GetTradingAddr(ids, factoryAddr, ethCrypto.Keccak256(b))
 	return &x
 }
