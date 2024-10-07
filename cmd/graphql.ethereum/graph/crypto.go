@@ -81,9 +81,13 @@ func verifyAuthTokenAddress(data string) (string, error) {
 }
 
 func getTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCommon.Address, b []byte) *ethCommon.Address {
-	var outcomes_ []crypto.Outcome
+	var outcomes_ = make([]crypto.Outcome, len(outcomes))
 	for i, o := range outcomes {
-		outcomes_[i] = crypto.Outcome{o.Name, o.Description, o.Seed}
+		outcomes_[i] = crypto.Outcome{
+			Name: o.Name,
+			Desc: o.Description,
+			Seed: o.Seed,
+		}
 	}
 	ids, err := crypto.GetOutcomeIds(outcomes_)
 	if err != nil {
