@@ -3,10 +3,7 @@ use stylus_sdk::{
     crypto,
 };
 
-use crate::{
-    immutables::{erc20_proxy_hash, trading_proxy_hash},
-    proxy,
-};
+use crate::immutables::{erc20_proxy_hash, trading_proxy_hash};
 
 #[cfg(target_arch = "wasm32")]
 pub use crate::wasm_proxy::*;
@@ -25,7 +22,7 @@ pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<8> {
 
 pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) -> Address {
     let trading_id =
-        proxy::create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
+        create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
     let mut b = [0_u8; 85];
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());
@@ -56,12 +53,12 @@ pub fn get_share_addr(
 fn test_create_identifier() {
     assert_eq!(
         create_identifier(&[
-            &[0x12, 0x34, 0x12, 0x34, 0x12, 0x34, 0x12, 0x34],
-            &[0x22, 0x34, 0x12, 0x34, 0x12, 0x34, 0x12, 0x34],
+            //bytes8(keccak256(abi.encodePacked("Koko", "Cat", uint8(0))))
+            &[0x8f, 0x88, 0x59, 0x92, 0xca, 0xfd, 0x4d, 0x5c,],
+            //bytes8(keccak256(abi.encodePacked("Leo", "Dog", uint8(0))))
+            &[0x3b, 0x79, 0x56, 0x5a, 0x91, 0x5e, 0xb9, 0x50,],
         ]),
-        FixedBytes::from_slice(&[
-            0x5e, 0x06, 0xb4, 0x24, 0x49, 0xd1, 0xec, 0xd7
-        ])
+        FixedBytes::from_slice(&[0xbb, 0x3f, 0xa3, 0x17, 0x53, 0x31, 0xf4, 0x14])
     )
 }
 
@@ -70,18 +67,14 @@ fn test_get_trading_addr() {
     use stylus_sdk::alloy_primitives::address;
     let factory = address!("7FA9385bE102ac3EAc297483Dd6233D62b3e1496");
     let outcomes = [
-        [0x12, 0x34, 0x12, 0x34, 0x12, 0x34, 0x12, 0x34],
-        [0x22, 0x34, 0x12, 0x34, 0x12, 0x34, 0x12, 0x34],
+        //bytes8(keccak256(abi.encodePacked("Koko", "Cat", uint8(0))))
+        [0x8f, 0x88, 0x59, 0x92, 0xca, 0xfd, 0x4d, 0x5c],
+        //bytes8(keccak256(abi.encodePacked("Leo", "Dog", uint8(0))))
+        [0x3b, 0x79, 0x56, 0x5a, 0x91, 0x5e, 0xb9, 0x50],
     ]
     .map(FixedBytes::<8>::from);
     assert_eq!(
-        const_hex::encode(proxy::create_identifier(
-            &outcomes.iter().map(|c| c.as_slice()).collect::<Vec<_>>()
-        )),
-        "5e06b42449d1ecd7"
-    );
-    assert_eq!(
         get_trading_addr(factory, &outcomes),
-        address!("004e4802a96792dabd528f0112d12e4cd31e5FAf")
+        address!("976bF96b903f653b86cA182cC419B690ce07070B")
     )
 }

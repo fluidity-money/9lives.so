@@ -1,4 +1,4 @@
-#![cfg(feature = "testing")]
+#![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
 use proptest::prelude::*;
 
