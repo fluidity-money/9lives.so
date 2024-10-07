@@ -14,7 +14,7 @@ name = "ninelives"
 [profile.release]
 codegen-units = 1
 panic = "abort"
-opt-level = "z"
+opt-level = "s"
 strip = true
 lto = true
 debug = false

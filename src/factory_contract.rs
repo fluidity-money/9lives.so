@@ -6,6 +6,7 @@ use stylus_sdk::{
     contract, evm, msg,
     prelude::*,
     storage::*,
+    abi,
 };
 
 use crate::{
@@ -100,6 +101,10 @@ impl Factory {
         trading_call::ctor(trading_addr, oracle, outcomes)?;
 
         Ok(trading_addr)
+    }
+
+    pub fn trading_bytecode(&self) -> Result<abi::Bytes, Error> {
+        Ok(abi::Bytes::from(trading_proxy_code().to_vec()))
     }
 
     pub fn was_created(&self, addr: Address) -> Result<bool, Error> {
