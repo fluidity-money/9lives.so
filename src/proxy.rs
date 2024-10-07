@@ -12,12 +12,12 @@ pub use crate::wasm_proxy::*;
 pub use crate::host_proxy::*;
 
 // Sort and concatenate the seeds given, ABI format them, then hash them,
-// using an offline keccak256 calculation with the native operation.
-pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<8> {
+// using an online keccak256 calculation with the native operation.
+pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
     // Sort the seeds in a new vector.
     let mut seeds = Vec::from(seeds);
     seeds.sort();
-    FixedBytes::<8>::from_slice(&crypto::keccak(seeds.concat())[..8])
+    crypto::keccak(seeds.concat())
 }
 
 pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) -> Address {
@@ -27,7 +27,7 @@ pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) ->
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());
     // Leaving some spacing so that we can have an empty part of the word.
-    b[21..29].copy_from_slice(trading_id.as_slice());
+    b[21..53].copy_from_slice(trading_id.as_slice());
     b[53..85].copy_from_slice(&trading_proxy_hash());
     Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
@@ -75,6 +75,6 @@ fn test_get_trading_addr() {
     .map(FixedBytes::<8>::from);
     assert_eq!(
         get_trading_addr(factory, &outcomes),
-        address!("976bF96b903f653b86cA182cC419B690ce07070B")
+        address!("da7eac0f112e8ed91c951972c60f8147fe51bbd4")
     )
 }

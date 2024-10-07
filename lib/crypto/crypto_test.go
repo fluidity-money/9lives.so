@@ -23,10 +23,7 @@ var testGetTradingAddress = []struct {
 
 	tradingAddr string
 }{{
-	[]Outcome{
-		{"Koko", "Cat", 0},
-		{"Leo", "Dog", 123},
-	},
+	[]Outcome{{"Koko", "Cat", 0}, {"Leo", "Dog", 123}},
 	[]string{
 		//bytes8(keccak256(abi.encodePacked("Leo", "Dog", uint8(0))))
 		"3b79565a915eb950",
@@ -36,16 +33,10 @@ var testGetTradingAddress = []struct {
 	"0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496",
 	TestContractBytecodeHashed,
 
-	"976bF96b903f653b86cA182cC419B690ce07070B",
+	"0xDA7EaC0f112e8ED91c951972c60f8147FE51bbD4",
 }}
 
-func TestOutcomeIdKoko(t *testing.T) {
-	id, err := GetOutcomeId("Koko", "Cat", 0)
-	assert.Nil(t, err)
-	assert.Equal(t, []byte{0x8f, 0x88, 0x59, 0x92, 0xca, 0xfd, 0x4d, 0x5c}, id)
-}
-
-func TestGetTradingAddress(t *testing.T) {
+func TestGetTradingAddr(t *testing.T) {
 	for i, test := range testGetTradingAddress {
 		test := test
 		t.Run("Check validity of the trading contract address", func(t *testing.T) {
@@ -61,14 +52,13 @@ func TestGetTradingAddress(t *testing.T) {
 				}
 				assert.Equalf(t, expectedIds, ids, "attempt %v ids", i)
 			}
-			tradingAddr, err := GetTradingAddr(
+			tradingAddr := GetTradingAddr(
 				ids,
 				ethCommon.HexToAddress(test.factoryAddress),
 				test.contractBytecodeHash,
 			)
 			expectedAddr := ethCommon.HexToAddress(test.tradingAddr)
-			assert.Nilf(t, err, "attempt %v get trading addrs", i)
-			assert.Equalf(t, expectedAddr, *tradingAddr, "attempt %v not equal", i)
+			assert.Equalf(t, expectedAddr, tradingAddr, "attempt %v not equal", i)
 		})
 	}
 }

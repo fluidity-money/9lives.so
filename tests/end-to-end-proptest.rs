@@ -95,9 +95,9 @@ proptest! {
             ];
             c.ctor(Address::ZERO, outcomes.to_vec())
                 .unwrap();
-            dbg!(c
+            c
                 .mint(outcome_1, mint_amount, Address::ZERO)
-                .unwrap());
+                .unwrap();
         })
     }
 }

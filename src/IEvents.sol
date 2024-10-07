@@ -3,14 +3,14 @@ pragma solidity ^0.8.18;
 
 interface IEvents {
     event NewTrading(
-        bytes8 indexed identifier,
+        bytes32 indexed identifier,
         address indexed addr,
         address indexed oracle
     );
 
     event OutcomeCreated(
-        bytes8 indexed tradingIdentifier,
-        bytes8 indexed erc20Identifier,
+        bytes32 indexed tradingIdentifier,
+        bytes32 indexed erc20Identifier,
         address indexed erc20Addr
     );
 

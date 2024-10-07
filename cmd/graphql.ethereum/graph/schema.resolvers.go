@@ -56,16 +56,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	slog.Debug("Check authentication",
 		"validated wallet", signerWallet,
 	)
-	tradingAddr, err := getTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingBytecode)
-	if err != nil {
-		slog.Error("Error while getting trading contract address",
-			"trading contract address", tradingAddr,
-			"factory address", r.FactoryAddr,
-			"error", err,
-		)
-		return nil, err
-	}
-
+	tradingAddr := getTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingBytecode)
 	// Check that the trading and share contracts created on-chain
 	isTradingContracDeployed, err := areContractsCreated(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {

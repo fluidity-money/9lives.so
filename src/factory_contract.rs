@@ -44,7 +44,7 @@ impl Factory {
         let outcome_identifiers = outcomes.iter().map(|(c, _)| c).collect::<Vec<_>>();
 
         // Create the trading identifier to derive the outcome addresses from.
-        let trading_identifier = proxy::create_identifier(
+        let trading_id = proxy::create_identifier(
             &outcome_identifiers
                 .iter()
                 .map(|c| c.as_slice())
@@ -52,14 +52,14 @@ impl Factory {
         );
 
         // Deploy the contract, and emit a log that it was created.
-        let trading_addr = proxy::deploy_trading(trading_identifier)?;
+        let trading_addr = proxy::deploy_trading(trading_id)?;
 
         self.created.setter(trading_addr).set(true);
 
         let oracle = self.oracle.get();
 
         evm::log(events::NewTrading {
-            identifier: trading_identifier,
+            identifier: trading_id,
             addr: trading_addr,
             oracle,
         });
@@ -91,7 +91,7 @@ impl Factory {
             longtail_call::enable_pool(erc20_addr)?;
 
             evm::log(events::OutcomeCreated {
-                tradingIdentifier: trading_identifier,
+                tradingIdentifier: trading_id,
                 erc20Identifier: erc20_identifier,
                 erc20Addr: erc20_addr,
             });

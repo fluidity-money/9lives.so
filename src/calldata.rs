@@ -51,26 +51,6 @@ pub fn unpack_bool_safe(data: &[u8]) -> Result<(), Error> {
     }
 }
 
-pub fn pad_seed(seed: FixedBytes<8>) -> FixedBytes<32> {
-    let mut b = [0_u8; 32];
-    b[..8].copy_from_slice(seed.as_slice());
-    FixedBytes::from_slice(&b)
-}
-
-#[test]
-fn test_pad_seed() {
-    assert_eq!(
-        pad_seed(FixedBytes::<8>::from_slice(&[
-            0x20, 0x4c, 0x49, 0x6e, 0xf1, 0xbf, 0xed, 0xdf
-        ])),
-        FixedBytes::<32>::from_slice(&[
-            0x20, 0x4c, 0x49, 0x6e, 0xf1, 0xbf, 0xed, 0xdf, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00
-        ])
-    )
-}
-
 #[test]
 fn test_write_address() {
     use stylus_sdk::alloy_primitives::address;

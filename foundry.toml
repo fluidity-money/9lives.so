@@ -3,3 +3,4 @@ src = "src"
 out = "out"
 libs = ["foundry-libs"]
 test = "tests"
+evm_version = "shanghai"

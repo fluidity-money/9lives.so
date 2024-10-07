@@ -80,14 +80,15 @@ func verifyAuthTokenAddress(data string) (string, error) {
 	return address.Hex(), nil
 }
 
-func getTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCommon.Address, b []byte) (*ethCommon.Address, error) {
+func getTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCommon.Address, b []byte) *ethCommon.Address {
 	var outcomes_ []crypto.Outcome
 	for i, o := range outcomes {
 		outcomes_[i] = crypto.Outcome{o.Name, o.Description, o.Seed}
 	}
 	ids, err := crypto.GetOutcomeIds(outcomes_)
 	if err != nil {
-		return nil, err
+		return nil
 	}
-	return crypto.GetTradingAddr(ids, factoryAddr, b)
+	x := crypto.GetTradingAddr(ids, factoryAddr, b)
+	return &x
 }
