@@ -46,7 +46,7 @@ func GetOutcomeIds(outcomes []Outcome) (ids [][]byte, err error) {
 	return
 }
 
-func GetTradingAddress(ids [][]byte, factoryAddress ethCommon.Address, bytecodeHash []byte) (*ethCommon.Address, error) {
+func GetTradingAddr(ids [][]byte, factoryAddress ethCommon.Address, bytecodeHash []byte) (*ethCommon.Address, error) {
 	concatenatedHash := ethCommon.RightPadBytes(ethCrypto.Keccak256(ids...)[:8], 32)
 	preimage := append(
 		ethCommon.FromHex("ff"),

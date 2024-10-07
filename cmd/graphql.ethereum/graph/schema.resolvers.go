@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
+
+	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 )
 
 // ID is the resolver for the id field.
@@ -55,11 +56,10 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	slog.Debug("Check authentication",
 		"validated wallet", signerWallet,
 	)
-
-	tradingContractAddress, err := getTradingAddress(outcomes, r.FactoryAddr, r.TradingBytecode)
+	tradingAddr, err := getTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingBytecode)
 	if err != nil {
 		slog.Error("Error while getting trading contract address",
-			"trading contract address", tradingContractAddress,
+			"trading contract address", tradingAddr,
 			"factory address", r.FactoryAddr,
 			"error", err,
 		)
@@ -67,10 +67,10 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	}
 
 	// Check that the trading and share contracts created on-chain
-	isTradingContracDeployed, err := areContractsCreated(r.Geth, r.FactoryAddr, *tradingContractAddress)
+	isTradingContracDeployed, err := areContractsCreated(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
-			"trading contract", tradingContractAddress,
+			"trading contract", tradingAddr,
 			"factory address", r.FactoryAddr,
 			"error", err,
 		)

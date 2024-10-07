@@ -61,7 +61,7 @@ func TestGetTradingAddress(t *testing.T) {
 				}
 				assert.Equalf(t, expectedIds, ids, "attempt %v ids", i)
 			}
-			tradingAddr, err := GetTradingAddress(
+			tradingAddr, err := GetTradingAddr(
 				ids,
 				ethCommon.HexToAddress(test.factoryAddress),
 				test.contractBytecodeHash,
