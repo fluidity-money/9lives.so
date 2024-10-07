@@ -15,7 +15,7 @@ var (
 	TestContractBytecode, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f7300000000000000000000000000000000000000005af43d5f5f3e6029573d5ffd5b3d5ff3")
 
 	// TestContractBytecodeRealWorld based on the real world deployment on testnet (maybe old).
-	TestContractBytecodeRealWorld, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f73c5f7a07a0fdfbe00f85dca1f088d8cdc9ef559b75af43d5f5f3e6029573d5ffd5b3d5ff3")
+	TestContractBytecodeRealWorld, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f73934b4f2c3a08b864a174800d5349e676d2228fa45af43d5f5f3e6029573d5ffd5b3d5ff3")
 )
 
 var (
@@ -45,17 +45,17 @@ var testGetTradingAddress = []struct {
 		"0xDA7EaC0f112e8ED91c951972c60f8147FE51bbD4",
 	},
 	{
-		[]Outcome{{"Koko", "Cat", 0}, {"Leo", "Dog", 123}},
+		[]Outcome{{"Neela", "Cat", 88}, {"Russell", "Dog", 123}},
 		[]string{
-			//bytes8(keccak256(abi.encodePacked("Leo", "Dog", uint8(123))))
-			"3b79565a915eb950",
-			//bytes8(keccak256(abi.encodePacked("Koko", "Cat", uint8(0))))
-			"8f885992cafd4d5c",
+			//bytes8(keccak256(abi.encodePacked("Neela", "Cat", uint8(88))))
+			"290ba3d293b129ab",
+			//bytes8(keccak256(abi.encodePacked("Russell", "Dog", uint8(123))))
+			"6f2af2188bfb19ca",
 		},
 		"0xa088e2bc674e98ac3f2b251ca4fece66bdecb50b",
 		TestContractBytecodeRealWorldHashed,
 
-		"0x30882f33dde2d01c5483f1cdb2533ef019b71e27",
+		"0xB9D5CE9774cfC8811F097EDB81C6B8d627680b88",
 	},
 }
 
