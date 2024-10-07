@@ -44,7 +44,7 @@ pub fn get_share_addr(
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());
     // Leaving some spacing so that we can have an empty part of the word.
-    b[21..29].copy_from_slice(erc20_id.as_slice());
+    b[21..53].copy_from_slice(erc20_id.as_slice());
     b[53..85].copy_from_slice(&erc20_proxy_hash());
     Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
@@ -58,7 +58,10 @@ fn test_create_identifier() {
             //bytes8(keccak256(abi.encodePacked("Leo", "Dog", uint8(0))))
             &[0x3b, 0x79, 0x56, 0x5a, 0x91, 0x5e, 0xb9, 0x50,],
         ]),
-        FixedBytes::from_slice(&[0xbb, 0x3f, 0xa3, 0x17, 0x53, 0x31, 0xf4, 0x14])
+        FixedBytes::from_slice(
+            &const_hex::decode("bb3fa3175331f414394239fac7252ead07157d0a449a362131f5554c02f43c04")
+                .unwrap()
+        ),
     )
 }
 

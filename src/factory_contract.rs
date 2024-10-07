@@ -97,12 +97,6 @@ impl Factory {
             });
         }
 
-        // Amount of fUSDC to take from the sender for the trading environment.
-        let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
-
-        assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
-        fusdc_call::take_from_sender_to(trading_addr, fusdc_amt)?;
-
         trading_call::ctor(trading_addr, oracle, outcomes)?;
 
         Ok(trading_addr)
