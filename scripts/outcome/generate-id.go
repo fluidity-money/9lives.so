@@ -4,12 +4,20 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"strconv"
 
-	ethCrypto "github.com/ethereum/go-ethereum/crypto"
+	"github.com/fluidity-money/9lives.so/lib/crypto"
 )
 
 func main() {
-	identifier := ethCrypto.Keccak256([]byte(os.Args[1] + os.Args[2] + os.Args[3]))[:8]
+	seed, err := strconv.ParseInt(os.Args[3], 10, 0)
+	if err != nil {
+		panic(err)
+	}
+	identifier, err := crypto.GetOutcomeId(os.Args[1], os.Args[2], int(seed))
+	if err != nil {
+		panic(err)
+	}
 	writer := csv.NewWriter(os.Stdout)
 	defer writer.Flush()
 	data := []string{
