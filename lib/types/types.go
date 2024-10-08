@@ -1,6 +1,11 @@
 package types
 
-import "time"
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 type (
 	Campaign struct {
@@ -9,6 +14,26 @@ type (
 		UpdatedAt time.Time       `gorm:"autoUpdateTime"`
 		Content   CampaignContent `json:"content"`
 	}
+
+	Outcome struct {
+		// Name of this campaign.
+		Name string `json:"name"`
+
+		// Text description of this campaign.
+		Description string `json:"description"`
+
+		// Number to salt the identifier of the outcome
+		Seed int `json:"seed"`
+
+		// Identifier hex encoded associated with this outcome. Used to derive addresses.
+		// Is of the form keccak256(name . description . seed)[:8]
+		Identifier string `json:"identifier"`
+
+		// Share address to trade this outcome.
+		Share *Share `json:"share"`
+	}
+
+	OutcomeList []Outcome
 
 	CampaignContent struct {
 		// Name of the campaign.
@@ -30,31 +55,7 @@ type (
 		PoolAddress string `json:"poolAddress"`
 
 		// Outcomes associated with this campaign.
-		Outcomes []Outcome `json:"outcomes"`
-	}
-
-	Outcome struct {
-		// Name of this campaign.
-		Name string `json:"name"`
-
-		// Text description of this campaign.
-		Description string `json:"description"`
-
-		// Number to salt the identifier of the outcome
-		Seed int `json:"seed"`
-
-		// Identifier hex encoded associated with this outcome. Used to derive addresses.
-		// Is of the form keccak256(name . description . seed)[:8]
-		Identifier string `json:"identifier"`
-
-		// Share address to trade this outcome.
-		Share *Share `json:"share"`
-	}
-
-	// Share representing the outcome of the current amount.
-	Share struct {
-		// ERC20 address of this campaign.
-		Address string `json:"address"`
+		Outcomes OutcomeList `json:"outcomes"`
 	}
 
 	// Wallet of the creator of a campaign.
@@ -62,7 +63,65 @@ type (
 		// Wallet address of this wallet, in hex.
 		Address string `json:"address"`
 	}
+
+	// Share representing the outcome of the current amount.
+	Share struct {
+		// ERC20 address of this campaign.
+		Address string `json:"address"`
+	}
 )
+
+func JSONMarshal(v interface{}) (driver.Value, error) {
+	return json.Marshal(v)
+}
+
+func JSONUnmarshal(value interface{}, v interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("failed to unmarshal %T, expected []byte", v)
+	}
+	return json.Unmarshal(bytes, v)
+}
+
+func (w Wallet) Value() (driver.Value, error) {
+	return JSONMarshal(w)
+}
+
+func (w *Wallet) Scan(value interface{}) error {
+	return JSONUnmarshal(value, w)
+}
+
+func (w Share) Value() (driver.Value, error) {
+	return JSONMarshal(w)
+}
+
+func (w *Share) Scan(value interface{}) error {
+	return JSONUnmarshal(value, w)
+}
+
+func (o Outcome) Value() (driver.Value, error) {
+	return JSONMarshal(o)
+}
+
+func (o *Outcome) Scan(value interface{}) error {
+	return JSONUnmarshal(value, o)
+}
+
+func (ol OutcomeList) Value() (driver.Value, error) {
+	return JSONMarshal(ol)
+}
+
+func (ol *OutcomeList) Scan(value interface{}) error {
+	return JSONUnmarshal(value, ol)
+}
+
+func (content CampaignContent) Value() (driver.Value, error) {
+	return JSONMarshal(content)
+}
+
+func (content *CampaignContent) Scan(value interface{}) error {
+	return JSONUnmarshal(value, content)
+}
 
 type Frontpage struct {
 	Campaigns []Campaign `json:"campaigns"`
