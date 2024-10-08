@@ -1,22 +1,30 @@
 package types
 
+import "time"
+
 type (
 	Campaign struct {
+		ID        string          `gorm:"primaryKey"`
+		CreatedAt time.Time       `gorm:"autoCreateTime"`
+		UpdatedAt time.Time       `gorm:"autoUpdateTime"`
+		Content   CampaignContent `json:"content"`
+	}
+
+	CampaignContent struct {
 		// Name of the campaign.
 		Name string `json:"name"`
 
 		// Description of the campaign in simple text.
 		Description string `json:"description"`
 
+		// Number to salt the identifier (id of the campaigns) of the outcome
+		Seed int `json:"seed"`
+
 		// Creator of the campaign.
 		Creator *Wallet `json:"creator"`
 
 		// Oracle that can decide if a winner happened.
 		Oracle string `json:"oracle"`
-
-		// Identifier that's used to do offline derivation of the campaign pool,
-		// and the outcome shares. Is keccak256(name . description . seed)[:8].
-		Identifier string `json:"identifier"`
 
 		// Pool address to purchase shares, and to receive the cost function.
 		PoolAddress string `json:"poolAddress"`
@@ -26,17 +34,14 @@ type (
 	}
 
 	Outcome struct {
-		// Campaign this outcome is associated with.
-		Campaign *Campaign `json:"campaign"`
-
 		// Name of this campaign.
 		Name string `json:"name"`
 
 		// Text description of this campaign.
 		Description string `json:"description"`
 
-		// Address of the creator.
-		Creator *Wallet `json:"creator"`
+		// Number to salt the identifier of the outcome
+		Seed int `json:"seed"`
 
 		// Identifier hex encoded associated with this outcome. Used to derive addresses.
 		// Is of the form keccak256(name . description . seed)[:8]
