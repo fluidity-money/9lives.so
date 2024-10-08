@@ -114,7 +114,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	for i, outcome := range outcomes {
 		outcomeId, _ := crypto.GetOutcomeId(outcome.Name, outcome.Description, outcome.Seed)
 		hexOutcomeId := "0x" + hex.EncodeToString(outcomeId)
-		shareAddress, _ := getShareAddr(r.Geth, *tradingAddr, hexOutcomeId)
+		shareAddress, _ := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
 		campaignOutcomes[i] = types.Outcome{
 			Name:        outcome.Name,
 			Description: outcome.Description,

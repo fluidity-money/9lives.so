@@ -52,7 +52,7 @@ func isContractCreated(c *ethclient.Client, factoryAdd ethCommon.Address, tradin
 	return &wasCreated, nil
 }
 
-func getShareAddr(c *ethclient.Client, tradingAddr ethCommon.Address, outcomeId string) (*ethCommon.Address, error) {
+func getShareAddr(c *ethclient.Client, tradingAddr ethCommon.Address, outcomeId [8]byte) (*ethCommon.Address, error) {
 	abiJSON := `[{"inputs":[{"internalType":"bytes8","name":"outcome","type":"bytes8"}],"name":"shareAddr","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]`
 	parsedABI, err := abi.JSON(strings.NewReader(abiJSON))
 	if err != nil {
