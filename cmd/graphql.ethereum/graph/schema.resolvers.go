@@ -9,10 +9,9 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
-
-	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 )
 
 // ID is the resolver for the id field.
@@ -58,7 +57,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	)
 	tradingAddr := getTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingBytecode)
 	// Check that the trading and share contracts created on-chain
-	isTradingContracDeployed, err := areContractsCreated(r.Geth, r.FactoryAddr, *tradingAddr)
+	isTradingContracCreated, err := isContractCreated(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
 			"trading contract", tradingAddr,
@@ -67,7 +66,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		)
 		return nil, fmt.Errorf("missing contract code")
 	}
-	return isTradingContracDeployed, nil
+	return isTradingContracCreated, nil
 }
 
 // Contracts is the resolver for the contracts field.

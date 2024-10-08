@@ -12,8 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-func areContractsCreated(c *ethclient.Client, factoryAdd ethCommon.Address, tradingAddr ethCommon.Address) (*bool, error) {
-	abiJSON := `[{"type": "function","name": "wasCreated","inputs": [{"name": "addr","type": "address","internalType": "address"}],"outputs": [{"name": "","type": "bool","internalType": "bool"}],"stateMutability": "view"}]`
+func isContractCreated(c *ethclient.Client, factoryAdd ethCommon.Address, tradingAddr ethCommon.Address) (*bool, error) {
+	abiJSON := `[{"type":"function","name":"wasCreated","inputs":[{"name":"addr","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"}]`
 	parsedABI, err := abi.JSON(strings.NewReader(abiJSON))
 	if err != nil {
 		slog.Error("factory abi could not be parsed",
