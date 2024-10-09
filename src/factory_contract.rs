@@ -114,7 +114,7 @@ impl Factory {
     /// Disable shares from being traded via Longtail.
     pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> Result<(), Error> {
         assert_or!(
-            self.trading_contracts.getter(msg::sender()).get(),
+            self.trading_contracts.getter(msg::sender()).get() != Address::default(),
             Error::NotTradingContract
         );
         // Start to derive the outcomes that were given to find the share addresses.
