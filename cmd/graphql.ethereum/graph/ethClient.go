@@ -1,29 +1,29 @@
 package graph
 
 import (
+	"bytes"
 	"context"
+	_ "embed"
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
+	ethAbi "github.com/ethereum/go-ethereum/accounts/abi"
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+//go:embed abis/factoryAbi.json
+var factoryAbiBytes []byte
+
+//go:embed abis/tradingAbi.json
+var tradingAbiBytes []byte
+
+var factoryAbi, _ = ethAbi.JSON(bytes.NewReader(factoryAbiBytes))
+var tradingAbi, _ = ethAbi.JSON(bytes.NewReader(tradingAbiBytes))
+
 func isContractCreated(c *ethclient.Client, factoryAdd ethCommon.Address, tradingAddr ethCommon.Address) (*bool, error) {
-	abiJSON := `[{"type":"function","name":"wasCreated","inputs":[{"name":"addr","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"}]`
-	parsedABI, err := abi.JSON(strings.NewReader(abiJSON))
-	if err != nil {
-		slog.Error("factory abi could not be parsed",
-			"factory address", factoryAdd,
-			"to be verified trading address", tradingAddr,
-			"error", err,
-		)
-		return nil, fmt.Errorf("factory abi could not be parsed")
-	}
-	callData, err := parsedABI.Pack("wasCreated", tradingAddr)
+	callData, err := factoryAbi.Pack("wasCreated", tradingAddr)
 	if err != nil {
 		slog.Error("callData could not be prepared",
 			"factory address", factoryAdd,
@@ -45,7 +45,7 @@ func isContractCreated(c *ethclient.Client, factoryAdd ethCommon.Address, tradin
 		return nil, fmt.Errorf("can not call wasCreated from contract")
 	}
 	var wasCreated bool
-	err = parsedABI.UnpackIntoInterface(&wasCreated, "wasCreated", result)
+	err = factoryAbi.UnpackIntoInterface(&wasCreated, "wasCreated", result)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unpack contract call result")
 	}
@@ -53,17 +53,7 @@ func isContractCreated(c *ethclient.Client, factoryAdd ethCommon.Address, tradin
 }
 
 func getShareAddr(c *ethclient.Client, tradingAddr ethCommon.Address, outcomeId [8]byte) (*ethCommon.Address, error) {
-	abiJSON := `[{"inputs":[{"internalType":"bytes8","name":"outcome","type":"bytes8"}],"name":"shareAddr","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]`
-	parsedABI, err := abi.JSON(strings.NewReader(abiJSON))
-	if err != nil {
-		slog.Error("factory abi could not be parsed",
-			"outcome id", outcomeId,
-			"to be verified trading address", tradingAddr,
-			"error", err,
-		)
-		return nil, fmt.Errorf("factory abi could not be parsed")
-	}
-	callData, err := parsedABI.Pack("shareAddr", outcomeId)
+	callData, err := tradingAbi.Pack("shareAddr", outcomeId)
 	if err != nil {
 		slog.Error("callData could not be prepared",
 			"outcome id", outcomeId,
@@ -85,7 +75,7 @@ func getShareAddr(c *ethclient.Client, tradingAddr ethCommon.Address, outcomeId 
 		return nil, fmt.Errorf("can not call shareAddr from contract")
 	}
 	var shareAddr ethCommon.Address
-	err = parsedABI.UnpackIntoInterface(&shareAddr, "shareAddr", result)
+	err = tradingAbi.UnpackIntoInterface(&shareAddr, "shareAddr", result)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unpack contract call result")
 	}
