@@ -107,8 +107,8 @@ impl Factory {
         Ok(abi::Bytes::from(trading_proxy_code().to_vec()))
     }
 
-     pub fn is_owner(&self, trading_addr: Address, creator: Address) -> Result<bool, Error> {
-        Ok(self.trading_contracts.getter(trading_addr).get() == creator)
+     pub fn get_owner(&self, trading_addr: Address) -> Result<Address, Error> {
+        Ok(self.trading_contracts.getter(trading_addr).get())
     }
 
     /// Disable shares from being traded via Longtail.
