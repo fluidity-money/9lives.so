@@ -11,7 +11,7 @@ CREATE TABLE campaigns_1 (
 
 -- Frontpage state deserialised, and displayed literally on the landing page.
 
-CREATE TABLE frontpage (
+CREATE TABLE frontpage_1 (
 	id SERIAL PRIMARY KEY,
 	created_at TIMESTAMP NOT NULL,
 	updated_at TIMESTAMP NOT NULL,
@@ -20,8 +20,8 @@ CREATE TABLE frontpage (
 	CONSTRAINT fk_campaign FOREIGN KEY (campaign_id) REFERENCES campaigns_1(id)
 );
 
-CREATE INDEX ON frontpage (created_at);
+CREATE INDEX ON frontpage_1 (created_at);
 
-CREATE INDEX ON frontpage (until);
+CREATE INDEX ON frontpage_1 (until);
 
 -- migrate:down
