@@ -20,8 +20,8 @@ pub struct Factory {
     enabled: StorageBool,
     oracle: StorageAddress,
 
-    // Trading contracts that were created by this Factory
-    created: StorageMap<Address, StorageBool>,
+    // Trading contracts mapped to the creators that were created by this Factory
+    trading_contracts: StorageMap<Address, StorageAddress>,
 }
 
 #[public]
@@ -55,7 +55,7 @@ impl Factory {
         // Deploy the contract, and emit a log that it was created.
         let trading_addr = proxy::deploy_trading(trading_id)?;
 
-        self.created.setter(trading_addr).set(true);
+        self.trading_contracts.setter(trading_addr).set(msg::sender());
 
         let oracle = self.oracle.get();
 
@@ -107,14 +107,14 @@ impl Factory {
         Ok(abi::Bytes::from(trading_proxy_code().to_vec()))
     }
 
-    pub fn was_created(&self, addr: Address) -> Result<bool, Error> {
-        Ok(self.created.getter(addr).get())
+    pub fn get_owner(&self, trading_addr: Address) -> Result<Address, Error> {
+        Ok(self.trading_contracts.getter(trading_addr).get())
     }
 
     /// Disable shares from being traded via Longtail.
     pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> Result<(), Error> {
         assert_or!(
-            self.created.getter(msg::sender()).get(),
+            self.trading_contracts.getter(msg::sender()).get() != Address::default(),
             Error::NotTradingContract
         );
         // Start to derive the outcomes that were given to find the share addresses.
