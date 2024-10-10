@@ -162,7 +162,7 @@ func (r *queryResolver) Contracts(ctx context.Context) (*model.Contracts, error)
 // Campaigns is the resolver for the campaigns field.
 func (r *queryResolver) Campaigns(ctx context.Context) ([]*types.Campaign, error) {
 	var campaigns []*types.Campaign
-	if !r.F.Is(features.FeatureGraphqlMockGraph) {
+	if r.F.Is(features.FeatureGraphqlMockGraph) {
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
