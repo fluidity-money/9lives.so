@@ -43,7 +43,6 @@ type ResolverRoot interface {
 	Campaign() CampaignResolver
 	Frontpage() FrontpageResolver
 	Mutation() MutationResolver
-	Outcome() OutcomeResolver
 	Query() QueryResolver
 }
 
@@ -79,8 +78,6 @@ type ComplexityRoot struct {
 	}
 
 	Outcome struct {
-		Campaign    func(childComplexity int) int
-		Creator     func(childComplexity int) int
 		Description func(childComplexity int) int
 		Identifier  func(childComplexity int) int
 		Name        func(childComplexity int) int
@@ -119,11 +116,6 @@ type FrontpageResolver interface {
 }
 type MutationResolver interface {
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error)
-}
-type OutcomeResolver interface {
-	Campaign(ctx context.Context, obj *types.Outcome) (*types.Campaign, error)
-
-	Creator(ctx context.Context, obj *types.Outcome) (*types.Wallet, error)
 }
 type QueryResolver interface {
 	Contracts(ctx context.Context) (*model.Contracts, error)
@@ -259,20 +251,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["creator"].(string)), true
-
-	case "Outcome.campaign":
-		if e.complexity.Outcome.Campaign == nil {
-			break
-		}
-
-		return e.complexity.Outcome.Campaign(childComplexity), true
-
-	case "Outcome.creator":
-		if e.complexity.Outcome.Creator == nil {
-			break
-		}
-
-		return e.complexity.Outcome.Creator(childComplexity), true
 
 	case "Outcome.description":
 		if e.complexity.Outcome.Description == nil {
@@ -891,14 +869,10 @@ func (ec *executionContext) fieldContext_Campaign_outcomes(_ context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "campaign":
-				return ec.fieldContext_Outcome_campaign(ctx, field)
 			case "name":
 				return ec.fieldContext_Outcome_name(ctx, field)
 			case "description":
 				return ec.fieldContext_Outcome_description(ctx, field)
-			case "creator":
-				return ec.fieldContext_Outcome_creator(ctx, field)
 			case "identifier":
 				return ec.fieldContext_Outcome_identifier(ctx, field)
 			case "share":
@@ -1286,66 +1260,6 @@ func (ec *executionContext) fieldContext_Mutation_explainCampaign(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _Outcome_campaign(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Outcome_campaign(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Outcome().Campaign(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*types.Campaign)
-	fc.Result = res
-	return ec.marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Outcome_campaign(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Outcome",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "name":
-				return ec.fieldContext_Campaign_name(ctx, field)
-			case "description":
-				return ec.fieldContext_Campaign_description(ctx, field)
-			case "creator":
-				return ec.fieldContext_Campaign_creator(ctx, field)
-			case "oracle":
-				return ec.fieldContext_Campaign_oracle(ctx, field)
-			case "identifier":
-				return ec.fieldContext_Campaign_identifier(ctx, field)
-			case "poolAddress":
-				return ec.fieldContext_Campaign_poolAddress(ctx, field)
-			case "outcomes":
-				return ec.fieldContext_Campaign_outcomes(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Outcome_name(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_name(ctx, field)
 	if err != nil {
@@ -1429,54 +1343,6 @@ func (ec *executionContext) fieldContext_Outcome_description(_ context.Context, 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Outcome_creator(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Outcome_creator(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Outcome().Creator(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*types.Wallet)
-	fc.Result = res
-	return ec.marshalNWallet2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐWallet(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Outcome_creator(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Outcome",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "address":
-				return ec.fieldContext_Wallet_address(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Wallet", field.Name)
 		},
 	}
 	return fc, nil
@@ -4346,97 +4212,25 @@ func (ec *executionContext) _Outcome(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Outcome")
-		case "campaign":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Outcome_campaign(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "name":
 			out.Values[i] = ec._Outcome_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "description":
 			out.Values[i] = ec._Outcome_description(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
-		case "creator":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Outcome_creator(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "identifier":
 			out.Values[i] = ec._Outcome_identifier(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "share":
 			out.Values[i] = ec._Outcome_share(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -5039,16 +4833,6 @@ func (ec *executionContext) marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoney�
 	}
 
 	return ret
-}
-
-func (ec *executionContext) marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx context.Context, sel ast.SelectionSet, v *types.Campaign) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Campaign(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNContracts2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐContracts(ctx context.Context, sel ast.SelectionSet, v model.Contracts) graphql.Marshaler {

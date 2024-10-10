@@ -171,10 +171,6 @@ type Campaign {
 }
 
 type Outcome {
-  """
-  Campaign this outcome is associated with.
-  """
-  campaign: Campaign!
 
   """
   Name of this campaign.
@@ -186,10 +182,6 @@ type Outcome {
   """
   description: String!
 
-  """
-  Address of the creator.
-  """
-  creator: Wallet!
 
   """
   Identifier hex encoded associated with this outcome. Used to derive addresses.

@@ -154,16 +154,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	return &res, nil
 }
 
-// Campaign is the resolver for the campaign field.
-func (r *outcomeResolver) Campaign(ctx context.Context, obj *types.Outcome) (*types.Campaign, error) {
-	panic(fmt.Errorf("not implemented: Campaign - campaign"))
-}
-
-// Creator is the resolver for the creator field.
-func (r *outcomeResolver) Creator(ctx context.Context, obj *types.Outcome) (*types.Wallet, error) {
-	panic(fmt.Errorf("not implemented: Creator - creator"))
-}
-
 // Contracts is the resolver for the contracts field.
 func (r *queryResolver) Contracts(ctx context.Context) (*model.Contracts, error) {
 	panic(fmt.Errorf("not implemented: Contracts - contracts"))
@@ -200,14 +190,10 @@ func (r *Resolver) Frontpage() FrontpageResolver { return &frontpageResolver{r} 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
-// Outcome returns OutcomeResolver implementation.
-func (r *Resolver) Outcome() OutcomeResolver { return &outcomeResolver{r} }
-
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type campaignResolver struct{ *Resolver }
 type frontpageResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
-type outcomeResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
