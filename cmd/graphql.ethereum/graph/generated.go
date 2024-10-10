@@ -88,6 +88,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Campaigns func(childComplexity int) int
 		Contracts func(childComplexity int) int
 		Frontpage func(childComplexity int) int
 	}
@@ -126,6 +127,7 @@ type OutcomeResolver interface {
 }
 type QueryResolver interface {
 	Contracts(ctx context.Context) (*model.Contracts, error)
+	Campaigns(ctx context.Context) ([]*types.Campaign, error)
 	Frontpage(ctx context.Context) ([]types.Frontpage, error)
 }
 
@@ -299,6 +301,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Outcome.Share(childComplexity), true
+
+	case "Query.campaigns":
+		if e.complexity.Query.Campaigns == nil {
+			break
+		}
+
+		return e.complexity.Query.Campaigns(childComplexity), true
 
 	case "Query.contracts":
 		if e.complexity.Query.Contracts == nil {
@@ -1610,6 +1619,63 @@ func (ec *executionContext) fieldContext_Query_contracts(_ context.Context, fiel
 				return ec.fieldContext_Contracts_factoryAddr(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Contracts", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_campaigns(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_campaigns(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Campaigns(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*types.Campaign)
+	fc.Result = res
+	return ec.marshalOCampaign2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_campaigns(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_Campaign_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Campaign_description(ctx, field)
+			case "creator":
+				return ec.fieldContext_Campaign_creator(ctx, field)
+			case "oracle":
+				return ec.fieldContext_Campaign_oracle(ctx, field)
+			case "identifier":
+				return ec.fieldContext_Campaign_identifier(ctx, field)
+			case "poolAddress":
+				return ec.fieldContext_Campaign_poolAddress(ctx, field)
+			case "outcomes":
+				return ec.fieldContext_Campaign_outcomes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
 	}
 	return fc, nil
@@ -4436,6 +4502,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "campaigns":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_campaigns(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "frontpage":
 			field := field
 
@@ -5486,6 +5571,54 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOCampaign2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx context.Context, sel ast.SelectionSet, v []*types.Campaign) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx context.Context, sel ast.SelectionSet, v *types.Campaign) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Campaign(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

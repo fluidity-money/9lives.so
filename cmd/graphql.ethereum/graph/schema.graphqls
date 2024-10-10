@@ -6,6 +6,11 @@ type Query {
   contracts: Contracts!
 
   """
+  Campaign List
+  """
+  campaigns: [Campaign]
+
+  """
   Frontpage display. Should have a timeline as to when it should and should
   not be displayed.
   """

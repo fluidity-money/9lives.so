@@ -18,37 +18,58 @@ import (
 
 // Name is the resolver for the name field.
 func (r *campaignResolver) Name(ctx context.Context, obj *types.Campaign) (string, error) {
-	panic(fmt.Errorf("not implemented: Name - name"))
+	if obj == nil {
+		return "", fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Name, nil
 }
 
 // Description is the resolver for the description field.
 func (r *campaignResolver) Description(ctx context.Context, obj *types.Campaign) (string, error) {
-	panic(fmt.Errorf("not implemented: Description - description"))
+	if obj == nil {
+		return "", fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Description, nil
 }
 
 // Creator is the resolver for the creator field.
 func (r *campaignResolver) Creator(ctx context.Context, obj *types.Campaign) (*types.Wallet, error) {
-	panic(fmt.Errorf("not implemented: Creator - creator"))
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Creator, nil
 }
 
 // Oracle is the resolver for the oracle field.
 func (r *campaignResolver) Oracle(ctx context.Context, obj *types.Campaign) (string, error) {
-	panic(fmt.Errorf("not implemented: Oracle - oracle"))
+	if obj == nil {
+		return "", fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Oracle, nil
 }
 
 // Identifier is the resolver for the identifier field.
 func (r *campaignResolver) Identifier(ctx context.Context, obj *types.Campaign) (string, error) {
-	panic(fmt.Errorf("not implemented: Identifier - identifier"))
+	if obj == nil {
+		return "", fmt.Errorf("campaign is nil")
+	}
+	return obj.ID, nil
 }
 
 // PoolAddress is the resolver for the poolAddress field.
 func (r *campaignResolver) PoolAddress(ctx context.Context, obj *types.Campaign) (string, error) {
-	panic(fmt.Errorf("not implemented: PoolAddress - poolAddress"))
+	if obj == nil {
+		return "", fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.PoolAddress, nil
 }
 
 // Outcomes is the resolver for the outcomes field.
 func (r *campaignResolver) Outcomes(ctx context.Context, obj *types.Campaign) ([]types.Outcome, error) {
-	panic(fmt.Errorf("not implemented: Outcomes - outcomes"))
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Outcomes, nil
 }
 
 // ID is the resolver for the id field.
@@ -148,6 +169,23 @@ func (r *queryResolver) Contracts(ctx context.Context) (*model.Contracts, error)
 	panic(fmt.Errorf("not implemented: Contracts - contracts"))
 }
 
+// Campaigns is the resolver for the campaigns field.
+func (r *queryResolver) Campaigns(ctx context.Context) ([]*types.Campaign, error) {
+	var campaigns []*types.Campaign
+	if !r.F.Is(features.FeatureGraphqlMockGraph) {
+		campaigns = MockGraphCampaigns()
+		return campaigns, nil
+	}
+	err := r.DB.Table("campaigns_1").Find(&campaigns).Error
+	if err != nil {
+		slog.Error("Error getting campaigns from database",
+			"error", err,
+		)
+		return nil, fmt.Errorf("error getting campaigns from database")
+	}
+	return campaigns, nil
+}
+
 // Frontpage is the resolver for the frontpage field.
 func (r *queryResolver) Frontpage(ctx context.Context) ([]types.Frontpage, error) {
 	panic(fmt.Errorf("not implemented: Frontpage - frontpage"))
@@ -173,16 +211,3 @@ type frontpageResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type outcomeResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *queryResolver) Campaigns(ctx context.Context) ([]types.CampaignContent, error) {
-	if r.F.Is(features.FeatureGraphqlMockGraph) {
-		return MockGraphCampaigns()
-	}
-	return nil, nil
-}
