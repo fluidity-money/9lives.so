@@ -73,27 +73,8 @@ func (r *frontpageResolver) Categories(ctx context.Context, obj *types.Frontpage
 
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error) {
-	// Check the user's signature
-	// authHeader, ok := ctx.Value("authHeader").(string)
-	// if !ok || authHeader == "" {
-	// 	return nil, fmt.Errorf("authorization token is missing")
-	// }
-	// signerWallet, err := verifyAuthTokenAddress(authHeader)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// if creator != signerWallet {
-	// 	slog.Error("Creator address does not match the signer wallet",
-	// 		"creator address", creator,
-	// 		"signer wallet", signerWallet,
-	// 	)
-	// 	return nil, fmt.Errorf("creator address does not match the signer wallet")
-	// }
-	// slog.Debug("Check authentication",
-	// 	"validated wallet", signerWallet,
-	// )
-	tradingAddr := getTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingBytecode)
-	isTradingContracCreated, err := isContractCreated(r.Geth, r.FactoryAddr, *tradingAddr)
+	tradingAddr := crypto.GetTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingBytecode)
+	contractOwner, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
 			"trading contract", tradingAddr,
@@ -102,12 +83,13 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		)
 		return nil, fmt.Errorf("error checking if trading contract is deployed")
 	}
-	if !*isTradingContracCreated {
-		slog.Error("trading contract is not created",
+	if contractOwner.Hex() != creator {
+		slog.Error("Staged creator is not the contract owner",
 			"trading contract", tradingAddr,
+			"contractOwner", contractOwner,
 			"factory address", r.FactoryAddr,
 		)
-		return nil, fmt.Errorf("trading contract is not created")
+		return nil, fmt.Errorf("staged creator is not the contract owner")
 	}
 	// Create outcomes object
 	var campaignOutcomes = make([]types.Outcome, len(outcomes))
@@ -137,7 +119,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 				Address: creator,
 			},
 			Oracle:      "n/a",
-			PoolAddress: "n/a",
+			PoolAddress: tradingAddr.Hex(),
 			Outcomes:    campaignOutcomes,
 		}}
 	result := r.DB.Table("campaigns_1").Create(&campaign)

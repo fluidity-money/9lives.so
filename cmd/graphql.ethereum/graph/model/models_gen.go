@@ -29,8 +29,6 @@ type OutcomeInput struct {
 	Description string `json:"description"`
 	// Randomly chosen seed for the creation of the identifier.
 	Seed int `json:"seed"`
-	// Identifier hex encoded associated with this outcome. Used to derive addresses.
-	Identifier string `json:"identifier"`
 }
 
 type Query struct {

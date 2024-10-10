@@ -77,11 +77,6 @@ input OutcomeInput {
   Randomly chosen seed for the creation of the identifier.
   """
   seed: Int!
-
-  """
-  Identifier hex encoded associated with this outcome. Used to derive addresses.
-  """
-  identifier: String!
 }
 
 type Mutation {

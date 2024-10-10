@@ -8,6 +8,8 @@ import (
 
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
+
+	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 )
 
 type Outcome struct {
@@ -52,4 +54,21 @@ func GetTradingAddr(ids [][]byte, factoryAddr ethCommon.Address, bytecodeHash []
 		[32]byte(ethCrypto.Keccak256(ids...)),
 		bytecodeHash,
 	)
+}
+
+func GetTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCommon.Address, b []byte) *ethCommon.Address {
+	var outcomes_ = make([]Outcome, len(outcomes))
+	for i, o := range outcomes {
+		outcomes_[i] = Outcome{
+			Name: o.Name,
+			Desc: o.Description,
+			Seed: o.Seed,
+		}
+	}
+	ids, err := GetOutcomeIds(outcomes_)
+	if err != nil {
+		return nil
+	}
+	x := GetTradingAddr(ids, factoryAddr, ethCrypto.Keccak256(b))
+	return &x
 }

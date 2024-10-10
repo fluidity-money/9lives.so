@@ -3668,7 +3668,7 @@ func (ec *executionContext) unmarshalInputOutcomeInput(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "description", "seed", "identifier"}
+	fieldsInOrder := [...]string{"name", "description", "seed"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3696,13 +3696,6 @@ func (ec *executionContext) unmarshalInputOutcomeInput(ctx context.Context, obj 
 				return it, err
 			}
 			it.Seed = data
-		case "identifier":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Identifier = data
 		}
 	}
 

@@ -22,8 +22,8 @@ var tradingAbiBytes []byte
 var factoryAbi, _ = ethAbi.JSON(bytes.NewReader(factoryAbiBytes))
 var tradingAbi, _ = ethAbi.JSON(bytes.NewReader(tradingAbiBytes))
 
-func isContractCreated(c *ethclient.Client, factoryAdd ethCommon.Address, tradingAddr ethCommon.Address) (*bool, error) {
-	callData, err := factoryAbi.Pack("wasCreated", tradingAddr)
+func getOwner(c *ethclient.Client, factoryAdd ethCommon.Address, tradingAddr ethCommon.Address) (*ethCommon.Address, error) {
+	callData, err := factoryAbi.Pack("getOwner", tradingAddr)
 	if err != nil {
 		slog.Error("callData could not be prepared",
 			"factory address", factoryAdd,
@@ -37,19 +37,19 @@ func isContractCreated(c *ethclient.Client, factoryAdd ethCommon.Address, tradin
 		Data: callData,
 	}, nil)
 	if err != nil {
-		slog.Error("can not call wasCreated from contract",
+		slog.Error("can not call getOwner from contract",
 			"factory address", factoryAdd,
 			"call data", callData,
 			"error", err,
 		)
-		return nil, fmt.Errorf("can not call wasCreated from contract")
+		return nil, fmt.Errorf("can not call getOwner from contract")
 	}
-	var wasCreated bool
-	err = factoryAbi.UnpackIntoInterface(&wasCreated, "wasCreated", result)
+	var owner ethCommon.Address
+	err = factoryAbi.UnpackIntoInterface(&owner, "getOwner", result)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unpack contract call result")
 	}
-	return &wasCreated, nil
+	return &owner, nil
 }
 
 func getShareAddr(c *ethclient.Client, tradingAddr ethCommon.Address, outcomeId [8]byte) (*ethCommon.Address, error) {

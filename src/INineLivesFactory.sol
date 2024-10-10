@@ -22,8 +22,8 @@ interface INineLivesFactory {
     function newTrading(Outcome[] memory outcomes) external returns (address);
 
     /**
-     * @notice checks if the address created any contracts
-     * @param addr to check if the address is the creator
+     * @notice gets the owner address from the trading contract address
+     * @param addr is trading address to get the owner
      */
-    function wasCreated(address addr) external view returns (bool);
+    function getOwner(address addr) external view returns (address);
 }
