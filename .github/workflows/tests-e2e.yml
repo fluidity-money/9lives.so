@@ -32,6 +32,8 @@ jobs:
           NEXT_PUBLIC_THIRDWEB_ID: ${{ vars.NEXT_PUBLIC_THIRDWEB_ID }}
           NEXT_PUBLIC_GRAPHQL_URL: "https://testnet-graph.9lives.so"
           NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
+          NEXT_PUBLIC_FUSDC_ADDR: "0xa8ea92c819463efbeddfb670fefc881a480f0115"
+          NEXT_PUBLIC_FACTORY_ADDR: "0xa088E2BC674E98Ac3F2b251cA4fECE66BDecB50B"
         run: pnpm test:e2e
         
       - uses: actions/upload-artifact@v4
