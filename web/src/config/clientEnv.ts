@@ -13,6 +13,14 @@ const clientEnvSchema = z.object({
    * Features url
    */
   NEXT_PUBLIC_FEATURES_URL: z.string().url(),
+  /**
+   * fUSDC address
+   */
+  NEXT_PUBLIC_FUSDC_ADDR: z.string().url(),
+  /**
+   * Factory address
+   */
+  NEXT_PUBLIC_FACTORY_ADDR: z.string().url(),
 });
 
 type ClientEnvSchemaType = z.infer<typeof clientEnvSchema>;
@@ -27,6 +35,8 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_THIRDWEB_ID: process.env.NEXT_PUBLIC_THIRDWEB_ID,
   NEXT_PUBLIC_GRAPHQL_URL: process.env.NEXT_PUBLIC_GRAPHQL_URL,
   NEXT_PUBLIC_FEATURES_URL: process.env.NEXT_PUBLIC_FEATURES_URL,
+  NEXT_PUBLIC_FUSDC_ADDR: process.env.NEXT_PUBLIC_FUSDC_ADDR,
+  NEXT_PUBLIC_FACTORY_ADDR: process.env.NEXT_PUBLIC_FACTORY_ADDR,
 });
 
 if (!clientEnv.success) {

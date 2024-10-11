@@ -1,8 +1,9 @@
 import z from "zod";
 import { createThirdwebClient, getContract } from "thirdweb";
 import clientEnv from "./clientEnv";
-import DPMAbi from "./abi/dpm";
 import { superpositionTestnet } from "@/config/chains";
+import factoryAbi from "./abi/factory";
+import ERC20Abi from "./abi/erc20";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 
@@ -73,9 +74,15 @@ const appVars = appSchema.safeParse({
   thirdwebClient,
   thirdwebSponsorGas: true,
   contracts: {
-    dpm: getContract({
-      abi: DPMAbi,
-      address: "0x0",
+    fusdc: getContract({
+      abi: ERC20Abi,
+      address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
+      chain: superpositionTestnet,
+      client: thirdwebClient,
+    }),
+    factory: getContract({
+      abi: factoryAbi,
+      address: clientEnv.NEXT_PUBLIC_FACTORY_ADDR,
       chain: superpositionTestnet,
       client: thirdwebClient,
     }),
