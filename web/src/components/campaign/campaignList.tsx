@@ -16,21 +16,10 @@ export default async function CampaignList() {
 
   if (!data || !data?.length) return <div>No item</div>;
 
-  const mockData = [
-    ...data,
-    ...data.map((item) => ({
-      ...item,
-      outcomes: [item.outcomes[0]],
-    })),
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-  ];
 
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {mockData.map((campaign) => (
+      {data.map((campaign) => (
         <CampaignItem key={campaign.identifier} data={campaign} />
       ))}
     </div>
