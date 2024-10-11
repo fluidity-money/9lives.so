@@ -1,11 +1,6 @@
 
 type Query {
   """
-  Details that should be sent to the users (ie, where are the contracts living?)
-  """
-  contracts: Contracts!
-
-  """
   Campaign List
   """
   campaigns: [Campaign]
@@ -17,22 +12,6 @@ type Query {
   frontpage: [Frontpage!]!
 }
 
-"""
-Contracts that are relevant to the frontend for tasks including deriving
-addresses of contracts to question for contract details without the graph.
-Also needed to create new campaigns.
-"""
-type Contracts {
-  """
-  fUSDC address that's used to settle all transactions.
-  """
-  fusdcAddr: String!
-
-  """
-  Factory address that creates Trading contracts.
-  """
-  factoryAddr: String!
-}
 
 """
 Frontpage that should be displayed for a time window.

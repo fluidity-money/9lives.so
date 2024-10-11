@@ -25,17 +25,38 @@ export type Campaign = {
   description: Scalars['String']['output'];
   /**
    * Identifier that's used to do offline derivation of the campaign pool,
-   * and the outcome shares. Is keccak256("c" . name . "d" . description . "s" . seed)[:8].
+   * and the outcome shares. Is keccak256(concatenated outcome ids)[:8].
    */
   identifier: Scalars['String']['output'];
-  /** Name of the campaign. */
+  /**
+   * Name of the campaign. Also used to look up the campaign based on the slug
+   * if needed (hyphenated).
+   */
   name: Scalars['String']['output'];
   /** Oracle that can decide if a winner happened. */
   oracle: Scalars['String']['output'];
-  /** Outcomes associated with this campaign. */
+  /**
+   * Outcomes associated with this campaign. If there are only two, it defaults
+   * to a "yes", or "no".
+   */
   outcomes: Array<Outcome>;
   /** Pool address to purchase shares, and to receive the cost function. */
   poolAddress: Scalars['String']['output'];
+};
+
+/** Frontpage that should be displayed for a time window. */
+export type Frontpage = {
+  __typename?: 'Frontpage';
+  /** Campaigns displayed left from right in the grid format. */
+  campaigns: Array<Campaign>;
+  /** Categories that should be displayed on the frontend in the list. */
+  categories: Array<Scalars['String']['output']>;
+  /** From when this should be displayed (timestamp)! */
+  from: Scalars['Int']['output'];
+  /** ID that's used to cache this frontend data. */
+  id: Scalars['ID']['output'];
+  /** Until when this should be displayed (timestamp)! */
+  until: Scalars['Int']['output'];
 };
 
 /**
@@ -51,29 +72,23 @@ export enum Modification {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** "Explain" a campaign, so an on-chain campaign creation is listed in the frontend. Campaign is then spooled in a would-be frontend aggregation table. */
   explainCampaign?: Maybe<Scalars['Boolean']['output']>;
 };
 
 
 export type MutationExplainCampaignArgs = {
   creator: Scalars['String']['input'];
+  description: Scalars['String']['input'];
   ending: Scalars['Int']['input'];
   name: Scalars['String']['input'];
   outcomes: Array<OutcomeInput>;
-  s: Scalars['String']['input'];
-  sR: Scalars['String']['input'];
   seed: Scalars['Int']['input'];
-  text: Scalars['String']['input'];
   type: Modification;
-  v: Scalars['String']['input'];
 };
 
 export type Outcome = {
   __typename?: 'Outcome';
-  /** Campaign this outcome is associated with. */
-  campaign: Campaign;
-  /** Address of the creator. */
-  creator: Wallet;
   /** Text description of this campaign. */
   description: Scalars['String']['output'];
   /**
@@ -91,8 +106,6 @@ export type Outcome = {
 export type OutcomeInput = {
   /** Text description of the outcome. */
   description: Scalars['String']['input'];
-  /** Identifier hex encoded associated with this outcome. Used to derive addresses. */
-  identifier: Scalars['String']['input'];
   /** Name of the campaign outcome. Ie, "Donald Trump" for the election. */
   name: Scalars['String']['input'];
   /** Randomly chosen seed for the creation of the identifier. */
@@ -101,8 +114,13 @@ export type OutcomeInput = {
 
 export type Query = {
   __typename?: 'Query';
-  /** Campaigns that are currently ongoing. */
-  campaigns: Array<Campaign>;
+  /** Campaign List */
+  campaigns?: Maybe<Array<Maybe<Campaign>>>;
+  /**
+   * Frontpage display. Should have a timeline as to when it should and should
+   * not be displayed.
+   */
+  frontpage: Array<Frontpage>;
 };
 
 /** Share representing the outcome of the current amount. */
@@ -122,7 +140,7 @@ export type Wallet = {
 export type CampaignListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CampaignListQuery = { __typename?: 'Query', campaigns: Array<{ __typename?: 'Campaign', name: string, identifier: string, description: string, oracle: string, poolAddress: string, outcomes: Array<{ __typename?: 'Outcome', identifier: string, name: string, share: { __typename?: 'Share', address: string } }> }> };
+export type CampaignListQuery = { __typename?: 'Query', campaigns?: Array<{ __typename?: 'Campaign', name: string, identifier: string, description: string, oracle: string, poolAddress: string, outcomes: Array<{ __typename?: 'Outcome', identifier: string, name: string, share: { __typename?: 'Share', address: string } }> } | null> | null };
 
 
 export const CampaignListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CampaignList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"campaigns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"oracle"}},{"kind":"Field","name":{"kind":"Name","value":"poolAddress"}},{"kind":"Field","name":{"kind":"Name","value":"outcomes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"share"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CampaignListQuery, CampaignListQueryVariables>;

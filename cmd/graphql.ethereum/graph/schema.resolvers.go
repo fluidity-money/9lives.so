@@ -154,11 +154,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	return &res, nil
 }
 
-// Contracts is the resolver for the contracts field.
-func (r *queryResolver) Contracts(ctx context.Context) (*model.Contracts, error) {
-	panic(fmt.Errorf("not implemented: Contracts - contracts"))
-}
-
 // Campaigns is the resolver for the campaigns field.
 func (r *queryResolver) Campaigns(ctx context.Context) ([]*types.Campaign, error) {
 	var campaigns []*types.Campaign

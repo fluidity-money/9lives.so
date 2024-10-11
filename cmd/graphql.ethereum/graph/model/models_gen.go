@@ -8,16 +8,6 @@ import (
 	"strconv"
 )
 
-// Contracts that are relevant to the frontend for tasks including deriving
-// addresses of contracts to question for contract details without the graph.
-// Also needed to create new campaigns.
-type Contracts struct {
-	// fUSDC address that's used to settle all transactions.
-	FusdcAddr string `json:"fusdcAddr"`
-	// Factory address that creates Trading contracts.
-	FactoryAddr string `json:"factoryAddr"`
-}
-
 type Mutation struct {
 }
 
