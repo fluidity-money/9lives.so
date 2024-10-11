@@ -1,5 +1,5 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
-import serverEnv from "@/config/serverEnv";
+import serverEnv from "./src/config/serverEnv";
 
 const config: CodegenConfig = {
   schema: serverEnv.GRAPHQL_SCHEMA,
