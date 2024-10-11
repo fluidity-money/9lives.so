@@ -155,8 +155,8 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 }
 
 // Campaigns is the resolver for the campaigns field.
-func (r *queryResolver) Campaigns(ctx context.Context) ([]*types.Campaign, error) {
-	var campaigns []*types.Campaign
+func (r *queryResolver) Campaigns(ctx context.Context) ([]types.Campaign, error) {
+	var campaigns []types.Campaign
 	if r.F.Is(features.FeatureGraphqlMockGraph) {
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil

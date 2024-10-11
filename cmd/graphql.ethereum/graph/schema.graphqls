@@ -3,7 +3,7 @@ type Query {
   """
   Campaign List
   """
-  campaigns: [Campaign]
+  campaigns: [Campaign!]!
 
   """
   Frontpage display. Should have a timeline as to when it should and should

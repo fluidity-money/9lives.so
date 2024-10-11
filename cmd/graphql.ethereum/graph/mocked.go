@@ -6,7 +6,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types"
 )
 
-func MockGraphCampaigns() []*types.Campaign {
+func MockGraphCampaigns() []types.Campaign {
 	mockItem := types.Campaign{
 		ID:        "0x1234678",
 		CreatedAt: time.Now(),
@@ -28,7 +28,7 @@ The 2024 United States presidential election will be the 60th quadrennial presid
 				{Name: "Michelle Obama", Description: "c", Seed: 15, Identifier: "0x2b48de91", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
 			},
 		}}
-	var list = make([]*types.Campaign, 1)
-	list[0] = &mockItem
+	var list = make([]types.Campaign, 1)
+	list[0] = mockItem
 	return list
 }
