@@ -36,6 +36,15 @@ const thirdWebClientSchema = z.object({
     .optional(),
 });
 
+const contractSchema = z.object({
+  abi: z.array(z.any()).optional(),
+  address: z.string(),
+  chain: z.object({
+    rpc:z.string()
+  }),
+  client: z.object({})
+})
+
 const appSchema = z.object({
   /**
    * Generated metadata of the web app and wagmi will use this object
@@ -52,11 +61,15 @@ const appSchema = z.object({
     url: z.string().url(),
     logoUrl: z.string().url(),
   }),
-  /**
-   * Thirdweb client components like connect button will use
-   */
   thirdwebClient: thirdWebClientSchema,
   thirdwebSponsorGas: z.boolean(),
+  contracts: z.object({
+    fusdc: contractSchema,
+    factory: contractSchema,
+  }),
+  decimals:z.object({
+    fusdc: z.number().default(6)
+  }),
   cacheRevalidation: z.object({
     homePage: z.number(),
     detailPages: z.number(),
@@ -86,6 +99,9 @@ const appVars = appSchema.safeParse({
       chain: superpositionTestnet,
       client: thirdwebClient,
     }),
+  },
+  decimals:{
+    fusdc:6
   },
   cacheRevalidation: {
     homePage: 86400000, // 1 day

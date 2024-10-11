@@ -16,11 +16,11 @@ const clientEnvSchema = z.object({
   /**
    * fUSDC address
    */
-  NEXT_PUBLIC_FUSDC_ADDR: z.string().url(),
+  NEXT_PUBLIC_FUSDC_ADDR: z.string().length(42),
   /**
    * Factory address
    */
-  NEXT_PUBLIC_FACTORY_ADDR: z.string().url(),
+  NEXT_PUBLIC_FACTORY_ADDR: z.string().length(42),
 });
 
 type ClientEnvSchemaType = z.infer<typeof clientEnvSchema>;

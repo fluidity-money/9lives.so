@@ -7,17 +7,45 @@ import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
 import { Outcome } from "@/types";
 import { useOutcomeStore } from "@/stores/outcomeStore";
-
+import useTradingTx from "@/hooks/useTradingTx";
+import { useActiveAccount } from "thirdweb/react";
 export default function DetailCall2Action({
+  tradingAddr,
   initalData,
 }: {
+  tradingAddr: `0x${string}`
   initalData: Outcome[];
 }) {
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const selectOutcome = useOutcomeStore((s) => s.selectOutcome);
   const selectedOutcome = useOutcomeStore((s) => s.selectedOutcome);
   const reset = useOutcomeStore((s) => s.reset);
-  const outcome = initalData[selectedOutcome.outcomeIdx];
+  const account = useActiveAccount()
+  const outcome = initalData[selectedOutcome.outcomeIdx]
+
+  const [isMinting, setIsMinting] = useState(false)
+
+  const sendTransaction = useTradingTx({
+    tradingAddr,
+    account,
+    outcomeId: outcome.identifier,
+    value: 0,
+  })
+
+  async function handleBuy() {
+    try {
+      if (!account) return console.error("No account")
+      setIsMinting(true)
+      const signature = await account?.signMessage({ message: "Mint with your permission"})
+      if (!signature) return console.error("No signature")
+      const response = await sendTransaction(signature)
+      console.log("response", response)
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : error)
+    } finally {
+      setIsMinting(false)
+    }
+  }
 
   useEffect(() => {
     return () => {
@@ -70,7 +98,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               !!selectedOutcome.state &&
-                "bg-green-500 text-white hover:bg-green-500",
+              "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}
             onClick={() => selectOutcome({ ...selectedOutcome, state: 1 })}
@@ -81,7 +109,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               !selectedOutcome.state &&
-                "bg-red-500 text-white hover:bg-red-500",
+              "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
             onClick={() => selectOutcome({ ...selectedOutcome, state: 0 })}
@@ -105,11 +133,12 @@ export default function DetailCall2Action({
         <Input type="range" intent="range" className={"mt-2 w-full"} disabled />
       </div>
       <Button
-        title={side}
+        disabled={isMinting}
+        title={isMinting ? "Loading.." : side}
         className={"uppercase"}
         size={"xlarge"}
         intent={"cta"}
-        onClick={() => window.alert("You clicked the button!")}
+        onClick={handleBuy}
       />
     </div>
   );

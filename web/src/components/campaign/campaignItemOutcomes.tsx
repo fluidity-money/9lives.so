@@ -1,11 +1,10 @@
-import { CampaignListQuery } from "@/gql/graphql";
 import Button from "../themed/button";
 import React from "react";
 import Link from "next/link";
-import { SelectedOutcome } from "@/types";
+import { Outcome, SelectedOutcome } from "@/types";
 interface CampaignItemOutcomesProps {
   campaignId: string;
-  outcomes: CampaignListQuery["campaigns"][number]["outcomes"];
+  outcomes: Outcome[];
   setSelectedBet: React.Dispatch<SelectedOutcome>;
 }
 export default function CampaignItemOutcomes({
@@ -36,7 +35,7 @@ export default function CampaignItemOutcomes({
     );
 
   return (
-    <ul className="flex h-20 flex-col gap-1 overflow-y-scroll">
+    <ul className="flex h-20 flex-col gap-1 overflow-y-auto">
       {outcomes.map((outcome) => (
         <li
           key={outcome.identifier}
