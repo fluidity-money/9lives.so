@@ -16,13 +16,12 @@ export default function DetailCall2Action({
   tradingAddr: `0x${string}`;
   initalData: Outcome[];
 }) {
-  const [side, setSide] = useState<"buy" | "sell">("buy");
   const selectOutcome = useOutcomeStore((s) => s.selectOutcome);
   const selectedOutcome = useOutcomeStore((s) => s.selectedOutcome);
   const reset = useOutcomeStore((s) => s.reset);
   const account = useActiveAccount();
   const outcome = initalData[selectedOutcome.outcomeIdx];
-
+  const ctaTitle = !!selectedOutcome.state ? 'Buy': 'Sell'
   const [isMinting, setIsMinting] = useState(false);
 
   const sendTransaction = useTradingTx({
@@ -69,33 +68,13 @@ export default function DetailCall2Action({
           {outcome.name}
         </h3>
       </div>
-      <div className="flex items-center gap-2">
-        <Button
-          cat={"secondary"}
-          size={"small"}
-          title="Buy"
-          className={combineClass(
-            side === "buy" && "hover:bg-bg-neutral-50 bg-neutral-50",
-          )}
-          onClick={() => setSide("buy")}
-        />
-        <Button
-          cat={"secondary"}
-          size={"small"}
-          title="Sell"
-          className={combineClass(
-            side === "sell" && "bg-neutral-50 hover:bg-neutral-50",
-          )}
-          onClick={() => setSide("sell")}
-        />
-      </div>
       <div>
         <span className="font-chicago text-xs font-normal text-9black">
           Outcome
         </span>
         <div className="mt-2 flex items-center gap-2">
           <Button
-            title="Bet Yes"
+            title="Buy"
             intent={!!selectedOutcome.state ? "yes" : "default"}
             size={"large"}
             className={combineClass(
@@ -106,7 +85,7 @@ export default function DetailCall2Action({
             onClick={() => selectOutcome({ ...selectedOutcome, state: 1 })}
           />
           <Button
-            title="Bet No"
+            title="Sell"
             intent={!!selectedOutcome.state ? "no" : "default"}
             size={"large"}
             className={combineClass(
@@ -120,7 +99,7 @@ export default function DetailCall2Action({
       </div>
       <div className="flex flex-col">
         <span className="font-chicago text-xs font-normal text-9black">
-          Limit
+          Shares
         </span>
         <Input
           type="number"
@@ -136,7 +115,7 @@ export default function DetailCall2Action({
       </div>
       <Button
         disabled={isMinting}
-        title={isMinting ? "Loading.." : side}
+        title={isMinting ? "Loading.." : ctaTitle}
         className={"uppercase"}
         size={"xlarge"}
         intent={"cta"}

@@ -67,7 +67,7 @@ export default function DetailOutcomeItem({
         )}
       >
         <Button
-          title="Bet Yes"
+          title="Buy"
           intent={"yes"}
           size={"large"}
           className={combineClass(
@@ -81,7 +81,7 @@ export default function DetailOutcomeItem({
           }}
         />
         <Button
-          title="Bet No"
+          title="Sell"
           intent={"no"}
           size={"large"}
           className={combineClass(

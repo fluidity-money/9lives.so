@@ -21,13 +21,13 @@ export default function CampaignItemOutcomes({
       <div className="flex flex-1 items-end gap-2">
         <Button
           intent="yes"
-          title="Bet Yes"
+          title="Buy"
           onClick={() => handleSelect(outcomes[0], false)}
           className={"flex-1"}
         />
         <Button
           intent="no"
-          title="Bet No"
+          title="Sell"
           onClick={() => handleSelect(outcomes[0], true)}
           className={"flex-1"}
         />
@@ -50,14 +50,14 @@ export default function CampaignItemOutcomes({
               intent="yes"
               cat="secondary"
               size="small"
-              title="Yes"
+              title="Buy"
               onClick={() => handleSelect(outcome, true)}
             />
             <Button
               intent="no"
               cat="secondary"
               size="small"
-              title="No"
+              title="Sell"
               onClick={() => handleSelect(outcome, true)}
             />
           </div>
