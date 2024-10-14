@@ -34,6 +34,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
+    "sharp": "^0.33.5",
     "tailwind-merge": "^2.5.2",
     "thirdweb": "^5.55.0",
     "zod": "^3.23.8",
