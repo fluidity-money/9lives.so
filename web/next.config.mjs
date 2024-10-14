@@ -2,10 +2,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
-  images: {
-    unoptimized: true,
-  },
   webpack(config) {
     if (process.env.NODE_V8_COVERAGE) {
       Object.defineProperty(config, "devtool", {
