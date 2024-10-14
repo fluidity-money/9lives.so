@@ -1,25 +1,14 @@
+"use client";
+import { Campaign } from "@/types";
 import CampaignItem from "./campaignItem";
-import { unstable_cache } from "next/cache";
-import { requestCampaignList } from "@/providers/graphqlClient";
-import appConfig from "@/config";
+import { useQuery } from "@tanstack/react-query";
 
-const getCampaigns = unstable_cache(
-  async () => {
-    return (await requestCampaignList).campaigns;
-  },
-  ["campaigns"],
-  { revalidate: appConfig.cacheRevalidation.homePage, tags: ["campaigns"] },
-);
-
-export default async function CampaignList() {
-  const data = await getCampaigns();
-
-  if (!data || !data?.length) return <div>No item</div>;
-
+export default function CampaignList() {
+  const { data } = useQuery<Campaign[]>({ queryKey: ["campaigns"] });
 
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {data.map((campaign) => (
+      {data?.map((campaign) => (
         <CampaignItem key={campaign.identifier} data={campaign} />
       ))}
     </div>

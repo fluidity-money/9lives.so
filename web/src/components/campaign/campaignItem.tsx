@@ -1,13 +1,10 @@
 "use client";
 
-import { CampaignListQuery } from "@/gql/graphql";
-
 import { useState } from "react";
 import SelectedBet from "./selectedBet";
 import CampaignBody from "./campaignBody";
-import { SelectedOutcome } from "@/types";
+import { Campaign, SelectedOutcome } from "@/types";
 
-type Campaign = CampaignListQuery["campaigns"][number];
 interface CampaignItemProps {
   data: Campaign;
 }

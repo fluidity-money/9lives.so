@@ -13,37 +13,39 @@ export default function DetailCall2Action({
   tradingAddr,
   initalData,
 }: {
-  tradingAddr: `0x${string}`
+  tradingAddr: `0x${string}`;
   initalData: Outcome[];
 }) {
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const selectOutcome = useOutcomeStore((s) => s.selectOutcome);
   const selectedOutcome = useOutcomeStore((s) => s.selectedOutcome);
   const reset = useOutcomeStore((s) => s.reset);
-  const account = useActiveAccount()
-  const outcome = initalData[selectedOutcome.outcomeIdx]
+  const account = useActiveAccount();
+  const outcome = initalData[selectedOutcome.outcomeIdx];
 
-  const [isMinting, setIsMinting] = useState(false)
+  const [isMinting, setIsMinting] = useState(false);
 
   const sendTransaction = useTradingTx({
     tradingAddr,
     account,
     outcomeId: outcome.identifier,
     value: 0,
-  })
+  });
 
   async function handleBuy() {
     try {
-      if (!account) return console.error("No account")
-      setIsMinting(true)
-      const signature = await account?.signMessage({ message: "Mint with your permission"})
-      if (!signature) return console.error("No signature")
-      const response = await sendTransaction(signature)
-      console.log("response", response)
+      if (!account) return console.error("No account");
+      setIsMinting(true);
+      const signature = await account?.signMessage({
+        message: "Mint with your permission",
+      });
+      if (!signature) return console.error("No signature");
+      const response = await sendTransaction(signature);
+      console.log("response", response);
     } catch (error) {
-      console.error(error instanceof Error ? error.message : error)
+      console.error(error instanceof Error ? error.message : error);
     } finally {
-      setIsMinting(false)
+      setIsMinting(false);
     }
   }
 
@@ -98,7 +100,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               !!selectedOutcome.state &&
-              "bg-green-500 text-white hover:bg-green-500",
+                "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}
             onClick={() => selectOutcome({ ...selectedOutcome, state: 1 })}
@@ -109,7 +111,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               !selectedOutcome.state &&
-              "bg-red-500 text-white hover:bg-red-500",
+                "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
             onClick={() => selectOutcome({ ...selectedOutcome, state: 0 })}

@@ -6,7 +6,7 @@ import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const button = cva(
-  "border-9black disabled:bg-9gray font-chicago text-9black rounded-sm border text-xs focus-visible:border-2  disabled:opacity-40",
+  "rounded-sm border border-9black font-chicago text-xs text-9black focus-visible:border-2 disabled:bg-9gray  disabled:opacity-40",
   {
     variants: {
       intent: {
@@ -17,11 +17,11 @@ const button = cva(
       },
       cat: {
         primary:
-          "shadow-9btnPrimaryIdle focus-visible:shadow-9btnPrimaryFocus hover:shadow-9btnPrimaryHover active:shadow-9btnPrimaryActive disabled:shadow-9btnPrimaryDisabled focus:outline-none ",
+          "shadow-9btnPrimaryIdle hover:shadow-9btnPrimaryHover focus:outline-none focus-visible:shadow-9btnPrimaryFocus active:shadow-9btnPrimaryActive disabled:shadow-9btnPrimaryDisabled ",
         secondary:
-          "shadow-9btnSecondaryIdle focus-visible:shadow-9btnSecondaryFocus hover:shadow-9btnSecondaryHover active:shadow-9btnSecondaryActive disabled:shadow-9btnSecondaryDisabled focus:outline-none",
+          "shadow-9btnSecondaryIdle hover:shadow-9btnSecondaryHover focus:outline-none focus-visible:shadow-9btnSecondaryFocus active:shadow-9btnSecondaryActive disabled:shadow-9btnSecondaryDisabled",
         close:
-          "bg-closeIdle active:bg-closePressed rounded-none border-0 bg-[length:100%_100%] bg-center bg-no-repeat shadow-none",
+          "rounded-none border-0 bg-closeIdle bg-[length:100%_100%] bg-center bg-no-repeat shadow-none active:bg-closePressed",
       },
       size: {
         nospace: "p-0",

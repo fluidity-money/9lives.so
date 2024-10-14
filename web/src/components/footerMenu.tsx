@@ -25,9 +25,9 @@ export default function FooterMenu() {
 
   return (
     <nav className="flex max-w-72 flex-wrap items-center justify-end gap-4 text-xs">
-      {menu.map((item) => (
+      {menu.map((item, index) => (
         <Link
-          key={item.page}
+          key={item.page + index}
           href={item.page}
           className="font-chicago text-neutral-800 hover:underline"
         >

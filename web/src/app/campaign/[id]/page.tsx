@@ -3,6 +3,7 @@ import DetailHeader from "@/components/detail/detailHeader";
 import DetailOutcomes from "@/components/detail/detailOutcomes";
 import appConfig from "@/config";
 import { requestCampaignList } from "@/providers/graphqlClient";
+import { Campaign } from "@/types";
 import { unstable_cache } from "next/cache";
 
 export const dynamicParams = true;
@@ -18,7 +19,7 @@ export async function generateStaticParams() {
 
 const getCampaigns = unstable_cache(
   async () => {
-    return (await requestCampaignList).campaigns;
+    return (await requestCampaignList).campaigns as Campaign[];
   },
   ["campaigns"],
   { revalidate: appConfig.cacheRevalidation.detailPages, tags: ["campaigns"] },
@@ -40,7 +41,10 @@ export default async function DetailPage({
         <DetailOutcomes data={campaign.outcomes} />
       </div>
       <div className="flex-1">
-        <DetailCall2Action initalData={campaign.outcomes} />
+        <DetailCall2Action
+          initalData={campaign.outcomes}
+          tradingAddr={campaign.poolAddress}
+        />
       </div>
     </section>
   );

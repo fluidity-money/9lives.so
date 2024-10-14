@@ -40,10 +40,10 @@ const contractSchema = z.object({
   abi: z.array(z.any()).optional(),
   address: z.string(),
   chain: z.object({
-    rpc:z.string()
+    rpc: z.string(),
   }),
-  client: z.object({})
-})
+  client: z.object({}),
+});
 
 const appSchema = z.object({
   /**
@@ -67,8 +67,8 @@ const appSchema = z.object({
     fusdc: contractSchema,
     factory: contractSchema,
   }),
-  decimals:z.object({
-    fusdc: z.number().default(6)
+  decimals: z.object({
+    fusdc: z.number().default(6),
   }),
   cacheRevalidation: z.object({
     homePage: z.number(),
@@ -100,8 +100,8 @@ const appVars = appSchema.safeParse({
       client: thirdwebClient,
     }),
   },
-  decimals:{
-    fusdc:6
+  decimals: {
+    fusdc: 6,
   },
   cacheRevalidation: {
     homePage: 86400000, // 1 day

@@ -2,11 +2,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { requestCampaignList } from "./graphqlClient";
 import appConfig from "@/config";
+import { Campaign } from "@/types";
 
 export default function ReactQueryProvider({
   children,
+  initialData,
 }: {
   children: React.ReactNode;
+  initialData: Campaign[];
 }) {
   const [queryClient] = useState(() => {
     // eslint-disable-next-line @tanstack/query/stable-query-client
@@ -17,7 +20,11 @@ export default function ReactQueryProvider({
     });
 
     client.setQueryDefaults(["campaigns"], {
-      queryFn: () => requestCampaignList,
+      queryFn: async () => {
+        const res = await requestCampaignList;
+        return res.campaigns;
+      },
+      initialData,
     });
 
     return client;
