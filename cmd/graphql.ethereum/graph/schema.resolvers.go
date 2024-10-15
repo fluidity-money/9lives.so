@@ -143,7 +143,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			PoolAddress: tradingAddr.Hex(),
 			Outcomes:    campaignOutcomes,
 		}}
-	result := r.DB.Table("campaigns_1").Create(&campaign)
+	result := r.DB.Table("ninelives_campaigns_1").Create(&campaign)
 	if result.Error != nil {
 		slog.Error("Error inserting campaign into database",
 			"error", result.Error,
@@ -161,7 +161,7 @@ func (r *queryResolver) Campaigns(ctx context.Context) ([]types.Campaign, error)
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
-	err := r.DB.Table("campaigns_1").Find(&campaigns).Error
+	err := r.DB.Table("ninelives_campaigns_1").Find(&campaigns).Error
 	if err != nil {
 		slog.Error("Error getting campaigns from database",
 			"error", err,
