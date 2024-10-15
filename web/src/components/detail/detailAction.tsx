@@ -20,8 +20,10 @@ export default function DetailCall2Action({
   initalData: Outcome[];
 }) {
   const account = useActiveAccount();
-  const outcome = selectedOutcome ? initalData.find(o=> o.identifier === selectedOutcome.id)! :  initalData[0]
-  const ctaTitle = selectedOutcome?.state === 'sell' ? "Sell" : "Buy";
+  const outcome = selectedOutcome
+    ? initalData.find((o) => o.identifier === selectedOutcome.id)!
+    : initalData[0];
+  const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
 
   const sendTransaction = useTradingTx({
@@ -72,7 +74,7 @@ export default function DetailCall2Action({
             intent={selectedOutcome?.state === "buy" ? "yes" : "default"}
             size={"large"}
             className={combineClass(
-              selectedOutcome?.state === 'buy' &&
+              selectedOutcome?.state === "buy" &&
                 "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}

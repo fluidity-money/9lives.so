@@ -71,7 +71,7 @@ export default function DetailOutcomeItem({
           size={"large"}
           className={combineClass(
             isSelected &&
-              selectedOutcome.state === 'buy' &&
+              selectedOutcome.state === "buy" &&
               "bg-green-500 font-bold text-white hover:bg-green-500",
           )}
           onClick={(e) => {
@@ -85,7 +85,7 @@ export default function DetailOutcomeItem({
           size={"large"}
           className={combineClass(
             isSelected &&
-              selectedOutcome.state === 'sell' &&
+              selectedOutcome.state === "sell" &&
               "bg-red-500 font-bold text-white hover:bg-red-500",
           )}
           onClick={(e) => {

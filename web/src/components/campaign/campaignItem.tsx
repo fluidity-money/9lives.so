@@ -3,7 +3,11 @@
 import { useState } from "react";
 import SelectedOutcome from "./selectedOutcome";
 import CampaignBody from "./campaignBody";
-import { Campaign, Outcome, SelectedOutcome as SelectedOutcomeType } from "@/types";
+import {
+  Campaign,
+  Outcome,
+  SelectedOutcome as SelectedOutcomeType,
+} from "@/types";
 
 interface CampaignItemProps {
   data: Campaign;
@@ -18,7 +22,11 @@ export default function CampaignItem({ data }: CampaignItemProps) {
         <SelectedOutcome
           campaignId={data.identifier}
           selectedState={selectedOutcome.state}
-          data={data.outcomes.find(o => o.identifier === selectedOutcome.id)! as Outcome}
+          data={
+            data.outcomes.find(
+              (o) => o.identifier === selectedOutcome.id,
+            )! as Outcome
+          }
           setSelectedOutcome={setSelectedOutcome}
         />
       ) : (

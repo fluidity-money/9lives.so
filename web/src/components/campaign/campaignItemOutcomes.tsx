@@ -12,21 +12,23 @@ export default function CampaignItemOutcomes({
   outcomes,
   setSelectedOutcome,
 }: CampaignItemOutcomesProps) {
- 
-
   if (outcomes.length === 1)
     return (
       <div className="flex flex-1 items-end gap-2">
         <Button
           intent="yes"
           title="Buy"
-          onClick={() => setSelectedOutcome({id: outcomes[0].identifier, 'state':"buy"})}
+          onClick={() =>
+            setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
+          }
           className={"flex-1"}
         />
         <Button
           intent="no"
           title="Sell"
-          onClick={() => setSelectedOutcome({id: outcomes[0].identifier, 'state':"sell"})}
+          onClick={() =>
+            setSelectedOutcome({ id: outcomes[0].identifier, state: "sell" })
+          }
           className={"flex-1"}
         />
       </div>
@@ -49,14 +51,18 @@ export default function CampaignItemOutcomes({
               cat="secondary"
               size="small"
               title="Buy"
-              onClick={() => setSelectedOutcome({id: outcome.identifier, 'state':"buy"})}
+              onClick={() =>
+                setSelectedOutcome({ id: outcome.identifier, state: "buy" })
+              }
             />
             <Button
               intent="no"
               cat="secondary"
               size="small"
               title="Sell"
-              onClick={() => setSelectedOutcome({id: outcome.identifier, 'state':"sell"})}
+              onClick={() =>
+                setSelectedOutcome({ id: outcome.identifier, state: "sell" })
+              }
             />
           </div>
         </li>

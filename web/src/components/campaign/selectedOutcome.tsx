@@ -7,17 +7,17 @@ import Input from "../themed/input";
 import { useState } from "react";
 import Link from "next/link";
 import CloseButton from "../closeButton";
-import { Outcome, SelectedOutcome as SelectedOutcomeType  } from "@/types";
+import { Outcome, SelectedOutcome as SelectedOutcomeType } from "@/types";
 
 export default function SelectedOutcome({
   campaignId,
   data,
   selectedState,
-  setSelectedOutcome
+  setSelectedOutcome,
 }: {
   campaignId: string;
   data: Outcome;
-  selectedState: SelectedOutcomeType['state'] 
+  selectedState: SelectedOutcomeType["state"];
   setSelectedOutcome: React.Dispatch<SelectedOutcomeType | undefined>;
 }) {
   const [deposit, setDeposit] = useState(0);
