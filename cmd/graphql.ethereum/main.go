@@ -36,8 +36,8 @@ const (
 	EnvListenAddr = "SPN_LISTEN_ADDR"
 )
 
-// TradingBytecode is the bytecode of the trading contract.
-var tradingBytecode, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f73934b4f2c3a08b864a174800d5349e676d2228fa45af43d5f5f3e6029573d5ffd5b3d5ff3")
+// TradingHash the keccak256 hash of the trading contract.
+var tradingHash, _ = hex.DecodeString("0x3aec606de378ab580805627cdcc9c21381ffe31d9017012dc19c907ddd976c3b")
 
 type corsMiddleware struct {
 	srv *handler.Server
@@ -66,12 +66,12 @@ func main() {
 	defer geth.Close()
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB:              db,
-			F:               features.Get(),
-			Geth:            geth,
-			C:               config,
-			FactoryAddr:     ethCommon.HexToAddress(config.FactoryAddress),
-			TradingBytecode: tradingBytecode,
+			DB:          db,
+			F:           features.Get(),
+			Geth:        geth,
+			C:           config,
+			FactoryAddr: ethCommon.HexToAddress(config.FactoryAddress),
+			TradingHash: tradingHash,
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})

@@ -26,4 +26,9 @@ interface INineLivesFactory {
      * @param addr is trading address to get the owner
      */
     function getOwner(address addr) external view returns (address);
+
+    /**
+     * @notice return the keccak256 hash of the trading contract
+     */
+    function tradingHash() external view returns (bytes32);
 }

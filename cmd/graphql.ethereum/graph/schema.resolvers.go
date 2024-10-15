@@ -94,7 +94,7 @@ func (r *frontpageResolver) Categories(ctx context.Context, obj *types.Frontpage
 
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error) {
-	tradingAddr := crypto.GetTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingBytecode)
+	tradingAddr := crypto.GetTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingHash)
 	contractOwner, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
