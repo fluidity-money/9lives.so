@@ -5,7 +5,13 @@ CARGO_BUILD_STYLUS := \
 		--target wasm32-unknown-unknown \
 		--features
 
-RELEASE_COPY_9LIVES := cp target/wasm32-unknown-unknown/release/ninelives.wasm
+RELEASE_WASM_OPT_9LIVES := \
+	wasm-opt \
+		--dce \
+		--rse \
+		--signature-pruning \
+		-Os target/wasm32-unknown-unknown/release/ninelives.wasm \
+		-o
 
 .PHONY: build clean docs factory trading
 
@@ -22,12 +28,12 @@ trading: trading.wasm
 factory.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f factory.wasm
 	@${CARGO_BUILD_STYLUS} factory
-	@${RELEASE_COPY_9LIVES} factory.wasm
+	@${RELEASE_WASM_OPT_9LIVES} factory.wasm
 
 trading.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading.wasm
 	@${CARGO_BUILD_STYLUS} trading
-	@${RELEASE_COPY_9LIVES} trading.wasm
+	@${RELEASE_WASM_OPT_9LIVES} trading.wasm
 
 clean:
 	@rm -rf ninelives.wasm factory.wasm trading.wasm target liblib9lives.rlib

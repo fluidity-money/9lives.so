@@ -14,7 +14,7 @@ name = "ninelives"
 [profile.release]
 codegen-units = 1
 panic = "abort"
-opt-level = "s"
+opt-level = "z"
 strip = true
 lto = true
 debug = false
@@ -33,7 +33,7 @@ array-concat = "0.5.3"
 sha3-const = "0.1.1"
 const-hex = { version = "1.12.0" }
 paste = "1.0.15"
-rust_decimal = { version =  "1.36.0", features = ["maths"] }
+rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths"] }
 
 [dev-dependencies]
 proptest = "1.5.0"
