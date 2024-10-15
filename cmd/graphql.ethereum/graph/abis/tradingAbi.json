@@ -56,7 +56,7 @@
     },
     {
         "type": "function",
-        "name": "mint",
+        "name": "mintE12943CE",
         "inputs": [
             {
                 "name": "outcome",
@@ -85,7 +85,7 @@
     },
     {
         "type": "function",
-        "name": "mintPermit",
+        "name": "mintPermitB8D681AD",
         "inputs": [
             {
                 "name": "outcome",
