@@ -1,10 +1,10 @@
 import config from "@/config";
+import { thirdwebClient } from '@/config/app'
 import tradingAbi from "@/config/abi/trading";
 import {
   getContract,
   prepareContractCall,
   sendTransaction,
-  ThirdwebClient,
 } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { Signature } from "ethers";
@@ -24,7 +24,7 @@ const useTradingTx = ({
   const tradingContract = getContract({
     abi: tradingAbi,
     address: tradingAddr,
-    client: config.thirdwebClient as ThirdwebClient,
+    client: thirdwebClient,
     chain: config.chains.superpositionTestnet,
   });
   const prepare = (signature: string, accountAddress: string) => {
