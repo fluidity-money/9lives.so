@@ -55,7 +55,7 @@ describe("End to end tests", async () => {
 
   // Build everything from a fresh state, get addresses first.
 
-  const { factoryImpl, erc20Impl, tradingImpl } =
+  const { factoryImpl, erc20Impl, tradingMintImpl, tradingExtrasImpl } =
     JSON.parse(execSync(
       `go run scripts/get-addresses.go ${defaultAccountAddr}`,
       {
@@ -76,8 +76,9 @@ describe("End to end tests", async () => {
         ...process.env,
         "SPN_FACTORY_IMPL_ADDR": factoryImpl,
         "SPN_ERC20_IMPL_ADDR": erc20Impl,
-        "SPN_TRADING_IMPL_ADDR": tradingImpl,
-        "SPN_FACTORY_PROXY_ADDR": factoryImpl, // Impl instead of proxy.
+        "SPN_TRADING_MINT_IMPL_ADDR": tradingMintImpl,
+        "SPN_TRADING_EXTRAS_IMPL_ADDR": tradingExtrasImpl,
+        "SPN_FACTORY_PROXY_ADDR": factoryImpl, // Impl instead of proxy in our tests.
         "SPN_LONGTAIL_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
     } },

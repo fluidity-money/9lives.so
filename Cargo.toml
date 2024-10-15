@@ -52,6 +52,7 @@ alloy-primitives = { git = "https://github.com/fluidity-money/alloy-core" }
 
 [features]
 factory = []
-trading = []
+trading-mint = []
+trading-extras = []
 testing-dbg = []
 testing = []

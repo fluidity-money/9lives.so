@@ -23,7 +23,7 @@ fn test_trading_edgecase() {
     let amount_0 = U256::from(23560214097017_u64);
     let amount_1 = U256::from(1000000_u64);
     let mint_amount = U256::from(64682966_u64);
-    use lib9lives::trading_contract::Trading;
+    use lib9lives::trading_storage::Trading;
     host::with_storage::<_, Trading, _>(|c| {
         let outcome_0 =
             FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
@@ -38,7 +38,7 @@ fn test_trading_edgecase() {
 
 #[test]
 fn test_unit_1() {
-    use lib9lives::trading_contract::Trading;
+    use lib9lives::trading_storage::Trading;
     host::with_storage::<_, Trading, _>(|c| {
         let outcome_0 =
             FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
@@ -65,7 +65,7 @@ proptest! {
         let amount_0 = U256::from(amount_0);
         let amount_1 = U256::from(amount_1);
         let mint_amount = U256::from(mint_amount);
-        use lib9lives::trading_contract::Trading;
+        use lib9lives::trading_storage::Trading;
         host::with_storage::<_, Trading, _>(|c| {
             let outcome_0 =
                 FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);

@@ -1,0 +1,12 @@
+#define constant MINT_IMPL = 0x6221a9c005f6e47eb398fd867784cacfdcfff4e7
+#define constant OTHER_IMPL = 0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5
+
+#define macro MAIN() = takes(0) returns(0) {
+  0x02 calldataload push0 byte
+  0x01 eq payoff
+
+  payoff:
+  	DISPATCH(0x6221a9c005f6e47eb398fd867784cacfdcfff4e7)
+}
+
+#define macro DISPATCH(
