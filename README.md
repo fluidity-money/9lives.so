@@ -31,9 +31,9 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 |    Deployment name     |              Deployment address            |
 |------------------------|--------------------------------------------|
-| Proxy admin            | 0x83dfbdddc9012e4e76d2d0cc97c50d981f4aef38 |
-| Factory implementation | 0xa835876F15BAb9d01b2e4E608D389aAc14ba73b8 |
-| ERC20 implementation   | 0x16E778C0611497A6739E926b35738Bb93eddEc17 |
-| Trading mint impl      | 0xe906bC540093e82339785BDBEa3Fd3c3222107FB |
-| Trading extras impl    | 0xe906bC540093e82339785BDBEa3Fd3c3222107FB |
-| Factory proxy          | 0xa088E2BC674E98Ac3F2b251cA4fECE66BDecB50B |
+| Proxy admin            |  |
+| Factory implementation | 0x1b86293f065355674eB57b9b246E156De3615Fe3 |
+| ERC20 implementation   | 0x314E174CD27C20206079db7455af49fa17e401a0 |
+| Trading mint impl      | 0xFF02930eF3774686b587C9641112ce91E93aBF8a |
+| Trading extras impl    | 0xa4c0b4bF1331944Ac4dc98C4305F9CC603ce2EaE |
+| Factory proxy          | 0x9705a4CD5525B4655eAac9d40cAF03BA7E0268cc |

@@ -1,3 +1,5 @@
+#!/usr/bin/env vyper
+
 # @version >=0.4.0
 
 def delegate(a: address):
@@ -5,7 +7,7 @@ def delegate(a: address):
 
 @external
 def __default__():
-	if convert(slice(msg.data, 1, 1), uint8) == 2:
-		self.delegate(0x1000000000000000000000000000000000000001)
+	if convert(slice(msg.data, 2, 1), uint8) == 2:
+		self.delegate(0xFF02930eF3774686b587C9641112ce91E93aBF8a)
 	else:
-		self.delegate(0x2000000000000000000000000000000000000002)
+		self.delegate(0xa4c0b4bF1331944Ac4dc98C4305F9CC603ce2EaE)

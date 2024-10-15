@@ -57,7 +57,7 @@ describe("End to end tests", async () => {
 
   const { factoryImpl, erc20Impl, tradingMintImpl, tradingExtrasImpl } =
     JSON.parse(execSync(
-      `go run scripts/get-addresses.go ${defaultAccountAddr}`,
+      `go run scripts/get-addresses-deploy.go ${defaultAccountAddr}`,
       {
         env: {
           ...process.env,

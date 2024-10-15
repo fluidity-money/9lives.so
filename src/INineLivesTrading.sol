@@ -8,7 +8,7 @@ interface INineLivesTrading {
      * @param value to spend of fUSDC.
      * @param recipient of the funds spent.
      */
-    function mint(bytes8 outcome, uint256 value, address recipient) external returns (uint256);
+    function mintE12943CE(bytes8 outcome, uint256 value, address recipient) external returns (uint256);
 
     /**
      * @notice Mint some shares in exchange for fUSDC.
@@ -20,7 +20,7 @@ interface INineLivesTrading {
      * @param r to use for permit.
      * @param s to use for permit.
      */
-    function mintPermit(
+    function mintPermitB8D681AD(
         bytes8 outcome,
         uint256 value,
         uint256 deadline,

@@ -45,13 +45,9 @@ func main() {
 		"tradingExtrasImpl": tradingExtrasImpl,
 		"factoryProxy": factoryProxy,
 	})
-	fmt.Fprintf(os.Stderr, `export \
-	SPN_FACTORY_IMPL_ADDR=%v \
-	SPN_ERC20_IMPL_ADDR=%v \
-	SPN_TRADING_MINT_IMPL_ADDR=%v \
-	SPN_TRADING_EXTRAS_IMPL_ADDR=%v \
-	SPN_FACTORY_PROXY_ADDR=%v
-`,
+	fmt.Fprintf(
+		os.Stderr,
+		`export SPN_FACTORY_IMPL_ADDR='%v' SPN_ERC20_IMPL_ADDR='%v' SPN_TRADING_MINT_IMPL_ADDR='%v' SPN_TRADING_EXTRAS_IMPL_ADDR='%v' SPN_FACTORY_PROXY_ADDR='%v'`,
 		factoryImpl,
 		erc20Impl,
 		tradingMintImpl,

@@ -81,7 +81,8 @@ impl Entrypoint {
         Ok(shares)
     }
 
-    pub fn mint(
+    #[allow(non_snake_case)]
+    pub fn mint_E_12943_C_E(
         &mut self,
         outcome: FixedBytes<8>,
         value: U256,
@@ -92,7 +93,8 @@ impl Entrypoint {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn mint_permit(
+    #[allow(non_snake_case)]
+    pub fn mint_permit_B8_D_681_A_D(
         &mut self,
         outcome: FixedBytes<8>,
         value: U256,
