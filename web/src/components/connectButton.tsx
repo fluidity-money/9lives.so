@@ -1,16 +1,16 @@
 "use client";
 import { ConnectButton as ThirdWebButton } from "thirdweb/react";
 import { useActiveWalletChain } from "thirdweb/react";
+import { thirdwebClient } from '@/config/app'
 import appConfig from "@/config";
 import { allChains } from "@/config/chains";
-import { ThirdwebClient } from "thirdweb";
 
 export default function ConnectButton() {
   const activeChain = useActiveWalletChain();
 
   return (
     <ThirdWebButton
-      client={appConfig.thirdwebClient as ThirdwebClient}
+      client={thirdwebClient}
       chains={allChains}
       appMetadata={appConfig.thirdwebMetadata}
       accountAbstraction={{

@@ -7,7 +7,7 @@ import ERC20Abi from "./abi/erc20";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 
-const thirdwebClient = createThirdwebClient({
+export const thirdwebClient = createThirdwebClient({
   clientId: thirdwebClientId,
 });
 const metadata = {
@@ -24,17 +24,6 @@ const metadata = {
     "blockchain",
   ],
 };
-
-const thirdWebClientSchema = z.object({
-  clientId: z.string(),
-  secretKey: z.never().optional(),
-  config: z
-    .object({
-      rpc: z.object({}).optional(),
-      storage: z.object({}).optional(),
-    })
-    .optional(),
-});
 
 const contractSchema = z.object({
   abi: z.array(z.any()).optional(),
@@ -61,7 +50,6 @@ const appSchema = z.object({
     url: z.string().url(),
     logoUrl: z.string().url(),
   }),
-  thirdwebClient: thirdWebClientSchema,
   thirdwebSponsorGas: z.boolean(),
   contracts: z.object({
     fusdc: contractSchema,
@@ -84,7 +72,6 @@ const appVars = appSchema.safeParse({
     url: metadata.metadataBase.href,
     logoUrl: metadata.metadataBase.origin + "/images/logo.svg",
   },
-  thirdwebClient,
   thirdwebSponsorGas: true,
   contracts: {
     fusdc: getContract({
