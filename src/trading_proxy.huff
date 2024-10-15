@@ -4,9 +4,17 @@
 #define macro MAIN() = takes(0) returns(0) {
   0x02 calldataload push0 byte
   0x01 eq payoff
-
   payoff:
-  	DISPATCH(0x6221a9c005f6e47eb398fd867784cacfdcfff4e7)
+  	DISPATCH(MINT_IMPL)
+  DISPATCH(OTHER_IMPL)
 }
 
-#define macro DISPATCH(
+#define macro DISPATCH(addr) = takes(0) returns(0) {
+	0x0 0x0 calldatasize calldatacopy
+	gas <addr> 0x0 calldatasize 0x0 0x0 delegatecall
+	0x0 0x0 returndatacopy 0x0 eq failure
+	0x0 returndatasize return
+
+	failure:
+		0x0 returndatasize revert
+}

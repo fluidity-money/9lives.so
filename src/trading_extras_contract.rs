@@ -138,3 +138,9 @@ impl Entrypoint {
     }
 }
 
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+impl crate::host::StorageNew for Entrypoint {
+    fn new(i: U256, v: u8) -> Self {
+        unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
+    }
+}
