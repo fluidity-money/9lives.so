@@ -9,4 +9,4 @@ export type Outcome =
     identifier: `0x${string}`;
     share: { address: `0x${string}` };
   };
-export type SelectedOutcome = Outcome & { bet: boolean };
+export type SelectedOutcome = { id: string; state: "buy" | "sell" };

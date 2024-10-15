@@ -5,16 +5,14 @@ import { Outcome, SelectedOutcome } from "@/types";
 interface CampaignItemOutcomesProps {
   campaignId: string;
   outcomes: Outcome[];
-  setSelectedBet: React.Dispatch<SelectedOutcome>;
+  setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }
 export default function CampaignItemOutcomes({
   campaignId,
   outcomes,
-  setSelectedBet,
+  setSelectedOutcome,
 }: CampaignItemOutcomesProps) {
-  function handleSelect(data: Omit<SelectedOutcome, "bet">, bet: boolean) {
-    setSelectedBet({ ...data, bet });
-  }
+ 
 
   if (outcomes.length === 1)
     return (
@@ -22,13 +20,13 @@ export default function CampaignItemOutcomes({
         <Button
           intent="yes"
           title="Buy"
-          onClick={() => handleSelect(outcomes[0], false)}
+          onClick={() => setSelectedOutcome({id: outcomes[0].identifier, 'state':"buy"})}
           className={"flex-1"}
         />
         <Button
           intent="no"
           title="Sell"
-          onClick={() => handleSelect(outcomes[0], true)}
+          onClick={() => setSelectedOutcome({id: outcomes[0].identifier, 'state':"sell"})}
           className={"flex-1"}
         />
       </div>
@@ -51,14 +49,14 @@ export default function CampaignItemOutcomes({
               cat="secondary"
               size="small"
               title="Buy"
-              onClick={() => handleSelect(outcome, true)}
+              onClick={() => setSelectedOutcome({id: outcome.identifier, 'state':"buy"})}
             />
             <Button
               intent="no"
               cat="secondary"
               size="small"
               title="Sell"
-              onClick={() => handleSelect(outcome, true)}
+              onClick={() => setSelectedOutcome({id: outcome.identifier, 'state':"sell"})}
             />
           </div>
         </li>

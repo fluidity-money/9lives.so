@@ -1,6 +1,4 @@
-import DetailCall2Action from "@/components/detail/detailAction";
-import DetailHeader from "@/components/detail/detailHeader";
-import DetailOutcomes from "@/components/detail/detailOutcomes";
+import DetailWrapper from "@/components/detail/detailWrapper";
 import appConfig from "@/config";
 import { requestCampaignList } from "@/providers/graphqlClient";
 import { Campaign } from "@/types";
@@ -36,16 +34,7 @@ export default async function DetailPage({
   )!;
   return (
     <section className="flex h-full gap-4">
-      <div className="flex flex-[2] flex-col gap-8">
-        <DetailHeader data={campaign} />
-        <DetailOutcomes data={campaign.outcomes} />
-      </div>
-      <div className="flex-1">
-        <DetailCall2Action
-          initalData={campaign.outcomes}
-          tradingAddr={campaign.poolAddress}
-        />
-      </div>
+      <DetailWrapper initialData={campaign} />
     </section>
   );
 }

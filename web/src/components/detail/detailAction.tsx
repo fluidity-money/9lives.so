@@ -1,27 +1,27 @@
-"use client";
 import Button from "@/components/themed/button";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
-import { Outcome } from "@/types";
-import { useOutcomeStore } from "@/stores/outcomeStore";
+import { Outcome, SelectedOutcome } from "@/types";
 import useTradingTx from "@/hooks/useTradingTx";
 import { useActiveAccount } from "thirdweb/react";
+
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
+  selectedOutcome,
+  setSelectedOutcome,
 }: {
+  selectedOutcome: SelectedOutcome;
+  setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   tradingAddr: `0x${string}`;
   initalData: Outcome[];
 }) {
-  const selectOutcome = useOutcomeStore((s) => s.selectOutcome);
-  const selectedOutcome = useOutcomeStore((s) => s.selectedOutcome);
-  const reset = useOutcomeStore((s) => s.reset);
   const account = useActiveAccount();
-  const outcome = initalData[selectedOutcome.outcomeIdx];
-  const ctaTitle = !!selectedOutcome.state ? 'Buy': 'Sell'
+  const outcome = selectedOutcome ? initalData.find(o=> o.identifier === selectedOutcome.id)! :  initalData[0]
+  const ctaTitle = selectedOutcome?.state === 'sell' ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
 
   const sendTransaction = useTradingTx({
@@ -48,12 +48,6 @@ export default function DetailCall2Action({
     }
   }
 
-  useEffect(() => {
-    return () => {
-      reset();
-    };
-  }, [reset]);
-
   return (
     <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black p-4 shadow-9card">
       <div className="flex items-center gap-4">
@@ -75,25 +69,29 @@ export default function DetailCall2Action({
         <div className="mt-2 flex items-center gap-2">
           <Button
             title="Buy"
-            intent={!!selectedOutcome.state ? "yes" : "default"}
+            intent={selectedOutcome?.state === "buy" ? "yes" : "default"}
             size={"large"}
             className={combineClass(
-              !!selectedOutcome.state &&
+              selectedOutcome?.state === 'buy' &&
                 "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}
-            onClick={() => selectOutcome({ ...selectedOutcome, state: 1 })}
+            onClick={() =>
+              setSelectedOutcome({ ...selectedOutcome, state: "buy" })
+            }
           />
           <Button
             title="Sell"
-            intent={!!selectedOutcome.state ? "no" : "default"}
+            intent={selectedOutcome?.state === "sell" ? "no" : "default"}
             size={"large"}
             className={combineClass(
-              !selectedOutcome.state &&
+              selectedOutcome?.state === "sell" &&
                 "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
-            onClick={() => selectOutcome({ ...selectedOutcome, state: 0 })}
+            onClick={() =>
+              setSelectedOutcome({ ...selectedOutcome, state: "sell" })
+            }
           />
         </div>
       </div>

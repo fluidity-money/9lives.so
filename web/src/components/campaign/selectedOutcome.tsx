@@ -7,16 +7,18 @@ import Input from "../themed/input";
 import { useState } from "react";
 import Link from "next/link";
 import CloseButton from "../closeButton";
-import { SelectedOutcome } from "@/types";
+import { Outcome, SelectedOutcome as SelectedOutcomeType  } from "@/types";
 
-export default function SelectedBet({
+export default function SelectedOutcome({
   campaignId,
   data,
-  setSelectedBet,
+  selectedState,
+  setSelectedOutcome
 }: {
   campaignId: string;
-  data: SelectedOutcome;
-  setSelectedBet: React.Dispatch<SelectedOutcome | undefined>;
+  data: Outcome;
+  selectedState: SelectedOutcomeType['state'] 
+  setSelectedOutcome: React.Dispatch<SelectedOutcomeType | undefined>;
 }) {
   const [deposit, setDeposit] = useState(0);
 
@@ -37,7 +39,7 @@ export default function SelectedBet({
             </span>
           </Link>
         </div>
-        <CloseButton onClick={() => setSelectedBet(undefined)} />
+        <CloseButton onClick={() => setSelectedOutcome(undefined)} />
       </div>
       <div className="flex items-center justify-center gap-1">
         <Input

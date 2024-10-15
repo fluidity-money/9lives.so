@@ -5,10 +5,10 @@ import { Campaign, SelectedOutcome } from "@/types";
 
 export default function CampaignBody({
   data,
-  setSelectedBet,
+  setSelectedOutcome,
 }: {
   data: Campaign;
-  setSelectedBet: React.Dispatch<SelectedOutcome>;
+  setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
   return (
     <>
@@ -21,7 +21,7 @@ export default function CampaignBody({
       <CampaignItemOutcomes
         campaignId={data.identifier}
         outcomes={data.outcomes}
-        setSelectedBet={setSelectedBet}
+        setSelectedOutcome={setSelectedOutcome}
       />
       <CampaignItemFooter />
     </>

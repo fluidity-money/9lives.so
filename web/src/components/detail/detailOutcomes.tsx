@@ -1,8 +1,18 @@
 import { combineClass } from "@/utils/combineClass";
 import DetailOutcomeItem from "@/components/detail/detailOutcomeItem";
 import { Outcome } from "@/types";
+import { SelectedOutcome } from "../../types";
+import React from "react";
 
-export default function DetailOutcomes({ data }: { data: Outcome[] }) {
+export default function DetailOutcomes({
+  data,
+  selectedOutcome,
+  setSelectedOutcome,
+}: {
+  data: Outcome[];
+  selectedOutcome: SelectedOutcome;
+  setSelectedOutcome: React.Dispatch<SelectedOutcome>;
+}) {
   const borderStyle = "border-y border-y-gray-200";
 
   return (
@@ -29,11 +39,12 @@ export default function DetailOutcomes({ data }: { data: Outcome[] }) {
         </tr>
       </thead>
       <tbody>
-        {data.map((outcome, idx) => (
+        {data.map((outcome) => (
           <DetailOutcomeItem
+            selectedOutcome={selectedOutcome}
+            setSelectedOutcome={setSelectedOutcome}
             key={outcome.identifier}
             data={outcome}
-            index={idx}
           />
         ))}
       </tbody>

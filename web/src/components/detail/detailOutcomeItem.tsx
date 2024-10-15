@@ -1,29 +1,28 @@
-"use client";
-
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
 import Button from "../themed/button";
 import { combineClass } from "@/utils/combineClass";
-import { Outcome } from "@/types";
-import { useOutcomeStore } from "@/stores/outcomeStore";
+import { Outcome, SelectedOutcome } from "@/types";
+import React from "react";
 
 export default function DetailOutcomeItem({
   data,
-  index,
+  selectedOutcome,
+  setSelectedOutcome,
 }: {
   data: Outcome;
-  index: number;
+  selectedOutcome: SelectedOutcome;
+  setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
-  const selectOutcome = useOutcomeStore((s) => s.selectOutcome);
-  const selectedOutcome = useOutcomeStore((s) => s.selectedOutcome);
-
   const borderStyle = "border-b border-b-gray-200";
 
-  const isSelected = selectedOutcome.outcomeIdx === index;
+  const isSelected = selectedOutcome.id === data.identifier;
 
   return (
     <tr
-      onClick={() => selectOutcome({ ...selectedOutcome, outcomeIdx: index })}
+      onClick={() =>
+        setSelectedOutcome({ ...selectedOutcome, id: data.identifier })
+      }
       key={data.identifier}
       className={combineClass(
         isSelected
@@ -72,12 +71,12 @@ export default function DetailOutcomeItem({
           size={"large"}
           className={combineClass(
             isSelected &&
-              !!selectedOutcome.state &&
+              selectedOutcome.state === 'buy' &&
               "bg-green-500 font-bold text-white hover:bg-green-500",
           )}
           onClick={(e) => {
             e.stopPropagation();
-            selectOutcome({ outcomeIdx: index, state: 1 });
+            setSelectedOutcome({ state: "buy", id: data.identifier });
           }}
         />
         <Button
@@ -86,12 +85,12 @@ export default function DetailOutcomeItem({
           size={"large"}
           className={combineClass(
             isSelected &&
-              !selectedOutcome.state &&
+              selectedOutcome.state === 'sell' &&
               "bg-red-500 font-bold text-white hover:bg-red-500",
           )}
           onClick={(e) => {
             e.stopPropagation();
-            selectOutcome({ outcomeIdx: index, state: 0 });
+            setSelectedOutcome({ state: "sell", id: data.identifier });
           }}
         />
       </td>
