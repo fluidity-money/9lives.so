@@ -56,7 +56,7 @@ func GetTradingAddr(ids [][]byte, factoryAddr ethCommon.Address, bytecodeHash []
 	)
 }
 
-func GetTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCommon.Address, b []byte) *ethCommon.Address {
+func GetTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCommon.Address, hash []byte) *ethCommon.Address {
 	var outcomes_ = make([]Outcome, len(outcomes))
 	for i, o := range outcomes {
 		outcomes_[i] = Outcome{
@@ -69,6 +69,6 @@ func GetTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCo
 	if err != nil {
 		return nil
 	}
-	x := GetTradingAddr(ids, factoryAddr, ethCrypto.Keccak256(b))
+	x := GetTradingAddr(ids, factoryAddr, hash)
 	return &x
 }
