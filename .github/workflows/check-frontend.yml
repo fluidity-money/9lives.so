@@ -30,7 +30,7 @@ jobs:
         uses: ./.github/workflows/tests-e2e.yml
         secrets: inherit
     deploy:
-        name: Deploy to Cloudflare
+        name: Deploy to Vercel
         uses: ./.github/workflows/deploy-webapp.yml
         secrets: inherit
         if: github.event_name == 'push'

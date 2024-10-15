@@ -8,11 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: mainnet
     env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       NEXT_PUBLIC_THIRDWEB_ID: ${{ vars.NEXT_PUBLIC_THIRDWEB_ID }}
       NEXT_PUBLIC_GRAPHQL_URL: "https://testnet-graph.9lives.so"
       NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
       NEXT_PUBLIC_FUSDC_ADDR: "0xa8ea92c819463efbeddfb670fefc881a480f0115"
-      NEXT_PUBLIC_FACTORY_ADDR: "0xa088E2BC674E98Ac3F2b251cA4fECE66BDecB50B"
+      NEXT_PUBLIC_FACTORY_ADDR: "0xd6f788544a1F2046183716A99E81Ec93685903f5"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,35 +26,25 @@ jobs:
           run_install: |
             - recursive: true
 
+      - name: Install Vercel CLI
+        run: pnpm add --global vercel@latest
+
       - uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm
             ${{ github.workspace }}/.next/cache
           # Generate a new cache whenever packages or source files change.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.json') }}-
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.15.0
 
-      - run: |
+      - name: Build with Vercel
+        run: |
           cd web
-          pnpm build
+          vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_TOKEN }}
-          # update
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # update
-          projectName: ${{ secrets.CLOUDFLARE_APP_PROJECT_NAME }}
-          directory: out
-          # to enable Github Deployments
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          workingDirectory: web
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
