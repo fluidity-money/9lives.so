@@ -6,7 +6,6 @@ use stylus_sdk::{
     contract, evm, msg,
     prelude::*,
     storage::*,
-    abi,
 };
 
 use crate::{
@@ -103,8 +102,8 @@ impl Factory {
         Ok(trading_addr)
     }
 
-    pub fn trading_bytecode(&self) -> Result<abi::Bytes, Error> {
-        Ok(abi::Bytes::from(trading_proxy_code().to_vec()))
+    pub fn trading_hash(&self) -> Result<FixedBytes<32>, Error> {
+        Ok(FixedBytes::from_slice(&trading_proxy_hash()))
     }
 
     pub fn get_owner(&self, trading_addr: Address) -> Result<Address, Error> {

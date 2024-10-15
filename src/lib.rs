@@ -1,6 +1,6 @@
 
 pub mod maths;
-pub mod fixed;
+pub mod decimal;
 
 #[macro_use]
 pub mod error;

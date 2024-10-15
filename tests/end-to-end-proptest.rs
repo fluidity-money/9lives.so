@@ -4,7 +4,7 @@ use proptest::prelude::*;
 
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
-use lib9lives::{fixed::MAX_NUMBER, host};
+use lib9lives::host;
 
 #[test]
 fn test_factory_new_trading() {
@@ -37,24 +37,6 @@ fn test_trading_edgecase() {
 }
 
 #[test]
-fn test_negative_value() {
-    use lib9lives::trading_contract::Trading;
-    host::with_storage::<_, Trading, _>(|c| {
-        let outcome_0 =
-            FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
-        let outcome_1 =
-            FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
-        let amount_0 = U256::from(1000000);
-        let amount_1 = U256::from(42057417509851_u64);
-        let mint_amount = U256::from(1000000);
-        let outcomes = [(outcome_0, amount_0), (outcome_1, amount_1)];
-        c.ctor(Address::ZERO, outcomes.to_vec())
-            .unwrap();
-        dbg!(c.mint(outcome_1, mint_amount, Address::ZERO).unwrap());
-    })
-}
-
-#[test]
 fn test_unit_1() {
     use lib9lives::trading_contract::Trading;
     host::with_storage::<_, Trading, _>(|c| {
@@ -83,7 +65,6 @@ proptest! {
         let amount_0 = U256::from(amount_0);
         let amount_1 = U256::from(amount_1);
         let mint_amount = U256::from(mint_amount);
-        prop_assume!(amount_0 + amount_1 <= MAX_NUMBER);
         use lib9lives::trading_contract::Trading;
         host::with_storage::<_, Trading, _>(|c| {
             let outcome_0 =

@@ -1,85 +1,65 @@
-use fixed::types::I96F32;
 
-use stylus_sdk::storage::{GlobalStorage, StorageCache, StorageGuardMut, StorageType};
-
-use std::{
-    cell::OnceCell,
-    ops::{Deref, Rem},
+use stylus_sdk::{
+    alloy_primitives::{FixedBytes, U256},
+    storage::{GlobalStorage, StorageCache, StorageGuardMut, StorageType},
 };
 
-use stylus_sdk::alloy_primitives::{FixedBytes, U256};
+use rust_decimal::{prelude::*, Decimal, MathematicalOps};
+
+use std::{cell::OnceCell, ops::Deref};
 
 use crate::{assert_or, error::Error};
 
-//1
-pub const MIN_NUMBER: U256 = U256::from_limbs([1, 0, 0, 0]);
-
-//1000000000000000
-// Is it likely that this will ever be an issue?
-pub const MAX_NUMBER: U256 = U256::from_limbs([1000000000000000, 0, 0, 0]);
-
-pub(crate) fn pow(base: I96F32, exp: u8) -> Result<I96F32, Error> {
-    let mut r = I96F32::from(1);
-    for _ in 0..exp {
-        r = r.checked_mul(base).ok_or(Error::CheckedPowOverflow)?;
-    }
-    Ok(r)
-}
-
-pub(crate) fn u256_to_fixed(n: U256, decimals: u8) -> Result<I96F32, Error> {
-    assert_or!(n <= MAX_NUMBER, Error::TooBigNumber);
-
+pub(crate) fn u256_to_decimal(n: U256, decimals: u8) -> Result<Decimal, Error> {
     if n.is_zero() {
-        return Ok(I96F32::ZERO);
+        return Ok(Decimal::ZERO);
     }
 
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
 
-    assert_or!(n >= MIN_NUMBER, Error::TooSmallNumber);
-
     let n: u128 = u128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
     let rem: u128 = u128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
 
-    let n = I96F32::from_num(n);
-    let rem = I96F32::from_num(rem);
+    let n = Decimal::from(n);
+    let rem = Decimal::from(rem);
 
-    Ok(n + rem / pow(I96F32::from_num(10), decimals)?)
+    Ok(n + rem / Decimal::from(10).powi(decimals as i64))
 }
 
-// Return the fixed amount, cutting off the decimals.
-pub(crate) fn fixed_to_u256(n: I96F32, decimals: u8) -> Result<U256, Error> {
+pub(crate) fn decimal_to_u256(n: Decimal, decimals: u8) -> Result<U256, Error> {
     if n.is_zero() {
         return Ok(U256::ZERO);
     }
-    assert_or!(n > 0, Error::NegativeFixedToUintConv);
-    let q = U256::from(n.to_bits() >> 32);
+    assert_or!(n.is_sign_positive(), Error::NegativeFixedToUintConv);
+    let q = U256::from(n.to_u64().ok_or(Error::CheckedMulOverflow)?);
     let r = U256::from(
-        n.rem(I96F32::from(1))
-            .checked_mul(pow(I96F32::from(10), decimals)?)
+        n.checked_rem(Decimal::from(1))
             .ok_or(Error::CheckedMulOverflow)?
-            .to_bits()
-            >> 32,
+            .checked_mul(Decimal::from(10).powi(decimals as i64))
+            .ok_or(Error::CheckedMulOverflow)?
+            .to_u64()
+            .ok_or(Error::CheckedMulOverflow)?,
     );
     Ok(q * U256::from(10).pow(U256::from(decimals)) + r)
 }
 
 #[derive(Debug, Clone)]
-pub struct StorageFixed {
+pub struct StorageDecimal {
     slot: U256,
     offset: u8,
-    cached: OnceCell<I96F32>,
+    cached: OnceCell<Decimal>,
 }
 
-impl StorageFixed {
-    pub fn get(&self) -> I96F32 {
+impl StorageDecimal {
+    pub fn get(&self) -> Decimal {
         *self.clone()
     }
 
-    pub fn set(&mut self, v: I96F32) {
+    pub fn set(&mut self, v: Decimal) {
         self.cached.take();
         _ = self.cached.set(v);
         let mut b = [0_u8; 16];
-        b.copy_from_slice(&v.to_be_bytes());
+        b.copy_from_slice(&v.serialize());
         unsafe {
             StorageCache::set::<16>(
                 self.slot,
@@ -90,8 +70,8 @@ impl StorageFixed {
     }
 }
 
-impl StorageType for StorageFixed {
-    type Wraps<'a> = I96F32;
+impl StorageType for StorageDecimal {
+    type Wraps<'a> = Decimal;
     type WrapsMut<'a> = StorageGuardMut<'a, Self>;
 
     const SLOT_BYTES: usize = 32;
@@ -113,23 +93,23 @@ impl StorageType for StorageFixed {
     }
 }
 
-impl Deref for StorageFixed {
-    type Target = I96F32;
+impl Deref for StorageDecimal {
+    type Target = Decimal;
 
     fn deref(&self) -> &Self::Target {
         self.cached.get_or_init(|| unsafe {
             let b = StorageCache::get::<16>(self.slot, self.offset.into());
             if b.is_zero() {
-                I96F32::from(0)
+                Decimal::ZERO
             } else {
-                I96F32::from_be_bytes(b.as_slice().try_into().unwrap())
+                Decimal::deserialize(b.as_slice().try_into().unwrap())
             }
         })
     }
 }
 
-impl From<StorageFixed> for I96F32 {
-    fn from(v: StorageFixed) -> Self {
+impl From<StorageDecimal> for Decimal {
+    fn from(v: StorageDecimal) -> Self {
         *v
     }
 }
@@ -139,15 +119,12 @@ macro_rules! assert_eq_f {
     ($left:expr, $right:expr $(,)?) => {
         match (&$left, &$right) {
             (left_val, right_val) => {
-                let right_val_add = right_val + (right_val * I96F32::from_num(1e-6));
+                let right_val_add = right_val + (right_val * rust_decimal_macros::dec!(1e-6));
                 // !(left_val <= (right_val + right_val * 0.0000001))
                 if !(*left_val <= right_val_add) {
                     panic!(
                         "!({} == {} || {} <= {})",
-                        left_val,
-                        right_val,
-                        left_val,
-                        right_val_add
+                        left_val, right_val, left_val, right_val_add
                     );
                 }
             }
@@ -157,7 +134,7 @@ macro_rules! assert_eq_f {
 
 #[cfg(all(test, feature = "testing"))]
 mod test {
-    use fixed::types::I96F32;
+    use rust_decimal::Decimal;
 
     use stylus_sdk::alloy_primitives::U256;
 
@@ -179,24 +156,16 @@ mod test {
     #[test]
     fn test_storage_behaviour() {
         host::with_storage::<_, Stubbed, _>(|_| {
-            let mut f = StorageFixed {
+            let mut f = StorageDecimal {
                 slot: U256::from(0),
                 offset: 0,
                 cached: OnceCell::new(),
             };
-            assert_eq!(f.get(), I96F32::from(0));
-            f.set(I96F32::MAX);
-            assert_eq!(f.get(), I96F32::MAX);
+            assert_eq!(f.get(), Decimal::from(0));
+            f.set(Decimal::MAX);
+            assert_eq!(f.get(), Decimal::MAX);
         })
     }
-}
-
-#[test]
-fn pow_10_16() {
-    assert_eq!(
-        pow(I96F32::from(10), 16).unwrap(),
-        I96F32::from(100000000) * I96F32::from(100000000)
-    )
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
@@ -214,7 +183,7 @@ mod proptesting {
         ) {
             let d = 6;
             let n = U256::from_limbs([x, 0, 0, 0]);
-            let res = fixed_to_u256(u256_to_fixed(n, d).unwrap(), d).unwrap();
+            let res = decimal_to_u256(u256_to_decimal(n, d).unwrap(), d).unwrap();
             assert!(res == n - U256::from(1) || res == n, "{res} != {n}");
         }
     }
