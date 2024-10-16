@@ -35,8 +35,8 @@ impl StorageTrading {
         let outcome = self.outcomes.getter(outcome_id);
         let m_1 = outcome.invested.get();
         let n_1 = outcome.shares.get();
-        let n_2 = self.shares.get();
-        let m_2 = self.invested.get();
+        let n_2 = self.shares.get().checked_sub(n_1).ok_or(Error::CheckedSubOverflow)?;
+        let m_2 = self.invested.get().checked_sub(m_1).ok_or(Error::CheckedSubOverflow)?;
 
         // Convert everything to floats!
         let m = u256_to_decimal(value, FUSDC_DECIMALS)?;
