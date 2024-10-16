@@ -5,7 +5,6 @@
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
     contract, evm, msg,
-    prelude::*,
 };
 
 use crate::{
@@ -14,48 +13,43 @@ use crate::{
     events, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
+    trading_storage::{StorageTrading},
+
 };
 
-pub use crate::trading_storage::*;
+#[cfg(feature = "trading-mint")]
+pub use crate::trading_storage::user_entrypoint;
 
-#[cfg_attr(feature = "trading-mint", entrypoint)]
-#[storage]
-pub struct Entrypoint {
-    // Due to storage collision, this hack is possible. This shares the same
-    // slot as trading_extras_contract's entrypoint.
-    s: StorageTrading
-}
-
-#[cfg_attr(feature = "trading-mint", public)]
-impl Entrypoint {
+#[cfg_attr(feature = "trading-mint", stylus_sdk::prelude::public)]
+impl StorageTrading {
     fn internal_mint(
         &mut self,
         outcome_id: FixedBytes<8>,
         value: U256,
         recipient: Address,
     ) -> Result<U256, Error> {
-        assert_or!(!self.s.locked.get(), Error::DoneVoting);
+        assert_or!(!self.locked.get(), Error::DoneVoting);
 
         // Assume we already took the user's balance. Get the state of
         // everything else as u256s.
-        let outcome = self.s.outcomes.getter(outcome_id);
+        let outcome = self.outcomes.getter(outcome_id);
         let m_1 = outcome.invested.get();
         let n_1 = outcome.shares.get();
-        let n_2 = self.s.shares.get();
-        let m_2 = self.s.invested.get();
+        let n_2 = self.shares.get();
+        let m_2 = self.invested.get();
 
         // Convert everything to floats!
         let m = u256_to_decimal(value, FUSDC_DECIMALS)?;
 
         // Set the global states.
-        self.s.outcomes.setter(outcome_id).invested.set(m_1 + m);
-        self.s.invested.set(self.s.invested.get() + m);
+        self.outcomes.setter(outcome_id).invested.set(m_1 + m);
+        self.invested.set(self.invested.get() + m);
 
         let shares = maths::shares(m_1, m_2, n_1, n_2, m)?;
 
         // Set the global states as the output of shares.
-        self.s.outcomes.setter(outcome_id).shares.set(n_1 + shares);
-        self.s.shares.set(self.s.shares.get() + shares);
+        self.outcomes.setter(outcome_id).shares.set(n_1 + shares);
+        self.shares.set(self.shares.get() + shares);
 
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
@@ -106,12 +100,5 @@ impl Entrypoint {
     ) -> Result<U256, Error> {
         fusdc_call::take_from_sender_permit(value, deadline, v, r, s)?;
         self.internal_mint(outcome, value, recipient)
-    }
-}
-
-#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-impl crate::host::StorageNew for Entrypoint {
-    fn new(i: U256, v: u8) -> Self {
-        unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
     }
 }

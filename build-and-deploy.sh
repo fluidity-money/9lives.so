@@ -2,6 +2,8 @@
 
 cat >/dev/null <<EOF
 $SPN_SUPERPOSITION_URL $SPN_SUPERPOSITION_KEY
+$SPN_LONGTAIL_ADDR
+$SPN_FUSDC_ADDR
 EOF
 
 wallet_addr="$(cast wallet address --private-key $SPN_SUPERPOSITION_KEY)"
