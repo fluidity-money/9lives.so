@@ -1,4 +1,4 @@
-import { ChainOptions, defineChain } from "thirdweb/chains";
+import { defineChain } from "thirdweb/chains";
 import z from "zod";
 import "thirdweb/utils";
 
@@ -35,20 +35,8 @@ export const superpositionTestnet = defineChain({
   testnet: true,
 });
 
-export const allTestnets = [superpositionTestnet] as const;
-
-export const allMainnets = [] as const;
-
-export const allChains = [...allTestnets, ...allMainnets] as Readonly<
-  ChainOptions & { rpc: string }
->[];
-
-export function useChain(chainId: (typeof allChains)[number]["id"]) {
-  return allChains.find((chain) => chain.id === chainId)!;
-}
-
 // validate all chains
-const chainValidation = z.array(networkSchema).safeParse(allChains);
+const chainValidation = z.array(networkSchema).safeParse(superpositionTestnet);
 
 if (!chainValidation.success) {
   console.error("Invalid chain: ", chainValidation.error.name);

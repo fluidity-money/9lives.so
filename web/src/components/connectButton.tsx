@@ -1,20 +1,17 @@
 "use client";
 import { ConnectButton as ThirdWebButton } from "thirdweb/react";
-import { useActiveWalletChain } from "thirdweb/react";
 import { thirdwebClient } from "@/config/app";
 import appConfig from "@/config";
-import { allChains } from "@/config/chains";
+import { superpositionTestnet } from "@/config/chains";
 
 export default function ConnectButton() {
-  const activeChain = useActiveWalletChain();
-
   return (
     <ThirdWebButton
       client={thirdwebClient}
-      chains={allChains}
+      chain={superpositionTestnet}
       appMetadata={appConfig.thirdwebMetadata}
       accountAbstraction={{
-        chain: activeChain ?? allChains[0],
+        chain: superpositionTestnet,
         sponsorGas: appConfig.thirdwebSponsorGas,
       }}
       theme={"light"}
