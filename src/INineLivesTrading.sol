@@ -8,7 +8,7 @@ interface INineLivesTrading {
      * @param value to spend of fUSDC.
      * @param recipient of the funds spent.
      */
-    function mintE12943CE(bytes8 outcome, uint256 value, address recipient) external returns (uint256);
+    function mint227CF432(bytes8 outcome, uint256 value, address recipient) external returns (uint256);
 
     /**
      * @notice Mint some shares in exchange for fUSDC.

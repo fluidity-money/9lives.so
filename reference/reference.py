@@ -69,7 +69,7 @@ if __name__ == "__main__":
 	initial_N2 = 1.0
 
 	# Place an order for outcome A with a cost of 1
-	order_result = place_order('A', 50, initial_M1, initial_M2, initial_N1, initial_N2)
+	order_result = place_order('A', 1, initial_M1, initial_M2, initial_N1, initial_N2)
 
 	print("Order Result:")
 	for key, value in order_result.items():

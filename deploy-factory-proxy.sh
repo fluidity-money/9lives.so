@@ -18,6 +18,7 @@ err() {
 export SPN_DEPLOY_DATA=$(cast calldata 'ctor(address)' $SPN_ORACLE_ADDR)
 
 forge script \
+	--broadcast \
 	--json scripts/DeployFactoryTransparentProxy.s.sol \
 	--rpc-url "$SPN_SUPERPOSITION_URL" \
 	--private-key "$SPN_SUPERPOSITION_KEY"

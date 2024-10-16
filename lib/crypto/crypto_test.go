@@ -14,13 +14,14 @@ var (
 	// TestContractBytecode based on the Solidity tests.
 	TestContractBytecode, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f7300000000000000000000000000000000000000005af43d5f5f3e6029573d5ffd5b3d5ff3")
 
-	// TestContractBytecodeRealWorld based on the real world deployment on testnet (maybe old).
-	TestContractBytecodeRealWorld, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f73934b4f2c3a08b864a174800d5349e676d2228fa45af43d5f5f3e6029573d5ffd5b3d5ff3")
+	// TestContractBytecodeRealWorld1 based on the real world deployment on testnet (maybe old).
+	TestContractBytecodeRealWorld1, _ = hex.DecodeString("602d5f8160095f39f35f5f365f5f37365f73934b4f2c3a08b864a174800d5349e676d2228fa45af43d5f5f3e6029573d5ffd5b3d5ff3")
 )
 
 var (
 	TestContractBytecodeHashed          = ethCrypto.Keccak256(TestContractBytecode)
-	TestContractBytecodeRealWorldHashed = ethCrypto.Keccak256(TestContractBytecodeRealWorld)
+	TestContractBytecodeRealWorld1Hashed = ethCrypto.Keccak256(TestContractBytecodeRealWorld1)
+	TestContractBytecodeRealWorld2Hashed, _ = hex.DecodeString("4b5abc700e1e6538373db0decb478e837362d012d70e1a2c648d3e25f91d8e23")
 )
 
 var testGetTradingAddress = []struct {
@@ -53,9 +54,22 @@ var testGetTradingAddress = []struct {
 			"6f2af2188bfb19ca",
 		},
 		"0xa088e2bc674e98ac3f2b251ca4fece66bdecb50b",
-		TestContractBytecodeRealWorldHashed,
+		TestContractBytecodeRealWorld1Hashed,
 
 		"0xB9D5CE9774cfC8811F097EDB81C6B8d627680b88",
+	},
+	{
+		[]Outcome{{"Neela", "Cat", 88}, {"Russell", "Dog", 123}},
+		[]string{
+			//bytes8(keccak256(abi.encodePacked("Neela", "Cat", uint8(88))))
+			"290ba3d293b129ab",
+			//bytes8(keccak256(abi.encodePacked("Russell", "Dog", uint8(123))))
+			"6f2af2188bfb19ca",
+		},
+		"0x14011904f399a7854FDf03329Bb4A897D336676f",
+		TestContractBytecodeRealWorld2Hashed,
+
+		"0xb382b6f3dd386f9fbfc0493ab8e2e6a6b57947aa",
 	},
 }
 

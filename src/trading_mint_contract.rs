@@ -76,7 +76,7 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn mint_E_12943_C_E(
+    pub fn mint_227_C_F_432(
         &mut self,
         outcome: FixedBytes<8>,
         value: U256,
