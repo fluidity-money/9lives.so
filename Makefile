@@ -3,7 +3,7 @@ CARGO_BUILD_STYLUS := \
 	cargo build \
 		--release \
 		--target wasm32-unknown-unknown \
-		--features ${CARGO_EXTRA_FEATURES},
+		--features
 
 RELEASE_WASM_OPT_9LIVES := \
 	wasm-opt \
@@ -30,17 +30,17 @@ trading-extras: trading-extras.wasm
 
 factory.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f factory.wasm
-	@${CARGO_BUILD_STYLUS}factory
+	@${CARGO_BUILD_STYLUS} factory
 	@${RELEASE_WASM_OPT_9LIVES} factory.wasm
 
 trading-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading-mint.wasm
-	@${CARGO_BUILD_STYLUS}trading-mint
+	@${CARGO_BUILD_STYLUS} trading-mint
 	@${RELEASE_WASM_OPT_9LIVES} trading-mint.wasm
 
 trading-extras.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading-extras.wasm
-	@${CARGO_BUILD_STYLUS}trading-extras
+	@${CARGO_BUILD_STYLUS} trading-extras
 	@${RELEASE_WASM_OPT_9LIVES} trading-extras.wasm
 
 clean:
