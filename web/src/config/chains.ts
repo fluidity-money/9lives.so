@@ -36,7 +36,7 @@ export const superpositionTestnet = defineChain({
 });
 
 // validate all chains
-const chainValidation = z.array(networkSchema).safeParse(superpositionTestnet);
+const chainValidation = networkSchema.safeParse(superpositionTestnet);
 
 if (!chainValidation.success) {
   console.error("Invalid chain: ", chainValidation.error.name);
