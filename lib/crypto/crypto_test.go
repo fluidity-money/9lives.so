@@ -19,9 +19,10 @@ var (
 )
 
 var (
-	TestContractBytecodeHashed          = ethCrypto.Keccak256(TestContractBytecode)
-	TestContractBytecodeRealWorld1Hashed = ethCrypto.Keccak256(TestContractBytecodeRealWorld1)
+	TestContractBytecodeHashed              = ethCrypto.Keccak256(TestContractBytecode)
+	TestContractBytecodeRealWorld1Hashed    = ethCrypto.Keccak256(TestContractBytecodeRealWorld1)
 	TestContractBytecodeRealWorld2Hashed, _ = hex.DecodeString("4b5abc700e1e6538373db0decb478e837362d012d70e1a2c648d3e25f91d8e23")
+	TestContractBytecodeRealWorld3Hashed, _ = hex.DecodeString("4a983a25ab349680c5a3936d92529f8a6a2b32a4a7bb97f8b0342f56bd4e1409")
 )
 
 var testGetTradingAddress = []struct {
@@ -70,6 +71,18 @@ var testGetTradingAddress = []struct {
 		TestContractBytecodeRealWorld2Hashed,
 
 		"0xb382b6f3dd386f9fbfc0493ab8e2e6a6b57947aa",
+	},
+	{
+		[]Outcome{{"Trump", "Republican", 495}, {"Kamala", "Democrat", 592}},
+		[]string{
+			//bytes8(keccak256(abi.encodePacked("Trump", "Republican", uint8(495))))
+			"1665bc497c0c2f5d",
+			//bytes8(keccak256(abi.encodePacked("Kamala", "Democrat", uint8(592))))
+			"11968c4bbb26f625",
+		},
+		"0x3A238B6b12F5da5ED7BAA7Fbb871fc5455AA2fc0",
+		TestContractBytecodeRealWorld3Hashed,
+		"0x4344b2d160cc2beF8755E53234E42360fF07605c",
 	},
 }
 
