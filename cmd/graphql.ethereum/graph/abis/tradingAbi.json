@@ -56,7 +56,7 @@
     },
     {
         "type": "function",
-        "name": "mintE12943CE",
+        "name": "mint227CF432",
         "inputs": [
             {
                 "name": "outcome",
@@ -140,6 +140,35 @@
                 "name": "outcomeId",
                 "type": "bytes8",
                 "internalType": "bytes8"
+            },
+            {
+                "name": "recipient",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "quote101CBE35",
+        "inputs": [
+            {
+                "name": "outcome",
+                "type": "bytes8",
+                "internalType": "bytes8"
+            },
+            {
+                "name": "value",
+                "type": "uint256",
+                "internalType": "uint256"
             },
             {
                 "name": "recipient",

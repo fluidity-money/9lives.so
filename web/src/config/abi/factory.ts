@@ -62,6 +62,19 @@ const factoryAbi = [
     ],
     stateMutability: "nonpayable",
   },
+  {
+    type: "function",
+    name: "tradingHash",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
 ] as const;
 
 export default factoryAbi;
