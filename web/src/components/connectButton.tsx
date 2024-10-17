@@ -22,8 +22,8 @@ export default function ConnectButton() {
           height: 40,
           fontSize: 12,
           lineHeight: 16,
-          borderColor: 'transparent',
-          border: 'none',
+          borderColor: "transparent",
+          border: "none",
         },
       }}
       connectButton={{
