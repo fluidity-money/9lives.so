@@ -21,6 +21,10 @@ const clientEnvSchema = z.object({
    * Factory address
    */
   NEXT_PUBLIC_FACTORY_ADDR: z.string().length(42),
+ /**
+   * Longtail amm address
+   */
+  NEXT_PUBLIC_AMM_ADDR: z.string().length(42),
 });
 
 type ClientEnvSchemaType = z.infer<typeof clientEnvSchema>;
@@ -37,6 +41,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_FEATURES_URL: process.env.NEXT_PUBLIC_FEATURES_URL,
   NEXT_PUBLIC_FUSDC_ADDR: process.env.NEXT_PUBLIC_FUSDC_ADDR,
   NEXT_PUBLIC_FACTORY_ADDR: process.env.NEXT_PUBLIC_FACTORY_ADDR,
+  NEXT_PUBLIC_AMM_ADDR: process.env.NEXT_PUBLIC_AMM_ADDR,
 });
 
 if (!clientEnv.success) {

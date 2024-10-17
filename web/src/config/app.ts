@@ -4,6 +4,7 @@ import clientEnv from "./clientEnv";
 import { superpositionTestnet } from "@/config/chains";
 import factoryAbi from "./abi/factory";
 import ERC20Abi from "./abi/erc20";
+import ammAbi from "./abi/amm";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 
@@ -86,13 +87,19 @@ const appVars = appSchema.safeParse({
       chain: superpositionTestnet,
       client: thirdwebClient,
     }),
+    amm: getContract({
+      abi: ammAbi,
+      address: clientEnv.NEXT_PUBLIC_AMM_ADDR,
+      chain: superpositionTestnet,
+      client: thirdwebClient,
+    }),
   },
   decimals: {
     fusdc: 6,
   },
   cacheRevalidation: {
-    homePage: 86400000, // 1 day
-    detailPages: 300000, // 5 minutes
+    homePage: 1000, // 1 day
+    detailPages: 1000, // 5 minutes
   },
 });
 
