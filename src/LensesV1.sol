@@ -8,7 +8,7 @@ interface IERC20 {
 contract LensesV1 {
     address public factory;
 
-    bytes32 constant TRADING_HASH = 0x774b2adeacb12e63db7c123457590fd80fb82f53f09158de587d757e51499224;
+    bytes32 constant TRADING_HASH = 0xb76acf5e142590fb27653e1d0d9425270d8e048e85f6329ede467692bcb14279;
 
     struct Balances {
         bytes8 campaign;

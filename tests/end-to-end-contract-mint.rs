@@ -16,7 +16,7 @@ fn test_mint() {
         .unwrap();
 
         dbg!(c
-            .mint_E_12943_C_E(
+            .mint_227_C_F_432(
                 fixed_bytes!("0541d76af67ad076"),
                 U256::from(1e6),
                 msg::sender(),

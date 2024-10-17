@@ -13,8 +13,7 @@ use crate::{
     events, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    trading_storage::{StorageTrading},
-
+    trading_storage::StorageTrading,
 };
 
 #[cfg(feature = "trading-mint")]
@@ -35,8 +34,16 @@ impl StorageTrading {
         let outcome = self.outcomes.getter(outcome_id);
         let m_1 = outcome.invested.get();
         let n_1 = outcome.shares.get();
-        let n_2 = self.shares.get().checked_sub(n_1).ok_or(Error::CheckedSubOverflow)?;
-        let m_2 = self.invested.get().checked_sub(m_1).ok_or(Error::CheckedSubOverflow)?;
+        let n_2 = self
+            .shares
+            .get()
+            .checked_sub(n_1)
+            .ok_or(Error::CheckedSubOverflow)?;
+        let m_2 = self
+            .invested
+            .get()
+            .checked_sub(m_1)
+            .ok_or(Error::CheckedSubOverflow)?;
 
         // Convert everything to floats!
         let m = u256_to_decimal(value, FUSDC_DECIMALS)?;
@@ -84,6 +91,17 @@ impl StorageTrading {
     ) -> Result<U256, Error> {
         fusdc_call::take_from_sender(value)?;
         self.internal_mint(outcome, value, recipient)
+    }
+
+    #[allow(non_snake_case)]
+    pub fn quote_101_C_B_E_35(
+        &mut self,
+        outcome: FixedBytes<8>,
+        value: U256,
+        recipient: Address,
+    ) -> Result<(), Vec<u8>> {
+        let amount = self.internal_mint(outcome, value, recipient)?;
+        Err(amount.to_be_bytes::<32>().to_vec())
     }
 
     #[allow(clippy::too_many_arguments)]

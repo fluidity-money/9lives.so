@@ -31,7 +31,7 @@ fn test_trading_edgecase() {
             FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let outcomes = [(outcome_0, amount_0), (outcome_1, amount_1)];
         c.ctor(Address::ZERO, outcomes.to_vec()).unwrap();
-        c.mint_E_12943_C_E(outcome_1, mint_amount, Address::ZERO).unwrap();
+        c.mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO).unwrap();
     })
 }
 
@@ -48,7 +48,7 @@ fn test_unit_1() {
         let mint_amount = U256::from(10000000);
         let outcomes = [(outcome_0, amount_0), (outcome_1, amount_1)];
         c.ctor(Address::ZERO, outcomes.to_vec()).unwrap();
-        dbg!(c.mint_E_12943_C_E(outcome_1, mint_amount, Address::ZERO).unwrap());
+        dbg!(c.mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO).unwrap());
     })
 }
 
@@ -75,7 +75,7 @@ proptest! {
             c.ctor(Address::ZERO, outcomes.to_vec())
                 .unwrap();
             c
-                .mint_E_12943_C_E(outcome_1, mint_amount, Address::ZERO)
+                .mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO)
                 .unwrap();
         })
     }
