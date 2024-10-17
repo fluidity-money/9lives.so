@@ -1,10 +1,6 @@
 import z from "zod";
 import { createThirdwebClient, getContract } from "thirdweb";
 import clientEnv from "./clientEnv";
-import { superpositionTestnet } from "@/config/chains";
-import factoryAbi from "./abi/factory";
-import ERC20Abi from "./abi/erc20";
-import ammAbi from "./abi/amm";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 
@@ -26,15 +22,6 @@ const metadata = {
   ],
 };
 
-const contractSchema = z.object({
-  abi: z.array(z.any()).optional(),
-  address: z.string(),
-  chain: z.object({
-    rpc: z.string(),
-  }),
-  client: z.object({}),
-});
-
 const appSchema = z.object({
   /**
    * Generated metadata of the web app and wagmi will use this object
@@ -52,13 +39,6 @@ const appSchema = z.object({
     logoUrl: z.string().url(),
   }),
   thirdwebSponsorGas: z.boolean(),
-  contracts: z.object({
-    fusdc: contractSchema,
-    factory: contractSchema,
-  }),
-  decimals: z.object({
-    fusdc: z.number().default(6),
-  }),
   cacheRevalidation: z.object({
     homePage: z.number(),
     detailPages: z.number(),
@@ -74,29 +54,6 @@ const appVars = appSchema.safeParse({
     logoUrl: metadata.metadataBase.origin + "/images/logo.svg",
   },
   thirdwebSponsorGas: true,
-  contracts: {
-    fusdc: getContract({
-      abi: ERC20Abi,
-      address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
-      chain: superpositionTestnet,
-      client: thirdwebClient,
-    }),
-    factory: getContract({
-      abi: factoryAbi,
-      address: clientEnv.NEXT_PUBLIC_FACTORY_ADDR,
-      chain: superpositionTestnet,
-      client: thirdwebClient,
-    }),
-    amm: getContract({
-      abi: ammAbi,
-      address: clientEnv.NEXT_PUBLIC_AMM_ADDR,
-      chain: superpositionTestnet,
-      client: thirdwebClient,
-    }),
-  },
-  decimals: {
-    fusdc: 6,
-  },
   cacheRevalidation: {
     homePage: 1000, // 1 day
     detailPages: 1000, // 5 minutes

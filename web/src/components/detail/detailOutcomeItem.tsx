@@ -65,7 +65,9 @@ export default function DetailOutcomeItem({
             "rounded-r-sm border-y border-r border-y-9black border-r-9black",
         )}
       >
-        <p className="font-chicago text-xs font-normal min-h-[50px] leading-[50px]">$0.32/Share</p>
+        <p className="min-h-[50px] font-chicago text-xs font-normal leading-[50px]">
+          $0.32/Share
+        </p>
         {/* <Button
           title="Buy"
           intent={"yes"}

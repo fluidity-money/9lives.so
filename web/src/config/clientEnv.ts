@@ -21,7 +21,7 @@ const clientEnvSchema = z.object({
    * Factory address
    */
   NEXT_PUBLIC_FACTORY_ADDR: z.string().length(42),
- /**
+  /**
    * Longtail amm address
    */
   NEXT_PUBLIC_AMM_ADDR: z.string().length(42),

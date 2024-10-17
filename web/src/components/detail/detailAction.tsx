@@ -5,7 +5,7 @@ import CatImage from "#/images/cat.png";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
 import { Outcome, SelectedOutcome } from "@/types";
-import useTradingTx from "@/hooks/useTradingTx";
+import useBuy from "@/hooks/useBuy";
 import { useActiveAccount } from "thirdweb/react";
 
 export default function DetailCall2Action({
@@ -19,6 +19,7 @@ export default function DetailCall2Action({
   tradingAddr: `0x${string}`;
   initalData: Outcome[];
 }) {
+  const [value, setValue] = useState(0);
   const account = useActiveAccount();
   const outcome = selectedOutcome
     ? initalData.find((o) => o.identifier === selectedOutcome.id)!
@@ -26,22 +27,17 @@ export default function DetailCall2Action({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
 
-  const sendTransaction = useTradingTx({
+  const buy = useBuy({
     tradingAddr,
     account,
     outcomeId: outcome.identifier,
-    value: 0,
+    value,
   });
 
   async function handleBuy() {
     try {
-      if (!account) return console.error("No account");
       setIsMinting(true);
-      const signature = await account?.signMessage({
-        message: "Mint with your permission",
-      });
-      if (!signature) return console.error("No signature");
-      const response = await sendTransaction(signature);
+      const response = await buy();
       console.log("response", response);
     } catch (error) {
       console.error(error instanceof Error ? error.message : error);
@@ -103,8 +99,10 @@ export default function DetailCall2Action({
         </span>
         <Input
           type="number"
+          onChange={(e) => setValue(Number(e.target.value))}
+          min={0}
           className={"mt-2 flex-1 text-center"}
-          defaultValue={0}
+          value={value}
         />
       </div>
       <div className="flex flex-col">
