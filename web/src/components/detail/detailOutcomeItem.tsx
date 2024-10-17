@@ -65,7 +65,8 @@ export default function DetailOutcomeItem({
             "rounded-r-sm border-y border-r border-y-9black border-r-9black",
         )}
       >
-        <Button
+        <p className="font-chicago text-xs font-normal min-h-[50px] leading-[50px]">$0.32/Share</p>
+        {/* <Button
           title="Buy"
           intent={"yes"}
           size={"large"}
@@ -92,7 +93,7 @@ export default function DetailOutcomeItem({
             e.stopPropagation();
             setSelectedOutcome({ state: "sell", id: data.identifier });
           }}
-        />
+        /> */}
       </td>
     </tr>
   );
