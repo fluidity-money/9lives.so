@@ -16,7 +16,9 @@ export default function DetailWrapper({
     id: initialData.outcomes[0].identifier,
     state: "buy",
   });
-  const outcomeIds = initialData.outcomes.map(o => o.identifier as `0x${string}`)
+  const outcomeIds = initialData.outcomes.map(
+    (o) => o.identifier as `0x${string}`,
+  );
   return (
     <>
       <div className="flex flex-[2] flex-col gap-8">
@@ -34,7 +36,10 @@ export default function DetailWrapper({
           initalData={initialData.outcomes}
           tradingAddr={initialData.poolAddress}
         />
-        <Positions campaignId={initialData.identifier} outcomeIds={outcomeIds} />
+        <Positions
+          campaignId={initialData.identifier}
+          outcomeIds={outcomeIds}
+        />
       </div>
     </>
   );

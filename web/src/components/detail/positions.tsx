@@ -2,29 +2,43 @@
 
 import config from "@/config";
 import { useQuery } from "@tanstack/react-query";
-import { prepareContractCall, PreparedTransaction, sendBatchTransaction } from "thirdweb";
+import {
+  prepareContractCall,
+  PreparedTransaction,
+  sendBatchTransaction,
+} from "thirdweb";
 import { useActiveAccount } from "thirdweb/react";
 import { Account } from "thirdweb/wallets";
 
 interface PositionsProps {
   campaignId: `0x${string}`;
-  outcomeIds: `0x${string}`[]
+  outcomeIds: `0x${string}`[];
 }
-async function fetchPositions(campaignId: PositionsProps["campaignId"], outcomeIds: PositionsProps['outcomeIds'], account?: Account) {
-  if (!account) return []
+async function fetchPositions(
+  campaignId: PositionsProps["campaignId"],
+  outcomeIds: PositionsProps["outcomeIds"],
+  account?: Account,
+) {
+  if (!account) return [];
 
-  const txs = outcomeIds.map((outcomeId) => prepareContractCall({
-    contract: config.contracts.lens,
-    method: "balances",
-    params: [account.address, [{ campaign: campaignId, word: [outcomeId] }]],
-  }) as PreparedTransaction);
+  const txs = outcomeIds.map(
+    (outcomeId) =>
+      prepareContractCall({
+        contract: config.contracts.lens,
+        method: "balances",
+        params: [
+          account.address,
+          [{ campaign: campaignId, word: [outcomeId] }],
+        ],
+      }) as PreparedTransaction,
+  );
 
   const waitForReceiptOptions = await sendBatchTransaction({
     transactions: txs,
     account,
-  })
-  console.log(waitForReceiptOptions)
-  return [waitForReceiptOptions]
+  });
+  console.log(waitForReceiptOptions);
+  return [waitForReceiptOptions];
 }
 function PositionRow({ data }: { data: any }) {
   return (

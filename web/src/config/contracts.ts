@@ -24,7 +24,7 @@ const allContractSchema = z.object({
   fusdc: contractSchema,
   factory: contractSchema,
   amm: contractSchema,
-  lens: contractSchema
+  lens: contractSchema,
 });
 
 const fusdc = getContract({
@@ -59,7 +59,7 @@ const contractValidation = allContractSchema.safeParse({
   fusdc,
   factory,
   amm,
-  lens
+  lens,
 });
 
 type ContractsType = z.infer<typeof allContractSchema>;
@@ -74,5 +74,5 @@ export default contractValidation.data as {
   fusdc: typeof fusdc;
   factory: typeof factory;
   amm: typeof amm;
-  lens: typeof lens
+  lens: typeof lens;
 };

@@ -25,7 +25,7 @@ const clientEnvSchema = z.object({
    * Longtail amm address
    */
   NEXT_PUBLIC_AMM_ADDR: z.string().length(42),
-   /**
+  /**
    * Lens address
    */
   NEXT_PUBLIC_LENS_ADDR: z.string().length(42),
