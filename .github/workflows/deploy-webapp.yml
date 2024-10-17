@@ -34,7 +34,6 @@ jobs:
         with:
           path: |
             ~/.pnpm
-            ${{ github.workspace }}/.vercel
             ${{ github.workspace }}/.next/cache
           # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
