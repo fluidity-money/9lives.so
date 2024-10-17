@@ -10,17 +10,19 @@ const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
 describe("Read trading contract address", async () => {
     const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
     const DEPLOY_KEY = process.env.SPN_SUPERPOSITION_KEY;
+    const FACTORY = process.env.SPN_FACTORY_ADDR
 
     if (!RPC_URL) throw new Error("SPN_SUPERPOSITION_URL unset");
     if (!DEPLOY_KEY) throw new Error("SPN_SUPERPOSITION_KEY unset");
+    if (!FACTORY) throw new Error("SPN_FACTORY_ADDR unset");
     const provider = new JsonRpcProvider(RPC_URL);
     const signer = new Wallet(DEPLOY_KEY, provider);
 
-    const factory = new Contract("0x8D3cD4D05DCeb276c6f33AAdC45141BFCB58BAC8", Factory.abi, signer);
-
+    const factory = new Contract(FACTORY, Factory.abi, signer);
+    // trdAddr 0x8248aC70745141F484709C73E642c530ef1a0b00
     // you can change outcomes here to test and deploy new trading contracts
-    const outcome1 = "0x849179e252117c17"; // Trump keccak256(n,d,s)
-    const outcome2 = "0x509007fee9be87e4"; // Kamala
+    const outcome1 = "0x9e79ed8f3f957e4b"; // Ryu,Fighter,947,0x9e79ed8f3f957e4b
+    const outcome2 = "0x257e43cceaa2a5ac"; // Ken,Fighter,665,0x257e43cceaa2a5ac
 
     const outcomes = [
         {

@@ -6,6 +6,7 @@ import ERC20Abi from "./abi/erc20";
 import ammAbi from "./abi/amm";
 import clientEnv from "./clientEnv";
 import { thirdwebClient } from "./app";
+import lensAbi from "./abi/lens";
 
 const contractSchema = z.object({
   abi: z.array(z.any()).optional(),
@@ -23,6 +24,7 @@ const allContractSchema = z.object({
   fusdc: contractSchema,
   factory: contractSchema,
   amm: contractSchema,
+  lens: contractSchema
 });
 
 const fusdc = getContract({
@@ -43,6 +45,12 @@ const amm = getContract({
   chain: superpositionTestnet,
   client: thirdwebClient,
 });
+const lens = getContract({
+  abi: lensAbi,
+  address: clientEnv.NEXT_PUBLIC_LENS_ADDR,
+  chain: superpositionTestnet,
+  client: thirdwebClient,
+});
 
 const contractValidation = allContractSchema.safeParse({
   decimals: {
@@ -51,6 +59,7 @@ const contractValidation = allContractSchema.safeParse({
   fusdc,
   factory,
   amm,
+  lens
 });
 
 type ContractsType = z.infer<typeof allContractSchema>;
@@ -65,4 +74,5 @@ export default contractValidation.data as {
   fusdc: typeof fusdc;
   factory: typeof factory;
   amm: typeof amm;
+  lens: typeof lens
 };

@@ -5,6 +5,7 @@ import DetailOutcomes from "./detailOutcomes";
 import DetailCall2Action from "./detailAction";
 import { SelectedOutcome } from "../../types";
 import { useState } from "react";
+import Positions from "./positions";
 
 export default function DetailWrapper({
   initialData,
@@ -15,7 +16,7 @@ export default function DetailWrapper({
     id: initialData.outcomes[0].identifier,
     state: "buy",
   });
-
+  const outcomeIds = initialData.outcomes.map(o => o.identifier as `0x${string}`)
   return (
     <>
       <div className="flex flex-[2] flex-col gap-8">
@@ -26,13 +27,14 @@ export default function DetailWrapper({
           setSelectedOutcome={setSelectedOutcome}
         />
       </div>
-      <div className="flex-1">
+      <div className="flex-1 flex-col flex gap-8">
         <DetailCall2Action
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
           initalData={initialData.outcomes}
           tradingAddr={initialData.poolAddress}
         />
+        <Positions campaignId={initialData.identifier} outcomeIds={outcomeIds} />
       </div>
     </>
   );
