@@ -44,6 +44,9 @@ jobs:
 
       - name: Install Vercel CLI
         run: pnpm add --global vercel@latest
+
+      - name: Clear .vercel folder
+        run: rm -rf .vercel
               
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
