@@ -26,13 +26,12 @@ jobs:
           run_install: |
             - recursive: true
 
-      - name: Install Vercel CLI
-        run: pnpm add --global vercel@latest
 
       - uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm
+            ${{ github.workspace }}/.vercel
             ${{ github.workspace }}/.next/cache
           # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
@@ -40,6 +39,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.json') }}-
 
+      - name: Install Vercel CLI
+        run: pnpm add --global vercel@latest
+              
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build with Vercel
         run: |
