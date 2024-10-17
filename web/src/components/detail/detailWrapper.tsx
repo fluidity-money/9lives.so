@@ -27,7 +27,7 @@ export default function DetailWrapper({
           setSelectedOutcome={setSelectedOutcome}
         />
       </div>
-      <div className="flex-1 flex-col flex gap-8">
+      <div className="flex flex-1 flex-col gap-8">
         <DetailCall2Action
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}

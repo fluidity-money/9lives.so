@@ -39,15 +39,15 @@ function PositionRow({ data }: { data: any }) {
 export default function Positions({ campaignId, outcomeIds }: PositionsProps) {
   const account = useActiveAccount();
   const { isLoading, isError, data } = useQuery({
-    queryKey: ["positions", campaignId, account?.address],
+    queryKey: ["positions", campaignId, outcomeIds, account],
     queryFn: () => fetchPositions(campaignId, outcomeIds, account),
   });
 
   return (
-    <div className="rounded-[3px] border border-9black p-4 p-5 shadow-9card">
+    <div className="rounded-[3px] border border-9black p-5 shadow-9card">
       <table>
         <thead>
-          <tr className="font-">
+          <tr className="font-geneva">
             <th>Position</th>
             <th>Qty</th>
             <th>Value</th>
