@@ -1,5 +1,5 @@
 import z from "zod";
-import { createThirdwebClient, getContract } from "thirdweb";
+import { createThirdwebClient } from "thirdweb";
 import clientEnv from "./clientEnv";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;

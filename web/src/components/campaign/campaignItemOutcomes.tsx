@@ -12,12 +12,13 @@ export default function CampaignItemOutcomes({
   outcomes,
   setSelectedOutcome,
 }: CampaignItemOutcomesProps) {
-  if (outcomes.length === 1)
+  if (outcomes.length === 2)
     return (
-      <div className="flex flex-1 items-end gap-2">
+      <div className="flex flex-1 items-end gap-2 my-5">
         <Button
           intent="yes"
-          title="Buy"
+          size={"large"}
+          title={`Bet on ${outcomes[0].name}`}
           onClick={() =>
             setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
           }
@@ -25,9 +26,10 @@ export default function CampaignItemOutcomes({
         />
         <Button
           intent="no"
-          title="Sell"
+          size={"large"}
+          title={`Bet on ${outcomes[1].name}`}
           onClick={() =>
-            setSelectedOutcome({ id: outcomes[0].identifier, state: "sell" })
+            setSelectedOutcome({ id: outcomes[1].identifier, state: "buy" })
           }
           className={"flex-1"}
         />
@@ -46,7 +48,15 @@ export default function CampaignItemOutcomes({
           </Link>
           <div className="flex items-center gap-1">
             <span className="font-chicago text-sm font-normal">{"%75"}</span>
-            <Button
+            <Link href={`/campaign/${campaignId}`}>
+              <Button
+                intent="default"
+                cat="secondary"
+                size="small"
+                title="Bet"
+              />
+            </Link>
+            {/* <Button
               intent="yes"
               cat="secondary"
               size="small"
@@ -63,7 +73,7 @@ export default function CampaignItemOutcomes({
               onClick={() =>
                 setSelectedOutcome({ id: outcome.identifier, state: "sell" })
               }
-            />
+            /> */}
           </div>
         </li>
       ))}
