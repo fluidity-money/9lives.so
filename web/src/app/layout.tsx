@@ -63,7 +63,7 @@ export default async function RootLayout({
       lang="en"
       className={combineClass([chicago.variable, geneva.variable])}
     >
-      <body className="flex min-h-screen flex-col">
+      <body className="flex min-h-screen flex-col bg-9layer">
         <Providers initialData={initialData}>
           <Header />
           <main className="flex flex-1 p-4">{children}</main>

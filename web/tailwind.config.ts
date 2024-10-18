@@ -26,6 +26,7 @@ const config: Config = {
         "9yellow": "#FFD699",
         "9black": "#0C0C0C",
         "9gray": "#EEEEEE",
+        "9layer": "#F5F5F5"
       },
       boxShadow: {
         "9btnPrimaryIdle":
