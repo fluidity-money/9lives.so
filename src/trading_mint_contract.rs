@@ -98,12 +98,27 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn quote_101_C_B_E_35(
         &mut self,
-        outcome: FixedBytes<8>,
+        outcome_id: FixedBytes<8>,
         value: U256,
-        recipient: Address,
-    ) -> Result<(), Vec<u8>> {
-        let amount = self.internal_mint(outcome, value, recipient)?;
-        Err(amount.to_be_bytes::<32>().to_vec())
+        _recipient: Address,
+    ) -> Result<U256, Error> {
+        let outcome = self.outcomes.getter(outcome_id);
+        let m_1 = outcome.invested.get();
+        let n_1 = outcome.shares.get();
+        let n_2 = self
+            .shares
+            .get()
+            .checked_sub(n_1)
+            .ok_or(Error::CheckedSubOverflow)?;
+        let m_2 = self
+            .invested
+            .get()
+            .checked_sub(m_1)
+            .ok_or(Error::CheckedSubOverflow)?;
+        decimal_to_u256(
+            maths::shares(m_1, m_2, n_1, n_2, u256_to_decimal(value, FUSDC_DECIMALS)?)?,
+            SHARE_DECIMALS,
+        )
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -122,6 +137,8 @@ impl StorageTrading {
         self.internal_mint(outcome, value, recipient)
     }
 
+    #[allow(clippy::too_many_arguments)]
+    #[allow(non_snake_case)]
     pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> Result<U256, Error> {
         let outcome = self.outcomes.getter(id);
         let m_1 = outcome.invested.get();
