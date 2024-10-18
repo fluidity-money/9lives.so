@@ -37,7 +37,7 @@ const (
 )
 
 // TradingHash the keccak256 hash of the trading contract.
-var tradingHash, _ = hex.DecodeString("1e1d950d546dab5c1293ec873c05de1a0523bab04877277e4187dd53b12a6de9")
+var tradingHash, _ = hex.DecodeString("22df17116e992352b4f9c923b69ba3d6396bb9173a98e1a8432a606238428b4f")
 
 type corsMiddleware struct {
 	srv *handler.Server
