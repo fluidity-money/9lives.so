@@ -5,7 +5,6 @@ interface UserStore {
   watchlist: string[];
   addToWatchlist: (id: string) => void;
   removeFromWatchlist: (id: string) => void;
-  
 }
 export const useUserStore = create<UserStore>()(
   persist(
