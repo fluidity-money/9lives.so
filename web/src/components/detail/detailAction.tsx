@@ -47,7 +47,7 @@ export default function DetailCall2Action({
   }
 
   return (
-    <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black p-4 shadow-9card bg-9layer">
+    <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
       <div className="flex items-center gap-4">
         <Image
           width={40}

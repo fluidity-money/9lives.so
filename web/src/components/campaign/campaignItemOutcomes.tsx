@@ -14,7 +14,7 @@ export default function CampaignItemOutcomes({
 }: CampaignItemOutcomesProps) {
   if (outcomes.length === 2)
     return (
-      <div className="flex flex-1 items-end gap-2 my-5">
+      <div className="my-5 flex flex-1 items-end gap-2">
         <Button
           intent="yes"
           size={"large"}
