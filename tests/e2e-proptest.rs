@@ -52,7 +52,6 @@ fn test_unit_1() {
     })
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 proptest! {
     #[test]
     fn test_trading_full_story(

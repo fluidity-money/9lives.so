@@ -8,7 +8,7 @@ use stylus_sdk::{
 };
 
 use crate::{
-    decimal::{decimal_to_u256, u256_to_decimal},
+    decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_decimal_to_u256},
     error::*,
     events, fusdc_call,
     immutables::*,
@@ -48,7 +48,7 @@ impl StorageTrading {
             .ok_or(Error::CheckedSubOverflow)?;
 
         // Convert everything to floats!
-        let m = u256_to_decimal(value, FUSDC_DECIMALS)?;
+        let m = fusdc_u256_to_decimal(value)?;
 
         // Set the global states.
         self.outcomes.setter(outcome_id).invested.set(m_1 + m);
@@ -65,7 +65,7 @@ impl StorageTrading {
 
         let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
 
-        let shares = decimal_to_u256(shares, SHARE_DECIMALS)?;
+        let shares = share_decimal_to_u256(shares)?;
 
         // This can happen where someone supplies too much at first. FIXME
 
@@ -115,10 +115,13 @@ impl StorageTrading {
             .get()
             .checked_sub(m_1)
             .ok_or(Error::CheckedSubOverflow)?;
-        decimal_to_u256(
-            maths::shares(m_1, m_2, n_1, n_2, u256_to_decimal(value, FUSDC_DECIMALS)?)?,
-            SHARE_DECIMALS,
-        )
+        share_decimal_to_u256(maths::shares(
+            m_1,
+            m_2,
+            n_1,
+            n_2,
+            fusdc_u256_to_decimal(value)?,
+        )?)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -153,9 +156,6 @@ impl StorageTrading {
             .get()
             .checked_sub(m_1)
             .ok_or(Error::CheckedSubOverflow)?;
-        decimal_to_u256(
-            maths::shares(m_1, m_2, n_1, n_2, Decimal::ZERO)?,
-            FUSDC_DECIMALS,
-        )
+        fusdc_decimal_to_u256(maths::price(m_1, m_2, n_1, n_2, Decimal::ZERO)?)
     }
 }

@@ -1,16 +1,19 @@
+use crate::immutables::{FUSDC_DECIMALS, SHARE_DECIMALS};
 
 use stylus_sdk::{
     alloy_primitives::{FixedBytes, U256},
     storage::{GlobalStorage, StorageCache, StorageGuardMut, StorageType},
 };
 
-use rust_decimal::{prelude::*, Decimal, MathematicalOps};
+use rust_decimal::{prelude::*, Decimal, MathematicalOps, RoundingStrategy};
 
 use std::{cell::OnceCell, ops::Deref};
 
 use crate::{assert_or, error::Error};
 
-pub(crate) fn u256_to_decimal(n: U256, decimals: u8) -> Result<Decimal, Error> {
+const ROUNDING_DEC: u32 = 3;
+
+fn u256_to_decimal(n: U256, decimals: u8) -> Result<Decimal, Error> {
     if n.is_zero() {
         return Ok(Decimal::ZERO);
     }
@@ -23,24 +26,44 @@ pub(crate) fn u256_to_decimal(n: U256, decimals: u8) -> Result<Decimal, Error> {
     let n = Decimal::from(n);
     let rem = Decimal::from(rem);
 
-    Ok(n + rem / Decimal::from(10).powi(decimals as i64))
+    Ok(n + rem
+        .checked_div(Decimal::from(10).powi(decimals as i64))
+        .ok_or(Error::CheckedDivOverflow)?)
 }
 
-pub(crate) fn decimal_to_u256(n: Decimal, decimals: u8) -> Result<U256, Error> {
+fn decimal_to_u256(n: Decimal, decimals: u8) -> Result<U256, Error> {
     if n.is_zero() {
         return Ok(U256::ZERO);
     }
     assert_or!(n.is_sign_positive(), Error::NegativeFixedToUintConv);
-    let q = U256::from(n.to_u64().ok_or(Error::CheckedMulOverflow)?);
+    let q = U256::from(n.to_u128().unwrap());
     let r = U256::from(
         n.checked_rem(Decimal::from(1))
             .ok_or(Error::CheckedMulOverflow)?
             .checked_mul(Decimal::from(10).powi(decimals as i64))
             .ok_or(Error::CheckedMulOverflow)?
-            .to_u64()
+            .to_u128()
             .ok_or(Error::CheckedMulOverflow)?,
     );
     Ok(q * U256::from(10).pow(U256::from(decimals)) + r)
+}
+
+fn round_down(n: Decimal) -> Decimal {
+    n.round_dp_with_strategy(ROUNDING_DEC, RoundingStrategy::MidpointTowardZero)
+}
+
+pub fn share_decimal_to_u256(x: Decimal) -> Result<U256, Error> {
+    decimal_to_u256(x, SHARE_DECIMALS)
+}
+pub fn share_u256_to_decimal(x: U256) -> Result<Decimal, Error> {
+    u256_to_decimal(x, SHARE_DECIMALS)
+}
+
+pub fn fusdc_decimal_to_u256(x: Decimal) -> Result<U256, Error> {
+    decimal_to_u256(x, FUSDC_DECIMALS)
+}
+pub fn fusdc_u256_to_decimal(x: U256) -> Result<Decimal, Error> {
+    Ok(round_down(u256_to_decimal(x, FUSDC_DECIMALS)?))
 }
 
 #[derive(Debug, Clone)]
@@ -179,12 +202,12 @@ mod proptesting {
     proptest! {
         #[test]
         fn test_decoding_to_and_from(
-            x in 1e6 as u64 * 2..1000000000000000
+            x in 1..i128::MAX
         ) {
             let d = 6;
-            let n = U256::from_limbs([x, 0, 0, 0]);
+            let n = U256::from(x);
             let res = decimal_to_u256(u256_to_decimal(n, d).unwrap(), d).unwrap();
-            assert!(res == n - U256::from(1) || res == n, "{res} != {n}");
+            assert!(res <= n, "res: {res} <= {n}");
         }
     }
 }

@@ -5,11 +5,13 @@ use rust_decimal::Decimal;
 use crate::error::Error;
 
 use crate::{
-    decimal::{decimal_to_u256, u256_to_decimal},
+    decimal::{
+        fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal,
+    },
     events, factory_call, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    trading_storage::{StorageTrading},
+    trading_storage::StorageTrading,
 };
 
 #[cfg(feature = "trading-extras")]
@@ -33,9 +35,7 @@ impl StorageTrading {
 
         // We assume that the Factory already supplied the liquidity to us.
 
-        self
-            .invested
-            .set(u256_to_decimal(fusdc_amt, FUSDC_DECIMALS)?);
+        self.invested.set(fusdc_u256_to_decimal(fusdc_amt)?);
 
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
 
@@ -47,7 +47,7 @@ impl StorageTrading {
         // set each slot in the storage with the outcome id for Longtail later.
         for (outcome_id, outcome_amt) in outcomes {
             assert_or!(!outcome_amt.is_zero(), Error::OddsMustBeSet);
-            let outcome_amt = u256_to_decimal(outcome_amt, FUSDC_DECIMALS)?;
+            let outcome_amt = fusdc_u256_to_decimal(outcome_amt)?;
             let mut outcome = self.outcomes.setter(outcome_id);
             outcome.invested.set(outcome_amt);
             outcome.shares.set(Decimal::from(1));
@@ -89,13 +89,13 @@ impl StorageTrading {
         // Start to burn their share of the supply to convert to a payoff amount.
         let share_bal = share_call::balance_of(share_addr, msg::sender())?;
         share_call::burn(share_addr, msg::sender(), share_bal)?;
-        let n = u256_to_decimal(share_bal, SHARE_DECIMALS)?;
+        let n = share_u256_to_decimal(share_bal)?;
         let n_1 = outcome.shares.get();
         #[allow(non_snake_case)]
         let M = self.invested.get();
         let p = maths::payoff(n, n_1, M)?;
         // Send the user some fUSDC now!
-        let fusdc = decimal_to_u256(p, FUSDC_DECIMALS)?;
+        let fusdc = fusdc_decimal_to_u256(p)?;
         fusdc_call::transfer(recipient, fusdc)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
@@ -110,14 +110,14 @@ impl StorageTrading {
     pub fn details(&self, outcome_id: FixedBytes<8>) -> Result<(U256, U256, bool), Error> {
         let outcome = self.outcomes.getter(outcome_id);
         Ok((
-            decimal_to_u256(outcome.shares.get(), SHARE_DECIMALS)?,
-            decimal_to_u256(outcome.invested.get(), FUSDC_DECIMALS)?,
+            share_decimal_to_u256(outcome.shares.get())?,
+            fusdc_decimal_to_u256(outcome.invested.get())?,
             outcome.winner.get(),
         ))
     }
 
     pub fn invested(&self) -> Result<U256, Error> {
-        decimal_to_u256(self.invested.get(), FUSDC_DECIMALS)
+        fusdc_decimal_to_u256(self.invested.get())
     }
 
     pub fn share_addr(&self, outcome: FixedBytes<8>) -> Result<Address, Error> {
