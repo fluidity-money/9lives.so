@@ -16,6 +16,8 @@ use crate::{
     trading_storage::StorageTrading,
 };
 
+use rust_decimal::Decimal;
+
 #[cfg(feature = "trading-mint")]
 pub use crate::trading_storage::user_entrypoint;
 
@@ -118,5 +120,25 @@ impl StorageTrading {
     ) -> Result<U256, Error> {
         fusdc_call::take_from_sender_permit(value, deadline, v, r, s)?;
         self.internal_mint(outcome, value, recipient)
+    }
+
+    pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> Result<U256, Error> {
+        let outcome = self.outcomes.getter(id);
+        let m_1 = outcome.invested.get();
+        let n_1 = outcome.shares.get();
+        let n_2 = self
+            .shares
+            .get()
+            .checked_sub(n_1)
+            .ok_or(Error::CheckedSubOverflow)?;
+        let m_2 = self
+            .invested
+            .get()
+            .checked_sub(m_1)
+            .ok_or(Error::CheckedSubOverflow)?;
+        decimal_to_u256(
+            maths::shares(m_1, m_2, n_1, n_2, Decimal::ZERO)?,
+            FUSDC_DECIMALS,
+        )
     }
 }

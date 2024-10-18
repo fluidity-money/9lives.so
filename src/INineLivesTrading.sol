@@ -19,6 +19,12 @@ interface INineLivesTrading {
     function quote101CBE35(bytes8 outcome, uint256 value, address recipient) external returns (uint256);
 
     /**
+     * @notice Get the price of an outcome in fUSDC.
+     * @param outcome to test for
+     */
+    function priceF3C364BC(bytes8 outcome) external returns (uint256);
+
+    /**
      * @notice Mint some shares in exchange for fUSDC.
      * @param outcome to bet on.
      * @param value to spend of fUSDC.
