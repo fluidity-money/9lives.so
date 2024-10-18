@@ -32,7 +32,7 @@ const useBuy = ({
   const checkAmmReturnTx = prepareContractCall({
     contract: config.contracts.amm,
     method: "quote72E2ADE7",
-    params: [tradingAddr, true, amount, BigInt(amount)],
+    params: [tradingAddr, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
   });
   const check9liveReturnTx = (receipent: string) =>
     prepareContractCall({
@@ -61,7 +61,7 @@ const useBuy = ({
     prepareContractCall({
       contract: config.contracts.amm,
       method: "swap904369BE",
-      params: [outcomeId, true, amount, amount],
+      params: [outcomeId, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
     });
 
   const buy = async () => {
