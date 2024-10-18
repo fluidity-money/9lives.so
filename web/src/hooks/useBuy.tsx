@@ -16,14 +16,14 @@ const useBuy = ({
   tradingAddr,
   account,
   outcomeId,
-  value,
+  share,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
   outcomeId: `0x${string}`;
-  value: number;
+  share: number;
 }) => {
-  const amount = toUnits(value.toString(), config.contracts.decimals.fusdc);
+  const amount = toUnits(share.toString(), config.contracts.decimals.fusdc);
   const tradingContract = getContract({
     abi: tradingAbi,
     address: tradingAddr,

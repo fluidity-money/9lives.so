@@ -7,6 +7,8 @@ import Input from "../themed/input";
 import { Outcome, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
 import { useActiveAccount } from "thirdweb/react";
+import config from "@/config";
+import { formatUnits } from "ethers";
 
 export default function DetailCall2Action({
   tradingAddr,
@@ -19,7 +21,7 @@ export default function DetailCall2Action({
   tradingAddr: `0x${string}`;
   initalData: Outcome[];
 }) {
-  const [value, setValue] = useState(0);
+  const [share, setShare] = useState(0);
   const account = useActiveAccount();
   const outcome = selectedOutcome
     ? initalData.find((o) => o.identifier === selectedOutcome.id)!
@@ -31,17 +33,17 @@ export default function DetailCall2Action({
     tradingAddr,
     account,
     outcomeId: outcome.identifier,
-    value,
+    share,
   });
 
   const orderSummary = [
-    { title: "AVG Price", value: priceLoading ? "?..." : (price ?? "N/A") },
+    { title: "AVG Price", value: priceLoading ? "?..." : (price ? formatUnits(price.toString(), config.contracts.decimals.fusdc) : "N/A") },
     {
       title: "Shares",
-      value: 21,
+      value: share,
     },
     {
-      title: "Returns",
+      title: "Return",
       value: 0.2,
     },
   ];
@@ -83,7 +85,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               selectedOutcome?.state === "buy" &&
-                "bg-green-500 text-white hover:bg-green-500",
+              "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}
             onClick={() =>
@@ -96,7 +98,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               selectedOutcome?.state === "sell" &&
-                "bg-red-500 text-white hover:bg-red-500",
+              "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
             onClick={() =>
@@ -111,10 +113,10 @@ export default function DetailCall2Action({
         </span>
         <Input
           type="number"
-          onChange={(e) => setValue(Number(e.target.value))}
+          onChange={(e) => setShare(Number(e.target.value))}
           min={0}
           className={"mt-2 flex-1 text-center"}
-          value={value}
+          value={share}
         />
       </div>
       <div className="flex flex-col">
