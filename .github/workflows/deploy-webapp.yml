@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest     
+    runs-on: ubuntu-latest
     environment: mainnet
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -42,21 +42,8 @@ jobs:
       - name: Install Vercel CLI
         run: pnpm add --global vercel@latest
               
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: './web'
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: vercel
-          path: web/.vercel/
-          retention-days: 5
-
       - name: Build with Vercel
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: './'
+        run: vercel build --yes --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: './web'
