@@ -32,9 +32,9 @@ on the local environment, or with end to end tests with an Arbitrum node.
 |    Deployment name     |              Deployment address            |
 |------------------------|--------------------------------------------|
 | Proxy admin            | 0xa04b3bfc6d4415948787617a74f58fe595536dbb |
-| Factory implementation | 0x39c98617e91d955ee5312664ea9bd0e2c5278ce0 |
+| Factory implementation | 0x56916c35b6226c219a473a683b756fa1ee54a498 |
 | ERC20 implementation   | 0x24A20811eBA6c39e3B1A613e892eBfc6A81Dd6ee |
-| Trading mint impl      | 0x4f8aff0a7b0011ff09a791e8f233dd89e8698a5b |
+| Trading mint impl      | 0xd8936cf0f911850ee4d645eae6693c360ee684f8 |
 | Trading extras impl    | 0xF60DD9b41A77A33E5F0E881e408cc577BC18245e |
 | Factory proxy          | 0x3A238B6b12F5da5ED7BAA7Fbb871fc5455AA2fc0 |
 | LensesV1               | 0x08cDfFa3efc37Af2d8E9E81FadE6209fD704EbbA |

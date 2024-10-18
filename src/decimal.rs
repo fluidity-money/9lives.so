@@ -5,13 +5,11 @@ use stylus_sdk::{
     storage::{GlobalStorage, StorageCache, StorageGuardMut, StorageType},
 };
 
-use rust_decimal::{prelude::*, Decimal, MathematicalOps, RoundingStrategy};
+use rust_decimal::{prelude::*, Decimal, MathematicalOps};
 
 use std::{cell::OnceCell, ops::Deref};
 
 use crate::{assert_or, error::Error};
-
-const ROUNDING_DEC: u32 = 3;
 
 fn u256_to_decimal(n: U256, decimals: u8) -> Result<Decimal, Error> {
     if n.is_zero() {
@@ -48,10 +46,6 @@ fn decimal_to_u256(n: Decimal, decimals: u8) -> Result<U256, Error> {
     Ok(q * U256::from(10).pow(U256::from(decimals)) + r)
 }
 
-fn round_down(n: Decimal) -> Decimal {
-    n.round_dp_with_strategy(ROUNDING_DEC, RoundingStrategy::MidpointTowardZero)
-}
-
 pub fn share_decimal_to_u256(x: Decimal) -> Result<U256, Error> {
     decimal_to_u256(x, SHARE_DECIMALS)
 }
@@ -63,7 +57,7 @@ pub fn fusdc_decimal_to_u256(x: Decimal) -> Result<U256, Error> {
     decimal_to_u256(x, FUSDC_DECIMALS)
 }
 pub fn fusdc_u256_to_decimal(x: U256) -> Result<Decimal, Error> {
-    Ok(round_down(u256_to_decimal(x, FUSDC_DECIMALS)?))
+    Ok(u256_to_decimal(x, FUSDC_DECIMALS)?)
 }
 
 #[derive(Debug, Clone)]
