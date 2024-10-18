@@ -10,6 +10,7 @@ import {
 import { toUnits } from "thirdweb/utils";
 import { Signature } from "ethers";
 import { Account } from "thirdweb/wallets";
+import { useReadContract } from "thirdweb/react";
 
 const useBuy = ({
   tradingAddr,
@@ -64,6 +65,12 @@ const useBuy = ({
       params: [outcomeId, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
     });
 
+  const { data: price, isLoading: priceLoading } = useReadContract({
+    contract: tradingContract,
+    method: "priceF3C364BC",
+    params: [outcomeId],
+  });
+
   const buy = async () => {
     if (!account) {
       console.error("No account is connected");
@@ -107,7 +114,7 @@ const useBuy = ({
     }
   };
 
-  return buy;
+  return { buy, price, priceLoading };
 };
 
 export default useBuy;

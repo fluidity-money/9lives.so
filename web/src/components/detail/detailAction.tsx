@@ -27,12 +27,24 @@ export default function DetailCall2Action({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
 
-  const buy = useBuy({
+  const { buy, price, priceLoading } = useBuy({
     tradingAddr,
     account,
     outcomeId: outcome.identifier,
     value,
   });
+
+  const orderSummary = [
+    { title: "AVG Price", value: priceLoading ? "?..." : (price ?? "N/A") },
+    {
+      title: "Shares",
+      value: 21,
+    },
+    {
+      title: "Returns",
+      value: 0.2,
+    },
+  ];
 
   async function handleBuy() {
     try {
@@ -110,6 +122,17 @@ export default function DetailCall2Action({
           Leverage
         </span>
         <Input type="range" intent="range" className={"mt-2 w-full"} disabled />
+      </div>
+      <div className="flex flex-col gap-4 bg-9gray p-5 text-xs shadow-9orderSummary">
+        <span className="font-chicago uppercase">Order Summary</span>
+        <ul className="flex flex-col gap-1 text-gray-500">
+          {orderSummary.map((item) => (
+            <li className="flex items-center justify-between" key={item.title}>
+              <strong>{item.title}</strong>
+              <span>{item.value}</span>
+            </li>
+          ))}
+        </ul>
       </div>
       <Button
         disabled={isMinting}
