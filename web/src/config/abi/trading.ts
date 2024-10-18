@@ -158,6 +158,25 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "priceF3C364BC",
+    inputs: [
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "quote101CBE35",
     inputs: [
       {
