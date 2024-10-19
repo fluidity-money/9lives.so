@@ -148,6 +148,11 @@ pub enum Error {
     /// supplied.
     #[error("Unusual amount supplied at first")]
     UnusualAmountCreated,
+
+    // 0x1b
+    /// Sqrt function returned None!
+    #[error("Sqrt function returned none")]
+    SqrtOpNone
 }
 
 impl From<Error> for Vec<u8> {

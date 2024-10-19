@@ -67,6 +67,10 @@ pub fn payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error> {
     mul(div(n, N_1)?, M)
 }
 
+pub fn price_to_sqrt_price(x: Decimal) -> Result<Decimal, Error> {
+    Ok((x.sqrt().ok_or(Error::SqrtOpNone)? * Decimal::from(2)).powi(96))
+}
+
 #[test]
 fn test_price_single() {
     dbg!(shares(

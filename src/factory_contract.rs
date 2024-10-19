@@ -9,8 +9,14 @@ use stylus_sdk::{
 };
 
 use crate::{
-    error::*, events, fusdc_call, immutables::*, longtail_call, proxy, share_call, trading_call,
+    decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal},
+    error::*,
+    events, fusdc_call,
+    immutables::*,
+    longtail_call, maths, proxy, share_call, trading_call,
 };
+
+use rust_decimal::Decimal;
 
 #[storage]
 #[cfg_attr(all(target_arch = "wasm32", feature = "factory"), entrypoint)]
@@ -54,7 +60,9 @@ impl Factory {
         // Deploy the contract, and emit a log that it was created.
         let trading_addr = proxy::deploy_trading(trading_id)?;
 
-        self.trading_contracts.setter(trading_addr).set(msg::sender());
+        self.trading_contracts
+            .setter(trading_addr)
+            .set(msg::sender());
 
         let oracle = self.oracle.get();
 
@@ -71,18 +79,37 @@ impl Factory {
         assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
         fusdc_call::take_from_sender_to(trading_addr, fusdc_amt)?;
 
-        for outcome_identifier in outcome_identifiers {
+        // Used for the price function for seeding Longtail.
+
+        let m_1 = fusdc_u256_to_decimal(fusdc_amt)?;
+        let n_1 = outcome_identifiers.len();
+        let n_2 = n_1 - 1;
+
+        for (outcome_identifier, seed_amt) in outcomes.iter() {
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(erc20_identifier)?;
 
+            let m_2 = m_1 - fusdc_u256_to_decimal(*seed_amt)?;
+
             // Set up the share ERC20 asset, with the description.
             share_call::ctor(erc20_addr, *outcome_identifier, trading_addr)?;
+
+            // We use the sqrt price to seed Longtail with the initial trading amounts for this
+            // so there's an immediate arbitrage opportunity for LPing.
+
+            let sqrt_price = fusdc_decimal_to_u256(maths::price_to_sqrt_price(maths::price(
+                m_1,
+                m_2,
+                Decimal::from(n_1),
+                Decimal::from(n_2),
+                Decimal::ZERO,
+            )?)?)?;
 
             // Use Longtail to create a pool for this share, then enable it with a 50/50 price.
             longtail_call::create_pool(
                 erc20_addr,
-                LONGTAIL_PRICE,
+                sqrt_price,
                 LONGTAIL_FEE,
                 LONGTAIL_TICK_SPACING,
                 LONGTAIL_MAX_LIQ_PER_TICK,
