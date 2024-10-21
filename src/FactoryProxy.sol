@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-/// @dev 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
-bytes32 constant ADMIN_SLOT = bytes32(uint256(keccak256('eip1967.proxy.implementation')) - 1);
+/// @dev 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103
+bytes32 constant ADMIN_SLOT = bytes32(uint256(keccak256('eip1967.proxy.admin')) - 1);
 
 /// @dev bytes32(uint256(keccak256('eip1967.proxy.implementation.1')) - 1)
 bytes32 constant IMPL_1_SLOT = 0xb1367b25ecdd0d2df3db9449bc5ce8a546c54d6e9893823c94910167e4916b2e;

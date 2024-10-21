@@ -11,7 +11,7 @@ interface INineLivesFactory {
      * @notice set up new trading contract, seeding the initial amounts
      * @param outcomes to set up as the default
      */
-    function newTrading(Outcome[] memory outcomes) external returns (address);
+    function newTrading03B23698(Outcome[] memory outcomes) external returns (address);
 
     /**
      * @notice gets the owner address from the trading contract address

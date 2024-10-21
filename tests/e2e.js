@@ -134,7 +134,7 @@ describe("End to end tests", async () => {
   await (await fusdc.approve(factoryImpl, MaxUint256)).wait();
 
   const tradingAddr = await factory.newTrading.staticCall(outcomes);
-  const tx = await factory.newTrading(outcomes);
+  const tx = await factory.newTrading03B23698(outcomes);
   await tx.wait();
 
   const trading = new Contract(tradingAddr, Trading.abi, signer);

@@ -63,13 +63,13 @@ describe("Mint test", async () => {
         assert.equal(response.status, 1)
     })
     it("should get the new trading contract address", async () => {
-        tradingAddress = await factoryContract.newTrading.staticCall(outcomeInput);
+        tradingAddress = await factoryContract.newTrading03B23698.staticCall(outcomeInput);
         console.log("tradingAddr", tradingAddress)
         tradingContract = new Contract(tradingAddress, Trading.abi, signer);
         assert.ok(Boolean(tradingAddress))
     })
     it("should create a new trading contract", async () => {
-        const response = await (await factoryContract.newTrading(outcomeInput)).wait();
+        const response = await (await factoryContract.newTrading03B23698(outcomeInput)).wait();
         assert.ok(response.status)
     })
     it("should approve FUSDC spending for the trading contract", async () => {

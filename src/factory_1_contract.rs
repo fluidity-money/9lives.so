@@ -22,7 +22,8 @@ use rust_decimal::Decimal;
 impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.
-    pub fn new_trading(
+    #[allow(non_snake_case)]
+    pub fn new_trading_03_B_23698(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256)>,
     ) -> Result<Address, Vec<u8>> {
