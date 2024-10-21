@@ -1,19 +1,6 @@
 const factoryAbi = [
   {
     type: "function",
-    name: "ctor",
-    inputs: [
-      {
-        name: "oracle",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     name: "getOwner",
     inputs: [
       {
@@ -33,7 +20,7 @@ const factoryAbi = [
   },
   {
     type: "function",
-    name: "newTrading",
+    name: "newTrading03B23698",
     inputs: [
       {
         name: "outcomes",
