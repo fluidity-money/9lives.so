@@ -31,6 +31,7 @@ export default function ConnectButton() {
         label: "Connect Wallet",
         style: {
           color: "#0c0c0c",
+          textDecoration: "underline",
           backgroundColor: "transparent",
           fontFamily: "var(--font-chicago)",
           height: 40,
