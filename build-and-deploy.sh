@@ -13,13 +13,13 @@ eval "$(go run scripts/get-addresses-full-deploy.go "$wallet_addr" 2>&1 1>/dev/n
 
 make -B
 
-echo "SPN_FACTORY_1_IMPL_ADDR=$(./deploy-stylus.sh factory-1.wasm)"
-echo "SPN_FACTORY_2_IMPL_ADDR=$(./deploy-stylus.sh factory-2.wasm)"
-echo "SPN_ERC20_IMPL_ADDR=$(./deploy-erc20-impl.sh)"
-echo "SPN_TRADING_MINT_IMPL_ADDR=$(./deploy-stylus.sh trading-mint.wasm)"
-echo "SPN_TRADING_EXTRAS_IMPL_ADDR=$(./deploy-stylus.sh trading-extras.wasm)"
+>&2 echo "SPN_FACTORY_1_IMPL_ADDR=$(./deploy-stylus.sh factory-1.wasm)"
+>&2 echo "SPN_FACTORY_2_IMPL_ADDR=$(./deploy-stylus.sh factory-2.wasm)"
+>&2 echo "SPN_ERC20_IMPL_ADDR=$(./deploy-erc20-impl.sh)"
+>&2 echo "SPN_TRADING_MINT_IMPL_ADDR=$(./deploy-stylus.sh trading-mint.wasm)"
+>&2 echo "SPN_TRADING_EXTRAS_IMPL_ADDR=$(./deploy-stylus.sh trading-extras.wasm)"
 
-cat <<EOF
+>&2 cat <<EOF
 |      Deployment name     |              Deployment address            |
 |--------------------------|--------------------------------------------|
 | Proxy admin              |  |
@@ -29,3 +29,4 @@ cat <<EOF
 | Trading mint impl        | $SPN_TRADING_MINT_IMPL_ADDR |
 | Trading extras impl      | $SPN_TRADING_EXTRAS_IMPL_ADDR |
 | Factory proxy            |  |
+EOF

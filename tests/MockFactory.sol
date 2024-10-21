@@ -4,6 +4,8 @@ pragma solidity ^0.8.18;
 import "../src/INineLivesFactory.sol";
 
 contract MockFactory is INineLivesFactory {
+    function ctor(address /* oracle */) external {}
+
     function newTrading03B23698(Outcome[] memory) external pure returns (address) {
         return address(1);
     }

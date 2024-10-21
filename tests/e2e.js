@@ -55,9 +55,16 @@ describe("End to end tests", async () => {
 
   // Build everything from a fresh state, get addresses first.
 
-  const { factoryImpl, erc20Impl, tradingMintImpl, tradingExtrasImpl } =
+  const {
+    factoryProxy: factoryProxyAddr,
+    factory1Impl,
+    factory2Impl,
+    erc20Impl,
+    tradingMintImpl,
+    tradingExtrasImpl
+  } =
     JSON.parse(execSync(
-      `go run scripts/get-addresses-deploy.go ${defaultAccountAddr}`,
+      `go run scripts/get-addresses-full-deploy.go ${defaultAccountAddr}`,
       {
         env: {
           ...process.env,
@@ -74,11 +81,10 @@ describe("End to end tests", async () => {
     "make -B",
     { env: {
         ...process.env,
-        "SPN_FACTORY_IMPL_ADDR": factoryImpl,
         "SPN_ERC20_IMPL_ADDR": erc20Impl,
         "SPN_TRADING_MINT_IMPL_ADDR": tradingMintImpl,
         "SPN_TRADING_EXTRAS_IMPL_ADDR": tradingExtrasImpl,
-        "SPN_FACTORY_PROXY_ADDR": factoryImpl, // Impl instead of proxy in our tests.
+        "SPN_FACTORY_PROXY_ADDR": factoryProxyAddr, // Impl instead of proxy in our tests.
         "SPN_LONGTAIL_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
     } },
@@ -87,7 +93,16 @@ describe("End to end tests", async () => {
   // Do the deployments!
 
   execSync(
-    "./deploy-stylus.sh factory.wasm",
+    "./deploy-stylus.sh factory-1.wasm",
+    { env: {
+        ...process.env,
+        "SPN_SUPERPOSITION_URL": RPC_URL,
+        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
+    } },
+  );
+
+  execSync(
+    "./deploy-stylus.sh factory-2.wasm",
     { env: {
         ...process.env,
         "SPN_SUPERPOSITION_URL": RPC_URL,
@@ -105,7 +120,7 @@ describe("End to end tests", async () => {
   );
 
   execSync(
-    "./deploy-stylus.sh trading.wasm",
+    "./deploy-stylus.sh trading-mint.wasm",
     { env: {
         ...process.env,
         "SPN_SUPERPOSITION_URL": RPC_URL,
@@ -113,9 +128,16 @@ describe("End to end tests", async () => {
     } },
   );
 
-  const factory = new Contract(factoryImpl, Factory.abi, signer);
+  execSync(
+    "./deploy-stylus.sh trading-extras.wasm",
+    { env: {
+        ...process.env,
+        "SPN_SUPERPOSITION_URL": RPC_URL,
+        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
+    } },
+  );
 
-  await (await factory.ctor(defaultAccountAddr)).wait();
+  const factoryProxy = new Contract(factoryProxyAddr, Factory.abi, signer);
 
   const outcome1 = "0x1e9e51837f3ea6ea";
   const outcome2 = "0x1e9e51837f3ea6eb";
@@ -123,17 +145,17 @@ describe("End to end tests", async () => {
   const outcomes = [
     {
       identifier: outcome1,
-      seed: 1000000
+      amount: 1000000
     },
     {
       identifier: outcome2,
-      seed: 1000000
+      amount: 1000000
     },
   ];
 
-  await (await fusdc.approve(factoryImpl, MaxUint256)).wait();
+  await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
 
-  const tradingAddr = await factory.newTrading.staticCall(outcomes);
+  const tradingAddr = await factoryProxy.newTrading03B23698.staticCall(outcomes);
   const tx = await factory.newTrading03B23698(outcomes);
   await tx.wait();
 
