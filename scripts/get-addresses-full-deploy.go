@@ -32,14 +32,16 @@ func main() {
 		panic(fmt.Errorf("failed to get nonce for %v: %v", addr, err))
 	}
 	var (
-		factoryImpl  = ethCrypto.CreateAddress(addr, nonce)
-		erc20Impl    = ethCrypto.CreateAddress(addr, nonce+2)
-		tradingMintImpl  = ethCrypto.CreateAddress(addr, nonce+3)
-		tradingExtrasImpl  = ethCrypto.CreateAddress(addr, nonce+5)
+		factory1Impl  = ethCrypto.CreateAddress(addr, nonce)
+		factory2Impl = ethCrypto.CreateAddress(addr, nonce+2)
+		erc20Impl    = ethCrypto.CreateAddress(addr, nonce+4)
+		tradingMintImpl  = ethCrypto.CreateAddress(addr, nonce+5)
+		tradingExtrasImpl  = ethCrypto.CreateAddress(addr, nonce+6)
 		factoryProxy = ethCrypto.CreateAddress(addr, nonce+7)
 	)
 	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
-		"factoryImpl":  factoryImpl,
+		"factory1Impl":  factory1Impl,
+		"factory2Impl":  factory2Impl,
 		"erc20Impl":    erc20Impl,
 		"tradingMintImpl":  tradingMintImpl,
 		"tradingExtrasImpl": tradingExtrasImpl,
@@ -47,8 +49,9 @@ func main() {
 	})
 	fmt.Fprintf(
 		os.Stderr,
-		`export SPN_FACTORY_IMPL_ADDR='%v' SPN_ERC20_IMPL_ADDR='%v' SPN_TRADING_MINT_IMPL_ADDR='%v' SPN_TRADING_EXTRAS_IMPL_ADDR='%v' SPN_FACTORY_PROXY_ADDR='%v'`,
-		factoryImpl,
+		`export SPN_FACTORY_1_IMPL_ADDR='%v' SPN_FACTORY_2_IMPL_ADDR='%v' SPN_ERC20_IMPL_ADDR='%v' SPN_TRADING_MINT_IMPL_ADDR='%v' SPN_TRADING_EXTRAS_IMPL_ADDR='%v' SPN_FACTORY_PROXY_ADDR='%v'`,
+		factory1Impl,
+		factory2Impl,
 		erc20Impl,
 		tradingMintImpl,
 		tradingExtrasImpl,

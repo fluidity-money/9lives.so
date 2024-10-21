@@ -29,12 +29,12 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 ### Superposition testnet
 
-|    Deployment name     |              Deployment address            |
-|------------------------|--------------------------------------------|
-| Proxy admin            | 0xa04b3bfc6d4415948787617a74f58fe595536dbb |
-| Factory implementation | 0x56916c35b6226c219a473a683b756fa1ee54a498 |
-| ERC20 implementation   | 0x24A20811eBA6c39e3B1A613e892eBfc6A81Dd6ee |
-| Trading mint impl      | 0xd8936cf0f911850ee4d645eae6693c360ee684f8 |
-| Trading extras impl    | 0xF60DD9b41A77A33E5F0E881e408cc577BC18245e |
-| Factory proxy          | 0x3A238B6b12F5da5ED7BAA7Fbb871fc5455AA2fc0 |
-| LensesV1               | 0x08cDfFa3efc37Af2d8E9E81FadE6209fD704EbbA |
+|      Deployment name     |              Deployment address            |
+|--------------------------|--------------------------------------------|
+| Proxy admin              |  |
+| Factory 1 implementation | 0x8556F2AF170a8a1e321d09C695f00c9BEdc97A0e |
+| Factory 2 implementation | 0xA53CA21770E59f1bE75Dd5A32a665651A3992837 |
+| ERC20 implementation     | 0x7Ccc810773663d64aB44417eB1352556c5bDE62C |
+| Trading mint impl        | 0xAA3B5f45C52bEDddca2281051C2807c017B46850 |
+| Trading extras impl      | 0x8774877F44A30Eb90eAB3f38848721253Dd48d1E |
+| Factory proxy            |  |

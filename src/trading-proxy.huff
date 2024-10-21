@@ -1,4 +1,7 @@
 
+// This trading proxy is a simple proxy that selects the function to
+// delegatecall to based on the signature of the function given.
+
 #define macro MAIN() = takes(0) returns(0) {
 	calldatasize 0x0 0x0 calldatacopy
 	0x0 0x0 calldatasize

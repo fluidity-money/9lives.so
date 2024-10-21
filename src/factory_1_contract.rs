@@ -3,9 +3,7 @@
 
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
-    contract, evm, msg,
-    prelude::*,
-    storage::*,
+    evm, msg,
 };
 
 use crate::{
@@ -16,29 +14,12 @@ use crate::{
     longtail_call, maths, proxy, share_call, trading_call,
 };
 
+pub use crate::factory_storage::*;
+
 use rust_decimal::Decimal;
 
-#[storage]
-#[cfg_attr(all(target_arch = "wasm32", feature = "factory"), entrypoint)]
-pub struct Factory {
-    version: StorageU8,
-    enabled: StorageBool,
-    oracle: StorageAddress,
-
-    // Trading contracts mapped to the creators that were created by this Factory
-    trading_contracts: StorageMap<Address, StorageAddress>,
-}
-
-#[public]
-impl Factory {
-    pub fn ctor(&mut self, oracle_addr: Address) -> Result<(), Vec<u8>> {
-        assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
-        self.enabled.set(true);
-        self.oracle.set(oracle_addr);
-        self.version.set(U8::from(1));
-        Ok(())
-    }
-
+#[cfg_attr(feature = "factory-1", stylus_sdk::prelude::public)]
+impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.
     pub fn new_trading(
@@ -106,7 +87,7 @@ impl Factory {
                 Decimal::ZERO,
             )?)?)?;
 
-            // Use Longtail to create a pool for this share, then enable it with a 50/50 price.
+            // Use Longtail to create a pool for this share for aftermarket trading.
             longtail_call::create_pool(
                 erc20_addr,
                 sqrt_price,
@@ -127,31 +108,6 @@ impl Factory {
         trading_call::ctor(trading_addr, oracle, outcomes)?;
 
         Ok(trading_addr)
-    }
-
-    pub fn trading_hash(&self) -> Result<FixedBytes<32>, Error> {
-        Ok(FixedBytes::from_slice(&trading_proxy_hash()))
-    }
-
-    pub fn get_owner(&self, trading_addr: Address) -> Result<Address, Error> {
-        Ok(self.trading_contracts.getter(trading_addr).get())
-    }
-
-    /// Disable shares from being traded via Longtail.
-    pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> Result<(), Error> {
-        assert_or!(
-            self.trading_contracts.getter(msg::sender()).get() != Address::default(),
-            Error::NotTradingContract
-        );
-        // Start to derive the outcomes that were given to find the share addresses.
-        for outcome_id in outcomes {
-            longtail_call::pause_pool(proxy::get_share_addr(
-                contract::address(),
-                msg::sender(),
-                outcome_id,
-            ))?;
-        }
-        Ok(())
     }
 }
 

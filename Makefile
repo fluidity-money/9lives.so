@@ -19,19 +19,26 @@ RELEASE_WASM_OPT_9LIVES := \
 
 OUT_SHARE := out/Share.sol/Share.json
 
-build: ${OUT_SHARE} factory trading-mint trading-extras
+build: ${OUT_SHARE} factory-1 factory-2 trading-mint trading-extras
 
 ${OUT_SHARE}: $(shell find src -name '*.sol')
 	@forge build
 
-factory: factory.wasm
+factory-1: factory-1.wasm
+factory-2: factory-2.wasm
+
 trading-mint: trading-mint.wasm
 trading-extras: trading-extras.wasm
 
-factory.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f factory.wasm
-	@${CARGO_BUILD_STYLUS} factory
-	@${RELEASE_WASM_OPT_9LIVES} factory.wasm
+factory-1.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f factory-1.wasm
+	@${CARGO_BUILD_STYLUS} factory-1
+	@${RELEASE_WASM_OPT_9LIVES} factory-1.wasm
+
+factory-2.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f factory-2.wasm
+	@${CARGO_BUILD_STYLUS} factory-2
+	@${RELEASE_WASM_OPT_9LIVES} factory-2.wasm
 
 trading-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading-mint.wasm

@@ -60,15 +60,21 @@ pub mod host;
 
 extern crate alloc;
 
-pub mod factory_contract;
+pub mod factory_storage;
+
+pub mod factory_1_contract;
+pub mod factory_2_contract;
 
 pub mod trading_storage;
 
 pub mod trading_mint_contract;
 pub mod trading_extras_contract;
 
-#[cfg(feature = "factory")]
-pub use factory_contract::user_entrypoint;
+#[cfg(feature = "factory-1")]
+pub use factory_1_contract::user_entrypoint;
+
+#[cfg(feature = "factory-2")]
+pub use factory_2_contract::user_entrypoint;
 
 #[cfg(feature = "trading-mint")]
 pub use trading_mint_contract::user_entrypoint;
