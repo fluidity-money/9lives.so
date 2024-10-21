@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+import "./INineLivesFactory.sol";
+
 interface ILongtail {
     function quote72E2ADE7(address, bool, int256, uint256) external view;
 }
@@ -11,17 +13,15 @@ interface IERC20 {
 
 contract LensesV1 {
     ILongtail public longtail;
-    address public factory;
-
-    bytes32 constant TRADING_HASH = 0xb76acf5e142590fb27653e1d0d9425270d8e048e85f6329ede467692bcb14279;
+    INineLivesFactory public factory;
 
     struct Balances {
         bytes8 campaign;
         bytes32[] word;
     }
 
-    constructor(address _longtail, address _factory) {
-        longtail = ILongtail(_longtail);
+    constructor(ILongtail _longtail, INineLivesFactory _factory) {
+        longtail = _longtail;
         factory = _factory;
     }
 
@@ -57,7 +57,7 @@ contract LensesV1 {
             hex"ff",
             factory,
             createShareId(_campaignId, _outcomeId),
-            TRADING_HASH
+            factory.tradingHash()
         )))));
     }
 
