@@ -3,8 +3,10 @@ pragma solidity ^0.8.18;
 
 import "./INineLivesFactory.sol";
 
+import "forge-std/console.sol";
+
 interface ILongtail {
-    function quote72E2ADE7(address, bool, int256, uint256) external view;
+    function quote72E2ADE7(address, bool, int256, uint256) external;
 }
 
 interface IERC20 {
@@ -12,8 +14,8 @@ interface IERC20 {
 }
 
 contract LensesV1 {
-    ILongtail public longtail;
-    INineLivesFactory public factory;
+    ILongtail immutable public longtail;
+    INineLivesFactory immutable public factory;
 
     struct Balances {
         bytes8 campaign;
@@ -30,7 +32,7 @@ contract LensesV1 {
         bool _zeroForOne,
         int256 _amount,
         uint256 _priceLimit
-    ) external view returns (string memory data) {
+    ) external returns (string memory data) {
         try
             longtail.quote72E2ADE7(_pool, _zeroForOne, _amount, _priceLimit)
         {} catch (bytes memory rc) {

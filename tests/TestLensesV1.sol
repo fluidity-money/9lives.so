@@ -20,7 +20,8 @@ contract TestShare is Test {
         lenses = new LensesV1(ILongtail(address(longtail)), factory);
     }
 
-    function testQuote() public view {
-        assertEq("1000", lenses.getLongtailQuote(address(this), true, 0, 0));
+    function testQuote() public {
+        string memory amt = lenses.getLongtailQuote(address(this), true, 0, 0);
+        assertEq("430201822", amt);
     }
 }
