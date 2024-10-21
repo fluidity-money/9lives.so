@@ -37,7 +37,14 @@ export default function DetailCall2Action({
   });
 
   const orderSummary = [
-    { title: "AVG Price", value: priceLoading ? "?..." : (price ? formatUnits(price.toString(), config.contracts.decimals.fusdc) : "N/A") },
+    {
+      title: "AVG Price",
+      value: priceLoading
+        ? "?..."
+        : price
+          ? formatUnits(price.toString(), config.contracts.decimals.fusdc)
+          : "N/A",
+    },
     {
       title: "Shares",
       value: share,
@@ -85,7 +92,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               selectedOutcome?.state === "buy" &&
-              "bg-green-500 text-white hover:bg-green-500",
+                "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}
             onClick={() =>
@@ -98,7 +105,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               selectedOutcome?.state === "sell" &&
-              "bg-red-500 text-white hover:bg-red-500",
+                "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
             onClick={() =>
