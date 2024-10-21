@@ -23,6 +23,7 @@ export default function ConnectButton() {
           fontSize: 12,
           lineHeight: 16,
           borderColor: "transparent",
+          minWidth: 'auto',
           border: "none",
         },
       }}
