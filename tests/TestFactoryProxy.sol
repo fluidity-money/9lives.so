@@ -70,7 +70,7 @@ contract TestFactoryProxy is Test {
     function testDelegatesOkAfterUpgrade() external {
         IProxyAdmin proxyAdmin = IProxyAdmin(address(uint160(uint256(vm.load(
             address(factoryProxy),
-            bytes32(uint256(keccak256('eip1967.proxy.implementation')) - 1)
+            bytes32(uint256(keccak256('eip1967.proxy.admin')) - 1)
         )))));
         proxyAdmin.upgrade(
             address(factoryProxy),
