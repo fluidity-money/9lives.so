@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   prepareContractCall,
   PreparedTransaction,
-  sendBatchTransaction,
+  simulateTransaction,
 } from "thirdweb";
 import { useActiveAccount } from "thirdweb/react";
 import { Account } from "thirdweb/wallets";
@@ -21,9 +21,9 @@ async function fetchPositions(
 ) {
   if (!account) return [];
 
-  const txs = outcomeIds.map(
-    (outcomeId) =>
-      prepareContractCall({
+  const txSims = outcomeIds.map((outcomeId) =>
+    simulateTransaction({
+      transaction: prepareContractCall({
         contract: config.contracts.lens,
         method: "balances",
         params: [
@@ -31,14 +31,11 @@ async function fetchPositions(
           [{ campaign: campaignId, word: [outcomeId] }],
         ],
       }) as PreparedTransaction,
+    }),
   );
+  const res = await Promise.all(txSims);
 
-  const waitForReceiptOptions = await sendBatchTransaction({
-    transactions: txs,
-    account,
-  });
-  console.log(waitForReceiptOptions);
-  return [waitForReceiptOptions];
+  return res;
 }
 function PositionRow({ data }: { data: any }) {
   return (
@@ -62,7 +59,7 @@ export default function Positions({ campaignId, outcomeIds }: PositionsProps) {
 
   return (
     <div>
-      <div className="inline rounded-t-md border-l border-r border-t border-black bg-9layer px-2 py-1 font-chicago text-xs">
+      <div className="inline rounded-t-md border-x border-t border-black bg-9layer px-2 py-1 font-chicago text-xs">
         My Campaign Positions
       </div>
       <div className="rounded-[3px] rounded-tl-none border border-9black p-5 shadow-9card">
