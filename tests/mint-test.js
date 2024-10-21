@@ -16,9 +16,11 @@ const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 const assert = require("node:assert");
 
 function generateId({ name, desc }) {
+    const seed = (Math.random() * 300).toFixed(0)
+    console.log(name, ",", desc, ",", seed)
     const res =
         execSync(
-            `go run scripts/outcome/generate-id.go ${name} ${desc} ${(Math.random() * 300).toFixed(0)}`,
+            `go run scripts/outcome/generate-id.go ${name} ${desc} ${seed}`,
             {
                 stdio: ["ignore", "pipe", "ignore"]
             },
@@ -33,18 +35,18 @@ function getIds(items) {
 describe("Mint test", async () => {
     const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
     const DEPLOY_KEY = process.env.SPN_SUPERPOSITION_KEY;
-
+    const FACTORY = process.env.SPN_FACTORY_ADDR
     if (!RPC_URL) throw new Error("SPN_SUPERPOSITION_URL unset");
     if (!DEPLOY_KEY) throw new Error("SPN_SUPERPOSITION_KEY unset");
+    if (!FACTORY) throw new Error("SPN_FACTORY_ADDR unset");
 
     const provider = new JsonRpcProvider(RPC_URL);
     const signer = new Wallet(DEPLOY_KEY, provider);
-    const outcomeDetails = [{ name: "cat", desc: "animal" }, { name: "dog", desc: "animal" }]
-    const factoryAddress = "0xd6f788544a1F2046183716A99E81Ec93685903f5"
+    const outcomeDetails = [{ name: "Ryu", desc: "Fighter" }, { name: "Ken", desc: "Fighter" }]
     const fusdcAddress = "0xa8ea92c819463efbeddfb670fefc881a480f0115"
     const receiver = "0x63177184B8b5e1229204067a76Ec4c635009CBD2"
     const onefUSD = 1000000
-    const factoryContract = new Contract(factoryAddress, Factory.abi, signer);
+    const factoryContract = new Contract(FACTORY, Factory.abi, signer);
     const fusdc = new Contract(fusdcAddress, TestERC20.abi, signer);
 
     const outcomeIds = getIds(outcomeDetails)
@@ -59,7 +61,7 @@ describe("Mint test", async () => {
         console.log("outcomeIds", outcomeIds)
     })
     it("should approve FUSDC spending for the factory", async () => {
-        const response = await (await fusdc.approve(factoryAddress, MaxUint256)).wait();
+        const response = await (await fusdc.approve(FACTORY, MaxUint256)).wait();
         assert.equal(response.status, 1)
     })
     it("should get the new trading contract address", async () => {
@@ -83,7 +85,7 @@ describe("Mint test", async () => {
         assert.equal(shareAddr.length, 42)
     })
     it("should mint a share", async () => {
-        const response = await (await tradingContract.mintE12943CE(outcomeIds[0], onefUSD, receiver)).wait();
+        const response = await (await tradingContract.mint227CF432(outcomeIds[0], onefUSD, receiver)).wait();
         assert.ok(response.status)
     })
 })
