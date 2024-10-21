@@ -137,6 +137,9 @@ describe("End to end tests", async () => {
     } },
   );
 
+  console.log("factory1Impl:", factory1Impl);
+  console.log(`factory proxy addr: ${factoryProxyAddr}`);
+
   const factoryProxy = new Contract(factoryProxyAddr, Factory.abi, signer);
 
   const outcome1 = "0x1e9e51837f3ea6ea";

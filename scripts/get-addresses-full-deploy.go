@@ -32,20 +32,20 @@ func main() {
 		panic(fmt.Errorf("failed to get nonce for %v: %v", addr, err))
 	}
 	var (
-		factory1Impl  = ethCrypto.CreateAddress(addr, nonce)
-		factory2Impl = ethCrypto.CreateAddress(addr, nonce+2)
-		erc20Impl    = ethCrypto.CreateAddress(addr, nonce+4)
-		tradingMintImpl  = ethCrypto.CreateAddress(addr, nonce+5)
-		tradingExtrasImpl  = ethCrypto.CreateAddress(addr, nonce+6)
-		factoryProxy = ethCrypto.CreateAddress(addr, nonce+7)
+		factory1Impl      = ethCrypto.CreateAddress(addr, nonce)
+		factory2Impl      = ethCrypto.CreateAddress(addr, nonce+2)
+		erc20Impl         = ethCrypto.CreateAddress(addr, nonce+4)
+		tradingMintImpl   = ethCrypto.CreateAddress(addr, nonce+5)
+		tradingExtrasImpl = ethCrypto.CreateAddress(addr, nonce+7)
+		factoryProxy      = ethCrypto.CreateAddress(addr, nonce+9)
 	)
 	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
-		"factory1Impl":  factory1Impl,
-		"factory2Impl":  factory2Impl,
-		"erc20Impl":    erc20Impl,
-		"tradingMintImpl":  tradingMintImpl,
+		"factory1Impl":      factory1Impl,
+		"factory2Impl":      factory2Impl,
+		"erc20Impl":         erc20Impl,
+		"tradingMintImpl":   tradingMintImpl,
 		"tradingExtrasImpl": tradingExtrasImpl,
-		"factoryProxy": factoryProxy,
+		"factoryProxy":      factoryProxy,
 	})
 	fmt.Fprintf(
 		os.Stderr,
