@@ -21,10 +21,6 @@ echo "SPN_ERC20_IMPL_ADDR=$(./deploy-erc20-impl.sh)"
 echo "SPN_TRADING_MINT_IMPL_ADDR=$(./deploy-stylus.sh trading-mint.wasm)"
 echo "SPN_TRADING_EXTRAS_IMPL_ADDR=$(./deploy-stylus.sh trading-extras.wasm)"
 
-./deploy-factory-proxy.sh
-
-proxy="$(./deploy-factory-proxy.sh | jq -r .logs[0])"
-
 cat <<EOF
 |      Deployment name     |              Deployment address            |
 |--------------------------|--------------------------------------------|
@@ -34,4 +30,4 @@ cat <<EOF
 | ERC20 implementation     | $SPN_ERC20_IMPL_ADDR |
 | Trading mint impl        | $SPN_TRADING_MINT_IMPL_ADDR |
 | Trading extras impl      | $SPN_TRADING_EXTRAS_IMPL_ADDR |
-| Factory proxy            | $proxy |
+| Factory proxy            |  |
