@@ -3,6 +3,7 @@ import NavigationMenu from "@/components/navMenu";
 import Link from "next/link";
 import HeaderLogo from "./headerLogo";
 import dynamic from "next/dynamic";
+import CreateCampaingButton from "./createCampaignButton";
 const Clock = dynamic(() => import("@/components/clock"), { ssr: false });
 
 export default function Header() {
@@ -16,6 +17,7 @@ export default function Header() {
         <HeaderLogo />
       </Link>
       <NavigationMenu />
+      <CreateCampaingButton />
       <ConnectButton />
       <Clock />
     </header>
