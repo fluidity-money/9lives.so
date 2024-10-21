@@ -15,11 +15,13 @@ RELEASE_WASM_OPT_9LIVES := \
 		-Oz target/wasm32-unknown-unknown/release/ninelives.wasm \
 		-o
 
-.PHONY: build clean docs factory trading
+.PHONY: build clean docs factory trading solidity
 
 OUT_SHARE := out/Share.sol/Share.json
 
 build: ${OUT_SHARE} factory-1 factory-2 trading-mint trading-extras
+
+solidity: ${OUT_SHARE}
 
 ${OUT_SHARE}: $(shell find src -name '*.sol')
 	@forge build
