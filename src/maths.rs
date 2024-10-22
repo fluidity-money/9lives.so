@@ -1,3 +1,5 @@
+use stylus_sdk::alloy_primitives::U256;
+
 use rust_decimal::{Decimal, MathematicalOps};
 
 use crate::error::Error;
@@ -67,8 +69,8 @@ pub fn payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error> {
     mul(div(n, N_1)?, M)
 }
 
-pub fn price_to_sqrt_price(x: Decimal) -> Result<Decimal, Error> {
-    Ok((x.sqrt().ok_or(Error::SqrtOpNone)? * Decimal::from(2)).powi(96))
+pub fn price_to_sqrt_price(x: U256) -> Result<U256, Error> {
+    Ok(x.root(2) << 96)
 }
 
 #[test]

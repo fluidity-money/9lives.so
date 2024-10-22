@@ -20,7 +20,7 @@ const factoryAbi = [
   },
   {
     type: "function",
-    name: "newTrading03B23698",
+    name: "newTradingC11AAA3B",
     inputs: [
       {
         name: "outcomes",

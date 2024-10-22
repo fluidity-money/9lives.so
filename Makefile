@@ -23,7 +23,7 @@ build: ${OUT_SHARE} factory-1 factory-2 trading-mint trading-extras
 
 solidity: ${OUT_SHARE}
 
-${OUT_SHARE}: $(shell find src -name '*.sol')
+${OUT_SHARE}: $(shell find src tests -name '*.sol')
 	@forge build
 
 factory-1: factory-1.wasm

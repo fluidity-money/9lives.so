@@ -23,7 +23,7 @@ impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.
     #[allow(non_snake_case)]
-    pub fn new_trading_03_B_23698(
+    pub fn new_trading_C_11_A_A_A_3_B(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256)>,
     ) -> Result<Address, Vec<u8>> {
@@ -80,7 +80,7 @@ impl StorageFactory {
             // We use the sqrt price to seed Longtail with the initial trading amounts for this
             // so there's an immediate arbitrage opportunity for LPing.
 
-            let sqrt_price = fusdc_decimal_to_u256(maths::price_to_sqrt_price(maths::price(
+            let sqrt_price = maths::price_to_sqrt_price(fusdc_decimal_to_u256(maths::price(
                 m_1,
                 m_2,
                 Decimal::from(n_1),

@@ -41,7 +41,7 @@ describe("Read trading contract address", async () => {
     })
 
     it('should deploy it', async () => {
-        const tx = await factory.newTrading03B23698(outcomes);
+        const tx = await factory.newTradingC11AAA3B(outcomes);
         const receipt = await tx.wait();
 
         assert(receipt);

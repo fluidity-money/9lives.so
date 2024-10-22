@@ -25,6 +25,10 @@ impl StorageFactory {
         Ok(FixedBytes::from_slice(&trading_proxy_hash()))
     }
 
+    pub fn erc20_impl(&self) -> Result<Address, Error> {
+        Ok(ERC20_IMPL_ADDR)
+    }
+
     pub fn get_owner(&self, trading_addr: Address) -> Result<Address, Error> {
         Ok(self.trading_contracts.getter(trading_addr).get())
     }

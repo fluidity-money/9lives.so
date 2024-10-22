@@ -38,7 +38,12 @@ contract ProxyAdmin {
         emit TransferOwnership(admin, _newAdmin);
         admin = _newAdmin;
     }
-    function upgrade(address _proxy, address _impl1, address _impl2, bytes memory _data) external {
+    function upgrade(
+        address _proxy,
+        address _impl1,
+        address _impl2,
+        bytes memory _data
+    ) external {
         require(msg.sender == admin, "only admin");
         IProxy(_proxy).upgradeAndCall(_impl1, _impl2, _data);
     }

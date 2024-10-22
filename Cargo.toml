@@ -43,6 +43,7 @@ rust_decimal_macros = "1.36.0"
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 alloy-primitives = { version = "0.7.6", features = ["getrandom"] }
 proptest = "1.5.0"
+rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths", "proptest"] }
 
 [patch.crates-io]
 alloy-sol-types = { git = "https://github.com/fluidity-money/alloy-core" }

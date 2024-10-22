@@ -1,4 +1,5 @@
 const {describe, it} = require("node:test");
+const assert = require("assert");
 
 const {
   Contract,
@@ -13,6 +14,7 @@ const {execSync} = require("node:child_process");
 const TestERC20 = require("../out/TestERC20.sol/TestERC20.json");
 const MockLongtail = require("../out/MockLongtail.sol/MockLongtail.json");
 const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
+const FactoryProxy = require("../out/FactoryProxy.sol/FactoryProxy.json");
 const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 
 describe("End to end tests", async () => {
@@ -78,69 +80,51 @@ describe("End to end tests", async () => {
   // factory implementation instead of the proxy.
 
   execSync(
-    "make -B",
-    { env: {
+    "./build-and-deploy.sh",
+    {
+      env: {
         ...process.env,
-        "SPN_ERC20_IMPL_ADDR": erc20Impl,
-        "SPN_TRADING_MINT_IMPL_ADDR": tradingMintImpl,
-        "SPN_TRADING_EXTRAS_IMPL_ADDR": tradingExtrasImpl,
-        "SPN_FACTORY_PROXY_ADDR": factoryProxyAddr, // Impl instead of proxy in our tests.
+        "SPN_SUPERPOSITION_URL": RPC_URL,
+        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
         "SPN_LONGTAIL_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
-    } },
+      },
+      // stdio: ["ignore", "ignore", "ignore"]
+    },
   );
 
-  // Do the deployments!
-
-  execSync(
-    "./deploy-stylus.sh factory-1.wasm",
-    { env: {
-        ...process.env,
-        "SPN_SUPERPOSITION_URL": RPC_URL,
-        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
-    } },
+  const factoryFactory = new ContractFactory(
+    Factory.abi,
+    Factory.bytecode,
+    signer
   );
 
-  execSync(
-    "./deploy-stylus.sh factory-2.wasm",
-    { env: {
-        ...process.env,
-        "SPN_SUPERPOSITION_URL": RPC_URL,
-        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
-    } },
+  const factoryProxyFactory  = new ContractFactory(
+    FactoryProxy.abi,
+    FactoryProxy.bytecode,
+    signer
+  );
+  const factoryProxy_ = await factoryProxyFactory.deploy(
+    defaultAccountAddr,
+    factory1Impl,
+    factory2Impl,
+    factoryFactory.interface.encodeFunctionData("ctor", [
+      defaultAccountAddr
+    ])
+  );
+  await factoryProxy_.waitForDeployment();
+  const factoryProxy = new Contract(
+    await factoryProxy_.getAddress(),
+    Factory.abi,
+    signer
   );
 
-  execSync(
-    "./deploy-erc20-impl.sh",
-    { env: {
-        ...process.env,
-        "SPN_SUPERPOSITION_URL": RPC_URL,
-        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
-    } },
+  assert.equal(
+    erc20Impl.toLowerCase(),
+    (await factoryProxy.erc20Impl()).toLowerCase()
   );
 
-  execSync(
-    "./deploy-stylus.sh trading-mint.wasm",
-    { env: {
-        ...process.env,
-        "SPN_SUPERPOSITION_URL": RPC_URL,
-        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
-    } },
-  );
-
-  execSync(
-    "./deploy-stylus.sh trading-extras.wasm",
-    { env: {
-        ...process.env,
-        "SPN_SUPERPOSITION_URL": RPC_URL,
-        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
-    } },
-  );
-
-  console.log("factory1Impl:", factory1Impl);
-  console.log(`factory proxy addr: ${factoryProxyAddr}`);
-
-  const factoryProxy = new Contract(factoryProxyAddr, Factory.abi, signer);
+  console.log(`fusdc addresss: ${fusdcAddress}`);
 
   const outcome1 = "0x1e9e51837f3ea6ea";
   const outcome2 = "0x1e9e51837f3ea6eb";
@@ -158,8 +142,8 @@ describe("End to end tests", async () => {
 
   await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
 
-  const tradingAddr = await factoryProxy.newTrading03B23698.staticCall(outcomes);
-  const tx = await factory.newTrading03B23698(outcomes);
+  const tradingAddr = await factoryProxy.newTradingC11AAA3B.staticCall(outcomes);
+  const tx = await factory.newTradingC11AAA3B(outcomes);
   await tx.wait();
 
   const trading = new Contract(tradingAddr, Trading.abi, signer);

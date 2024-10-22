@@ -71,7 +71,7 @@ describe("Mint test", async () => {
         assert.ok(Boolean(tradingAddress))
     })
     it("should create a new trading contract", async () => {
-        const response = await (await factoryContract.newTrading03B23698(outcomeInput)).wait();
+        const response = await (await factoryContract.newTradingC11AAA3B(outcomeInput)).wait();
         assert.ok(response.status)
     })
     it("should approve FUSDC spending for the trading contract", async () => {
