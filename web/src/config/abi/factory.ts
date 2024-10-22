@@ -1,6 +1,32 @@
 const factoryAbi = [
   {
     type: "function",
+    name: "ctor",
+    inputs: [
+      {
+        name: "oracle",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "erc20Impl",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
     name: "getOwner",
     inputs: [
       {
