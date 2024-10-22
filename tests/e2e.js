@@ -142,6 +142,8 @@ describe("End to end tests", async () => {
 
   await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
 
+  console.log("factoryProxyAddr:", factoryProxyAddr);
+
   const tradingAddr = await factoryProxy.newTradingC11AAA3B.staticCall(outcomes);
   const tx = await factoryProxy.newTradingC11AAA3B(outcomes);
   await tx.wait();

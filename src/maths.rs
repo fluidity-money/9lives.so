@@ -69,8 +69,23 @@ pub fn payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error> {
     mul(div(n, N_1)?, M)
 }
 
+fn sqrt_u256(x: U256) -> Result<U256, Error> {
+    // Since the Rust implementation uses some floating point conversions
+    // the Stylus runtime doesn't have. Uses the Babylonian Method.
+    if x.is_zero() {
+        return Ok(U256::ZERO);
+    }
+    let mut z = (x >> 1) + U256::from(1);
+    let mut y = x;
+    while z < y {
+        y = z;
+        z = (x / z + z) >> 1;
+    }
+    Ok(y)
+}
+
 pub fn price_to_sqrt_price(x: U256) -> Result<U256, Error> {
-    Ok(x.root(2) << 96)
+    Ok(sqrt_u256(x)? * U256::from(2).pow(U256::from(96)))
 }
 
 #[test]
