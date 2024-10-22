@@ -3,6 +3,8 @@ pragma solidity ^0.8.18;
 
 import "./INineLivesFactory.sol";
 
+import "./WordPackingLib.sol";
+
 import "forge-std/console.sol";
 
 interface ILongtail {
@@ -14,6 +16,8 @@ interface IERC20 {
 }
 
 contract LensesV1 {
+    using WordPackingLib for bytes32;
+
     ILongtail immutable public longtail;
     INineLivesFactory immutable public factory;
 
@@ -69,16 +73,18 @@ contract LensesV1 {
         address word3,
         address word4
     ) {
-        word1 = getShareAddr(id, bytes8(word));
-        word2 = getShareAddr(id, bytes8(word << 64));
-        word3 = getShareAddr(id, bytes8(word << 128));
-        word4 = getShareAddr(id, bytes8(word << 192));
+        (bytes8 word1_, bytes8 word2_, bytes8 word3_, bytes8 word4_) =
+            WordPackingLib.unpack(word);
+        word1 = getShareAddr(id, word1_);
+        word2 = getShareAddr(id, word2_);
+        word3 = getShareAddr(id, word3_);
+        word4 = getShareAddr(id, word4_);
     }
 
     function balances(
         address _spender,
         Balances[] calldata _identifiers
-    ) external view returns (uint256[] memory bals) {
+    ) external returns (uint256[] memory bals) {
         uint256 wordsLen;
         uint256 i;
         for (;i < _identifiers.length; ++i) {
