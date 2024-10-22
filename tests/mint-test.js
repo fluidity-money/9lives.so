@@ -65,7 +65,7 @@ describe("Mint test", async () => {
         assert.equal(response.status, 1)
     })
     it("should get the new trading contract address", async () => {
-        tradingAddress = await factoryContract.newTrading03B23698.staticCall(outcomeInput);
+        tradingAddress = await factoryContract.newTradingC11AAA3B.staticCall(outcomeInput);
         console.log("tradingAddr", tradingAddress)
         tradingContract = new Contract(tradingAddress, Trading.abi, signer);
         assert.ok(Boolean(tradingAddress))
