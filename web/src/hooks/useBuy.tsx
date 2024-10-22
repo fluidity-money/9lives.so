@@ -21,7 +21,7 @@ const useBuy = ({
   outcomeId,
   share,
 }: {
-  shareAddr: `0x${string}`
+  shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   account?: Account;
   outcomeId: `0x${string}`;
@@ -78,7 +78,7 @@ const useBuy = ({
       console.error("No account is connected");
       return;
     }
-    if(!share){
+    if (!share) {
       console.error("No share to invest");
       return;
     }
@@ -116,18 +116,14 @@ const useBuy = ({
       });
     }
   };
-  const { data: price, isLoading: priceLoading } = useReadContract({
-    contract: tradingContract,
-    method: "priceF3C364BC",
-    params: [outcomeId],
-  });
+
   const returnValue =
     return9lives && returnAmm
       ? BigInt(Math.max(Number(return9lives), Number(returnAmm)))
       : (return9lives ?? returnAmm);
   const estimatedReturn = returnValue
     ? formatUnits(returnValue, config.contracts.decimals.fusdc)
-    : '0';
+    : "0";
 
   useEffect(() => {
     async function getReturns(account: Account) {
@@ -149,7 +145,7 @@ const useBuy = ({
     }
   }, [account, checkAmmReturnTx, check9liveReturnTx]);
 
-  return { buy, price, priceLoading, estimatedReturn };
+  return { buy, estimatedReturn };
 };
 
 export default useBuy;

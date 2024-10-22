@@ -7,19 +7,19 @@ import Input from "../themed/input";
 import { Outcome, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
 import { useActiveAccount } from "thirdweb/react";
-import config from "@/config";
-import { formatUnits } from "ethers";
 
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
   selectedOutcome,
   setSelectedOutcome,
+  price,
 }: {
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   tradingAddr: `0x${string}`;
   initalData: Outcome[];
+  price: string;
 }) {
   const [share, setShare] = useState(0);
   const account = useActiveAccount();
@@ -29,7 +29,7 @@ export default function DetailCall2Action({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
 
-  const { buy, price, priceLoading, estimatedReturn } = useBuy({
+  const { buy, estimatedReturn } = useBuy({
     tradingAddr,
     shareAddr: outcome.share.address,
     account,
@@ -40,11 +40,7 @@ export default function DetailCall2Action({
   const orderSummary = [
     {
       title: "AVG Price",
-      value: priceLoading
-        ? "⏳"
-        : price
-          ? formatUnits(price.toString(), config.contracts.decimals.fusdc)
-          : "N/A",
+      value: price,
     },
     {
       title: "Shares",

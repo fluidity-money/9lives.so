@@ -1,16 +1,17 @@
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
-import Button from "../themed/button";
 import { combineClass } from "@/utils/combineClass";
 import { Outcome, SelectedOutcome } from "@/types";
 import React from "react";
 
 export default function DetailOutcomeItem({
   data,
+  price,
   selectedOutcome,
   setSelectedOutcome,
 }: {
   data: Outcome;
+  price: string;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
@@ -66,7 +67,7 @@ export default function DetailOutcomeItem({
         )}
       >
         <p className="min-h-[50px] font-chicago text-xs font-normal leading-[50px]">
-          $0.32/Share
+          {`$ ${price}/Share`}
         </p>
         {/* <Button
           title="Buy"

@@ -6,10 +6,12 @@ import React from "react";
 
 export default function DetailOutcomes({
   data,
+  sharePrices,
   selectedOutcome,
   setSelectedOutcome,
 }: {
   data: Outcome[];
+  sharePrices?: { id: string; price: string }[];
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
@@ -43,6 +45,10 @@ export default function DetailOutcomes({
           <DetailOutcomeItem
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
+            price={
+              sharePrices?.find((item) => item.id === outcome.identifier)
+                ?.price ?? "0"
+            }
             key={outcome.identifier}
             data={outcome}
           />
