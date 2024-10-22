@@ -5,12 +5,14 @@ import {
   getContract,
   prepareContractCall,
   sendTransaction,
+  simulateTransaction,
   toSerializableTransaction,
 } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { Signature } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useReadContract } from "thirdweb/react";
+import { useCallback, useEffect, useState } from "react";
 
 const useBuy = ({
   tradingAddr,
@@ -23,6 +25,8 @@ const useBuy = ({
   outcomeId: `0x${string}`;
   share: number;
 }) => {
+  const [return9lives, setReturn9lives] = useState();
+  const [returnAmm, setReturnAmm] = useState();
   const amount = toUnits(share.toString(), config.contracts.decimals.fusdc);
   const tradingContract = getContract({
     abi: tradingAbi,
@@ -35,12 +39,15 @@ const useBuy = ({
     method: "quote72E2ADE7",
     params: [tradingAddr, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
   });
-  const check9liveReturnTx = (receipent: string) =>
-    prepareContractCall({
-      contract: tradingContract,
-      method: "quote101CBE35",
-      params: [outcomeId, amount, receipent],
-    });
+  const check9liveReturnTx = useCallback(
+    (receipent: string) =>
+      prepareContractCall({
+        contract: tradingContract,
+        method: "quote101CBE35",
+        params: [outcomeId, amount, receipent],
+      }),
+    [tradingContract, outcomeId, amount],
+  );
   const mintWith9LivesTx = (signature: string, accountAddress: string) => {
     const { v, r, s } = Signature.from(signature);
     const deadline = Date.now();
@@ -64,13 +71,6 @@ const useBuy = ({
       method: "swap904369BE",
       params: [outcomeId, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
     });
-
-  const { data: price, isLoading: priceLoading } = useReadContract({
-    contract: tradingContract,
-    method: "priceF3C364BC",
-    params: [outcomeId],
-  });
-
   const buy = async () => {
     if (!account) {
       console.error("No account is connected");
@@ -114,7 +114,36 @@ const useBuy = ({
     }
   };
 
-  return { buy, price, priceLoading };
+  const { data: price, isLoading: priceLoading } = useReadContract({
+    contract: tradingContract,
+    method: "priceF3C364BC",
+    params: [outcomeId],
+  });
+
+  useEffect(() => {
+    async function getReturns(account: Account) {
+      const returnAmm = await simulateTransaction({
+        transaction: checkAmmReturnTx,
+        account,
+      });
+      const return9lives = await simulateTransaction({
+        transaction: check9liveReturnTx(account.address),
+        account,
+      });
+      setReturnAmm(returnAmm);
+      setReturn9lives(return9lives);
+    }
+    if (account) {
+      getReturns(account);
+    }
+  }, [account, checkAmmReturnTx, check9liveReturnTx]);
+
+  const estimatedReturn =
+    return9lives && returnAmm
+      ? Math.max(return9lives, returnAmm)
+      : return9lives || returnAmm;
+
+  return { buy, price, priceLoading, estimatedReturn };
 };
 
 export default useBuy;

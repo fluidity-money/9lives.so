@@ -29,7 +29,7 @@ export default function DetailCall2Action({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
 
-  const { buy, price, priceLoading } = useBuy({
+  const { buy, price, priceLoading, estimatedReturn } = useBuy({
     tradingAddr,
     account,
     outcomeId: outcome.identifier,
@@ -51,7 +51,7 @@ export default function DetailCall2Action({
     },
     {
       title: "Return",
-      value: 0.2,
+      value: estimatedReturn ?? "?...",
     },
   ];
 
