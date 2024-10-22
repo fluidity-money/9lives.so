@@ -93,28 +93,8 @@ describe("End to end tests", async () => {
     },
   );
 
-  const factoryFactory = new ContractFactory(
-    Factory.abi,
-    Factory.bytecode,
-    signer
-  );
-
-  const factoryProxyFactory  = new ContractFactory(
-    FactoryProxy.abi,
-    FactoryProxy.bytecode,
-    signer
-  );
-  const factoryProxy_ = await factoryProxyFactory.deploy(
-    defaultAccountAddr,
-    factory1Impl,
-    factory2Impl,
-    factoryFactory.interface.encodeFunctionData("ctor", [
-      defaultAccountAddr
-    ])
-  );
-  await factoryProxy_.waitForDeployment();
   const factoryProxy = new Contract(
-    await factoryProxy_.getAddress(),
+    factoryProxyAddr,
     Factory.abi,
     signer
   );

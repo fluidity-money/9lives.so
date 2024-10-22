@@ -21,7 +21,7 @@ make -B
 >&2 echo "SPN_TRADING_EXTRAS_IMPL_ADDR=$(./deploy-stylus.sh trading-extras.wasm)"
 >&2 echo "SPN_FACTORY_PROXY_ADDR=$(./deploy-factory-proxy.sh $SPN_PROXY_ADMIN | jq -r .deployedTo)"
 
-proxy_admin="$(cast admin --rpc-url "$SPN_SUPERPOSITION_URL" "$SPN_FACTORY_PROXY_ADDR")
+proxy_admin="$(cast admin --rpc-url "$SPN_SUPERPOSITION_URL" "$SPN_FACTORY_PROXY_ADDR")"
 
 lenses_addr="$(./deploy-lenses.sh | jq -r .deployedTo)"
 
