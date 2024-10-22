@@ -29,6 +29,10 @@ impl StorageFactory {
         Ok(ERC20_IMPL_ADDR)
     }
 
+    pub fn fusdc_addr(&self) -> Result<Address, Error> {
+        Ok(FUSDC_ADDR)
+    }
+
     pub fn get_owner(&self, trading_addr: Address) -> Result<Address, Error> {
         Ok(self.trading_contracts.getter(trading_addr).get())
     }

@@ -88,12 +88,10 @@ impl StorageFactory {
                 Decimal::ZERO,
             )?)?)?; */
 
-            let sqrt_price = U256::from(1);
-
             // Use Longtail to create a pool for this share for aftermarket trading.
             longtail_call::create_pool(
                 erc20_addr,
-                sqrt_price,
+                LONGTAIL_PRICE,
                 LONGTAIL_FEE,
                 LONGTAIL_TICK_SPACING,
                 LONGTAIL_MAX_LIQ_PER_TICK,

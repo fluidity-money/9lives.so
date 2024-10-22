@@ -13,7 +13,7 @@ pub fn transfer(addr: Address, recipient: Address, value: U256) -> Result<(), Er
     unpack_bool_safe(
         &RawCall::new()
             .call(addr, &pack_transfer(recipient, value))
-            .map_err(Error::ERC20Error)?,
+            .map_err(Error::ERC20ErrorTransfer)?,
     )
 }
 
@@ -26,7 +26,7 @@ pub fn transfer_from(
     unpack_bool_safe(
         &RawCall::new()
             .call(addr, &pack_transfer_from(spender, recipient, amount))
-            .map_err(Error::ERC20Error)?,
+            .map_err(Error::ERC20ErrorTransferFrom)?,
     )
 }
 
@@ -43,7 +43,7 @@ pub fn permit(
     unpack_bool_safe(
         &RawCall::new()
             .call(addr, &pack_permit(owner, spender, value, deadline, v, r, s))
-            .map_err(Error::ERC20Error)?,
+            .map_err(Error::ERC20ErrorPermit)?,
     )
 }
 
@@ -51,7 +51,7 @@ pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
     unpack_u256(
         &RawCall::new_static()
             .call(addr, &pack_balance_of(spender))
-            .map_err(Error::ERC20Error)?,
+            .map_err(Error::ERC20ErrorBalanceOf)?,
     )
     .ok_or(Error::ERC20UnableToUnpack)
 }

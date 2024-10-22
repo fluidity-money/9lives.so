@@ -155,7 +155,7 @@ describe("End to end tests", async () => {
 
   it("Should support minting shares", async () => {
     const balBefore = await share1.balanceOf(defaultAccountAddr);
-    await trading.mint.staticCall(outcome1, 10000000, defaultAccountAddr);
+    await trading.mint227CF432.staticCall(outcome1, 10000000, defaultAccountAddr);
     const balAfter = await share1.balanceOf(defaultAccountAddr);
   });
 });
