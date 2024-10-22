@@ -38,4 +38,4 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Trading mint impl        | 0x40C95243e895D8d374b8a10E79Ef7C166F1b8C91 |
 | Trading extras impl      | 0x8d26afe1c65A23bD2aa602e13e45A960c5147094 |
 | Factory proxy            | 0x582c92BcA6aDceAc72D8f78CFC158D90f7eF11f7 |
-| LensesV1                 | 0x70c5BAB2c56Ea35AC2edB3a41F209a11E3602c38 |
+| LensesV1                 | 0xc4Fe30A0490f26463f30EB88ea051D9c720Dde37 |
