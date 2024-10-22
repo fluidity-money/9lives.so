@@ -7,7 +7,7 @@ import {
   simulateTransaction,
 } from "thirdweb";
 import { formatUnits } from "ethers";
-import { DefinedInitialDataOptions, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export default function useSharePrices({
   tradingAddr,

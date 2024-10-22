@@ -7,16 +7,19 @@ import Input from "../themed/input";
 import { Outcome, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
 import { useActiveAccount } from "thirdweb/react";
+import useReturnValue from "@/hooks/useReturnValue";
 
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
+  campaignId,
   selectedOutcome,
   setSelectedOutcome,
   price,
 }: {
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
+  campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
   initalData: Outcome[];
   price: string;
@@ -29,12 +32,20 @@ export default function DetailCall2Action({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
 
-  const { buy, estimatedReturn } = useBuy({
+  const { buy } = useBuy({
     tradingAddr,
     shareAddr: outcome.share.address,
     account,
     outcomeId: outcome.identifier,
     share,
+  });
+  const { data: estimatedReturn } = useReturnValue({
+    account,
+    tradingAddr,
+    share,
+    shareAddr: outcome.share.address,
+    campaignId,
+    outcomeId: outcome.identifier,
   });
 
   const orderSummary = [
@@ -48,7 +59,7 @@ export default function DetailCall2Action({
     },
     {
       title: "Return",
-      value: estimatedReturn,
+      value: estimatedReturn ?? "0",
     },
   ];
 

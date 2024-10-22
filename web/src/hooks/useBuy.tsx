@@ -9,10 +9,9 @@ import {
   toSerializableTransaction,
 } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
-import { formatUnits, MaxUint256, Signature } from "ethers";
+import { MaxUint256, Signature } from "ethers";
 import { Account } from "thirdweb/wallets";
-import { useReadContract } from "thirdweb/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 
 const useBuy = ({
   shareAddr,
@@ -27,8 +26,6 @@ const useBuy = ({
   outcomeId: `0x${string}`;
   share: number;
 }) => {
-  const [return9lives, setReturn9lives] = useState<bigint>();
-  const [returnAmm, setReturnAmm] = useState<bigint>();
   const amount = toUnits(share.toString(), config.contracts.decimals.fusdc);
   const tradingContract = getContract({
     abi: tradingAbi,
@@ -117,35 +114,7 @@ const useBuy = ({
     }
   };
 
-  const returnValue =
-    return9lives && returnAmm
-      ? BigInt(Math.max(Number(return9lives), Number(returnAmm)))
-      : (return9lives ?? returnAmm);
-  const estimatedReturn = returnValue
-    ? formatUnits(returnValue, config.contracts.decimals.fusdc)
-    : "0";
-
-  useEffect(() => {
-    async function getReturns(account: Account) {
-      const [returnAmm, return9lives] = await Promise.all<bigint>([
-        simulateTransaction({
-          transaction: checkAmmReturnTx,
-          account,
-        }),
-        simulateTransaction({
-          transaction: check9liveReturnTx(account.address),
-          account,
-        }),
-      ]);
-      setReturnAmm(returnAmm);
-      setReturn9lives(return9lives);
-    }
-    if (account) {
-      getReturns(account);
-    }
-  }, [account, checkAmmReturnTx, check9liveReturnTx]);
-
-  return { buy, estimatedReturn };
+  return { buy };
 };
 
 export default useBuy;
