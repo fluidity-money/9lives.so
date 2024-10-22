@@ -1,15 +1,15 @@
 
 type Query {
   """
-  Campaign List
+  Campaign List that can be filtered according to categories
   """
-  campaigns: [Campaign!]!
+  campaigns(category:[String!]): [Campaign!]!
 
   """
-  Frontpage display. Should have a timeline as to when it should and should
-  not be displayed.
+  Frontpage display. Should have a timeline as to when it should (from) and should
+  not be displayed (until).
   """
-  frontpage: [Frontpage!]!
+  frontpage(category:[String!]): [Frontpage!]!
 }
 
 
@@ -38,9 +38,9 @@ type Frontpage {
   categories: [String!]!
 
   """
-  Campaigns displayed left from right in the grid format.
+  Campaign item which is assigned.
   """
-  campaigns: [Campaign!]!
+  content: Campaign!
 }
 
 """

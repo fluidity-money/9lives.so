@@ -92,6 +92,11 @@ func (r *frontpageResolver) Categories(ctx context.Context, obj *types.Frontpage
 	panic(fmt.Errorf("not implemented: Categories - categories"))
 }
 
+// Content is the resolver for the content field.
+func (r *frontpageResolver) Content(ctx context.Context, obj *types.Frontpage) (*types.Campaign, error) {
+	panic(fmt.Errorf("not implemented: Content - content"))
+}
+
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error) {
 	tradingAddr := crypto.GetTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingHash)
@@ -155,7 +160,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 }
 
 // Campaigns is the resolver for the campaigns field.
-func (r *queryResolver) Campaigns(ctx context.Context) ([]types.Campaign, error) {
+func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
 	if r.F.Is(features.FeatureGraphqlMockGraph) {
 		campaigns = MockGraphCampaigns()
@@ -172,7 +177,7 @@ func (r *queryResolver) Campaigns(ctx context.Context) ([]types.Campaign, error)
 }
 
 // Frontpage is the resolver for the frontpage field.
-func (r *queryResolver) Frontpage(ctx context.Context) ([]types.Frontpage, error) {
+func (r *queryResolver) Frontpage(ctx context.Context, category []string) ([]types.Frontpage, error) {
 	panic(fmt.Errorf("not implemented: Frontpage - frontpage"))
 }
 
