@@ -31,6 +31,7 @@ export default function DetailCall2Action({
 
   const { buy, price, priceLoading, estimatedReturn } = useBuy({
     tradingAddr,
+    shareAddr: outcome.share.address,
     account,
     outcomeId: outcome.identifier,
     share,
@@ -40,7 +41,7 @@ export default function DetailCall2Action({
     {
       title: "AVG Price",
       value: priceLoading
-        ? "?..."
+        ? "⏳"
         : price
           ? formatUnits(price.toString(), config.contracts.decimals.fusdc)
           : "N/A",
@@ -51,7 +52,7 @@ export default function DetailCall2Action({
     },
     {
       title: "Return",
-      value: estimatedReturn ?? "?...",
+      value: estimatedReturn,
     },
   ];
 

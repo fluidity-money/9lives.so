@@ -9,24 +9,26 @@ import {
   toSerializableTransaction,
 } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
-import { Signature } from "ethers";
+import { formatUnits, MaxUint256, Signature } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useReadContract } from "thirdweb/react";
 import { useCallback, useEffect, useState } from "react";
 
 const useBuy = ({
+  shareAddr,
   tradingAddr,
   account,
   outcomeId,
   share,
 }: {
+  shareAddr: `0x${string}`
   tradingAddr: `0x${string}`;
   account?: Account;
   outcomeId: `0x${string}`;
   share: number;
 }) => {
-  const [return9lives, setReturn9lives] = useState();
-  const [returnAmm, setReturnAmm] = useState();
+  const [return9lives, setReturn9lives] = useState<bigint>();
+  const [returnAmm, setReturnAmm] = useState<bigint>();
   const amount = toUnits(share.toString(), config.contracts.decimals.fusdc);
   const tradingContract = getContract({
     abi: tradingAbi,
@@ -35,9 +37,9 @@ const useBuy = ({
     chain: config.chains.superpositionTestnet,
   });
   const checkAmmReturnTx = prepareContractCall({
-    contract: config.contracts.amm,
-    method: "quote72E2ADE7",
-    params: [tradingAddr, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
+    contract: config.contracts.lens,
+    method: "getLongtailQuote",
+    params: [shareAddr, true, amount, MaxUint256],
   });
   const check9liveReturnTx = useCallback(
     (receipent: string) =>
@@ -76,18 +78,19 @@ const useBuy = ({
       console.error("No account is connected");
       return;
     }
-    const returnAmmP = sendTransaction({
-      transaction: checkAmmReturnTx,
-      account,
-    }).catch((e) => e);
-    const return9livesP = sendTransaction({
-      transaction: check9liveReturnTx(account.address),
-      account,
-    }).catch((e) => e);
-    // can be improve with batch txs (need to measure)
-    const [returnAmm, return9lives] = await Promise.all([
-      returnAmmP,
-      return9livesP,
+    if(!share){
+      console.error("No share to invest");
+      return;
+    }
+    const [returnAmm, return9lives] = await Promise.all<bigint>([
+      simulateTransaction({
+        transaction: checkAmmReturnTx,
+        account,
+      }),
+      simulateTransaction({
+        transaction: check9liveReturnTx(account.address),
+        account,
+      }),
     ]);
     const useAmm = returnAmm > return9lives;
     if (useAmm) {
@@ -113,23 +116,31 @@ const useBuy = ({
       });
     }
   };
-
   const { data: price, isLoading: priceLoading } = useReadContract({
     contract: tradingContract,
     method: "priceF3C364BC",
     params: [outcomeId],
   });
+  const returnValue =
+    return9lives && returnAmm
+      ? BigInt(Math.max(Number(return9lives), Number(returnAmm)))
+      : (return9lives ?? returnAmm);
+  const estimatedReturn = returnValue
+    ? formatUnits(returnValue, config.contracts.decimals.fusdc)
+    : '0';
 
   useEffect(() => {
     async function getReturns(account: Account) {
-      const returnAmm = await simulateTransaction({
-        transaction: checkAmmReturnTx,
-        account,
-      });
-      const return9lives = await simulateTransaction({
-        transaction: check9liveReturnTx(account.address),
-        account,
-      });
+      const [returnAmm, return9lives] = await Promise.all<bigint>([
+        simulateTransaction({
+          transaction: checkAmmReturnTx,
+          account,
+        }),
+        simulateTransaction({
+          transaction: check9liveReturnTx(account.address),
+          account,
+        }),
+      ]);
       setReturnAmm(returnAmm);
       setReturn9lives(return9lives);
     }
@@ -137,11 +148,6 @@ const useBuy = ({
       getReturns(account);
     }
   }, [account, checkAmmReturnTx, check9liveReturnTx]);
-
-  const estimatedReturn =
-    return9lives && returnAmm
-      ? Math.max(return9lives, returnAmm)
-      : return9lives || returnAmm;
 
   return { buy, price, priceLoading, estimatedReturn };
 };
