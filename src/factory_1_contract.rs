@@ -80,13 +80,15 @@ impl StorageFactory {
             // We use the sqrt price to seed Longtail with the initial trading amounts for this
             // so there's an immediate arbitrage opportunity for LPing.
 
-            let sqrt_price = maths::price_to_sqrt_price(fusdc_decimal_to_u256(maths::price(
+            /* let sqrt_price = maths::price_to_sqrt_price(fusdc_decimal_to_u256(maths::price(
                 m_1,
                 m_2,
                 Decimal::from(n_1),
                 Decimal::from(n_2),
                 Decimal::ZERO,
-            )?)?)?;
+            )?)?)?; */
+
+            let sqrt_price = U256::from(1);
 
             // Use Longtail to create a pool for this share for aftermarket trading.
             longtail_call::create_pool(

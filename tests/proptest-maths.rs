@@ -4,7 +4,7 @@ use proptest::prelude::*;
 
 use stylus_sdk::alloy_primitives::U256;
 
-use lib9lives::maths;
+use lib9lives::{decimal, maths};
 
 #[test]
 fn test_price_to_sqrt_ratio_native() {
@@ -16,9 +16,12 @@ fn test_price_to_sqrt_ratio_native() {
 
 proptest! {
     #[test]
-    fn test_price_to_sqrt_ratio(price in 2 ^ -256..2 ^ 256) {
-         prop_assume!(price > 0);
+    fn test_price_to_sqrt_ratio_and_convert(price in 0..2 ^ 256) {
          let price = U256::from(price);
-         maths::price_to_sqrt_price(price).unwrap();
+         dbg!(
+             price,
+             maths::price_to_sqrt_price(price).unwrap(),
+             decimal::fusdc_u256_to_decimal(maths::price_to_sqrt_price(price).unwrap()).unwrap()
+         );
     }
 }

@@ -29,4 +29,5 @@ make -B
 | Trading mint impl        | $SPN_TRADING_MINT_IMPL_ADDR |
 | Trading extras impl      | $SPN_TRADING_EXTRAS_IMPL_ADDR |
 | Factory proxy            |  |
+| LensesV1                 |  |
 EOF
