@@ -8,6 +8,7 @@ import {
 } from "thirdweb";
 import { formatUnits } from "ethers";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 export default function useSharePrices({
   tradingAddr,
@@ -16,25 +17,33 @@ export default function useSharePrices({
   tradingAddr: string;
   outcomeIds: `0x${string}`[];
 }) {
-  const tradingContract = getContract({
-    abi: tradingAbi,
-    address: tradingAddr,
-    client: thirdwebClient,
-    chain: config.chains.superpositionTestnet,
-  });
-
-  const promises = outcomeIds.map((outcomeId) =>
-    simulateTransaction({
-      transaction: prepareContractCall({
-        contract: tradingContract,
-        method: "priceF3C364BC",
-        params: [outcomeId],
+  const tradingContract = useMemo(
+    () =>
+      getContract({
+        abi: tradingAbi,
+        address: tradingAddr,
+        client: thirdwebClient,
+        chain: config.chains.superpositionTestnet,
       }),
-    }),
+    [tradingAddr],
+  );
+
+  const promises = useMemo(
+    () =>
+      outcomeIds.map((outcomeId) =>
+        simulateTransaction({
+          transaction: prepareContractCall({
+            contract: tradingContract,
+            method: "priceF3C364BC",
+            params: [outcomeId],
+          }),
+        }),
+      ),
+    [outcomeIds, tradingContract],
   );
 
   return useQuery<{ id: `0x${string}`; price: string }[]>({
-    queryKey: ["sharePrices", tradingAddr],
+    queryKey: ["sharePrices", tradingAddr, promises],
     queryFn: async () => {
       const res = await Promise.all<bigint>(promises);
       return res.map((price, idx) => ({
