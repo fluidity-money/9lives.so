@@ -38,15 +38,12 @@ const useBuy = ({
     method: "getLongtailQuote",
     params: [shareAddr, true, amount, MaxUint256],
   });
-  const check9liveReturnTx = useCallback(
-    (receipent: string) =>
-      prepareContractCall({
-        contract: tradingContract,
-        method: "quote101CBE35",
-        params: [outcomeId, amount, receipent],
-      }),
-    [tradingContract, outcomeId, amount],
-  );
+  const check9liveReturnTx = (receipent: string) =>
+    prepareContractCall({
+      contract: tradingContract,
+      method: "quote101CBE35",
+      params: [outcomeId, amount, receipent],
+    });
   const mintWith9LivesTx = (signature: string, accountAddress: string) => {
     const { v, r, s } = Signature.from(signature);
     const deadline = Date.now();
@@ -64,12 +61,11 @@ const useBuy = ({
       ],
     });
   };
-  const mintWithAMMTx = () =>
-    prepareContractCall({
-      contract: config.contracts.amm,
-      method: "swap904369BE",
-      params: [outcomeId, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
-    });
+  const mintWithAMMTx = prepareContractCall({
+    contract: config.contracts.amm,
+    method: "swap904369BE",
+    params: [outcomeId, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
+  });
   const buy = async () => {
     if (!account) {
       console.error("No account is connected");
@@ -92,7 +88,7 @@ const useBuy = ({
     const useAmm = returnAmm > return9lives;
     if (useAmm) {
       return sendTransaction({
-        transaction: mintWithAMMTx(),
+        transaction: mintWithAMMTx,
         account,
       });
     } else {
