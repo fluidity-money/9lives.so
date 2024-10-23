@@ -30,9 +30,9 @@ const lensAbi = [
         internalType: "struct LensesV1.Balances[]",
         components: [
           {
-            name: "campaign",
-            type: "bytes8",
-            internalType: "bytes8",
+            name: "tradingAddr",
+            type: "address",
+            internalType: "address",
           },
           {
             name: "word",
@@ -103,9 +103,9 @@ const lensAbi = [
     name: "getShareAddr",
     inputs: [
       {
-        name: "_campaignId",
-        type: "bytes8",
-        internalType: "bytes8",
+        name: "_tradingAddr",
+        type: "address",
+        internalType: "address",
       },
       {
         name: "_outcomeId",
@@ -115,7 +115,7 @@ const lensAbi = [
     ],
     outputs: [
       {
-        name: "",
+        name: "shareAddr",
         type: "address",
         internalType: "address",
       },

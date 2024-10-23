@@ -14,6 +14,19 @@ const factoryAbi = [
   },
   {
     type: "function",
+    name: "erc20Hash",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "erc20Impl",
     inputs: [],
     outputs: [
