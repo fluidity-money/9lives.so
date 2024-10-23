@@ -1,5 +1,5 @@
 import appConfig from "@/config"
-import { useConnect, useConnectModal } from "thirdweb/react"
+import { useConnectModal } from "thirdweb/react"
 
 export default function useConnectWallet() {
   const { connect, isConnecting } = useConnectModal()
@@ -10,6 +10,7 @@ export default function useConnectWallet() {
     accountAbstraction: appConfig.thirdweb.accountAbstraction,
     theme: appConfig.thirdweb.theme,
     showThirdwebBranding: appConfig.thirdweb.connectModal.showThirdwebBranding,
+    showAllWallets: false
   })
   return { connect: handleConnect, isConnecting }
 }
