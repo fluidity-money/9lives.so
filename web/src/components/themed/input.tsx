@@ -2,7 +2,7 @@ import {
   Input as BasicInput,
   InputProps as BasicInputProps,
 } from "@headlessui/react";
-import React from "react";
+import React, { forwardRef } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const input = cva(
@@ -22,13 +22,14 @@ const input = cva(
 
 export interface InputProps
   extends Omit<BasicInputProps, "size">,
-    VariantProps<typeof input> {}
+  VariantProps<typeof input> { }
 
-export default function Input({ className, intent, ...props }: InputProps) {
+export default forwardRef<HTMLInputElement, InputProps>(function Input({ className, intent, ...props }, ref) {
   return (
     <BasicInput
+      ref={ref}
       {...props}
       className={input({ intent, className })}
     ></BasicInput>
   );
-}
+})
