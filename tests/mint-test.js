@@ -2,10 +2,9 @@ const { describe, it } = require("node:test");
 
 const {
     Contract,
-    ContractFactory,
     JsonRpcProvider,
     MaxUint256,
-    Provider,
+    zeroPadValue,
     Wallet } = require("ethers");
 
 const { execSync } = require("node:child_process");
@@ -13,6 +12,7 @@ const { execSync } = require("node:child_process");
 const TestERC20 = require("../out/TestERC20.sol/TestERC20.json");
 const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
 const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
+const Lens = require("../out/LensesV1.sol/LensesV1.json");
 const assert = require("node:assert");
 
 function generateId({ name, desc }) {
@@ -36,9 +36,11 @@ describe("Mint test", async () => {
     const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
     const DEPLOY_KEY = process.env.SPN_SUPERPOSITION_KEY;
     const FACTORY = process.env.SPN_FACTORY_ADDR
+    const LENS_ADDR = process.env.SPN_LENS_ADDR
     if (!RPC_URL) throw new Error("SPN_SUPERPOSITION_URL unset");
     if (!DEPLOY_KEY) throw new Error("SPN_SUPERPOSITION_KEY unset");
     if (!FACTORY) throw new Error("SPN_FACTORY_ADDR unset");
+    if (!LENS_ADDR) throw new Error("SPN_LENS_ADDR unset");
 
     const provider = new JsonRpcProvider(RPC_URL);
     const signer = new Wallet(DEPLOY_KEY, provider);
@@ -48,6 +50,7 @@ describe("Mint test", async () => {
     const onefUSD = 1000000
     const factoryContract = new Contract(FACTORY, Factory.abi, signer);
     const fusdc = new Contract(fusdcAddress, TestERC20.abi, signer);
+    const lensContract = new Contract(LENS_ADDR, Lens.abi, signer);
 
     const outcomeIds = getIds(outcomeDetails)
     const outcomeInput = outcomeIds.map((id) => ({ identifier: id, amount: onefUSD })) // seed >= 1e6
@@ -86,6 +89,17 @@ describe("Mint test", async () => {
     })
     it("should mint a share", async () => {
         const response = await (await tradingContract.mint227CF432(outcomeIds[0], onefUSD, receiver)).wait();
+        assert.ok(response.status)
+    })
+    it("should get the minted position", async () => {
+        const mintedPositionId = outcomeIds[0];
+        // Convert the 8-byte data to bytes32 by padding it
+        const word1 = zeroPadValue(mintedPositionId, 32);
+        const tupleParam = [{
+            tradingAddr: tradingAddress,
+            word: [word1]
+        }]
+        const response = await (await lensContract.balances(signer.address, tupleParam)).wait();
         assert.ok(response.status)
     })
 })
