@@ -2,6 +2,7 @@
 
 import config from "@/config";
 import { useQuery } from "@tanstack/react-query";
+import { zeroPadValue } from "ethers";
 import {
   prepareContractCall,
   PreparedTransaction,
@@ -11,11 +12,11 @@ import { useActiveAccount } from "thirdweb/react";
 import { Account } from "thirdweb/wallets";
 
 interface PositionsProps {
-  campaignId: `0x${string}`;
+  tradingAddr: `0x${string}`;
   outcomeIds: `0x${string}`[];
 }
 async function fetchPositions(
-  campaignId: PositionsProps["campaignId"],
+  tradingAddr: PositionsProps["tradingAddr"],
   outcomeIds: PositionsProps["outcomeIds"],
   account?: Account,
 ) {
@@ -28,7 +29,12 @@ async function fetchPositions(
         method: "balances",
         params: [
           account.address,
-          [{ campaign: campaignId, word: [outcomeId] }],
+          [
+            {
+              tradingAddr,
+              word: [zeroPadValue(outcomeId, 32) as `0x${string}`],
+            },
+          ],
         ],
       }) as PreparedTransaction,
     }),
@@ -47,11 +53,11 @@ function PositionRow({ data }: { data: any }) {
     </tr>
   );
 }
-export default function Positions({ campaignId, outcomeIds }: PositionsProps) {
+export default function Positions({ tradingAddr, outcomeIds }: PositionsProps) {
   const account = useActiveAccount();
   const { isLoading, isError, data } = useQuery({
-    queryKey: ["positions", campaignId, outcomeIds, account],
-    queryFn: () => fetchPositions(campaignId, outcomeIds, account),
+    queryKey: ["positions", tradingAddr, outcomeIds, account],
+    queryFn: () => fetchPositions(tradingAddr, outcomeIds, account),
   });
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";

@@ -49,7 +49,7 @@ export default function DetailWrapper({
           }
         />
         <Positions
-          campaignId={initialData.identifier}
+          tradingAddr={initialData.poolAddress}
           outcomeIds={outcomeIds}
         />
       </div>
