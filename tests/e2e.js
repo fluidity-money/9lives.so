@@ -16,6 +16,7 @@ const MockLongtail = require("../out/MockLongtail.sol/MockLongtail.json");
 const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
 const FactoryProxy = require("../out/FactoryProxy.sol/FactoryProxy.json");
 const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
+const LensesV1 = require("../out/LensesV1.sol/LensesV1.json");
 
 describe("End to end tests", async () => {
   const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
@@ -88,8 +89,9 @@ describe("End to end tests", async () => {
         "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
         "SPN_LONGTAIL_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
+        "SPN_PROXY_ADMIN": defaultAccountAddr
       },
-      // stdio: ["ignore", "ignore", "ignore"]
+      stdio: ["ignore", "ignore", "ignore"]
     },
   );
 
@@ -104,7 +106,15 @@ describe("End to end tests", async () => {
     (await factoryProxy.erc20Impl()).toLowerCase()
   );
 
-  console.log(`fusdc addresss: ${fusdcAddress}`);
+  // Deploy Lenses for testing the balances function.
+
+  const lensesFactory = new ContractFactory(
+    LensesV1.abi,
+    LensesV1.bytecode,
+    signer
+  );
+  const lenses = await lensesFactory.deploy(longtailAddress, factoryProxyAddr);
+  await lenses.waitForDeployment();
 
   const outcome1 = "0x1e9e51837f3ea6ea";
   const outcome2 = "0x1e9e51837f3ea6eb";
@@ -112,17 +122,19 @@ describe("End to end tests", async () => {
   const outcomes = [
     {
       identifier: outcome1,
-      amount: 1000000
+      amount: 1e6
     },
     {
       identifier: outcome2,
-      amount: 1000000
+      amount: 1e6
     },
   ];
 
-  await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
+  const outcomeBals = Buffer.alloc(32);
+  Buffer.from(outcome1.substr(-16), "hex").copy(outcomeBals, 0);
+  Buffer.from(outcome2.substr(-16), "hex").copy(outcomeBals, 8);
 
-  console.log("factoryProxyAddr:", factoryProxyAddr);
+  await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
 
   const tradingAddr = await factoryProxy.newTradingC11AAA3B.staticCall(outcomes);
   const tx = await factoryProxy.newTradingC11AAA3B(outcomes);
@@ -135,9 +147,15 @@ describe("End to end tests", async () => {
 
   await (await fusdc.approve(tradingAddr, MaxUint256)).wait();
 
-  it("Should support minting shares", async () => {
+  it("Should support minting shares, then activating payoff, and receiving all of the pool.", async () => {
     const balBefore = await share1.balanceOf(defaultAccountAddr);
-    await trading.mint227CF432.staticCall(outcome1, 10000000, defaultAccountAddr);
+    await trading.mint227CF432(outcome1, 6 * 1e6, defaultAccountAddr);
     const balAfter = await share1.balanceOf(defaultAccountAddr);
+    assert.equal(balAfter, "4476926");
+    const bals =
+      await lenses.balances(tradingAddr, [outcomeBals], defaultAccountAddr);
+    assert.equal(bals[0], "4476926");
+    await trading.decide(outcome1);
+    await trading.payoff(outcome1, defaultAccountAddr);
   });
 });

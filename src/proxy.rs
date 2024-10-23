@@ -84,7 +84,7 @@ fn test_get_trading_addr() {
 
 #[test]
 #[ignore]
-fn test_get_share_addrs() {
+fn print_get_share_addrs() {
     use stylus_sdk::alloy_primitives::address;
     let factory = address!("2e234DAe75C793f67A35089C9d99245E1C58470b");
     let trading = Address::from([2_u8; 20]);

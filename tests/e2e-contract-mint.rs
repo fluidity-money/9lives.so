@@ -1,26 +1,30 @@
-use alloy_primitives::{fixed_bytes, Address, U256};
+use stylus_sdk::{msg, alloy_primitives::{fixed_bytes, Address, U256}};
 use lib9lives::host;
-use stylus_sdk::msg;
 
 #[test]
-fn test_mint() {
+fn test_e2e_mint() {
     use lib9lives::trading_storage::StorageTrading;
     host::with_storage::<_, StorageTrading, _>(|c| {
+        let outcome_1 = fixed_bytes!("0541d76af67ad076");
         c.ctor(
-            Address::from([1_u8; 20]),
+            msg::sender(),
             vec![
-                (fixed_bytes!("0541d76af67ad076"), U256::from(1e6)),
+                (outcome_1, U256::from(1e6)),
                 (fixed_bytes!("3be0d8814450a582"), U256::from(1e6)),
             ],
         )
         .unwrap();
 
-        dbg!(c
-            .mint_227_C_F_432(
-                fixed_bytes!("0541d76af67ad076"),
-                U256::from(1e6),
+        assert_eq!(
+            c.mint_227_C_F_432(
+                outcome_1,
+                U256::from(1e6) * U256::from(6),
                 msg::sender(),
             )
-            .unwrap());
+            .unwrap(),
+            U256::from(4476926)
+        );
+
+        c.decide(outcome_1).unwrap();
     })
 }

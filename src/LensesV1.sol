@@ -5,8 +5,6 @@ import "./INineLivesFactory.sol";
 
 import "./WordPackingLib.sol";
 
-import "forge-std/console.sol";
-
 interface ILongtail {
     function quote72E2ADE7(address, bool, int256, uint256) external;
 }
@@ -20,11 +18,6 @@ contract LensesV1 {
 
     ILongtail immutable public longtail;
     INineLivesFactory immutable public factory;
-
-    struct Balances {
-        address tradingAddr;
-        bytes32[] word;
-    }
 
     bytes32 private TRADING_HASH;
     bytes32 private ERC20_HASH;
@@ -70,47 +63,32 @@ contract LensesV1 {
         )))));
     }
 
-    function unpackBalancesWordAddrs(
-        address _tradingAddr,
-        bytes32 word
-    ) internal view returns (
-        address word1,
-        address word2,
-        address word3,
-        address word4
-    ) {
-        (bytes8 word1_, bytes8 word2_, bytes8 word3_, bytes8 word4_) =
-            WordPackingLib.unpack(word);
-        word1 = getShareAddr(_tradingAddr, word1_);
-        word2 = getShareAddr(_tradingAddr, word2_);
-        word3 = getShareAddr(_tradingAddr, word3_);
-        word4 = getShareAddr(_tradingAddr, word4_);
-    }
-
     function balances(
-        address _spender,
-        Balances[] calldata _identifiers
+        address _tradingAddr,
+        bytes32[] calldata _words,
+        address _spender
     ) external view returns (uint256[] memory bals) {
-        uint256 wordsLen;
-        uint256 i;
-        for (;i < _identifiers.length; ++i) {
-            wordsLen += _identifiers[i].word.length * 4;
-        }
-        bals = new uint256[](wordsLen);
-        i = 0;
-        for (uint256 idI = 0; idI < _identifiers.length; ++idI) {
-            for (uint256 wordI = 0; wordI < _identifiers[idI].word.length; wordI++) {
-                address tradingAddr = _identifiers[idI].tradingAddr;
-                bytes32 word = _identifiers[idI].word[wordI];
-                (address word1, address word2, address word3, address word4) =
-                    unpackBalancesWordAddrs(tradingAddr, word);
-                if (word1 != address(0)) bals[i] = IERC20(word1).balanceOf(_spender);
-                if (word2 != address(0)) bals[i+1] = IERC20(word2).balanceOf(_spender);
-                if (word3 != address(0)) bals[i+2] = IERC20(word3).balanceOf(_spender);
-                if (word4 != address(0)) bals[i+3] = IERC20(word4).balanceOf(_spender);
-                i += 4;
+        bals = new uint256[](_words.length * 4); // TODO: trim suffix of return array
+        uint x = 0;
+        for (uint256 i = 0; i < _words.length; ++i) {
+            (bytes8 word1, bytes8 word2, bytes8 word3, bytes8 word4) =
+                WordPackingLib.unpack(_words[i]);
+            if (word1 != bytes8(0)) {
+                bals[x] = IERC20(getShareAddr(_tradingAddr, word1)).balanceOf(_spender);
+                ++x;
+            }
+            if (word2 != bytes8(0)) {
+                bals[x] = IERC20(getShareAddr(_tradingAddr, word2)).balanceOf(_spender);
+                ++x;
+            }
+            if (word3 != bytes8(0)) {
+                bals[x] = IERC20(getShareAddr(_tradingAddr, word3)).balanceOf(_spender);
+                ++x;
+            }
+            if (word4 != bytes8(0)) {
+                bals[x] = IERC20(getShareAddr(_tradingAddr, word4)).balanceOf(_spender);
+                ++x;
             }
         }
-        return bals;
     }
 }

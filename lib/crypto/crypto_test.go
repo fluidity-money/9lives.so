@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var TestContractBytecodeRealWorldHashed, _ = hex.DecodeString("17ed8b2ca822b3813299535097b75b015e0de326f17e2b4a5eac9c629959756c")
-
 var testGetTradingAddress = []struct {
 	outcomes             []Outcome
 	expectedIds          []string
@@ -28,7 +26,7 @@ var testGetTradingAddress = []struct {
 			"1665bc497c0c2f5d",
 		},
 		"0x3A238B6b12F5da5ED7BAA7Fbb871fc5455AA2fc0",
-		TestContractBytecodeRealWorldHashed,
+		mustDecode("17ed8b2ca822b3813299535097b75b015e0de326f17e2b4a5eac9c629959756c"),
 		"0x3D9735deAd46d19f6BED4e47B3205647Ebd22Cb5",
 	},
 }
@@ -58,4 +56,12 @@ func TestGetTradingAddr(t *testing.T) {
 			assert.Equalf(t, expectedAddr, tradingAddr, "attempt %v not equal", i)
 		})
 	}
+}
+
+func mustDecode(x string) []byte {
+	h, err := hex.DecodeString(x)
+	if err != nil {
+		panic(err)
+	}
+	return h
 }
