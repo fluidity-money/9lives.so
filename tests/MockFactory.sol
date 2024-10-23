@@ -21,4 +21,8 @@ contract MockFactory is INineLivesFactory {
     function erc20Impl() external pure returns (address) {
         return address(4);
     }
+
+    function erc20Hash() external pure returns (bytes32) {
+        return 0x1343ea59060a485e977f5a1e0f03a141751673bb0ef6554d0738326a91838787;
+    }
 }

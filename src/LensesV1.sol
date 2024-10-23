@@ -22,13 +22,18 @@ contract LensesV1 {
     INineLivesFactory immutable public factory;
 
     struct Balances {
-        bytes8 campaign;
+        address tradingAddr;
         bytes32[] word;
     }
+
+    bytes32 private TRADING_HASH;
+    bytes32 private ERC20_HASH;
 
     constructor(ILongtail _longtail, INineLivesFactory _factory) {
         longtail = _longtail;
         factory = _factory;
+        TRADING_HASH = factory.tradingHash();
+        ERC20_HASH = factory.erc20Hash();
     }
 
     function getLongtailQuote(
@@ -50,24 +55,25 @@ contract LensesV1 {
         }
     }
 
-    function createShareId(bytes8 _x, bytes8 _y) internal pure returns (bytes32) {
-        if (_x > _y) {
-            _x = _y;
-            _y = _x;
-        }
-        return keccak256(abi.encodePacked(_x, _y));
-    }
-
-    function getShareAddr(bytes8 _campaignId, bytes8 _outcomeId) public view returns (address) {
-        return address(uint160(uint256(keccak256(abi.encodePacked(
+    function getShareAddr(
+        address _tradingAddr,
+        bytes8 _outcomeId
+    ) public view returns (address shareAddr) {
+        shareAddr = address(uint160(uint256(keccak256(abi.encodePacked(
             hex"ff",
             factory,
-            createShareId(_campaignId, _outcomeId),
-            factory.tradingHash()
+            keccak256(abi.encodePacked(
+                _outcomeId,
+                _tradingAddr
+            )),
+            ERC20_HASH
         )))));
     }
 
-    function unpackBalancesWordAddrs(bytes8 id, bytes32 word) internal view returns (
+    function unpackBalancesWordAddrs(
+        address _tradingAddr,
+        bytes32 word
+    ) internal view returns (
         address word1,
         address word2,
         address word3,
@@ -75,10 +81,10 @@ contract LensesV1 {
     ) {
         (bytes8 word1_, bytes8 word2_, bytes8 word3_, bytes8 word4_) =
             WordPackingLib.unpack(word);
-        word1 = getShareAddr(id, word1_);
-        word2 = getShareAddr(id, word2_);
-        word3 = getShareAddr(id, word3_);
-        word4 = getShareAddr(id, word4_);
+        word1 = getShareAddr(_tradingAddr, word1_);
+        word2 = getShareAddr(_tradingAddr, word2_);
+        word3 = getShareAddr(_tradingAddr, word3_);
+        word4 = getShareAddr(_tradingAddr, word4_);
     }
 
     function balances(
@@ -94,10 +100,10 @@ contract LensesV1 {
         i = 0;
         for (uint256 idI = 0; idI < _identifiers.length; ++idI) {
             for (uint256 wordI = 0; wordI < _identifiers[idI].word.length; wordI++) {
-                bytes8 campaignId = _identifiers[idI].campaign;
+                address tradingAddr = _identifiers[idI].tradingAddr;
                 bytes32 word = _identifiers[idI].word[wordI];
                 (address word1, address word2, address word3, address word4) =
-                    unpackBalancesWordAddrs(campaignId, word);
+                    unpackBalancesWordAddrs(tradingAddr, word);
                 if (word1 != address(0)) bals[i] = IERC20(word1).balanceOf(_spender);
                 if (word2 != address(0)) bals[i+1] = IERC20(word2).balanceOf(_spender);
                 if (word3 != address(0)) bals[i+2] = IERC20(word3).balanceOf(_spender);

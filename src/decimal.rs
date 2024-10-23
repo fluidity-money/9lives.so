@@ -11,19 +11,21 @@ use std::{cell::OnceCell, ops::Deref};
 
 use crate::{assert_or, error::Error};
 
+/// Max decimal straight from rust_decimal documentation.
+pub const MAX_DECIMAL: u128 = 79_228_162_514_264_337_593_543_950_335;
+
 fn u256_to_decimal(n: U256, decimals: u8) -> Result<Decimal, Error> {
     if n.is_zero() {
         return Ok(Decimal::ZERO);
     }
-
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
-
     let n: u128 = u128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
     let rem: u128 = u128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
-
+    if n > MAX_DECIMAL {
+        return Err(Error::U256TooLarge)
+    }
     let n = Decimal::from(n);
     let rem = Decimal::from(rem);
-
     Ok(n + rem
         .checked_div(Decimal::from(10).powi(decimals as i64))
         .ok_or(Error::CheckedDivOverflow)?)
@@ -196,7 +198,7 @@ mod proptesting {
     proptest! {
         #[test]
         fn test_decoding_to_and_from(
-            x in 1..i128::MAX
+            x in 1..i64::MAX
         ) {
             let d = 6;
             let n = U256::from(x);

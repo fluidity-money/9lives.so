@@ -14,9 +14,9 @@ pub use crate::host_proxy::*;
 // Sort and concatenate the seeds given, ABI format them, then hash them,
 // using an online keccak256 calculation with the native operation.
 pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
-    // Sort the seeds in a new vector.
+    // Sort the seeds in a new vector by length first, then by default.
     let mut seeds = Vec::from(seeds);
-    seeds.sort();
+    seeds.sort_by(|a, b| a.len().cmp(&b.len()).then(a.cmp(b)));
     crypto::keccak(seeds.concat())
 }
 
@@ -68,16 +68,32 @@ fn test_create_identifier() {
 #[test]
 fn test_get_trading_addr() {
     use stylus_sdk::alloy_primitives::address;
-    let factory = address!("7FA9385bE102ac3EAc297483Dd6233D62b3e1496");
+    let factory = address!("3A238B6b12F5da5ED7BAA7Fbb871fc5455AA2fc0");
     let outcomes = [
-        //bytes8(keccak256(abi.encodePacked("Koko", "Cat", uint8(0))))
-        [0x8f, 0x88, 0x59, 0x92, 0xca, 0xfd, 0x4d, 0x5c],
-        //bytes8(keccak256(abi.encodePacked("Leo", "Dog", uint8(0))))
-        [0x3b, 0x79, 0x56, 0x5a, 0x91, 0x5e, 0xb9, 0x50],
+        //bytes8(keccak256(abi.encodePacked("Kamala", "Democrat", uint8(592))))
+        const_hex::decode_to_array("11968c4bbb26f625").unwrap(),
+        //bytes8(keccak256(abi.encodePacked("Trump", "Republican", uint8(495))))
+        const_hex::decode_to_array("1665bc497c0c2f5d").unwrap(),
     ]
     .map(FixedBytes::<8>::from);
     assert_eq!(
         get_trading_addr(factory, &outcomes),
-        address!("da7eac0f112e8ed91c951972c60f8147fe51bbd4")
+        address!("3D9735deAd46d19f6BED4e47B3205647Ebd22Cb5")
     )
+}
+
+#[test]
+#[ignore]
+fn test_get_share_addrs() {
+    use stylus_sdk::alloy_primitives::address;
+    let factory = address!("2e234DAe75C793f67A35089C9d99245E1C58470b");
+    let trading = Address::from([2_u8; 20]);
+    dbg!(
+        factory,
+        trading,
+        get_share_addr(factory, trading, FixedBytes::<8>::from([1_u8; 8])),
+        get_share_addr(factory, trading, FixedBytes::<8>::from([2_u8; 8])),
+        get_share_addr(factory, trading, FixedBytes::<8>::from([3_u8; 8])),
+        get_share_addr(factory, trading, FixedBytes::<8>::from([4_u8; 8])),
+    );
 }

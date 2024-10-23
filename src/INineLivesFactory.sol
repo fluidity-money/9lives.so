@@ -33,4 +33,9 @@ interface INineLivesFactory {
      * @notice return the keccak256 hash of the trading contract
      */
     function tradingHash() external view returns (bytes32);
+
+    /**
+     * @notice return the keccak256 hash of the ERC20
+     */
+    function erc20Hash() external view returns (bytes32);
 }

@@ -41,8 +41,11 @@ func GetOutcomeIds(outcomes []Outcome) (ids [][]byte, err error) {
 			return nil, fmt.Errorf("get outcome id: %v", err)
 		}
 	}
+	// Sort the ids given by first the length, then by a ascending sort.
 	sort.Slice(ids, func(i, j int) bool {
-		//i < j
+		if len(ids[i]) != len(ids[j]) {
+			return len(ids[i]) < len(ids[j])
+		}
 		return bytes.Compare(ids[i], ids[j]) <= 0
 	})
 	return
