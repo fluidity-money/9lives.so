@@ -20,26 +20,19 @@ const lensAbi = [
     name: "balances",
     inputs: [
       {
-        name: "_spender",
+        name: "_tradingAddr",
         type: "address",
         internalType: "address",
       },
       {
-        name: "_identifiers",
-        type: "tuple[]",
-        internalType: "struct LensesV1.Balances[]",
-        components: [
-          {
-            name: "tradingAddr",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "word",
-            type: "bytes32[]",
-            internalType: "bytes32[]",
-          },
-        ],
+        name: "_words",
+        type: "bytes32[]",
+        internalType: "bytes32[]",
+      },
+      {
+        name: "_spender",
+        type: "address",
+        internalType: "address",
       },
     ],
     outputs: [
