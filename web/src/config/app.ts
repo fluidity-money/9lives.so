@@ -1,12 +1,5 @@
 import z from "zod";
-import { createThirdwebClient } from "thirdweb";
-import clientEnv from "./clientEnv";
 
-const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
-
-export const thirdwebClient = createThirdwebClient({
-  clientId: thirdwebClientId,
-});
 const metadata = {
   title: "9Lives.so",
   description: "The most capital efficient prediction market",
@@ -32,13 +25,6 @@ const appSchema = z.object({
     metadataBase: z.instanceof(URL),
     keywords: z.array(z.string()),
   }),
-  thirdwebMetadata: z.object({
-    name: z.string(),
-    description: z.string(),
-    url: z.string().url(),
-    logoUrl: z.string().url(),
-  }),
-  thirdwebSponsorGas: z.boolean(),
   cacheRevalidation: z.object({
     homePage: z.number(),
     detailPages: z.number(),
@@ -47,13 +33,6 @@ const appSchema = z.object({
 
 const appVars = appSchema.safeParse({
   metadata,
-  thirdwebMetadata: {
-    name: metadata.title,
-    description: metadata.description,
-    url: metadata.metadataBase.href,
-    logoUrl: metadata.metadataBase.origin + "/images/logo.svg",
-  },
-  thirdwebSponsorGas: true,
   cacheRevalidation: {
     homePage: 1000, // 1 day
     detailPages: 1000, // 5 minutes

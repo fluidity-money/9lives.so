@@ -8,6 +8,10 @@ import { Outcome, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
 import { useActiveAccount } from "thirdweb/react";
 import useReturnValue from "@/hooks/useReturnValue";
+import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod'
+import useConnectWallet from "@/hooks/useConnectWallet";
 
 export default function DetailCall2Action({
   tradingAddr,
@@ -24,20 +28,28 @@ export default function DetailCall2Action({
   initalData: Outcome[];
   price: string;
 }) {
-  const [share, setShare] = useState(0);
+  const [share, setShare] = useState<number>(0);
+  const { connect, isConnecting } = useConnectWallet()
   const account = useActiveAccount();
   const outcome = selectedOutcome
     ? initalData.find((o) => o.identifier === selectedOutcome.id)!
     : initalData[0];
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
-
+  const formSchema = z.object({
+    share: z.number().min(1, { message: "Invalid share quantity" }),
+  });
+  type FormData = z.infer<typeof formSchema>
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      share: 0
+    }
+  });
   const { buy } = useBuy({
     tradingAddr,
     shareAddr: outcome.share.address,
-    account,
     outcomeId: outcome.identifier,
-    share,
   });
   const { data: estimatedReturn } = useReturnValue({
     account,
@@ -47,7 +59,6 @@ export default function DetailCall2Action({
     campaignId,
     outcomeId: outcome.identifier,
   });
-
   const orderSummary = [
     {
       title: "AVG Price",
@@ -62,11 +73,10 @@ export default function DetailCall2Action({
       value: estimatedReturn ?? "0",
     },
   ];
-
-  async function handleBuy() {
+  async function handleBuy({ share }: FormData) {
     try {
       setIsMinting(true);
-      const response = await buy();
+      const response = await buy(account!, share);
       console.log("response", response);
     } catch (error) {
       console.error(error instanceof Error ? error.message : error);
@@ -74,7 +84,7 @@ export default function DetailCall2Action({
       setIsMinting(false);
     }
   }
-
+  const onSubmit = () => !account ? connect() : handleSubmit(handleBuy)();
   return (
     <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
       <div className="flex items-center gap-4">
@@ -100,7 +110,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               selectedOutcome?.state === "buy" &&
-                "bg-green-500 text-white hover:bg-green-500",
+              "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}
             onClick={() =>
@@ -113,7 +123,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               selectedOutcome?.state === "sell" &&
-                "bg-red-500 text-white hover:bg-red-500",
+              "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
             onClick={() =>
@@ -128,11 +138,20 @@ export default function DetailCall2Action({
         </span>
         <Input
           type="number"
-          onChange={(e) => setShare(Number(e.target.value))}
           min={0}
-          className={"mt-2 flex-1 text-center"}
           value={share}
+          {...register("share")}
+          placeholder="0"
+          onChange={(e) => {
+            const value = Number(e.target.value)
+            setShare(value)
+            setValue("share", value);
+          }}
+          className={combineClass("mt-2 flex-1 text-center",
+            errors.share && "border-red-500 border-2"
+          )}
         />
+        {errors.share && <span className="text-xs text-red-500">{errors.share.message}</span>}
       </div>
       <div className="flex flex-col">
         <span className="font-chicago text-xs font-normal text-9black">
@@ -152,12 +171,12 @@ export default function DetailCall2Action({
         </ul>
       </div>
       <Button
-        disabled={isMinting}
+        disabled={isMinting || isConnecting}
         title={isMinting ? "Loading.." : ctaTitle}
         className={"uppercase"}
         size={"xlarge"}
         intent={"cta"}
-        onClick={handleBuy}
+        onClick={onSubmit}
       />
     </div>
   );

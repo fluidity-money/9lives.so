@@ -1,5 +1,4 @@
 import config from "@/config";
-import { thirdwebClient } from "@/config/app";
 import tradingAbi from "@/config/abi/trading";
 import {
   getContract,
@@ -22,7 +21,7 @@ export default function useSharePrices({
       getContract({
         abi: tradingAbi,
         address: tradingAddr,
-        client: thirdwebClient,
+        client: config.thirdweb.client,
         chain: config.chains.superpositionTestnet,
       }),
     [tradingAddr],

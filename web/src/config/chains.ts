@@ -2,7 +2,7 @@ import { defineChain } from "thirdweb/chains";
 import z from "zod";
 import "thirdweb/utils";
 
-const networkSchema = z.object({
+export const networkSchema = z.object({
   id: z.number(),
   name: z.string(),
   nativeCurrency: z.object({

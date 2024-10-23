@@ -1,11 +1,11 @@
 import z from "zod";
 import { getContract } from "thirdweb";
 import { superpositionTestnet } from "@/config/chains";
+import thirdweb from "@/config/thirdweb";
 import factoryAbi from "./abi/factory";
 import ERC20Abi from "./abi/erc20";
 import ammAbi from "./abi/amm";
 import clientEnv from "./clientEnv";
-import { thirdwebClient } from "./app";
 import lensAbi from "./abi/lens";
 
 const contractSchema = z.object({
@@ -31,25 +31,25 @@ const fusdc = getContract({
   abi: ERC20Abi,
   address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
   chain: superpositionTestnet,
-  client: thirdwebClient,
+  client: thirdweb.client,
 });
 const factory = getContract({
   abi: factoryAbi,
   address: clientEnv.NEXT_PUBLIC_FACTORY_ADDR,
   chain: superpositionTestnet,
-  client: thirdwebClient,
+  client: thirdweb.client,
 });
 const amm = getContract({
   abi: ammAbi,
   address: clientEnv.NEXT_PUBLIC_AMM_ADDR,
   chain: superpositionTestnet,
-  client: thirdwebClient,
+  client: thirdweb.client,
 });
 const lens = getContract({
   abi: lensAbi,
   address: clientEnv.NEXT_PUBLIC_LENS_ADDR,
   chain: superpositionTestnet,
-  client: thirdwebClient,
+  client: thirdweb.client,
 });
 
 const contractValidation = allContractSchema.safeParse({
