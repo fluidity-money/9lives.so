@@ -16,14 +16,12 @@ import useConnectWallet from "@/hooks/useConnectWallet";
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
-  campaignId,
   selectedOutcome,
   setSelectedOutcome,
   price,
 }: {
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
-  campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
   initalData: Outcome[];
   price: string;
@@ -56,7 +54,6 @@ export default function DetailCall2Action({
     tradingAddr,
     share,
     shareAddr: outcome.share.address,
-    campaignId,
     outcomeId: outcome.identifier,
   });
   const orderSummary = [

@@ -15,13 +15,11 @@ export default function useReturnValue({
   account,
   shareAddr,
   outcomeId,
-  campaignId,
   tradingAddr,
   share,
 }: {
   account?: Account;
   shareAddr: string;
-  campaignId: `0x${string}`;
   tradingAddr: string;
   outcomeId: `0x${string}`;
   share: number;
