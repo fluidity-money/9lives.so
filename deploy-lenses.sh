@@ -1,5 +1,10 @@
 #!/bin/sh -eu
 
+cat >/dev/null <<EOF
+$SPN_LONGTAIL_ADDR
+$SPN_FACTORY_PROXY_ADDR
+EOF
+
 word_packing_lib_addr="$(\
 	forge create --json \
 		--rpc-url "$SPN_SUPERPOSITION_URL" \

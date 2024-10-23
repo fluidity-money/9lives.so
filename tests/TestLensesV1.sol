@@ -27,7 +27,7 @@ contract TestShare is Test {
         assertEq("430201822", amt);
     }
 
-    function testLenses() public {
+    function testLenses() public view {
         bytes8 eWord1 = bytes8(keccak256(abi.encodePacked(block.timestamp)));
         bytes8 eWord2 = bytes8(keccak256(abi.encodePacked(block.timestamp + 1)));
         bytes8 eWord3 = bytes8(keccak256(abi.encodePacked(block.timestamp + 2)));
@@ -44,7 +44,7 @@ contract TestShare is Test {
         assertEq(eWord4, word4);
     }
 
-    function testGetShareAddrAndCall() public {
+    function testGetShareAddrAndCall() public view {
         // Assumes factory is deployed at 0x2e234dae75c793f67a35089c9d99245e1c58470b
         address trading = 0x0202020202020202020202020202020202020202;
         address eTrading1 = 0xd268387eC71089B12c46135705945364893d4825;

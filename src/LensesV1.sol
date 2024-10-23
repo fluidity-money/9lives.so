@@ -90,7 +90,7 @@ contract LensesV1 {
     function balances(
         address _spender,
         Balances[] calldata _identifiers
-    ) external returns (uint256[] memory bals) {
+    ) external view returns (uint256[] memory bals) {
         uint256 wordsLen;
         uint256 i;
         for (;i < _identifiers.length; ++i) {

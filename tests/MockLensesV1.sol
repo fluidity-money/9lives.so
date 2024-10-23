@@ -11,7 +11,7 @@ contract MockLensesV1 {
         bytes8 word2,
         bytes8 word3,
         bytes8 word4
-    ) external returns (bytes32) {
+    ) external pure returns (bytes32) {
         return WordPackingLib.pack(word1, word2, word3, word4);
     }
 
