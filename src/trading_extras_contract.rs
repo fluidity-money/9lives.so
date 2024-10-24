@@ -107,11 +107,12 @@ impl StorageTrading {
         Ok(fusdc)
     }
 
-    pub fn details(&self, outcome_id: FixedBytes<8>) -> Result<(U256, U256, bool), Error> {
+    pub fn details(&self, outcome_id: FixedBytes<8>) -> Result<(U256, U256, U256, bool), Error> {
         let outcome = self.outcomes.getter(outcome_id);
         Ok((
             share_decimal_to_u256(outcome.shares.get())?,
             fusdc_decimal_to_u256(outcome.invested.get())?,
+            fusdc_decimal_to_u256(self.invested.get())?,
             outcome.winner.get(),
         ))
     }

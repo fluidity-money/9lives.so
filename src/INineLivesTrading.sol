@@ -64,6 +64,7 @@ interface INineLivesTrading {
     function details(bytes8 outcomeId) external view returns (
         uint256 shares,
         uint256 invested,
+        uint256 globalInvested,
         bool isWinner
     );
 
