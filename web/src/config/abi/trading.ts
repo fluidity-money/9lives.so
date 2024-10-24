@@ -34,6 +34,11 @@ const tradingAbi = [
         internalType: "uint256",
       },
       {
+        name: "globalInvested",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
         name: "isWinner",
         type: "bool",
         internalType: "bool",
