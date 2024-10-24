@@ -137,8 +137,7 @@ describe("End to end tests", async () => {
   await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
 
   const tradingAddr = await factoryProxy.newTradingC11AAA3B.staticCall(outcomes);
-  const tx = await factoryProxy.newTradingC11AAA3B(outcomes);
-  await tx.wait();
+  await (await factoryProxy.newTradingC11AAA3B(outcomes)).wait();
 
   const trading = new Contract(tradingAddr, Trading.abi, signer);
 
@@ -149,13 +148,13 @@ describe("End to end tests", async () => {
 
   it("Should support minting shares, then activating payoff, and receiving all of the pool.", async () => {
     const balBefore = await share1.balanceOf(defaultAccountAddr);
-    await trading.mint227CF432(outcome1, 6 * 1e6, defaultAccountAddr);
+    await (await trading.mint227CF432(outcome1, 6 * 1e6, defaultAccountAddr)).wait();
     const balAfter = await share1.balanceOf(defaultAccountAddr);
     assert.equal(balAfter, "4476926");
     const bals =
       await lenses.balances(tradingAddr, [outcomeBals], defaultAccountAddr);
     assert.equal(bals[0], "4476926");
-    await trading.decide(outcome1);
-    await trading.payoff(outcome1, defaultAccountAddr);
+    await (await trading.decide(outcome1)).wait();
+    await (await trading.payoff(outcome1, defaultAccountAddr)).wait();
   });
 });
