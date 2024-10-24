@@ -1,11 +1,12 @@
+import { Outcome } from "@/types";
 import dynamic from "next/dynamic";
 const PositionsBody = dynamic(() => import("./positionsBody"), { ssr: false });
 
 interface PositionsProps {
   tradingAddr: `0x${string}`;
-  outcomeIds: `0x${string}`[];
+  outcomes: Outcome[];
 }
-export default function Positions({ tradingAddr, outcomeIds }: PositionsProps) {
+export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
   const tablesHeaders = ["Position", "Qty", "Value", "Return"];
@@ -26,7 +27,7 @@ export default function Positions({ tradingAddr, outcomeIds }: PositionsProps) {
               ))}
             </tr>
           </thead>
-          <PositionsBody tradingAddr={tradingAddr} outcomeIds={outcomeIds} />
+          <PositionsBody tradingAddr={tradingAddr} outcomes={outcomes} />
         </table>
       </div>
     </div>
