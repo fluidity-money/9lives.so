@@ -78,8 +78,11 @@ export default function DetailCall2Action({
   async function handleBuy({ share }: FormData) {
     try {
       setIsMinting(true);
-      const response = await buy(account!, share);
-      console.log("response", response);
+      await buy(
+        account!,
+        share,
+        initalData.map((outcome) => outcome.identifier),
+      );
     } catch (error) {
       console.error(error instanceof Error ? error.message : error);
     } finally {
