@@ -7,11 +7,13 @@ import React from "react";
 export default function DetailOutcomeItem({
   data,
   price,
+  chance,
   selectedOutcome,
   setSelectedOutcome,
 }: {
   data: Outcome;
   price: string;
+  chance?: number
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
@@ -56,7 +58,7 @@ export default function DetailOutcomeItem({
           isSelected && "border-y border-y-9black",
         )}
       >
-        <span className="font-chicago text-xs font-normal">75%</span>
+        <span className="font-chicago text-xs font-normal">{chance}%</span>
       </td>
       <td
         className={combineClass(

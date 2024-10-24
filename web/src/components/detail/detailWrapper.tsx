@@ -24,7 +24,6 @@ export default function DetailWrapper({
     tradingAddr: initialData.poolAddress as `0x${string}`,
     outcomeIds,
   });
-
   return (
     <>
       <div className="flex flex-[2] flex-col gap-8">
@@ -32,6 +31,7 @@ export default function DetailWrapper({
         <DetailOutcomes
           sharePrices={sharePrices}
           data={initialData.outcomes}
+          tradingAddr={initialData.poolAddress}
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
         />
