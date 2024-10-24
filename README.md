@@ -31,11 +31,11 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 |      Deployment name     |              Deployment address            |
 |--------------------------|--------------------------------------------|
-| Proxy admin              | 0x524c7243879d72e6182c7e3efcd2b164f3651306 |
-| Factory 1 implementation | 0xfe1290854d09e22e8af999af48c4b918806f3068 |
-| Factory 2 implementation | 0x63cde81616d46d35fb44480a606be287f34df91f |
-| ERC20 implementation     | 0x00831eD728ECAF702C92acAA01710B865cB784b1 |
-| Trading mint impl        | 0x40C95243e895D8d374b8a10E79Ef7C166F1b8C91 |
-| Trading extras impl      | 0x1d112ad67b53990252da40c7858c3bface9a51ff |
-| Factory proxy            | 0x582c92BcA6aDceAc72D8f78CFC158D90f7eF11f7 |
-| LensesV1                 | 0x05B234d5562990b2b578013BAFc52b9772b6d8E9 |
+| Proxy admin              | 0x0256a089553ae26fd45fc36495d7cf3a044d0fdb |
+| Factory 1 implementation | 0xF1b485d0a0D79FCEAd35E9923E3A07deD14D9A1A |
+| Factory 2 implementation | 0xE30f69f9F2A439db7A5fA89707403a4A231368F5 |
+| ERC20 implementation     | 0xd27d3c46A66b6F496a67C9cb881f9dF13091A777 |
+| Trading mint impl        | 0xeCAC5280Ad9bF4E2a1AC7a16b884945E134A2c36 |
+| Trading extras impl      | 0x3C4bD874746C0EbD3e438900B226Dde963a1eB0c |
+| Factory proxy            | 0x22E844526b3921BE5c42f8208a4FEfC5db8d82CB |
+| LensesV1                 | 0xfCd4E63563D561D979D280B52eD4AB7e7678F204 |

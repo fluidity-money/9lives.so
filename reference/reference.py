@@ -63,13 +63,13 @@ def place_order(outcome, cost, M1, M2, N1, N2):
 
 if __name__ == "__main__":
 	# Seed liquidity
-	initial_M1 = 1.0
-	initial_M2 = 1.0
+	initial_M1 = 1.012856
+	initial_M2 = 1.000978
 	initial_N1 = 1.0
 	initial_N2 = 1.0
 
 	# Place an order for outcome A with a cost of 1
-	order_result = place_order('A', 6.0, initial_M1, initial_M2, initial_N1, initial_N2)
+	order_result = place_order('A', 1.012856, initial_M1, initial_M2, initial_N1, initial_N2)
 
 	print("Order Result:")
 	for key, value in order_result.items():
