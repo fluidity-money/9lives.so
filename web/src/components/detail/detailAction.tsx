@@ -35,7 +35,7 @@ export default function DetailCall2Action({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z.object({
-    share: z.number().min(1, { message: "Invalid share quantity" }),
+    share: z.coerce.number().min(1, { message: "Invalid share quantity" }),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
