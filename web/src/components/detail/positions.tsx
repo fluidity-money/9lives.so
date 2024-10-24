@@ -3,9 +3,9 @@
 import config from "@/config";
 import { useQuery } from "@tanstack/react-query";
 import { zeroPadValue } from "ethers";
+import { Suspense } from "react";
 import {
   prepareContractCall,
-  PreparedTransaction,
   simulateTransaction,
 } from "thirdweb";
 import { useActiveAccount } from "thirdweb/react";
@@ -22,40 +22,40 @@ async function fetchPositions(
 ) {
   if (!account) return [];
 
-  const txSims = outcomeIds.map((outcomeId) =>
-    simulateTransaction({
-      transaction: prepareContractCall({
-        contract: config.contracts.lens,
-        method: "balances",
-        params: [
-          account.address,
-          [
-            {
-              tradingAddr,
-              word: [zeroPadValue(outcomeId, 32) as `0x${string}`],
-            },
-          ],
-        ],
-      }) as PreparedTransaction,
+  const rawBalances = await simulateTransaction({
+    transaction: prepareContractCall({
+      contract: config.contracts.lens,
+      method: "balances",
+      params: [
+        tradingAddr,
+        outcomeIds.map(outcomeId => zeroPadValue(outcomeId, 32)) as `0x${string}`[],
+        account.address
+      ],
     }),
-  );
-  const res = await Promise.all(txSims);
+  }) as bigint[];
+  const balances = rawBalances.filter((_, idx) => idx % 4 === 0);
 
-  return res;
+  const mintedPositions = outcomeIds.map((id, idx) => ({ id, balance: balances[idx].toString() })).filter(item => item.balance !== '0')
+
+  return mintedPositions
 }
-function PositionRow({ data }: { data: any }) {
+
+function PositionRow({ data }: { data: { id: string, balance: string } }) {
+
+  if (!data) return <tr></tr>
+
   return (
     <tr>
-      <td>0x123</td>
-      <td>100</td>
-      <td>For</td>
-      <td>0.08</td>
+      <td>{data.id}</td>
+      <td>{data.balance}</td>
+      <td>-</td>
+      <td>-</td>
     </tr>
   );
 }
 export default function Positions({ tradingAddr, outcomeIds }: PositionsProps) {
   const account = useActiveAccount();
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data } = useQuery<{ id: string, balance: string }[]>({
     queryKey: ["positions", tradingAddr, outcomeIds, account],
     queryFn: () => fetchPositions(tradingAddr, outcomeIds, account),
   });
