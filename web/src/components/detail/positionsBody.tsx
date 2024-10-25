@@ -14,21 +14,18 @@ async function fetchPositions(
   account?: Account,
 ) {
   if (!account) return [];
-
-  const rawBalances = (await simulateTransaction({
+  const concatIds = outcomes.reduce((acc, v) => {
+    acc = acc + v.identifier.slice(2);
+    return acc;
+  }, "");
+  const word = zeroPadValue(`0x${concatIds}`, 32);
+  const balances = (await simulateTransaction({
     transaction: prepareContractCall({
       contract: config.contracts.lens,
       method: "balances",
-      params: [
-        tradingAddr,
-        outcomes.map((outcome) =>
-          zeroPadValue(outcome.identifier, 32),
-        ) as `0x${string}`[],
-        account.address,
-      ],
+      params: [tradingAddr, [word] as `0x${string}`[], account.address],
     }),
   })) as bigint[];
-  const balances = rawBalances.filter((_, idx) => idx % 4 === 0);
 
   const mintedPositions = outcomes
     .map((outcome, idx) => ({
