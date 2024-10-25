@@ -4,7 +4,7 @@ export default function CloseButton({
   onClick,
   size = "size-6",
 }: {
-  onClick: () => void;
+  onClick?: () => void;
   size?: `size-${number}`;
 }) {
   return (

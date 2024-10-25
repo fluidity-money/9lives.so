@@ -7,6 +7,7 @@ import { SelectedOutcome } from "../../types";
 import { useState } from "react";
 import Positions from "./positions";
 import useSharePrices from "@/hooks/useSharePrices";
+import DetailInfo from "./detailInfo";
 
 export default function DetailWrapper({
   initialData,
@@ -35,6 +36,7 @@ export default function DetailWrapper({
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
         />
+        <DetailInfo data={initialData.description} />
       </div>
       <div className="flex flex-1 flex-col gap-8">
         <DetailCall2Action
