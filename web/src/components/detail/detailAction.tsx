@@ -86,15 +86,17 @@ export default function DetailCall2Action({
   return (
     <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
       <div className="flex items-center gap-4">
-        <Image
-          width={40}
-          height={40}
-          alt={outcome.name}
-          src={
-            outcome.identifier === "0x5c96f5316cd9172c" ? TrumpImg : KamalaImg
-          }
-          className="rounded-full"
-        />
+        <div className="h-10 w-10 overflow-hidden rounded-full">
+          <Image
+            width={40}
+            height={40}
+            alt={outcome.name}
+            src={
+              outcome.identifier === "0x5c96f5316cd9172c" ? TrumpImg : KamalaImg
+            }
+            className="h-full w-full object-cover"
+          />
+        </div>
         <h3 className="font-chicago text-base font-normal text-9black">
           {outcome.name}
         </h3>
