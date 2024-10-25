@@ -12,7 +12,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
-
+import TrumpImg from "#/images/trump.webp";
+import KamalaImg from "#/images/kamala.webp";
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
@@ -97,7 +98,9 @@ export default function DetailCall2Action({
           width={40}
           height={40}
           alt={outcome.name}
-          src={CatImage}
+          src={
+            outcome.identifier === "0x5c96f5316cd9172c" ? TrumpImg : KamalaImg
+          }
           className="rounded-full"
         />
         <h3 className="font-chicago text-base font-normal text-9black">

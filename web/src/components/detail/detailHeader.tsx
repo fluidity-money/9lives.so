@@ -1,5 +1,5 @@
 import Image from "next/image";
-import CatImage from "#/images/cat.png";
+import ElectionImg from "#/images/usa-election.webp";
 import WatchlistButton from "../watchlistButton";
 import { Campaign } from "@/types";
 
@@ -12,7 +12,7 @@ export default function DetailHeader({ data }: { data: Campaign }) {
           width={60}
           height={60}
           className="border border-9black"
-          src={CatImage}
+          src={ElectionImg}
         />
         <h1 className="font-chicago text-2xl">{data.name}</h1>
       </div>

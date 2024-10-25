@@ -3,7 +3,8 @@ import CatImage from "#/images/cat.png";
 import { combineClass } from "@/utils/combineClass";
 import { Outcome, SelectedOutcome } from "@/types";
 import React from "react";
-
+import TrumpImg from "#/images/trump.webp";
+import KamalaImg from "#/images/kamala.webp";
 export default function DetailOutcomeItem({
   data,
   price,
@@ -13,7 +14,7 @@ export default function DetailOutcomeItem({
 }: {
   data: Outcome;
   price: string;
-  chance?: number
+  chance?: number;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
@@ -46,7 +47,9 @@ export default function DetailOutcomeItem({
             width={40}
             height={40}
             alt={data.name}
-            src={CatImage}
+            src={
+              data.identifier === "0x5c96f5316cd9172c" ? TrumpImg : KamalaImg
+            }
             className="border border-9black"
           />
           <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
@@ -58,7 +61,9 @@ export default function DetailOutcomeItem({
           isSelected && "border-y border-y-9black",
         )}
       >
-        <span className="font-chicago text-xs font-normal">{chance}%</span>
+        <span className="font-chicago text-xs font-normal">
+          {chance ? +chance.toFixed(2) : ""}%
+        </span>
       </td>
       <td
         className={combineClass(

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import CatImage from "#/images/cat.png";
+import ElectionImage from "#/images/usa-election.webp";
 import { Campaign } from "@/gql/graphql";
 import Link from "next/link";
 import PixelRing from "#/icons/pixel-ring.svg";
@@ -18,7 +18,7 @@ export default function CampaignItemHeader({
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-2">
-        <Image src={CatImage} width={40} height={40} alt={name} />
+        <Image src={ElectionImage} width={40} height={40} alt={name} />
         <Link href={`/campaign/${identifier}`}>
           <h4 className="font-chicago text-sm font-bold">{name}</h4>
         </Link>

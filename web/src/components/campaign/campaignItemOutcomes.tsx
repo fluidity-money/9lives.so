@@ -15,24 +15,28 @@ export default function CampaignItemOutcomes({
   if (outcomes.length === 2)
     return (
       <div className="my-5 flex flex-1 items-end gap-2">
-        <Button
-          intent="yes"
-          size={"large"}
-          title={`Bet on ${outcomes[0].name}`}
-          onClick={() =>
-            setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
-          }
-          className={"flex-1"}
-        />
-        <Button
-          intent="no"
-          size={"large"}
-          title={`Bet on ${outcomes[1].name}`}
-          onClick={() =>
-            setSelectedOutcome({ id: outcomes[1].identifier, state: "buy" })
-          }
-          className={"flex-1"}
-        />
+        <Link href={`/campaign/${campaignId}`} className="flex flex-1">
+          <Button
+            intent="default"
+            size={"large"}
+            title={`Bet on ${outcomes[0].name}`}
+            // onClick={() =>
+            //   setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
+            // }
+            className={"flex-1"}
+          />
+        </Link>
+        <Link href={`/campaign/${campaignId}`} className="flex flex-1">
+          <Button
+            intent="default"
+            size={"large"}
+            title={`Bet on ${outcomes[1].name}`}
+            // onClick={() =>
+            //   setSelectedOutcome({ id: outcomes[1].identifier, state: "buy" })
+            // }
+            className={"flex-1"}
+          />
+        </Link>
       </div>
     );
 

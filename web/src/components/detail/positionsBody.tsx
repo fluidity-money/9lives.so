@@ -30,13 +30,21 @@ async function fetchPositions(
   const balances = rawBalances.filter((_, idx) => idx % 4 === 0);
 
   const mintedPositions = outcomes
-    .map((outcome, idx) => ({ id: outcome.identifier, name: outcome.name, balance: balances[idx].toString() }))
+    .map((outcome, idx) => ({
+      id: outcome.identifier,
+      name: outcome.name,
+      balance: balances[idx].toString(),
+    }))
     .filter((item) => item.balance !== "0");
 
   return mintedPositions;
 }
 
-function PositionRow({ data }: { data: { id: string; name: string, balance: string } }) {
+function PositionRow({
+  data,
+}: {
+  data: { id: string; name: string; balance: string };
+}) {
   if (!data) return <tr></tr>;
 
   return (
@@ -61,7 +69,7 @@ export default function PositionsBody({
     (outcome) => outcome.identifier,
   ) as `0x${string}`[];
   const { isLoading, isError, data } = useQuery<
-    { id: string; name: string, balance: string }[]
+    { id: string; name: string; balance: string }[]
   >({
     queryKey: ["positions", tradingAddr, outcomes, account],
     queryFn: () => fetchPositions(tradingAddr, outcomes, account),

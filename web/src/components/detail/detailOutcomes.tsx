@@ -15,14 +15,14 @@ export default function DetailOutcomes({
   data: Outcome[];
   sharePrices?: { id: string; price: string }[];
   selectedOutcome: SelectedOutcome;
-  tradingAddr: string
+  tradingAddr: string;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
   const { data: chances } = useChances({
     tradingAddr,
     outcomeId: selectedOutcome.id as `0x${string}`,
-    outcomes: data
-  })
+    outcomes: data,
+  });
   const borderStyle = "border-y border-y-gray-200";
 
   return (
@@ -57,7 +57,10 @@ export default function DetailOutcomes({
               sharePrices?.find((item) => item.id === outcome.identifier)
                 ?.price ?? "0"
             }
-            chance={chances?.find(chance => chance.id === outcome.identifier)?.chance}
+            chance={
+              chances?.find((chance) => chance.id === outcome.identifier)
+                ?.chance
+            }
             key={outcome.identifier}
             data={outcome}
           />
