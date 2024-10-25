@@ -51,8 +51,8 @@ export default function useChances({
         id: outcome.identifier,
         chance:
           outcome.identifier === outcomeId
-            ? invested / globalInvested
-            : (globalInvested - invested) / globalInvested,
+            ? (invested / globalInvested) * 100
+            : ((globalInvested - invested) / globalInvested) * 100,
       }));
       console.log("res", res);
       return res;

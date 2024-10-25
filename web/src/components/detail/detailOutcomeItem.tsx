@@ -62,7 +62,7 @@ export default function DetailOutcomeItem({
         )}
       >
         <span className="font-chicago text-xs font-normal">
-          {chance ? +chance.toFixed(2) : ""}%
+          {chance?.toFixed(0)}%
         </span>
       </td>
       <td
