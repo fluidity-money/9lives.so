@@ -55,7 +55,6 @@ export default function DetailCall2Action({
     outcomeId: outcome.identifier,
   });
   const { data: estimatedReturn } = useReturnValue({
-    account,
     tradingAddr,
     share,
     shareAddr: outcome.share.address,
