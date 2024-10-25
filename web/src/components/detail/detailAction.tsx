@@ -154,7 +154,9 @@ export default function DetailCall2Action({
           )}
         />
         {errors.share && (
-          <span className="text-xs text-red-500">{errors.share.message}</span>
+          <span className="mt-1 text-xs text-red-500">
+            {errors.share.message}
+          </span>
         )}
       </div>
       <div className="flex flex-col">
