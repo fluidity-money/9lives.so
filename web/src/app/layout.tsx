@@ -11,6 +11,7 @@ import appConfig from "@/config";
 import { requestCampaignList } from "@/providers/graphqlClient";
 import { unstable_cache } from "next/cache";
 import { Campaign } from "@/types";
+import { Toaster } from "react-hot-toast";
 
 const CookieBanner = dynamic(() => import("@/components/cookieBanner"), {
   ssr: false,
@@ -64,6 +65,11 @@ export default async function RootLayout({
       className={combineClass([chicago.variable, geneva.variable])}
     >
       <body className="flex min-h-screen flex-col bg-9layer">
+        <Toaster
+          toastOptions={{
+            position: "top-right",
+          }}
+        />
         <Providers initialData={initialData}>
           <Header />
           <main className="flex flex-1 p-4">{children}</main>

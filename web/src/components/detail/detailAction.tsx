@@ -1,7 +1,6 @@
 import Button from "@/components/themed/button";
 import React, { useState } from "react";
 import Image from "next/image";
-import CatImage from "#/images/cat.png";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
 import { Outcome, SelectedOutcome } from "@/types";
@@ -79,13 +78,7 @@ export default function DetailCall2Action({
   async function handleBuy({ share }: FormData) {
     try {
       setIsMinting(true);
-      await buy(
-        account!,
-        share,
-        initalData.map((outcome) => outcome.identifier),
-      );
-    } catch (error) {
-      console.error(error instanceof Error ? error.message : error);
+      await buy(account!, share, initalData);
     } finally {
       setIsMinting(false);
     }

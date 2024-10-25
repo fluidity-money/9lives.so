@@ -9,7 +9,7 @@ interface PositionsProps {
 export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
-  const tablesHeaders = ["Position", "Qty", "Value", "Return"];
+  const tablesHeaders = ["Position", "Invested Amount", "Actions"];
 
   return (
     <div>
@@ -17,7 +17,7 @@ export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
         My Campaign Positions
       </div>
       <div className="rounded-[3px] rounded-tl-none border border-9black p-5 shadow-9card">
-        <table className="w-full">
+        <table className="w-full table-auto border-separate border-spacing-y-1">
           <thead>
             <tr className="font-geneva">
               {tablesHeaders.map((key) => (
