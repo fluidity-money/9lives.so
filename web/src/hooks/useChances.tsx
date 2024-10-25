@@ -42,11 +42,8 @@ export default function useChances({
       const outcomeRes = await simulateTransaction({
         transaction: detailsTx,
       });
-      console.log("           dsfdsf dsf dsf dsfdsfds", outcomeRes);
-
       const invested = Number(outcomeRes[investedIdx]);
       const globalInvested = Number(outcomeRes[globalInvestedIdx]);
-
       const res = outcomes.map((outcome) => ({
         id: outcome.identifier,
         chance:
@@ -54,7 +51,6 @@ export default function useChances({
             ? (invested / globalInvested) * 100
             : ((globalInvested - invested) / globalInvested) * 100,
       }));
-      console.log("res", res);
       return res;
     },
   });
