@@ -25,11 +25,9 @@ export default function CampaignItemFooter({
     },
   });
 
-  if (isLoading) return null;
-
   return (
     <div className="flex items-center justify-between gap-2 font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
-      <span>{data} fUSDC</span>
+      <span>{data} fUSDC Vol.</span>
       {/* <span>10K fUSDC Reward</span> */}
     </div>
   );
