@@ -23,7 +23,7 @@ export default function CampaignBody({
         outcomes={data.outcomes}
         setSelectedOutcome={setSelectedOutcome}
       />
-      <CampaignItemFooter />
+      <CampaignItemFooter tradingAddr={data.poolAddress} />
     </>
   );
 }
