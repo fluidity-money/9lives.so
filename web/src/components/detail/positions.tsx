@@ -1,7 +1,5 @@
 import { Outcome } from "@/types";
-import dynamic from "next/dynamic";
-const PositionsBody = dynamic(() => import("./positionsBody"), { ssr: false });
-
+import PositionsBody from "./positionsBody";
 interface PositionsProps {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
