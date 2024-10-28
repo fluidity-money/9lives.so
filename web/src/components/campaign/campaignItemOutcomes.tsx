@@ -26,7 +26,10 @@ export default function CampaignItemOutcomes({
             className={"flex-1"}
           />
         </Link>
-        <Link href={`/campaign/${campaignId}`} className="flex flex-1">
+        <Link
+          href={`/campaign/${campaignId}?outcomeId=${outcomes[1].identifier}`}
+          className="flex flex-1"
+        >
           <Button
             intent="default"
             size={"large"}
@@ -52,7 +55,9 @@ export default function CampaignItemOutcomes({
           </Link>
           <div className="flex items-center gap-1">
             <span className="font-chicago text-sm font-normal">{"%75"}</span>
-            <Link href={`/campaign/${campaignId}`}>
+            <Link
+              href={`/campaign/${campaignId}?outcomeId=${outcome.identifier}`}
+            >
               <Button
                 intent="default"
                 cat="secondary"

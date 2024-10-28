@@ -8,14 +8,18 @@ import { useState } from "react";
 import Positions from "./positions";
 import useSharePrices from "@/hooks/useSharePrices";
 import DetailInfo from "./detailInfo";
+import { useSearchParams } from "next/navigation";
 
 export default function DetailWrapper({
   initialData,
 }: {
   initialData: Campaign;
 }) {
+  const outcomeId = useSearchParams()?.get("outcomeId");
   const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcome>({
-    id: initialData.outcomes[0].identifier,
+    id:
+      initialData.outcomes.find((o) => o.identifier === outcomeId)
+        ?.identifier ?? initialData.outcomes[0].identifier,
     state: "buy",
   });
   const outcomeIds = initialData.outcomes.map(
