@@ -23,7 +23,7 @@ const useBuy = ({
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
 }) => {
-  const quertClient = useQueryClient();
+  const queryClient = useQueryClient();
   const buy = async (account: Account, share: number, outcomes: Outcome[]) =>
     toast.promise(
       new Promise(async (res, rej) => {
@@ -134,8 +134,27 @@ const useBuy = ({
               transaction: mintTx,
               account,
             });
-            quertClient.invalidateQueries({
+            queryClient.invalidateQueries({
               queryKey: ["positions", tradingAddr, outcomes, account],
+            });
+            queryClient.invalidateQueries({
+              queryKey: [
+                "sharePrices",
+                tradingAddr,
+                outcomes.map((o) => o.identifier),
+              ],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["chances", tradingAddr, outcomeId],
+            });
+            queryClient.invalidateQueries({
+              queryKey: [
+                "returnValue",
+                shareAddr,
+                tradingAddr,
+                outcomeId,
+                share,
+              ],
             });
           }
           res(null);

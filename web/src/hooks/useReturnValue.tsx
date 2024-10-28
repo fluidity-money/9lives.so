@@ -7,7 +7,6 @@ import {
 } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { formatUnits, MaxUint256 } from "ethers";
-import { Account } from "thirdweb/wallets";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 
