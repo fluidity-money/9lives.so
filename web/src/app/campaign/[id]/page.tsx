@@ -3,6 +3,7 @@ import appConfig from "@/config";
 import { requestCampaignList } from "@/providers/graphqlClient";
 import { Campaign } from "@/types";
 import { unstable_cache } from "next/cache";
+import { Suspense } from "react";
 
 export const dynamicParams = true;
 
@@ -34,7 +35,9 @@ export default async function DetailPage({
   )!;
   return (
     <section className="flex h-full gap-4">
-      <DetailWrapper initialData={campaign} />
+      <Suspense>
+        <DetailWrapper initialData={campaign} />
+      </Suspense>
     </section>
   );
 }
