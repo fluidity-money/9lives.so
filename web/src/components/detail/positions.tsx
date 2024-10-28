@@ -11,7 +11,7 @@ export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
   const tablesHeaders = ["Position", "Invested Amount", "Actions"];
 
   return (
-    <>
+    <div>
       <TabButton title="My Campaign Positions" />
       <div className="rounded-[3px] rounded-tl-none border border-9black p-5 shadow-9card">
         <table className="w-full table-auto border-separate border-spacing-y-1">
@@ -27,6 +27,6 @@ export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
           <PositionsBody tradingAddr={tradingAddr} outcomes={outcomes} />
         </table>
       </div>
-    </>
+    </div>
   );
 }
