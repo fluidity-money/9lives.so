@@ -5,7 +5,6 @@ import appConfig from "./app";
 import { superpositionTestnet, networkSchema } from "./chains";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
-
 const thirdwebClient = createThirdwebClient({
   clientId: thirdwebClientId,
 });
@@ -34,7 +33,6 @@ const thirdwebSchema = z.object({
     showThirdwebBranding: z.boolean(),
   }),
 });
-
 const thirdwebValidation = thirdwebSchema.safeParse({
   metadata: {
     name: appConfig.metadata.title,
@@ -76,7 +74,6 @@ const thirdwebValidation = thirdwebSchema.safeParse({
     showThirdwebBranding: false,
   },
 });
-
 if (!thirdwebValidation.success) {
   console.error(
     "Invalid thirdwen config variables: ",
@@ -84,7 +81,6 @@ if (!thirdwebValidation.success) {
   );
   throw new Error(thirdwebValidation.error.message);
 }
-
 const thirdweb = {
   ...(thirdwebValidation.data as ThirdwebSchemaType & {
     chain: typeof superpositionTestnet;
@@ -95,5 +91,4 @@ const thirdweb = {
   }),
   client: thirdwebClient,
 };
-
 export default thirdweb;
