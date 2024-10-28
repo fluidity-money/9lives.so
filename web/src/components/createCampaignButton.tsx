@@ -7,7 +7,10 @@ export default function CreateCampaingButton() {
   if (!account) return;
 
   return (
-    <button className="h-10 border-r-2 border-r-black px-4 font-chicago leading-10 underline">
+    <button
+      className="h-10 border-r-2 border-r-black px-4 font-chicago leading-10 underline opacity-30"
+      disabled
+    >
       Create Campaign
     </button>
   );

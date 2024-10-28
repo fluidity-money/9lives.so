@@ -1,3 +1,4 @@
+import { combineClass } from "@/utils/combineClass";
 import Link from "next/link";
 export default function NavigationMenu() {
   const menu = [
@@ -7,11 +8,13 @@ export default function NavigationMenu() {
     },
     {
       title: "Portfolio",
-      page: "/portfolio",
+      page: "/#",
+      disabled: true,
     },
     {
       title: "Leaderboard",
-      page: "/leaderboard",
+      page: "/#",
+      disabled: true,
     },
   ];
 
@@ -21,7 +24,10 @@ export default function NavigationMenu() {
         <Link
           key={item.page}
           href={item.page}
-          className="font-chicago text-neutral-800 hover:underline"
+          className={combineClass(
+            "font-chicago text-neutral-800 hover:underline",
+            item.disabled && "pointer-events-none opacity-30",
+          )}
         >
           {item.title}
         </Link>
