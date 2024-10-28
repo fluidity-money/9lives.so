@@ -10,15 +10,13 @@ import {
 
 export default function useChances({
   tradingAddr,
-  outcomeId,
   outcomes,
 }: {
   tradingAddr: string;
-  outcomeId: `0x${string}`;
   outcomes: Outcome[];
 }) {
   return useQuery({
-    queryKey: ["chances", tradingAddr, outcomeId],
+    queryKey: ["chances", tradingAddr, outcomes[0].identifier],
     queryFn: async () => {
       const investedIdx = 1;
       const globalInvestedIdx = 2;
@@ -34,7 +32,7 @@ export default function useChances({
         transaction: prepareContractCall({
           contract: tradingContract,
           method: "details",
-          params: [outcomeId],
+          params: [outcomes[0].identifier],
         }),
       });
       const invested = Number(outcomeRes[investedIdx]);
@@ -42,7 +40,7 @@ export default function useChances({
       const res = outcomes.map((outcome) => ({
         id: outcome.identifier,
         chance:
-          outcome.identifier === outcomeId
+          outcome.identifier === outcomes[0].identifier
             ? (invested / globalInvested) * 100
             : ((globalInvested - invested) / globalInvested) * 100,
       }));

@@ -20,7 +20,6 @@ export default function DetailOutcomes({
 }) {
   const { data: chances } = useChances({
     tradingAddr,
-    outcomeId: selectedOutcome.id as `0x${string}`,
     outcomes: data,
   });
   const borderStyle = "border-y border-y-gray-200";

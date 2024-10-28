@@ -145,7 +145,7 @@ const useBuy = ({
               ],
             });
             queryClient.invalidateQueries({
-              queryKey: ["chances", tradingAddr, outcomeId],
+              queryKey: ["chances", tradingAddr, outcomes[0].identifier],
             });
             queryClient.invalidateQueries({
               queryKey: [
