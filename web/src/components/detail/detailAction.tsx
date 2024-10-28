@@ -13,6 +13,9 @@ import z from "zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import TrumpImg from "#/images/trump.webp";
 import KamalaImg from "#/images/kamala.webp";
+import { prepareContractCall, simulateTransaction } from "thirdweb";
+import config from "@/config";
+import { formatUnits } from "ethers";
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
@@ -82,6 +85,16 @@ export default function DetailCall2Action({
       setIsMinting(false);
     }
   }
+  const setToMaxShare = async () => {
+    const balance = (await simulateTransaction({
+      transaction: prepareContractCall({
+        contract: config.contracts.fusdc,
+        method: "balanceOf",
+        params: [account!.address],
+      }),
+    })) as bigint;
+    setShare(+formatUnits(balance, config.contracts.decimals.fusdc));
+  };
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
   return (
     <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
@@ -135,9 +148,19 @@ export default function DetailCall2Action({
         </div>
       </div>
       <div className="flex flex-col">
-        <span className="font-chicago text-xs font-normal text-9black">
-          Shares
-        </span>
+        <div className="flex items-center justify-between">
+          <span className="font-chicago text-xs font-normal text-9black">
+            Shares
+          </span>
+          {account ? (
+            <Button
+              onClick={setToMaxShare}
+              intent={"default"}
+              size={"small"}
+              title="Max"
+            />
+          ) : null}
+        </div>
         <Input
           type="number"
           min={0}
