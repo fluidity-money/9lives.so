@@ -9,7 +9,7 @@ export default function ConnectButton() {
       client={appConfig.thirdweb.client}
       chain={superpositionTestnet}
       appMetadata={appConfig.thirdweb.metadata}
-      accountAbstraction={appConfig.thirdweb.accountAbstraction}
+      wallets={appConfig.thirdweb.wallets}
       theme={appConfig.thirdweb.theme}
       detailsButton={appConfig.thirdweb.detailsButton}
       connectButton={appConfig.thirdweb.connectButton}

@@ -3,6 +3,7 @@ import { createThirdwebClient } from "thirdweb";
 import clientEnv from "./clientEnv";
 import appConfig from "./app";
 import { superpositionTestnet, networkSchema } from "./chains";
+import { inAppWallet } from "thirdweb/wallets";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 const thirdwebClient = createThirdwebClient({
@@ -16,15 +17,12 @@ const thirdwebSchema = z.object({
     url: z.string().url(),
     logoUrl: z.string().url(),
   }),
-  accountAbstraction: z.object({
-    sponsorGas: z.boolean(),
-    chain: networkSchema,
-  }),
   chain: networkSchema,
   theme: z.literal("light"),
   detailsButton: z.object({
     style: z.any(),
   }),
+  wallets: z.array(z.any()),
   connectButton: z.object({
     label: z.string(),
     style: z.any(),
@@ -33,6 +31,14 @@ const thirdwebSchema = z.object({
     showThirdwebBranding: z.boolean(),
   }),
 });
+const wallets = [
+  inAppWallet({
+    smartAccount: {
+      chain: superpositionTestnet,
+      sponsorGas: true,
+    },
+  }),
+];
 const thirdwebValidation = thirdwebSchema.safeParse({
   metadata: {
     name: appConfig.metadata.title,
@@ -40,11 +46,8 @@ const thirdwebValidation = thirdwebSchema.safeParse({
     url: appConfig.metadata.metadataBase.href,
     logoUrl: appConfig.metadata.metadataBase.origin + "/images/logo.svg",
   },
-  accountAbstraction: {
-    sponsorGas: true,
-    chain: superpositionTestnet,
-  },
   chain: superpositionTestnet,
+  wallets,
   theme: "light",
   detailsButton: {
     style: {
@@ -84,10 +87,7 @@ if (!thirdwebValidation.success) {
 const thirdweb = {
   ...(thirdwebValidation.data as ThirdwebSchemaType & {
     chain: typeof superpositionTestnet;
-    accountAbstraction: {
-      sponsorGas: boolean;
-      chain: typeof superpositionTestnet;
-    };
+    wallets: typeof wallets;
   }),
   client: thirdwebClient,
 };

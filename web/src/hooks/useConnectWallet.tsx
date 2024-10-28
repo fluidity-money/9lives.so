@@ -8,7 +8,7 @@ export default function useConnectWallet() {
       client: appConfig.thirdweb.client,
       chain: appConfig.thirdweb.chain,
       appMetadata: appConfig.thirdweb.metadata,
-      accountAbstraction: appConfig.thirdweb.accountAbstraction,
+      wallets: appConfig.thirdweb.wallets,
       theme: appConfig.thirdweb.theme,
       showThirdwebBranding:
         appConfig.thirdweb.connectModal.showThirdwebBranding,
