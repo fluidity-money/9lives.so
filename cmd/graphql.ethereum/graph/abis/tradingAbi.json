@@ -34,6 +34,11 @@
                 "internalType": "uint256"
             },
             {
+                "name": "globalInvested",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
                 "name": "isWinner",
                 "type": "bool",
                 "internalType": "bool"
@@ -140,6 +145,11 @@
                 "name": "outcomeId",
                 "type": "bytes8",
                 "internalType": "bytes8"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "internalType": "uint256"
             },
             {
                 "name": "recipient",

@@ -147,6 +147,11 @@ const tradingAbi = [
         internalType: "bytes8",
       },
       {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
         name: "recipient",
         type: "address",
         internalType: "address",
