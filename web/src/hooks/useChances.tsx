@@ -25,7 +25,7 @@ export default function useChances({
         abi: tradingAbi,
         address: tradingAddr,
         client: config.thirdweb.client,
-        chain: config.chains.superpositionTestnet,
+        chain: config.chains.arbitrumOneMainnet,
       });
 
       const outcomeRes = await simulateTransaction({

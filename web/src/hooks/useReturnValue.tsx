@@ -37,7 +37,7 @@ export default function useReturnValue({
         abi: tradingAbi,
         address: tradingAddr,
         client: config.thirdweb.client,
-        chain: config.chains.superpositionTestnet,
+        chain: config.chains.arbitrumOneMainnet,
       }),
     [tradingAddr],
   );

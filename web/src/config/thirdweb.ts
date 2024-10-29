@@ -2,7 +2,7 @@ import z from "zod";
 import { createThirdwebClient } from "thirdweb";
 import clientEnv from "./clientEnv";
 import appConfig from "./app";
-import { superpositionTestnet, networkSchema } from "./chains";
+import { arbitrumOneMainnet, networkSchema } from "./chains";
 import { inAppWallet, createWallet } from "thirdweb/wallets";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
@@ -34,7 +34,7 @@ const thirdwebSchema = z.object({
 const wallets = [
   inAppWallet({
     smartAccount: {
-      chain: superpositionTestnet,
+      chain: arbitrumOneMainnet,
       sponsorGas: true,
     },
   }),
@@ -48,7 +48,7 @@ const thirdwebValidation = thirdwebSchema.safeParse({
     url: appConfig.metadata.metadataBase.href,
     logoUrl: appConfig.metadata.metadataBase.origin + "/images/logo.svg",
   },
-  chain: superpositionTestnet,
+  chain: arbitrumOneMainnet,
   wallets,
   theme: "light",
   detailsButton: {
@@ -88,7 +88,7 @@ if (!thirdwebValidation.success) {
 }
 const thirdweb = {
   ...(thirdwebValidation.data as ThirdwebSchemaType & {
-    chain: typeof superpositionTestnet;
+    chain: typeof arbitrumOneMainnet;
     wallets: typeof wallets;
   }),
   client: thirdwebClient,

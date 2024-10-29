@@ -36,7 +36,7 @@ const useBuy = ({
             abi: tradingAbi,
             address: tradingAddr,
             client: config.thirdweb.client,
-            chain: config.chains.superpositionTestnet,
+            chain: config.chains.arbitrumOneMainnet,
           });
           const checkAmmReturnTx = prepareContractCall({
             contract: config.contracts.lens,
