@@ -1,4 +1,4 @@
-use stylus_sdk:: {storage::*, prelude::*, alloy_primitives::*};
+use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
 use crate::decimal::StorageDecimal;
 

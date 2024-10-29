@@ -1,4 +1,4 @@
-use stylus_sdk::{prelude::*, storage::*, alloy_primitives::Address};
+use stylus_sdk::{alloy_primitives::Address, prelude::*, storage::*};
 
 #[storage]
 #[cfg_attr(any(feature = "factory-1", feature = "factory-2"), entrypoint)]

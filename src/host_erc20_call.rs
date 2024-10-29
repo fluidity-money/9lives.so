@@ -30,5 +30,5 @@ pub fn permit(
 }
 
 pub fn balance_of(_addr: Address, _spender: Address) -> Result<U256, Error> {
-    Ok(U256::from(100))
+    Ok(U256::MAX)
 }

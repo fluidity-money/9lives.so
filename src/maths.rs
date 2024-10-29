@@ -81,7 +81,7 @@ fn sqrt_u256_round_down(x: U256) -> Result<U256, Error> {
         y = z;
         z = (x / z + z) >> 1;
     }
-    if y *  y > x {
+    if y * y > x {
         y -= U256::from(1);
     }
     Ok(y)

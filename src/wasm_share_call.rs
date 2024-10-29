@@ -3,7 +3,7 @@ use stylus_sdk::{
     call::RawCall,
 };
 
-use crate::{error::Error, share_cd::*, erc20_call};
+use crate::{erc20_call, error::Error, share_cd::*};
 
 // Construct the ERC20 with the description in bytes provided, and an
 // admin that can mint more tokens on request.

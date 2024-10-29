@@ -22,6 +22,12 @@ rpath = false
 debug-assertions = false
 incremental = false
 
+[profile.dev]
+codegen-units = 1
+panic = "unwind"
+opt-level = "z"
+incremental = false
+
 [dependencies]
 stylus-sdk = "0.6.0"
 thiserror = "1.0.48"
@@ -58,3 +64,5 @@ trading-mint = []
 trading-extras = []
 testing-dbg = []
 testing = []
+amm-use-longtail = []
+amm-use-camelot = []

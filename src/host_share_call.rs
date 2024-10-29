@@ -1,6 +1,4 @@
-use stylus_sdk::{
-    alloy_primitives::{Address, FixedBytes, U256},
-};
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use crate::{erc20_call, error::Error};
 

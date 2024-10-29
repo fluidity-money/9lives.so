@@ -81,13 +81,19 @@ impl StorageTrading {
         Ok(())
     }
 
-    pub fn payoff(&mut self, outcome_id: FixedBytes<8>, recipient: Address) -> Result<U256, Error> {
+    pub fn payoff(
+        &mut self,
+        outcome_id: FixedBytes<8>,
+        amt: U256,
+        recipient: Address,
+    ) -> Result<U256, Error> {
         let outcome = self.outcomes.getter(outcome_id);
         assert_or!(outcome.winner.get(), Error::NotWinner);
         // Get the user's balance of the share they own for this outcome.
         let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
         // Start to burn their share of the supply to convert to a payoff amount.
-        let share_bal = share_call::balance_of(share_addr, msg::sender())?;
+        // Take the max of what they asked.
+        let share_bal = U256::min(share_call::balance_of(share_addr, msg::sender())?, amt);
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg::sender(), share_bal)?;
         let n = share_u256_to_decimal(share_bal)?;

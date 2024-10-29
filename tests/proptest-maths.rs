@@ -4,7 +4,10 @@ use proptest::prelude::*;
 
 use stylus_sdk::alloy_primitives::U256;
 
-use lib9lives::{decimal, maths};
+use lib9lives::{
+    decimal::{fusdc_u256_to_decimal, MAX_DECIMAL},
+    maths,
+};
 
 #[test]
 fn test_price_to_sqrt_ratio_native() {
@@ -14,14 +17,13 @@ fn test_price_to_sqrt_ratio_native() {
     )
 }
 
+fn strat_valid_u256() -> impl Strategy<Value = U256> {
+    (1..MAX_DECIMAL).prop_map(U256::from)
+}
+
 proptest! {
     #[test]
-    fn test_price_to_sqrt_ratio_and_convert(price in 0..2 ^ 256) {
-         let price = U256::from(price);
-         dbg!(
-             price,
-             maths::price_to_sqrt_price(price).unwrap(),
-             decimal::fusdc_u256_to_decimal(maths::price_to_sqrt_price(price).unwrap()).unwrap()
-         );
+    fn test_price_to_sqrt_ratio_and_convert(p in strat_valid_u256()) {
+        fusdc_u256_to_decimal(maths::price_to_sqrt_price(p).unwrap()).unwrap();
     }
 }

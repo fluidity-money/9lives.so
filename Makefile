@@ -34,22 +34,22 @@ trading-extras: trading-extras.wasm
 
 factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f factory-1.wasm
-	@${CARGO_BUILD_STYLUS} factory-1
+	@${CARGO_BUILD_STYLUS} amm-use-camelot,factory-1
 	@${RELEASE_WASM_OPT_9LIVES} factory-1.wasm
 
 factory-2.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f factory-2.wasm
-	@${CARGO_BUILD_STYLUS} factory-2
+	@${CARGO_BUILD_STYLUS} amm-use-camelot,factory-2
 	@${RELEASE_WASM_OPT_9LIVES} factory-2.wasm
 
 trading-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading-mint.wasm
-	@${CARGO_BUILD_STYLUS} trading-mint
+	@${CARGO_BUILD_STYLUS} amm-use-camelot,trading-mint
 	@${RELEASE_WASM_OPT_9LIVES} trading-mint.wasm
 
 trading-extras.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading-extras.wasm
-	@${CARGO_BUILD_STYLUS} trading-extras
+	@${CARGO_BUILD_STYLUS} amm-use-camelot,trading-extras
 	@${RELEASE_WASM_OPT_9LIVES} trading-extras.wasm
 
 clean:

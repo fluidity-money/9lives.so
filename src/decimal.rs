@@ -22,7 +22,7 @@ fn u256_to_decimal(n: U256, decimals: u8) -> Result<Decimal, Error> {
     let n: u128 = u128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
     let rem: u128 = u128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
     if n > MAX_DECIMAL {
-        return Err(Error::U256TooLarge)
+        return Err(Error::U256TooLarge);
     }
     let n = Decimal::from(n);
     let rem = Decimal::from(rem);

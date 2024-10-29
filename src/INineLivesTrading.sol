@@ -53,9 +53,10 @@ interface INineLivesTrading {
     /**
      * @notice Collect the payoff if holding winning shares!
      * @param outcomeId to collect the payoff for.
+     * @param amount of share to use for receiving the payoff.
      * @param recipient to send the winnings to.
      */
-    function payoff(bytes8 outcomeId, address recipient) external returns (uint256);
+    function payoff(bytes8 outcomeId, uint256 amount, address recipient) external returns (uint256);
 
     /**
      * @notice Details that're available for this outcome.

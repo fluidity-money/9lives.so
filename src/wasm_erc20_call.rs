@@ -5,7 +5,7 @@ use stylus_sdk::{
 
 use crate::{
     calldata::{unpack_bool_safe, unpack_u256},
-    erc20_cd::{pack_transfer, pack_balance_of, pack_permit, pack_transfer_from},
+    erc20_cd::{pack_balance_of, pack_permit, pack_transfer, pack_transfer_from},
     error::Error,
 };
 

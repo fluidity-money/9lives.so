@@ -7,11 +7,12 @@ use stylus_sdk::{
 };
 
 use crate::{
+    amm_call,
     decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal},
     error::*,
     events, fusdc_call,
     immutables::*,
-    longtail_call, maths, proxy, share_call, trading_call,
+    maths, proxy, share_call, trading_call,
 };
 
 pub use crate::factory_storage::*;
@@ -88,16 +89,14 @@ impl StorageFactory {
                 Decimal::ZERO,
             )?)?)?;
 
-            // Use Longtail to create a pool for this share for aftermarket trading.
-            longtail_call::create_pool(
+            // Use the current AMM to create a pool of this share for aftermarket trading.
+            amm_call::enable_pool(amm_call::create_pool(
                 erc20_addr,
                 sqrt_price,
                 LONGTAIL_FEE,
                 LONGTAIL_TICK_SPACING,
                 LONGTAIL_MAX_LIQ_PER_TICK,
-            )?;
-
-            longtail_call::enable_pool(erc20_addr)?;
+            )?)?;
 
             evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_id,

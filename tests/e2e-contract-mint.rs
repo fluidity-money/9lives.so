@@ -1,5 +1,8 @@
-use stylus_sdk::{msg, alloy_primitives::{fixed_bytes, Address, U256}};
 use lib9lives::host;
+use stylus_sdk::{
+    alloy_primitives::{fixed_bytes, U256},
+    msg,
+};
 
 #[test]
 fn test_e2e_mint() {
@@ -16,12 +19,8 @@ fn test_e2e_mint() {
         .unwrap();
 
         assert_eq!(
-            c.mint_227_C_F_432(
-                outcome_1,
-                U256::from(1e6) * U256::from(6),
-                msg::sender(),
-            )
-            .unwrap(),
+            c.mint_227_C_F_432(outcome_1, U256::from(1e6) * U256::from(6), msg::sender(),)
+                .unwrap(),
             U256::from(4476926)
         );
 

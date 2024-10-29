@@ -24,20 +24,16 @@ pub fn pack_disable_shares(outcomes: &[FixedBytes<8>]) -> Vec<u8> {
 #[test]
 fn test_disable_shares() {
     //cast calldata 'disableShares(bytes8[])' '[0x0011223300112233, 0x0011223300112233]'
-    let b = const_hex::encode(
-        &pack_disable_shares(&[
-            FixedBytes::from_slice(&[0x00, 0x11, 0x22, 0x33, 0x00, 0x11, 0x22, 0x33]),
-            FixedBytes::from_slice(&[0x00, 0x11, 0x22, 0x33, 0x00, 0x11, 0x22, 0x33]),
-        ])
-    );
+    let b = const_hex::encode(&pack_disable_shares(&[
+        FixedBytes::from_slice(&[0x00, 0x11, 0x22, 0x33, 0x00, 0x11, 0x22, 0x33]),
+        FixedBytes::from_slice(&[0x00, 0x11, 0x22, 0x33, 0x00, 0x11, 0x22, 0x33]),
+    ]));
     assert_eq!(b.to_string(), "587703db0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200112233001122330000000000000000000000000000000000000000000000000011223300112233000000000000000000000000000000000000000000000000");
     //cast calldata 'disableShares(bytes8[])' '[0x0011223300112233, 0x9999999999999999, 0x2222222222222222]'
-    let b = const_hex::encode(
-        &pack_disable_shares(&[
-            FixedBytes::from_slice(&[0x00, 0x11, 0x22, 0x33, 0x00, 0x11, 0x22, 0x33]),
-            FixedBytes::from_slice(&[0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99]),
-            FixedBytes::from_slice(&[0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22]),
-        ])
-    );
+    let b = const_hex::encode(&pack_disable_shares(&[
+        FixedBytes::from_slice(&[0x00, 0x11, 0x22, 0x33, 0x00, 0x11, 0x22, 0x33]),
+        FixedBytes::from_slice(&[0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99]),
+        FixedBytes::from_slice(&[0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22]),
+    ]));
     assert_eq!(b.to_string(), "587703db00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003001122330011223300000000000000000000000000000000000000000000000099999999999999990000000000000000000000000000000000000000000000002222222222222222000000000000000000000000000000000000000000000000")
 }

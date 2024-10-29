@@ -175,6 +175,11 @@ pub enum Error {
     /// No shares were burned.
     #[error("No shares were burned!")]
     ZeroShares,
+
+    // 0x21
+    /// Camelot had an error, we'll bubble up what happened.
+    #[error("Camelot had an error.")]
+    CamelotError(Vec<u8>),
 }
 
 impl From<Error> for Vec<u8> {

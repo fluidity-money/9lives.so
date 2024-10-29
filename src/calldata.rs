@@ -51,6 +51,14 @@ pub fn unpack_bool_safe(data: &[u8]) -> Result<(), Error> {
     }
 }
 
+pub fn unpack_address(data: &[u8]) -> Option<Address> {
+    if data.len() != 32 {
+        None
+    } else {
+        Some(Address::from_slice(&data[12..]))
+    }
+}
+
 #[test]
 fn test_write_address() {
     use stylus_sdk::alloy_primitives::address;
@@ -150,5 +158,16 @@ fn test_write_u128() {
     assert_eq!(
         const_hex::encode(&b),
         "6d677a1f000000000000000000000000000000000000000000000000000000000001599e"
+    );
+}
+
+#[test]
+fn test_address_unpacking() {
+    use stylus_sdk::alloy_primitives::address;
+    let b = const_hex::decode("0000000000000000000000002e0413d120b556c39b1e97cf1201b1ce93759872")
+        .unwrap();
+    assert_eq!(
+        unpack_address(&b).unwrap(),
+        address!("2e0413D120B556c39B1e97cF1201B1cE93759872")
     );
 }

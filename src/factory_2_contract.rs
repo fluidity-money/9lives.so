@@ -1,13 +1,6 @@
-use stylus_sdk::{
-    alloy_primitives::{*},
-    contract, msg,
-};
+use stylus_sdk::{alloy_primitives::*, contract, msg};
 
-use crate::{
-    error::*,
-    immutables::*,
-    longtail_call, proxy,
-};
+use crate::{amm_call, error::*, immutables::*, proxy};
 
 pub use crate::factory_storage::*;
 
@@ -41,7 +34,8 @@ impl StorageFactory {
         Ok(self.trading_contracts.getter(trading_addr).get())
     }
 
-    /// Disable shares from being traded via Longtail.
+    /// Disable shares from being traded via Longtail. WARNING: if Camelot
+    /// is the enabled feature, this will not do anything!
     pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> Result<(), Error> {
         assert_or!(
             self.trading_contracts.getter(msg::sender()).get() != Address::default(),
@@ -49,7 +43,8 @@ impl StorageFactory {
         );
         // Start to derive the outcomes that were given to find the share addresses.
         for outcome_id in outcomes {
-            longtail_call::pause_pool(proxy::get_share_addr(
+            // NOTE: If Camelot is enabled, this will NOT do anything!
+            amm_call::pause_pool(proxy::get_share_addr(
                 contract::address(),
                 msg::sender(),
                 outcome_id,
