@@ -11,7 +11,7 @@ function PositionRow({
   data,
   price,
 }: {
-  data: { id: string; name: string; balance: string };
+  data: { shareAddress: `0x${string}`; name: string; balance: string };
   price?: string;
 }) {
   return (
@@ -20,7 +20,7 @@ function PositionRow({
         <div className="flex flex-col gap-1 p-1">
           <p className="font-chicago text-xs">{data.name}</p>
           <span className="font-geneva text-[10px] uppercase text-[#808080]">
-            {data.id}
+            {data.shareAddress}
           </span>
         </div>
       </td>

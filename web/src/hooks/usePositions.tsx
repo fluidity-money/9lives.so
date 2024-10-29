@@ -26,6 +26,7 @@ async function fetchPositions(
   const mintedPositions = outcomes
     .map((outcome, idx) => ({
       id: outcome.identifier,
+      shareAddress: outcome.share.address,
       name: outcome.name,
       balance: formatUnits(balances[idx], config.contracts.decimals.fusdc),
     }))
@@ -43,7 +44,14 @@ export default function usePositions({
   outcomes: Outcome[];
   account?: Account;
 }) {
-  return useQuery<{ id: string; name: string; balance: string }[]>({
+  return useQuery<
+    {
+      id: `0x${string}`;
+      shareAddress: `0x${string}`;
+      name: string;
+      balance: string;
+    }[]
+  >({
     queryKey: ["positions", tradingAddr, outcomes, account],
     queryFn: () => fetchPositions(tradingAddr, outcomes, account),
   });
