@@ -1,6 +1,8 @@
 use alloc::vec::Vec;
 use thiserror::Error;
 
+use stylus_sdk::alloy_primitives::Address;
+
 #[macro_export]
 macro_rules! assert_or {
     ($cond:expr, $err:expr) => {
@@ -61,7 +63,7 @@ pub enum Error {
     // 0x0a
     /// ERC20 error on transfer!
     #[error("ERC20 error on transfer")]
-    ERC20ErrorTransfer(Vec<u8>),
+    ERC20ErrorTransfer(Address, Vec<u8>),
 
     // 0x0b
     /// Trading error! Probably during construction.
@@ -157,17 +159,17 @@ pub enum Error {
     // 0x1d
     /// ERC20 error on transfer from!
     #[error("ERC20 error on transfer")]
-    ERC20ErrorTransferFrom(Vec<u8>),
+    ERC20ErrorTransferFrom(Address, Vec<u8>),
 
     // 0x1e
     /// ERC20 error on permit!
     #[error("ERC20 error on permit")]
-    ERC20ErrorPermit(Vec<u8>),
+    ERC20ErrorPermit(Address, Vec<u8>),
 
     // 0x1f
     /// ERC20 error on balanceOf!
     #[error("ERC20 error on balanceOf")]
-    ERC20ErrorBalanceOf(Vec<u8>),
+    ERC20ErrorBalanceOf(Address, Vec<u8>),
 
     // 0x20
     /// No shares were burned.
@@ -183,9 +185,11 @@ impl From<Error> for Vec<u8> {
 
     #[cfg(target_arch = "wasm32")]
     fn from(val: Error) -> Self {
-        fn ext(preamble: [u8; 2], b: Vec<u8>) -> Vec<u8> {
+        fn ext(preamble: &[u8], b: &[&[u8]]) -> Vec<u8> {
             let mut x = preamble.to_vec();
-            x.extend(b);
+            for b in b {
+                x.extend(*b);
+            }
             x
         }
 
@@ -198,13 +202,21 @@ impl From<Error> for Vec<u8> {
         const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
 
         match val {
-            Error::LongtailError(b) => ext(ERR_LONGTAIL_PREAMBLE, b),
-            Error::ERC20ErrorTransfer(b) => ext(ERR_ERC20_TRANSFER_PREAMBLE, b),
-            | Error::ERC20ErrorTransferFrom(b) => ext(ERR_ERC20_TRANSFER_FROM_PREAMBLE, b),
-            | Error::ERC20ErrorPermit(b) => ext(ERR_ERC20_PERMIT_PREAMBLE, b),
-            | Error::ERC20ErrorBalanceOf(b) => ext(ERR_ERC20_BALANCE_OF_PREAMBLE, b),
-            Error::ShareError(b) => ext(ERR_SHARE_PREAMBLE, b),
-            Error::TradingError(b) => ext(ERR_TRADING_PREAMBLE, b),
+            Error::LongtailError(b) => ext(&ERR_LONGTAIL_PREAMBLE, &[&b]),
+            Error::ERC20ErrorTransfer(addr, b) => {
+                ext(&ERR_ERC20_TRANSFER_PREAMBLE, &[&b, addr.as_slice()])
+            }
+            Error::ERC20ErrorTransferFrom(addr, b) => {
+                ext(&ERR_ERC20_TRANSFER_FROM_PREAMBLE, &[&b, addr.as_slice()])
+            }
+            Error::ERC20ErrorPermit(addr, b) => {
+                ext(&ERR_ERC20_PERMIT_PREAMBLE, &[&b, addr.as_slice()])
+            }
+            Error::ERC20ErrorBalanceOf(addr, b) => {
+                ext(&ERR_ERC20_BALANCE_OF_PREAMBLE, &[&b, addr.as_slice()])
+            }
+            Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
+            Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
         }
     }
