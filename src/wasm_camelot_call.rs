@@ -1,5 +1,13 @@
+use crate::{error::Error, immutables::*};
+
+use stylus_sdk::{
+    alloy_primitives::{Address, U256},
+    call::RawCall,
+};
 
 use alloy_sol_macro::sol;
+
+use alloy_sol_types::SolCall;
 
 sol! {
     function createPool(address tokenA, address tokenB);
@@ -13,18 +21,19 @@ pub fn create_pool(
     _liq_per_tick: u128,
 ) -> Result<Address, Error> {
     // We don't do much aside from take the ERC20 and fUSDC address for this.
-    let  (tokenA, tokenB) = if erc20 > FUSDC_ADDRESS {
-        FUSDC_ADDR, erc20
+    let (token_a, token_b) = if erc20 > FUSDC_ADDR {
+        (FUSDC_ADDR, erc20)
     } else {
-        erc20, FUSDC_ADDR
+        (erc20, FUSDC_ADDR)
     };
     RawCall::new()
         .call(
-            LONGTAIL_ADDR,
+            AMM_ADDR,
             &createPoolCall {
-                tokenA,
-                tokenB
-            }.abi_encode()
+                tokenA: token_a,
+                tokenB: token_b,
+            }
+            .abi_encode(),
         )
         .map_err(Error::CamelotError)?;
     Ok(erc20)

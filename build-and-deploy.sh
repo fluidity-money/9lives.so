@@ -3,7 +3,7 @@
 cat >/dev/null <<EOF
 $SPN_SUPERPOSITION_URL
 $SPN_SUPERPOSITION_KEY
-$SPN_LONGTAIL_ADDR
+$SPN_AMM_ADDR
 $SPN_FUSDC_ADDR
 $SPN_PROXY_ADMIN
 EOF
@@ -13,6 +13,8 @@ wallet_addr="$(cast wallet address --private-key $SPN_SUPERPOSITION_KEY)"
 eval "$(go run scripts/get-addresses-full-deploy.go "$wallet_addr" 2>&1 1>/dev/null)"
 
 ./build-and-deploy-impls.sh
+
+>&2 echo "SPN_ERC20_IMPL_ADDR=$(./deploy-erc20-impl.sh)"
 
 >&2 echo "SPN_FACTORY_PROXY_ADDR=$(./deploy-factory-proxy.sh $SPN_PROXY_ADMIN | jq -r .deployedTo)"
 

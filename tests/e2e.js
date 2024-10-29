@@ -87,11 +87,11 @@ describe("End to end tests", async () => {
         ...process.env,
         "SPN_SUPERPOSITION_URL": RPC_URL,
         "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
-        "SPN_LONGTAIL_ADDR": longtailAddress,
+        "SPN_AMM_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
         "SPN_PROXY_ADMIN": defaultAccountAddr
       },
-      stdio: ["ignore", "ignore", "ignore"]
+      //stdio: ["ignore", "ignore", "ignore"]
     },
   );
 

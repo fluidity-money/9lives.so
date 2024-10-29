@@ -53,7 +53,7 @@ mod wasm_longtail_call;
 #[cfg(all(feature = "amm-use-camelot", not(target_arch = "wasm32")))]
 mod host_camelot_call;
 #[cfg(all(feature = "amm-use-camelot", target_arch = "wasm32"))]
-mod wasm_longtail_call;
+mod wasm_camelot_call;
 
 pub mod amm_call;
 

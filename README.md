@@ -52,10 +52,10 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Proxy admin              | 0xde1a8eda6fc9913224b1e8ad6cdcd8dc1d5080ae |
 | Factory 1 implementation | 0x850f803b43C6075BcA8D4ABb0795F72a7AA28090 |
 | Factory 2 implementation | 0x170d2Ffdd4231F8c4D106A935b775f0792223527 |
-| ERC20 implementation     | 0x08444e75F468f0298Fcef1d7e7ED7ecFEf8d6daf |
 | Trading mint impl        | 0x7601aFdc3bdAabD9323aaF6381084156c686Adc2 |
 | Trading extras impl      | 0x28168339e87c247910B1b8A0b428fF2679462582 |
 | Factory proxy            | 0x6c49d7845d1C9540B3D53B01296248b4B0a9d60D |
+| ERC20 implementation     | 0x08444e75F468f0298Fcef1d7e7ED7ecFEf8d6daf |
 | LensesV1                 | 0x9a7eBd1a085BaCDD6211Fd77ac26b772b48BD6B4 |
 
 ### Superposition testnet
@@ -65,8 +65,8 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Proxy admin              | 0x0256a089553ae26fd45fc36495d7cf3a044d0fdb |
 | Factory 1 implementation | 0xF1b485d0a0D79FCEAd35E9923E3A07deD14D9A1A |
 | Factory 2 implementation | 0xE30f69f9F2A439db7A5fA89707403a4A231368F5 |
-| ERC20 implementation     | 0xd27d3c46A66b6F496a67C9cb881f9dF13091A777 |
 | Trading mint impl        | 0xeCAC5280Ad9bF4E2a1AC7a16b884945E134A2c36 |
 | Trading extras impl      | 0x3C4bD874746C0EbD3e438900B226Dde963a1eB0c |
 | Factory proxy            | 0x22E844526b3921BE5c42f8208a4FEfC5db8d82CB |
+| ERC20 implementation     | 0xd27d3c46A66b6F496a67C9cb881f9dF13091A777 |
 | LensesV1                 | 0xfCd4E63563D561D979D280B52eD4AB7e7678F204 |

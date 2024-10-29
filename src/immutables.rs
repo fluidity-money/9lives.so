@@ -35,8 +35,8 @@ macro_rules! env_addr {
     };
 }
 
-// Longtail address deployed.
-env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR");
+// AMM address deployed (either Longtail or Camelot.)
+env_addr!(AMM_ADDR, "SPN_AMM_ADDR");
 
 // fUSDC address to use as the base asset for everything.
 env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR");
