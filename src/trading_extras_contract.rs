@@ -1,4 +1,4 @@
-use stylus_sdk::{alloy_primitives::*, contract, evm, msg};
+use stylus_sdk::{block, alloy_primitives::*, contract, evm, msg};
 
 use rust_decimal::Decimal;
 
@@ -63,7 +63,7 @@ impl StorageTrading {
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> Result<(), Error> {
         let oracle_addr = self.oracle.get();
         assert_or!(msg::sender() == oracle_addr, Error::NotOracle);
-        assert_or!(!self.decided.get(), Error::NotTradingContract);
+        assert_or!(self.locked.get().is_zero(), Error::NotTradingContract);
         // Notify Longtail to pause trading on every outcome pool.
         factory_call::disable_shares(
             self.factory.get(),
@@ -73,7 +73,7 @@ impl StorageTrading {
         )?;
         // Set the outcome that's winning as the winner!
         self.outcomes.setter(outcome).winner.set(true);
-        self.decided.set(true);
+        self.locked.set(U64::from(block::timestamp()));
         evm::log(events::OutcomeDecided {
             identifier: outcome,
             oracle: oracle_addr,

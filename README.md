@@ -45,15 +45,15 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 ## Deployments
 
-### Arbitrum One (pre US election) - Camelot edition
+### Arbitrum One (pre-US election) - Camelot edition
 
 |      Deployment name     |              Deployment address            |
 |--------------------------|--------------------------------------------|
 | Proxy admin              | 0xde1a8eda6fc9913224b1e8ad6cdcd8dc1d5080ae |
-| Factory 1 implementation | 0xe0e6cf9b357e9a2720891cbcc87d2afdb1392793 |
-| Factory 2 implementation | 0x29d9d41822efa475754b173fe4fdb1b7a032313c |
-| Trading mint impl        | 0x5f8049771d5f2fb86bf64d92c2511eff10818f73 |
-| Trading extras impl      | 0x4fd31ab7fcac42712fc584872608d7855817baec |
+| Factory 1 implementation | 0xc3ec0a8f059a02b8991f66e25eb90dc1262caf46 |
+| Factory 2 implementation | 0x15bd7286550309636046953c6824b2fcf1dc4d31 |
+| Trading mint impl        | 0x34Ac578cce13f7165DA843Fa5d817fc00b3036fe |
+| Trading extras impl      | 0xd484d84b440a4c50318C7387Db3F0Ffba8771051 |
 | Factory proxy            | 0x6c49d7845d1C9540B3D53B01296248b4B0a9d60D |
 | ERC20 implementation     | 0x08444e75F468f0298Fcef1d7e7ED7ecFEf8d6daf |
 | LensesV1                 | 0x9a7eBd1a085BaCDD6211Fd77ac26b772b48BD6B4 |

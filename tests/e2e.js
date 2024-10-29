@@ -91,7 +91,7 @@ describe("End to end tests", async () => {
         "SPN_FUSDC_ADDR": fusdcAddress,
         "SPN_PROXY_ADMIN": defaultAccountAddr
       },
-      //stdio: ["ignore", "ignore", "ignore"]
+      stdio: ["ignore", "ignore", "ignore"]
     },
   );
 
@@ -143,7 +143,7 @@ describe("End to end tests", async () => {
     assert.equal(balAfter, "4476926");
     await (await trading.decide(outcome1)).wait();
     const fusdcBalBefore = await fusdc.balanceOf(defaultAccountAddr);
-    await (await trading.payoff(outcome1, defaultAccountAddr)).wait();
+    await (await trading.payoff(outcome1, balAfter, defaultAccountAddr)).wait();
     assert.equal(await share1.balanceOf(defaultAccountAddr), "0");
     assert.ok(await fusdc.balanceOf(defaultAccountAddr) > fusdcBalBefore);
   });

@@ -29,7 +29,7 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> Result<U256, Error> {
-        assert_or!(!self.locked.get(), Error::DoneVoting);
+        assert_or!(self.locked.get().is_zero(), Error::DoneVoting);
 
         // Assume we already took the user's balance. Get the state of
         // everything else as u256s.

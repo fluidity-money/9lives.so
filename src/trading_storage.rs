@@ -17,28 +17,31 @@ pub struct StorageOutcome {
 #[storage]
 #[cfg_attr(any(feature = "trading-mint", feature = "trading-extras"), entrypoint)]
 pub struct StorageTrading {
-    // Outcome was determined! It should be impossible to mint, only to burn.
-    pub locked: StorageBool,
+    /// Outcome was determined! It should be impossible to mint, only to burn.
+    /// This is the timestamp the locking took place. If it's 0, then we haven't
+    /// decided the outcome yet.
+    pub locked: StorageU64,
 
-    // Oracle responsible for determine the outcome.
+    /// Oracle responsible for determine the outcome.
     pub oracle: StorageAddress,
 
-    // Factory that created this trading pool. Empty if not created!
+    /// Factory that created this trading pool. Empty if not created!
     pub factory: StorageAddress,
 
-    // Shares existing in every outcome.
+    /// Shares existing in every outcome.
     pub shares: StorageDecimal,
 
-    // Global amount invested to this pool of the native asset.
+    /// Global amount invested to this pool of the native asset.
     pub invested: StorageDecimal,
 
+    /// Outcomes vested in the contract.
     pub outcomes: StorageMap<FixedBytes<8>, StorageOutcome>,
 
-    // Outcomes tracked to be disabled with Longtail once a winner is found.
+    /// Outcomes tracked to be disabled with Longtail once a winner is found.
     pub outcome_list: StorageVec<StorageFixedBytes<8>>,
 
-    // Has the outcome here been determined using the determine function?
-    pub decided: StorageBool,
+    /// The amount paid out so far by the decided amount.
+    pub amount_paid_out: StorageDecimal
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]

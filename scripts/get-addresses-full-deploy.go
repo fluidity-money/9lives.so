@@ -35,9 +35,9 @@ func main() {
 		factory1Impl      = ethCrypto.CreateAddress(addr, nonce)
 		factory2Impl      = ethCrypto.CreateAddress(addr, nonce+2)
 		tradingMintImpl   = ethCrypto.CreateAddress(addr, nonce+4)
-		tradingExtrasImpl = ethCrypto.CreateAddress(addr, nonce+6)
-		erc20Impl         = ethCrypto.CreateAddress(addr, nonce+8)
-		factoryProxy      = ethCrypto.CreateAddress(addr, nonce+9)
+		tradingExtrasImpl = ethCrypto.CreateAddress(addr, nonce+5)
+		erc20Impl         = ethCrypto.CreateAddress(addr, nonce+7)
+		factoryProxy      = ethCrypto.CreateAddress(addr, nonce+8)
 	)
 	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
 		"factory1Impl":      factory1Impl,

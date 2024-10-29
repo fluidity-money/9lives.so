@@ -19,14 +19,9 @@ contract LensesV1 {
     ILongtail immutable public longtail;
     INineLivesFactory immutable public factory;
 
-    bytes32 private TRADING_HASH;
-    bytes32 private ERC20_HASH;
-
     constructor(ILongtail _longtail, INineLivesFactory _factory) {
         longtail = _longtail;
         factory = _factory;
-        TRADING_HASH = factory.tradingHash();
-        ERC20_HASH = factory.erc20Hash();
     }
 
     function getLongtailQuote(
@@ -59,7 +54,7 @@ contract LensesV1 {
                 _outcomeId,
                 _tradingAddr
             )),
-            ERC20_HASH
+            factory.erc20Hash()
         )))));
     }
 

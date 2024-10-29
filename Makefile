@@ -39,17 +39,17 @@ factory-1.wasm: $(shell find src -type f -name '*.rs')
 
 factory-2.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f factory-2.wasm
-	@${CARGO_BUILD_STYLUS} amm-use-longtail,factory-2
+	@${CARGO_BUILD_STYLUS} amm-use-camelot,factory-2
 	@${RELEASE_WASM_OPT_9LIVES} factory-2.wasm
 
 trading-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading-mint.wasm
-	@${CARGO_BUILD_STYLUS} amm-use-longtail,trading-mint
+	@${CARGO_BUILD_STYLUS} amm-use-camelot,trading-mint
 	@${RELEASE_WASM_OPT_9LIVES} trading-mint.wasm
 
 trading-extras.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading-extras.wasm
-	@${CARGO_BUILD_STYLUS} amm-use-longtail,trading-extras
+	@${CARGO_BUILD_STYLUS} amm-use-camelot,trading-extras
 	@${RELEASE_WASM_OPT_9LIVES} trading-extras.wasm
 
 clean:
