@@ -20,7 +20,7 @@ function generateId({ name, desc }) {
     console.log(name, ",", desc, ",", seed)
     const res =
         execSync(
-            `go run scripts/outcome/generate-id.go ${name} ${desc} ${seed}`,
+            `go run scripts/outcome/generate-id.go "${name}" "${desc}" ${seed}`,
             {
                 stdio: ["ignore", "pipe", "ignore"]
             },
@@ -44,8 +44,8 @@ describe("Mint test", async () => {
 
     const provider = new JsonRpcProvider(RPC_URL);
     const signer = new Wallet(DEPLOY_KEY, provider);
-    const outcomeDetails = [{ name: "Ryu", desc: "Fighter" }, { name: "Ken", desc: "Fighter" }]
-    const fusdcAddress = "0xa8ea92c819463efbeddfb670fefc881a480f0115"
+    const outcomeDetails = [{ name: "Donald Trump", desc: "Republican Representative" }, { name: "Kamala Harris", desc: "Democratic Representative" }]
+    const fusdcAddress = "0x4cfa50b7ce747e2d61724fcac57f24b748ff2b2a"
     const receiver = "0x63177184B8b5e1229204067a76Ec4c635009CBD2"
     const onefUSD = 1000000
     const factoryContract = new Contract(FACTORY, Factory.abi, signer);
