@@ -4,11 +4,15 @@ import { Outcome } from "@/types";
 import { useActiveAccount } from "thirdweb/react";
 import Button from "../themed/button";
 import usePositions from "@/hooks/usePositions";
+import useSharePrices from "@/hooks/useSharePrices";
+import config from "@/config";
 
 function PositionRow({
   data,
+  price,
 }: {
   data: { id: string; name: string; balance: string };
+  price?: string;
 }) {
   return (
     <tr>
@@ -23,8 +27,18 @@ function PositionRow({
       <td>
         <span className="font-chicago text-xs">$ {data.balance}</span>
       </td>
+      <td>
+        <span className="font-chicago text-xs">
+          ${" "}
+          {price
+            ? (Number(data.balance) * Number(price)).toFixed(
+                config.contracts.decimals.fusdc,
+              )
+            : ""}
+        </span>
+      </td>
       <td className="flex justify-end px-2">
-        <Button title="Sell" intent={"no"} />
+        <Button title="Sell" intent={"no"} disabled />
       </td>
     </tr>
   );
@@ -40,7 +54,7 @@ function Placeholder({
   return (
     <tbody className={bodyStyles}>
       <tr>
-        <td colSpan={3}>
+        <td colSpan={4}>
           <div className="flex min-h-36 flex-col items-center justify-center gap-1">
             <span className="font-chicago text-xs">{title}</span>
             <span className="font-geneva text-[10px] uppercase text-[#808080]">
@@ -66,6 +80,10 @@ export default function PositionsBody({
     outcomes,
     account,
   });
+  const { data: sharePrices } = useSharePrices({
+    tradingAddr,
+    outcomeIds: outcomes.map((o) => o.identifier),
+  });
   if (isLoading) return <Placeholder title="Loading..." />;
   if (isError)
     return <Placeholder title="Whoops, error!" subtitle={error.message} />;
@@ -78,7 +96,13 @@ export default function PositionsBody({
     );
   return (
     <tbody className={bodyStyles}>
-      {data?.map((item, idx) => <PositionRow key={idx} data={item} />)}
+      {data?.map((item, idx) => (
+        <PositionRow
+          key={idx}
+          data={item}
+          price={sharePrices?.find((o) => o.id === item.id)?.price}
+        />
+      ))}
     </tbody>
   );
 }

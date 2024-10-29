@@ -8,7 +8,12 @@ interface PositionsProps {
 export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
-  const tablesHeaders = ["Position", "Invested Amount", "Actions"];
+  const tablesHeaders = [
+    "Position",
+    "Amount of Shares",
+    "Value of Shares",
+    "Actions",
+  ];
 
   return (
     <div>
