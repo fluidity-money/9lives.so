@@ -88,6 +88,7 @@ impl StorageTrading {
         let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
         // Start to burn their share of the supply to convert to a payoff amount.
         let share_bal = share_call::balance_of(share_addr, msg::sender())?;
+        assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg::sender(), share_bal)?;
         let n = share_u256_to_decimal(share_bal)?;
         let n_1 = outcome.shares.get();

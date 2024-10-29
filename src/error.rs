@@ -168,6 +168,11 @@ pub enum Error {
     /// ERC20 error on balanceOf!
     #[error("ERC20 error on balanceOf")]
     ERC20ErrorBalanceOf(Vec<u8>),
+
+    // 0x20
+    /// No shares were burned.
+    #[error("No shares were burned!")]
+    ZeroShares,
 }
 
 impl From<Error> for Vec<u8> {
@@ -185,16 +190,19 @@ impl From<Error> for Vec<u8> {
         }
 
         const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
-        const ERR_ERC20_PREAMBLE: [u8; 2] = [0x99, 0x01];
+        const ERR_ERC20_TRANSFER_PREAMBLE: [u8; 2] = [0x99, 0x01];
         const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];
-        const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x03];
+        const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x02];
+        const ERR_ERC20_TRANSFER_FROM_PREAMBLE: [u8; 2] = [0x99, 0x04];
+        const ERR_ERC20_PERMIT_PREAMBLE: [u8; 2] = [0x99, 0x05];
+        const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
 
         match val {
             Error::LongtailError(b) => ext(ERR_LONGTAIL_PREAMBLE, b),
-            Error::ERC20ErrorTransfer(b)
-            | Error::ERC20ErrorTransferFrom(b)
-            | Error::ERC20ErrorPermit(b)
-            | Error::ERC20ErrorBalanceOf(b) => ext(ERR_ERC20_PREAMBLE, b),
+            Error::ERC20ErrorTransfer(b) => ext(ERR_ERC20_TRANSFER_PREAMBLE, b),
+            | Error::ERC20ErrorTransferFrom(b) => ext(ERR_ERC20_TRANSFER_FROM_PREAMBLE, b),
+            | Error::ERC20ErrorPermit(b) => ext(ERR_ERC20_PERMIT_PREAMBLE, b),
+            | Error::ERC20ErrorBalanceOf(b) => ext(ERR_ERC20_BALANCE_OF_PREAMBLE, b),
             Error::ShareError(b) => ext(ERR_SHARE_PREAMBLE, b),
             Error::TradingError(b) => ext(ERR_TRADING_PREAMBLE, b),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
