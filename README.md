@@ -5,9 +5,6 @@
 pattern. A factory takes a list of outcomes, and creates a variable number of contracts
 with a minimal viable proxy pointing to share ERC20s, and a trading contract.
 
-It allows a protocol-sanctioned address to determine which outcome came to reality,
-then share holders can convert their positions to fUSDC on request.
-
 ![Diagram of the system](diagram.svg)
 
 ## Roadmap
@@ -23,7 +20,8 @@ then share holders can convert their positions to fUSDC on request.
     3. Customise the UI of the frontpage for the info
     4. Settlement based on a website URL?
     5. Stack ranking is done for automated updating of frontpage
-    6. Campaign report functionality. Images are screened automatically for bad images with AI
+    6. Campaign report functionality. Images are screened automatically for bad images with A
+    7. API to update display on the frontpage
 - [ ] Layerzero configuration with Arbitrum One mainnet with UMA
 - [ ] Prediction market DAO. Token launch
 
