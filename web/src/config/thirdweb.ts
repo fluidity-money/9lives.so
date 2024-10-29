@@ -30,6 +30,10 @@ const thirdwebSchema = z.object({
   connectModal: z.object({
     showThirdwebBranding: z.boolean(),
   }),
+  switchButton: z.object({
+    style: z.any(),
+    label: z.string(),
+  })
 });
 const wallets = [
   inAppWallet({
@@ -77,6 +81,20 @@ const thirdwebValidation = thirdwebSchema.safeParse({
   },
   connectModal: {
     showThirdwebBranding: false,
+  },
+  switchButton: {
+    style: {
+      backgroundColor: "transparent",
+      fontFamily: "var(--font-chicago)",
+      height: 40,
+      fontSize: 12,
+      lineHeight: 16,
+      borderColor: "transparent",
+      color: "#FFB3B3",
+      minWidth: "auto",
+      border: "none",
+    },
+    label: "Wrong Network",
   },
 });
 if (!thirdwebValidation.success) {

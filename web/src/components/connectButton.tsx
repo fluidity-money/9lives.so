@@ -14,6 +14,7 @@ export default function ConnectButton() {
       detailsButton={appConfig.thirdweb.detailsButton}
       connectButton={appConfig.thirdweb.connectButton}
       connectModal={appConfig.thirdweb.connectModal}
+      switchButton={appConfig.thirdweb.switchButton}
     />
   );
 }
