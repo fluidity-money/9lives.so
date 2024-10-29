@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"strings"
 	"encoding/hex"
 	"fmt"
 	"log/slog"
@@ -100,7 +101,7 @@ func (r *frontpageResolver) Content(ctx context.Context, obj *types.Frontpage) (
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error) {
 	tradingAddr := crypto.GetTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingHash)
-	contractOwner, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
+	contractOwner_, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
 			"trading contract", tradingAddr,
@@ -109,13 +110,18 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		)
 		return nil, fmt.Errorf("error checking if trading contract is deployed")
 	}
-	if contractOwner.Hex() != creator {
+	creator = strings.ToLower(creator)
+	contractOwner := strings.ToLower(contractOwner_.Hex())
+	if contractOwner != creator {
 		slog.Error("Staged creator is not the contract owner",
 			"trading contract", tradingAddr,
 			"contractOwner", contractOwner,
 			"factory address", r.FactoryAddr,
 		)
-		return nil, fmt.Errorf("staged creator is not the contract owner")
+		return nil, fmt.Errorf(
+			"staged creator is not the contract owner, owner is %v",
+			contractOwner,
+		)
 	}
 	// Create outcomes object
 	var campaignOutcomes = make([]types.Outcome, len(outcomes))
@@ -129,7 +135,8 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			Seed:        outcome.Seed,
 			Identifier:  hexOutcomeId,
 			Share: &types.Share{
-				Address: shareAddress.String()},
+				Address: shareAddress.String(),
+			},
 		}
 	}
 	// Create the campaign object
@@ -147,7 +154,8 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			Oracle:      "n/a",
 			PoolAddress: tradingAddr.Hex(),
 			Outcomes:    campaignOutcomes,
-		}}
+		},
+	}
 	result := r.DB.Table("ninelives_campaigns_1").Create(&campaign)
 	if result.Error != nil {
 		slog.Error("Error inserting campaign into database",
