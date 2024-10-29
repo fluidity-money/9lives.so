@@ -1,13 +1,13 @@
 "use client";
 import { ConnectButton as ThirdWebButton } from "thirdweb/react";
 import appConfig from "@/config";
-import { arbitrumOneMainnet } from "@/config/chains";
+import { arbitrum } from "thirdweb/chains";
 
 export default function ConnectButton() {
   return (
     <ThirdWebButton
       client={appConfig.thirdweb.client}
-      chain={arbitrumOneMainnet}
+      chain={arbitrum}
       appMetadata={appConfig.thirdweb.metadata}
       wallets={appConfig.thirdweb.wallets}
       theme={appConfig.thirdweb.theme}

@@ -9,6 +9,7 @@ import { toUnits } from "thirdweb/utils";
 import { formatUnits, MaxUint256 } from "ethers";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
+import { arbitrum } from "thirdweb/chains";
 
 export default function useReturnValue({
   shareAddr,
@@ -37,7 +38,7 @@ export default function useReturnValue({
         abi: tradingAbi,
         address: tradingAddr,
         client: config.thirdweb.client,
-        chain: config.chains.arbitrumOneMainnet,
+        chain: arbitrum,
       }),
     [tradingAddr],
   );

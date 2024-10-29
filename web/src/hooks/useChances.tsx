@@ -7,6 +7,7 @@ import {
   prepareContractCall,
   simulateTransaction,
 } from "thirdweb";
+import { arbitrum } from "thirdweb/chains";
 
 export default function useChances({
   tradingAddr,
@@ -25,7 +26,7 @@ export default function useChances({
         abi: tradingAbi,
         address: tradingAddr,
         client: config.thirdweb.client,
-        chain: config.chains.arbitrumOneMainnet,
+        chain: arbitrum,
       });
 
       const outcomeRes = await simulateTransaction({

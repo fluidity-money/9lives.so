@@ -38,12 +38,9 @@ export const superpositionTestnet = defineChain({
   ],
   testnet: true,
 });
-export const arbitrumOneMainnet = defineChain(42161);
 
 // validate all chains
-const chainValidation = z
-  .array(networkSchema)
-  .safeParse([superpositionTestnet, arbitrumOneMainnet]);
+const chainValidation = networkSchema.safeParse(superpositionTestnet);
 
 if (!chainValidation.success) {
   console.error("Invalid chain: ", chainValidation.error.name);
