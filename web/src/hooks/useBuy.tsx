@@ -136,29 +136,23 @@ const useBuy = ({
               transaction: mintTx,
               account,
             });
-            queryClient.invalidateQueries({
-              queryKey: ["positions", tradingAddr, outcomes, account],
-            });
-            queryClient.invalidateQueries({
-              queryKey: [
-                "sharePrices",
-                tradingAddr,
-                outcomes.map((o) => o.identifier),
-              ],
-            });
-            queryClient.invalidateQueries({
-              queryKey: ["chances", tradingAddr, outcomes[0].identifier],
-            });
-            queryClient.invalidateQueries({
-              queryKey: [
-                "returnValue",
-                shareAddr,
-                tradingAddr,
-                outcomeId,
-                fusdc,
-              ],
-            });
           }
+          queryClient.invalidateQueries({
+            queryKey: ["positions", tradingAddr, outcomes, account],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "sharePrices",
+              tradingAddr,
+              outcomes.map((o) => o.identifier),
+            ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["chances", tradingAddr, outcomes[0].identifier],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
+          });
           res(null);
         } catch (e) {
           rej(e);
