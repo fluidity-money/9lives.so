@@ -38,8 +38,8 @@ const wallets = [
       sponsorGas: true,
     },
   }),
-  createWallet('io.metamask'),
-  createWallet('io.rabby'),
+  createWallet("io.metamask"),
+  createWallet("io.rabby"),
 ];
 const thirdwebValidation = thirdwebSchema.safeParse({
   metadata: {
