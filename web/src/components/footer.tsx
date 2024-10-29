@@ -10,7 +10,7 @@ const socials = [
   },
   {
     title: "Discord",
-    page: "#",
+    page: "https://discord.gg/VjUWjRQP8y",
   },
 ];
 const menu = [
@@ -20,7 +20,11 @@ const menu = [
   },
   {
     title: "Privacy Policy",
-    page: "#",
+    page: "https://static.9lives.so/privacy.pdf",
+  },
+  {
+    title: "Docs",
+    page: "https://docs.9lives.so",
   },
 ];
 const MenuItem = ({ item }: { item: { page: string; title: string } }) => (

@@ -155,6 +155,9 @@ describe("End to end tests", async () => {
       await lenses.balances(tradingAddr, [outcomeBals], defaultAccountAddr);
     assert.equal(bals[0], "4476926");
     await (await trading.decide(outcome1)).wait();
+    console.log(await fusdc.balanceOf(defaultAccountAddr));
     await (await trading.payoff(outcome1, defaultAccountAddr)).wait();
+    assert.equal(await share1.balanceOf(defaultAccountAddr), "0");
+    console.log(await fusdc.balanceOf(defaultAccountAddr));
   });
 });
