@@ -7,15 +7,6 @@ import { Suspense } from "react";
 
 export const dynamicParams = true;
 
-export async function generateStaticParams() {
-  const response = await requestCampaignList;
-  const { campaigns } = response;
-
-  return campaigns.map((campaign) => ({
-    id: campaign.identifier,
-  }));
-}
-
 const getCampaigns = unstable_cache(
   async () => {
     return (await requestCampaignList).campaigns as Campaign[];
