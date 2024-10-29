@@ -33,7 +33,7 @@ const thirdwebSchema = z.object({
   switchButton: z.object({
     style: z.any(),
     label: z.string(),
-  })
+  }),
 });
 const wallets = [
   inAppWallet({
