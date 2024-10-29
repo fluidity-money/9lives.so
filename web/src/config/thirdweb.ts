@@ -4,7 +4,6 @@ import clientEnv from "./clientEnv";
 import appConfig from "./app";
 import { arbitrumOneMainnet, networkSchema } from "./chains";
 import { inAppWallet, createWallet } from "thirdweb/wallets";
-//
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 const thirdwebClient = createThirdwebClient({
