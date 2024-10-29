@@ -30,6 +30,7 @@ export default function DetailCall2Action({
   price: string;
 }) {
   const [share, setShare] = useState<number>(0);
+  const [fusdc, setFusdc] = useState<number>(0);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
   const outcome = selectedOutcome
@@ -38,13 +39,15 @@ export default function DetailCall2Action({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z.object({
-    share: z.coerce.number().min(1, { message: "Invalid share quantity" }),
+    share: z.coerce.number().gt(0, { message: "Invalid share to buy" }),
+    fusdc: z.coerce.number().gt(0, { message: "Invalid fusdc to spend" }),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
     register,
     handleSubmit,
     setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -93,7 +96,13 @@ export default function DetailCall2Action({
         params: [account!.address],
       }),
     })) as bigint;
-    setShare(+formatUnits(balance, config.contracts.decimals.fusdc));
+    const maxfUSDC = +formatUnits(balance, config.contracts.decimals.fusdc);
+    const share = maxfUSDC / Number(price);
+    setShare(share);
+    setValue("share", share);
+    setFusdc(maxfUSDC);
+    setValue("fusdc", maxfUSDC);
+    if (maxfUSDC > 0) clearErrors();
   };
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
   return (
@@ -134,6 +143,7 @@ export default function DetailCall2Action({
           />
           <Button
             title="Sell"
+            disabled
             intent={selectedOutcome?.state === "sell" ? "no" : "default"}
             size={"large"}
             className={combineClass(
@@ -150,7 +160,39 @@ export default function DetailCall2Action({
       <div className="flex flex-col">
         <div className="flex items-center justify-between">
           <span className="font-chicago text-xs font-normal text-9black">
-            Shares
+            Shares to buy
+          </span>
+        </div>
+        <Input
+          {...register("share")}
+          type="number"
+          min={0}
+          value={share}
+          placeholder="0"
+          onChange={(e) => {
+            const share = Number(e.target.value);
+            const fusdc = share * Number(price);
+            setShare(share);
+            setValue("share", share);
+            setFusdc(fusdc);
+            setValue("fusdc", fusdc);
+            if (share > 0) clearErrors();
+          }}
+          className={combineClass(
+            "mt-2 flex-1 text-center",
+            errors.share && "border-2 border-red-500",
+          )}
+        />
+        {errors.share && (
+          <span className="mt-1 text-xs text-red-500">
+            {errors.share.message}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between">
+          <span className="font-chicago text-xs font-normal text-9black">
+            fUSDC to spend
           </span>
           {account ? (
             <Button
@@ -162,24 +204,28 @@ export default function DetailCall2Action({
           ) : null}
         </div>
         <Input
+          {...register("fusdc")}
           type="number"
           min={0}
-          value={share}
-          {...register("share")}
+          value={fusdc}
           placeholder="0"
           onChange={(e) => {
-            const value = Number(e.target.value);
-            setShare(value);
-            setValue("share", value);
+            const fusdc = Number(e.target.value);
+            const share = fusdc / Number(price);
+            setShare(share);
+            setValue("share", share);
+            setFusdc(fusdc);
+            setValue("fusdc", fusdc);
+            if (fusdc > 0) clearErrors();
           }}
           className={combineClass(
             "mt-2 flex-1 text-center",
-            errors.share && "border-2 border-red-500",
+            errors.fusdc && "border-2 border-red-500",
           )}
         />
-        {errors.share && (
+        {errors.fusdc && (
           <span className="mt-1 text-xs text-red-500">
-            {errors.share.message}
+            {errors.fusdc.message}
           </span>
         )}
       </div>
@@ -200,6 +246,7 @@ export default function DetailCall2Action({
           ))}
         </ul>
       </div>
+
       <Button
         disabled={isMinting || isConnecting}
         title={isMinting ? "Loading.." : ctaTitle}
