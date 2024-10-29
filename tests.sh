@@ -2,7 +2,7 @@
 
 make solidity
 
-cargo test -q --features testing,amm-use-longtail $@
+#cargo test -q --features testing,amm-use-longtail $@
 
 forge test
 

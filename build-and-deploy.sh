@@ -12,7 +12,7 @@ wallet_addr="$(cast wallet address --private-key $SPN_SUPERPOSITION_KEY)"
 
 eval "$(go run scripts/get-addresses-full-deploy.go "$wallet_addr" 2>&1 1>/dev/null)"
 
-./build-and-deploy-impls.sh
+./build-and-deploy-impls.bash
 
 >&2 echo "SPN_ERC20_IMPL_ADDR=$(./deploy-erc20-impl.sh)"
 
@@ -33,4 +33,3 @@ lenses_addr="$(./deploy-lenses.sh | jq -r .deployedTo)"
 | Trading extras impl      | $SPN_TRADING_EXTRAS_IMPL_ADDR |
 | Factory proxy            | $SPN_FACTORY_PROXY_ADDR |
 | LensesV1                 | $lenses_addr |
-EOF
