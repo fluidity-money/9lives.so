@@ -3,7 +3,7 @@ import { createThirdwebClient } from "thirdweb";
 import clientEnv from "./clientEnv";
 import appConfig from "./app";
 import { superpositionTestnet, networkSchema } from "./chains";
-import { inAppWallet } from "thirdweb/wallets";
+import { inAppWallet, createWallet } from "thirdweb/wallets";
 
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 const thirdwebClient = createThirdwebClient({
@@ -38,6 +38,8 @@ const wallets = [
       sponsorGas: true,
     },
   }),
+  createWallet('io.metamask'),
+  createWallet('io.rabby'),
 ];
 const thirdwebValidation = thirdwebSchema.safeParse({
   metadata: {
