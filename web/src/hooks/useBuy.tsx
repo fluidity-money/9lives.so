@@ -75,10 +75,12 @@ const useBuy = ({
             params: [outcomeId, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
           });
           const [returnAmm, return9lives] = await Promise.all<bigint>([
-            simulateTransaction({
-              transaction: checkAmmReturnTx,
-              account,
-            }),
+            // simulateTransaction({
+            //   transaction: checkAmmReturnTx,
+            //   account,
+            // }),
+            // disable checking long tail for now on mainnet
+            BigInt(0),
             simulateTransaction({
               transaction: check9liveReturnTx(account.address),
               account,
