@@ -11,7 +11,9 @@ with a minimal viable proxy pointing to share ERC20s, and a trading contract.
 
 - [ ] UX improvements (shares are more visible, smart account behaviour)
 - [ ] Mainnet is supported as well. Mainnet has disclosure that funds are locked up until the election is over.
-- [ ] Achievements and portfolio page is supported.
+- [ ] Achievements and portfolio page is supported. Some socialfi elements.
+    1. Users can choose their favourite achievements to display in a minified form next to their Meow Domain.
+    2. Meow domains is supported in the UI.
 - [ ] Collect payoff from the campaign ending in the frontend.
 - [ ] Custom fee collection and pool configuration supported (use beauty contest with fixed date, many outcomes if they want)
 - [ ] Anyone can create pools. Custom display of pools a la Ebay customisation. Tracking of people investing in specific campaigns and their outcomes for frontpage stack ranking feature.
