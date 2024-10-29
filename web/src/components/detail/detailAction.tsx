@@ -1,5 +1,5 @@
 import Button from "@/components/themed/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
@@ -53,6 +53,7 @@ export default function DetailCall2Action({
     resolver: zodResolver(formSchema),
     defaultValues: {
       share: 0,
+      fusdc: 0,
     },
   });
   const { buy } = useBuy({
@@ -62,7 +63,7 @@ export default function DetailCall2Action({
   });
   const { data: estimatedReturn } = useReturnValue({
     tradingAddr,
-    share,
+    fusdc,
     shareAddr: outcome.share.address,
     outcomeId: outcome.identifier,
   });
@@ -80,10 +81,10 @@ export default function DetailCall2Action({
       value: estimatedReturn ?? "0",
     },
   ];
-  async function handleBuy({ share }: FormData) {
+  async function handleBuy({ fusdc }: FormData) {
     try {
       setIsMinting(true);
-      await buy(account!, share, initalData);
+      await buy(account!, fusdc, initalData);
     } finally {
       setIsMinting(false);
     }
@@ -105,6 +106,14 @@ export default function DetailCall2Action({
     if (maxfUSDC > 0) clearErrors();
   };
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
+
+  useEffect(() => {
+    setFusdc(0);
+    setShare(0);
+    setValue("fusdc", 0);
+    setValue("share", 0);
+  }, [price]);
+
   return (
     <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
       <div className="flex items-center gap-4">
@@ -160,38 +169,6 @@ export default function DetailCall2Action({
       <div className="flex flex-col">
         <div className="flex items-center justify-between">
           <span className="font-chicago text-xs font-normal text-9black">
-            Shares to buy
-          </span>
-        </div>
-        <Input
-          {...register("share")}
-          type="number"
-          min={0}
-          value={share}
-          placeholder="0"
-          onChange={(e) => {
-            const share = Number(e.target.value);
-            const fusdc = share * Number(price);
-            setShare(share);
-            setValue("share", share);
-            setFusdc(fusdc);
-            setValue("fusdc", fusdc);
-            if (share > 0) clearErrors();
-          }}
-          className={combineClass(
-            "mt-2 flex-1 text-center",
-            errors.share && "border-2 border-red-500",
-          )}
-        />
-        {errors.share && (
-          <span className="mt-1 text-xs text-red-500">
-            {errors.share.message}
-          </span>
-        )}
-      </div>
-      <div className="flex flex-col">
-        <div className="flex items-center justify-between">
-          <span className="font-chicago text-xs font-normal text-9black">
             fUSDC to spend
           </span>
           {account ? (
@@ -207,10 +184,14 @@ export default function DetailCall2Action({
           {...register("fusdc")}
           type="number"
           min={0}
+          max={Number.MAX_SAFE_INTEGER}
           value={fusdc}
           placeholder="0"
           onChange={(e) => {
-            const fusdc = Number(e.target.value);
+            const fusdc =
+              Number(e.target.value) >= Number.MAX_SAFE_INTEGER
+                ? Number.MAX_SAFE_INTEGER
+                : Number(e.target.value);
             const share = fusdc / Number(price);
             setShare(share);
             setValue("share", share);
@@ -226,6 +207,42 @@ export default function DetailCall2Action({
         {errors.fusdc && (
           <span className="mt-1 text-xs text-red-500">
             {errors.fusdc.message}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between">
+          <span className="font-chicago text-xs font-normal text-9black">
+            Shares to buy
+          </span>
+        </div>
+        <Input
+          {...register("share")}
+          type="number"
+          min={0}
+          max={Number.MAX_SAFE_INTEGER}
+          value={share}
+          placeholder="0"
+          onChange={(e) => {
+            const share =
+              Number(e.target.value) >= Number.MAX_SAFE_INTEGER
+                ? Number.MAX_SAFE_INTEGER
+                : Number(e.target.value);
+            const fusdc = share * Number(price);
+            setShare(share);
+            setValue("share", share);
+            setFusdc(fusdc);
+            setValue("fusdc", fusdc);
+            if (share > 0) clearErrors();
+          }}
+          className={combineClass(
+            "mt-2 flex-1 text-center",
+            errors.share && "border-2 border-red-500",
+          )}
+        />
+        {errors.share && (
+          <span className="mt-1 text-xs text-red-500">
+            {errors.share.message}
           </span>
         )}
       </div>

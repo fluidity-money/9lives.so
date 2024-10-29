@@ -24,12 +24,12 @@ const useBuy = ({
   outcomeId: `0x${string}`;
 }) => {
   const queryClient = useQueryClient();
-  const buy = async (account: Account, share: number, outcomes: Outcome[]) =>
+  const buy = async (account: Account, fusdc: number, outcomes: Outcome[]) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
           const amount = toUnits(
-            share.toString(),
+            fusdc.toString(),
             config.contracts.decimals.fusdc,
           );
           const tradingContract = getContract({
@@ -153,7 +153,7 @@ const useBuy = ({
                 shareAddr,
                 tradingAddr,
                 outcomeId,
-                share,
+                fusdc,
               ],
             });
           }

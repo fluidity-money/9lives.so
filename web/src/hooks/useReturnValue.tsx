@@ -14,14 +14,14 @@ export default function useReturnValue({
   shareAddr,
   outcomeId,
   tradingAddr,
-  share,
+  fusdc,
 }: {
   shareAddr: string;
   tradingAddr: string;
   outcomeId: `0x${string}`;
-  share: number;
+  fusdc: number;
 }) {
-  const amount = toUnits(share.toString(), config.contracts.decimals.fusdc);
+  const amount = toUnits(fusdc.toString(), config.contracts.decimals.fusdc);
   const checkAmmReturnTx = useMemo(
     () =>
       prepareContractCall({
@@ -65,7 +65,7 @@ export default function useReturnValue({
     [check9liveReturnTx, checkAmmReturnTx],
   );
   return useQuery({
-    queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, share],
+    queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
     queryFn: async () => {
       const [returnAmm, return9lives] = await getReturns();
       const returnValue =
