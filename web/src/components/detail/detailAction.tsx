@@ -112,7 +112,7 @@ export default function DetailCall2Action({
     setShare(0);
     setValue("fusdc", 0);
     setValue("share", 0);
-  }, [price]);
+  }, [price, setValue]);
 
   return (
     <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
