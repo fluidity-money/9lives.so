@@ -10,6 +10,23 @@ then share holders can convert their positions to fUSDC on request.
 
 ![Diagram of the system](diagram.svg)
 
+## Roadmap
+
+- [ ] UX improvements (shares are more visible, smart account behaviour)
+- [ ] Mainnet is supported as well. Mainnet has disclosure that funds are locked up until the election is over.
+- [ ] Achievements and portfolio page is supported.
+- [ ] Collect payoff from the campaign ending in the frontend.
+- [ ] Custom fee collection and pool configuration supported (use beauty contest with fixed date, many outcomes if they want)
+- [ ] Anyone can create pools. Custom display of pools a la Ebay customisation. Tracking of people investing in specific campaigns and their outcomes for frontpage stack ranking feature.
+    1. A fixed fee is sent to creator of when shares are created.
+    2. Behind the scenes deferring to the AMM model if more than two outcomes.
+    3. Customise the UI of the frontpage for the info
+    4. Settlement based on a website URL?
+    5. Stack ranking is done for automated updating of frontpage
+    6. Campaign report functionality. Images are screened automatically for bad images with AI
+- [ ] Layerzero configuration with Arbitrum One mainnet with UMA
+- [ ] Prediction market DAO. Token launch
+
 ## Building contracts
 
 	make build
@@ -26,6 +43,19 @@ on the local environment, or with end to end tests with an Arbitrum node.
 	./tests.sh
 
 ## Deployments
+
+### Arbitrum One (pre US election)
+
+|      Deployment name     |              Deployment address            |
+|--------------------------|--------------------------------------------|
+| Proxy admin              | 0xde1a8eda6fc9913224b1e8ad6cdcd8dc1d5080ae |
+| Factory 1 implementation | 0x850f803b43C6075BcA8D4ABb0795F72a7AA28090 |
+| Factory 2 implementation | 0x170d2Ffdd4231F8c4D106A935b775f0792223527 |
+| ERC20 implementation     | 0x08444e75F468f0298Fcef1d7e7ED7ecFEf8d6daf |
+| Trading mint impl        | 0x7601aFdc3bdAabD9323aaF6381084156c686Adc2 |
+| Trading extras impl      | 0x28168339e87c247910B1b8A0b428fF2679462582 |
+| Factory proxy            | 0x6c49d7845d1C9540B3D53B01296248b4B0a9d60D |
+| LensesV1                 | 0x9a7eBd1a085BaCDD6211Fd77ac26b772b48BD6B4 |
 
 ### Superposition testnet
 

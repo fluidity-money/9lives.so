@@ -26,10 +26,16 @@ const menu = [
     title: "Docs",
     page: "https://docs.9lives.so",
   },
+  {
+    title: "TODO board",
+    page: "https://issues.superposition.so",
+  },
 ];
 const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
   <Link
     href={item.page}
+    target="_blank"
+    rel="noopener noreferrer"
     className="font-chicago text-neutral-800 hover:underline"
   >
     {item.title}

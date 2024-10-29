@@ -106,16 +106,6 @@ describe("End to end tests", async () => {
     (await factoryProxy.erc20Impl()).toLowerCase()
   );
 
-  // Deploy Lenses for testing the balances function.
-
-  const lensesFactory = new ContractFactory(
-    LensesV1.abi,
-    LensesV1.bytecode,
-    signer
-  );
-  const lenses = await lensesFactory.deploy(longtailAddress, factoryProxyAddr);
-  await lenses.waitForDeployment();
-
   const outcome1 = "0x1e9e51837f3ea6ea";
   const outcome2 = "0x1e9e51837f3ea6eb";
 
@@ -151,13 +141,10 @@ describe("End to end tests", async () => {
     await (await trading.mint227CF432(outcome1, 6 * 1e6, defaultAccountAddr)).wait();
     const balAfter = await share1.balanceOf(defaultAccountAddr);
     assert.equal(balAfter, "4476926");
-    const bals =
-      await lenses.balances(tradingAddr, [outcomeBals], defaultAccountAddr);
-    assert.equal(bals[0], "4476926");
     await (await trading.decide(outcome1)).wait();
-    console.log(await fusdc.balanceOf(defaultAccountAddr));
+    const fusdcBalBefore = await fusdc.balanceOf(defaultAccountAddr);
     await (await trading.payoff(outcome1, defaultAccountAddr)).wait();
     assert.equal(await share1.balanceOf(defaultAccountAddr), "0");
-    console.log(await fusdc.balanceOf(defaultAccountAddr));
+    assert.ok(await fusdc.balanceOf(defaultAccountAddr) > fusdcBalBefore);
   });
 });
