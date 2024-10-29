@@ -25,6 +25,7 @@ with a minimal viable proxy pointing to share ERC20s, and a trading contract.
     6. Campaign report functionality. Images are screened automatically for bad images with A
     7. API to update campaign by the original sender
     8. Anti bad content screening API used
+    9. Custom embed when sharing URL
 - [ ] Layerzero configuration with Arbitrum One mainnet with UMA
 - [ ] Prediction market DAO. Token launch
 
