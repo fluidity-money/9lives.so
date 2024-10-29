@@ -96,7 +96,6 @@ impl StorageTrading {
         let share_bal = U256::min(share_call::balance_of(share_addr, msg::sender())?, amt);
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg::sender(), share_bal)?;
-        dbg!(outcome.invested.get(), self.shares.get());
         let n = share_u256_to_decimal(share_bal)?;
         let n_1 = outcome.shares.get();
         #[allow(non_snake_case)]

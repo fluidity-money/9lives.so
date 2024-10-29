@@ -63,7 +63,7 @@ pub fn fusdc_u256_to_decimal(x: U256) -> Result<Decimal, Error> {
 }
 
 pub fn round_down(x: Decimal) -> Decimal {
-    x.round_dp_with_strategy(2, RoundingStrategy::ToZero)
+    x.round_dp_with_strategy(0, RoundingStrategy::ToZero)
 }
 
 #[derive(Debug, Clone)]

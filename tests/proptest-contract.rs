@@ -115,9 +115,13 @@ proptest! {
             c.decide(outcome_winner).unwrap();
             let ret_amt = c.payoff(outcome_winner, winning_amt, msg::sender()).unwrap();
             assert!(
-                ret_amt <= fusdc_vested || ret_amt - U256::from(1) <= fusdc_vested,
+                ret_amt == fusdc_vested || ret_amt - U256::from(1) == fusdc_vested,
                 "ret_amt: {ret_amt} <= fusdc_vested: {fusdc_vested}, diff: {}",
-                ret_amt - fusdc_vested
+                if ret_amt > fusdc_vested {
+                    ret_amt - fusdc_vested
+                } else {
+                    fusdc_vested - ret_amt
+                }
             );
         })
     }
