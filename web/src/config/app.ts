@@ -34,8 +34,8 @@ const appSchema = z.object({
 const appVars = appSchema.safeParse({
   metadata,
   cacheRevalidation: {
-    homePage: 1,
-    detailPages: 1,
+    homePage: 10,
+    detailPages: 10,
   },
 });
 
