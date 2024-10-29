@@ -3,13 +3,13 @@ type Query {
   """
   Campaign List that can be filtered according to categories
   """
-  campaigns(category:[String!]): [Campaign!]!
+  campaigns(categories:[String!]): [Campaign!]!
 
   """
   Frontpage display. Should have a timeline as to when it should (from) and should
   not be displayed (until).
   """
-  frontpage(category:[String!]): [Frontpage!]!
+  frontpage(categories:[String!]): [Frontpage!]!
 }
 
 
@@ -115,6 +115,11 @@ type Campaign {
   if needed (hyphenated).
   """
   name: String!
+
+  """
+  Name of the category that campaign belongs.
+  """
+  categoryName: String!
 
   """
   Description of the campaign in simple text.

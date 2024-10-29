@@ -14,6 +14,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
+	"github.com/lib/pq"
 )
 
 // Name is the resolver for the name field.
@@ -160,13 +161,13 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 }
 
 // Campaigns is the resolver for the campaigns field.
-func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]types.Campaign, error) {
+func (r *queryResolver) Campaigns(ctx context.Context, categories []string) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
 	if r.F.Is(features.FeatureGraphqlMockGraph) {
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
-	err := r.DB.Table("ninelives_campaigns_1").Find(&campaigns).Error
+	err := r.DB.Raw("SELECT * FROM queryCampaigns_1(?)", pq.Array(categories)).Scan(&campaigns).Error
 	if err != nil {
 		slog.Error("Error getting campaigns from database",
 			"error", err,
@@ -177,7 +178,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]typ
 }
 
 // Frontpage is the resolver for the frontpage field.
-func (r *queryResolver) Frontpage(ctx context.Context, category []string) ([]types.Frontpage, error) {
+func (r *queryResolver) Frontpage(ctx context.Context, categories []string) ([]types.Frontpage, error) {
 	panic(fmt.Errorf("not implemented: Frontpage - frontpage"))
 }
 

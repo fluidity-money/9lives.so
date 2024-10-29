@@ -51,13 +51,14 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Campaign struct {
-		Creator     func(childComplexity int) int
-		Description func(childComplexity int) int
-		Identifier  func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Oracle      func(childComplexity int) int
-		Outcomes    func(childComplexity int) int
-		PoolAddress func(childComplexity int) int
+		CategoryName func(childComplexity int) int
+		Creator      func(childComplexity int) int
+		Description  func(childComplexity int) int
+		Identifier   func(childComplexity int) int
+		Name         func(childComplexity int) int
+		Oracle       func(childComplexity int) int
+		Outcomes     func(childComplexity int) int
+		PoolAddress  func(childComplexity int) int
 	}
 
 	Frontpage struct {
@@ -80,8 +81,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Campaigns func(childComplexity int, category []string) int
-		Frontpage func(childComplexity int, category []string) int
+		Campaigns func(childComplexity int, categories []string) int
+		Frontpage func(childComplexity int, categories []string) int
 	}
 
 	Share struct {
@@ -95,6 +96,7 @@ type ComplexityRoot struct {
 
 type CampaignResolver interface {
 	Name(ctx context.Context, obj *types.Campaign) (string, error)
+
 	Description(ctx context.Context, obj *types.Campaign) (string, error)
 	Creator(ctx context.Context, obj *types.Campaign) (*types.Wallet, error)
 	Oracle(ctx context.Context, obj *types.Campaign) (string, error)
@@ -113,8 +115,8 @@ type MutationResolver interface {
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error)
 }
 type QueryResolver interface {
-	Campaigns(ctx context.Context, category []string) ([]types.Campaign, error)
-	Frontpage(ctx context.Context, category []string) ([]types.Frontpage, error)
+	Campaigns(ctx context.Context, categories []string) ([]types.Campaign, error)
+	Frontpage(ctx context.Context, categories []string) ([]types.Frontpage, error)
 }
 
 type executableSchema struct {
@@ -135,6 +137,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Campaign.categoryName":
+		if e.complexity.Campaign.CategoryName == nil {
+			break
+		}
+
+		return e.complexity.Campaign.CategoryName(childComplexity), true
 
 	case "Campaign.creator":
 		if e.complexity.Campaign.Creator == nil {
@@ -270,7 +279,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Campaigns(childComplexity, args["category"].([]string)), true
+		return e.complexity.Query.Campaigns(childComplexity, args["categories"].([]string)), true
 
 	case "Query.frontpage":
 		if e.complexity.Query.Frontpage == nil {
@@ -282,7 +291,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Frontpage(childComplexity, args["category"].([]string)), true
+		return e.complexity.Query.Frontpage(childComplexity, args["categories"].([]string)), true
 
 	case "Share.address":
 		if e.complexity.Share.Address == nil {
@@ -511,14 +520,14 @@ func (ec *executionContext) field_Query_campaigns_args(ctx context.Context, rawA
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []string
-	if tmp, ok := rawArgs["category"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+	if tmp, ok := rawArgs["categories"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categories"))
 		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["category"] = arg0
+	args["categories"] = arg0
 	return args, nil
 }
 
@@ -526,14 +535,14 @@ func (ec *executionContext) field_Query_frontpage_args(ctx context.Context, rawA
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []string
-	if tmp, ok := rawArgs["category"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+	if tmp, ok := rawArgs["categories"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categories"))
 		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["category"] = arg0
+	args["categories"] = arg0
 	return args, nil
 }
 
@@ -612,6 +621,50 @@ func (ec *executionContext) fieldContext_Campaign_name(_ context.Context, field 
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Campaign_categoryName(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_categoryName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CategoryName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_categoryName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -1114,6 +1167,8 @@ func (ec *executionContext) fieldContext_Frontpage_content(_ context.Context, fi
 			switch field.Name {
 			case "name":
 				return ec.fieldContext_Campaign_name(ctx, field)
+			case "categoryName":
+				return ec.fieldContext_Campaign_categoryName(ctx, field)
 			case "description":
 				return ec.fieldContext_Campaign_description(ctx, field)
 			case "creator":
@@ -1379,7 +1434,7 @@ func (ec *executionContext) _Query_campaigns(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Campaigns(rctx, fc.Args["category"].([]string))
+		return ec.resolvers.Query().Campaigns(rctx, fc.Args["categories"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1406,6 +1461,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 			switch field.Name {
 			case "name":
 				return ec.fieldContext_Campaign_name(ctx, field)
+			case "categoryName":
+				return ec.fieldContext_Campaign_categoryName(ctx, field)
 			case "description":
 				return ec.fieldContext_Campaign_description(ctx, field)
 			case "creator":
@@ -1450,7 +1507,7 @@ func (ec *executionContext) _Query_frontpage(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Frontpage(rctx, fc.Args["category"].([]string))
+		return ec.resolvers.Query().Frontpage(rctx, fc.Args["categories"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3589,6 +3646,11 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "categoryName":
+			out.Values[i] = ec._Campaign_categoryName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "description":
 			field := field
 

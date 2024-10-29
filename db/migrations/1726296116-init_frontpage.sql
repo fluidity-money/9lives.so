@@ -36,4 +36,20 @@ CREATE INDEX ON ninelives_frontpage_1 ("from");
 CREATE INDEX ON ninelives_frontpage_1 (until);
 CREATE INDEX ON ninelives_campaigns_categories_1 (category_id);
 
+INSERT INTO ninelives_categories_1 (name, created_at, updated_at) VALUES 
+('Politics', NOW(), NOW()), 
+('Crypto',NOW(), NOW()), 
+('Pop Culture',NOW(), NOW());
+
+CREATE OR REPLACE FUNCTION queryCampaigns_1(categories TEXT[] DEFAULT NULL)
+RETURNS TABLE (id TEXT, content JSONB, category_name TEXT) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT c.id, c.content, cat.name AS category_name
+    FROM ninelives_campaigns_1 c
+    JOIN ninelives_campaigns_categories_1 cc ON c.id = cc.campaign_id
+    JOIN ninelives_categories_1 cat ON cc.category_id = cat.id
+    WHERE categories IS NULL OR cat.name = ANY (categories);
+END;
+$$ LANGUAGE plpgsql;
 -- migrate:down
