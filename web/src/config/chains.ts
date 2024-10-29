@@ -5,18 +5,22 @@ import "thirdweb/utils";
 export const networkSchema = z.object({
   id: z.number(),
   name: z.string().optional(),
-  nativeCurrency: z.object({
-    name: z.string().optional(),
-    symbol: z.string().optional(),
-    decimals: z.number().optional(),
-  }).optional(),
+  nativeCurrency: z
+    .object({
+      name: z.string().optional(),
+      symbol: z.string().optional(),
+      decimals: z.number().optional(),
+    })
+    .optional(),
   rpc: z.string().url(),
-  blockExplorers: z.array(
-    z.object({
-      name: z.string(),
-      url: z.string(),
-    }),
-  ).optional(),
+  blockExplorers: z
+    .array(
+      z.object({
+        name: z.string(),
+        url: z.string(),
+      }),
+    )
+    .optional(),
   testnet: z.boolean().optional(),
   icon: z.string().optional(),
 });
@@ -34,10 +38,12 @@ export const superpositionTestnet = defineChain({
   ],
   testnet: true,
 });
-export const arbitrumOneMainnet = defineChain(42161)
+export const arbitrumOneMainnet = defineChain(42161);
 
 // validate all chains
-const chainValidation = z.array(networkSchema).safeParse([superpositionTestnet, arbitrumOneMainnet]);
+const chainValidation = z
+  .array(networkSchema)
+  .safeParse([superpositionTestnet, arbitrumOneMainnet]);
 
 if (!chainValidation.success) {
   console.error("Invalid chain: ", chainValidation.error.name);
