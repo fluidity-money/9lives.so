@@ -130,6 +130,9 @@ pub const LONGTAIL_TICK_SPACING: u8 = 10;
 
 pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 
+/// Minimum amount of fUSDC that can be minted with.
+pub const MINIMUM_MINT_AMT: i64 = 1;
+
 #[test]
 #[ignore]
 fn print_deployment_bytecode() {

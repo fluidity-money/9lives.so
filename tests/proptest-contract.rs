@@ -29,7 +29,7 @@ struct ActionAmountPurchased {
 }
 
 fn strat_valid_u256() -> impl Strategy<Value = U256> {
-    (1..REASONABLE_UPPER_AMT).prop_map(U256::from)
+    (1e6 as u128..REASONABLE_UPPER_AMT).prop_map(U256::from)
 }
 
 fn strat_action_amount_purchased() -> impl Strategy<Value = ActionAmountPurchased> {
@@ -42,7 +42,7 @@ fn strat_action_amount_purchased() -> impl Strategy<Value = ActionAmountPurchase
 fn strat_action_amount_purchasing(
     amt: usize,
 ) -> VecStrategy<impl Strategy<Value = ActionAmountPurchased>> {
-    collection::vec(strat_action_amount_purchased(), 0..=amt)
+    collection::vec(strat_action_amount_purchased(), 1..=amt)
 }
 
 proptest! {
@@ -57,8 +57,6 @@ proptest! {
             any::<u8>(), any::<u8>(), any::<u8>(), any::<u8>(),
         ],
         outcome_winner in prop_oneof![Just(Outcome::Outcome1), Just(Outcome::Outcome2)],
-        outcome_1_seed in strat_valid_u256(),
-        outcome_2_seed in strat_valid_u256(),
         purchase_int_1 in strat_action_amount_purchasing(1000),
         purchase_int_2 in strat_action_amount_purchasing(1000),
     ) {
@@ -72,8 +70,8 @@ proptest! {
             let outcome_1_id = FixedBytes::<8>::from(outcome_1_id);
             let outcome_2_id = FixedBytes::<8>::from(outcome_2_id);
             let outcomes = vec![
-                (outcome_1_id, U256::from(outcome_1_seed)),
-                (outcome_2_id, U256::from(outcome_2_seed))
+                (outcome_1_id, U256::from(1e6)),
+                (outcome_2_id, U256::from(1e6))
             ];
             c.ctor(msg::sender(), outcomes).unwrap();
             let mut fusdc_vested = U256::ZERO;

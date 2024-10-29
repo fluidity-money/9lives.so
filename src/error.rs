@@ -180,6 +180,11 @@ pub enum Error {
     /// Camelot had an error, we'll bubble up what happened.
     #[error("Camelot had an error.")]
     CamelotError(Vec<u8>),
+
+    // 0x22
+    /// DPM you can only set 1!
+    #[error("DPM must be 1e6")]
+    BadSeedAmount
 }
 
 impl From<Error> for Vec<u8> {

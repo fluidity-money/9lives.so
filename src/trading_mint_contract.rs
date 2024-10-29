@@ -8,7 +8,7 @@ use stylus_sdk::{
 };
 
 use crate::{
-    decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_decimal_to_u256},
+    decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal, round_down, share_decimal_to_u256},
     error::*,
     events, fusdc_call,
     immutables::*,
@@ -48,7 +48,10 @@ impl StorageTrading {
             .ok_or(Error::CheckedSubOverflow)?;
 
         // Convert everything to floats!
-        let m = fusdc_u256_to_decimal(value)?;
+        let m = round_down(fusdc_u256_to_decimal(value)?);
+
+        // Prevent them from taking less than the minimum amount to LP with.
+        assert_or!(m >= Decimal::from(MINIMUM_MINT_AMT), Error::TooSmallNumber);
 
         // Set the global states.
         self.outcomes.setter(outcome_id).invested.set(m_1 + m);

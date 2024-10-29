@@ -3,7 +3,7 @@ use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 use crate::decimal::StorageDecimal;
 
 #[storage]
-pub struct Outcome {
+pub struct StorageOutcome {
     // Outstanding invested into this outcome.
     pub invested: StorageDecimal,
 
@@ -32,7 +32,7 @@ pub struct StorageTrading {
     // Global amount invested to this pool of the native asset.
     pub invested: StorageDecimal,
 
-    pub outcomes: StorageMap<FixedBytes<8>, Outcome>,
+    pub outcomes: StorageMap<FixedBytes<8>, StorageOutcome>,
 
     // Outcomes tracked to be disabled with Longtail once a winner is found.
     pub outcome_list: StorageVec<StorageFixedBytes<8>>,

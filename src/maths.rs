@@ -1,6 +1,6 @@
 use stylus_sdk::alloy_primitives::U256;
 
-use rust_decimal::{Decimal, MathematicalOps};
+use rust_decimal::{Decimal, MathematicalOps, RoundingStrategy};
 
 use crate::error::Error;
 
@@ -64,9 +64,13 @@ pub fn shares(
     add(a, mul(b, d)?)
 }
 
+/// Get the payoff for the shares given, with M being the globally
+/// invested amount, N_1 is the amount of shares for the outcome that's
+/// won, and n is the user's amount of shares.
 #[allow(non_snake_case)]
 pub fn payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error> {
-    mul(div(n, N_1)?, M)
+    dbg!(n, N_1, M);
+    Ok(mul(div(n, N_1)?, M)?.round_dp_with_strategy(2, RoundingStrategy::ToZero))
 }
 
 fn sqrt_u256_round_down(x: U256) -> Result<U256, Error> {

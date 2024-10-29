@@ -69,6 +69,12 @@ impl StorageFactory {
         let n_2 = n_1 - 1;
 
         for (outcome_identifier, seed_amt) in outcomes.iter() {
+            // For the DPM (at least right now), we can only take 1 from the user for both sides.
+            assert_or!(
+                *seed_amt == U256::from(10).pow(U256::from(FUSDC_DECIMALS)),
+                Error::BadSeedAmount
+            );
+
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(erc20_identifier)?;

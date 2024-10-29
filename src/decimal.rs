@@ -62,6 +62,10 @@ pub fn fusdc_u256_to_decimal(x: U256) -> Result<Decimal, Error> {
     Ok(u256_to_decimal(x, FUSDC_DECIMALS)?)
 }
 
+pub fn round_down(x: Decimal) -> Decimal {
+    x.round_dp_with_strategy(2, RoundingStrategy::ToZero)
+}
+
 #[derive(Debug, Clone)]
 pub struct StorageDecimal {
     slot: U256,
@@ -138,8 +142,8 @@ macro_rules! assert_eq_f {
     ($left:expr, $right:expr $(,)?) => {
         match (&$left, &$right) {
             (left_val, right_val) => {
-                let right_val_add = right_val + (right_val * rust_decimal_macros::dec!(1e-6));
-                // !(left_val <= (right_val + right_val * 0.0000001))
+                let right_val_add = right_val + (right_val * rust_decimal_macros::dec!(1e-4));
+                // !(left_val <= (right_val + right_val * 0.00001))
                 if !(*left_val <= right_val_add) {
                     panic!(
                         "!({} == {} || {} <= {})",
