@@ -78,6 +78,8 @@ const thirdwebValidation = thirdwebSchema.safeParse({
       height: 40,
       fontSize: 12,
       lineHeight: 16,
+      paddingRight: 4,
+      minWidth: "auto",
     },
   },
   connectModal: {
@@ -91,7 +93,7 @@ const thirdwebValidation = thirdwebSchema.safeParse({
       fontSize: 12,
       lineHeight: 16,
       borderColor: "transparent",
-      color: "#FFB3B3",
+      color: "#ff0000",
       minWidth: "auto",
       border: "none",
     },

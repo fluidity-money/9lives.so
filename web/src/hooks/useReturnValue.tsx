@@ -65,7 +65,10 @@ export default function useReturnValue({
         }),
       ]);
     },
-    [check9liveReturnTx, checkAmmReturnTx],
+    [
+      check9liveReturnTx,
+      // checkAmmReturnTx
+    ],
   );
   return useQuery({
     queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],

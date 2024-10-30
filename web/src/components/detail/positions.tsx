@@ -1,6 +1,8 @@
 import { Outcome } from "@/types";
 import PositionsBody from "./positionsBody";
 import TabButton from "../tabButton";
+import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
+import { Fragment } from "react";
 interface PositionsProps {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
@@ -14,24 +16,31 @@ export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
     "Value of Shares",
     "Actions",
   ];
-
   return (
-    <div>
-      <TabButton title="My Campaign Positions" />
-      <div className="rounded-[3px] rounded-tl-none border border-9black p-5 shadow-9card">
-        <table className="w-full table-auto border-separate border-spacing-y-1">
-          <thead>
-            <tr className="font-geneva">
-              {tablesHeaders.map((key) => (
-                <th className={tableHeaderClasses} key={key}>
-                  {key}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <PositionsBody tradingAddr={tradingAddr} outcomes={outcomes} />
-        </table>
-      </div>
-    </div>
+    <TabGroup>
+      <TabList>
+        <Tab as={Fragment}>
+          {(props) => <TabButton title="My Campaign Positions" {...props} />}
+        </Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel>
+          <div className="rounded-[3px] rounded-tl-none border border-9black p-5 shadow-9card">
+            <table className="w-full table-auto border-separate border-spacing-y-1">
+              <thead>
+                <tr className="font-geneva">
+                  {tablesHeaders.map((key) => (
+                    <th className={tableHeaderClasses} key={key}>
+                      {key}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <PositionsBody tradingAddr={tradingAddr} outcomes={outcomes} />
+            </table>
+          </div>
+        </TabPanel>
+      </TabPanels>
+    </TabGroup>
   );
 }

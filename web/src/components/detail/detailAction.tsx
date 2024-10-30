@@ -115,7 +115,7 @@ export default function DetailCall2Action({
   }, [price, setValue]);
 
   return (
-    <div className="sticky top-0 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
+    <div className="sticky top-0 z-10 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
       <div className="flex items-center gap-4">
         <div className="size-10 overflow-hidden rounded-full">
           <Image
