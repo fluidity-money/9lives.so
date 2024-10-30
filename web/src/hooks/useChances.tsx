@@ -44,6 +44,10 @@ export default function useChances({
           outcome.identifier === outcomes[0].identifier
             ? (invested / globalInvested) * 100
             : ((globalInvested - invested) / globalInvested) * 100,
+        investedAmount:
+          outcome.identifier === outcomes[0].identifier
+            ? invested
+            : globalInvested - invested,
       }));
       return res;
     },

@@ -22,29 +22,23 @@ export default function DetailOutcomes({
     tradingAddr,
     outcomes: data,
   });
-  const borderStyle = "border-y border-y-gray-200";
+  const titles = ["Outcome", "Chance %", "Invested", ""];
 
   return (
     <table className="w-full border-separate border-spacing-0">
       <thead>
         <tr>
-          <th
-            className={combineClass(
-              borderStyle,
-              "py-3 text-left font-chicago text-xs font-normal uppercase text-gray-400",
-            )}
-          >
-            Outcome
-          </th>
-          <th
-            className={combineClass(
-              borderStyle,
-              "text-left font-chicago text-xs font-normal uppercase text-gray-400",
-            )}
-          >
-            Chance %
-          </th>
-          <th className={borderStyle}></th>
+          {titles.map((title, index) => (
+            <th
+              key={index}
+              className={combineClass(
+                index === 0 && "py-3",
+                "border-y border-y-gray-200 text-left font-chicago text-xs font-normal uppercase text-gray-400",
+              )}
+            >
+              {title}
+            </th>
+          ))}
         </tr>
       </thead>
       <tbody>
@@ -59,6 +53,10 @@ export default function DetailOutcomes({
             chance={
               chances?.find((chance) => chance.id === outcome.identifier)
                 ?.chance
+            }
+            amount={
+              chances?.find((chance) => chance.id === outcome.identifier)
+                ?.investedAmount
             }
             key={outcome.identifier}
             data={outcome}

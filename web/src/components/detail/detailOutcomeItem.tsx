@@ -5,15 +5,19 @@ import { Outcome, SelectedOutcome } from "@/types";
 import React from "react";
 import TrumpImg from "#/images/trump.webp";
 import KamalaImg from "#/images/kamala.webp";
+import { formatUnits } from "ethers";
+import config from "@/config";
 export default function DetailOutcomeItem({
   data,
   price,
   chance,
+  amount,
   selectedOutcome,
   setSelectedOutcome,
 }: {
   data: Outcome;
   price: string;
+  amount?: number;
   chance?: number;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
@@ -63,6 +67,16 @@ export default function DetailOutcomeItem({
       >
         <span className="font-chicago text-xs font-normal">
           {chance?.toFixed(0)}%
+        </span>
+      </td>
+      <td
+        className={combineClass(
+          borderStyle,
+          isSelected && "border-y border-y-9black",
+        )}
+      >
+        <span className="font-chicago text-xs font-normal">
+          ${formatUnits(amount ?? 0, config.contracts.decimals.fusdc)}
         </span>
       </td>
       <td
