@@ -38,7 +38,13 @@ function PositionRow({
         </span>
       </td>
       <td className="flex justify-end px-2">
-        <Button title="Trade" intent={"no"} disabled />
+        <a
+          href={`https://app.camelot.exchange/liquidity/?token1=${data.shareAddress}&token2=0x4CFA50B7Ce747e2D61724fcAc57f24B748FF2b2A`}
+          target="_blank"
+          rel="noopener,noreferrer"
+        >
+          <Button title="LP" />
+        </a>
       </td>
     </tr>
   );
