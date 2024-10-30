@@ -20,8 +20,7 @@ export default function DisclaimerButton() {
         className="flex h-10 items-center justify-center gap-1 border-l-2 border-l-9black px-4 font-chicago text-xs underline"
         onClick={() => setIsModalOpen(true)}
       >
-        How It Works{" "}
-        <Image src={InfoIcon} width={15} height={15} alt="How it works?" />
+        How It Works <Image src={InfoIcon} width={15} alt="How it works?" />
       </button>
       <Modal
         isOpen={isModalOpen}
