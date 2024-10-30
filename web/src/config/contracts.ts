@@ -15,7 +15,7 @@ const contractSchema = z.object({
     rpc: z.string(),
   }),
   client: z.object({
-    clientId: z.string()
+    clientId: z.string(),
   }),
 });
 

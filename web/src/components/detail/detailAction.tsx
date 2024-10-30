@@ -159,8 +159,13 @@ export default function DetailCall2Action({
                 "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
-            onClick={() =>
-              window.open(`https://app.camelot.exchange/?token1=${outcome.share.address}`, "_blank", "noopener,noreferrer")
+            onClick={
+              () =>
+                window.open(
+                  `https://app.camelot.exchange/?token1=${outcome.share.address}`,
+                  "_blank",
+                  "noopener,noreferrer",
+                )
               //setSelectedOutcome({ ...selectedOutcome, state: "sell" })
             }
           />
