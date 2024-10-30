@@ -4,6 +4,8 @@ import Link from "next/link";
 import HeaderLogo from "./headerLogo";
 import dynamic from "next/dynamic";
 import CreateCampaingButton from "./createCampaignButton";
+import GetFusdcButton from "./getFusdcButton";
+
 const Clock = dynamic(() => import("@/components/clock"), { ssr: false });
 
 export default function Header() {
@@ -17,6 +19,7 @@ export default function Header() {
         <HeaderLogo />
       </Link>
       <NavigationMenu />
+      <GetFusdcButton />
       <CreateCampaingButton />
       <ConnectButton />
       <Clock />
