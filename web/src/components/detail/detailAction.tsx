@@ -123,7 +123,7 @@ export default function DetailCall2Action({
             height={40}
             alt={outcome.name}
             src={
-              outcome.identifier === "0xeb024a3dd3b6b0b9" ? TrumpImg : KamalaImg
+              outcome.identifier === "0x1b8fb68f7c2e19b8" ? TrumpImg : KamalaImg
             }
             className="size-full object-cover"
           />
