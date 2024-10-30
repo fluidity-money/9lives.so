@@ -48,7 +48,7 @@ export default function DetailOutcomeItem({
             height={40}
             alt={data.name}
             src={
-              data.identifier === "0x5c96f5316cd9172c" ? TrumpImg : KamalaImg
+              data.identifier === "0xeb024a3dd3b6b0b9" ? TrumpImg : KamalaImg
             }
             className="border border-9black"
           />
