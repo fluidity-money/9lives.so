@@ -1,13 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "./modal";
 import Image from "next/image";
 import InfoIcon from "#/icons/info.svg";
 import Disclaimer from "./disclaimer";
 export default function DisclaimerButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  useEffect(() => {
+    const visitedBefore = window.localStorage.getItem("visitedBefore");
+    if (!visitedBefore) {
+      setIsModalOpen(true);
+      window.localStorage.setItem("visitedBefore", "true");
+    }
+  }, []);
   return (
     <>
       <button
