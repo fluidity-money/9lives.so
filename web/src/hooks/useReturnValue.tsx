@@ -55,9 +55,11 @@ export default function useReturnValue({
   const getReturns = useCallback(
     async function () {
       return await Promise.all<bigint>([
-        simulateTransaction({
-          transaction: checkAmmReturnTx,
-        }),
+        // simulateTransaction({
+        //   transaction: checkAmmReturnTx,
+        // }),
+        // disable checking long tail for now on mainnet
+        BigInt(0),
         simulateTransaction({
           transaction: check9liveReturnTx,
         }),
