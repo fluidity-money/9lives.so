@@ -57,7 +57,7 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Trading extras impl      | 0xd484d84b440a4c50318C7387Db3F0Ffba8771051 |
 | Factory proxy            | 0x6c49d7845d1C9540B3D53B01296248b4B0a9d60D |
 | ERC20 implementation     | 0x08444e75F468f0298Fcef1d7e7ED7ecFEf8d6daf |
-| LensesV1                 | 0x9a7eBd1a085BaCDD6211Fd77ac26b772b48BD6B4 |
+| LensesV1                 | 0x30Cc3AbEcf76fd53dDf3103395B1Fc6eDA1d1599 |
 
 ### Superposition testnet
 

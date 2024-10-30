@@ -19,7 +19,7 @@ export default function CampaignItemOutcomes({
           <Button
             intent="default"
             size={"large"}
-            title={`Bet on ${outcomes[0].name}`}
+            title={`Predict ${outcomes[0].name}`}
             // onClick={() =>
             //   setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
             // }
@@ -33,7 +33,7 @@ export default function CampaignItemOutcomes({
           <Button
             intent="default"
             size={"large"}
-            title={`Bet on ${outcomes[1].name}`}
+            title={`Predict ${outcomes[1].name}`}
             // onClick={() =>
             //   setSelectedOutcome({ id: outcomes[1].identifier, state: "buy" })
             // }

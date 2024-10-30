@@ -138,7 +138,7 @@ export default function DetailCall2Action({
         </span>
         <div className="mt-2 flex items-center gap-2">
           <Button
-            title="Buy"
+            title="Mint"
             intent={selectedOutcome?.state === "buy" ? "yes" : "default"}
             size={"large"}
             className={combineClass(
@@ -151,8 +151,7 @@ export default function DetailCall2Action({
             }
           />
           <Button
-            title="Sell"
-            disabled
+            title="Trade"
             intent={selectedOutcome?.state === "sell" ? "no" : "default"}
             size={"large"}
             className={combineClass(
@@ -161,7 +160,8 @@ export default function DetailCall2Action({
               "flex-1",
             )}
             onClick={() =>
-              setSelectedOutcome({ ...selectedOutcome, state: "sell" })
+              window.open(`https://app.camelot.exchange/?token1=${outcome.share.address}`, "_blank", "noopener,noreferrer")
+              //setSelectedOutcome({ ...selectedOutcome, state: "sell" })
             }
           />
         </div>

@@ -38,7 +38,7 @@ function PositionRow({
         </span>
       </td>
       <td className="flex justify-end px-2">
-        <Button title="Sell" intent={"no"} disabled />
+        <Button title="Trade" intent={"no"} disabled />
       </td>
     </tr>
   );
