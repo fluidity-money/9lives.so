@@ -33,6 +33,10 @@ contract Share is
         __ERC20Permit_init(name);
     }
 
+    function decimals() public override pure returns (uint8) {
+        return 6;
+    }
+
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
