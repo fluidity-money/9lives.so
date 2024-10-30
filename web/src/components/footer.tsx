@@ -1,12 +1,8 @@
 import Link from "next/link";
 const socials = [
   {
-    title: "Twitter",
-    page: "#",
-  },
-  {
-    title: "Telegram",
-    page: "#",
+    title: "X",
+    page: "https://x.com/superpositionso",
   },
   {
     title: "Discord",
