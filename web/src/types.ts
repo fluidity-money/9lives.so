@@ -11,3 +11,9 @@ export type Outcome =
     share: { address: `0x${string}` };
   };
 export type SelectedOutcome = { id: string; state: "buy" | "sell" };
+export type Leader = {
+  rank: string;
+  user: `0x${string}`;
+  profit: string;
+  positions: string;
+};

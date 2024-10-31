@@ -8,12 +8,12 @@ export default function NavigationMenu() {
     },
     {
       title: "Portfolio",
-      page: "/#p",
+      page: "/portfolio",
       disabled: true,
     },
     {
       title: "Leaderboard",
-      page: "/#l",
+      page: "/leaderboard",
       disabled: true,
     },
   ];
