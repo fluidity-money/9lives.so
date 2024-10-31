@@ -9,8 +9,8 @@ with a minimal viable proxy pointing to share ERC20s, and a trading contract.
 
 ## Roadmap
 
-- [ ] UX improvements (shares are more visible, smart account behaviour)
-- [ ] Mainnet is supported as well. Mainnet has disclosure that funds are locked up until the election is over.
+- [X] UX improvements (shares are more visible, smart account behaviour)
+- [X] Mainnet is supported as well. Mainnet has disclosure that funds are locked up until the election is over.
 - [ ] Achievements and portfolio page is supported. Some socialfi elements.
     1. Users can choose their favourite achievements to display in a minified form next to their Meow Domain.
     2. Meow domains is supported in the UI.
