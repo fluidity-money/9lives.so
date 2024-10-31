@@ -117,7 +117,7 @@ const useBuy = ({
               transaction: allowanceTx,
               account,
             })) as bigint;
-            if (!(allowance > 0)) {
+            if (amount > allowance) {
               const approveTx = prepareContractCall({
                 contract: config.contracts.fusdc,
                 method: "approve",
