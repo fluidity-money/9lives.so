@@ -1,5 +1,5 @@
 import { combineClass } from "@/utils/combineClass";
-import DetailOutcomeItem from "@/components/detail/detailOutcomeItem";
+import DetailOutcomeRow from "@/components/detail/detailOutcomeRow";
 import { Outcome } from "@/types";
 import { SelectedOutcome } from "../../types";
 import React from "react";
@@ -43,7 +43,7 @@ export default function DetailOutcomes({
       </thead>
       <tbody>
         {data.map((outcome) => (
-          <DetailOutcomeItem
+          <DetailOutcomeRow
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
             price={

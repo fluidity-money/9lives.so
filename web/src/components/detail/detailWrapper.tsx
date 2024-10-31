@@ -1,7 +1,7 @@
 "use client";
 import { Campaign } from "@/types";
 import DetailHeader from "./detailHeader";
-import DetailOutcomes from "./detailOutcomes";
+import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
 import { SelectedOutcome } from "../../types";
 import { useState } from "react";
@@ -33,7 +33,7 @@ export default function DetailWrapper({
     <>
       <div className="flex flex-[2] flex-col gap-8">
         <DetailHeader data={initialData} />
-        <DetailOutcomes
+        <DetailOutcomeTable
           sharePrices={sharePrices}
           data={initialData.outcomes}
           tradingAddr={initialData.poolAddress}

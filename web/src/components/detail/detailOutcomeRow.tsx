@@ -7,7 +7,7 @@ import TrumpImg from "#/images/trump.webp";
 import KamalaImg from "#/images/kamala.webp";
 import { formatUnits } from "ethers";
 import config from "@/config";
-export default function DetailOutcomeItem({
+export default function DetailOutcomeRow({
   data,
   price,
   chance,
