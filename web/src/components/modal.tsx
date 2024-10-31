@@ -4,15 +4,13 @@ import {
   Transition,
   DialogPanel,
 } from "@headlessui/react";
-import CloseButton from "./closeButton";
-import TitleBorders from "./titleBorders";
-
+import RetroCard from "./cardRetro";
 interface ModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<boolean>;
   callback?: () => void;
   children: React.ReactNode;
-  title?: string;
+  title: string;
   disabled?: boolean;
 }
 export default function Modal({
@@ -45,16 +43,10 @@ export default function Modal({
               leaveFrom="opacity-100 transform-[scale(100%)]"
               leaveTo="opacity-0 transform-[scale(95%)]"
             >
-              <DialogPanel className="w-full max-w-3xl overflow-hidden rounded-[3px] border border-9black bg-9layer shadow-9card">
-                <div className="flex gap-1 bg-[#CCC] px-2 py-1">
-                  <TitleBorders />
-                  <span className="font-chicago text-xs uppercase leading-[13px]">
-                    {title}
-                  </span>
-                  <TitleBorders />
-                  <CloseButton onClick={closeModal} size="size-3.5" />
-                </div>
-                <div className="bg-9layer p-5">{children}</div>
+              <DialogPanel className="w-full max-w-3xl">
+                <RetroCard title={title} onClose={closeModal} position="middle">
+                  {children}
+                </RetroCard>
               </DialogPanel>
             </TransitionChild>
           </div>

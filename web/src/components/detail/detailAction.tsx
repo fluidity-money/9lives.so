@@ -16,6 +16,7 @@ import KamalaImg from "#/images/kamala.webp";
 import { prepareContractCall, simulateTransaction } from "thirdweb";
 import config from "@/config";
 import { formatUnits } from "ethers";
+import ShadowCard from "../cardShadow";
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
@@ -115,7 +116,7 @@ export default function DetailCall2Action({
   }, [price, setValue]);
 
   return (
-    <div className="sticky top-0 z-10 flex flex-col gap-4 rounded-[3px] border border-9black bg-9layer p-4 shadow-9card">
+    <ShadowCard className="sticky top-0 z-10 flex flex-col gap-4 p-4">
       <div className="flex items-center gap-4">
         <div className="size-10 overflow-hidden rounded-full">
           <Image
@@ -277,6 +278,6 @@ export default function DetailCall2Action({
         intent={"cta"}
         onClick={onSubmit}
       />
-    </div>
+    </ShadowCard>
   );
 }

@@ -3,6 +3,7 @@ import PositionsBody from "./positionsBody";
 import TabButton from "../tabButton";
 import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment } from "react";
+import ShadowCard from "../cardShadow";
 interface PositionsProps {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
@@ -25,7 +26,7 @@ export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
       </TabList>
       <TabPanels>
         <TabPanel>
-          <div className="rounded-[3px] rounded-tl-none border border-9black p-5 shadow-9card">
+          <ShadowCard className="rounded-tl-none p-5">
             <table className="w-full table-auto border-separate border-spacing-y-1">
               <thead>
                 <tr className="font-geneva">
@@ -38,7 +39,7 @@ export default function Positions({ tradingAddr, outcomes }: PositionsProps) {
               </thead>
               <PositionsBody tradingAddr={tradingAddr} outcomes={outcomes} />
             </table>
-          </div>
+          </ShadowCard>
         </TabPanel>
       </TabPanels>
     </TabGroup>
