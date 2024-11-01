@@ -21,12 +21,12 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
     <button className="relative flex" ref={ref} {...props}>
       <Image
         src={selected ? Leftborder : LeftborderIdle}
-        width={14}
+        height={25}
         alt={title + "left-border"}
       />
       <span
         className={combineClass(
-          "border-t border-t-black bg-9layer px-2 py-1 font-chicago text-xs",
+          "h-full border-t border-t-black bg-9layer px-2 py-1 font-chicago text-xs",
           selected ? "bg-9layer" : "bg-[#CCC]",
         )}
       >
@@ -34,7 +34,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
       </span>
       <Image
         src={selected ? Rightborder : RightborderIdle}
-        width={14}
+        height={25}
         alt={title + "right-border"}
       />
       {selected && (

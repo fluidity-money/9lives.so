@@ -6,7 +6,7 @@ export default function LeaderboardPage() {
   return (
     <div className="flex flex-1 flex-col gap-5">
       <h2 className="font-chicago text-2xl">Leaderboard</h2>
-      <div className="flex flex-1 gap-10">
+      <div className="flex gap-10">
         <div className="flex-[2]">
           <LeaderTabScene />
         </div>
