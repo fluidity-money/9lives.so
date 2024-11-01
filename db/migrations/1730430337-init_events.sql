@@ -60,7 +60,7 @@ CREATE TABLE ninelives_events_new_trading(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	identifier BYTES8 NOT NULL UNIQUE,
+	identifier BYTES32 NOT NULL UNIQUE,
 	address ADDRESS NOT NULL UNIQUE,
 	oracle ADDRESS NOT NULL
 );
@@ -73,7 +73,7 @@ CREATE TABLE ninelives_events_outcome_created(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	trading_identifier BYTES32 NOT NULL UNIQUE,
+	trading_identifier BYTES32 NOT NULL,
 	erc20_identifier BYTES32 NOT NULL UNIQUE,
 	erc20_addr BYTES32 NOT NULL UNIQUE
 );
