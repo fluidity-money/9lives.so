@@ -110,7 +110,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 		}
 		// Update the checkpoint to use the latest block, if that's more than our
 		// request.
-		biggestBlockNo = min(from + to, latestBlockNo)
+		biggestBlockNo = min(to, latestBlockNo)
 		// Update checkpoint here with the latest that we saw.
 		if err := updateCheckpoint(db, biggestBlockNo); err != nil {
 			return fmt.Errorf("failed to update a checkpoint: %v", err)
