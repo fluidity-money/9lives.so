@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import useAchievements from "@/hooks/useAchievements";
 import RetroCard from "../cardRetro";
 import AchievementItem from "./achievementItem";
