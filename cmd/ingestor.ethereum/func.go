@@ -109,11 +109,9 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 				wasChanged = true
 			}
 		}
-		// Update checkpoint here.
-		if wasChanged {
-			if err := updateCheckpoint(db, biggestBlockNo); err != nil {
-				return fmt.Errorf("failed to update a checkpoint: %v", err)
-			}
+		// Update checkpoint here with the latest that we saw.
+		if err := updateCheckpoint(db, biggestBlockNo); err != nil {
+			return fmt.Errorf("failed to update a checkpoint: %v", err)
 		}
 		return nil
 	})
