@@ -6,7 +6,7 @@ type (
 		Event
 
 		Identifier Bytes   `json:"identifier"`
-		Addr       Address `json:"address"`
+		Addr       Address `json:"address" gorm:"address"`
 		Oracle     Address `json:"oracle"`
 	}
 
