@@ -5,10 +5,10 @@ import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
 import { SelectedOutcome } from "../../types";
 import { useState } from "react";
-import Positions from "./positions";
 import useSharePrices from "@/hooks/useSharePrices";
 import DetailInfo from "./detailInfo";
 import { useSearchParams } from "next/navigation";
+import AssetScene from "../user/assetScene";
 
 export default function DetailWrapper({
   initialData,
@@ -53,7 +53,7 @@ export default function DetailWrapper({
               ?.price ?? "0"
           }
         />
-        <Positions
+        <AssetScene
           tradingAddr={initialData.poolAddress}
           outcomes={initialData.outcomes}
         />
