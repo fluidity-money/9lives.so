@@ -30,6 +30,9 @@ type Event struct {
 	EmitterAddr     Address   `json:"emitter_addr"`
 }
 
+func BytesFromSlice(x []byte) Bytes {
+	return Bytes{x}
+}
 func BytesFromHex(s string) (*Bytes, error) {
 	h, err := hex.DecodeString(s)
 	if err != nil {

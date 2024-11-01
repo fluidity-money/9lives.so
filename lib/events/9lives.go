@@ -94,7 +94,7 @@ func UnpackPayoffActivated(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*ev
 }
 
 func hashToBytes(h ethCommon.Hash) events.Bytes {
-	return events.Bytes(h.Bytes())
+	return events.BytesFromSlice(h.Bytes())
 }
 
 func hashToAddr(h ethCommon.Hash) events.Address {
