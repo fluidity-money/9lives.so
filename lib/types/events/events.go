@@ -10,7 +10,9 @@ import (
 	"time"
 )
 
-type Bytes []byte
+type Bytes struct {
+	b []byte
+}
 
 type (
 	Hash    Bytes
@@ -28,21 +30,27 @@ type Event struct {
 	EmitterAddr     Address   `json:"emitter_addr"`
 }
 
-func BytesFromHex(s string) ([]byte, error) {
-	return hex.DecodeString(s)
+func BytesFromHex(s string) (*Bytes, error) {
+	h, err := hex.DecodeString(s)
+	if err != nil {
+		return nil, err
+	}
+	return &Bytes{h}, nil
 }
 func (x *Bytes) UnmarshalJSON(b []byte) (err error) {
 	var s string
 	if err := json.Unmarshal(b, &x); err != nil {
 		return err
 	}
-	if *x, err = BytesFromHex(s); err != nil {
+	e, err := BytesFromHex(s)
+	if err != nil {
 		return err
 	}
+	*x = *e
 	return nil
 }
 func (b Bytes) String() string {
-	return hex.EncodeToString([]byte(b))
+	return hex.EncodeToString([]byte(b.b))
 }
 func (b Bytes) Value() (sqlDriver.Value, error) {
 	return b.String(), nil

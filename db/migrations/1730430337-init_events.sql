@@ -44,7 +44,7 @@ CREATE TABLE ninelives_ingestor_checkpointing_1 (
 
 CREATE TABLE ninelives_tracked_trading_contracts_1(
 	id SERIAL PRIMARY KEY,
-	created_by TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+	created_by TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	-- Block hash that this tracking happened in.
 	block_hash HASH NOT NULL,
 	transaction_hash HASH NOT NULL,
