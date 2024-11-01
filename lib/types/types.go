@@ -69,6 +69,13 @@ type (
 		// ERC20 address of this campaign.
 		Address string `json:"address"`
 	}
+
+	// TrackedTradingContract that was created by the NewTrading event.
+	TrackedTradingContract struct {
+		BlockHash       string `json:"block_hash"`
+		TransactionHash string `json:"transaction_hash"`
+		TradingAddr     string `json:"trading_addr"`
+	}
 )
 
 func JSONMarshal(v interface{}) (driver.Value, error) {

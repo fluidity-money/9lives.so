@@ -8,6 +8,7 @@ require (
 	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
 	github.com/ethereum/go-ethereum v1.14.8
 	github.com/getsentry/sentry-go v0.28.1
+	github.com/lib/pq v1.10.9
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/samber/slog-sentry/v2 v2.8.0
 	github.com/stretchr/testify v1.9.0

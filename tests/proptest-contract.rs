@@ -1,5 +1,7 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
+use std::collections::LinkedList;
+
 use lib9lives::host;
 
 use stylus_sdk::{
@@ -45,6 +47,20 @@ fn strat_action_amount_purchasing(
     collection::vec(strat_action_amount_purchased(), 1..=amt)
 }
 
+fn strat_refunds(total: usize) -> impl Strategy<Value = LinkedList<u128>> {
+    let mut c = 0u128;
+    proptest::collection::vec((1..=total), (1..=total).prop_perturb(move |_, r| {
+        let mut x = [0u8; 8]; // So we know we're not going to meet it instantly.
+        r.fill_bytes(&mut x);
+        let x = u64::from_le_bytes(x);
+        if c + x as u128 > REASONABLE_UPPER_AMT {
+            return 0
+        }
+        c += x as u128;
+        x
+    }))
+}
+
 proptest! {
     #[test]
     fn test_end_to_end_contract(
@@ -59,6 +75,7 @@ proptest! {
         outcome_winner in prop_oneof![Just(Outcome::Outcome1), Just(Outcome::Outcome2)],
         purchase_int_1 in strat_action_amount_purchasing(1000),
         purchase_int_2 in strat_action_amount_purchasing(1000),
+        refunds in strat_refunds(10_000)
     ) {
         prop_assume!(outcome_1_id != outcome_2_id);
         use lib9lives::trading_storage::StorageTrading;
@@ -114,6 +131,7 @@ proptest! {
             };
             c.decide(outcome_winner).unwrap();
             let ret_amt = c.payoff(outcome_winner, winning_amt, msg::sender()).unwrap();
+            let back_amt = U256::ZERO;
             assert!(
                 ret_amt == fusdc_vested || ret_amt - U256::from(1) == fusdc_vested,
                 "ret_amt: {ret_amt} <= fusdc_vested: {fusdc_vested}, diff: {}",
