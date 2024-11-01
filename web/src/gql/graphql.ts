@@ -16,6 +16,15 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type Achievements = {
+  __typename?: 'Achievements';
+  /** Number of the achievement that was won. */
+  count: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  /** Name of the achievement earned. */
+  name?: Maybe<Scalars['String']['output']>;
+};
+
 /** Ongoing prediction market competition. */
 export type Campaign = {
   __typename?: 'Campaign';
@@ -72,8 +81,40 @@ export enum Modification {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Add achievement for an address or Discord handle given. */
+  addAchievement: Scalars['Boolean']['output'];
+  /**
+   * Authenticate with the info service using the key given. Secret string that should be set
+   * with Authorization.
+   */
+  auth?: Maybe<Scalars['String']['output']>;
+  /**
+   * Calculate points based on the data lake available. Does so using a function with an
+   * advisory lock. Can only be used by an authenticated user sending a Authentication token.
+   */
+  calculatePoints: Scalars['Boolean']['output'];
   /** "Explain" a campaign, so an on-chain campaign creation is listed in the frontend. Campaign is then spooled in a would-be frontend aggregation table. */
   explainCampaign?: Maybe<Scalars['Boolean']['output']>;
+  /** Register a Discord username with an address given. */
+  registerDiscord: Scalars['Boolean']['output'];
+};
+
+
+export type MutationAddAchievementArgs = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  count?: InputMaybe<Scalars['Int']['input']>;
+  discordUsername?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationAuthArgs = {
+  key: Scalars['String']['input'];
+};
+
+
+export type MutationCalculatePointsArgs = {
+  yes: Scalars['Boolean']['input'];
 };
 
 
@@ -85,6 +126,13 @@ export type MutationExplainCampaignArgs = {
   outcomes: Array<OutcomeInput>;
   seed: Scalars['Int']['input'];
   type: Modification;
+};
+
+
+export type MutationRegisterDiscordArgs = {
+  address: Scalars['String']['input'];
+  discord: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
 };
 
 export type Outcome = {
@@ -112,8 +160,18 @@ export type OutcomeInput = {
   seed: Scalars['Int']['input'];
 };
 
+export type Points = {
+  __typename?: 'Points';
+  /** Amount of points that're given to this user so far. */
+  amount: Scalars['Int']['output'];
+  /** ID of the points of the form "address" */
+  id: Scalars['ID']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  /** Get achievements for the address given. */
+  achievements: Array<Achievements>;
   /** Campaign List that can be filtered according to categories */
   campaigns: Array<Campaign>;
   /**
@@ -121,6 +179,13 @@ export type Query = {
    * not be displayed (until).
    */
   frontpage: Array<Frontpage>;
+  /** Get points for the address given. */
+  points: Points;
+};
+
+
+export type QueryAchievementsArgs = {
+  wallet: Scalars['String']['input'];
 };
 
 
@@ -131,6 +196,11 @@ export type QueryCampaignsArgs = {
 
 export type QueryFrontpageArgs = {
   category?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type QueryPointsArgs = {
+  wallet: Scalars['String']['input'];
 };
 
 /** Share representing the outcome of the current amount. */
@@ -152,5 +222,13 @@ export type CampaignListQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type CampaignListQuery = { __typename?: 'Query', campaigns: Array<{ __typename?: 'Campaign', name: string, identifier: string, description: string, oracle: string, poolAddress: string, outcomes: Array<{ __typename?: 'Outcome', identifier: string, name: string, description: string, share: { __typename?: 'Share', address: string } }> }> };
 
+export type GetAchievementsQueryVariables = Exact<{
+  wallet: Scalars['String']['input'];
+}>;
+
+
+export type GetAchievementsQuery = { __typename?: 'Query', achievements: Array<{ __typename?: 'Achievements', id: string, name?: string | null, count: number }> };
+
 
 export const CampaignListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CampaignList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"campaigns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"oracle"}},{"kind":"Field","name":{"kind":"Name","value":"poolAddress"}},{"kind":"Field","name":{"kind":"Name","value":"outcomes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"share"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CampaignListQuery, CampaignListQueryVariables>;
+export const GetAchievementsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAchievements"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"wallet"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"achievements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"wallet"},"value":{"kind":"Variable","name":{"kind":"Name","value":"wallet"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]} as unknown as DocumentNode<GetAchievementsQuery, GetAchievementsQueryVariables>;

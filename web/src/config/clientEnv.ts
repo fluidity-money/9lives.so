@@ -14,6 +14,10 @@ const clientEnvSchema = z.object({
    */
   NEXT_PUBLIC_FEATURES_URL: z.string().url(),
   /**
+   * Points and achievements server url
+   */
+  NEXT_PUBLIC_POINTS_URL: z.string().url(),
+  /**
    * fUSDC address
    */
   NEXT_PUBLIC_FUSDC_ADDR: z.string().length(42),
@@ -47,6 +51,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_FACTORY_ADDR: process.env.NEXT_PUBLIC_FACTORY_ADDR,
   NEXT_PUBLIC_AMM_ADDR: process.env.NEXT_PUBLIC_AMM_ADDR,
   NEXT_PUBLIC_LENS_ADDR: process.env.NEXT_PUBLIC_LENS_ADDR,
+  NEXT_PUBLIC_POINTS_URL: process.env.NEXT_PUBLIC_POINTS_URL,
 });
 
 if (!clientEnv.success) {

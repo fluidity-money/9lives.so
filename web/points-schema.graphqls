@@ -1,0 +1,97 @@
+
+type Mutation {
+  """
+  Authenticate with the info service using the key given. Secret string that should be set
+  with Authorization.
+  """
+  auth(key: String!): String
+
+  """
+  Add achievement for an address or Discord handle given.
+  """
+  addAchievement(
+    """
+    Wallet address to associate this achievement with.
+    """
+    address: String,
+
+    """
+    Discord username to associate this achievement with. Must be address or this.
+    """
+    discordUsername: String,
+
+    """
+    Name of the achievement to give.
+    """
+    name: String!,
+
+    """
+    Amount of the achievement that was won.
+    """
+    count: Int
+  ): Boolean!
+
+  """
+  Register a Discord username with an address given.
+  """
+  registerDiscord(
+    """
+    Address owned by the Discord handle given.
+    """
+    address: String!,
+
+    """
+    Discord username to associate the address with.
+    """
+    discord: String!,
+
+    """
+    Signature that verifies the ownership and relationship. Hex encoded.
+    """
+    sig: String!
+  ): Boolean!
+
+  """
+  Calculate points based on the data lake available. Does so using a function with an
+  advisory lock. Can only be used by an authenticated user sending a Authentication token.
+  """
+  calculatePoints(yes: Boolean!): Boolean!
+}
+
+type Query {
+  """
+  Get points for the address given.
+  """
+  points(wallet: String!): Points!
+
+  """
+  Get achievements for the address given.
+  """
+  achievements(wallet: String!): [Achievements!]!
+}
+
+type Points {
+  """
+  ID of the points of the form "address"
+  """
+  id: ID!
+
+  """
+  Amount of points that're given to this user so far.
+  """
+  amount: Int!
+}
+
+type Achievements {
+  id: ID!
+
+  """
+  Name of the achievement earned.
+  """
+  name: String
+
+  """
+  Number of the achievement that was won.
+  """
+  count: Int!
+}

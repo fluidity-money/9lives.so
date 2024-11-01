@@ -1,5 +1,5 @@
 import { graphql } from "@/gql";
-import request, { GraphQLClient } from "graphql-request";
+import { GraphQLClient } from "graphql-request";
 import appConfig from "@/config";
 
 const CampaignList = graphql(`
@@ -22,6 +22,19 @@ const CampaignList = graphql(`
   }
 `);
 
-const graphqlClient = new GraphQLClient(appConfig.NEXT_PUBLIC_GRAPHQL_URL);
+const getAchievements = graphql(`
+  query getAchievements($wallet: String!) {
+    achievements(wallet: $wallet) {
+      id
+      name
+      count
+    }
+  }
+`);
 
-export const requestCampaignList = graphqlClient.request(CampaignList);
+const graph9Lives = new GraphQLClient(appConfig.NEXT_PUBLIC_GRAPHQL_URL);
+const graphPoints = new GraphQLClient(appConfig.NEXT_PUBLIC_POINTS_URL);
+
+export const requestCampaignList = graph9Lives.request(CampaignList);
+export const requestAchievments = (wallet: string) =>
+  graphPoints.request(getAchievements, { wallet });

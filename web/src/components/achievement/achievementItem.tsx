@@ -2,13 +2,14 @@ import ShadowCard from "@/components/cardShadow";
 import AchYellow from "#/icons/ach-y.svg";
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
-export default function Achievement() {
+import { Achievement } from "@/types";
+export default function AchievementItem({ data }: { data: Achievement }) {
   return (
     <ShadowCard className="flex flex-col gap-4 p-5">
       <div className="flex items-center justify-between gap-2">
         <Image src={AchYellow} width={45} alt="Achievement" />
         <div className="flex flex-col gap-1">
-          <span className="font-chicago text-sm">Achievement #1</span>
+          <span className="font-chicago text-sm">{data.name}</span>
           <span className="text-xs">Connect to X and earn points.</span>
         </div>
         <div className="flex gap-1">
@@ -25,7 +26,7 @@ export default function Achievement() {
         </div>
       </div>
       <p className="text-center font-geneva text-[10px] uppercase text-[#808080]">
-        60% of users have this achievement
+        {data.count} users have this achievement
       </p>
     </ShadowCard>
   );

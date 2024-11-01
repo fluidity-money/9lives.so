@@ -1,5 +1,5 @@
 import { CampaignListQuery } from "./gql/graphql";
-
+import { GetAchievementsQuery } from "./gql/graphql";
 export type Campaign = CampaignListQuery["campaigns"][number] & {
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
@@ -17,3 +17,4 @@ export type Leader = {
   profit: string;
   positions: string;
 };
+export type Achievement = GetAchievementsQuery["achievements"][number];
