@@ -4,9 +4,9 @@ import (
 	sqlDriver "database/sql/driver"
 	"encoding/hex"
 	"encoding/json"
-	"strings"
-	"math/big"
 	"fmt"
+	"math/big"
+	"strings"
 	"time"
 )
 
@@ -17,17 +17,17 @@ type Bytes struct {
 type (
 	Hash    Bytes
 	Address string
-	Number struct {
+	Number  struct {
 		i *big.Int
 	}
 )
 
 type Event struct {
 	CreatedBy       time.Time `json:"created_by"`
-	BlockHash       Hash      `json:"block_hash"`
-	TransactionHash Hash      `json:"transaction_hash"`
+	BlockHash       string    `json:"block_hash"`
+	TransactionHash string    `json:"transaction_hash"`
 	BlockNumber     uint64    `json:"block_number"`
-	EmitterAddr     Address   `json:"emitter_addr"`
+	EmitterAddr     string    `json:"emitter_addr"`
 }
 
 func BytesFromSlice(x []byte) Bytes {
