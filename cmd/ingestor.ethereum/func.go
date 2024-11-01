@@ -88,6 +88,10 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 // provided is a HTTP client. Also updates the underlying last block it
 // saw into the database checkpoints. Fatals if something goes wrong.
 func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr ethCommon.Address, from, to uint64) {
+	latestBlockNo, err := c.BlockNumber(context.Background())
+	if err != nil {
+		setup.Exitf("failed to get latest block number: %v", err)
+	}
 	logs, err := c.FilterLogs(context.Background(), ethereum.FilterQuery{
 		FromBlock: new(big.Int).SetUint64(from),
 		ToBlock:   new(big.Int).SetUint64(to),
@@ -97,18 +101,16 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 		setup.Exitf("failed to filter logs: %v", err)
 	}
 	err = db.Transaction(func(db *gorm.DB) error {
-		wasChanged := false
 		biggestBlockNo := from
 		for _, l := range logs {
 			if err := handleLog(db, factoryAddr, l); err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
-			isBiggerOrEqual := biggestBlockNo <= l.BlockNumber
-			if isBiggerOrEqual {
-				biggestBlockNo = l.BlockNumber
-				wasChanged = true
-			}
+			biggestBlockNo = max(l.BlockNumber, biggestBlockNo)
 		}
+		// Update the checkpoint to use the latest block, if that's more than our
+		// request.
+		biggestBlockNo = min(from + to, latestBlockNo)
 		// Update checkpoint here with the latest that we saw.
 		if err := updateCheckpoint(db, biggestBlockNo); err != nil {
 			return fmt.Errorf("failed to update a checkpoint: %v", err)
