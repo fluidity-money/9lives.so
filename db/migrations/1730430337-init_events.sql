@@ -36,7 +36,7 @@ BEGIN
 	END IF;
 END $$;
 
-CREATE TABLE ingestor_checkpointing_1 (
+CREATE TABLE ninelives_ingestor_checkpointing_1 (
 	id SERIAL PRIMARY KEY,
 	last_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 	block_number INTEGER NOT NULL
