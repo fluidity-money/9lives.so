@@ -230,7 +230,7 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 	setEventFields(&a, blockHash, transactionHash, blockNumber, emitterAddr.String())
 	isTradingAddr, err := cbIsTrading(emitterAddr.String())
 	if err != nil {
-
+		return fmt.Errorf("finding trading addr: %v", err)
 	}
 	if !isFactory && !isTradingAddr {
 		// The submitter was not the factory or the trading contract, we're going to
