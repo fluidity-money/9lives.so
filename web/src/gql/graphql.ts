@@ -47,10 +47,10 @@ export type Campaign = {
 /** Frontpage that should be displayed for a time window. */
 export type Frontpage = {
   __typename?: 'Frontpage';
-  /** Campaigns displayed left from right in the grid format. */
-  campaigns: Array<Campaign>;
   /** Categories that should be displayed on the frontend in the list. */
   categories: Array<Scalars['String']['output']>;
+  /** Campaign item which is assigned. */
+  content: Campaign;
   /** From when this should be displayed (timestamp)! */
   from: Scalars['Int']['output'];
   /** ID that's used to cache this frontend data. */
@@ -114,13 +114,23 @@ export type OutcomeInput = {
 
 export type Query = {
   __typename?: 'Query';
-  /** Campaign List */
+  /** Campaign List that can be filtered according to categories */
   campaigns: Array<Campaign>;
   /**
-   * Frontpage display. Should have a timeline as to when it should and should
-   * not be displayed.
+   * Frontpage display. Should have a timeline as to when it should (from) and should
+   * not be displayed (until).
    */
   frontpage: Array<Frontpage>;
+};
+
+
+export type QueryCampaignsArgs = {
+  category?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type QueryFrontpageArgs = {
+  category?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** Share representing the outcome of the current amount. */
