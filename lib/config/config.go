@@ -22,9 +22,9 @@ type C struct {
 // Get config by querying environment variables.
 func Get() C {
 	/* Global RPC configuration. */
-	gethUrl := os.Getenv("SPN_GETH_URL")
+	gethUrl := os.Getenv("SPN_SUPERPOSITION_URL")
 	if gethUrl == "" {
-		setup.Exitf("SPN_GETH_URL not set")
+		setup.Exitf("SPN_SUPERPOSITION_URL not set")
 	}
 	timescaleUrl := os.Getenv("SPN_TIMESCALE")
 	if timescaleUrl == "" {

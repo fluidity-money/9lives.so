@@ -276,7 +276,7 @@ type BlockCheckpoint struct {
 
 func getLastBlockCheckpointed(db *gorm.DB) (uint64, error) {
 	var c BlockCheckpoint
-	err := db.Table("ingestor_checkpointing_1").Find(&c).Error
+	err := db.Table("ninelives_ingestor_checkpointing_1").Find(&c).Error
 	if err != nil {
 		return 0, err
 	}
