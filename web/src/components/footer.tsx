@@ -26,6 +26,10 @@ const menu = [
     title: "TODO board",
     page: "https://issues.superposition.so",
   },
+  {
+    title: "Status",
+    page: "https://status.9lives.so/"
+  }
 ];
 const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
   <Link
