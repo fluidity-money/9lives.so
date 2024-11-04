@@ -86,7 +86,7 @@ CREATE TABLE ninelives_events_outcome_decided(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	identifier BYTES8 NOT NULL,
+	identifier BYTES32 NOT NULL,
 	oracle ADDRESS NOT NULL,
 
 	UNIQUE (emitter_addr, identifier)
@@ -100,7 +100,7 @@ CREATE TABLE ninelives_events_shares_minted(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	identifier BYTES32 NOT NULL UNIQUE,
+	identifier BYTES32 NOT NULL,
 	share_amount HUGEINT NOT NULL,
 	spender ADDRESS NOT NULL,
 	recipient ADDRESS NOT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE ninelives_events_payoff_activated(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	identifier BYTES32 NOT NULL UNIQUE,
+	identifier BYTES32 NOT NULL,
 	shares_spent HUGEINT NOT NULL,
 	spender ADDRESS NOT NULL,
 	recipient ADDRESS NOT NULL,
