@@ -17,6 +17,7 @@ import { prepareContractCall, simulateTransaction } from "thirdweb";
 import config from "@/config";
 import { formatUnits } from "ethers";
 import ShadowCard from "../cardShadow";
+import ErrorInfo from "../themed/errorInfo";
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
@@ -210,11 +211,7 @@ export default function DetailCall2Action({
             errors.fusdc && "border-2 border-red-500",
           )}
         />
-        {errors.fusdc && (
-          <span className="mt-1 text-xs text-red-500">
-            {errors.fusdc.message}
-          </span>
-        )}
+        {errors.fusdc && <ErrorInfo text={errors.fusdc.message} />}
       </div>
       <div className="flex flex-col">
         <div className="flex items-center justify-between">
@@ -246,11 +243,7 @@ export default function DetailCall2Action({
             errors.share && "border-2 border-red-500",
           )}
         />
-        {errors.share && (
-          <span className="mt-1 text-xs text-red-500">
-            {errors.share.message}
-          </span>
-        )}
+        {errors.share && <ErrorInfo text={errors.share.message} />}
       </div>
       <div className="flex flex-col">
         <span className="font-chicago text-xs font-normal text-9black">
