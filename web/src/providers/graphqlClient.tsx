@@ -28,6 +28,20 @@ const getAchievements = graphql(`
       id
       name
       count
+      description
+    }
+  }
+`);
+
+const getLeaderboard = graphql(`
+  query getLeaderboard($season: Int) {
+    leaderboards(product: "9lives", season: $season) {
+      id
+      items {
+        id
+        wallet
+        ranking
+      }
     }
   }
 `);
@@ -38,3 +52,5 @@ const graphPoints = new GraphQLClient(appConfig.NEXT_PUBLIC_POINTS_URL);
 export const requestCampaignList = graph9Lives.request(CampaignList);
 export const requestAchievments = (wallet: string) =>
   graphPoints.request(getAchievements, { wallet });
+export const requestLeaderboard = (season?: number) =>
+  graphPoints.request(getLeaderboard, { season });
