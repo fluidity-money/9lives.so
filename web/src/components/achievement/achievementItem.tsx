@@ -7,10 +7,12 @@ export default function AchievementItem({ data }: { data: Achievement }) {
   return (
     <ShadowCard className="flex flex-col gap-4 p-5">
       <div className="flex items-center justify-between gap-2">
-        <Image src={AchYellow} width={45} alt="Achievement" />
-        <div className="flex flex-col gap-1">
-          <span className="font-chicago text-sm">{data.name}</span>
-          <span className="text-xs">Connect to X and earn points.</span>
+        <div className="flex gap-2.5">
+          <Image src={AchYellow} width={45} alt="Achievement" />
+          <div className="flex flex-col gap-1">
+            <span className="font-chicago text-sm">{data.name}</span>
+            <span className="text-xs">Connect to X and earn points.</span>
+          </div>
         </div>
         <div className="flex gap-1">
           <Image

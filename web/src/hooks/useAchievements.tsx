@@ -1,14 +1,12 @@
 import { requestAchievments } from "@/providers/graphqlClient";
 import { useQuery } from "@tanstack/react-query";
-import { useActiveAccount } from "thirdweb/react";
+// import { useActiveAccount } from "thirdweb/react";
 
-export default function useAchievements() {
-  const account = useActiveAccount();
+export default function useAchievements(props?: { walletAddress?: string }) {
   return useQuery({
-    queryKey: ["achievements", account?.address],
+    queryKey: ["achievements", props?.walletAddress],
     queryFn: async () => {
-      if (!account?.address) return [];
-      const res = await requestAchievments(account?.address);
+      const res = await requestAchievments(props?.walletAddress);
       return res.achievements;
     },
   });

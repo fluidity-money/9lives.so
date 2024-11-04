@@ -23,7 +23,7 @@ const CampaignList = graphql(`
 `);
 
 const getAchievements = graphql(`
-  query getAchievements($wallet: String!) {
+  query getAchievements($wallet: String) {
     achievements(wallet: $wallet) {
       id
       name
@@ -51,7 +51,7 @@ const graph9Lives = new GraphQLClient(appConfig.NEXT_PUBLIC_GRAPHQL_URL);
 const graphPoints = new GraphQLClient(appConfig.NEXT_PUBLIC_POINTS_URL);
 
 export const requestCampaignList = graph9Lives.request(CampaignList);
-export const requestAchievments = (wallet: string) =>
+export const requestAchievments = (wallet?: string) =>
   graphPoints.request(getAchievements, { wallet });
 export const requestLeaderboard = (season?: number) =>
   graphPoints.request(getLeaderboard, { season });
