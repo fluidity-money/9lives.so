@@ -126,6 +126,11 @@ type Achievement {
   The season that this achievement is for.
   """
   season: Int!
+
+  """
+  The amount of scoring for this achievement. NOTE THAT THESE ARE NOT POINTS!
+  """
+  scoring: Int!
 }
 
 type Leaderboard {
@@ -156,7 +161,7 @@ type LeaderboardItem {
   ranking: Int!
 
   """
-  Achievements earned by the user to earn them this spot.
+  The scoring of the wallet for their cumulative count achievement value.
   """
-  achievements: [Achievement!]!
+  scoring: Int!
 }

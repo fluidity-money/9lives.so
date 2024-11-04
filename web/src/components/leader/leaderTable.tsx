@@ -1,16 +1,11 @@
 import { combineClass } from "@/utils/combineClass";
 import React from "react";
-import { Leader } from "@/types";
 import LeaderRow from "./leaderRow";
+import useLeaderboard from "@/hooks/useLeaderboard";
 
-const mockData = Array.from({ length: 10 }, () => ({
-  rank: (Math.random() * 9 + 1).toFixed(0),
-  user: "0x544654563242af123",
-  positions: (Math.random() * 100).toFixed(0),
-  profit: `${Math.random() * 1000}$`,
-})) as Leader[];
 export default function LeaderTable() {
-  const titles = ["Rank", "User", "Positions", "Profit"];
+  const titles = ["Rank", "User", "Score", "Profit"];
+  const { data } = useLeaderboard();
   return (
     <table className="w-full border-separate border-spacing-0">
       <thead>
@@ -29,9 +24,7 @@ export default function LeaderTable() {
         </tr>
       </thead>
       <tbody>
-        {mockData.map((item) => (
-          <LeaderRow key={item.user} data={item} />
-        ))}
+        {data?.map((item) => <LeaderRow key={item.id} data={item} />)}
       </tbody>
     </table>
   );

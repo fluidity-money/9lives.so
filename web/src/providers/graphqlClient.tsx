@@ -41,6 +41,7 @@ const getLeaderboard = graphql(`
         id
         wallet
         ranking
+        scoring
       }
     }
   }
