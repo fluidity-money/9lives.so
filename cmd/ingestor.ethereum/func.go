@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strings"
 	"log/slog"
 	"math/big"
 	"time"
@@ -228,13 +229,17 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 		return fmt.Errorf("failed to process topic for table %#v: %v", table, err)
 	}
 	setEventFields(&a, blockHash, transactionHash, blockNumber, emitterAddr.String())
-	isTradingAddr, err := cbIsTrading(emitterAddr.String())
+	isTradingAddr, err := cbIsTrading(strings.ToLower(emitterAddr.String()))
 	if err != nil {
 		return fmt.Errorf("finding trading addr: %v", err)
 	}
 	if !isFactory && !isTradingAddr {
 		// The submitter was not the factory or the trading contract, we're going to
 		// disregard this event.
+		slog.Info("We disregarded an event that wasn't created by a trading contract",
+			"emitter", emitterAddr,
+			"event", a,
+		)
 		return nil
 	}
 	return cbInsert(table, a)
