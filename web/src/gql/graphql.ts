@@ -16,13 +16,19 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type Achievements = {
-  __typename?: 'Achievements';
+export type Achievement = {
+  __typename?: 'Achievement';
   /** Number of the achievement that was won. */
   count: Scalars['Int']['output'];
+  /** The descirption of this achievement. */
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   /** Name of the achievement earned. */
   name?: Maybe<Scalars['String']['output']>;
+  /** Product that this achievement was for. */
+  product: Scalars['String']['output'];
+  /** The season that this achievement is for. */
+  season: Scalars['Int']['output'];
 };
 
 /** Ongoing prediction market competition. */
@@ -68,6 +74,26 @@ export type Frontpage = {
   until: Scalars['Int']['output'];
 };
 
+export type Leaderboard = {
+  __typename?: 'Leaderboard';
+  id: Scalars['ID']['output'];
+  /** The amount of items in this leaderboard. */
+  items: Array<LeaderboardItem>;
+  /** The product this leaderboard is for. Could be 9lives or longtail. */
+  product: Scalars['String']['output'];
+};
+
+export type LeaderboardItem = {
+  __typename?: 'LeaderboardItem';
+  /** Achievements earned by the user to earn them this spot. */
+  achievements: Array<Achievement>;
+  id: Scalars['ID']['output'];
+  /** The ranking of the wallet. Ie, 1 for first place (the top). */
+  ranking: Scalars['Int']['output'];
+  /** The wallet that sits in the leaderboard this way. */
+  wallet: Scalars['String']['output'];
+};
+
 /**
  * HTTP-like interface for mutation. Either a delete, a logical update, or a put for the
  * first time.
@@ -97,6 +123,11 @@ export type Mutation = {
   explainCampaign?: Maybe<Scalars['Boolean']['output']>;
   /** Register a Discord username with an address given. */
   registerDiscord: Scalars['Boolean']['output'];
+  /**
+   * Add a connected wallet achievement for a specific product. Does so without
+   * any verification.
+   */
+  tagConnectedWallet: Scalars['Boolean']['output'];
 };
 
 
@@ -135,6 +166,12 @@ export type MutationRegisterDiscordArgs = {
   sig: Scalars['String']['input'];
 };
 
+
+export type MutationTagConnectedWalletArgs = {
+  product: Scalars['String']['input'];
+  wallet: Scalars['String']['input'];
+};
+
 export type Outcome = {
   __typename?: 'Outcome';
   /** Text description of this campaign. */
@@ -170,8 +207,11 @@ export type Points = {
 
 export type Query = {
   __typename?: 'Query';
-  /** Get achievements for the address given. */
-  achievements: Array<Achievements>;
+  /**
+   * Get achievements for the address given, or the category.
+   * If the product is requested, then the count will be 0.
+   */
+  achievements: Array<Achievement>;
   /** Campaign List that can be filtered according to categories */
   campaigns: Array<Campaign>;
   /**
@@ -179,13 +219,17 @@ export type Query = {
    * not be displayed (until).
    */
   frontpage: Array<Frontpage>;
+  /** Gets a sorted ranking of the address * achievement count for a specific product. */
+  leaderboards: Array<Leaderboard>;
   /** Get points for the address given. */
   points: Points;
+  /** Number of users who used this product. */
+  productUserCount: Scalars['Int']['output'];
 };
 
 
 export type QueryAchievementsArgs = {
-  wallet: Scalars['String']['input'];
+  wallet?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -199,8 +243,19 @@ export type QueryFrontpageArgs = {
 };
 
 
+export type QueryLeaderboardsArgs = {
+  product: Scalars['String']['input'];
+  season?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryPointsArgs = {
   wallet: Scalars['String']['input'];
+};
+
+
+export type QueryProductUserCountArgs = {
+  product: Scalars['String']['input'];
 };
 
 /** Share representing the outcome of the current amount. */
@@ -227,8 +282,16 @@ export type GetAchievementsQueryVariables = Exact<{
 }>;
 
 
-export type GetAchievementsQuery = { __typename?: 'Query', achievements: Array<{ __typename?: 'Achievements', id: string, name?: string | null, count: number }> };
+export type GetAchievementsQuery = { __typename?: 'Query', achievements: Array<{ __typename?: 'Achievement', id: string, name?: string | null, count: number, description: string }> };
+
+export type GetLeaderboardQueryVariables = Exact<{
+  season?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetLeaderboardQuery = { __typename?: 'Query', leaderboards: Array<{ __typename?: 'Leaderboard', id: string, items: Array<{ __typename?: 'LeaderboardItem', id: string, wallet: string, ranking: number }> }> };
 
 
 export const CampaignListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CampaignList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"campaigns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"oracle"}},{"kind":"Field","name":{"kind":"Name","value":"poolAddress"}},{"kind":"Field","name":{"kind":"Name","value":"outcomes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"share"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CampaignListQuery, CampaignListQueryVariables>;
-export const GetAchievementsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAchievements"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"wallet"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"achievements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"wallet"},"value":{"kind":"Variable","name":{"kind":"Name","value":"wallet"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]} as unknown as DocumentNode<GetAchievementsQuery, GetAchievementsQueryVariables>;
+export const GetAchievementsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAchievements"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"wallet"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"achievements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"wallet"},"value":{"kind":"Variable","name":{"kind":"Name","value":"wallet"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetAchievementsQuery, GetAchievementsQueryVariables>;
+export const GetLeaderboardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getLeaderboard"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"season"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"leaderboards"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"product"},"value":{"kind":"StringValue","value":"9lives","block":false}},{"kind":"Argument","name":{"kind":"Name","value":"season"},"value":{"kind":"Variable","name":{"kind":"Name","value":"season"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"wallet"}},{"kind":"Field","name":{"kind":"Name","value":"ranking"}}]}}]}}]}}]} as unknown as DocumentNode<GetLeaderboardQuery, GetLeaderboardQueryVariables>;

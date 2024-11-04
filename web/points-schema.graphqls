@@ -32,6 +32,12 @@ type Mutation {
   ): Boolean!
 
   """
+  Add a connected wallet achievement for a specific product. Does so without
+  any verification.
+  """
+  tagConnectedWallet(wallet: String!, product: String!): Boolean!
+
+  """
   Register a Discord username with an address given.
   """
   registerDiscord(
@@ -65,9 +71,20 @@ type Query {
   points(wallet: String!): Points!
 
   """
-  Get achievements for the address given.
+  Get achievements for the address given, or the category.
+  If the product is requested, then the count will be 0.
   """
-  achievements(wallet: String!): [Achievements!]!
+  achievements(wallet: String): [Achievement!]!
+
+  """
+  Gets a sorted ranking of the address * achievement count for a specific product.
+  """
+  leaderboards(product: String!, season: Int): [Leaderboard!]!
+
+  """
+  Number of users who used this product.
+  """
+  productUserCount(product: String!): Int!
 }
 
 type Points {
@@ -82,7 +99,7 @@ type Points {
   amount: Int!
 }
 
-type Achievements {
+type Achievement {
   id: ID!
 
   """
@@ -94,4 +111,52 @@ type Achievements {
   Number of the achievement that was won.
   """
   count: Int!
+
+  """
+  The descirption of this achievement.
+  """
+  description: String!
+
+  """
+  Product that this achievement was for.
+  """
+  product: String!
+
+  """
+  The season that this achievement is for.
+  """
+  season: Int!
+}
+
+type Leaderboard {
+  id: ID!
+
+  """
+  The product this leaderboard is for. Could be 9lives or longtail.
+  """
+  product: String!
+
+  """
+  The amount of items in this leaderboard.
+  """
+  items: [LeaderboardItem!]!
+}
+
+type LeaderboardItem {
+  id: ID!
+
+  """
+  The wallet that sits in the leaderboard this way.
+  """
+  wallet: String!
+
+  """
+  The ranking of the wallet. Ie, 1 for first place (the top).
+  """
+  ranking: Int!
+
+  """
+  Achievements earned by the user to earn them this spot.
+  """
+  achievements: [Achievement!]!
 }
