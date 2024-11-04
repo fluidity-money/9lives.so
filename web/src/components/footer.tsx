@@ -28,8 +28,8 @@ const menu = [
   },
   {
     title: "Status",
-    page: "https://status.9lives.so/"
-  }
+    page: "https://status.9lives.so/",
+  },
 ];
 const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
   <Link
