@@ -17,7 +17,7 @@ export default function LeaderTabScene() {
       </TabList>
       <TabPanels>
         <TabPanel>
-          <div className="overflow-y-scroll h-[554px]">
+          <div className="h-[554px] overflow-y-scroll">
             <LeaderTable />
           </div>
         </TabPanel>

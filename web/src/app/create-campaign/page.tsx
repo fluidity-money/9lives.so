@@ -1,11 +1,20 @@
 "use client";
 import RetroCard from "@/components/cardRetro";
+import TabRadioButton from "@/components/tabRadioButton";
 import Button from "@/components/themed/button";
 import ErrorInfo from "@/components/themed/errorInfo";
 import Input from "@/components/themed/input";
 import Label from "@/components/themed/label";
-import { Field } from "@headlessui/react";
+import {
+  Field,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Fragment } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 export default function CreateCampaign() {
@@ -58,6 +67,40 @@ export default function CreateCampaign() {
               <ErrorInfo text={errors.description.message} />
             )}
           </Field>
+          <TabGroup>
+            <TabList className="flex gap-2.5">
+              <Tab as={Fragment}>
+                {(props) => <TabRadioButton title="Yes / No" {...props} />}
+              </Tab>
+              <Tab as={Fragment}>
+                {(props) => (
+                  <TabRadioButton title="Custom Outcomes" {...props} />
+                )}
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <div className="flex gap-2.5 py-4">
+                  <input type="file"></input>
+                  <Input className={"flex-1"} />
+                </div>
+                <div className="flex gap-2.5 py-4">
+                  <input type="file"></input>
+                  <Input className={"flex-1"} />
+                </div>
+              </TabPanel>
+              <TabPanel>
+                <div className="flex gap-2.5 py-4">
+                  <input type="file"></input>
+                  <Input className={"flex-1"} />
+                </div>
+                <div className="flex gap-2.5 py-4">
+                  <input type="file"></input>
+                  <Input className={"flex-1"} />
+                </div>
+              </TabPanel>
+            </TabPanels>
+          </TabGroup>
           <Field className={fieldClass}>
             <Label text="Campaign Picture" required />
             <Input type="file" {...register("picture")} />
