@@ -17,7 +17,7 @@ export default function AchievementItem({
           <Image src={AchYellow} width={45} alt="Achievement" />
           <div className="flex flex-col gap-1">
             <span className="font-chicago text-sm">{data.name}</span>
-            <span className="text-xs">Connect to X and earn points.</span>
+            <span className="text-xs">{data.description}</span>
           </div>
         </div>
         <div className="flex gap-1">
