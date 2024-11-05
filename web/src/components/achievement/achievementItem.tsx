@@ -34,7 +34,7 @@ export default function AchievementItem({
         </div>
       </div>
       <p className="text-center font-geneva text-[10px] uppercase text-[#808080]">
-        {totalUserCount
+        {data.shouldCountMatter && totalUserCount
           ? `${((data.count / totalUserCount) * 100).toFixed(0)}`
           : "?"}
         % users have this achievement

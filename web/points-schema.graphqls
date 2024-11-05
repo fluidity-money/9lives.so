@@ -108,9 +108,22 @@ type Achievement {
   name: String
 
   """
-  Number of the achievement that was won.
+  Number of the achievement that was won. May be a unscaled number.
   """
   count: Int!
+
+  """
+  Whether this achievement counts the amount of interactions with it, or its a one time
+  interaction. It might be better to not display the count of in a "this is how many
+  people have this" context if it's the former.
+  """
+  shouldCountMatter: Boolean!
+
+  """
+  Is the count financial? This could dissuade the UI from displaying this item if so. Or,
+  enabling some scaling functionality.
+  """
+  isCountFinancial: Boolean!
 
   """
   The descirption of this achievement.
@@ -130,7 +143,7 @@ type Achievement {
   """
   The amount of scoring for this achievement. NOTE THAT THESE ARE NOT POINTS!
   """
-  scoring: Int!
+  scoring: Float!
 }
 
 type Leaderboard {

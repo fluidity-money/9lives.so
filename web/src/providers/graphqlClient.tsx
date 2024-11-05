@@ -29,6 +29,7 @@ const getAchievements = graphql(`
       name
       count
       description
+      shouldCountMatter
     }
   }
 `);
