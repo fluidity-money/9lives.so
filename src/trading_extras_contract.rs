@@ -125,6 +125,10 @@ impl StorageTrading {
         ))
     }
 
+    pub fn ended(&self) -> Result<bool, Error> {
+        Ok(!self.locked.is_zero())
+    }
+
     pub fn invested(&self) -> Result<U256, Error> {
         fusdc_decimal_to_u256(self.invested.get())
     }

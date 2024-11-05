@@ -105,6 +105,9 @@ impl StorageTrading {
         value: U256,
         _recipient: Address,
     ) -> Result<U256, Error> {
+        if !self.locked.is_zero() {
+            return Ok(U256::ZERO)
+        }
         let outcome = self.outcomes.getter(outcome_id);
         let m_1 = outcome.invested.get();
         let n_1 = outcome.shares.get();
@@ -147,6 +150,9 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> Result<U256, Error> {
         let outcome = self.outcomes.getter(id);
+        if !self.locked.is_zero() && outcome.winner.get() {
+            return Ok(U256::ZERO)
+        }
         let m_1 = outcome.invested.get();
         let n_1 = outcome.shares.get();
         let n_2 = self
