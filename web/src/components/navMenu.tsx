@@ -14,7 +14,6 @@ export default function NavigationMenu() {
     {
       title: "Leaderboard",
       page: "/leaderboard",
-      disabled: true,
     },
   ];
 
