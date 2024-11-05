@@ -9,7 +9,7 @@ export default function Providers({
   initialData,
 }: {
   children: React.ReactNode;
-  initialData: Campaign[];
+  initialData: { campaigns: Campaign[]; totalUserCount: number };
 }) {
   return (
     <ThirdwebProvider>

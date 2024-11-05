@@ -6,7 +6,7 @@ import { unstable_cache } from "next/cache";
 import { Suspense } from "react";
 
 export const dynamicParams = true;
-export const revalidate = 300 // per 5 minutes
+export const revalidate = 300; // per 5 minutes
 export async function generateStaticParams() {
   const response = await requestCampaignList;
   const { campaigns } = response;

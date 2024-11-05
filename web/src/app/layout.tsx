@@ -8,7 +8,10 @@ import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import dynamic from "next/dynamic";
 import appConfig from "@/config";
-import { requestCampaignList } from "@/providers/graphqlClient";
+import {
+  requestCampaignList,
+  requestTotalUserCount,
+} from "@/providers/graphqlClient";
 import { unstable_cache } from "next/cache";
 import { Campaign } from "@/types";
 import CustomToaster from "@/components/customToaster";
@@ -49,6 +52,17 @@ const getCampaigns = unstable_cache(
   { revalidate: appConfig.cacheRevalidation.homePage, tags: ["campaigns"] },
 );
 
+const getTotalUserCount = unstable_cache(
+  async () => {
+    return (await requestTotalUserCount).productUserCount as number;
+  },
+  ["totalUserCount"],
+  {
+    revalidate: appConfig.cacheRevalidation.homePage,
+    tags: ["totalUserCount"],
+  },
+);
+
 export const metadata: Metadata = {
   ...appConfig.metadata,
 };
@@ -58,14 +72,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialData = await getCampaigns();
+  const campaigns = await getCampaigns();
+  const totalUserCount = await getTotalUserCount();
   return (
     <html
       lang="en"
       className={combineClass([chicago.variable, geneva.variable])}
     >
       <body className="flex min-h-screen flex-col bg-9layer">
-        <Providers initialData={initialData}>
+        <Providers initialData={{ campaigns, totalUserCount }}>
           <Header />
           <main className="flex flex-1 p-4">{children}</main>
           <Footer />

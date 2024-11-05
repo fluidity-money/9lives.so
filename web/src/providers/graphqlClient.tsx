@@ -47,6 +47,12 @@ const getLeaderboard = graphql(`
   }
 `);
 
+const getTotalUserCount = graphql(`
+  query getTotalUserCount {
+    productUserCount(product: "9lives")
+  }
+`);
+
 const graph9Lives = new GraphQLClient(appConfig.NEXT_PUBLIC_GRAPHQL_URL);
 const graphPoints = new GraphQLClient(appConfig.NEXT_PUBLIC_POINTS_URL);
 
@@ -55,3 +61,4 @@ export const requestAchievments = (wallet?: string) =>
   graphPoints.request(getAchievements, { wallet });
 export const requestLeaderboard = (season?: number) =>
   graphPoints.request(getLeaderboard, { season });
+export const requestTotalUserCount = graphPoints.request(getTotalUserCount);
