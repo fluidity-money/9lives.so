@@ -6,7 +6,14 @@ import { unstable_cache } from "next/cache";
 import { Suspense } from "react";
 
 export const dynamicParams = true;
-
+export const revalidate = 300 // per 5 minutes
+export async function generateStaticParams() {
+  const response = await requestCampaignList;
+  const { campaigns } = response;
+  return campaigns.map((campaign) => ({
+    id: campaign.identifier,
+  }));
+}
 const getCampaigns = unstable_cache(
   async () => {
     return (await requestCampaignList).campaigns as Campaign[];
@@ -14,7 +21,6 @@ const getCampaigns = unstable_cache(
   ["campaigns"],
   { revalidate: appConfig.cacheRevalidation.detailPages, tags: ["campaigns"] },
 );
-
 export default async function DetailPage({
   params,
 }: {
