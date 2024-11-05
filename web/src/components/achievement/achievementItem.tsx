@@ -3,7 +3,13 @@ import AchYellow from "#/icons/ach-y.svg";
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
 import { Achievement } from "@/types";
-export default function AchievementItem({ data }: { data: Achievement }) {
+export default function AchievementItem({
+  data,
+  totalUserCount,
+}: {
+  data: Achievement;
+  totalUserCount?: number;
+}) {
   return (
     <ShadowCard className="flex flex-col gap-4 p-5">
       <div className="flex items-center justify-between gap-2">
@@ -28,7 +34,10 @@ export default function AchievementItem({ data }: { data: Achievement }) {
         </div>
       </div>
       <p className="text-center font-geneva text-[10px] uppercase text-[#808080]">
-        {data.count} users have this achievement
+        {totalUserCount
+          ? `${((data.count / totalUserCount) * 100).toFixed(0)}`
+          : "?"}
+        % users have this achievement
       </p>
     </ShadowCard>
   );
