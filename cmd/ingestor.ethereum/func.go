@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
 	"log/slog"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
@@ -228,8 +228,15 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 	if err != nil {
 		return fmt.Errorf("failed to process topic for table %#v: %v", table, err)
 	}
-	setEventFields(&a, blockHash, transactionHash, blockNumber, emitterAddr.String())
-	isTradingAddr, err := cbIsTrading(strings.ToLower(emitterAddr.String()))
+	emitterAddrS := strings.ToLower(emitterAddr.String())
+	setEventFields(
+		&a,
+		blockHash,
+		transactionHash,
+		blockNumber,
+		emitterAddrS,
+	)
+	isTradingAddr, err := cbIsTrading(emitterAddrS)
 	if err != nil {
 		return fmt.Errorf("finding trading addr: %v", err)
 	}
