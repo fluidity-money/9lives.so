@@ -48,7 +48,6 @@ export default function useDetails({
         }),
       );
       const results = await Promise.all(promises);
-      console.log(results, "resultsresultsresults");
       const details = results.reduce(
         (acc: Detail, cur: any[], curIdx) => {
           acc.totalInvestment += cur[investedIdx];
