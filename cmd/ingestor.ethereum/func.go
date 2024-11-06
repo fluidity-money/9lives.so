@@ -275,7 +275,7 @@ func databaseDoesContainTrading(db *gorm.DB, addr string) (doesExist bool, err e
 	err = db.Raw(`
 SELECT COUNT(1) FROM ninelives_tracked_trading_contracts_1
 WHERE trading_addr = ?`,
-		addr,
+		strings.ToLower(addr),
 	).
 		Scan(&count).
 		Error
