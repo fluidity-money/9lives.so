@@ -13,7 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query CampaignList {\n    campaigns {\n      name\n      identifier\n      description\n      oracle\n      poolAddress\n      outcomes {\n        identifier\n        name\n        description\n        share {\n          address\n        }\n      }\n    }\n  }\n": types.CampaignListDocument,
+    "\n  query CampaignList {\n    campaigns {\n      name\n      identifier\n      description\n      oracle\n      poolAddress\n      creator {\n        address\n      }\n      outcomes {\n        identifier\n        name\n        description\n        share {\n          address\n        }\n      }\n      ending\n    }\n  }\n": types.CampaignListDocument,
     "\n  query getAchievements($wallet: String) {\n    achievements(wallet: $wallet) {\n      id\n      name\n      count\n      description\n      shouldCountMatter\n      product\n    }\n  }\n": types.GetAchievementsDocument,
     "\n  query getLeaderboard($season: Int) {\n    leaderboards(product: \"9lives\", season: $season) {\n      id\n      items {\n        id\n        wallet\n        ranking\n        scoring\n      }\n    }\n  }\n": types.GetLeaderboardDocument,
     "\n  query getTotalUserCount {\n    productUserCount(product: \"9lives\")\n  }\n": types.GetTotalUserCountDocument,
@@ -36,7 +36,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query CampaignList {\n    campaigns {\n      name\n      identifier\n      description\n      oracle\n      poolAddress\n      outcomes {\n        identifier\n        name\n        description\n        share {\n          address\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query CampaignList {\n    campaigns {\n      name\n      identifier\n      description\n      oracle\n      poolAddress\n      outcomes {\n        identifier\n        name\n        description\n        share {\n          address\n        }\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query CampaignList {\n    campaigns {\n      name\n      identifier\n      description\n      oracle\n      poolAddress\n      creator {\n        address\n      }\n      outcomes {\n        identifier\n        name\n        description\n        share {\n          address\n        }\n      }\n      ending\n    }\n  }\n"): (typeof documents)["\n  query CampaignList {\n    campaigns {\n      name\n      identifier\n      description\n      oracle\n      poolAddress\n      creator {\n        address\n      }\n      outcomes {\n        identifier\n        name\n        description\n        share {\n          address\n        }\n      }\n      ending\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -277,7 +277,7 @@ export default function DetailCall2Action({
         title={isMinting ? "Loading.." : ctaTitle}
         className={"uppercase"}
         size={"xlarge"}
-        intent={"cta"}
+        intent={"yes"}
         onClick={onSubmit}
       />
     </ShadowCard>

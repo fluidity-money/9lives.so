@@ -10,6 +10,9 @@ const CampaignList = graphql(`
       description
       oracle
       poolAddress
+      creator {
+        address
+      }
       outcomes {
         identifier
         name
@@ -18,6 +21,7 @@ const CampaignList = graphql(`
           address
         }
       }
+      ending
     }
   }
 `);
