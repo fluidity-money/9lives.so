@@ -56,6 +56,9 @@ type (
 
 		// Outcomes associated with this campaign.
 		Outcomes OutcomeList `json:"outcomes"`
+
+		// Ending date of the campaign. Unix timestamp in miliseconds.
+		Ending int `json:"ending"`
 	}
 
 	// Wallet of the creator of a campaign.

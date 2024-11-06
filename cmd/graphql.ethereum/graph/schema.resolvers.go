@@ -6,10 +6,10 @@ package graph
 
 import (
 	"context"
-	"strings"
 	"encoding/hex"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
@@ -71,6 +71,14 @@ func (r *campaignResolver) Outcomes(ctx context.Context, obj *types.Campaign) ([
 		return nil, fmt.Errorf("campaign is nil")
 	}
 	return obj.Content.Outcomes, nil
+}
+
+// Ending is the resolver for the ending field.
+func (r *campaignResolver) Ending(ctx context.Context, obj *types.Campaign) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Ending, nil
 }
 
 // ID is the resolver for the id field.
@@ -154,6 +162,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			Oracle:      "n/a",
 			PoolAddress: tradingAddr.Hex(),
 			Outcomes:    campaignOutcomes,
+			Ending:      ending,
 		},
 	}
 	result := r.DB.Table("ninelives_campaigns_1").Create(&campaign)

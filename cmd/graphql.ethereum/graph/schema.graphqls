@@ -147,6 +147,11 @@ type Campaign {
   to a "yes", or "no".
   """
   outcomes: [Outcome!]!
+
+  """
+  Ending date of the campaign in timestamp
+  """
+  ending: Int!
 }
 
 type Outcome {

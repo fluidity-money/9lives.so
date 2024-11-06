@@ -53,6 +53,7 @@ type ComplexityRoot struct {
 	Campaign struct {
 		Creator     func(childComplexity int) int
 		Description func(childComplexity int) int
+		Ending      func(childComplexity int) int
 		Identifier  func(childComplexity int) int
 		Name        func(childComplexity int) int
 		Oracle      func(childComplexity int) int
@@ -101,6 +102,7 @@ type CampaignResolver interface {
 	Identifier(ctx context.Context, obj *types.Campaign) (string, error)
 	PoolAddress(ctx context.Context, obj *types.Campaign) (string, error)
 	Outcomes(ctx context.Context, obj *types.Campaign) ([]types.Outcome, error)
+	Ending(ctx context.Context, obj *types.Campaign) (int, error)
 }
 type FrontpageResolver interface {
 	ID(ctx context.Context, obj *types.Frontpage) (string, error)
@@ -149,6 +151,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.Description(childComplexity), true
+
+	case "Campaign.ending":
+		if e.complexity.Campaign.Ending == nil {
+			break
+		}
+
+		return e.complexity.Campaign.Ending(childComplexity), true
 
 	case "Campaign.identifier":
 		if e.complexity.Campaign.Identifier == nil {
@@ -897,6 +906,50 @@ func (ec *executionContext) fieldContext_Campaign_outcomes(_ context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Campaign_ending(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_ending(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().Ending(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_ending(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Frontpage_id(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Frontpage_id(ctx, field)
 	if err != nil {
@@ -1126,6 +1179,8 @@ func (ec *executionContext) fieldContext_Frontpage_content(_ context.Context, fi
 				return ec.fieldContext_Campaign_poolAddress(ctx, field)
 			case "outcomes":
 				return ec.fieldContext_Campaign_outcomes(ctx, field)
+			case "ending":
+				return ec.fieldContext_Campaign_ending(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -1418,6 +1473,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_poolAddress(ctx, field)
 			case "outcomes":
 				return ec.fieldContext_Campaign_outcomes(ctx, field)
+			case "ending":
+				return ec.fieldContext_Campaign_ending(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -3779,6 +3836,42 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Campaign_outcomes(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "ending":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_ending(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
