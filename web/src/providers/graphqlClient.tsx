@@ -30,6 +30,7 @@ const getAchievements = graphql(`
       count
       description
       shouldCountMatter
+      product
     }
   }
 `);

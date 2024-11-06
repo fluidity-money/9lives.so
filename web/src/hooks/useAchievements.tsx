@@ -7,7 +7,7 @@ export default function useAchievements(props?: { walletAddress?: string }) {
     queryKey: ["achievements", props?.walletAddress],
     queryFn: async () => {
       const res = await requestAchievments(props?.walletAddress);
-      return res.achievements;
+      return res.achievements.filter((a) => a.product === "9lives");
     },
   });
 }
