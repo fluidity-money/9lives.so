@@ -18,6 +18,7 @@ import config from "@/config";
 import { formatUnits } from "ethers";
 import ShadowCard from "../cardShadow";
 import ErrorInfo from "../themed/errorInfo";
+import usePotentialReturn from "@/hooks/usePotentialReturn";
 export default function DetailCall2Action({
   tradingAddr,
   initalData,
@@ -38,6 +39,7 @@ export default function DetailCall2Action({
   const outcome = selectedOutcome
     ? initalData.find((o) => o.identifier === selectedOutcome.id)!
     : initalData[0];
+  const outcomeIds = initalData.map((o) => o.identifier);
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z.object({
@@ -63,24 +65,31 @@ export default function DetailCall2Action({
     shareAddr: outcome.share.address,
     outcomeId: outcome.identifier,
   });
-  const { data: estimatedReturn } = useReturnValue({
+  const estimatedReturn = usePotentialReturn({
     tradingAddr,
-    fusdc,
-    shareAddr: outcome.share.address,
+    outcomeIds,
     outcomeId: outcome.identifier,
+    fusdc,
+    share,
   });
+  const estimatedReturnPerc = (
+    ((estimatedReturn - fusdc) / fusdc) *
+    100
+  ).toFixed(2);
   const orderSummary = [
     {
       title: "AVG Price",
-      value: price,
+      value: `$${price}`,
     },
     {
       title: "Shares",
       value: share,
     },
     {
-      title: "Return",
-      value: estimatedReturn ?? "0",
+      title: "Potential Return",
+      value: estimatedReturn
+        ? `$${estimatedReturn} (${estimatedReturnPerc}%)`
+        : "$0",
     },
   ];
   async function handleBuy({ fusdc }: FormData) {

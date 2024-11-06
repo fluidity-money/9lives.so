@@ -10,6 +10,7 @@ export default function CampaignBody({
   data: Campaign;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
+  const outcomeIds = data.outcomes.map((o) => o.identifier as `0x${string}`);
   return (
     <>
       <CampaignItemHeader
@@ -23,7 +24,10 @@ export default function CampaignBody({
         outcomes={data.outcomes}
         setSelectedOutcome={setSelectedOutcome}
       />
-      <CampaignItemFooter tradingAddr={data.poolAddress} />
+      <CampaignItemFooter
+        tradingAddr={data.poolAddress}
+        outcomeIds={outcomeIds}
+      />
     </>
   );
 }

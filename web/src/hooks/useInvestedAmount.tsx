@@ -1,26 +1,20 @@
 import config from "@/config";
-import { useQuery } from "@tanstack/react-query";
 import { formatUnits } from "ethers";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
+import useDetails from "./useDetails";
 
 export default function useInvestedAmount({
   tradingAddr,
+  outcomeIds,
 }: {
   tradingAddr: `0x${string}`;
+  outcomeIds: `0x${string}`[];
 }) {
-  return useQuery({
-    queryKey: ["investedAmount", tradingAddr],
-    queryFn: async () => {
-      const balanceOfTx = prepareContractCall({
-        contract: config.contracts.fusdc,
-        method: "balanceOf",
-        params: [tradingAddr],
-      });
-      const balance = await simulateTransaction({
-        transaction: balanceOfTx,
-      });
-
-      return formatUnits(balance, config.contracts.decimals.fusdc);
-    },
+  const { data } = useDetails({
+    tradingAddr,
+    outcomeIds,
   });
+  return formatUnits(
+    data?.totalInvestment ?? 0,
+    config.contracts.decimals.fusdc,
+  );
 }

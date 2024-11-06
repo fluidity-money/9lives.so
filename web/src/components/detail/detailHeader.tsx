@@ -5,8 +5,12 @@ import { Campaign } from "@/types";
 import useInvestedAmount from "@/hooks/useInvestedAmount";
 
 export default function DetailHeader({ data }: { data: Campaign }) {
-  const { data: investedAmount } = useInvestedAmount({
+  const outcomeIds = data.outcomes.map(
+    (outcome) => outcome.identifier as `0x${string}`,
+  );
+  const investedAmount = useInvestedAmount({
     tradingAddr: data.poolAddress,
+    outcomeIds,
   });
   return (
     <div className="flex items-center justify-between">

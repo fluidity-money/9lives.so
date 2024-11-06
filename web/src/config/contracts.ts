@@ -22,6 +22,7 @@ const contractSchema = z.object({
 const allContractSchema = z.object({
   decimals: z.object({
     fusdc: z.number().default(6),
+    shares: z.number().default(6),
   }),
   fusdc: contractSchema,
   factory: contractSchema,
@@ -57,6 +58,7 @@ const lens = getContract({
 const contractValidation = allContractSchema.safeParse({
   decimals: {
     fusdc: 6,
+    shares: 6,
   },
   fusdc,
   factory,

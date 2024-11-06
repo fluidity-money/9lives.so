@@ -1,55 +1,29 @@
-import config from "@/config";
-import tradingAbi from "@/config/abi/trading";
-import { Outcome } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-} from "thirdweb";
-import { arbitrum } from "thirdweb/chains";
+import useDetails from "./useDetails";
 
 export default function useChances({
   tradingAddr,
-  outcomes,
+  outcomeIds,
 }: {
-  tradingAddr: string;
-  outcomes: Outcome[];
+  tradingAddr: `0x${string}`;
+  outcomeIds: `0x${string}`[];
 }) {
-  return useQuery({
-    queryKey: ["chances", tradingAddr, outcomes[0].identifier],
-    queryFn: async () => {
-      const investedIdx = 1;
-      const globalInvestedIdx = 2;
-
-      const tradingContract = getContract({
-        abi: tradingAbi,
-        address: tradingAddr,
-        client: config.thirdweb.client,
-        chain: arbitrum,
-      });
-
-      const outcomeRes = await simulateTransaction({
-        transaction: prepareContractCall({
-          contract: tradingContract,
-          method: "details",
-          params: [outcomes[0].identifier],
-        }),
-      });
-      const invested = Number(outcomeRes[investedIdx]);
-      const globalInvested = Number(outcomeRes[globalInvestedIdx]);
-      const res = outcomes.map((outcome) => ({
-        id: outcome.identifier,
-        chance:
-          outcome.identifier === outcomes[0].identifier
-            ? (invested / globalInvested) * 100
-            : ((globalInvested - invested) / globalInvested) * 100,
-        investedAmount:
-          outcome.identifier === outcomes[0].identifier
-            ? invested
-            : globalInvested - invested,
-      }));
-      return res;
-    },
+  const { data } = useDetails({
+    tradingAddr,
+    outcomeIds,
   });
+  if (!data)
+    return outcomeIds.map((id) => ({
+      id,
+      chance: 0,
+      investedAmount: BigInt(0),
+    }));
+  const chances = outcomeIds.map((id) => {
+    const investedAmount = data.outcomes.find((o) => o.id === id)!.invested;
+    return {
+      id,
+      chance: (Number(investedAmount) / Number(data.totalInvestment)) * 100,
+      investedAmount,
+    };
+  });
+  return chances;
 }

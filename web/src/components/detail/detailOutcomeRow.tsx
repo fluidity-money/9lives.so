@@ -17,7 +17,7 @@ export default function DetailOutcomeRow({
 }: {
   data: Outcome;
   price: string;
-  amount?: number;
+  amount?: bigint;
   chance?: number;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
