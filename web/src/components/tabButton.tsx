@@ -23,6 +23,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
         src={selected ? Leftborder : LeftborderIdle}
         height={25}
         alt={title + "left-border"}
+        className="size-auto"
       />
       <span
         className={combineClass(
@@ -36,6 +37,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
         src={selected ? Rightborder : RightborderIdle}
         height={25}
         alt={title + "right-border"}
+        className="size-auto"
       />
       {selected && (
         <div className="absolute -bottom-px h-[2px] w-full bg-9layer" />
