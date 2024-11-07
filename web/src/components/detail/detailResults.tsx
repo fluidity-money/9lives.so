@@ -45,9 +45,7 @@ export default function DetailResults({
   const avgPrice = Number(results?.totalInvestment) / Number(winnerShares);
   const accountShares = data?.reduce((acc, item) => {
     if (item.id === winner.identifier) {
-      acc += Number(
-        formatUnits(item.balance, config.contracts.decimals.shares),
-      );
+      acc += Number(item.balance);
     }
     return acc;
   }, 0);
@@ -139,7 +137,7 @@ export default function DetailResults({
         </ul>
       </div>
       <Button
-        disabled={noClaim || isConnecting || isClaiming}
+        disabled={!noClaim || isConnecting || isClaiming}
         title={
           isClaiming
             ? "Claiming..."
