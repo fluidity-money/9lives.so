@@ -14,3 +14,14 @@ export type SelectedOutcome = { id: string; state: "buy" | "sell" };
 export type Leader =
   GetLeaderboardQuery["leaderboards"][number]["items"][number];
 export type Achievement = GetAchievementsQuery["achievements"][number];
+export type Detail = {
+  totalInvestment: bigint;
+  totalShares: bigint;
+  winner: `0x${string}` | undefined;
+  outcomes: {
+    id: `0x${string}`;
+    share: bigint;
+    invested: bigint;
+    isWinner: boolean;
+  }[];
+}

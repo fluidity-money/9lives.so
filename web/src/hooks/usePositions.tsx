@@ -28,7 +28,7 @@ async function fetchPositions(
       id: outcome.identifier,
       shareAddress: outcome.share.address,
       name: outcome.name,
-      balance: formatUnits(balances[idx], config.contracts.decimals.fusdc),
+      balance: formatUnits(balances[idx], config.contracts.decimals.shares),
     }))
     .filter((item) => item.balance !== "0.0");
 

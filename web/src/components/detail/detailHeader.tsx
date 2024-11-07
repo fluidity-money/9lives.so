@@ -5,24 +5,16 @@ import { Campaign } from "@/types";
 import useInvestedAmount from "@/hooks/useInvestedAmount";
 import ActiveIndicator from "#/images/active-indicator.svg";
 import InactiveIndicator from "#/images/inactive-indicator.svg";
-import useDetails from "@/hooks/useDetails";
 import { combineClass } from "@/utils/combineClass";
 
-export default function DetailHeader({ data }: { data: Campaign }) {
+export default function DetailHeader({ data, isConcluded }: { data: Campaign, isConcluded: boolean }) {
   const outcomeIds = data.outcomes.map(
     (outcome) => outcome.identifier as `0x${string}`,
   );
-  const { data: details } = useDetails({
-    tradingAddr: data.poolAddress,
-    outcomeIds,
-  });
   const investedAmount = useInvestedAmount({
     tradingAddr: data.poolAddress,
     outcomeIds,
   });
-  const isEnded = data.ending && data.ending < Date.now();
-  const isDisabled = details?.winner || isEnded;
-
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -36,7 +28,7 @@ export default function DetailHeader({ data }: { data: Campaign }) {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2.5">
             <Image
-              src={isDisabled ? InactiveIndicator : ActiveIndicator}
+              src={isConcluded ? InactiveIndicator : ActiveIndicator}
               alt=""
               className="h-[16px] w-auto"
               height={16}
@@ -53,7 +45,7 @@ export default function DetailHeader({ data }: { data: Campaign }) {
             </div>
             <span
               className={combineClass(
-                isDisabled ? "bg-[#CCC]" : "bg-9yellow",
+                isConcluded ? "bg-[#CCC]" : "bg-9yellow",
                 "px-1 py-0.5 text-9black",
               )}
             >

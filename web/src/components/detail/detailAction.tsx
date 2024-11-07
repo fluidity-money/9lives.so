@@ -6,7 +6,6 @@ import Input from "../themed/input";
 import { Outcome, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
 import { useActiveAccount } from "thirdweb/react";
-import useReturnValue from "@/hooks/useReturnValue";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";

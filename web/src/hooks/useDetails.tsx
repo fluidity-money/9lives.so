@@ -7,20 +7,10 @@ import {
 } from "thirdweb";
 import config from "@/config";
 import { arbitrum } from "thirdweb/chains";
+import { Detail } from "@/types";
 interface useDetailsProps {
   tradingAddr: `0x${string}`;
   outcomeIds: `0x${string}`[];
-}
-interface Detail {
-  totalInvestment: bigint;
-  totalShares: bigint;
-  winner: `0x${string}` | undefined;
-  outcomes: {
-    id: `0x${string}`;
-    share: bigint;
-    invested: bigint;
-    isWinner: boolean;
-  }[];
 }
 export default function useDetails({
   tradingAddr,

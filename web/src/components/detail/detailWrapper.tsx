@@ -9,6 +9,8 @@ import useSharePrices from "@/hooks/useSharePrices";
 import DetailInfo from "./detailInfo";
 import { useSearchParams } from "next/navigation";
 import AssetScene from "../user/assetScene";
+import useDetails from "@/hooks/useDetails";
+import DetailResults from "./detailResults";
 
 export default function DetailWrapper({
   initialData,
@@ -25,6 +27,12 @@ export default function DetailWrapper({
   const outcomeIds = initialData.outcomes.map(
     (o) => o.identifier as `0x${string}`,
   );
+  const { data: details } = useDetails({
+    tradingAddr: initialData.poolAddress,
+    outcomeIds,
+  });
+  const isEnded = !!initialData.ending && initialData.ending < Date.now();
+  const isConcluded = !!details?.winner || !!isEnded;
   const { data: sharePrices } = useSharePrices({
     tradingAddr: initialData.poolAddress as `0x${string}`,
     outcomeIds,
@@ -32,7 +40,7 @@ export default function DetailWrapper({
   return (
     <>
       <div className="flex flex-[2] flex-col gap-8">
-        <DetailHeader data={initialData} />
+        <DetailHeader data={initialData} isConcluded={isConcluded} />
         <DetailOutcomeTable
           sharePrices={sharePrices}
           data={initialData.outcomes}
@@ -43,16 +51,18 @@ export default function DetailWrapper({
         <DetailInfo data={initialData.description} />
       </div>
       <div className="flex flex-1 flex-col gap-8">
-        <DetailCall2Action
-          selectedOutcome={selectedOutcome}
-          setSelectedOutcome={setSelectedOutcome}
-          initalData={initialData.outcomes}
-          tradingAddr={initialData.poolAddress}
-          price={
-            sharePrices?.find((item) => item.id === selectedOutcome.id)
-              ?.price ?? "0"
-          }
-        />
+        {isConcluded ?
+          <DetailResults results={details} initialData={initialData.outcomes} tradingAddr={initialData.poolAddress} />
+          : <DetailCall2Action
+            selectedOutcome={selectedOutcome}
+            setSelectedOutcome={setSelectedOutcome}
+            initalData={initialData.outcomes}
+            tradingAddr={initialData.poolAddress}
+            price={
+              sharePrices?.find((item) => item.id === selectedOutcome.id)
+                ?.price ?? "0"
+            }
+          />}
         <AssetScene
           tradingAddr={initialData.poolAddress}
           outcomes={initialData.outcomes}
