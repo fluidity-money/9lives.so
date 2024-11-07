@@ -137,7 +137,7 @@ export default function DetailResults({
         </ul>
       </div>
       <Button
-        disabled={!noClaim || isConnecting || isClaiming}
+        disabled={noClaim || isConnecting || isClaiming}
         title={
           isClaiming
             ? "Claiming..."
