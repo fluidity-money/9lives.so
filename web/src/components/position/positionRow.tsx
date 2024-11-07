@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Button from "../themed/button";
 import config from "@/config";
 
@@ -13,9 +14,14 @@ export default function PositionRow({
       <td>
         <div className="flex flex-col gap-1 p-1">
           <p className="font-chicago text-xs">{data.name}</p>
-          <span className="font-geneva text-[10px] uppercase text-[#808080]">
-            {data.shareAddress}
-          </span>
+          <Link
+            href={`https://arbiscan.io/token/${data.shareAddress}`}
+            target="_blank"
+          >
+            <span className="font-geneva text-[10px] uppercase text-[#808080] underline">
+              {data.shareAddress.slice(0, 4)}...{data.shareAddress.slice(-4)}
+            </span>
+          </Link>
         </div>
       </td>
       <td>
