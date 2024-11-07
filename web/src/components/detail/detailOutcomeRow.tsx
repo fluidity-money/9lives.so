@@ -7,6 +7,8 @@ import KamalaImg from "#/images/kamala.webp";
 import { formatUnits } from "ethers";
 import config from "@/config";
 import CrownImg from "#/images/crown.svg";
+import Button from "../themed/button";
+import Link from "next/link";
 export default function DetailOutcomeRow({
   data,
   price,
@@ -98,9 +100,7 @@ export default function DetailOutcomeRow({
       <td
         className={combineClass(
           borderStyle,
-          "flex items-end justify-end gap-2 p-4",
-          isSelected &&
-            "rounded-r-sm border-y border-r border-y-9black border-r-9black",
+          isSelected && "border-y border-y-9black",
         )}
       >
         <p className="min-h-[50px] font-chicago text-xs font-normal leading-[50px]">
@@ -134,6 +134,35 @@ export default function DetailOutcomeRow({
             setSelectedOutcome({ state: "sell", id: data.identifier });
           }}
         /> */}
+      </td>
+      <td
+        className={combineClass(
+          borderStyle,
+          "flex items-end justify-end gap-2 p-4",
+          isSelected &&
+            "rounded-r-sm border-y border-r border-y-9black border-r-9black",
+        )}
+      >
+        <Link
+          href={`https://app.camelot.exchange/?token1=${data.share.address}`}
+          target="_blank"
+          rel="noopener,noreferrer"
+        >
+          <Button size={"medium"} title="Trade" disabled={isConcluded} />
+        </Link>
+        <Link
+          href={`https://app.camelot.exchange/liquidity/?token1=${data.share.address}&token2=0x4CFA50B7Ce747e2D61724fcAc57f24B748FF2b2A`}
+          target="_blank"
+          rel="noopener,noreferrer"
+        >
+          <Button size={"medium"} title="LP" disabled={isConcluded} />
+        </Link>
+        <Link
+          href={`https://arbiscan.io/token/${data.share.address}`}
+          target="_blank"
+        >
+          <Button size={"medium"} title="Arbiscan" />
+        </Link>
       </td>
     </tr>
   );

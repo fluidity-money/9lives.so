@@ -27,7 +27,7 @@ export default function DetailOutcomes({
     tradingAddr,
     outcomeIds,
   });
-  const titles = ["Outcome", "Chance %", "Invested", ""];
+  const titles = ["Outcome", "Chance %", "Invested", "Current Price", ""];
   return (
     <table className="w-full border-separate border-spacing-0">
       <thead>
