@@ -61,7 +61,7 @@ export default function DetailResults({
       value: `$${formatUnits(results?.totalInvestment ?? 0, config.contracts.decimals.fusdc)}`,
     },
     {
-      title: "Total Shares of Winner",
+      title: "Total Shares of The Winner",
       value: formatUnits(winnerShares ?? 0, config.contracts.decimals.shares),
     },
     {
