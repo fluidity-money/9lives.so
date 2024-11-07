@@ -8,9 +8,11 @@ import Button from '../themed/button';
 import { formatUnits } from 'ethers';
 import config from '@/config';
 import usePositions from '@/hooks/usePositions';
-import useSharePrices from '@/hooks/useSharePrices';
 import { useActiveAccount } from 'thirdweb/react';
 import SparkleImg from '#/images/sparkle.svg'
+import useConnectWallet from '@/hooks/useConnectWallet';
+import useClaim from '@/hooks/useClaim';
+import { useState } from 'react';
 interface DetailResultsProps {
     results?: Detail
     initialData: Outcome[]
@@ -18,19 +20,22 @@ interface DetailResultsProps {
 }
 export default function DetailResults({ results, tradingAddr, initialData }: DetailResultsProps) {
     const account = useActiveAccount();
-    const outcomeIds = initialData.map((o) => o.identifier)
-    const { isLoading, isError, error, data } = usePositions({
+    const { connect, isConnecting } = useConnectWallet();
+    const [isClaiming, setIsClaiming] = useState(false)
+    const { data } = usePositions({
         tradingAddr,
         outcomes: initialData,
         account,
     });
-    const { data: sharePrices } = useSharePrices({
-        tradingAddr,
-        outcomeIds,
-    });
     if (!results) return
     const winner = initialData.find((item) => item.identifier === results.winner)!
-    const winnerPrice = sharePrices?.find(p => p.id === winner.identifier)!.price
+    const { claim } = useClaim({
+        shareAddr: winner.share.address,
+        tradingAddr,
+        outcomeId: initialData[0].identifier,
+    });
+    const winnerShares = results.outcomes.find(o => o.id === winner.identifier)!.share
+    const avgPrice = Number(results.totalInvestment) / Number(winnerShares)
     const accountShares = data?.reduce((acc, item) => {
         if (item.id === winner.identifier) {
             acc += Number(formatUnits(item.balance, config.contracts.decimals.shares))
@@ -47,14 +52,24 @@ export default function DetailResults({ results, tradingAddr, initialData }: Det
             value: `$${formatUnits(results?.totalInvestment ?? 0, config.contracts.decimals.fusdc)}`,
         },
         {
-            title: "Total Shares",
-            value: formatUnits(results?.totalShares ?? 0, config.contracts.decimals.shares),
+            title: "Total Shares of Winner",
+            value: formatUnits(winnerShares ?? 0, config.contracts.decimals.shares),
         },
         {
             title: "Avg. Price/Share",
-            value: `$${winnerPrice}`,
+            value: `$${avgPrice}`,
         },
     ];
+    const noClaim = account && accountShares !== undefined && !(accountShares > 0)
+    async function handleClaim() {
+        if (!account) return connect()
+        try {
+            setIsClaiming(true)
+            await claim(account, accountShares!, initialData)
+        } finally {
+            setIsClaiming(false)
+        }
+    }
     return <ShadowCard className="sticky top-0 z-10 flex flex-col gap-4 p-4">
         <div className="flex items-center gap-4">
             <div className='relative'>
@@ -72,7 +87,7 @@ export default function DetailResults({ results, tradingAddr, initialData }: Det
                 </div>
             </div>
 
-            <div className='flex flex-col gap-2'>
+            <div className='flex flex-col gap-1'>
                 <h3 className="font-chicago text-base font-normal text-9black">
                     {winner.name}
                 </h3>
@@ -96,6 +111,8 @@ export default function DetailResults({ results, tradingAddr, initialData }: Det
                 ))}
             </ul>
         </div>
-        <Button title='Claim Your Rewards' className='uppercase' intent='yes' size='xlarge' />
+        <Button
+            disabled={noClaim || isConnecting || isClaiming}
+            title={isClaiming ? 'Claiming...' : noClaim ? 'No Rewards to Claim' : 'Claim Your Rewards'} className='uppercase' intent='yes' size='xlarge' onClick={handleClaim} />
     </ShadowCard>
 }
