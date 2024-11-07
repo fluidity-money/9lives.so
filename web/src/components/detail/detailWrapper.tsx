@@ -51,9 +51,14 @@ export default function DetailWrapper({
         <DetailInfo data={initialData.description} />
       </div>
       <div className="flex flex-1 flex-col gap-8">
-        {isConcluded ?
-          <DetailResults results={details} initialData={initialData.outcomes} tradingAddr={initialData.poolAddress} />
-          : <DetailCall2Action
+        {isConcluded ? (
+          <DetailResults
+            results={details}
+            initialData={initialData.outcomes}
+            tradingAddr={initialData.poolAddress}
+          />
+        ) : (
+          <DetailCall2Action
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
             initalData={initialData.outcomes}
@@ -62,7 +67,8 @@ export default function DetailWrapper({
               sharePrices?.find((item) => item.id === selectedOutcome.id)
                 ?.price ?? "0"
             }
-          />}
+          />
+        )}
         <AssetScene
           tradingAddr={initialData.poolAddress}
           outcomes={initialData.outcomes}

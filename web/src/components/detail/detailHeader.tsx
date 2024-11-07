@@ -7,7 +7,13 @@ import ActiveIndicator from "#/images/active-indicator.svg";
 import InactiveIndicator from "#/images/inactive-indicator.svg";
 import { combineClass } from "@/utils/combineClass";
 
-export default function DetailHeader({ data, isConcluded }: { data: Campaign, isConcluded: boolean }) {
+export default function DetailHeader({
+  data,
+  isConcluded,
+}: {
+  data: Campaign;
+  isConcluded: boolean;
+}) {
   const outcomeIds = data.outcomes.map(
     (outcome) => outcome.identifier as `0x${string}`,
   );

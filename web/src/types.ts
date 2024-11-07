@@ -24,4 +24,4 @@ export type Detail = {
     invested: bigint;
     isWinner: boolean;
   }[];
-}
+};
