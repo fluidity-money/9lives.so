@@ -66,7 +66,7 @@ export default function DetailResults({
     },
     {
       title: "Avg. Price/Share",
-      value: `$${avgPrice}`,
+      value: `$${avgPrice.toFixed(3)}`,
     },
   ];
   const noClaim =
@@ -122,7 +122,7 @@ export default function DetailResults({
         <span className="font-chicago uppercase">Claimable Rewards</span>
         <div className="flex items-center gap-1">
           <span className="font-chicago text-2xl">
-            ${account ? (accountShares ? accountShares * avgPrice : 0) : "?"}
+            ${account ? (accountShares ? (accountShares * avgPrice).toFixed(3) : 0) : "?"}
           </span>
           <Image src={SparkleImg} alt="" width={23} className="h-auto" />
         </div>
