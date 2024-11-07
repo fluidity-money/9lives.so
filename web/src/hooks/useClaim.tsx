@@ -32,7 +32,7 @@ const useClaim = ({
           //   accountShare.toString(),
           //   config.contracts.decimals.shares,
           // );
-          const shares = BigInt(accountShare * 10 ** 6)
+          const shares = BigInt(accountShare * 10 ** 6);
           const shareContract = getContract({
             abi: ERC20Abi,
             address: shareAddr,

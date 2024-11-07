@@ -47,6 +47,8 @@ export default function DetailWrapper({
           tradingAddr={initialData.poolAddress}
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
+          details={details}
+          isConcluded={isConcluded}
         />
         <DetailInfo data={initialData.description} />
       </div>

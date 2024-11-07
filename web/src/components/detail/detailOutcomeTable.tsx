@@ -1,6 +1,6 @@
 import { combineClass } from "@/utils/combineClass";
 import DetailOutcomeRow from "@/components/detail/detailOutcomeRow";
-import { Outcome } from "@/types";
+import { Detail, Outcome } from "@/types";
 import { SelectedOutcome } from "../../types";
 import React from "react";
 import useChances from "@/hooks/useChances";
@@ -11,12 +11,16 @@ export default function DetailOutcomes({
   selectedOutcome,
   tradingAddr,
   setSelectedOutcome,
+  details,
+  isConcluded,
 }: {
   data: Outcome[];
   sharePrices?: { id: string; price: string }[];
   selectedOutcome: SelectedOutcome;
   tradingAddr: `0x${string}`;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
+  details?: Detail;
+  isConcluded: boolean;
 }) {
   const outcomeIds = data.map((o) => o.identifier);
   const chances = useChances({
@@ -47,8 +51,10 @@ export default function DetailOutcomes({
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
             price={
-              sharePrices?.find((item) => item.id === outcome.identifier)
-                ?.price ?? "0"
+              details?.winner && outcome.identifier !== details.winner
+                ? "0"
+                : (sharePrices?.find((item) => item.id === outcome.identifier)
+                    ?.price ?? "0")
             }
             chance={
               chances?.find((chance) => chance.id === outcome.identifier)!
@@ -58,8 +64,10 @@ export default function DetailOutcomes({
               chances?.find((chance) => chance.id === outcome.identifier)!
                 .investedAmount
             }
+            isWinner={outcome.identifier === details?.winner}
             key={outcome.identifier}
             data={outcome}
+            isConcluded={isConcluded}
           />
         ))}
       </tbody>

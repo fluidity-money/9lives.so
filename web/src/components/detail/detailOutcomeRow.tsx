@@ -1,5 +1,4 @@
 import Image from "next/image";
-import CatImage from "#/images/cat.png";
 import { combineClass } from "@/utils/combineClass";
 import { Outcome, SelectedOutcome } from "@/types";
 import React from "react";
@@ -7,6 +6,7 @@ import TrumpImg from "#/images/trump.webp";
 import KamalaImg from "#/images/kamala.webp";
 import { formatUnits } from "ethers";
 import config from "@/config";
+import CrownImg from "#/images/crown.svg";
 export default function DetailOutcomeRow({
   data,
   price,
@@ -14,6 +14,8 @@ export default function DetailOutcomeRow({
   amount,
   selectedOutcome,
   setSelectedOutcome,
+  isWinner,
+  isConcluded,
 }: {
   data: Outcome;
   price: string;
@@ -21,22 +23,25 @@ export default function DetailOutcomeRow({
   chance?: number;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
+  isWinner: boolean;
+  isConcluded: boolean;
 }) {
   const borderStyle = "border-b border-b-gray-200";
-
   const isSelected = selectedOutcome.id === data.identifier;
 
   return (
     <tr
       onClick={() =>
+        !isConcluded &&
         setSelectedOutcome({ ...selectedOutcome, id: data.identifier })
       }
       key={data.identifier}
       className={combineClass(
-        isSelected
-          ? "rounded-sm bg-9blueLight shadow-9selectedOutcome"
+        isSelected || isWinner
+          ? "rounded-sm shadow-9selectedOutcome"
           : "hover:bg-9blueLight/50",
-        "cursor-pointer",
+        isConcluded && isWinner && "bg-9green",
+        !isConcluded && "cursor-pointer",
       )}
     >
       <td
@@ -47,15 +52,26 @@ export default function DetailOutcomeRow({
         )}
       >
         <div className="flex items-center gap-2 px-4">
-          <Image
-            width={40}
-            height={40}
-            alt={data.name}
-            src={
-              data.identifier === "0x1b8fb68f7c2e19b8" ? TrumpImg : KamalaImg
-            }
-            className="border border-9black"
-          />
+          <div className="relative">
+            {isWinner && (
+              <Image
+                alt=""
+                width={20}
+                className="absolute inset-x-0 -top-2 mx-auto h-auto"
+                src={CrownImg}
+              />
+            )}
+            <Image
+              width={40}
+              height={40}
+              alt={data.name}
+              src={
+                data.identifier === "0x1b8fb68f7c2e19b8" ? TrumpImg : KamalaImg
+              }
+              className="border border-9black"
+            />
+          </div>
+
           <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
         </div>
       </td>
