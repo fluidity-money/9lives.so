@@ -63,7 +63,6 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 			setup.Exitf("failed to get the last block checkpoint: %v", err)
 		}
 		to := from + uint64(ingestorPagination)
-		from++ // Increase the starting block by 1 so we always get the next block.
 		slog.Info("latest block checkpoint",
 			"from", from,
 			"collecting until", to,

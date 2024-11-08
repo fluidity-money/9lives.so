@@ -32,6 +32,8 @@ factory-2: factory-2.wasm
 trading-mint: trading-mint.wasm
 trading-extras: trading-extras.wasm
 
+infra-pool: infra-pool.wasm
+
 factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f factory-1.wasm
 	@${CARGO_BUILD_STYLUS} amm-use-camelot,factory-1
@@ -51,6 +53,11 @@ trading-extras.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f trading-extras.wasm
 	@${CARGO_BUILD_STYLUS} amm-use-camelot,trading-extras
 	@${RELEASE_WASM_OPT_9LIVES} trading-extras.wasm
+
+infra-pool.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f infra-pool.wasm
+	@${CARGO_BUILD_STYLUS} amm-use-camelot,infra-pool-wasm
+	@${RELEASE_WASM_OPT_9LIVES} infra-pool.wasm
 
 clean:
 	@rm -rf \
