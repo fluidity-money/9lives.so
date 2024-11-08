@@ -102,15 +102,22 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 	}
 	err = db.Transaction(func(db *gorm.DB) error {
 		biggestBlockNo := from
+		var (
+			hasChanged bool
+			err error
+		)
 		for _, l := range logs {
-			if err := handleLog(db, factoryAddr, l); err != nil {
+			if hasChanged, err = handleLog(db, factoryAddr, l); err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
 			biggestBlockNo = max(l.BlockNumber, biggestBlockNo)
 		}
 		// Update the checkpoint to use the latest block, if that's more than our
 		// request.
-		if biggestBlockNo < latestBlockNo {
+		if hasChanged {
+			biggestBlockNo++
+		}
+		if to < latestBlockNo {
 			biggestBlockNo = to
 		}
 		// Update checkpoint here with the latest that we saw.
@@ -124,7 +131,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 	}
 }
 
-func handleLog(db *gorm.DB, factoryAddr ethCommon.Address, l ethTypes.Log) error {
+func handleLog(db *gorm.DB, factoryAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
 	return handleLogCallback(
 		factoryAddr,
 		l,
@@ -142,7 +149,7 @@ func handleLog(db *gorm.DB, factoryAddr ethCommon.Address, l ethTypes.Log) error
 		},
 	)
 }
-func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) error {
+func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
 	var topic1, topic2, topic3 ethCommon.Hash
 	topic0 := l.Topics[0]
 	if len(l.Topics) > 1 {
@@ -203,7 +210,7 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 		logEvent("NewTrading")
 		err := cbTrackTradingContract(blockHash, transactionHash, tradingAddr)
 		if err != nil {
-			return fmt.Errorf("track trading: %v", err)
+			return false, fmt.Errorf("track trading: %v", err)
 		}
 	case events.TopicOutcomeCreated:
 		a, err = events.UnpackOutcomeCreated(topic1, topic2, topic3)
@@ -222,10 +229,10 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 		table = "ninelives_events_payoff_activated"
 		logEvent("PayoffActivated")
 	default:
-		return fmt.Errorf("unexpected topic: %v", topic0)
+		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
 	if err != nil {
-		return fmt.Errorf("failed to process topic for table %#v: %v", table, err)
+		return false, fmt.Errorf("failed to process topic for table %#v: %v", table, err)
 	}
 	emitterAddrS := strings.ToLower(emitterAddr.String())
 	setEventFields(
@@ -237,7 +244,7 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 	)
 	isTradingAddr, err := cbIsTrading(emitterAddrS)
 	if err != nil {
-		return fmt.Errorf("finding trading addr: %v", err)
+		return false, fmt.Errorf("finding trading addr: %v", err)
 	}
 	if !isFactory && !isTradingAddr {
 		// The submitter was not the factory or the trading contract, we're going to
@@ -246,9 +253,9 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 			"emitter", emitterAddr,
 			"event", a,
 		)
-		return nil
+		return false, nil
 	}
-	return cbInsert(table, a)
+	return true, cbInsert(table, a)
 }
 
 func databaseInsertLog(db *gorm.DB, table string, a any) error {
@@ -298,7 +305,9 @@ func getLastBlockCheckpointed(db *gorm.DB) (uint64, error) {
 
 func updateCheckpoint(db *gorm.DB, blockNo uint64) error {
 	err := db.Table("ninelives_ingestor_checkpointing_1").
-		Save(&BlockCheckpoint{1, time.Now(), blockNo}).
+		Where("id = 1").
+		Update("last_updated", time.Now()).
+		Update("block_number", blockNo).
 		Error
 	return err
 }
