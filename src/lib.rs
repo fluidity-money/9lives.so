@@ -43,8 +43,6 @@ mod wasm_erc20_call;
 
 pub mod fusdc_call;
 
-
-
 #[cfg(all(feature = "amm-use-longtail", not(target_arch = "wasm32")))]
 mod host_longtail_call;
 #[cfg(all(feature = "amm-use-longtail", target_arch = "wasm32"))]

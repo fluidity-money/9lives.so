@@ -5,7 +5,7 @@ use crate::decimal::StorageDecimal;
 #[storage]
 pub struct StorageOutcome {
     // Outstanding invested into this outcome.
-    pub invested: StorageDecimal,
+    pub invested: StorageU256,
 
     // Amount of shares in existence in this outcome.
     pub shares: StorageDecimal,
@@ -32,7 +32,7 @@ pub struct StorageTrading {
     pub shares: StorageDecimal,
 
     /// Global amount invested to this pool of the native asset.
-    pub invested: StorageDecimal,
+    pub invested: StorageU256,
 
     /// Outcomes vested in the contract.
     pub outcomes: StorageMap<FixedBytes<8>, StorageOutcome>,

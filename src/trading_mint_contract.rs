@@ -34,29 +34,36 @@ impl StorageTrading {
         // Assume we already took the user's balance. Get the state of
         // everything else as u256s.
         let outcome = self.outcomes.getter(outcome_id);
-        let m_1 = outcome.invested.get();
+        let m_1 = fusdc_u256_to_decimal(outcome.invested.get())?;
         let n_1 = outcome.shares.get();
         let n_2 = self
             .shares
             .get()
             .checked_sub(n_1)
             .ok_or(Error::CheckedSubOverflow)?;
-        let m_2 = self
-            .invested
-            .get()
-            .checked_sub(m_1)
-            .ok_or(Error::CheckedSubOverflow)?;
+        let m_2 = fusdc_u256_to_decimal(
+            self.invested
+                .get()
+                .checked_sub(outcome.invested.get())
+                .ok_or(Error::CheckedSubOverflow)?,
+        )?;
 
-        // Convert everything to floats!
         let m = round_down(fusdc_u256_to_decimal(value)?);
 
         // Prevent them from taking less than the minimum amount to LP with.
         assert_or!(m >= Decimal::from(MINIMUM_MINT_AMT), Error::TooSmallNumber);
 
-        // Set the global states.
-        self.outcomes.setter(outcome_id).invested.set(m_1 + m);
-        self.invested.set(self.invested.get() + m);
+        let outcome_invested = outcome.invested.get();
 
+        // Set the global states.
+        self.outcomes
+            .setter(outcome_id)
+            .invested
+            .set(outcome_invested + value);
+
+        self.invested.set(self.invested.get() + value);
+
+        // Convert everything to decimals for this function.
         let shares = maths::shares(m_1, m_2, n_1, n_2, m)?;
 
         // Set the global states as the output of shares.
@@ -106,21 +113,22 @@ impl StorageTrading {
         _recipient: Address,
     ) -> Result<U256, Error> {
         if !self.locked.is_zero() {
-            return Ok(U256::ZERO)
+            return Ok(U256::ZERO);
         }
         let outcome = self.outcomes.getter(outcome_id);
-        let m_1 = outcome.invested.get();
+        let m_1 = fusdc_u256_to_decimal(outcome.invested.get())?;
         let n_1 = outcome.shares.get();
         let n_2 = self
             .shares
             .get()
             .checked_sub(n_1)
             .ok_or(Error::CheckedSubOverflow)?;
-        let m_2 = self
-            .invested
-            .get()
-            .checked_sub(m_1)
-            .ok_or(Error::CheckedSubOverflow)?;
+        let m_2 = fusdc_u256_to_decimal(
+            self.invested
+                .get()
+                .checked_sub(outcome.invested.get())
+                .ok_or(Error::CheckedSubOverflow)?,
+        )?;
         share_decimal_to_u256(maths::shares(
             m_1,
             m_2,
@@ -151,20 +159,21 @@ impl StorageTrading {
     pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> Result<U256, Error> {
         let outcome = self.outcomes.getter(id);
         if !self.locked.is_zero() && outcome.winner.get() {
-            return Ok(U256::ZERO)
+            return Ok(U256::ZERO);
         }
-        let m_1 = outcome.invested.get();
+        let m_1 = fusdc_u256_to_decimal(outcome.invested.get())?;
         let n_1 = outcome.shares.get();
         let n_2 = self
             .shares
             .get()
             .checked_sub(n_1)
             .ok_or(Error::CheckedSubOverflow)?;
-        let m_2 = self
-            .invested
-            .get()
-            .checked_sub(m_1)
-            .ok_or(Error::CheckedSubOverflow)?;
+        let m_2 = fusdc_u256_to_decimal(
+            self.invested
+                .get()
+                .checked_sub(outcome.invested.get())
+                .ok_or(Error::CheckedSubOverflow)?,
+        )?;
         fusdc_decimal_to_u256(maths::price(m_1, m_2, n_1, n_2, Decimal::ZERO)?)
     }
 }

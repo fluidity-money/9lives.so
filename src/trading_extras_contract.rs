@@ -35,7 +35,7 @@ impl StorageTrading {
 
         // We assume that the Factory already supplied the liquidity to us.
 
-        self.invested.set(fusdc_u256_to_decimal(fusdc_amt)?);
+        self.invested.set(fusdc_amt);
 
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
 
@@ -47,7 +47,6 @@ impl StorageTrading {
         // set each slot in the storage with the outcome id for Longtail later.
         for (outcome_id, outcome_amt) in outcomes {
             assert_or!(!outcome_amt.is_zero(), Error::OddsMustBeSet);
-            let outcome_amt = fusdc_u256_to_decimal(outcome_amt)?;
             let mut outcome = self.outcomes.setter(outcome_id);
             outcome.invested.set(outcome_amt);
             outcome.shares.set(Decimal::from(1));
@@ -99,7 +98,7 @@ impl StorageTrading {
         let n = share_u256_to_decimal(share_bal)?;
         let n_1 = outcome.shares.get();
         #[allow(non_snake_case)]
-        let M = self.invested.get();
+        let M = fusdc_u256_to_decimal(self.invested.get())?;
         // Get the cumulative payout for the user.
         let p = maths::payoff(n, n_1, M)?;
         // Send the user some fUSDC now!
@@ -119,8 +118,8 @@ impl StorageTrading {
         let outcome = self.outcomes.getter(outcome_id);
         Ok((
             share_decimal_to_u256(outcome.shares.get())?,
-            fusdc_decimal_to_u256(outcome.invested.get())?,
-            fusdc_decimal_to_u256(self.invested.get())?,
+            outcome.invested.get(),
+            self.invested.get(),
             outcome.winner.get(),
         ))
     }
@@ -130,7 +129,7 @@ impl StorageTrading {
     }
 
     pub fn invested(&self) -> Result<U256, Error> {
-        fusdc_decimal_to_u256(self.invested.get())
+        Ok(self.invested.get())
     }
 
     pub fn share_addr(&self, outcome: FixedBytes<8>) -> Result<Address, Error> {
