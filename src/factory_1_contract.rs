@@ -96,13 +96,7 @@ impl StorageFactory {
             )?)?)?;
 
             // Use the current AMM to create a pool of this share for aftermarket trading.
-            amm_call::enable_pool(amm_call::create_pool(
-                erc20_addr,
-                sqrt_price,
-                LONGTAIL_FEE,
-                LONGTAIL_TICK_SPACING,
-                LONGTAIL_MAX_LIQ_PER_TICK,
-            )?)?;
+            amm_call::enable_pool(amm_call::create_pool(erc20_addr, sqrt_price, LONGTAIL_FEE)?)?;
 
             evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_id,

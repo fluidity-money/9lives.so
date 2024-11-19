@@ -13,14 +13,9 @@ pub fn create_pool(
     erc20: Address,
     price: U256,
     fee: u32,
-    spacing: u8,
-    liq_per_tick: u128,
 ) -> Result<Address, Error> {
     RawCall::new()
-        .call(
-            AMM_ADDR,
-            &pack_create_pool(erc20, price, fee, spacing, liq_per_tick),
-        )
+        .call(AMM_ADDR, &pack_create_pool(erc20, price, fee))
         .map_err(Error::LongtailError)?;
     Ok(erc20)
 }

@@ -17,8 +17,6 @@ pub fn create_pool(
     erc20: Address,
     _price: U256,
     _fee: u32,
-    _spacing: u8,
-    _liq_per_tick: u128,
 ) -> Result<Address, Error> {
     // We don't do much aside from take the ERC20 and fUSDC address for this.
     let (token_a, token_b) = if erc20 > FUSDC_ADDR {
