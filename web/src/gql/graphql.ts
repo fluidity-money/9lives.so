@@ -136,13 +136,11 @@ export type Mutation = {
   calculatePoints: Scalars['Boolean']['output'];
   /** "Explain" a campaign, so an on-chain campaign creation is listed in the frontend. Campaign is then spooled in a would-be frontend aggregation table. */
   explainCampaign?: Maybe<Scalars['Boolean']['output']>;
-  /** Register a Discord username with an address given. */
-  registerDiscord: Scalars['Boolean']['output'];
   /**
-   * Add a connected wallet achievement for a specific product. Does so without
-   * any verification.
+   * Register a Discord username with an address given. Does verification
+   * to see if a trusted user is making this association.
    */
-  tagConnectedWallet: Scalars['Boolean']['output'];
+  registerDiscord: Scalars['Boolean']['output'];
 };
 
 
@@ -177,14 +175,8 @@ export type MutationExplainCampaignArgs = {
 
 export type MutationRegisterDiscordArgs = {
   address: Scalars['String']['input'];
-  discord: Scalars['String']['input'];
-  sig: Scalars['String']['input'];
-};
-
-
-export type MutationTagConnectedWalletArgs = {
-  product: Scalars['String']['input'];
-  wallet: Scalars['String']['input'];
+  snowflake: Scalars['String']['input'];
+  username: Scalars['String']['input'];
 };
 
 export type Outcome = {
@@ -234,6 +226,11 @@ export type Query = {
    * not be displayed (until).
    */
   frontpage: Array<Frontpage>;
+  /**
+   * Returns html string with embded points data for the wallet.
+   * This is a common points component to be used in every products.
+   */
+  getPointsComponent?: Maybe<Scalars['String']['output']>;
   /** Gets a sorted ranking of the address * achievement count for a specific product. */
   leaderboards: Array<Leaderboard>;
   /** Get points for the address given. */
@@ -255,6 +252,11 @@ export type QueryCampaignsArgs = {
 
 export type QueryFrontpageArgs = {
   category?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type QueryGetPointsComponentArgs = {
+  wallet?: InputMaybe<Scalars['String']['input']>;
 };
 
 
