@@ -81,7 +81,7 @@ export default function CreateCampaign() {
       </div>
       <div className="flex gap-7">
         <form
-          className="relative flex flex-[2] flex-col gap-7"
+          className="relative flex flex-[2] flex-col gap-7 p-0.5"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="absolute inset-0 z-10 bg-9layer/75" />
