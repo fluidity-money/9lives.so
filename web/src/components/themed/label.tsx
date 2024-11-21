@@ -5,7 +5,7 @@ export default function Label({
   required = false,
 }: {
   text: string;
-  required: boolean;
+  required?: boolean;
 }) {
   return (
     <div className="flex gap-2.5">
