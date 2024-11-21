@@ -4,6 +4,7 @@ import ShadowCard from "./cardShadow";
 interface RetroCardProps extends RetroTitleProps {
   children: React.ReactNode;
   padding?: `p-${number}`;
+  className?: string;
 }
 export default function RetroCard(props: RetroCardProps) {
   return (
@@ -14,7 +15,7 @@ export default function RetroCard(props: RetroCardProps) {
         position={props.position}
         showClose={props.showClose}
       />
-      <div className={combineClass(props.padding ?? "p-5")}>
+      <div className={combineClass(props.padding ?? "p-5", props.className)}>
         {props.children}
       </div>
     </ShadowCard>
