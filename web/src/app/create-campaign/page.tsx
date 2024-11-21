@@ -68,7 +68,12 @@ export default function CreateCampaign() {
   return (
     <div className="flex flex-1 flex-col gap-7">
       <div className="flex flex-col items-center justify-center gap-4">
-        <h2 className="font-chicago text-2xl">Create Campaign</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="z-2 font-chicago text-2xl">Create Campaign</h2>
+          <span className="bg-9yellow px-2 py-1 font-geneva text-sm">
+            Coming Soon
+          </span>
+        </div>
         <p className="text-center text-xs">
           This is where you can create your own campaign for other people to
           participate in!
@@ -76,9 +81,10 @@ export default function CreateCampaign() {
       </div>
       <div className="flex gap-7">
         <form
-          className="flex flex-[2] flex-col gap-7"
+          className="relative flex flex-[2] flex-col gap-7"
           onSubmit={handleSubmit(onSubmit)}
         >
+          <div className="absolute inset-0 z-10 bg-9layer/75" />
           <Field className={fieldClass}>
             <Label text="Campaign Name" required />
             <Input
