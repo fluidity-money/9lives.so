@@ -127,7 +127,7 @@ export default function CreateCampaignForm() {
       className="relative flex flex-[2] flex-col gap-7 p-0.5"
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* <div className="absolute inset-0 z-10 bg-9layer/75" /> */}
+      <div className="absolute inset-0 z-10 bg-9layer/75" />
       <Field className={fieldClass}>
         <Label text="Campaign Name" required />
         <Input
@@ -188,7 +188,8 @@ export default function CreateCampaignForm() {
                       {...register(`customOutcomes.${idx}.picture`)}
                       ref={(el) => {
                         register(`customOutcomes.${idx}.picture`).ref(el);
-                        customOutcomePicturesRef.current[idx].current = el;
+                        if (customOutcomePicturesRef.current[idx])
+                          customOutcomePicturesRef.current[idx].current = el;
                       }}
                     />
                     <div
