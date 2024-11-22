@@ -42,7 +42,6 @@ export default function CreateCampaignForm() {
   const onSubmit = (data: any) => console.log(data);
   const fieldClass = "flex flex-col gap-2.5";
   const inputStyle = "shadow-9input border border-9black bg-9gray";
-  // const customOutcomes = Array.from({ length: 2 });
   const formSchema = z.object({
     name: z.string().min(3),
     description: z.string().min(5),
@@ -94,7 +93,10 @@ export default function CreateCampaignForm() {
     },
   });
 
-  const [pictureBlob, setPictureBlob] = useState<string | null>();
+  const [pictureBlob, setPictureBlob] = useState<string>();
+  const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
+    (string | undefined)[]
+  >([]);
   const pictureInputRef = useRef<HTMLInputElement | null>(null);
   const customOutcomePicturesRef = useRef<
     Array<MutableRefObject<HTMLInputElement | null>>
@@ -104,7 +106,7 @@ export default function CreateCampaignForm() {
   }
   function onFileChange(
     e: React.ChangeEvent<HTMLInputElement>,
-    setFunc: React.Dispatch<SetStateAction<string | null | undefined>>,
+    setFunc: React.Dispatch<string | undefined>,
   ) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -119,6 +121,22 @@ export default function CreateCampaignForm() {
     const file = e.target.files?.[0];
     if (file) {
       setValue("picture", file);
+    }
+  };
+  const handleOutcomePicChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    idx: number,
+  ) => {
+    onFileChange(e, (val?: string) =>
+      setOutcomeImageBlobs((prev) => {
+        const arr = [...prev];
+        arr[idx] = val;
+        return arr;
+      }),
+    );
+    const file = e.target.files?.[0];
+    if (file) {
+      setValue(`customOutcomes.${idx}.picture`, file);
     }
   };
 
@@ -185,7 +203,9 @@ export default function CreateCampaignForm() {
                     <input
                       type="file"
                       hidden
-                      {...register(`customOutcomes.${idx}.picture`)}
+                      {...register(`customOutcomes.${idx}.picture`, {
+                        onChange: (e) => handleOutcomePicChange(e, idx),
+                      })}
                       ref={(el) => {
                         register(`customOutcomes.${idx}.picture`).ref(el);
                         if (customOutcomePicturesRef.current[idx])
@@ -193,6 +213,9 @@ export default function CreateCampaignForm() {
                       }}
                     />
                     <div
+                      onClick={() => {
+                        customOutcomePicturesRef.current[idx].current?.click();
+                      }}
                       className={combineClass(
                         inputStyle,
                         "flex size-10 cursor-pointer flex-col items-center justify-center",
@@ -200,13 +223,25 @@ export default function CreateCampaignForm() {
                           "border-2 border-red-500",
                       )}
                     >
-                      <Image
-                        src={UploadIcon}
-                        alt=""
-                        width={20}
-                        className="h-auto"
-                      />
-                      <p className="font-geneva text-[8px]">PIC</p>
+                      {outcomeImageBlobs[idx] ? (
+                        <Image
+                          src={outcomeImageBlobs[idx]}
+                          width={40}
+                          height={40}
+                          alt=""
+                          className="size-10 bg-white object-contain"
+                        />
+                      ) : (
+                        <>
+                          <Image
+                            src={UploadIcon}
+                            alt=""
+                            width={20}
+                            className="h-auto"
+                          />
+                          <p className="font-geneva text-[8px]">PIC</p>
+                        </>
+                      )}
                     </div>
                     <Input
                       className={combineClass(
@@ -235,6 +270,11 @@ export default function CreateCampaignForm() {
                             customOutcomePicturesRef.current.filter(
                               (_, i) => i !== idx,
                             );
+                          setOutcomeImageBlobs((prev) => {
+                            const arr = [...prev];
+                            arr.splice(idx, 1);
+                            return arr;
+                          });
                         }}
                         size={"small"}
                         intent={"no"}
