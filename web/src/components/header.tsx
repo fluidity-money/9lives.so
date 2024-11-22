@@ -20,8 +20,8 @@ export default function Header() {
         <HeaderLogo />
       </Link>
       <DisclaimerButton />
-      <NavigationMenu />
       <GetFusdcButton />
+      <NavigationMenu />
       <CreateCampaingButton />
       <ConnectButton />
       <Clock />

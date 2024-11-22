@@ -8,7 +8,7 @@ export default function GetFusdcButton() {
       rel="noopener,noreferrer"
       target="_blank"
     >
-      <button className="h-10 border-r-2 border-r-black px-4 font-chicago leading-10 underline">
+      <button className="h-10 border-l-2 border-l-black px-4 font-chicago leading-10 underline">
         Get fUSDC
       </button>
     </a>
