@@ -1,8 +1,6 @@
 import Image, { StaticImageData } from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import { forwardRef } from "react";
-import RadioSelectedImg from "#/images/radio-selected.svg";
-import RadioUnselectedimg from "#/images/radio-unselected.svg";
 interface TabButtonProps {
   title: string;
   active: boolean;
@@ -15,7 +13,17 @@ interface TabButtonProps {
 }
 export default forwardRef<HTMLButtonElement, TabButtonProps>(
   function TabIconButton(
-    { active, selected, hover, focus, autofocus, title, ...props },
+    {
+      active,
+      selected,
+      hover,
+      focus,
+      autofocus,
+      title,
+      activeIcon,
+      inactiveIcon,
+      ...props
+    },
     ref,
   ) {
     return (
@@ -30,7 +38,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(
         {...props}
       >
         <Image
-          src={selected ? props.activeIcon : props.inactiveIcon}
+          src={selected ? activeIcon : inactiveIcon}
           width={30}
           alt=""
           className="h-auto"

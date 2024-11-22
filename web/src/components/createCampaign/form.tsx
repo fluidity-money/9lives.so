@@ -430,7 +430,12 @@ export default function CreateCampaignForm() {
                   className="mt-2 flex gap-2 font-chicago text-xs underline"
                   href={"#"}
                 >
-                  More Info <Image src={RightCaretIcon} width={14} alt="" />
+                  More Info{" "}
+                  <Image
+                    src={RightCaretIcon}
+                    alt=""
+                    className="h-[15px] w-[14px]"
+                  />
                 </Link>
               </SourceWrapper>
             </TabPanel>
@@ -457,7 +462,12 @@ export default function CreateCampaignForm() {
                   className="flex gap-2 font-chicago text-xs underline"
                   href={"#"}
                 >
-                  More Info <Image src={RightCaretIcon} width={14} alt="" />
+                  More Info{" "}
+                  <Image
+                    src={RightCaretIcon}
+                    alt=""
+                    className="h-[15px] w-[14px]"
+                  />
                 </Link>
               </SourceWrapper>
             </TabPanel>
@@ -474,7 +484,12 @@ export default function CreateCampaignForm() {
                   className="flex gap-2 font-chicago text-xs underline"
                   href={"#"}
                 >
-                  More Info <Image src={RightCaretIcon} width={14} alt="" />
+                  More Info{" "}
+                  <Image
+                    src={RightCaretIcon}
+                    alt=""
+                    className="h-[15px] w-[14px]"
+                  />
                 </Link>
                 <Input
                   placeholder="Contract Address of Asset"
