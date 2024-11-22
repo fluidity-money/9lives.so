@@ -7,7 +7,7 @@ export default function CreateCampaign() {
     <div className="flex flex-1 flex-col gap-7">
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex items-center gap-2">
-          <h2 className="z-2 font-chicago text-2xl">Create Campaign</h2>
+          <h2 className="font-chicago text-2xl">Create Campaign</h2>
           <span className="bg-9yellow px-2 py-1 font-geneva text-sm">
             Coming Soon
           </span>
