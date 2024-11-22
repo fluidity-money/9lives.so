@@ -15,7 +15,7 @@ import {
 } from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import React, { Fragment } from "react";
+import React, { Fragment, SetStateAction, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import TelegramIcon from "#/icons/telegram.svg";
@@ -40,7 +40,7 @@ export default function CreateCampaignForm() {
   const formSchema = z.object({
     name: z.string().min(3),
     description: z.string().min(5),
-    picture: z.string(),
+    picture: z.instanceof(File, { message: "You have to upload a picture" }),
     endDate: z.date(),
     telegram: z.string().min(2).optional().or(z.literal("")),
     x: z.string().min(2).optional().or(z.literal("")),
@@ -57,6 +57,31 @@ export default function CreateCampaignForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {},
   });
+  const [pictureBlob, setPictureBlob] = useState<string | null>();
+  const pictureInputRef = useRef<HTMLInputElement | null>(null);
+  function handlePickPicture() {
+    pictureInputRef.current?.click();
+  }
+  function onFileChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFunc: React.Dispatch<SetStateAction<string | null | undefined>>,
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFunc(reader.result?.toString());
+    };
+    reader.readAsDataURL(file!);
+  }
+  const handlePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onFileChange(e, setPictureBlob);
+    const file = e.target.files?.[0];
+    if (file) {
+      setValue("picture", file);
+    }
+  };
+
   return (
     <form
       className="relative flex flex-[2] flex-col gap-7 p-0.5"
@@ -152,23 +177,42 @@ export default function CreateCampaignForm() {
         <Label text="Campaign Picture" required />
         <Input
           type="file"
-          {...register("picture")}
-          className={combineClass(errors.picture && "border-2 border-red-500")}
+          {...register("picture", {
+            onChange: handlePicChange,
+          })}
+          ref={(el) => {
+            register("picture").ref(el);
+            pictureInputRef.current = el;
+          }}
           hidden
         />
         <div
+          onClick={handlePickPicture}
           className={combineClass(
             inputStyle,
-            "flex h-[120px] flex-col items-center justify-center gap-1.5",
+            "flex h-[120px] cursor-pointer flex-col items-center justify-center gap-1.5",
+            errors.picture && "border-2 border-red-500",
           )}
         >
-          <div className="flex items-center gap-1.5">
-            <Image src={UploadIcon} width={20} className="h-auto" alt="" />
-            <span className="font-chicago text-xs">Upload Here</span>
-          </div>
-          <p className="font-geneva text-[10px] uppercase">
-            Formats: GIF, PNG, JPG, JPEG.
-          </p>
+          {pictureBlob ? (
+            <img
+              src={pictureBlob}
+              alt=""
+              height={120}
+              width={"auto"}
+              className="h-full w-auto"
+            />
+          ) : (
+            <>
+              <div className="flex items-center gap-1.5">
+                <Image src={UploadIcon} width={20} className="h-auto" alt="" />
+                <span className="font-chicago text-xs">Upload Here</span>
+              </div>
+              <p className="font-geneva text-[10px] uppercase">
+                Formats: GIF, PNG, JPG, JPEG.
+              </p>
+            </>
+          )}
         </div>
         {errors.picture && <ErrorInfo text={errors.picture.message} />}
       </Field>
