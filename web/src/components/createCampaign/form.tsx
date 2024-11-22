@@ -45,16 +45,24 @@ export default function CreateCampaignForm() {
   const formSchema = z.object({
     name: z.string().min(3),
     description: z.string().min(5),
-    picture: z.instanceof(File, { message: "You have to upload a picture" }),
+    picture: z
+      .instanceof(File, { message: "You have to upload a picture" })
+      .refine((file) => file.size <= 1024 * 1024, {
+        message: "File size must be under 1MB",
+      }),
     endDate: z.string().date(),
     telegram: z.string().min(2).optional().or(z.literal("")),
     x: z.string().min(2).optional().or(z.literal("")),
     web: z.string().url().optional().or(z.literal("")),
     customOutcomes: z.array(
       z.object({
-        picture: z.instanceof(File, {
-          message: "You have to upload a picture",
-        }),
+        picture: z
+          .instanceof(File, {
+            message: "You have to upload a picture",
+          })
+          .refine((file) => file.size <= 1024 * 1024, {
+            message: "File size must be under 1MB",
+          }),
         name: z.string().min(3),
         description: z.string().min(5),
       }),
@@ -145,7 +153,7 @@ export default function CreateCampaignForm() {
       className="relative flex flex-[2] flex-col gap-7 p-0.5"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="absolute inset-0 z-10 bg-9layer/75" />
+      {/* <div className="absolute inset-0 z-10 bg-9layer/75" /> */}
       <Field className={fieldClass}>
         <Label text="Campaign Name" required />
         <Input
@@ -346,7 +354,7 @@ export default function CreateCampaignForm() {
               alt=""
               height={120}
               width={120}
-              className="w-auto"
+              className="h-[120px] w-auto object-contain"
             />
           ) : (
             <>
