@@ -41,7 +41,7 @@ export default function CreateCampaignForm() {
     name: z.string().min(3),
     description: z.string().min(5),
     picture: z.instanceof(File, { message: "You have to upload a picture" }),
-    endDate: z.date(),
+    endDate: z.string().date(),
     telegram: z.string().min(2).optional().or(z.literal("")),
     x: z.string().min(2).optional().or(z.literal("")),
     web: z.string().url().optional().or(z.literal("")),
@@ -195,12 +195,12 @@ export default function CreateCampaignForm() {
           )}
         >
           {pictureBlob ? (
-            <img
+            <Image
               src={pictureBlob}
               alt=""
               height={120}
-              width={"auto"}
-              className="h-full w-auto"
+              width={120}
+              className="w-auto"
             />
           ) : (
             <>
