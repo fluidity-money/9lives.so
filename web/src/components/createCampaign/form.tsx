@@ -15,8 +15,14 @@ import {
 } from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import React, { Fragment, SetStateAction, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, {
+  Fragment,
+  MutableRefObject,
+  SetStateAction,
+  useRef,
+  useState,
+} from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import z from "zod";
 import TelegramIcon from "#/icons/telegram.svg";
 import XIcon from "#/icons/x-twitter.svg";
@@ -36,7 +42,7 @@ export default function CreateCampaignForm() {
   const onSubmit = (data: any) => console.log(data);
   const fieldClass = "flex flex-col gap-2.5";
   const inputStyle = "shadow-9input border border-9black bg-9gray";
-  const customOutcomes = Array.from({ length: 2 });
+  // const customOutcomes = Array.from({ length: 2 });
   const formSchema = z.object({
     name: z.string().min(3),
     description: z.string().min(5),
@@ -45,20 +51,47 @@ export default function CreateCampaignForm() {
     telegram: z.string().min(2).optional().or(z.literal("")),
     x: z.string().min(2).optional().or(z.literal("")),
     web: z.string().url().optional().or(z.literal("")),
+    customOutcomes: z.array(
+      z.object({
+        picture: z.instanceof(File, {
+          message: "You have to upload a picture",
+        }),
+        name: z.string().min(3),
+        description: z.string().min(5),
+      }),
+    ),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
     register,
+    control,
     handleSubmit,
     setValue,
-    clearErrors,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      customOutcomes: [{}, {}],
+    },
   });
+  const {
+    fields: customOutcomes,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "customOutcomes",
+    rules: {
+      required: true,
+      minLength: 2,
+    },
+  });
+
   const [pictureBlob, setPictureBlob] = useState<string | null>();
   const pictureInputRef = useRef<HTMLInputElement | null>(null);
+  const customOutcomePicturesRef = useRef<
+    Array<MutableRefObject<HTMLInputElement | null>>
+  >(Array.from({ length: 2 }, () => React.createRef<HTMLInputElement>()));
   function handlePickPicture() {
     pictureInputRef.current?.click();
   }
@@ -111,7 +144,7 @@ export default function CreateCampaignForm() {
       </Field>
       <Field className={fieldClass}>
         <Label text="Campaign Type & Outcomes" required />
-        <TabGroup>
+        <TabGroup defaultIndex={1}>
           <TabList className="flex gap-2.5">
             <Tab as={Fragment}>
               {(props) => <TabRadioButton title="Yes / No" {...props} />}
@@ -138,18 +171,25 @@ export default function CreateCampaignForm() {
               </div>
             </TabPanel>
             <TabPanel className={"flex flex-col gap-4"}>
-              {customOutcomes.map((_, idx) => (
-                <Field
-                  className={"flex flex-col gap-2.5"}
-                  key={"outcome" + idx}
-                >
-                  <Label text={`Outcome ${idx + 1}`} required />
+              {customOutcomes.map((field, idx) => (
+                <Field className={"flex flex-col gap-2.5"} key={field.id}>
+                  <Label text={`Outcome ${idx + 1}`} required={idx < 2} />
                   <div className="flex gap-2.5">
-                    <input type="file" hidden />
+                    <input
+                      type="file"
+                      hidden
+                      {...register(`customOutcomes.${idx}.picture`)}
+                      ref={(el) => {
+                        register(`customOutcomes.${idx}.picture`).ref(el);
+                        customOutcomePicturesRef.current[idx].current = el;
+                      }}
+                    />
                     <div
                       className={combineClass(
                         inputStyle,
-                        "flex size-10 flex-col items-center justify-center",
+                        "flex size-10 cursor-pointer flex-col items-center justify-center",
+                        errors.customOutcomes?.[idx]?.picture &&
+                          "border-2 border-red-500",
                       )}
                     >
                       <Image
@@ -160,11 +200,69 @@ export default function CreateCampaignForm() {
                       />
                       <p className="font-geneva text-[8px]">PIC</p>
                     </div>
-                    <Input className={"flex-1"} placeholder="Outcome name" />
+                    <Input
+                      className={combineClass(
+                        "flex-1",
+                        errors.customOutcomes?.[idx]?.name &&
+                          "border-2 border-red-500",
+                      )}
+                      placeholder="Outcome name"
+                      {...register(`customOutcomes.${idx}.name`)}
+                    />
+                    <Input
+                      className={combineClass(
+                        "flex-1",
+                        errors.customOutcomes?.[idx]?.description &&
+                          "border-2 border-red-500",
+                      )}
+                      placeholder="Outcome description"
+                      {...register(`customOutcomes.${idx}.description`)}
+                    />
+                    {idx > 1 && (
+                      <Button
+                        title="Del"
+                        onClick={() => {
+                          remove(idx);
+                          customOutcomePicturesRef.current =
+                            customOutcomePicturesRef.current.filter(
+                              (_, i) => i !== idx,
+                            );
+                        }}
+                        size={"small"}
+                        intent={"no"}
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    {errors.customOutcomes?.[idx]?.picture ? (
+                      <ErrorInfo
+                        text={errors.customOutcomes?.[idx]?.picture.message}
+                      />
+                    ) : null}
+                    {errors.customOutcomes?.[idx]?.name ? (
+                      <ErrorInfo
+                        text={errors.customOutcomes?.[idx]?.name.message}
+                      />
+                    ) : null}
+                    {errors.customOutcomes?.[idx]?.description ? (
+                      <ErrorInfo
+                        text={errors.customOutcomes?.[idx]?.description.message}
+                      />
+                    ) : null}
                   </div>
                 </Field>
               ))}
               <Button
+                onClick={() => {
+                  customOutcomePicturesRef.current.push(
+                    React.createRef<HTMLInputElement>(),
+                  );
+                  append({
+                    name: "",
+                    description: "",
+                    picture: new File(["0x12"], "sad"),
+                  });
+                }}
                 intent={"default"}
                 size={"large"}
                 title="Add More Outcomes +"
@@ -230,7 +328,7 @@ export default function CreateCampaignForm() {
       </Field>
       <Field className={fieldClass}>
         <Label text="Select Settlement Source" required />
-        <TabGroup selectedIndex={1}>
+        <TabGroup defaultIndex={1}>
           <TabList className="flex gap-2.5">
             <Tab as={Fragment}>
               {(props) => (
