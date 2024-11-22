@@ -60,6 +60,13 @@ export default function CreateCampaignForm() {
         description: z.string().min(5),
       }),
     ),
+    urlCommitee: z.string().url(),
+    contractAddress: z
+      .string()
+      .startsWith("0x")
+      .min(42)
+      .optional()
+      .or(z.literal("")),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
@@ -120,7 +127,7 @@ export default function CreateCampaignForm() {
       className="relative flex flex-[2] flex-col gap-7 p-0.5"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="absolute inset-0 z-10 bg-9layer/75" />
+      {/* <div className="absolute inset-0 z-10 bg-9layer/75" /> */}
       <Field className={fieldClass}>
         <Label text="Campaign Name" required />
         <Input
@@ -382,9 +389,16 @@ export default function CreateCampaignForm() {
               <SourceWrapper>
                 <Input
                   placeholder="Enter URL Here"
-                  className="text-center"
+                  className={combineClass(
+                    "text-center",
+                    errors.urlCommitee && "border-2 border-red-500",
+                  )}
                   type="url"
+                  {...register("urlCommitee")}
                 />
+                {errors.urlCommitee && (
+                  <ErrorInfo text={errors.urlCommitee.message} />
+                )}
                 <p className="text-xs">
                   URL committee: outcome is determined by the contents of a
                   webpage. This could include a political party announcing
@@ -413,7 +427,17 @@ export default function CreateCampaignForm() {
                 >
                   More Info <Image src={RightCaretIcon} width={14} alt="" />
                 </Link>
-                <Input placeholder="Contract Address of Asset" type="text" />
+                <Input
+                  placeholder="Contract Address of Asset"
+                  type="text"
+                  className={combineClass(
+                    "flex gap-2 font-chicago text-xs underline",
+                    errors.contractAddress && "border-2 border-red-500",
+                  )}
+                />
+                {errors.contractAddress && (
+                  <ErrorInfo text={errors.contractAddress.message} />
+                )}
               </SourceWrapper>
             </TabPanel>
           </TabPanels>
