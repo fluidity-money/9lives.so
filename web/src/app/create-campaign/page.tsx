@@ -1,5 +1,5 @@
-import RetroCard from "@/components/cardRetro";
 import CreateCampaignForm from "@/components/createCampaign/form";
+import CreateCampaignPreview from "@/components/createCampaign/preview";
 import CreateCampaignTutorial from "@/components/createCampaign/tutorial";
 
 export default function CreateCampaign() {
@@ -17,19 +17,13 @@ export default function CreateCampaign() {
           participate in!
         </p>
       </div>
-      <div className="flex gap-7">
+      <div className="flex flex-1 gap-7">
         <CreateCampaignForm />
         <div className="flex flex-1 flex-col gap-7">
           <CreateCampaignTutorial />
-          <RetroCard
-            title="YOUR CAMPAIGN SUMMARY"
-            position="middle"
-            showClose={false}
-          >
-            <p className="text-center font-geneva text-xs">
-              You can see your campaign preview here
-            </p>
-          </RetroCard>
+          <div className="sticky top-0">
+            <CreateCampaignPreview />
+          </div>
         </div>
       </div>
     </div>
