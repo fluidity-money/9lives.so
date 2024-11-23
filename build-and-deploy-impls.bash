@@ -24,15 +24,15 @@ err() {
 # Sanity check the deployed addresses to see if they're consistent with the nonce
 # expectation.
 
-impl_factory_1_addr="$(./deploy-stylus.sh factory-1.wasm)"
+impl_factory_1_addr="$(./deploy-stylus.sh contract-factory-1.wasm)"
 [ "$impl_factory_1_addr" = "${SPN_FACTORY_1_IMPL_ADDR,,}" ] || err "factory 1 differs"
 >&2 echo "SPN_FACTORY_1_IMPL_ADDR='$impl_factory_1_addr'"
-impl_factory_2_addr="$(./deploy-stylus.sh factory-2.wasm)"
+impl_factory_2_addr="$(./deploy-stylus.sh contract-factory-2.wasm)"
 [ "$impl_factory_2_addr" = "${SPN_FACTORY_2_IMPL_ADDR,,}" ] || err "factory 2 differs"
 >&2 echo "SPN_FACTORY_2_IMPL_ADDR='$impl_factory_2_addr'"
-trading_mint_impl="$(./deploy-stylus.sh trading-mint.wasm)"
+trading_mint_impl="$(./deploy-stylus.sh contract-trading-mint.wasm)"
 [ "$trading_mint_impl" = "${SPN_TRADING_MINT_IMPL_ADDR,,}" ] || err "trading mint differs"
 >&2 echo "SPN_TRADING_MINT_IMPL_ADDR='$trading_mint_impl'"
-trading_extras_impl="$(./deploy-stylus.sh trading-extras.wasm)"
+trading_extras_impl="$(./deploy-stylus.sh contract-trading-extras.wasm)"
 [ "$trading_extras_impl" = "${SPN_TRADING_EXTRAS_IMPL_ADDR,,}" ] || err "trading extras differs"
 >&2 echo "SPN_TRADING_EXTRAS_IMPL_ADDR='$trading_extras_impl'"

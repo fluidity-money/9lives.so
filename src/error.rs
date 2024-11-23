@@ -184,7 +184,68 @@ pub enum Error {
     // 0x22
     /// DPM you can only set 1!
     #[error("DPM must be 1e6")]
-    BadSeedAmount
+    BadSeedAmount,
+
+    // 0x23
+    /// Error using the locked ARB code!
+    #[error("Locked ARB error")]
+    LockedARBError(Address, Vec<u8>),
+
+    // 0x24
+    /// Error unpacking a U256!
+    #[error("Error unpacking ARB!")]
+    LockedARBUnableToUnpack,
+
+    // 0x25
+    /// The Trading contract was already registered with the
+    /// Infrastructure Markets contract!
+    #[error("Already registered with Infrastructure Markets!")]
+    AlreadyRegistered,
+
+    // 0x26
+    /// The sender is not the factory contract!
+    #[error("Not factory contract")]
+    NotFactoryContract,
+
+    // 0x27
+    /// The sender is not the infrastructure market!
+    #[error("Not infrastructure market")]
+    NotInfraMarket,
+
+    // 0x28
+    /// Infrastructure market has not started yet!
+    #[error("Infrastructure market has not started!")]
+    InfraMarketHasNotStarted,
+
+    // 0x29
+    /// User has tried to allocate more than they possibly should to the infra market.
+    #[error("Infrastructure market too much vested!")]
+    InfraMarketTooMuchVested,
+
+    // 0x2a
+    /// Infrastructure market has expired!
+    #[error("Infrastructure market has expired!")]
+    InfraMarketHasExpired,
+
+    // 0x2b
+    /// Error interacting with the lockup contract!
+    #[error("Lockup contract error!")]
+    LockupError(Address, Vec<u8>),
+
+    // 0x2c
+    /// The infrastructure market has not expired!
+    #[error("Infrastructure market has not expired yet!")]
+    InfraMarketHasNotExpired,
+
+    // 0x2d
+    /// Sweep wasn't called with calldata to reconstruct the winner.
+    #[error("Incorrect sweep invocation")]
+    IncorrectSweepInvocation,
+
+    // 0x2e
+    /// User was already targeted by the sweep/they can't be targeted!
+    #[error("User already targeted by sweep")]
+    UserAlreadyTargeted,
 }
 
 impl From<Error> for Vec<u8> {
@@ -210,6 +271,7 @@ impl From<Error> for Vec<u8> {
         const ERR_ERC20_TRANSFER_FROM_PREAMBLE: [u8; 2] = [0x99, 0x04];
         const ERR_ERC20_PERMIT_PREAMBLE: [u8; 2] = [0x99, 0x05];
         const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
+        const ERR_LOCKED_ARB_PREAMBLE: [u8; 3] = [0x99, 0x07];
 
         match val {
             Error::LongtailError(b) => ext(&ERR_LONGTAIL_PREAMBLE, &[&b]),
@@ -225,6 +287,7 @@ impl From<Error> for Vec<u8> {
             Error::ERC20ErrorBalanceOf(addr, b) => {
                 ext(&ERR_ERC20_BALANCE_OF_PREAMBLE, &[&b, addr.as_slice()])
             }
+            Error::LockedARBError(addr, b) => ext(&ERR_LOCKED_ARB_PREAMBLE, &[&b, addr.as_slice()]),
             Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
             Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],

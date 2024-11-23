@@ -35,23 +35,20 @@ macro_rules! env_addr {
     };
 }
 
-// AMM address deployed (either Longtail or Camelot.)
-env_addr!(AMM_ADDR, "SPN_AMM_ADDR");
-
-// fUSDC address to use as the base asset for everything.
+/// fUSDC address to use as the base asset for everything.
 env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR");
 
-// Factory address, derived using the next nonce of the deployer to store in bytecode.
-env_addr!(FACTORY_ADDR, "SPN_FACTORY_PROXY_ADDR");
+/// Staked ARB address to use for taking amounts for Infrastructure Markets.
+env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR");
 
-// Implementation of the ERC20 token for proxy deployment of shares.
-env_addr!(ERC20_IMPL_ADDR, "SPN_ERC20_IMPL_ADDR");
+/// Three days in seconds, for the infra market.
+pub const THREE_DAYS_SECS: u64 = 259200;
 
-// Implementation of the trading code mint functions.
-env_addr!(TRADING_MINT_IMPL_ADDR, "SPN_TRADING_MINT_IMPL_ADDR");
+/// Scaled amount to use for drawing down funds on request based on a percentage.
+pub const SCALING_AMT: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
 
-// Implementation of the trading code payoff and extra functions.
-env_addr!(TRADING_EXTRAS_IMPL_ADDR, "SPN_TRADING_EXTRAS_IMPL_ADDR");
+/// Incentive amount to take from users who create markets. $10 FUSDC.
+pub const INCENTIVE_AMT: U256 = U256::from_limbs([1e7 as u64, 0, 0, 0]);
 
 // Minimal viable proxy bytecode.
 pub const NORMAL_PROXY_BYTECODE_1: [u8; 18] = [
@@ -77,30 +74,28 @@ pub const TRADING_PROXY_BYTECODE_3: [u8; 22] = [
     0x00, 0x57, 0x57, 0xf3, 0x5b, 0xfd,
 ];
 
-pub const fn erc20_proxy_code() -> [u8; concat_arrays_size!(
-    NORMAL_PROXY_BYTECODE_1,
-    ERC20_IMPL_ADDR_BYTES,
-    NORMAL_PROXY_BYTECODE_2
-)] {
-    concat_arrays!(
-        NORMAL_PROXY_BYTECODE_1,
-        ERC20_IMPL_ADDR_BYTES,
-        NORMAL_PROXY_BYTECODE_2
-    )
+pub fn erc20_proxy_code(
+    addr: Address,
+) -> [u8; 20 + concat_arrays_size!(NORMAL_PROXY_BYTECODE_1, NORMAL_PROXY_BYTECODE_2)] {
+    concat_arrays!(NORMAL_PROXY_BYTECODE_1, addr, NORMAL_PROXY_BYTECODE_2)
 }
 
-pub const fn trading_proxy_code() -> [u8; concat_arrays_size!(
+pub const fn trading_proxy_code(
+    extras_addr: Address,
+    mint_addr: Address,
+) -> [u8; (2 * 20)
+       + concat_arrays_size!(
     TRADING_PROXY_BYTECODE_1,
-    TRADING_MINT_IMPL_ADDR_BYTES,
+    mint_addr,
     TRADING_PROXY_BYTECODE_2,
-    TRADING_EXTRAS_IMPL_ADDR_BYTES,
+    extras_addr,
     TRADING_PROXY_BYTECODE_3
 )] {
     concat_arrays!(
         TRADING_PROXY_BYTECODE_1,
-        TRADING_EXTRAS_IMPL_ADDR_BYTES,
+        extras_addr, ,
         TRADING_PROXY_BYTECODE_2,
-        TRADING_MINT_IMPL_ADDR_BYTES,
+        mint_addr,
         TRADING_PROXY_BYTECODE_3
     )
 }
@@ -132,28 +127,3 @@ pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 
 /// Minimum amount of fUSDC that can be minted with.
 pub const MINIMUM_MINT_AMT: i64 = 1;
-
-#[test]
-#[ignore]
-fn print_deployment_bytecode() {
-    use const_hex::encode;
-    dbg!(
-        encode(NORMAL_PROXY_BYTECODE_1),
-        ERC20_IMPL_ADDR,
-        encode(NORMAL_PROXY_BYTECODE_2),
-        encode(TRADING_PROXY_BYTECODE_1),
-        TRADING_MINT_IMPL_ADDR,
-        encode(TRADING_PROXY_BYTECODE_2),
-        TRADING_EXTRAS_IMPL_ADDR,
-        encode(TRADING_PROXY_BYTECODE_3),
-        encode(erc20_proxy_code()),
-        encode(trading_proxy_code())
-    );
-}
-
-#[test]
-#[ignore]
-fn print_proxy_hashes() {
-    use const_hex::encode;
-    dbg!(encode(erc20_proxy_hash()), encode(trading_proxy_hash()));
-}

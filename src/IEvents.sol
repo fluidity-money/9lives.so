@@ -2,6 +2,8 @@
 pragma solidity ^0.8.18;
 
 interface IEvents {
+    /* FACTORY CONTRACT */
+
     event NewTrading(
         bytes32 indexed identifier,
         address indexed addr,
@@ -13,6 +15,8 @@ interface IEvents {
         bytes32 indexed erc20Identifier,
         address indexed erc20Addr
     );
+
+    /* TRADING CONTRACTS */
 
     event OutcomeDecided(
         bytes8 indexed identifier,
@@ -33,5 +37,20 @@ interface IEvents {
         address indexed spender,
         address recipient,
         uint256 fusdcReceived
+    );
+
+    /* INFRASTRUCTURE MARKET */
+
+    event MarketCreated(
+        address indexed incentiveSender,
+        address indexed tradingAddr
+    );
+
+    event UserPredicted(
+        address indexed trading,
+        address indexed predictor,
+        uint256 indexed tokenAmount,
+        uint256 powerAmount,
+        bytes8 outcome
     );
 }

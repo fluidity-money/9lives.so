@@ -1,7 +1,7 @@
 use stylus_sdk::{alloy_primitives::Address, prelude::*, storage::*};
 
 #[storage]
-#[cfg_attr(any(feature = "factory-1", feature = "factory-2"), entrypoint)]
+#[cfg_attr(any(feature = "contract-factory-1", feature = "contract-factory-2"), entrypoint)]
 pub struct StorageFactory {
     pub version: StorageU8,
     pub enabled: StorageBool,

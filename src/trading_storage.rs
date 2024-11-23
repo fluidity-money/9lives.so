@@ -15,7 +15,7 @@ pub struct StorageOutcome {
 }
 
 #[storage]
-#[cfg_attr(any(feature = "trading-mint", feature = "trading-extras"), entrypoint)]
+#[cfg_attr(any(feature = "contract-trading-mint", feature = "contract-trading-extras"), entrypoint)]
 pub struct StorageTrading {
     /// Outcome was determined! It should be impossible to mint, only to burn.
     /// This is the timestamp the locking took place. If it's 0, then we haven't

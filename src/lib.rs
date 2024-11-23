@@ -68,25 +68,28 @@ extern crate alloc;
 
 pub mod factory_storage;
 
-pub mod factory_1_contract;
-pub mod factory_2_contract;
+pub mod contract_factory_1;
+pub mod contract_factory_2;
 
 pub mod trading_storage;
 
-pub mod trading_extras_contract;
-pub mod trading_mint_contract;
+pub mod contract_trading_extras;
+pub mod contract_trading_mint;
 
-#[cfg(feature = "factory-1")]
-pub use factory_1_contract::user_entrypoint;
+#[cfg(feature = "contract-factory-1")]
+pub use contract_factory_1::user_entrypoint;
 
-#[cfg(feature = "factory-2")]
-pub use factory_2_contract::user_entrypoint;
+#[cfg(feature = "contract-factory-2")]
+pub use contract_factory_2::user_entrypoint;
 
-#[cfg(feature = "trading-mint")]
-pub use trading_mint_contract::user_entrypoint;
+#[cfg(feature = "contract-trading-mint")]
+pub use contract_trading_mint::user_entrypoint;
 
-#[cfg(feature = "trading-extras")]
-pub use trading_extras_contract::user_entrypoint;
+#[cfg(feature = "contract-trading-extras")]
+pub use contract_trading_extras::user_entrypoint;
+
+#[cfg(feature = "contract-lockup")]
+pub use contract_lockup::user_entrypoint;
 
 #[cfg(not(any(
     feature = "amm-use-longtail",
@@ -107,12 +110,14 @@ compile_error!(
 #[cfg(all(
     target_arch = "wasm32",
     not(any(
-        feature = "factory-1",
-        feature = "factory-2",
-        feature = "trading-mint",
-        feature = "trading-extras",
+        feature = "contract-factory-1",
+        feature = "contract-factory-2",
+        feature = "contract-trading-mint",
+        feature = "contract-trading-extras",
+        feature = "contract-lockup",
+        feature = "contract-oracle"
     )))
 )]
 compile_error!(
-    "factory-1, factory-2, trading-mint, or trading-extras feature must be enabled."
+    "contract-factory-1, contract-factory-2, contract-trading-mint, contract-trading-extras, contract-lockup, or contract-oracle feature must be enabled."
 );

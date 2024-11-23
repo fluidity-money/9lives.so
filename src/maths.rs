@@ -94,6 +94,18 @@ pub fn price_to_sqrt_price(x: U256) -> Result<U256, Error> {
     Ok(sqrt_u256_round_down(x)? * U256::from(2).pow(U256::from(96)))
 }
 
+/// Locked ARB to give the user based on their lockup time and amount.
+pub fn locked_arb_amt(initial_amt: U256) -> Result<U256, Error> {
+    Ok(initial_amt)
+}
+
+/// Infra voting amount based on how many seconds have passed since the
+/// infra market became available.
+pub fn infra_voting_power(amt: U256, secs_passed: U256) -> Result<U256, Error> {
+    // TODO: have this do stuff.
+    U256::ZERO
+}
+
 #[test]
 fn test_sqrt_rounding_down() {
     assert_eq!(sqrt_u256_round_down(U256::from(1)).unwrap(), U256::from(1));

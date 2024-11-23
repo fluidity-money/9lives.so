@@ -14,6 +14,7 @@ sol! {
 }
 
 pub fn create_pool(
+    amm_addr: Address,
     erc20: Address,
     _price: U256,
     _fee: u32,
@@ -26,7 +27,7 @@ pub fn create_pool(
     };
     RawCall::new()
         .call(
-            AMM_ADDR,
+            amm_addr,
             &createPoolCall {
                 tokenA: token_a,
                 tokenB: token_b,

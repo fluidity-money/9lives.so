@@ -4,7 +4,7 @@ use crate::{amm_call, error::*, immutables::*, proxy};
 
 pub use crate::factory_storage::*;
 
-#[cfg_attr(feature = "factory-2", stylus_sdk::prelude::public)]
+#[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {
     pub fn ctor(&mut self, oracle_addr: Address) -> Result<(), Vec<u8>> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);

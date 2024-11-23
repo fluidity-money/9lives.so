@@ -19,7 +19,7 @@ pub use crate::factory_storage::*;
 
 use rust_decimal::Decimal;
 
-#[cfg_attr(feature = "factory-1", stylus_sdk::prelude::public)]
+#[cfg_attr(feature = "contract-factory-1", stylus_sdk::prelude::public)]
 impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.

@@ -5,28 +5,46 @@
 pattern. A factory takes a list of outcomes, and creates a variable number of contracts
 with a minimal viable proxy pointing to share ERC20s, and a trading contract.
 
+Inventors create campaigns (the prediction markets) by locking up "incentive" amounts, and
+by picking the type of oracle they want to use. Any fees earned in the campaign are sent
+to the Inventor, which provides incentive to create markets. Markets must be created with
+a hard deadline and a Beauty Contest or a Infrastructure Market, or with a Contract
+Interaction type of outcome. The Inventor must communicate to the Factory which oracle
+they would like to use, and provide the hash of the string that must be used to determine
+the outcome. This will then set the correct behaviour.
+
+Infrastructure Markets are betting situations where Staked ARB is locked up as LARB, which
+is used to predict the outcome of a situation. A voting ERC20 from OpenZeppellin is used
+as the wrapped asset. Lockup does the conversion. The outcome voting power is a linear
+curve that decays until the end of the voting period. Infrastructure Markets are markets
+that are created which resolve at a period of 3 days. These markets are designed to be
+risk free positions that infrastructure providers can take to "call" an outcome based on
+the results of a text field. These text fields can be empty or purely textual (as is the
+case with a string), or textual and pointing to a URL (as is the case with URL
+committees). Losers that bet incorrectly in the Infrastructure Market have their funds
+slashed.
+
 ![Diagram of the system](diagram.svg)
 
 ## Roadmap
 
 - [X] UX improvements (shares are more visible, smart account behaviour)
 - [X] Mainnet is supported as well. Mainnet has disclosure that funds are locked up until the election is over.
-- [ ] Achievements and portfolio page is supported. Some socialfi elements.
+- [X] Achievements and portfolio page is supported. Some socialfi elements.
     1. Users can choose their favourite achievements to display in a minified form next to their Meow Domain.
     2. Meow domains is supported in the UI.
-- [ ] Collect payoff from the campaign ending in the frontend.
+- [X] Collect payoff from the campaign ending in the frontend.
 - [ ] Custom fee collection and pool configuration supported (use beauty contest with fixed date, many outcomes if they want)
-- [ ] Anyone can create pools. Custom display of pools a la Ebay customisation. Tracking of people investing in specific campaigns and their outcomes for frontpage stack ranking feature.
+- [ ] Anyone can create pools. Custom display of pools a la Ebay customisation.
     1. A fixed fee is sent to creator of when shares are created.
     2. Behind the scenes deferring to the AMM model if more than two outcomes.
     3. Customise the UI of the frontpage for the info
-    4. Settlement based on a website URL?
+    4. Settlement based on a website URL
     5. Stack ranking is done for automated updating of frontpage
     6. Campaign report functionality. Images are screened automatically for bad images with A
     7. API to update campaign by the original sender
     8. Anti bad content screening API used
     9. Custom embed when sharing URL
-- [ ] Layerzero configuration with Arbitrum One mainnet with UMA
 - [ ] Prediction market DAO. Token launch
 
 ## Building contracts
