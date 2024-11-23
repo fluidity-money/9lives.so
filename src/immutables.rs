@@ -44,6 +44,8 @@ env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR");
 /// Three days in seconds, for the infra market.
 pub const THREE_DAYS_SECS: u64 = 259200;
 
+pub const A_WEEK_SECS: u64 = 604800;
+
 /// Scaled amount to use for drawing down funds on request based on a percentage.
 pub const SCALING_AMT: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
 

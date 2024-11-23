@@ -14,16 +14,24 @@ interface ILockup {
     ) external returns (uint256 debtId);
 
     /**
-     * @notice slash a user's entire position portfolio on request. only usable by InfraMarket. This can be called repeatedly safely without context. When this is used the user's amount before they started to lose funds is tracked to be drawn down.
-     * @param spender
+     * @notice Staked ARB vested by the user at this point in time.
+     * @param holder address
      */
-    function slash(address spender) external;
+    function stakedArbBal(address _holder) external view returns (uint256);
 
     /**
-     * @notice drawDown a user's Staked ARB portfolio to a recipient based on the percent,
-     scaled by 1e12.
+     * @notice slash a user's entire position portfolio on request. only usable by
+     * InfraMarket. This can be called repeatedly safely without context. When this is used
+     * the user's amount before they started to lose funds is tracked to be drawn down.
+     * @param spender
      */
-    function drawDown(address loser, address recipient, uint256 pct) external;
+    function slash(address loser) external;
+
+    /**
+     * @notice takeStakedArb from the pool that we have locked up
+     * @param victim to take money from, setting their staked arb to 0.
+     * @param recipient to send the staked arb to
+    function takeStakedArb(address victim, address recipient) external;
 
     /**
      * @notice freeze a user's position to prevent it from being taken until after this deadline. If the amount is already set, then we use the latest value.

@@ -246,6 +246,11 @@ pub enum Error {
     /// User was already targeted by the sweep/they can't be targeted!
     #[error("User already targeted by sweep")]
     UserAlreadyTargeted,
+
+    // 2f
+    /// The window for this market has closed! It's been longer than a week.
+    #[error("Infrastructure market window has closed!")]
+    InfraMarketWindowClosed,
 }
 
 impl From<Error> for Vec<u8> {

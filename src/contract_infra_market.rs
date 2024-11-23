@@ -39,12 +39,17 @@ pub struct StorageInfraMarket {
     /// the actual token itself.
     market_vested_user: StorageMap<Address, StorageMap<Address, StorageU256>>,
 
-    /// Created markets that we track when someone predicts them for the first time.
-    /// These are sorted on every prediction interaction.
-    markets_created: StorageMap<Address, StorageVec<B8>>,
-
     /// Was a winner determined?
     market_winner: StorageMap<Address, StorageB8>,
+
+    /// The amount of Staked ARB that was vested in this outcome by checking if
+    /// the predict user has had their amount of ARB vested from ILockup
+    /// stakedArbBal. If they haven't, then we update the global ARB
+    /// invested amount. Needed for slashing.
+    market_user_vested_arb: StorageMap<Address, StorageMap<Address, StorageU256>>,
+
+    /// The amount of Staked ARB invested by everyone in this outcome.
+    market_global_vested_arb: StorageMap<Address, StorageU256>,
 }
 
 #[cfg_attr(feature = "contract-infra-market", stylus_sdk::prelude::public)]
@@ -118,6 +123,35 @@ impl StorageInfraMarket {
             .market_vested_user
             .getter(trading_addr)
             .get(msg::sender());
+        // We track the amount of ARB that the user has in the Lockup contract
+        // to punish bad behaviour here.
+        let user_staked_arb_bal =
+            lockup_call::staked_arb_bal(self.lockup_addr.get(), msg::sender())?;
+        let existing_user_tracked_staked_arb_bal = self
+            .market_user_vested_arb
+            .getter(trading_addr)
+            .get(msg::sender());
+        // We check if they've previously updated this balance, and we track their new amount.
+        let new_user_staked_arb_amt = if user_staked_arb_bal > existing_user_tracked_staked_arb {
+            user_staked_arb_bal - existing_user_tracked_staked_arb
+        } else {
+            U256::ZERO
+        };
+        // We update the tracked amount for the user here. It's worth
+        // noting that later, if someone tries to draw down from this
+        // user's staked amount in the event of slashing, then we
+        // actually check their locked up staked ARB balance to see if
+        // it's greater than or equal to this amount here. And if it
+        // isn't, then we don't send anything to prevent weird slashing
+        // behaviour.
+        self.market_user_vested_arb
+            .setter(trading_addr)
+            .setter(msg::sender())
+            .set(user_staked_arb_bal);
+        let existing_market_global_vested_arb = self.market_global_vested_arb.getter(trading_arb);
+        self.market_global_vested_arb
+            .setter(trading_addr)
+            .set(existing_market_global_vested_arb + new_user_staked_arb_amt);
         // If the user is trying to allocate more than they possibly could at this timepoint,
         // we blow up.
         let amt_new_vested = amt_already_added + amt;
@@ -183,6 +217,8 @@ impl StorageInfraMarket {
     /// the winner was, if we haven't already. We check a flag to know
     /// if this already took place. Following that, we target a specific
     /// user that we want to collect funds from.
+    /// The problem with this design is that smallfry who get things wrong
+    /// won't get slashed. This may or may not be a big deal.
     pub fn sweep(
         &mut self,
         trading_addr: Address,
@@ -190,9 +226,17 @@ impl StorageInfraMarket {
         outcomes: Vec<B8>,
     ) -> Result<(), Error> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
+        let market_start_ts =
+            u64::from_le_bytes(self.market_starts.getter(trading_addr).to_le_bytes());
         assert_or!(
             block::timestamp() > market_start_ts + THREE_DAYS_SECS,
             Error::InfraMarketHasNotExpired
+        );
+        // If someone is trying to sweep a week after the end date, they shouldn't be able
+        // to incase that causes something strange somewhere.
+        assert_or!(
+            block::timestamp() > market_start_ts + A_WEEK_SECS,
+            Error::InfraMarketWindowClosed
         );
         // We check if the has sweeped flag is enabled by checking who the winner is.
         // If it isn't enabled, then we collect every identifier they specified, and
@@ -225,18 +269,58 @@ impl StorageInfraMarket {
                     .set(voting_power_winner);
                 // Looks like we owe the caller some money.
                 fusdc_call::transfer(msg::sender(), INCENTIVE_AMT)?;
+                // At this point we call the market that this is
+                // connected to to let them know that there was a winner.
+                trading_call::decide(voting_power_winner)?;
             }
         }
-        // First we check if the target actually invested incorrectly. If they did in the past, then
-        // their position in the storage for this is set to 0, as we assume that they already were
-        // slashed using the other token for this.
+        if victim_addr == U256::ZERO {
+            // We don't bother to slash the user if this is the case. We just return nicely.
+            return Ok(U256::ZERO);
+        }
+        // Time to slash the victim by having Lockup burn their tokens! It still freezes
+        // their staked ARB as tracked until someone decides to call it.
+        // This should be safe to call many times.
+        lockup_call::slash(victim_addr)?;
+        // Let's check that the caller actually took a position here. If they didn't, then we're
+        // not going to collect funds to this user.
+        if self
+            .market_vested_user
+            .getter(trading_addr)
+            .get(msg::sender())
+            .is_zero()
+        {
+            return Ok(U256::ZERO);
+        }
+        // First we check if the target actually invested incorrectly. If
+        // they did in the past, then their position in the storage for
+        // this is set to 0, as we assume that they already were slashed.
         let victim_vested_power = self.user_vested_power.getter(target_addr).get(victim_addr);
-        assert_or!(
-            victim_vested_power > U256::ZERO,
-            Error::UserAlreadyTargeted
-        );
+        assert_or!(victim_vested_power > U256::ZERO, Error::UserAlreadyTargeted);
         // To prevent this user from being double claimed on.
-        self.user_vested_power.setter(target_addr).setter(victim_addr).set(U256::ZERO);
-
+        self.user_vested_power
+            .setter(target_addr)
+            .setter(victim_addr)
+            .set(U256::ZERO);
+        // We check the victim's vested arb in the lockup contract, and
+        // if it's not greater than or equal to what's here, then we
+        // don't drain down their funds, we return! The setting of their
+        // power earlier to 0 should hopefully be enough to prevent
+        // double claiming later.
+        let victim_vested_arb_amt = self
+            .market_user_vested_arb
+            .getter(trading_addr)
+            .get(victim_addr);
+        let victim_staked_arb_amt = lockup_call::staked_arb_bal(victim_addr)?;
+        if victim_vested_arb_amt > victim_staked_arb_amt {
+            return Ok(U256::ZERO);
+        }
+        // We check the caller's share of the power vested globally, and
+        // if the victim's share of the incorrectly allocated profit is
+        // below the caller's share, then we claim their amounts here.
+        // If the amount of time that's exceeded is 5 days, then we're
+        // inside a "ANYTHING GOES" period where someone could
+        // claim the victim's entire position without beating them on the
+        // percentage of the share that's held.
     }
 }
