@@ -322,5 +322,6 @@ impl StorageInfraMarket {
         // inside a "ANYTHING GOES" period where someone could
         // claim the victim's entire position without beating them on the
         // percentage of the share that's held.
+        let are_we_allowed_to_claim_victim =
     }
 }

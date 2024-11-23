@@ -198,6 +198,21 @@ func (r *queryResolver) Frontpage(ctx context.Context, category []string) ([]typ
 	panic(fmt.Errorf("not implemented: Frontpage - frontpage"))
 }
 
+// SuggestedHeadlines is the resolver for the suggestedHeadlines field.
+func (r *queryResolver) SuggestedHeadlines(ctx context.Context) ([]string, error) {
+	var headlines []string
+	err := r.DB.Table("ninelives_newsfeed_for_today_1").Find(&headlines).Error
+	if err != nil {
+		return nil, fmt.Errorf("get newsfeed: %v", err)
+	}
+	return headlines, nil
+}
+
+// News is the resolver for the news field.
+func (r *queryResolver) News(ctx context.Context) ([]model.News, error) {
+	panic(fmt.Errorf("not implemented: News - news"))
+}
+
 // Campaign returns CampaignResolver implementation.
 func (r *Resolver) Campaign() CampaignResolver { return &campaignResolver{r} }
 

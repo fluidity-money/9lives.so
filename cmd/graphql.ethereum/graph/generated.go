@@ -73,6 +73,12 @@ type ComplexityRoot struct {
 		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, creator string) int
 	}
 
+	News struct {
+		AfterTs func(childComplexity int) int
+		HTML    func(childComplexity int) int
+		ID      func(childComplexity int) int
+	}
+
 	Outcome struct {
 		Description func(childComplexity int) int
 		Identifier  func(childComplexity int) int
@@ -81,8 +87,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Campaigns func(childComplexity int, category []string) int
-		Frontpage func(childComplexity int, category []string) int
+		Campaigns          func(childComplexity int, category []string) int
+		Frontpage          func(childComplexity int, category []string) int
+		News               func(childComplexity int) int
+		SuggestedHeadlines func(childComplexity int) int
 	}
 
 	Share struct {
@@ -117,6 +125,8 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Campaigns(ctx context.Context, category []string) ([]types.Campaign, error)
 	Frontpage(ctx context.Context, category []string) ([]types.Frontpage, error)
+	SuggestedHeadlines(ctx context.Context) ([]string, error)
+	News(ctx context.Context) ([]model.News, error)
 }
 
 type executableSchema struct {
@@ -241,6 +251,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["creator"].(string)), true
 
+	case "News.afterTs":
+		if e.complexity.News.AfterTs == nil {
+			break
+		}
+
+		return e.complexity.News.AfterTs(childComplexity), true
+
+	case "News.html":
+		if e.complexity.News.HTML == nil {
+			break
+		}
+
+		return e.complexity.News.HTML(childComplexity), true
+
+	case "News.id":
+		if e.complexity.News.ID == nil {
+			break
+		}
+
+		return e.complexity.News.ID(childComplexity), true
+
 	case "Outcome.description":
 		if e.complexity.Outcome.Description == nil {
 			break
@@ -292,6 +323,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Frontpage(childComplexity, args["category"].([]string)), true
+
+	case "Query.news":
+		if e.complexity.Query.News == nil {
+			break
+		}
+
+		return e.complexity.Query.News(childComplexity), true
+
+	case "Query.suggestedHeadlines":
+		if e.complexity.Query.SuggestedHeadlines == nil {
+			break
+		}
+
+		return e.complexity.Query.SuggestedHeadlines(childComplexity), true
 
 	case "Share.address":
 		if e.complexity.Share.Address == nil {
@@ -1240,6 +1285,138 @@ func (ec *executionContext) fieldContext_Mutation_explainCampaign(ctx context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _News_id(ctx context.Context, field graphql.CollectedField, obj *model.News) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_News_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_News_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "News",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _News_html(ctx context.Context, field graphql.CollectedField, obj *model.News) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_News_html(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HTML, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_News_html(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "News",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _News_afterTs(ctx context.Context, field graphql.CollectedField, obj *model.News) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_News_afterTs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AfterTs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_News_afterTs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "News",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Outcome_name(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_name(ctx, field)
 	if err != nil {
@@ -1556,6 +1733,102 @@ func (ec *executionContext) fieldContext_Query_frontpage(ctx context.Context, fi
 	if fc.Args, err = ec.field_Query_frontpage_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_suggestedHeadlines(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_suggestedHeadlines(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().SuggestedHeadlines(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_suggestedHeadlines(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_news(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_news(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().News(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.News)
+	fc.Result = res
+	return ec.marshalNNews2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐNewsᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_news(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_News_id(ctx, field)
+			case "html":
+				return ec.fieldContext_News_html(ctx, field)
+			case "afterTs":
+				return ec.fieldContext_News_afterTs(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type News", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -4181,6 +4454,55 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
+var newsImplementors = []string{"News"}
+
+func (ec *executionContext) _News(ctx context.Context, sel ast.SelectionSet, obj *model.News) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, newsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("News")
+		case "id":
+			out.Values[i] = ec._News_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "html":
+			out.Values[i] = ec._News_html(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "afterTs":
+			out.Values[i] = ec._News_afterTs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var outcomeImplementors = []string{"Outcome"}
 
 func (ec *executionContext) _Outcome(ctx context.Context, sel ast.SelectionSet, obj *types.Outcome) graphql.Marshaler {
@@ -4286,6 +4608,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_frontpage(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "suggestedHeadlines":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_suggestedHeadlines(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "news":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_news(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -4892,6 +5258,54 @@ func (ec *executionContext) unmarshalNModification2githubᚗcomᚋfluidityᚑmon
 
 func (ec *executionContext) marshalNModification2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐModification(ctx context.Context, sel ast.SelectionSet, v model.Modification) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) marshalNNews2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐNews(ctx context.Context, sel ast.SelectionSet, v model.News) graphql.Marshaler {
+	return ec._News(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNews2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐNewsᚄ(ctx context.Context, sel ast.SelectionSet, v []model.News) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNews2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐNews(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNOutcome2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐOutcome(ctx context.Context, sel ast.SelectionSet, v types.Outcome) graphql.Marshaler {

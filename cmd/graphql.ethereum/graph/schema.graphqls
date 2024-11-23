@@ -10,6 +10,16 @@ type Query {
   not be displayed (until).
   """
   frontpage(category:[String!]): [Frontpage!]!
+
+  """
+  Suggested headlines for the day based on AI input.
+  """
+  suggestedHeadlines: [String!]!
+
+  """
+  Any new notes that have come up recently.
+  """
+  news: [News!]!
 }
 
 
@@ -213,4 +223,33 @@ enum Modification {
   Create this modification.
   """
   PUT
+}
+
+"""
+News that could be rendered to a viewer who hasn't viewed the site in a while.
+This is CHANGELOG.md that's parsed to be of the form:
+```
+### (date) (description)
+
+* Markdown unsorted list
+
+1. Markdown sorted list
+
+... yadda yadda
+```
+
+This is converted to HTML.
+"""
+type News {
+    id: ID!
+
+    """
+    HTML rendered from the Markdown CHANGELOG.md file.
+    """
+    html: String!
+
+    """
+    The timestamp that this item is relevant for after.
+    """
+    afterTs: Int!
 }
