@@ -1,134 +1,125 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="643pt" height="533pt" viewBox="0.00 0.00 643.33 533.00">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 529)">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="898pt" height="310pt" viewBox="0.00 0.00 898.34 310.40">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 306.4)">
 <title>%0</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-529 639.329,-529 639.329,4 -4,4"/>
-<!-- Create campaign pool -->
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-306.4 894.3444,-306.4 894.3444,4 -4,4"/>
+<!-- Inventor -->
 <g id="node1" class="node">
-<title>Create campaign pool</title>
-<polygon fill="none" stroke="#000000" points="166.505,-403.5 166.505,-439.5 270.253,-439.5 270.253,-403.5 166.505,-403.5"/>
-<text text-anchor="middle" x="218.379" y="-418.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create campaign pool</text>
+<title>Inventor</title>
+<ellipse fill="none" stroke="#000000" cx="43.7504" cy="-284.4" rx="43.5022" ry="18"/>
+<text text-anchor="middle" x="43.7504" y="-280.2" font-family="Times,serif" font-size="14.00" fill="#000000">Inventor</text>
 </g>
-<!-- Create Longtail pool -->
+<!-- Factory -->
 <g id="node2" class="node">
-<title>Create Longtail pool</title>
-<polygon fill="none" stroke="#000000" points="0,-318.5 0,-354.5 98.758,-354.5 98.758,-318.5 0,-318.5"/>
-<text text-anchor="middle" x="49.379" y="-333.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create Longtail pool</text>
+<title>Factory</title>
+<ellipse fill="none" stroke="#000000" cx="103.7504" cy="-195.6" rx="40.5673" ry="18"/>
+<text text-anchor="middle" x="103.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Factory</text>
 </g>
-<!-- Create campaign pool&#45;&gt;Create Longtail pool -->
+<!-- Inventor&#45;&gt;Factory -->
 <g id="edge1" class="edge">
-<title>Create campaign pool-&gt;Create Longtail pool</title>
-<path fill="none" stroke="#000000" d="M166.3066,-414.2969C128.5515,-408.108 81.6526,-398.1096 66.99,-385 60.9536,-379.603 56.9844,-371.9707 54.3752,-364.3544"/>
-<polygon fill="#000000" stroke="#000000" points="57.7014,-363.2504 51.6689,-354.5407 50.9533,-365.1113 57.7014,-363.2504"/>
-<text text-anchor="middle" x="122.0735" y="-376" font-family="Times,serif" font-size="10.00" fill="#000000">Creates aftermarket trading</text>
+<title>Inventor-&gt;Factory</title>
+<path fill="none" stroke="#000000" d="M55.6044,-266.856C64.3153,-253.9638 76.2957,-236.2329 86.1263,-221.6837"/>
+<polygon fill="#000000" stroke="#000000" points="89.2224,-223.353 91.9209,-213.1076 83.4222,-219.434 89.2224,-223.353"/>
+<text text-anchor="middle" x="198.1316" y="-235.8" font-family="Times,serif" font-size="14.00" fill="#000000">Creates campaign, locks incentive amount</text>
 </g>
-<!-- Create shares -->
+<!-- Oracle -->
 <g id="node3" class="node">
-<title>Create shares</title>
-<polygon fill="none" stroke="#000000" points="145.5895,-318.5 145.5895,-354.5 215.1685,-354.5 215.1685,-318.5 145.5895,-318.5"/>
-<text text-anchor="middle" x="180.379" y="-333.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create shares</text>
+<title>Oracle</title>
+<ellipse fill="none" stroke="#000000" cx="382.7504" cy="-106.8" rx="36.5344" ry="18"/>
+<text text-anchor="middle" x="382.7504" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Oracle</text>
 </g>
-<!-- Create campaign pool&#45;&gt;Create shares -->
+<!-- Factory&#45;&gt;Oracle -->
 <g id="edge2" class="edge">
-<title>Create campaign pool-&gt;Create shares</title>
-<path fill="none" stroke="#000000" d="M195.7943,-403.4393C190.6141,-398.0871 185.7607,-391.8147 182.789,-385 180.091,-378.813 178.8449,-371.7521 178.4063,-364.9692"/>
-<polygon fill="#000000" stroke="#000000" points="181.9032,-364.664 178.2894,-354.7045 174.9036,-364.7438 181.9032,-364.664"/>
-<text text-anchor="middle" x="212.674" y="-376" font-family="Times,serif" font-size="10.00" fill="#000000">Creates tokens</text>
+<title>Factory-&gt;Oracle</title>
+<path fill="none" stroke="#000000" d="M129.8847,-181.6428C153.4603,-169.6244 189.4096,-152.6977 222.474,-142.8 269.6283,-128.6844 284.0743,-137.0384 331.7504,-124.8 335.8429,-123.7494 340.0726,-122.512 344.2646,-121.1859"/>
+<polygon fill="#000000" stroke="#000000" points="345.5148,-124.4586 353.8957,-117.9769 343.302,-117.8176 345.5148,-124.4586"/>
+<text text-anchor="middle" x="286.8886" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Creates and configures</text>
 </g>
-<!-- Create trading contract -->
+<!-- Trading -->
 <g id="node4" class="node">
-<title>Create trading contract</title>
-<polygon fill="none" stroke="#000000" points="163.567,-233.5 163.567,-269.5 271.191,-269.5 271.191,-233.5 163.567,-233.5"/>
-<text text-anchor="middle" x="217.379" y="-248.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create trading contract</text>
+<title>Trading</title>
+<ellipse fill="none" stroke="#000000" cx="252.7504" cy="-18" rx="41.7133" ry="18"/>
+<text text-anchor="middle" x="252.7504" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Trading</text>
 </g>
-<!-- Create campaign pool&#45;&gt;Create trading contract -->
+<!-- Oracle&#45;&gt;Trading -->
 <g id="edge3" class="edge">
-<title>Create campaign pool-&gt;Create trading contract</title>
-<path fill="none" stroke="#000000" d="M232.7314,-403.1552C236.261,-397.6243 239.5503,-391.3324 241.379,-385 253.3403,-343.5815 253.7409,-329.3008 241.379,-288 240.4222,-284.8032 239.0852,-281.627 237.5272,-278.5589"/>
-<polygon fill="#000000" stroke="#000000" points="240.4391,-276.6062 232.3484,-269.7657 234.4074,-280.1586 240.4391,-276.6062"/>
-<text text-anchor="middle" x="319.139" y="-333.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create Pool contract with custody</text>
+<title>Oracle-&gt;Trading</title>
+<path fill="none" stroke="#000000" d="M361.2835,-92.1365C340.088,-77.6583 307.463,-55.3729 283.5146,-39.0143"/>
+<polygon fill="#000000" stroke="#000000" points="285.3529,-36.0314 275.1213,-33.2811 281.4046,-41.8117 285.3529,-36.0314"/>
+<text text-anchor="middle" x="386.0073" y="-58.2" font-family="Times,serif" font-size="14.00" fill="#000000">"Calls" the outcome</text>
 </g>
-<!-- Verify signature and creation -->
-<g id="node5" class="node">
-<title>Verify signature and creation</title>
-<polygon fill="none" stroke="#000000" points="408.933,-318.5 408.933,-354.5 541.825,-354.5 541.825,-318.5 408.933,-318.5"/>
-<text text-anchor="middle" x="475.379" y="-333.5" font-family="Times,serif" font-size="10.00" fill="#000000">Verify signature and creation</text>
-</g>
-<!-- Create campaign pool&#45;&gt;Verify signature and creation -->
-<g id="edge9" class="edge">
-<title>Create campaign pool-&gt;Verify signature and creation</title>
-<path fill="none" stroke="#000000" d="M270.3868,-404.299C311.0219,-390.8594 367.7022,-372.113 411.1655,-357.7379"/>
-<polygon fill="#000000" stroke="#000000" points="412.3923,-361.0187 420.7875,-354.5556 410.1942,-354.3728 412.3923,-361.0187"/>
-<text text-anchor="middle" x="441.511" y="-376" font-family="Times,serif" font-size="10.00" fill="#000000">Verifies the creation signature on-chain</text>
-</g>
-<!-- Create shares&#45;&gt;Create trading contract -->
-<g id="edge4" class="edge">
-<title>Create shares-&gt;Create trading contract</title>
-<path fill="none" stroke="#000000" d="M176.5735,-318.3171C175.4471,-308.9122 175.424,-297.4541 179.447,-288 181.0517,-284.2289 183.2581,-280.659 185.8063,-277.3355"/>
-<polygon fill="#000000" stroke="#000000" points="188.6539,-279.4009 192.696,-269.6075 183.4288,-274.7427 188.6539,-279.4009"/>
-<text text-anchor="middle" x="211.345" y="-291" font-family="Times,serif" font-size="10.00" fill="#000000">Sent ownership</text>
-</g>
-<!-- Create campaign -->
-<g id="node6" class="node">
-<title>Create campaign</title>
-<polygon fill="none" stroke="#000000" points="433.6445,-233.5 433.6445,-269.5 517.1135,-269.5 517.1135,-233.5 433.6445,-233.5"/>
-<text text-anchor="middle" x="475.379" y="-248.5" font-family="Times,serif" font-size="10.00" fill="#000000">Create campaign</text>
-</g>
-<!-- Verify signature and creation&#45;&gt;Create campaign -->
-<g id="edge5" class="edge">
-<title>Verify signature and creation-&gt;Create campaign</title>
-<path fill="none" stroke="#000000" d="M475.379,-318.4737C475.379,-307.2043 475.379,-292.4524 475.379,-279.6627"/>
-<polygon fill="#000000" stroke="#000000" points="478.8791,-279.5003 475.379,-269.5003 471.8791,-279.5004 478.8791,-279.5003"/>
-</g>
-<!-- Pending campaign inclusion -->
-<g id="node7" class="node">
-<title>Pending campaign inclusion</title>
-<polygon fill="none" stroke="#000000" points="410.7205,-159.5 410.7205,-195.5 540.0375,-195.5 540.0375,-159.5 410.7205,-159.5"/>
-<text text-anchor="middle" x="475.379" y="-174.5" font-family="Times,serif" font-size="10.00" fill="#000000">Pending campaign inclusion</text>
-</g>
-<!-- Create campaign&#45;&gt;Pending campaign inclusion -->
-<g id="edge6" class="edge">
-<title>Create campaign-&gt;Pending campaign inclusion</title>
-<path fill="none" stroke="#000000" d="M475.379,-233.2079C475.379,-224.9635 475.379,-215.0376 475.379,-205.8622"/>
-<polygon fill="#000000" stroke="#000000" points="478.8791,-205.5817 475.379,-195.5817 471.8791,-205.5818 478.8791,-205.5817"/>
-</g>
-<!-- Frontpage -->
-<g id="node8" class="node">
-<title>Frontpage</title>
-<polygon fill="none" stroke="#000000" points="447.1065,-74.5 447.1065,-110.5 503.6515,-110.5 503.6515,-74.5 447.1065,-74.5"/>
-<text text-anchor="middle" x="475.379" y="-89.5" font-family="Times,serif" font-size="10.00" fill="#000000">Frontpage</text>
-</g>
-<!-- Pending campaign inclusion&#45;&gt;Frontpage -->
-<g id="edge7" class="edge">
-<title>Pending campaign inclusion-&gt;Frontpage</title>
-<path fill="none" stroke="#000000" d="M475.379,-159.4737C475.379,-148.2043 475.379,-133.4524 475.379,-120.6627"/>
-<polygon fill="#000000" stroke="#000000" points="478.8791,-120.5003 475.379,-110.5003 471.8791,-120.5004 478.8791,-120.5003"/>
-<text text-anchor="middle" x="555.354" y="-132" font-family="Times,serif" font-size="10.00" fill="#000000">Moderator chooses to include campaign</text>
-</g>
-<!-- Displayed to everyone on the landing page -->
-<g id="node10" class="node">
-<title>Displayed to everyone on the landing page</title>
-<polygon fill="none" stroke="#000000" points="381.848,-.5 381.848,-36.5 568.91,-36.5 568.91,-.5 381.848,-.5"/>
-<text text-anchor="middle" x="475.379" y="-15.5" font-family="Times,serif" font-size="10.00" fill="#000000">Displayed to everyone on the landing page</text>
-</g>
-<!-- Frontpage&#45;&gt;Displayed to everyone on the landing page -->
+<!-- Trading&#45;&gt;Inventor -->
 <g id="edge10" class="edge">
-<title>Frontpage-&gt;Displayed to everyone on the landing page</title>
-<path fill="none" stroke="#000000" d="M475.379,-74.2079C475.379,-65.9635 475.379,-56.0376 475.379,-46.8622"/>
-<polygon fill="#000000" stroke="#000000" points="478.8791,-46.5817 475.379,-36.5817 471.8791,-46.5818 478.8791,-46.5817"/>
+<title>Trading-&gt;Inventor</title>
+<path fill="none" stroke="#000000" d="M224.2861,-31.3744C179.2268,-54.2409 92.6052,-105.4678 53.7504,-177.6 40.7721,-201.6936 39.3986,-233.3185 40.5834,-255.8889"/>
+<polygon fill="#000000" stroke="#000000" points="37.1148,-256.4491 41.3309,-266.1689 44.0964,-255.9414 37.1148,-256.4491"/>
+<text text-anchor="middle" x="105.4885" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Sends fees</text>
 </g>
-<!-- User -->
-<g id="node9" class="node">
-<title>User</title>
-<polygon fill="none" stroke="#000000" points="191.379,-488.5 191.379,-524.5 245.379,-524.5 245.379,-488.5 191.379,-488.5"/>
-<text text-anchor="middle" x="218.317" y="-503.5" font-family="Times,serif" font-size="10.00" fill="#000000">User</text>
+<!-- Infrastructure Market -->
+<g id="node5" class="node">
+<title>Infrastructure Market</title>
+<ellipse fill="none" stroke="#000000" cx="418.7504" cy="-195.6" rx="93.7554" ry="18"/>
+<text text-anchor="middle" x="418.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Infrastructure Market</text>
 </g>
-<!-- User&#45;&gt;Create campaign pool -->
+<!-- Infrastructure Market&#45;&gt;Oracle -->
+<g id="edge4" class="edge">
+<title>Infrastructure Market-&gt;Oracle</title>
+<path fill="none" stroke="#000000" d="M376.7886,-179.4141C368.7196,-174.3208 361.3174,-167.8118 356.5834,-159.6 351.3948,-150.5996 354.4397,-140.4317 360.0027,-131.4387"/>
+<polygon fill="#000000" stroke="#000000" points="362.8982,-133.4075 365.9212,-123.253 357.2256,-129.306 362.8982,-133.4075"/>
+<text text-anchor="middle" x="412.3339" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Activates the oracle</text>
+</g>
+<!-- Infrastructure Market&#45;&gt;Trading -->
 <g id="edge8" class="edge">
-<title>User-&gt;Create campaign pool</title>
-<path fill="none" stroke="#000000" d="M218.379,-488.4737C218.379,-477.2043 218.379,-462.4524 218.379,-449.6627"/>
-<polygon fill="#000000" stroke="#000000" points="221.8791,-449.5003 218.379,-439.5003 214.8791,-449.5004 221.8791,-449.5003"/>
-<text text-anchor="middle" x="276.8245" y="-461" font-family="Times,serif" font-size="10.00" fill="#000000">Creates the contract on-chain</text>
+<title>Infrastructure Market-&gt;Trading</title>
+<path fill="none" stroke="#000000" d="M353.2272,-182.5707C320.33,-172.4954 283.0316,-154.9578 261.7076,-124.8 245.5915,-102.0076 245.2883,-69.2509 247.799,-46.0362"/>
+<polygon fill="#000000" stroke="#000000" points="251.2704,-46.4825 249.1039,-36.1115 244.3301,-45.5699 251.2704,-46.4825"/>
+<text text-anchor="middle" x="299.2718" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Sets outcome</text>
+</g>
+<!-- Lockup -->
+<g id="node7" class="node">
+<title>Lockup</title>
+<ellipse fill="none" stroke="#000000" cx="764.7504" cy="-106.8" rx="40.5731" ry="18"/>
+<text text-anchor="middle" x="764.7504" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Lockup</text>
+</g>
+<!-- Infrastructure Market&#45;&gt;Lockup -->
+<g id="edge9" class="edge">
+<title>Infrastructure Market-&gt;Lockup</title>
+<path fill="none" stroke="#000000" d="M462.2003,-179.5763C495.3425,-167.8926 542.3392,-152.4736 584.6108,-142.8 639.8137,-130.1672 655.6343,-137.8066 710.7504,-124.8 714.9161,-123.8169 719.2181,-122.6513 723.4908,-121.3929"/>
+<polygon fill="#000000" stroke="#000000" points="724.8216,-124.6444 733.3298,-118.3309 722.7415,-117.9606 724.8216,-124.6444"/>
+<text text-anchor="middle" x="672.8202" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Asks to slash amounts if wrong</text>
+</g>
+<!-- Predictor -->
+<g id="node6" class="node">
+<title>Predictor</title>
+<ellipse fill="none" stroke="#000000" cx="764.7504" cy="-195.6" rx="46.3643" ry="18"/>
+<text text-anchor="middle" x="764.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Predictor</text>
+</g>
+<!-- Predictor&#45;&gt;Lockup -->
+<g id="edge5" class="edge">
+<title>Predictor-&gt;Lockup</title>
+<path fill="none" stroke="#000000" d="M764.7504,-177.2006C764.7504,-165.0949 764.7504,-149.0076 764.7504,-135.2674"/>
+<polygon fill="#000000" stroke="#000000" points="768.2505,-134.872 764.7504,-124.872 761.2505,-134.8721 768.2505,-134.872"/>
+<text text-anchor="middle" x="827.5474" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Locks up Staked ARB</text>
+</g>
+<!-- Infrastructure Trader -->
+<g id="node8" class="node">
+<title>Infrastructure Trader</title>
+<ellipse fill="none" stroke="#000000" cx="560.7504" cy="-18" rx="91.9488" ry="18"/>
+<text text-anchor="middle" x="560.7504" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Infrastructure Trader</text>
+</g>
+<!-- Lockup&#45;&gt;Infrastructure Trader -->
+<g id="edge6" class="edge">
+<title>Lockup-&gt;Infrastructure Trader</title>
+<path fill="none" stroke="#000000" d="M735.5221,-94.0771C702.3106,-79.6203 647.6215,-55.8145 608.2588,-38.6802"/>
+<polygon fill="#000000" stroke="#000000" points="609.1699,-35.2596 598.604,-34.4775 606.376,-41.6779 609.1699,-35.2596"/>
+<text text-anchor="middle" x="718.8875" y="-58.2" font-family="Times,serif" font-size="14.00" fill="#000000">Sends LARB</text>
+</g>
+<!-- Infrastructure Trader&#45;&gt;Infrastructure Market -->
+<g id="edge7" class="edge">
+<title>Infrastructure Trader-&gt;Infrastructure Market</title>
+<path fill="none" stroke="#000000" d="M538.1221,-35.6264C522.6196,-48.7786 502.6574,-68.0033 490.0518,-88.8 472.9511,-117.0128 486.9503,-132.7717 467.7504,-159.6 464.5251,-164.1067 460.5619,-168.2791 456.2991,-172.0646"/>
+<polygon fill="#000000" stroke="#000000" points="453.9756,-169.4422 448.3971,-178.4495 458.375,-174.8869 453.9756,-169.4422"/>
+<text text-anchor="middle" x="603.0997" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Traders stake their funds on an outcome</text>
 </g>
 </g>
 </svg>
