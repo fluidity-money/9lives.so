@@ -75,7 +75,7 @@ func main() {
 			C:           config,
 			FactoryAddr: ethCommon.HexToAddress(config.FactoryAddress),
 			TradingHash: tradingHash,
-			ChangelogItems:   Changelog[:ChangelogLen],
+			ChangelogItems:   Changelog[:min(ChangelogLen, len(Changelog))],
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})
