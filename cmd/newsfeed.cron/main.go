@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"io"
 	"log/slog"
+	"strings"
 	"os"
 
 	"github.com/fluidity-money/9lives.so/lib/types/newsfeed"
@@ -50,7 +51,7 @@ L:
 			"line", i+1,
 		)
 		err = tx.Table("ninelives_newsfeed_1").Create(newsfeed.Newsfeed{
-			Headline: string(l),
+			Headline: strings.TrimSpace(string(l)),
 		}).Error
 		if err != nil {
 			setup.Exitf("headline insert %v: %v", i+1, err)
