@@ -17,11 +17,10 @@ type Query {
   suggestedHeadlines: [String!]!
 
   """
-  Any new notes that have come up recently.
+  Any new changelog items that have come up recently.
   """
-  news: [News!]!
+  changelog: [Changelog]!
 }
-
 
 """
 Frontpage that should be displayed for a time window.
@@ -240,16 +239,21 @@ This is CHANGELOG.md that's parsed to be of the form:
 
 This is converted to HTML.
 """
-type News {
+type Changelog {
     id: ID!
 
     """
-    HTML rendered from the Markdown CHANGELOG.md file.
+    The title of the changelog item.
     """
-    html: String!
+    title: String!
 
     """
     The timestamp that this item is relevant for after.
     """
     afterTs: Int!
+
+    """
+    HTML rendered from the Markdown CHANGELOG.md file.
+    """
+    html: String!
 }

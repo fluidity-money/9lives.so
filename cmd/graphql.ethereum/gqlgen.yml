@@ -35,3 +35,6 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+  Changelog:
+    model:
+      - github.com/fluidity-money/9lives.so/lib/types/changelog.Changelog

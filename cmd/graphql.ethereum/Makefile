@@ -1,11 +1,16 @@
 
-include ../golang.mk
+EXTRA_FILES := CHANGELOG.md
 
-EXTRA_FILES := pools.toml bootstrap bootstrap.zip
+include ../golang.mk
 
 .PHONY: lambda
 
+build: graphql.ethereum
+
 lambda: bootstrap.zip
+
+CHANGELOG.md: ../../CHANGELOG.md
+	@cp ../../CHANGELOG.md CHANGELOG.md
 
 bootstrap: graphql.ethereum
 	@cp graphql.ethereum bootstrap

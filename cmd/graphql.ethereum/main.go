@@ -36,6 +36,9 @@ const (
 	EnvListenAddr = "SPN_LISTEN_ADDR"
 )
 
+// ChangelogLen to send to the user at max on request for the changelog endpoint.
+const ChangelogLen = 10
+
 // TradingHash the keccak256 hash of the trading contract.
 var tradingHash, _ = hex.DecodeString("71e427fb5677e7947eee7f7697e3a1094e8da1b96805980acb4f74b8df0a3a41")
 
@@ -72,6 +75,7 @@ func main() {
 			C:           config,
 			FactoryAddr: ethCommon.HexToAddress(config.FactoryAddress),
 			TradingHash: tradingHash,
+			ChangelogItems:   Changelog[:ChangelogLen],
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})

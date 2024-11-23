@@ -11,27 +11,6 @@ import (
 type Mutation struct {
 }
 
-// News that could be rendered to a viewer who hasn't viewed the site in a while.
-// This is CHANGELOG.md that's parsed to be of the form:
-// ```
-// ### (date) (description)
-//
-// * Markdown unsorted list
-//
-// 1. Markdown sorted list
-//
-// ... yadda yadda
-// ```
-//
-// This is converted to HTML.
-type News struct {
-	ID string `json:"id"`
-	// HTML rendered from the Markdown CHANGELOG.md file.
-	HTML string `json:"html"`
-	// The timestamp that this item is relevant for after.
-	AfterTs int `json:"afterTs"`
-}
-
 // Outcome associated with a Campaign creation that's notified to the graph.
 type OutcomeInput struct {
 	// Name of the campaign outcome. Ie, "Donald Trump" for the election.

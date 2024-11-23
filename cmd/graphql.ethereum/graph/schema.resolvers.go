@@ -15,6 +15,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
+	"github.com/fluidity-money/9lives.so/lib/types/changelog"
 )
 
 // Name is the resolver for the name field.
@@ -79,6 +80,30 @@ func (r *campaignResolver) Ending(ctx context.Context, obj *types.Campaign) (int
 		return 0, fmt.Errorf("campaign is nil")
 	}
 	return obj.Content.Ending, nil
+}
+
+// ID is the resolver for the id field.
+func (r *changelogResolver) ID(ctx context.Context, obj *changelog.Changelog) (string, error) {
+	if obj == nil {
+		return "", fmt.Errorf("empty changelog")
+	}
+	return fmt.Sprintf("%v-%v", obj.Time, obj.Title), nil
+}
+
+// AfterTs is the resolver for the afterTs field.
+func (r *changelogResolver) AfterTs(ctx context.Context, obj *changelog.Changelog) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("empty changelog")
+	}
+	return int(obj.Time.Unix()), nil
+}
+
+// HTML is the resolver for the html field.
+func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) (string, error) {
+	if obj == nil {
+		return "", fmt.Errorf("empty changelog")
+	}
+	return obj.HtmlContent, nil
 }
 
 // ID is the resolver for the id field.
@@ -208,13 +233,20 @@ func (r *queryResolver) SuggestedHeadlines(ctx context.Context) ([]string, error
 	return headlines, nil
 }
 
-// News is the resolver for the news field.
-func (r *queryResolver) News(ctx context.Context) ([]model.News, error) {
-	panic(fmt.Errorf("not implemented: News - news"))
+// Changelog is the resolver for the changelog field.
+func (r *queryResolver) Changelog(ctx context.Context) ([]*changelog.Changelog, error) {
+	xs := make([]*changelog.Changelog, len(r.ChangelogItems))
+	for i, x := range r.ChangelogItems {
+		xs[i] = &x
+	}
+	return xs, nil
 }
 
 // Campaign returns CampaignResolver implementation.
 func (r *Resolver) Campaign() CampaignResolver { return &campaignResolver{r} }
+
+// Changelog returns ChangelogResolver implementation.
+func (r *Resolver) Changelog() ChangelogResolver { return &changelogResolver{r} }
 
 // Frontpage returns FrontpageResolver implementation.
 func (r *Resolver) Frontpage() FrontpageResolver { return &frontpageResolver{r} }
@@ -226,6 +258,7 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type campaignResolver struct{ *Resolver }
+type changelogResolver struct{ *Resolver }
 type frontpageResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
