@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
@@ -61,7 +62,7 @@ func init() {
 				appendChangelog()
 			}
 			c = new(changelog.Changelog)
-			c.Title = t[m[3]:]
+			c.Title = strings.TrimSpace(t[m[3]:])
 			var err error
 			c.Time, err = time.Parse("02-01-2006", t[m[2]:m[3]])
 			if err != nil {
