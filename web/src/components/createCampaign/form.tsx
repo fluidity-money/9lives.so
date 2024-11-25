@@ -48,19 +48,20 @@ export default function CreateCampaignForm() {
   const [settlementType, setSettlementType] = useState<
     "url" | "beauty" | "contract" | "ai"
   >("url");
-  const customOutcomeSchema = z.array(
-    z.object({
-      picture: z
-        .instanceof(File, {
-          message: "You have to upload a picture",
-        })
-        .refine((file) => file.size <= 1024 * 1024, {
-          message: "File size must be under 1MB",
-        }),
-      name: z.string().min(3),
-      description: z.string().min(5),
-    }),
-  );
+  const customOutcomeSchema = z.object({
+    picture: z
+      .instanceof(File, {
+        message: "You have to upload a picture",
+      })
+      .refine((file) => file.size <= 1024 * 1024, {
+        message: "File size must be under 1MB",
+      })
+      .refine((file) => file.size > 0, {
+        message: "You have to upload a picture",
+      }),
+    name: z.string().min(3),
+    description: z.string().min(5),
+  });
   const formSchema = useMemo(
     () =>
       z.object({
@@ -75,7 +76,16 @@ export default function CreateCampaignForm() {
         telegram: z.string().min(2).optional().or(z.literal("")),
         x: z.string().min(2).optional().or(z.literal("")),
         web: z.string().url().optional().or(z.literal("")),
-        customOutcomes: customOutcomeSchema,
+        customOutcomes:
+          outcomeType === "custom"
+            ? z.array(customOutcomeSchema)
+            : z.array(
+                z.object({
+                  picture: z.instanceof(File),
+                  name: z.string(),
+                  description: z.string(),
+                }),
+              ),
         urlCommitee:
           settlementType === "url" ? z.string().url() : z.undefined(),
         contractAddress:
@@ -95,7 +105,10 @@ export default function CreateCampaignForm() {
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      customOutcomes: [{}, {}],
+      customOutcomes: [
+        { name: "", description: "", picture: new File([], "") },
+        { name: "", description: "", picture: new File([], "") },
+      ],
     },
   });
   const {
@@ -105,9 +118,8 @@ export default function CreateCampaignForm() {
   } = useFieldArray({
     control,
     name: "customOutcomes",
-    shouldUnregister: outcomeType !== "custom",
     rules: {
-      required: true,
+      required: outcomeType === "custom",
       minLength: 2,
     },
   });
@@ -327,7 +339,11 @@ export default function CreateCampaignForm() {
                   customOutcomePicturesRef.current.push(
                     React.createRef<HTMLInputElement>(),
                   );
-                  append({} as any);
+                  append({
+                    name: "",
+                    description: "",
+                    picture: new File([], ""),
+                  });
                 }}
                 intent={"default"}
                 size={"large"}
