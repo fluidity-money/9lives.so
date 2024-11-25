@@ -25,3 +25,19 @@ export type Detail = {
     isWinner: boolean;
   }[];
 };
+export type CampaignInput = {
+  id: string;
+  name?: string;
+  description?: string;
+  picture?: string;
+  endDate?: string;
+  outcomes?: OutcomeInput[];
+  seed?: number;
+};
+export type OutcomeInput = {
+  id: string;
+  picture?: string;
+  name?: string;
+  description?: string;
+  seed?: number;
+};
