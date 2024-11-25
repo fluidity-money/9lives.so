@@ -400,12 +400,22 @@ export default function CreateCampaignForm() {
                 />
               )}
             </Tab>
-            <Tab as={Fragment}>
+            <Tab disabled as={Fragment}>
               {(props) => (
                 <TabIconButton
                   title="Contract State"
                   activeIcon={ContractIcon}
                   inactiveIcon={ContractIcon}
+                  {...props}
+                />
+              )}
+            </Tab>
+            <Tab disabled as={Fragment}>
+              {(props) => (
+                <TabIconButton
+                  title="AI Resolver"
+                  activeIcon={GlobeActiveIcon}
+                  inactiveIcon={GlobeInactiveIcon}
                   {...props}
                 />
               )}

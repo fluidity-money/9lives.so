@@ -1,7 +1,7 @@
 import Image, { StaticImageData } from "next/image";
 import { combineClass } from "@/utils/combineClass";
-import { forwardRef } from "react";
-interface TabButtonProps {
+import { forwardRef, HTMLAttributes } from "react";
+interface TabButtonProps extends HTMLAttributes<HTMLButtonElement> {
   title: string;
   active: boolean;
   hover: boolean;

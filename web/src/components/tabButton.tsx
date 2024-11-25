@@ -4,8 +4,8 @@ import LeftborderIdle from "#/images/left-border-idle.svg";
 import Rightborder from "#/images/right-border.svg";
 import RightborderIdle from "#/images/right-border-idle.svg";
 import { combineClass } from "@/utils/combineClass";
-import { forwardRef } from "react";
-interface TabButtonProps {
+import { forwardRef, HTMLAttributes } from "react";
+interface TabButtonProps extends HTMLAttributes<HTMLButtonElement> {
   title: string;
   active: boolean;
   hover: boolean;

@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
-import { forwardRef } from "react";
+import { forwardRef, HTMLAttributes } from "react";
 import RadioSelectedImg from "#/images/radio-selected.svg";
 import RadioUnselectedimg from "#/images/radio-unselected.svg";
-interface TabButtonProps {
+interface TabButtonProps extends HTMLAttributes<HTMLButtonElement> {
   title: string;
   active: boolean;
   hover: boolean;
