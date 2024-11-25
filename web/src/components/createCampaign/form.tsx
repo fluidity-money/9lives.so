@@ -15,7 +15,13 @@ import {
 } from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import React, { Fragment, MutableRefObject, useRef, useState } from "react";
+import React, {
+  Fragment,
+  MutableRefObject,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import z from "zod";
 import TelegramIcon from "#/icons/telegram.svg";
@@ -36,39 +42,50 @@ export default function CreateCampaignForm() {
   const onSubmit = (data: any) => console.log(data);
   const fieldClass = "flex flex-col gap-2.5";
   const inputStyle = "shadow-9input border border-9black bg-9gray";
-  const formSchema = z.object({
-    name: z.string().min(3),
-    description: z.string().min(5),
-    picture: z
-      .instanceof(File, { message: "You have to upload a picture" })
-      .refine((file) => file.size <= 1024 * 1024, {
-        message: "File size must be under 1MB",
-      }),
-    endDate: z.string().date(),
-    telegram: z.string().min(2).optional().or(z.literal("")),
-    x: z.string().min(2).optional().or(z.literal("")),
-    web: z.string().url().optional().or(z.literal("")),
-    customOutcomes: z.array(
+  const [outcomeType, setOutcomeType] = useState<"custom" | "default">(
+    "default",
+  );
+  const [settlementType, setSettlementType] = useState<
+    "url" | "beauty" | "contract" | "ai"
+  >("url");
+  const customOutcomeSchema = z.array(
+    z.object({
+      picture: z
+        .instanceof(File, {
+          message: "You have to upload a picture",
+        })
+        .refine((file) => file.size <= 1024 * 1024, {
+          message: "File size must be under 1MB",
+        }),
+      name: z.string().min(3),
+      description: z.string().min(5),
+    }),
+  );
+  const formSchema = useMemo(
+    () =>
       z.object({
+        name: z.string().min(3),
+        description: z.string().min(5),
         picture: z
-          .instanceof(File, {
-            message: "You have to upload a picture",
-          })
+          .instanceof(File, { message: "You have to upload a picture" })
           .refine((file) => file.size <= 1024 * 1024, {
             message: "File size must be under 1MB",
           }),
-        name: z.string().min(3),
-        description: z.string().min(5),
+        endDate: z.string().date(),
+        telegram: z.string().min(2).optional().or(z.literal("")),
+        x: z.string().min(2).optional().or(z.literal("")),
+        web: z.string().url().optional().or(z.literal("")),
+        customOutcomes:
+          outcomeType === "custom" ? customOutcomeSchema : z.undefined(),
+        urlCommitee:
+          settlementType === "url" ? z.string().url() : z.undefined(),
+        contractAddress:
+          settlementType === "contract"
+            ? z.string().startsWith("0x").min(42)
+            : z.undefined(),
       }),
-    ),
-    urlCommitee: z.string().url(),
-    contractAddress: z
-      .string()
-      .startsWith("0x")
-      .min(42)
-      .optional()
-      .or(z.literal("")),
-  });
+    [outcomeType, settlementType],
+  );
   type FormData = z.infer<typeof formSchema>;
   const {
     register,
@@ -171,7 +188,10 @@ export default function CreateCampaignForm() {
       </Field>
       <Field className={fieldClass}>
         <Label text="Campaign Type & Outcomes" required />
-        <TabGroup defaultIndex={1}>
+        <TabGroup
+          defaultIndex={0}
+          onChange={(idx) => setOutcomeType(idx === 0 ? "default" : "custom")}
+        >
           <TabList className="flex gap-2.5">
             <Tab as={Fragment}>
               {(props) => <TabRadioButton title="Yes / No" {...props} />}
@@ -378,7 +398,27 @@ export default function CreateCampaignForm() {
       </Field>
       <Field className={fieldClass}>
         <Label text="Select Settlement Source" required />
-        <TabGroup defaultIndex={1}>
+        <TabGroup
+          defaultIndex={1}
+          onChange={(idx) => {
+            switch (idx) {
+              case 0:
+                setSettlementType("beauty");
+                break;
+              case 1:
+                setSettlementType("url");
+                break;
+              case 2:
+                setSettlementType("contract");
+                break;
+              case 3:
+                setSettlementType("ai");
+                break;
+              default:
+                return;
+            }
+          }}
+        >
           <TabList className="flex gap-2.5">
             <Tab as={Fragment}>
               {(props) => (
