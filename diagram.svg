@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="898pt" height="310pt" viewBox="0.00 0.00 898.34 310.40">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1174pt" height="310pt" viewBox="0.00 0.00 1174.34 310.40">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 306.4)">
 <title>%0</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-306.4 894.3444,-306.4 894.3444,4 -4,4"/>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-306.4 1170.3444,-306.4 1170.3444,4 -4,4"/>
 <!-- Inventor -->
 <g id="node1" class="node">
 <title>Inventor</title>
@@ -12,114 +12,127 @@
 <!-- Factory -->
 <g id="node2" class="node">
 <title>Factory</title>
-<ellipse fill="none" stroke="#000000" cx="103.7504" cy="-195.6" rx="40.5673" ry="18"/>
-<text text-anchor="middle" x="103.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Factory</text>
+<ellipse fill="none" stroke="#000000" cx="268.7504" cy="-195.6" rx="40.5673" ry="18"/>
+<text text-anchor="middle" x="268.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Factory</text>
 </g>
 <!-- Inventor&#45;&gt;Factory -->
 <g id="edge1" class="edge">
 <title>Inventor-&gt;Factory</title>
-<path fill="none" stroke="#000000" d="M55.6044,-266.856C64.3153,-253.9638 76.2957,-236.2329 86.1263,-221.6837"/>
-<polygon fill="#000000" stroke="#000000" points="89.2224,-223.353 91.9209,-213.1076 83.4222,-219.434 89.2224,-223.353"/>
-<text text-anchor="middle" x="198.1316" y="-235.8" font-family="Times,serif" font-size="14.00" fill="#000000">Creates campaign, locks incentive amount</text>
+<path fill="none" stroke="#000000" d="M75.5102,-271.8655C115.7149,-255.998 184.9973,-228.6546 228.7642,-211.3812"/>
+<polygon fill="#000000" stroke="#000000" points="230.2162,-214.571 238.2331,-207.6442 227.6464,-208.0597 230.2162,-214.571"/>
+<text text-anchor="middle" x="294.1316" y="-235.8" font-family="Times,serif" font-size="14.00" fill="#000000">Creates campaign, locks incentive amount</text>
 </g>
 <!-- Oracle -->
 <g id="node3" class="node">
 <title>Oracle</title>
-<ellipse fill="none" stroke="#000000" cx="382.7504" cy="-106.8" rx="36.5344" ry="18"/>
-<text text-anchor="middle" x="382.7504" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Oracle</text>
+<ellipse fill="none" stroke="#000000" cx="281.7504" cy="-106.8" rx="36.5344" ry="18"/>
+<text text-anchor="middle" x="281.7504" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Oracle</text>
 </g>
 <!-- Factory&#45;&gt;Oracle -->
 <g id="edge2" class="edge">
 <title>Factory-&gt;Oracle</title>
-<path fill="none" stroke="#000000" d="M129.8847,-181.6428C153.4603,-169.6244 189.4096,-152.6977 222.474,-142.8 269.6283,-128.6844 284.0743,-137.0384 331.7504,-124.8 335.8429,-123.7494 340.0726,-122.512 344.2646,-121.1859"/>
-<polygon fill="#000000" stroke="#000000" points="345.5148,-124.4586 353.8957,-117.9769 343.302,-117.8176 345.5148,-124.4586"/>
-<text text-anchor="middle" x="286.8886" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Creates and configures</text>
+<path fill="none" stroke="#000000" d="M271.3811,-177.63C273.1666,-165.4338 275.5645,-149.0543 277.6046,-135.1187"/>
+<polygon fill="#000000" stroke="#000000" points="281.0934,-135.4496 279.0789,-125.0481 274.1672,-134.4356 281.0934,-135.4496"/>
+<text text-anchor="middle" x="339.8886" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Creates and configures</text>
 </g>
 <!-- Trading -->
 <g id="node4" class="node">
 <title>Trading</title>
-<ellipse fill="none" stroke="#000000" cx="252.7504" cy="-18" rx="41.7133" ry="18"/>
-<text text-anchor="middle" x="252.7504" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Trading</text>
+<ellipse fill="none" stroke="#000000" cx="281.7504" cy="-18" rx="41.7133" ry="18"/>
+<text text-anchor="middle" x="281.7504" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Trading</text>
 </g>
 <!-- Oracle&#45;&gt;Trading -->
 <g id="edge3" class="edge">
 <title>Oracle-&gt;Trading</title>
-<path fill="none" stroke="#000000" d="M361.2835,-92.1365C340.088,-77.6583 307.463,-55.3729 283.5146,-39.0143"/>
-<polygon fill="#000000" stroke="#000000" points="285.3529,-36.0314 275.1213,-33.2811 281.4046,-41.8117 285.3529,-36.0314"/>
-<text text-anchor="middle" x="386.0073" y="-58.2" font-family="Times,serif" font-size="14.00" fill="#000000">"Calls" the outcome</text>
+<path fill="none" stroke="#000000" d="M281.7504,-88.4006C281.7504,-76.2949 281.7504,-60.2076 281.7504,-46.4674"/>
+<polygon fill="#000000" stroke="#000000" points="285.2505,-46.072 281.7504,-36.072 278.2505,-46.0721 285.2505,-46.072"/>
+<text text-anchor="middle" x="338.0073" y="-58.2" font-family="Times,serif" font-size="14.00" fill="#000000">"Calls" the outcome</text>
 </g>
 <!-- Trading&#45;&gt;Inventor -->
 <g id="edge10" class="edge">
 <title>Trading-&gt;Inventor</title>
-<path fill="none" stroke="#000000" d="M224.2861,-31.3744C179.2268,-54.2409 92.6052,-105.4678 53.7504,-177.6 40.7721,-201.6936 39.3986,-233.3185 40.5834,-255.8889"/>
-<polygon fill="#000000" stroke="#000000" points="37.1148,-256.4491 41.3309,-266.1689 44.0964,-255.9414 37.1148,-256.4491"/>
-<text text-anchor="middle" x="105.4885" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Sends fees</text>
+<path fill="none" stroke="#000000" d="M247.0525,-28.0803C197.6598,-44.2033 107.5099,-80.4904 57.2742,-142.8 31.4851,-174.7874 33.5057,-225.0091 38.0808,-256.2511"/>
+<polygon fill="#000000" stroke="#000000" points="34.6822,-257.1528 39.7642,-266.4492 41.5887,-256.0127 34.6822,-257.1528"/>
+<text text-anchor="middle" x="87.4885" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Sends fees</text>
 </g>
 <!-- Infrastructure Market -->
 <g id="node5" class="node">
 <title>Infrastructure Market</title>
-<ellipse fill="none" stroke="#000000" cx="418.7504" cy="-195.6" rx="93.7554" ry="18"/>
-<text text-anchor="middle" x="418.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Infrastructure Market</text>
+<ellipse fill="none" stroke="#000000" cx="688.7504" cy="-195.6" rx="93.7554" ry="18"/>
+<text text-anchor="middle" x="688.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Infrastructure Market</text>
 </g>
 <!-- Infrastructure Market&#45;&gt;Oracle -->
 <g id="edge4" class="edge">
 <title>Infrastructure Market-&gt;Oracle</title>
-<path fill="none" stroke="#000000" d="M376.7886,-179.4141C368.7196,-174.3208 361.3174,-167.8118 356.5834,-159.6 351.3948,-150.5996 354.4397,-140.4317 360.0027,-131.4387"/>
-<polygon fill="#000000" stroke="#000000" points="362.8982,-133.4075 365.9212,-123.253 357.2256,-129.306 362.8982,-133.4075"/>
-<text text-anchor="middle" x="412.3339" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Activates the oracle</text>
+<path fill="none" stroke="#000000" d="M604.2046,-187.6495C542.3229,-181.0847 464.0628,-171.0163 433.5834,-159.6 420.7578,-154.7961 420.2138,-148.4776 407.7504,-142.8 381.5477,-130.8636 350.457,-121.9305 325.7157,-115.9487"/>
+<polygon fill="#000000" stroke="#000000" points="326.4151,-112.5178 315.8803,-113.6441 324.8181,-119.3332 326.4151,-112.5178"/>
+<text text-anchor="middle" x="488.3339" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Activates the oracle</text>
 </g>
 <!-- Infrastructure Market&#45;&gt;Trading -->
 <g id="edge8" class="edge">
 <title>Infrastructure Market-&gt;Trading</title>
-<path fill="none" stroke="#000000" d="M353.2272,-182.5707C320.33,-172.4954 283.0316,-154.9578 261.7076,-124.8 245.5915,-102.0076 245.2883,-69.2509 247.799,-46.0362"/>
-<polygon fill="#000000" stroke="#000000" points="251.2704,-46.4825 249.1039,-36.1115 244.3301,-45.5699 251.2704,-46.4825"/>
-<text text-anchor="middle" x="299.2718" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Sets outcome</text>
+<path fill="none" stroke="#000000" d="M727.4115,-179.0313C769.5735,-158.7019 827.3539,-122.7428 797.7504,-88.8 767.4368,-54.0431 457.7269,-29.7189 333.1927,-21.2731"/>
+<polygon fill="#000000" stroke="#000000" points="333.351,-17.776 323.1391,-20.5986 332.8824,-24.7603 333.351,-17.776"/>
+<text text-anchor="middle" x="843.2718" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Sets outcome</text>
 </g>
 <!-- Lockup -->
 <g id="node7" class="node">
 <title>Lockup</title>
-<ellipse fill="none" stroke="#000000" cx="764.7504" cy="-106.8" rx="40.5731" ry="18"/>
-<text text-anchor="middle" x="764.7504" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Lockup</text>
+<ellipse fill="none" stroke="#000000" cx="953.7504" cy="-106.8" rx="40.5731" ry="18"/>
+<text text-anchor="middle" x="953.7504" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Lockup</text>
 </g>
 <!-- Infrastructure Market&#45;&gt;Lockup -->
 <g id="edge9" class="edge">
 <title>Infrastructure Market-&gt;Lockup</title>
-<path fill="none" stroke="#000000" d="M462.2003,-179.5763C495.3425,-167.8926 542.3392,-152.4736 584.6108,-142.8 639.8137,-130.1672 655.6343,-137.8066 710.7504,-124.8 714.9161,-123.8169 719.2181,-122.6513 723.4908,-121.3929"/>
-<polygon fill="#000000" stroke="#000000" points="724.8216,-124.6444 733.3298,-118.3309 722.7415,-117.9606 724.8216,-124.6444"/>
-<text text-anchor="middle" x="672.8202" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Asks to slash amounts if wrong</text>
+<path fill="none" stroke="#000000" d="M761.6411,-184.1487C784.6162,-178.7229 809.5218,-170.8683 830.7504,-159.6 840.6658,-154.3369 839.9266,-148.4774 849.6108,-142.8 852.5355,-141.0853 884.1643,-130.2273 911.8051,-120.8799"/>
+<polygon fill="#000000" stroke="#000000" points="913.0066,-124.1684 921.362,-117.654 910.7678,-117.536 913.0066,-124.1684"/>
+<text text-anchor="middle" x="936.8202" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Asks to slash amounts if wrong</text>
 </g>
 <!-- Predictor -->
 <g id="node6" class="node">
 <title>Predictor</title>
-<ellipse fill="none" stroke="#000000" cx="764.7504" cy="-195.6" rx="46.3643" ry="18"/>
-<text text-anchor="middle" x="764.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Predictor</text>
+<ellipse fill="none" stroke="#000000" cx="1051.7504" cy="-195.6" rx="46.3643" ry="18"/>
+<text text-anchor="middle" x="1051.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Predictor</text>
 </g>
 <!-- Predictor&#45;&gt;Lockup -->
 <g id="edge5" class="edge">
 <title>Predictor-&gt;Lockup</title>
-<path fill="none" stroke="#000000" d="M764.7504,-177.2006C764.7504,-165.0949 764.7504,-149.0076 764.7504,-135.2674"/>
-<polygon fill="#000000" stroke="#000000" points="768.2505,-134.872 764.7504,-124.872 761.2505,-134.8721 768.2505,-134.872"/>
-<text text-anchor="middle" x="827.5474" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Locks up Staked ARB</text>
+<path fill="none" stroke="#000000" d="M1047.7799,-177.6166C1044.5306,-166.4457 1038.9333,-152.4306 1029.7504,-142.8 1020.767,-133.3786 1008.8217,-126.1529 997.0676,-120.7363"/>
+<polygon fill="#000000" stroke="#000000" points="998.3146,-117.4634 987.7423,-116.7728 995.5764,-123.9056 998.3146,-117.4634"/>
+<text text-anchor="middle" x="1103.5474" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Locks up Staked ARB</text>
 </g>
 <!-- Infrastructure Trader -->
 <g id="node8" class="node">
 <title>Infrastructure Trader</title>
-<ellipse fill="none" stroke="#000000" cx="560.7504" cy="-18" rx="91.9488" ry="18"/>
-<text text-anchor="middle" x="560.7504" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Infrastructure Trader</text>
+<ellipse fill="none" stroke="#000000" cx="730.7504" cy="-18" rx="91.9488" ry="18"/>
+<text text-anchor="middle" x="730.7504" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Infrastructure Trader</text>
 </g>
 <!-- Lockup&#45;&gt;Infrastructure Trader -->
 <g id="edge6" class="edge">
 <title>Lockup-&gt;Infrastructure Trader</title>
-<path fill="none" stroke="#000000" d="M735.5221,-94.0771C702.3106,-79.6203 647.6215,-55.8145 608.2588,-38.6802"/>
-<polygon fill="#000000" stroke="#000000" points="609.1699,-35.2596 598.604,-34.4775 606.376,-41.6779 609.1699,-35.2596"/>
-<text text-anchor="middle" x="718.8875" y="-58.2" font-family="Times,serif" font-size="14.00" fill="#000000">Sends LARB</text>
+<path fill="none" stroke="#000000" d="M925.4044,-93.5772C901.2537,-82.493 865.5144,-66.5169 833.7504,-54 818.8597,-48.1322 802.5783,-42.2162 787.4464,-36.9229"/>
+<polygon fill="#000000" stroke="#000000" points="788.2894,-33.5109 777.6946,-33.5412 785.9959,-40.1245 788.2894,-33.5109"/>
+<text text-anchor="middle" x="909.8875" y="-58.2" font-family="Times,serif" font-size="14.00" fill="#000000">Sends LARB</text>
 </g>
 <!-- Infrastructure Trader&#45;&gt;Infrastructure Market -->
 <g id="edge7" class="edge">
 <title>Infrastructure Trader-&gt;Infrastructure Market</title>
-<path fill="none" stroke="#000000" d="M538.1221,-35.6264C522.6196,-48.7786 502.6574,-68.0033 490.0518,-88.8 472.9511,-117.0128 486.9503,-132.7717 467.7504,-159.6 464.5251,-164.1067 460.5619,-168.2791 456.2991,-172.0646"/>
-<polygon fill="#000000" stroke="#000000" points="453.9756,-169.4422 448.3971,-178.4495 458.375,-174.8869 453.9756,-169.4422"/>
-<text text-anchor="middle" x="603.0997" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Traders stake their funds on an outcome</text>
+<path fill="none" stroke="#000000" d="M663.5237,-30.3799C630.2963,-40.2559 593.1081,-57.8106 573.0518,-88.8 550.1299,-124.2169 596.892,-155.7455 637.6512,-175.2025"/>
+<polygon fill="#000000" stroke="#000000" points="636.2168,-178.3953 646.7633,-179.4065 639.1493,-172.0391 636.2168,-178.3953"/>
+<text text-anchor="middle" x="685.0997" y="-102.6" font-family="Times,serif" font-size="14.00" fill="#000000">Traders stake their funds on an outcome</text>
+</g>
+<!-- Beauty Contest -->
+<g id="node9" class="node">
+<title>Beauty Contest</title>
+<ellipse fill="none" stroke="#000000" cx="125.7504" cy="-195.6" rx="70.1241" ry="18"/>
+<text text-anchor="middle" x="125.7504" y="-191.4" font-family="Times,serif" font-size="14.00" fill="#000000">Beauty Contest</text>
+</g>
+<!-- Beauty Contest&#45;&gt;Oracle -->
+<g id="edge11" class="edge">
+<title>Beauty Contest-&gt;Oracle</title>
+<path fill="none" stroke="#000000" d="M121.6998,-177.4814C120.3006,-166.2566 120.7141,-152.2322 128.6108,-142.8 142.1988,-126.5697 195.4766,-116.7957 235.3985,-111.6098"/>
+<polygon fill="#000000" stroke="#000000" points="235.9923,-115.0631 245.4854,-110.3586 235.1306,-108.1163 235.9923,-115.0631"/>
+<text text-anchor="middle" x="198.3202" y="-147" font-family="Times,serif" font-size="14.00" fill="#000000">Refers to liquidity vested</text>
 </g>
 </g>
 </svg>

@@ -216,9 +216,29 @@ impl StorageInfraMarket {
     /// so, then we tally up the amounts invested, and we determine who
     /// the winner was, if we haven't already. We check a flag to know
     /// if this already took place. Following that, we target a specific
-    /// user that we want to collect funds from.
-    /// The problem with this design is that smallfry who get things wrong
-    /// won't get slashed. This may or may not be a big deal.
+    /// user that we want to collect funds from. The caller of this function,
+    /// if they're the first user to call this, receives a small amount allocated
+    /// by the creator of the prediction market. The caller to sweep provides the
+    /// outcome identifiers, which are used to reconstruct the amounts that were
+    /// invested in each outcome. If the user passes these incorrectly, this code
+    /// reverts. If they don't pass an address of a victim to take funds from,
+    /// this code assumes they're not scalping funds from users, and just
+    /// sends them the incentive money that the creator supplied.
+    /// There are three stages to this interaction: the first stage where the market
+    /// has expired (after 3 days), and normal sweeping behaviour is possible.
+    /// During this stage, it's possible to claim funds from the bad bettors
+    /// in this market if your share of the winning pool is greater than their
+    /// share in the losing market. After 5 days, the "anything goes" period
+    /// begins, where it's possible for anyone to claim the entire amounts
+    /// that a bad bettor made regardless if you beat them on the share held
+    /// by them relative to yours, provided that you participated in this pool.
+    /// After 7 days, it's not possible to sweep bad outcomes any more.
+    /// There is a check inside this code that prevents a user's position from
+    /// being taken from them if their recorded share in this pool is either
+    /// 0, or that their recorded ARB allocated to this outcome is more than
+    /// their reported current amount of ARB in the rest of the lockup contract.
+    /// This way, the system should be tolerable for bad behaviour and unusal
+    /// interaction.
     pub fn sweep(
         &mut self,
         trading_addr: Address,
@@ -242,7 +262,7 @@ impl StorageInfraMarket {
         // If it isn't enabled, then we collect every identifier they specified, and
         // if it's identical (or over to accomodate for any decimal point errors),
         // we send them the finders fee, and we set the flag for the winner.
-        if self.market_winner.get(trading_addr) != B8::ZERO {
+        if self.market_winner.get(trading_addr).is_zero() {
             let mut voting_power_global = U256::ZERO;
             let mut current_voting_power_winner_amt = U256::ZERO;
             let mut current_voting_power_winner_id = None;
@@ -278,34 +298,16 @@ impl StorageInfraMarket {
             // We don't bother to slash the user if this is the case. We just return nicely.
             return Ok(U256::ZERO);
         }
-        // Time to slash the victim by having Lockup burn their tokens! It still freezes
-        // their staked ARB as tracked until someone decides to call it.
-        // This should be safe to call many times.
-        lockup_call::slash(victim_addr)?;
-        // Let's check that the caller actually took a position here. If they didn't, then we're
-        // not going to collect funds to this user.
-        if self
-            .market_vested_user
-            .getter(trading_addr)
-            .get(msg::sender())
-            .is_zero()
-        {
+        // We check if the victim's vested power is 0. If it is, then we assume
+        // that someone already claimed this victim's position!
+        let victim_vested_power = self.user_vested_power.getter(target_addr).get(victim_addr);
+        if victim_vested_power.is_zero() {
             return Ok(U256::ZERO);
         }
-        // First we check if the target actually invested incorrectly. If
-        // they did in the past, then their position in the storage for
-        // this is set to 0, as we assume that they already were slashed.
-        let victim_vested_power = self.user_vested_power.getter(target_addr).get(victim_addr);
-        assert_or!(victim_vested_power > U256::ZERO, Error::UserAlreadyTargeted);
-        // To prevent this user from being double claimed on.
-        self.user_vested_power
-            .setter(target_addr)
-            .setter(victim_addr)
-            .set(U256::ZERO);
         // We check the victim's vested arb in the lockup contract, and
         // if it's not greater than or equal to what's here, then we
         // don't drain down their funds, we return! The setting of their
-        // power earlier to 0 should hopefully be enough to prevent
+        // power to 0 should hopefully be enough to prevent
         // double claiming later.
         let victim_vested_arb_amt = self
             .market_user_vested_arb
@@ -315,13 +317,15 @@ impl StorageInfraMarket {
         if victim_vested_arb_amt > victim_staked_arb_amt {
             return Ok(U256::ZERO);
         }
-        // We check the caller's share of the power vested globally, and
-        // if the victim's share of the incorrectly allocated profit is
-        // below the caller's share, then we claim their amounts here.
-        // If the amount of time that's exceeded is 5 days, then we're
-        // inside a "ANYTHING GOES" period where someone could
-        // claim the victim's entire position without beating them on the
-        // percentage of the share that's held.
-        let are_we_allowed_to_claim_victim =
+        // We check the caller's share of the power vested in this losing market,
+        // and if the victim's share of the incorrectly allocated profit is below
+        // the caller's share, then we claim their amounts here. If the amount of
+        // time that's exceeded is 5 days, then we're inside a "ANYTHING GOES"
+        // period where someone could claim the victim's entire position without
+        // beating them on the percentage of the share that's held.
+        let are_we_anything_goes_period = block::timestamp() > market_start_ts + FIVE_DAYS_SECS;
+	// Does our share of the power exceed the share they have of the
+	// staked arb vested in this market?
+	let caller_share_of_power =
     }
 }
