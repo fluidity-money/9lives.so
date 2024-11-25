@@ -327,11 +327,7 @@ export default function CreateCampaignForm() {
                   customOutcomePicturesRef.current.push(
                     React.createRef<HTMLInputElement>(),
                   );
-                  append({
-                    name: "",
-                    description: "",
-                    picture: new File(["0x12"], "sad"),
-                  });
+                  append({} as any);
                 }}
                 intent={"default"}
                 size={"large"}
