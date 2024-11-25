@@ -41,7 +41,7 @@ func main() {
 		setup.Exitf("opening postgres: %v", err)
 	}
 	// Start to ingest block headers by connecting to the websocket given.
-	c, err := ethclient.Dial(config.GethUrl)
+	c, err := ethclient.Dial(config.PickGethUrl())
 	if err != nil {
 		setup.Exitf("websocket dial: %v", err)
 	}

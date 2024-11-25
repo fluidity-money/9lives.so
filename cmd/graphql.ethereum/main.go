@@ -62,7 +62,7 @@ func main() {
 	if err != nil {
 		setup.Exitf("database open: %v", err)
 	}
-	geth, err := ethclient.Dial(config.GethUrl)
+	geth, err := ethclient.Dial(config.PickGethUrl())
 	if err != nil {
 		setup.Exitf("geth open: %v", err)
 	}

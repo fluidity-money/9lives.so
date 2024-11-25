@@ -14,7 +14,7 @@ import (
 
 // C is configuration for each service, and globally.
 type C struct {
-	GethUrl        string
+	GethUrls        []string
 	TimescaleUrls  []string
 	FactoryAddress string
 }
@@ -30,18 +30,22 @@ func Get() C {
 	if timescaleUrl == "" {
 		setup.Exitf("SPN_TIMESCALE not set")
 	}
+	gethUrls := strings.Split(gethUrl, ",")
 	timescaleUrls := strings.Split(timescaleUrl, ",")
 	factoryAddress := strings.ToLower(os.Getenv("SPN_FACTORY_ADDR"))
 	if factoryAddress == "" {
 		setup.Exitf("SPN_FACTORY_ADDR not set")
 	}
 	return C{
-		GethUrl:        gethUrl,
+		GethUrls:        gethUrls,
 		TimescaleUrls:  timescaleUrls,
 		FactoryAddress: factoryAddress,
 	}
 }
 
+func (c C) PickGethUrl() string {
+	return c.GethUrls[rand.Intn(len(c.GethUrls))]
+}
 func (c C) PickTimescaleUrl() string {
 	return c.TimescaleUrls[rand.Intn(len(c.TimescaleUrls))]
 }
