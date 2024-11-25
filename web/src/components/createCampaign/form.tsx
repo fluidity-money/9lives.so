@@ -75,8 +75,7 @@ export default function CreateCampaignForm() {
         telegram: z.string().min(2).optional().or(z.literal("")),
         x: z.string().min(2).optional().or(z.literal("")),
         web: z.string().url().optional().or(z.literal("")),
-        customOutcomes:
-          outcomeType === "custom" ? customOutcomeSchema : z.undefined(),
+        customOutcomes: customOutcomeSchema,
         urlCommitee:
           settlementType === "url" ? z.string().url() : z.undefined(),
         contractAddress:
@@ -106,6 +105,7 @@ export default function CreateCampaignForm() {
   } = useFieldArray({
     control,
     name: "customOutcomes",
+    shouldUnregister: outcomeType !== "custom",
     rules: {
       required: true,
       minLength: 2,
