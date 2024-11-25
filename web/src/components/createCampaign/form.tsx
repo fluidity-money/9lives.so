@@ -433,7 +433,7 @@ export default function CreateCampaignForm() {
                 </Link>
               </SourceWrapper>
             </TabPanel>
-            <TabPanel className={"flex flex-col gap-4"}>
+            <TabPanel>
               <SourceWrapper>
                 <Input
                   placeholder="Enter URL Here"
