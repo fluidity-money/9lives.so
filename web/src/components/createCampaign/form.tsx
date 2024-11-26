@@ -42,6 +42,7 @@ import Link from "next/link";
 import RightCaretIcon from "#/icons/right-caret.svg";
 import SourceWrapper from "./settlementSource";
 import { useFormStore } from "@/stores/formStore";
+import useDebounce from "@/hooks/useDebounce";
 
 export default function CreateCampaignForm() {
   const onSubmit = (data: any) => console.log(data);
@@ -177,9 +178,10 @@ export default function CreateCampaignForm() {
       setValue(`outcomes.${idx}.picture`, file);
     }
   };
+  const debouncedFillForm = useDebounce(fillForm, 1);
   useEffect(() => {
     if (fields) {
-      fillForm({
+      debouncedFillForm({
         ...fields,
         picture: pictureBlob ?? "",
         outcomes: fields.outcomes.map((outcome, index) => {
@@ -191,7 +193,7 @@ export default function CreateCampaignForm() {
         }),
       });
     }
-  }, [fields, pictureBlob, outcomeImageBlobs]);
+  }, [fields, pictureBlob, debouncedFillForm, outcomeImageBlobs]);
 
   return (
     <form
