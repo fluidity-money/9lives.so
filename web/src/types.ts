@@ -25,6 +25,8 @@ export type Detail = {
     isWinner: boolean;
   }[];
 };
+export type OutcomeType = "custom" | "default";
+export type SettlementType = "url" | "beauty" | "contract" | "ai";
 export type CampaignInput = {
   id: string;
   name: string;
@@ -33,6 +35,11 @@ export type CampaignInput = {
   endDate: string;
   outcomes: OutcomeInput[];
   seed: number;
+  x?: string;
+  telegram?: string;
+  web?: string;
+  outcomeType: OutcomeType;
+  settlementType: SettlementType;
 };
 export type OutcomeInput = {
   id?: string;

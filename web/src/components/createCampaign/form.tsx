@@ -43,17 +43,14 @@ import RightCaretIcon from "#/icons/right-caret.svg";
 import SourceWrapper from "./settlementSource";
 import { useFormStore } from "@/stores/formStore";
 import useDebounce from "@/hooks/useDebounce";
+import { OutcomeType, SettlementType } from "@/types";
 
 export default function CreateCampaignForm() {
   const onSubmit = (data: any) => console.log(data);
   const fieldClass = "flex flex-col gap-2.5";
   const inputStyle = "shadow-9input border border-9black bg-9gray";
-  const [outcomeType, setOutcomeType] = useState<"custom" | "default">(
-    "default",
-  );
-  const [settlementType, setSettlementType] = useState<
-    "url" | "beauty" | "contract" | "ai"
-  >("url");
+  const [outcomeType, setOutcomeType] = useState<OutcomeType>("default");
+  const [settlementType, setSettlementType] = useState<SettlementType>("url");
   const outcomeschema = z.object({
     picture: z
       .instanceof(File, {
@@ -132,6 +129,7 @@ export default function CreateCampaignForm() {
   });
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
+  const debouncedFillForm = useDebounce(fillForm, 1);
   const [pictureBlob, setPictureBlob] = useState<string>();
   const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
     (string | undefined)[]
@@ -178,12 +176,13 @@ export default function CreateCampaignForm() {
       setValue(`outcomes.${idx}.picture`, file);
     }
   };
-  const debouncedFillForm = useDebounce(fillForm, 1);
   useEffect(() => {
     if (fields) {
       debouncedFillForm({
         ...fields,
         picture: pictureBlob ?? "",
+        outcomeType,
+        settlementType,
         outcomes: fields.outcomes.map((outcome, index) => {
           return {
             name: outcome.name,
