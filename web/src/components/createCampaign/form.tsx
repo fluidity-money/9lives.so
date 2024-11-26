@@ -34,6 +34,9 @@ import TabIconButton from "@/components/tabIconButton";
 import LipsActiveIcon from "#/images/lips.svg";
 import LipsInactiveIcon from "#/images/lips-black.svg";
 import ContractIcon from "#/images/contract.svg";
+import ContractBlackIcon from "#/images/contract-black.svg";
+import AIActiveIcon from "#/icons/ai.svg";
+import AIInactiveIcon from "#/icons/ai-black.svg";
 import Link from "next/link";
 import RightCaretIcon from "#/icons/right-caret.svg";
 import SourceWrapper from "./settlementSource";
@@ -457,7 +460,7 @@ export default function CreateCampaignForm() {
                 <TabIconButton
                   title="Contract State"
                   activeIcon={ContractIcon}
-                  inactiveIcon={ContractIcon}
+                  inactiveIcon={ContractBlackIcon}
                   {...props}
                 />
               )}
@@ -466,8 +469,8 @@ export default function CreateCampaignForm() {
               {(props) => (
                 <TabIconButton
                   title="AI Resolver"
-                  activeIcon={GlobeActiveIcon}
-                  inactiveIcon={GlobeInactiveIcon}
+                  activeIcon={AIActiveIcon}
+                  inactiveIcon={AIInactiveIcon}
                   {...props}
                 />
               )}
