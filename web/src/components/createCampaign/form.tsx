@@ -18,6 +18,7 @@ import Image from "next/image";
 import React, {
   Fragment,
   MutableRefObject,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -40,6 +41,7 @@ import AIInactiveIcon from "#/icons/ai-black.svg";
 import Link from "next/link";
 import RightCaretIcon from "#/icons/right-caret.svg";
 import SourceWrapper from "./settlementSource";
+import { useFormStore } from "@/stores/formStore";
 
 export default function CreateCampaignForm() {
   const onSubmit = (data: any) => console.log(data);
@@ -51,7 +53,7 @@ export default function CreateCampaignForm() {
   const [settlementType, setSettlementType] = useState<
     "url" | "beauty" | "contract" | "ai"
   >("url");
-  const customOutcomeSchema = z.object({
+  const outcomeschema = z.object({
     picture: z
       .instanceof(File, {
         message: "You have to upload a picture",
@@ -79,9 +81,9 @@ export default function CreateCampaignForm() {
         telegram: z.string().min(2).optional().or(z.literal("")),
         x: z.string().min(2).optional().or(z.literal("")),
         web: z.string().url().optional().or(z.literal("")),
-        customOutcomes:
+        outcomes:
           outcomeType === "custom"
-            ? z.array(customOutcomeSchema)
+            ? z.array(outcomeschema)
             : z.array(
                 z.object({
                   picture: z.instanceof(File),
@@ -104,29 +106,31 @@ export default function CreateCampaignForm() {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      customOutcomes: [
+      outcomes: [
         { name: "", description: "", picture: new File([], "") },
         { name: "", description: "", picture: new File([], "") },
       ],
     },
   });
   const {
-    fields: customOutcomes,
+    fields: outcomes,
     append,
     remove,
   } = useFieldArray({
     control,
-    name: "customOutcomes",
+    name: "outcomes",
     rules: {
       required: outcomeType === "custom",
       minLength: 2,
     },
   });
-
+  const fields = watch();
+  const fillForm = useFormStore((s) => s.fillForm);
   const [pictureBlob, setPictureBlob] = useState<string>();
   const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
     (string | undefined)[]
@@ -170,9 +174,24 @@ export default function CreateCampaignForm() {
     );
     const file = e.target.files?.[0];
     if (file) {
-      setValue(`customOutcomes.${idx}.picture`, file);
+      setValue(`outcomes.${idx}.picture`, file);
     }
   };
+  useEffect(() => {
+    if (fields) {
+      fillForm({
+        ...fields,
+        picture: pictureBlob ?? "",
+        outcomes: fields.outcomes.map((outcome, index) => {
+          return {
+            name: outcome.name,
+            description: outcome.description,
+            picture: outcomeImageBlobs[index],
+          };
+        }),
+      });
+    }
+  }, [fields, pictureBlob, outcomeImageBlobs]);
 
   return (
     <form
@@ -233,18 +252,18 @@ export default function CreateCampaignForm() {
               </div>
             </TabPanel>
             <TabPanel className={"flex flex-col gap-4"}>
-              {customOutcomes.map((field, idx) => (
+              {outcomes.map((field, idx) => (
                 <Field className={"flex flex-col gap-2.5"} key={field.id}>
                   <Label text={`Outcome ${idx + 1}`} required={idx < 2} />
                   <div className="flex gap-2.5">
                     <input
                       type="file"
                       hidden
-                      {...register(`customOutcomes.${idx}.picture`, {
+                      {...register(`outcomes.${idx}.picture`, {
                         onChange: (e) => handleOutcomePicChange(e, idx),
                       })}
                       ref={(el) => {
-                        register(`customOutcomes.${idx}.picture`).ref(el);
+                        register(`outcomes.${idx}.picture`).ref(el);
                         if (customOutcomePicturesRef.current[idx])
                           customOutcomePicturesRef.current[idx].current = el;
                       }}
@@ -256,7 +275,7 @@ export default function CreateCampaignForm() {
                       className={combineClass(
                         inputStyle,
                         "flex size-10 cursor-pointer flex-col items-center justify-center",
-                        errors.customOutcomes?.[idx]?.picture &&
+                        errors.outcomes?.[idx]?.picture &&
                           "border-2 border-red-500",
                       )}
                     >
@@ -283,20 +302,20 @@ export default function CreateCampaignForm() {
                     <Input
                       className={combineClass(
                         "flex-1",
-                        errors.customOutcomes?.[idx]?.name &&
+                        errors.outcomes?.[idx]?.name &&
                           "border-2 border-red-500",
                       )}
                       placeholder="Outcome name"
-                      {...register(`customOutcomes.${idx}.name`)}
+                      {...register(`outcomes.${idx}.name`)}
                     />
                     <Input
                       className={combineClass(
                         "flex-1",
-                        errors.customOutcomes?.[idx]?.description &&
+                        errors.outcomes?.[idx]?.description &&
                           "border-2 border-red-500",
                       )}
                       placeholder="Outcome description"
-                      {...register(`customOutcomes.${idx}.description`)}
+                      {...register(`outcomes.${idx}.description`)}
                     />
                     {idx > 1 && (
                       <Button
@@ -319,19 +338,17 @@ export default function CreateCampaignForm() {
                     )}
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    {errors.customOutcomes?.[idx]?.picture ? (
+                    {errors.outcomes?.[idx]?.picture ? (
                       <ErrorInfo
-                        text={errors.customOutcomes?.[idx]?.picture.message}
+                        text={errors.outcomes?.[idx]?.picture.message}
                       />
                     ) : null}
-                    {errors.customOutcomes?.[idx]?.name ? (
-                      <ErrorInfo
-                        text={errors.customOutcomes?.[idx]?.name.message}
-                      />
+                    {errors.outcomes?.[idx]?.name ? (
+                      <ErrorInfo text={errors.outcomes?.[idx]?.name.message} />
                     ) : null}
-                    {errors.customOutcomes?.[idx]?.description ? (
+                    {errors.outcomes?.[idx]?.description ? (
                       <ErrorInfo
-                        text={errors.customOutcomes?.[idx]?.description.message}
+                        text={errors.outcomes?.[idx]?.description.message}
                       />
                     ) : null}
                   </div>

@@ -27,17 +27,17 @@ export type Detail = {
 };
 export type CampaignInput = {
   id: string;
-  name?: string;
-  description?: string;
-  picture?: string;
-  endDate?: string;
-  outcomes?: OutcomeInput[];
-  seed?: number;
+  name: string;
+  description: string;
+  picture: string;
+  endDate: string;
+  outcomes: OutcomeInput[];
+  seed: number;
 };
 export type OutcomeInput = {
-  id: string;
+  id?: string;
   picture?: string;
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   seed?: number;
 };
