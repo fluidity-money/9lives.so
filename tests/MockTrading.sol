@@ -19,7 +19,6 @@ contract MockTrading is INineLivesTrading {
     address oracle_;
     uint256 timeStart_;
     uint256 timeEnding_;
-    bytes32 documentation_;
     address feeRecipient_;
 
     constructor(address _fusdc) {
@@ -31,7 +30,6 @@ contract MockTrading is INineLivesTrading {
         address _oracle,
         uint256 _timeStart,
         uint256 _timeEnding,
-        bytes32 _documentation,
         address _feeRecipient
     ) external {
         require(timeStart_ == 0, "already created");
@@ -47,8 +45,6 @@ contract MockTrading is INineLivesTrading {
         timeEnding_ = _timeEnding;
         require(timeEnding_ > block.timestamp, "ending in the past");
         require(timeEnding_ > timeStart_, "starting in the past");
-        documentation_ = _documentation;
-        require(documentation_ != bytes32(0), "empty documentation");
         feeRecipient_ = _feeRecipient;
     }
 
@@ -89,6 +85,11 @@ contract MockTrading is INineLivesTrading {
     ) external returns (uint256) {
         ++counter_;
         revert("not implemented");
+    }
+
+    function shutdown() external {
+        // Do nothing, for now...
+        ++counter_;
     }
 
     function decide(bytes8 /* outcome */) external {

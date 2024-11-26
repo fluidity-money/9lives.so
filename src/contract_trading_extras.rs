@@ -1,4 +1,4 @@
-use stylus_sdk::{block, alloy_primitives::*, contract, evm, msg};
+use stylus_sdk::{alloy_primitives::*, block, contract, evm, msg};
 
 use rust_decimal::Decimal;
 
@@ -29,20 +29,17 @@ impl StorageTrading {
         oracle: Address,
         outcomes: Vec<(FixedBytes<8>, U256)>,
     ) -> Result<(), Vec<u8>> {
-        assert_or!(self.factory.get().is_zero(), Error::AlreadyConstructed);
-
+        // We check that the caller is the factory, and if they are, we allow them
+        // to call us willy-nilly. Factory could harm us by calling this function again,
+        // but with the current implementation, that's not the case, allowing us to
+        // save on gas.
+        assert_or!(msg::sender() == FACTORY_ADDR, Error::CallerIsNotFactory);
         let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
-
         // We assume that the Factory already supplied the liquidity to us.
-
         self.invested.set(fusdc_amt);
-
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
-
         assert_or!(outcomes_len == 2, Error::TwoOutcomesOnly);
-
         self.shares.set(Decimal::from(outcomes_len));
-
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
         for (outcome_id, outcome_amt) in outcomes {
@@ -50,29 +47,35 @@ impl StorageTrading {
             let mut outcome = self.outcomes.setter(outcome_id);
             outcome.invested.set(outcome_amt);
             outcome.shares.set(Decimal::from(1));
-
             self.outcome_list.push(outcome_id);
         }
-
-        self.factory.set(msg::sender());
+        self.share_impl.set(factory_call::share_impl(FACTORY_ADDR)?);
         self.oracle.set(oracle);
         Ok(())
+    }
+
+    pub fn shutdown(&mut self) -> Result<U256, Error> {
+        // Notify Longtail to pause trading on every outcome pool.
+        // TODO, send a "thank you" amount to the caller of this function
+        // when it's called for the first time.
+        assert_or!(self.is_shutdown.get(), Error::IsShutdown);
+        factory_call::disable_shares(
+            FACTORY_ADDR,
+            &(0..self.outcome_list.len())
+                .map(|i| self.outcome_list.get(i).unwrap())
+                .collect::<Vec<_>>(),
+        )?;
+        self.is_shutdown.set(true);
+        Ok(U256::ZERO)
     }
 
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> Result<(), Error> {
         let oracle_addr = self.oracle.get();
         assert_or!(msg::sender() == oracle_addr, Error::NotOracle);
-        assert_or!(self.locked.get().is_zero(), Error::NotTradingContract);
-        // Notify Longtail to pause trading on every outcome pool.
-        factory_call::disable_shares(
-            self.factory.get(),
-            &(0..self.outcome_list.len())
-                .map(|i| self.outcome_list.get(i).unwrap())
-                .collect::<Vec<_>>(),
-        )?;
+        assert_or!(self.when_decided.get().is_zero(), Error::NotTradingContract);
         // Set the outcome that's winning as the winner!
         self.outcomes.setter(outcome).winner.set(true);
-        self.locked.set(U64::from(block::timestamp()));
+        self.when_decided.set(U64::from(block::timestamp()));
         evm::log(events::OutcomeDecided {
             identifier: outcome,
             oracle: oracle_addr,
@@ -89,7 +92,12 @@ impl StorageTrading {
         let outcome = self.outcomes.getter(outcome_id);
         assert_or!(outcome.winner.get(), Error::NotWinner);
         // Get the user's balance of the share they own for this outcome.
-        let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
+        let share_addr = proxy::get_share_addr(
+            FACTORY_ADDR,
+            contract::address(), // Address of this contract, the Trading contract.
+            self.share_impl.get(),
+            outcome_id,
+        );
         // Start to burn their share of the supply to convert to a payoff amount.
         // Take the max of what they asked.
         let share_bal = U256::min(share_call::balance_of(share_addr, msg::sender())?, amt);
@@ -125,7 +133,7 @@ impl StorageTrading {
     }
 
     pub fn ended(&self) -> Result<bool, Error> {
-        Ok(!self.locked.is_zero())
+        Ok(!self.when_decided.is_zero())
     }
 
     pub fn invested(&self) -> Result<U256, Error> {
@@ -136,6 +144,7 @@ impl StorageTrading {
         Ok(proxy::get_share_addr(
             FACTORY_ADDR,
             contract::address(),
+            self.share_impl.get(),
             outcome,
         ))
     }

@@ -20,7 +20,12 @@ pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
     crypto::keccak(seeds.concat())
 }
 
-pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) -> Address {
+pub fn get_trading_addr(
+    factory_addr: Address,
+    trading_extras: Address,
+    trading_mint: Address,
+    outcome_ids: &[FixedBytes<8>],
+) -> Address {
     let trading_id =
         create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
     let mut b = [0_u8; 85];
@@ -28,7 +33,7 @@ pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) ->
     b[1..21].copy_from_slice(factory_addr.as_slice());
     // Leaving some spacing so that we can have an empty part of the word.
     b[21..53].copy_from_slice(trading_id.as_slice());
-    b[53..85].copy_from_slice(&trading_proxy_hash());
+    b[53..85].copy_from_slice(&trading_proxy_hash(trading_extras, trading_mint));
     Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
 
@@ -37,6 +42,7 @@ pub fn get_trading_addr(factory_addr: Address, outcome_ids: &[FixedBytes<8>]) ->
 pub fn get_share_addr(
     factory_addr: Address,
     trading_addr: Address,
+    erc20_impl: Address,
     outcome_id: FixedBytes<8>,
 ) -> Address {
     let erc20_id = create_identifier(&[trading_addr.as_slice(), outcome_id.as_slice()]);
@@ -45,7 +51,7 @@ pub fn get_share_addr(
     b[1..21].copy_from_slice(factory_addr.as_slice());
     // Leaving some spacing so that we can have an empty part of the word.
     b[21..53].copy_from_slice(erc20_id.as_slice());
-    b[53..85].copy_from_slice(&erc20_proxy_hash());
+    b[53..85].copy_from_slice(&erc20_proxy_hash(erc20_impl));
     Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
 

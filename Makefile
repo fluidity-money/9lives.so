@@ -36,27 +36,27 @@ infra-pool: infra-pool.wasm
 
 contract-factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-1.wasm
-	@${CARGO_BUILD_STYLUS} amm-use-camelot,contract-factory-1
+	@${CARGO_BUILD_STYLUS} contract-factory-1
 	@${RELEASE_WASM_OPT_9LIVES} contract-factory-1.wasm
 
 contract-factory-2.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-2.wasm
-	@${CARGO_BUILD_STYLUS} amm-use-camelot,contract-factory-2
+	@${CARGO_BUILD_STYLUS} contract-factory-2
 	@${RELEASE_WASM_OPT_9LIVES} contract-factory-2.wasm
 
 contract-trading-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-mint.wasm
-	@${CARGO_BUILD_STYLUS} amm-use-camelot,contract-trading-mint
+	@${CARGO_BUILD_STYLUS} contract-trading-mint
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-mint.wasm
 
 contract-trading-extras.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-extras.wasm
-	@${CARGO_BUILD_STYLUS} amm-use-camelot,contract-trading-extras
+	@${CARGO_BUILD_STYLUS} contract-trading-extras
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-extras.wasm
 
 infra-pool.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f infra-pool.wasm
-	@${CARGO_BUILD_STYLUS} amm-use-camelot,infra-pool-wasm
+	@${CARGO_BUILD_STYLUS} infra-pool-wasm
 	@${RELEASE_WASM_OPT_9LIVES} infra-pool.wasm
 
 clean:

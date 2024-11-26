@@ -35,28 +35,35 @@ macro_rules! env_addr {
     };
 }
 
-/// fUSDC address to use as the base asset for everything.
+// fUSDC address to use as the base asset for everything.
 env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR");
 
-/// Staked ARB address to use for taking amounts for Infrastructure Markets.
+// AMM address deployed (either Longtail or Camelot.)
+env_addr!(AMM_ADDR, "SPN_AMM_ADDR");
+
+// Staked ARB address to use for taking amounts for Infrastructure Markets.
 env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR");
 
-/// Three days in seconds, for the infra market. This is when the market expires.
+// Address of the factory contract.
+env_addr!(FACTORY_ADDR, "SPN_FACTORY_ADDR");
+
+// Three days in seconds, for the infra market. This is when the market expires.
 pub const THREE_DAYS_SECS: u64 = 259200;
 
-/// FIVE_DAYS_SECS powers ANYTHING GOES period where anyone can claim a
-/// victim (user who bet incorrectly in an infrastructure market)'s
-/// entire position. This is 5 days in seconds.
+// FIVE_DAYS_SECS powers ANYTHING GOES period where anyone can claim a
+// victim (user who bet incorrectly in an infrastructure market)'s
+// entire position. This is 5 days in seconds.
 pub const FIVE_DAYS_SECS: u64 = 432000;
 
-/// A week in seconds, which is the point that users can start claiming amounts from users
-/// who bet incorrectly.
+// A week in seconds, which is the point where users cannot claim from
+// bad bettors in the infrastructure market anymore.
 pub const A_WEEK_SECS: u64 = 604800;
 
-/// Scaled amount to use for drawing down funds on request based on a percentage.
+// Scaled amount to use for drawing down funds on request based on a
+// percentage.
 pub const SCALING_AMT: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
 
-/// Incentive amount to take from users who create markets. $10 FUSDC.
+// Incentive amount to take from users who create markets. $10 FUSDC.
 pub const INCENTIVE_AMT: U256 = U256::from_limbs([1e7 as u64, 0, 0, 0]);
 
 // Minimal viable proxy bytecode.
@@ -86,35 +93,44 @@ pub const TRADING_PROXY_BYTECODE_3: [u8; 22] = [
 pub fn erc20_proxy_code(
     addr: Address,
 ) -> [u8; 20 + concat_arrays_size!(NORMAL_PROXY_BYTECODE_1, NORMAL_PROXY_BYTECODE_2)] {
-    concat_arrays!(NORMAL_PROXY_BYTECODE_1, addr, NORMAL_PROXY_BYTECODE_2)
+    concat_arrays!(
+        NORMAL_PROXY_BYTECODE_1,
+        addr.into_array(),
+        NORMAL_PROXY_BYTECODE_2
+    )
 }
 
-pub const fn trading_proxy_code(
+pub fn trading_proxy_code(
     extras_addr: Address,
     mint_addr: Address,
 ) -> [u8; (2 * 20)
        + concat_arrays_size!(
     TRADING_PROXY_BYTECODE_1,
-    mint_addr,
     TRADING_PROXY_BYTECODE_2,
-    extras_addr,
     TRADING_PROXY_BYTECODE_3
 )] {
     concat_arrays!(
         TRADING_PROXY_BYTECODE_1,
-        extras_addr, ,
+        extras_addr.into_array(),
         TRADING_PROXY_BYTECODE_2,
-        mint_addr,
+        mint_addr.into_array(),
         TRADING_PROXY_BYTECODE_3
     )
 }
 
-pub const fn erc20_proxy_hash() -> [u8; 32] {
-    Keccak256::new().update(&erc20_proxy_code()).finalize()
+pub fn erc20_proxy_hash(erc20_impl: Address) -> [u8; 32] {
+    Keccak256::new()
+        .update(&erc20_proxy_code(erc20_impl))
+        .finalize()
 }
 
-pub const fn trading_proxy_hash() -> [u8; 32] {
-    Keccak256::new().update(&trading_proxy_code()).finalize()
+pub fn trading_proxy_hash(
+    trading_proxy_extras: Address,
+    trading_proxy_impl: Address,
+) -> [u8; 32] {
+    Keccak256::new()
+        .update(&trading_proxy_code(trading_proxy_extras, trading_proxy_impl))
+        .finalize()
 }
 
 // fUSDC decimals should be this low!

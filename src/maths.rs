@@ -101,9 +101,9 @@ pub fn locked_arb_amt(initial_amt: U256) -> Result<U256, Error> {
 
 /// Infra voting amount based on how many seconds have passed since the
 /// infra market became available.
-pub fn infra_voting_power(amt: U256, secs_passed: U256) -> Result<U256, Error> {
+pub fn infra_voting_power(_amt: U256, _secs_passed: U256) -> Result<U256, Error> {
     // TODO: have this do stuff.
-    U256::ZERO
+    Ok(U256::ZERO)
 }
 
 #[test]

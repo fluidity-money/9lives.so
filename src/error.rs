@@ -177,7 +177,7 @@ pub enum Error {
     ZeroShares,
 
     // 0x21
-    /// Camelot had an error, we'll bubble up what happened.
+    /// Camelot had an error, we'll bubble up what happened. UNUSED.
     #[error("Camelot had an error.")]
     CamelotError(Vec<u8>),
 
@@ -251,6 +251,26 @@ pub enum Error {
     /// The window for this market has closed! It's been longer than a week.
     #[error("Infrastructure market window has closed!")]
     InfraMarketWindowClosed,
+
+    // 0x30
+    /// The Trading contract's shutdown function was already called.
+    #[error("Trading is shutdown!")]
+    IsShutdown,
+
+    // 0x31
+    /// The factory call failed!
+    #[error("Factory call failed!")]
+    FactoryCallError(Vec<u8>),
+
+    // 0x32
+    /// We were unable to unpack the factory call!
+    #[error("Factory call unable to unpack!")]
+    FactoryCallUnableToUnpack,
+
+    // 0x33
+    /// The caller is not the factory!
+    #[error("Caller is not factory")]
+    CallerIsNotFactory,
 }
 
 impl From<Error> for Vec<u8> {
@@ -276,7 +296,8 @@ impl From<Error> for Vec<u8> {
         const ERR_ERC20_TRANSFER_FROM_PREAMBLE: [u8; 2] = [0x99, 0x04];
         const ERR_ERC20_PERMIT_PREAMBLE: [u8; 2] = [0x99, 0x05];
         const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
-        const ERR_LOCKED_ARB_PREAMBLE: [u8; 3] = [0x99, 0x07];
+        const ERR_LOCKED_ARB_PREAMBLE: [u8; 2] = [0x99, 0x07];
+        const ERR_FACTORY_PREAMBLE: [u8; 2] = [0x99, 0x07];
 
         match val {
             Error::LongtailError(b) => ext(&ERR_LONGTAIL_PREAMBLE, &[&b]),
@@ -295,6 +316,7 @@ impl From<Error> for Vec<u8> {
             Error::LockedARBError(addr, b) => ext(&ERR_LOCKED_ARB_PREAMBLE, &[&b, addr.as_slice()]),
             Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
             Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
+            Error::FactoryCallError(b) => ext(&ERR_FACTORY_PREAMBLE, &[&b]),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
         }
     }

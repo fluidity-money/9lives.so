@@ -27,6 +27,11 @@ impl StorageFactory {
     pub fn new_trading_C_11_A_A_A_3_B(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256)>,
+        oracle: Address,
+        time_start: U256,
+        time_ending: U256,
+        documentation: FixedBytes<32>,
+        fee_recipient: Address,
     ) -> Result<Address, Vec<u8>> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
@@ -41,13 +46,15 @@ impl StorageFactory {
         );
 
         // Deploy the contract, and emit a log that it was created.
-        let trading_addr = proxy::deploy_trading(trading_id)?;
+        let trading_addr = proxy::deploy_trading(
+            self.trading_extras_impl.get(),
+            self.trading_mint_impl.get(),
+            trading_id,
+        )?;
 
         self.trading_contracts
             .setter(trading_addr)
             .set(msg::sender());
-
-        let oracle = self.oracle.get();
 
         evm::log(events::NewTrading {
             identifier: trading_id,
@@ -77,7 +84,7 @@ impl StorageFactory {
 
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
-            let erc20_addr = proxy::deploy_erc20(erc20_identifier)?;
+            let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)?;
 
             let m_2 = m_1 - fusdc_u256_to_decimal(*seed_amt)?;
 
@@ -96,7 +103,11 @@ impl StorageFactory {
             )?)?)?;
 
             // Use the current AMM to create a pool of this share for aftermarket trading.
-            amm_call::enable_pool(amm_call::create_pool(erc20_addr, sqrt_price, LONGTAIL_FEE)?)?;
+            amm_call::enable_pool(amm_call::create_pool(
+                erc20_addr,
+                sqrt_price,
+                LONGTAIL_FEE,
+            )?)?;
 
             evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_id,

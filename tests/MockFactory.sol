@@ -12,18 +12,23 @@ contract MockFactory is INineLivesFactory {
         ADDR_FUSDC = _fusdc;
     }
 
-    function ctor(address /* oracle */) external {}
+    function ctor(
+        address /* shareImpl */,
+        address /* tradingExtrasImpl */,
+        address /* tradingMintImpl */,
+        address /* infraMarketOracle */
+    ) external {}
 
     function newTradingC11AAA3B(
         Outcome[] memory _outcomes,
         address _oracle,
         uint256 _timeStart,
         uint256 _timeEnding,
-        bytes32 _documentation,
+        bytes32 /* _documentation */,
         address _feeRecipient
     ) external returns (address) {
         MockTrading t = new MockTrading(ADDR_FUSDC);
-        t.ctor(_outcomes, _oracle, _timeStart, _timeEnding, _documentation, _feeRecipient);
+        t.ctor(_outcomes, _oracle, _timeStart, _timeEnding, _feeRecipient);
         return address(t);
     }
 

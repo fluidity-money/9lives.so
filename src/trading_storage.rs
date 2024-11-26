@@ -20,13 +20,19 @@ pub struct StorageTrading {
     /// Outcome was determined! It should be impossible to mint, only to burn.
     /// This is the timestamp the locking took place. If it's 0, then we haven't
     /// decided the outcome yet.
-    pub locked: StorageU64,
+    pub when_decided: StorageU64,
+
+    /// Was this contract shut down? This is called once the deadline has
+    /// expired to pause trading.
+    pub is_shutdown: StorageBool,
 
     /// Oracle responsible for determine the outcome.
     pub oracle: StorageAddress,
 
-    /// Factory that created this trading pool. Empty if not created!
-    pub factory: StorageAddress,
+    /// The recorded share implementation that's needed to reconstruct the
+    /// location of the share contract. Stored here to prevent extra calls later
+    /// during the construction of this.
+    pub share_impl: StorageAddress,
 
     /// Shares existing in every outcome.
     pub shares: StorageDecimal,

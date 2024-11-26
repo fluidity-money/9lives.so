@@ -29,7 +29,7 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> Result<U256, Error> {
-        assert_or!(self.locked.get().is_zero(), Error::DoneVoting);
+        assert_or!(self.when_decided.get().is_zero(), Error::DoneVoting);
 
         // Assume we already took the user's balance. Get the state of
         // everything else as u256s.
@@ -73,7 +73,12 @@ impl StorageTrading {
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
 
-        let share_addr = proxy::get_share_addr(FACTORY_ADDR, contract::address(), outcome_id);
+        let share_addr = proxy::get_share_addr(
+            FACTORY_ADDR,
+            contract::address(),
+            self.share_impl.get(),
+            outcome_id,
+        );
 
         let shares = share_decimal_to_u256(shares)?;
 
@@ -112,7 +117,7 @@ impl StorageTrading {
         value: U256,
         _recipient: Address,
     ) -> Result<U256, Error> {
-        if !self.locked.is_zero() {
+        if !self.when_decided.is_zero() {
             return Ok(U256::ZERO);
         }
         let outcome = self.outcomes.getter(outcome_id);
@@ -158,7 +163,7 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> Result<U256, Error> {
         let outcome = self.outcomes.getter(id);
-        if !self.locked.is_zero() && outcome.winner.get() {
+        if !self.when_decided.is_zero() && outcome.winner.get() {
             return Ok(U256::ZERO);
         }
         let m_1 = fusdc_u256_to_decimal(outcome.invested.get())?;

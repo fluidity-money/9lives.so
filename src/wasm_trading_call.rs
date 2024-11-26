@@ -1,14 +1,10 @@
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes, U256},
     call::RawCall,
+    alloy_sol_types::{sol, SolCall},
 };
 
 use crate::error::Error;
-
-use stylus_sdk::{
-    alloy_primitives::{Address, FixedBytes, U256},
-    alloy_sol_types::{sol, SolCall},
-};
 
 sol! {
     function ctor(address oracle, (bytes8,uint256)[] outcomes);
@@ -26,7 +22,7 @@ pub fn ctor(
     Ok(())
 }
 
-pub fn decide(contract: Address, winner: B8) -> Result<(), Error> {
+pub fn decide(contract: Address, winner: FixedBytes<8>) -> Result<(), Error> {
     RawCall::new()
         .call(contract, &decideCall { winner }.abi_encode())
         .map_err(Error::TradingError)?;

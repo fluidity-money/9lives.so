@@ -64,18 +64,18 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 ## Deployments
 
-### Arbitrum One (pre-US election) - Camelot edition
+### Superposition mainnet
 
 |      Deployment name     |              Deployment address            |
 |--------------------------|--------------------------------------------|
-| Proxy admin              | 0xde1a8eda6fc9913224b1e8ad6cdcd8dc1d5080ae |
-| Factory 1 implementation | 0xE8594243278f726bd3c5F0D78f56a78F29046C1D |
-| Factory 2 implementation | 0x33aC7f5dc2e76867Ae076cE1555bC192469fb827 |
-| Trading mint impl        | 0x7650E34114978248AA1f70198241D4E7957C4f57 |
-| Trading extras impl      | 0xeC1563C1E29eB933dB9Df1a0D224C134A6be79E1 |
-| Factory proxy            | 0x6c49d7845d1C9540B3D53B01296248b4B0a9d60D |
-| ERC20 implementation     | 0x1Bb666386b75335c6bAc834a754BE56e880dAa12 |
-| LensesV1                 | 0x30Cc3AbEcf76fd53dDf3103395B1Fc6eDA1d1599 |
+| Proxy admin              |  |
+| Factory 1 implementation |  |
+| Factory 2 implementation |  |
+| Trading mint impl        |  |
+| Trading extras impl      |  |
+| Factory proxy            |  |
+| ERC20 implementation     |  |
+| LensesV1                 |  |
 
 ### Superposition testnet
 

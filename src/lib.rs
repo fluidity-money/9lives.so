@@ -17,10 +17,8 @@ mod wasm_proxy;
 pub mod calldata;
 
 pub mod erc20_cd;
-pub mod factory_cd;
 pub mod longtail_cd;
 pub mod share_cd;
-pub mod trading_cd;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod host_trading_call;
@@ -43,15 +41,10 @@ mod wasm_erc20_call;
 
 pub mod fusdc_call;
 
-#[cfg(all(feature = "amm-use-longtail", not(target_arch = "wasm32")))]
+#[cfg(not(target_arch = "wasm32"))]
 mod host_longtail_call;
-#[cfg(all(feature = "amm-use-longtail", target_arch = "wasm32"))]
+#[cfg(target_arch = "wasm32")]
 mod wasm_longtail_call;
-
-#[cfg(all(feature = "amm-use-camelot", not(target_arch = "wasm32")))]
-mod host_camelot_call;
-#[cfg(all(feature = "amm-use-camelot", target_arch = "wasm32"))]
-mod wasm_camelot_call;
 
 pub mod amm_call;
 
@@ -90,22 +83,6 @@ pub use contract_trading_extras::user_entrypoint;
 
 #[cfg(feature = "contract-lockup")]
 pub use contract_lockup::user_entrypoint;
-
-#[cfg(not(any(
-    feature = "amm-use-longtail",
-    feature = "amm-use-camelot",
-)))]
-compile_error!(
-    "amm-use-longtail or amm-use-camelot feature must be enabled."
-);
-
-#[cfg(all(
-    feature = "amm-use-longtail",
-    feature = "amm-use-camelot",
-))]
-compile_error!(
-    "amm-use-longtail or amm-use-camelot feature cannot both be enabled."
-);
 
 #[cfg(all(
     target_arch = "wasm32",

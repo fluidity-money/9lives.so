@@ -7,9 +7,19 @@ interface INineLivesFactory {
     /**
      * @notice Construct the Factory, configuring all Trading instances to use the oracle
      *         given.
+     * @notice shareImpl to use for the share creations with a proxy.
+     * @param tradingExtrasImpl to use as the extras implementation for the extras trading
+     * code.
+     * @param tradingMintImpl to use as the implementation of the mint code for deployed
+     * Tradings.
      * @param infraMarketOracle to set as the oracle for infrastructure market oracles
      */
-    function ctor(address infraMarketOracle) external;
+    function ctor(
+        address shareImpl,
+        address tradingExtrasImpl,
+        address tradingMintImpl,
+        address infraMarketOracle
+    ) external;
 
     /**
      * @notice set up new trading contract, seeding the initial amounts
@@ -25,7 +35,7 @@ interface INineLivesFactory {
      * @param timeStart to begin this contract at. This should be in the future.
      * @param timeEnding to end this contract at. This should be in the future.
      * @param documentation keccak'd hash of the information that makes up the description
-     * for this.
+     * for infrastructure markets. This is sent out there.
      * @param feeRecipient to send fees earned from the 10% commission to.
      * @return tradingAddr address of the newly created Trading contract deployment.
      */

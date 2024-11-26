@@ -12,13 +12,15 @@ interface INineLivesTrading {
      * @notice ctor to set the values for this contract.
      * @param oracle to use as the resolver for this contract.
      * @param outcomes to use to use as betting outcomes in this contract.
+     * @param timeStart to begin this contract by.
+     * @param timeEnding to end this contract by.
+     * @param feeRecipient to send fees earned from trading.
      */
     function ctor(
         Outcome[] memory outcomes,
         address oracle,
         uint256 timeStart,
         uint256 timeEnding,
-        bytes32 documentation,
         address feeRecipient
     ) external;
 
@@ -28,7 +30,11 @@ interface INineLivesTrading {
      * @param value to spend of fUSDC.
      * @param recipient of the funds spent.
      */
-    function mint227CF432(bytes8 outcome, uint256 value, address recipient) external returns (uint256);
+    function mint227CF432(
+        bytes8 outcome,
+        uint256 value,
+        address recipient
+    ) external returns (uint256);
 
     /**
      * @notice Quote function for testing the amount that could be minted.
@@ -36,7 +42,11 @@ interface INineLivesTrading {
      * @param value to test spending for
      * @param recipient of the funds spent (unused)
      */
-    function quote101CBE35(bytes8 outcome, uint256 value, address recipient) external returns (uint256);
+    function quote101CBE35(
+        bytes8 outcome,
+        uint256 value,
+        address recipient
+    ) external returns (uint256);
 
     /**
      * @notice Get the price of an outcome in fUSDC.
@@ -63,6 +73,13 @@ interface INineLivesTrading {
         bytes32 r,
         bytes32 s
     ) external returns (uint256);
+
+    /**
+     * @notice Shutdown this contract by disabling associated pools. Compensates callers
+     * of this function by distributing them a small amount of token for doing so.
+     * This can only be called when the contract has exceeded its deadline.
+     */
+    function shutdown() external;
 
     /**
      * @notice Decide an outcome. Only callable by the oracle!
