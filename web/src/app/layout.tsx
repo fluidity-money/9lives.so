@@ -79,10 +79,12 @@ export default async function RootLayout({
       lang="en"
       className={combineClass([chicago.variable, geneva.variable])}
     >
-      <body className="flex min-h-screen flex-col bg-9layer">
+      <body className="flex min-h-screen flex-col items-center bg-9layer">
         <Providers initialData={{ campaigns, totalUserCount }}>
           <Header />
-          <main className="flex flex-1 p-4">{children}</main>
+          <main className="mx-auto flex max-w-screen-xl flex-1 p-4">
+            {children}
+          </main>
           <Footer />
         </Providers>
         <CookieBanner />

@@ -43,7 +43,7 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
 );
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-between border-t-2 border-t-black bg-9blueLight px-4 py-8">
+    <footer className="flex items-center justify-between self-stretch border-t-2 border-t-black bg-9blueLight px-4 py-8">
       <nav className="flex items-center justify-start gap-4 text-xs">
         {menu.map((item) => (
           <MenuItem item={item} key={item.title} />
