@@ -2,12 +2,8 @@
 pragma solidity ^0.8.18;
 
 import "./INineLivesFactory.sol";
-
+import "./ILongtail.sol";
 import "./WordPackingLib.sol";
-
-interface ILongtail {
-    function quote72E2ADE7(address, bool, int256, uint256) external;
-}
 
 interface IERC20 {
     function balanceOf(address) external view returns (uint256);

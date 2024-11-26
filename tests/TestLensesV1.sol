@@ -7,7 +7,8 @@ import "./MockLongtail.sol";
 import "./MockFactory.sol";
 import "./MockLensesV1.sol";
 
-import "../src/LensesV1.sol";
+import {LensesV1} from "../src/LensesV1.sol";
+import {ILongtail} from "../src/ILongtail.sol";
 
 contract TestShare is Test {
     MockLongtail longtail;
@@ -17,7 +18,7 @@ contract TestShare is Test {
 
     function setUp() public {
         longtail = new MockLongtail();
-        factory = INineLivesFactory(new MockFactory());
+        factory = INineLivesFactory(new MockFactory(address(0)));
         lenses = new LensesV1(ILongtail(address(longtail)), factory);
         mockLenses = new MockLensesV1();
     }

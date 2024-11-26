@@ -15,22 +15,23 @@ interface ILockup {
 
     /**
      * @notice Staked ARB vested by the user at this point in time.
-     * @param holder address
+     * @param holder to query for
      */
-    function stakedArbBal(address _holder) external view returns (uint256);
+    function stakedArbBal(address holder) external view returns (uint256);
 
     /**
      * @notice slash a user's entire position portfolio on request. only usable by
      * InfraMarket. This can be called repeatedly safely without context. When this is used
      * the user's amount before they started to lose funds is tracked to be drawn down.
-     * @param spender
+     * @param victim to take money from
      */
-    function slash(address loser) external;
+    function slash(address victim) external;
 
     /**
      * @notice takeStakedArb from the pool that we have locked up
      * @param victim to take money from, setting their staked arb to 0.
      * @param recipient to send the staked arb to
+     */
     function takeStakedArb(address victim, address recipient) external;
 
     /**

@@ -3,11 +3,28 @@ pragma solidity ^0.8.18;
 
 import "../src/INineLivesFactory.sol";
 
+import "./MockTrading.sol";
+
 contract MockFactory is INineLivesFactory {
+    address immutable ADDR_FUSDC;
+
+    constructor(address _fusdc) {
+        ADDR_FUSDC = _fusdc;
+    }
+
     function ctor(address /* oracle */) external {}
 
-    function newTradingC11AAA3B(Outcome[] memory) external pure returns (address) {
-        return address(1);
+    function newTradingC11AAA3B(
+        Outcome[] memory _outcomes,
+        address _oracle,
+        uint256 _timeStart,
+        uint256 _timeEnding,
+        bytes32 _documentation,
+        address _feeRecipient
+    ) external returns (address) {
+        MockTrading t = new MockTrading(ADDR_FUSDC);
+        t.ctor(_outcomes, _oracle, _timeStart, _timeEnding, _documentation, _feeRecipient);
+        return address(t);
     }
 
     function getOwner(address) external pure returns (address) {

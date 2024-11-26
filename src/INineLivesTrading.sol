@@ -1,7 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+/// @notice outcome used by Trading as bettable situations
+struct Outcome {
+    bytes8 identifier;
+    uint256 amount;
+}
+
 interface INineLivesTrading {
+    /**
+     * @notice ctor to set the values for this contract.
+     * @param oracle to use as the resolver for this contract.
+     * @param outcomes to use to use as betting outcomes in this contract.
+     */
+    function ctor(
+        Outcome[] memory outcomes,
+        address oracle,
+        uint256 timeStart,
+        uint256 timeEnding,
+        bytes32 documentation,
+        address feeRecipient
+    ) external;
+
     /**
      * @notice Mint some shares in exchange for fUSDC.
      * @param outcome to bet on.
