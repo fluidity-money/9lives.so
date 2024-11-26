@@ -25,7 +25,7 @@ export const useCampaignStore = create<CampaignStore>()(
         }),
     }),
     {
-      name: "user-storage",
+      name: "campaign-storage",
     },
   ),
 );
