@@ -13,16 +13,19 @@ use crate::{
     events, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    storage_dpm::StorageDPM,
+    storage_trading_dpm::StorageTradingDPM,
 };
 
 use rust_decimal::Decimal;
 
-#[cfg(feature = "contract-dpm-trading-mint")]
-pub use crate::storage_dpm::user_entrypoint;
+#[cfg(feature = "contract-trading-dpm-trading-mint")]
+pub use crate::storage_trading_dpm::user_entrypoint;
 
-#[cfg_attr(feature = "contract-dpm-trading-mint", stylus_sdk::prelude::public)]
-impl StorageDPM {
+#[cfg_attr(
+    feature = "contract-trading-dpm-trading-mint",
+    stylus_sdk::prelude::public
+)]
+impl StorageTradingDPM {
     fn internal_mint(
         &mut self,
         outcome_id: FixedBytes<8>,
@@ -34,18 +37,18 @@ impl StorageDPM {
 
         // Assume we already took the user's balance. Get the state of
         // everything else as u256s.
-        let outcome = self.outcomes.getter(outcome_id);
-        let m_1 = fusdc_u256_to_decimal(outcome.invested.get())?;
-        let n_1 = outcome.shares.get();
+        let outcome_invested = self.outcome_invested.get(outcome_id);
+        let m_1 = fusdc_u256_to_decimal(outcome_invested)?;
+        let n_1 = self.outcome_shares.get(outcome_id);
         let n_2 = self
-            .shares
+            .global_shares
             .get()
             .checked_sub(n_1)
             .ok_or(Error::CheckedSubOverflow)?;
         let m_2 = fusdc_u256_to_decimal(
-            self.invested
+            self.global_invested
                 .get()
-                .checked_sub(outcome.invested.get())
+                .checked_sub(outcome_invested)
                 .ok_or(Error::CheckedSubOverflow)?,
         )?;
 
@@ -59,22 +62,26 @@ impl StorageDPM {
         // Prevent them from taking less than the minimum amount to LP with.
         assert_or!(m >= Decimal::from(MINIMUM_MINT_AMT), Error::TooSmallNumber);
 
-        let outcome_invested = outcome.invested.get();
+        let outcome_invested = self.outcome_invested.get(outcome_id);
 
         // Set the global states.
-        self.outcomes
+        self.outcome_invested
             .setter(outcome_id)
-            .invested
             .set(outcome_invested + value);
 
-        self.invested.set(self.invested.get() + value);
+        self.global_invested.set(
+            self.global_invested
+                .get()
+                .checked_add(value)
+                .ok_or(Error::CheckedAddOverflow)?,
+        );
 
         // Convert everything to decimals for this function.
         let shares = maths::shares(m_1, m_2, n_1, n_2, m)?;
 
         // Set the global states as the output of shares.
-        self.outcomes.setter(outcome_id).shares.set(n_1 + shares);
-        self.shares.set(self.shares.get() + shares);
+        self.outcome_shares.setter(outcome_id).set(n_1 + shares);
+        self.global_shares.set(self.global_shares.get() + shares);
 
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
@@ -126,18 +133,17 @@ impl StorageDPM {
         if !self.when_decided.is_zero() {
             return Ok(U256::ZERO);
         }
-        let outcome = self.outcomes.getter(outcome_id);
-        let m_1 = fusdc_u256_to_decimal(outcome.invested.get())?;
-        let n_1 = outcome.shares.get();
+        let m_1 = fusdc_u256_to_decimal(self.outcome_invested.get(outcome_id))?;
+        let n_1 = self.global_shares.get();
         let n_2 = self
-            .shares
+            .global_shares
             .get()
             .checked_sub(n_1)
             .ok_or(Error::CheckedSubOverflow)?;
         let m_2 = fusdc_u256_to_decimal(
-            self.invested
+            self.global_invested
                 .get()
-                .checked_sub(outcome.invested.get())
+                .checked_sub(self.global_invested.get())
                 .ok_or(Error::CheckedSubOverflow)?,
         )?;
         share_decimal_to_u256(maths::shares(
@@ -168,21 +174,20 @@ impl StorageDPM {
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> Result<U256, Error> {
-        let outcome = self.outcomes.getter(id);
-        if !self.when_decided.is_zero() && outcome.winner.get() {
+        if !self.when_decided.is_zero() {
             return Ok(U256::ZERO);
         }
-        let m_1 = fusdc_u256_to_decimal(outcome.invested.get())?;
-        let n_1 = outcome.shares.get();
+        let m_1 = fusdc_u256_to_decimal(self.outcome_invested.get(id))?;
+        let n_1 = self.outcome_shares.get(id);
         let n_2 = self
-            .shares
+            .global_shares
             .get()
             .checked_sub(n_1)
             .ok_or(Error::CheckedSubOverflow)?;
         let m_2 = fusdc_u256_to_decimal(
-            self.invested
+            self.global_invested
                 .get()
-                .checked_sub(outcome.invested.get())
+                .checked_sub(self.outcome_invested.get(id))
                 .ok_or(Error::CheckedSubOverflow)?,
         )?;
         fusdc_decimal_to_u256(maths::price(m_1, m_2, n_1, n_2, Decimal::ZERO)?)

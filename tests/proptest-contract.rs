@@ -61,12 +61,12 @@ proptest! {
         purchase_int_2 in strat_action_amount_purchasing(1000),
     ) {
         prop_assume!(outcome_1_id != outcome_2_id);
-        use lib9lives::trading_storage::StorageDPM;
+        use lib9lives::trading_storage::StorageTradingDPM;
         // This follows a classic interaction, with a user minting a random
         // amount of shares several thousand times on both sides, reporting when
         // things break down. This also prints the test data in a format that's
         // compatible with the Python code to find divergences.
-        host::with_storage::<_, StorageDPM, _>(|c| {
+        host::with_storage::<_, StorageTradingDPM, _>(|c| {
             let outcome_1_id = FixedBytes::<8>::from(outcome_1_id);
             let outcome_2_id = FixedBytes::<8>::from(outcome_2_id);
             let outcomes = vec![

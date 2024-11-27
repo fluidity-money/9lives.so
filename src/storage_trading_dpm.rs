@@ -3,20 +3,8 @@ use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 use crate::decimal::StorageDecimal;
 
 #[storage]
-pub struct StorageOutcome {
-    // Outstanding invested into this outcome.
-    pub invested: StorageU256,
-
-    // Amount of shares in existence in this outcome.
-    pub shares: StorageDecimal,
-
-    // Was this outcome the correct outcome?
-    pub winner: StorageBool,
-}
-
-#[storage]
-#[cfg_attr(any(feature = "contract-dpm-trading-mint", feature = "contract-dpm-trading-extras"), entrypoint)]
-pub struct StorageDPM {
+#[cfg_attr(any(feature = "contract-trading-dpm-trading-mint", feature = "contract-trading-dpm-trading-extras"), entrypoint)]
+pub struct StorageTradingDPM {
     /// Outcome was determined! It should be impossible to mint, only to burn.
     /// This is the timestamp the locking took place. If it's 0, then we haven't
     /// decided the outcome yet.
@@ -43,24 +31,30 @@ pub struct StorageDPM {
     /// during the construction of this.
     pub share_impl: StorageAddress,
 
-    /// Shares existing in every outcome.
-    pub shares: StorageDecimal,
+    /// Shares invested in every outcome cumulatively.
+    pub global_shares: StorageDecimal,
+
+    /// Shares invested in a specific outome.
+    pub outcome_shares: StorageMap<FixedBytes<8>, StorageDecimal>,
 
     /// Global amount invested to this pool of the native asset.
-    pub invested: StorageU256,
+    pub global_invested: StorageU256,
 
-    /// Outcomes vested in the contract.
-    pub outcomes: StorageMap<FixedBytes<8>, StorageOutcome>,
+    /// The amount invested in a specific outcome.
+    pub outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /// Outcomes tracked to be disabled with Longtail once a winner is found.
     pub outcome_list: StorageVec<StorageFixedBytes<8>>,
+
+    /// The outcome that was chosen to win by the oracle.
+    pub winner: StorageFixedBytes<8>,
 
     /// The amount paid out so far by the decided amount.
     pub amount_paid_out: StorageDecimal
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-impl crate::host::StorageNew for StorageDPM {
+impl crate::host::StorageNew for StorageTradingDPM {
     fn new(i: U256, v: u8) -> Self {
         unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
     }

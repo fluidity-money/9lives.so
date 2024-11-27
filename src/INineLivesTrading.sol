@@ -10,8 +10,8 @@ struct TradingOutcome {
 interface INineLivesTrading {
     /**
      * @notice ctor to set the values for this contract.
-     * @param oracle to use as the resolver for this contract.
      * @param outcomes to use to use as betting outcomes in this contract.
+     * @param oracle to use as the resolver for this contract.
      * @param timeStart to begin this contract by.
      * @param timeEnding to end this contract by.
      * @param feeRecipient to send fees earned from trading.
@@ -103,7 +103,7 @@ interface INineLivesTrading {
         uint256 shares,
         uint256 invested,
         uint256 globalInvested,
-        bool isWinner
+        bytes8 winner
     );
 
     /**

@@ -111,9 +111,9 @@ contract MockTrading is INineLivesTrading {
         uint256 shares,
         uint256 investedAmt,
         uint256 globalInvested,
-        bool isWinner
+        bytes8 winner
     ) {
-        return (100, 10_000, 19291, false);
+        return (100, 10_000, 19291, bytes8(uint64(1)));
     }
 
     function invested() external pure returns (uint256) {

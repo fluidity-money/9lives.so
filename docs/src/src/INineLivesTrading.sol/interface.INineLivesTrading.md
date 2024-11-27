@@ -80,7 +80,7 @@ details that're available for this outcome.
 
 
 ```solidity
-function details(bytes8 outcomeId) external view returns (uint256 shares, uint256 invested, bool isWinner);
+function details(bytes8 outcomeId) external view returns (uint256 shares, uint256 invested, bytes8 winner);
 ```
 **Parameters**
 
