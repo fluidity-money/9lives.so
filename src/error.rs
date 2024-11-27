@@ -306,6 +306,11 @@ pub enum Error {
     /// Error calling the Infrastructure Market!
     #[error("Error calling the Infra Market!")]
     InfraMarketCallError(Vec<u8>),
+
+    // 0x3b
+    /// Error creating the NinelivesLockedArb contract!
+    #[error("Error creating the NinelivesLockedArb contract!")]
+    NinelivesLockedArbCreateError,
 }
 
 impl From<Error> for Vec<u8> {

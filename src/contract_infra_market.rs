@@ -251,7 +251,7 @@ impl StorageInfraMarket {
                 // Looks like we owe the caller some money.
                 fusdc_call::transfer(recipient, INCENTIVE_AMT_SWEEP)?;
                 // At this point we call the campaign that this is
-                // connected to to let them know that there was a winner. Hopefully
+                // connected to let them know that there was a winner. Hopefully
                 // someone called shutdown on the contract in the past to prevent
                 // users from calling Longtail constantly.
                 trading_call::decide(trading_addr, voting_power_winner)?;

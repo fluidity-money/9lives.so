@@ -109,7 +109,7 @@ pub const TRADING_PROXY_BYTECODE_3: [u8; 22] = [
     0x00, 0x57, 0x57, 0xf3, 0x5b, 0xfd,
 ];
 
-pub fn erc20_proxy_code(
+pub fn boring_proxy_code(
     addr: Address,
 ) -> [u8; 20 + concat_arrays_size!(NORMAL_PROXY_BYTECODE_1, NORMAL_PROXY_BYTECODE_2)] {
     concat_arrays!(
@@ -139,7 +139,7 @@ pub fn trading_proxy_code(
 
 pub fn erc20_proxy_hash(erc20_impl: Address) -> [u8; 32] {
     Keccak256::new()
-        .update(&erc20_proxy_code(erc20_impl))
+        .update(&boring_proxy_code(erc20_impl))
         .finalize()
 }
 

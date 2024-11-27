@@ -16,7 +16,7 @@ contract NinelivesLockedARB is Initializable, ERC20Upgradeable, ERC20BurnableUpg
         _disableInitializers();
     }
 
-    function initialize(address initialOwner) initializer public {
+    function initialise(address initialOwner) initializer public {
         __ERC20_init("Ninelives Locked ARB", "NLA");
         __ERC20Burnable_init();
         __Ownable_init(initialOwner);

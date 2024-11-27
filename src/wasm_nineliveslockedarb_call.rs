@@ -10,11 +10,15 @@ use alloy_sol_macro::sol;
 use alloy_sol_types::SolCall;
 
 sol! {
+    function initialise(address owner) external;
     function getPastVotes(address spender, uint256 timepoint) external view returns (uint256);
 }
 
 /// Construct the Locked ARB token that we're going to supply control.
-pub fn ctor(_token: Address, _owner: Address) -> Result<(), Error> {
+pub fn ctor(addr: Address, owner: Address) -> Result<(), Error> {
+    RawCall::new()
+        .call(addr, &initialiseCall { owner }.abi_encode())
+        .map_err(|b| Error::LockedARBError(addr, b))?;
     Ok(())
 }
 

@@ -1,14 +1,17 @@
 use stylus_sdk::{alloy_primitives::*, contract, msg};
 
-use crate::{fusdc_call, maths, erc20_call, error::Error, immutables::*};
+use crate::{erc20_call, error::Error, fusdc_call, immutables::*, maths};
 
-pub use crate::{nineliveslockedarb_call, storage_lockup::*};
+pub use crate::{nineliveslockedarb_call, proxy, storage_lockup::*};
 
 #[cfg_attr(feature = "contract-lockup", stylus_sdk::prelude::public)]
 impl StorageLockup {
-    pub fn ctor(&mut self, token: Address, infra_market: Address) -> Result<(), Error> {
+    pub fn ctor(&mut self, token_impl: Address, infra_market: Address) -> Result<(), Error> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         self.enabled.set(true);
+        let token =
+            proxy::deploy_proxy(token_impl).map_err(|_| Error::NinelivesLockedArbCreateError)?;
+        nineliveslockedarb_call::ctor(token, contract::address())?;
         self.token_addr.set(token);
         self.infra_market_addr.set(infra_market);
         Ok(())
@@ -16,7 +19,12 @@ impl StorageLockup {
 
     /// Lockup sends Locked ARB to the user after taking Staked ARB from
     /// them. The amount they receive is distributed according to a curve.
-    pub fn lockup(&mut self, amt: U256, _until_timestamp: u64, recipient: Address) -> Result<U256, Error> {
+    pub fn lockup(
+        &mut self,
+        amt: U256,
+        _until_timestamp: u64,
+        recipient: Address,
+    ) -> Result<U256, Error> {
         let debt_id = self.debt_id_counter.get();
         self.debt_id_counter.set(debt_id + U256::from(1));
         // Lock up the amounts for the user, giving them back some Locked ARB.
