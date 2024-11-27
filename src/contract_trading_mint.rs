@@ -146,7 +146,6 @@ impl StorageTrading {
     pub fn quote_101_C_B_E_35(
         &mut self,
         outcome_id: FixedBytes<8>,
-        token: Address,
         value: U256,
         _recipient: Address,
     ) -> Result<U256, Error> {
@@ -182,7 +181,6 @@ impl StorageTrading {
     pub fn mint_permit_B8_D_681_A_D(
         &mut self,
         outcome: FixedBytes<8>,
-        token: Address,
         value: U256,
         recipient: Address,
         deadline: U256,

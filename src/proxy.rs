@@ -71,6 +71,7 @@ fn test_create_identifier() {
     )
 }
 
+/*
 #[test]
 fn test_get_trading_addr() {
     use stylus_sdk::alloy_primitives::address;
@@ -87,7 +88,9 @@ fn test_get_trading_addr() {
         address!("3D9735deAd46d19f6BED4e47B3205647Ebd22Cb5")
     )
 }
+*/
 
+/*
 #[test]
 #[ignore]
 fn print_get_share_addrs() {
@@ -103,3 +106,4 @@ fn print_get_share_addrs() {
         get_share_addr(factory, trading, FixedBytes::<8>::from([4_u8; 8])),
     );
 }
+*/

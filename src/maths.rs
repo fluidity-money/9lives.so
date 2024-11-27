@@ -116,7 +116,7 @@ fn test_sqrt_rounding_down() {
 
 #[test]
 fn test_price_single() {
-    dbg!(shares(
+    dbg!(dpm_shares(
         Decimal::from(524),
         Decimal::from(387),
         Decimal::from(173),
@@ -131,7 +131,7 @@ fn test_shares_edge_1() {
     use rust_decimal_macros::dec;
 
     assert_eq!(
-        shares(
+        dpm_shares(
             dec!(0.1),
             dec!(4.370954),
             dec!(1),

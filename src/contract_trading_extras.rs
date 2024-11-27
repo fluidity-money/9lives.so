@@ -55,6 +55,7 @@ impl StorageTrading {
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));
         self.oracle.set(oracle);
+        self.is_dpm.set(is_dpm);
         Ok(())
     }
 

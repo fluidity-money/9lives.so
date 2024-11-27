@@ -22,9 +22,6 @@ pub fn ctor(addr: Address, owner: Address) -> Result<(), Error> {
     Ok(())
 }
 
-pub use crate::share_call::burn;
-pub use crate::share_call::mint;
-
 /// Get the past votes for a address at a point in time.
 pub fn get_past_votes(addr: Address, spender: Address, timepoint: U256) -> Result<U256, Error> {
     unpack_u256(

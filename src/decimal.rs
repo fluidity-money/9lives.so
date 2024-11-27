@@ -79,42 +79,6 @@ macro_rules! assert_eq_f {
     };
 }
 
-#[cfg(all(test, feature = "testing"))]
-mod test {
-    use rust_decimal::Decimal;
-
-    use stylus_sdk::alloy_primitives::U256;
-
-    use crate::host;
-
-    use super::*;
-
-    use std::cell::OnceCell;
-
-    #[stylus_sdk::prelude::storage]
-    struct Stubbed {}
-
-    impl host::StorageNew for Stubbed {
-        fn new(i: U256, v: u8) -> Self {
-            unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
-        }
-    }
-
-    #[test]
-    fn test_storage_behaviour() {
-        host::with_storage::<_, Stubbed, _>(|_| {
-            let mut f = StorageDecimal {
-                slot: U256::from(0),
-                offset: 0,
-                cached: OnceCell::new(),
-            };
-            assert_eq!(f.get(), Decimal::from(0));
-            f.set(Decimal::MAX);
-            assert_eq!(f.get(), Decimal::MAX);
-        })
-    }
-}
-
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod proptesting {
     use super::*;

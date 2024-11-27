@@ -1,6 +1,6 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
-use alloy_primitives::{fixed_bytes, Address, U256};
+use stylus_sdk::{block, alloy_primitives::{fixed_bytes, Address, U256}};
 
 use lib9lives::{decimal::MAX_DECIMAL, error::Error, host};
 
@@ -15,14 +15,18 @@ proptest! {
         seed_amount_2 in 1..MAX_DECIMAL,
         fusdc_quote in 1..MAX_DECIMAL,
     ) {
-        use lib9lives::trading_storage::StorageTradingDPM;
-        host::with_storage::<_, StorageTradingDPM, _>(|c| {
+        use lib9lives::storage_trading::StorageTrading;
+        host::with_storage::<_, StorageTrading, _>(|c| {
             c.ctor(
-                Address::from([1_u8; 20]),
                 vec![
                     (fixed_bytes!("0541d76af67ad076"), U256::from(seed_amount_1)),
                     (fixed_bytes!("3be0d8814450a582"), U256::from(seed_amount_2)),
                 ],
+                Address::from([1_u8; 20]),
+                true,
+                block::timestamp() + 1,
+                block::timestamp() + 2,
+                msg::sender()
             )
             .unwrap();
 

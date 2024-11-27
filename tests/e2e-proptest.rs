@@ -2,19 +2,34 @@
 
 use proptest::prelude::*;
 
-use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
+use stylus_sdk::{
+    alloy_primitives::{Address, FixedBytes, U256},
+    block, msg,
+};
 
 use lib9lives::host;
 
 #[test]
 fn test_factory_new_trading() {
-    use lib9lives::factory_storage::StorageFactory;
+    use lib9lives::storage_factory::StorageFactory;
     host::with_storage::<_, StorageFactory, _>(|c| {
-        c.ctor(Address::ZERO).unwrap();
+        c.ctor(Address::ZERO, Address::ZERO, Address::ZERO, Address::ZERO)
+            .unwrap();
         let id = FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let id2 = FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
-        c.new_trading_C_11_A_A_A_3_B(vec![(id, U256::from(1e6)), (id2, U256::from(1e6))])
-            .unwrap();
+        c.new_trading_37_B_D_1242(
+            vec![
+                (id, U256::from(1e6), String::new()),
+                (id2, U256::from(1e6), String::new()),
+            ],
+            Address::from([1_u8; 20]),
+            true,
+            block::timestamp(),
+            block::timestamp() + 100,
+            FixedBytes::ZERO,
+            Address::ZERO,
+        )
+        .unwrap();
     })
 }
 
@@ -23,14 +38,22 @@ fn test_trading_edgecase() {
     let amount_0 = U256::from(23560214097017_u64);
     let amount_1 = U256::from(1000000_u64);
     let mint_amount = U256::from(64682966_u64);
-    use lib9lives::trading_storage::StorageTradingDPM;
-    host::with_storage::<_, StorageTradingDPM, _>(|c| {
+    use lib9lives::storage_trading::StorageTrading;
+    host::with_storage::<_, StorageTrading, _>(|c| {
         let outcome_0 =
             FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let outcome_1 =
             FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let outcomes = [(outcome_0, amount_0), (outcome_1, amount_1)];
-        c.ctor(Address::ZERO, outcomes.to_vec()).unwrap();
+        c.ctor(
+            outcomes.to_vec(),
+            Address::ZERO,
+            true,
+            block::timestamp() + 1,
+            block::timestamp() + 2,
+            msg::sender(),
+        )
+        .unwrap();
         c.mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO)
             .unwrap();
     })
@@ -38,8 +61,8 @@ fn test_trading_edgecase() {
 
 #[test]
 fn test_unit_1() {
-    use lib9lives::trading_storage::StorageTradingDPM;
-    host::with_storage::<_, StorageTradingDPM, _>(|c| {
+    use lib9lives::storage_trading::StorageTrading;
+    host::with_storage::<_, StorageTrading, _>(|c| {
         let outcome_0 =
             FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let outcome_1 =
@@ -48,7 +71,15 @@ fn test_unit_1() {
         let amount_1 = U256::from(1000000);
         let mint_amount = U256::from(10000000);
         let outcomes = [(outcome_0, amount_0), (outcome_1, amount_1)];
-        c.ctor(Address::ZERO, outcomes.to_vec()).unwrap();
+        c.ctor(
+            outcomes.to_vec(),
+            Address::ZERO,
+            true,
+            block::timestamp() + 1,
+            block::timestamp() + 2,
+            Address::ZERO,
+        )
+        .unwrap();
         dbg!(c
             .mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO)
             .unwrap());
@@ -65,8 +96,8 @@ proptest! {
         let amount_0 = U256::from(amount_0);
         let amount_1 = U256::from(amount_1);
         let mint_amount = U256::from(mint_amount);
-        use lib9lives::trading_storage::StorageTradingDPM;
-        host::with_storage::<_, StorageTradingDPM, _>(|c| {
+        use lib9lives::storage_trading::StorageTrading;
+        host::with_storage::<_, StorageTrading, _>(|c| {
             let outcome_0 =
                 FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
             let outcome_1 = FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
@@ -74,7 +105,13 @@ proptest! {
                 (outcome_0, amount_0),
                 (outcome_1, amount_1),
             ];
-            c.ctor(Address::ZERO, outcomes.to_vec())
+            c.ctor(
+                outcomes.to_vec(),
+                Address::ZERO,
+                true,
+                block::timestamp(),
+                block::timestamp() + 100, msg::sender()
+            )
                 .unwrap();
             c
                 .mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO)

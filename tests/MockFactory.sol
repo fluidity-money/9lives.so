@@ -19,7 +19,7 @@ contract MockFactory is INineLivesFactory {
         address /* infraMarketOracle */
     ) external {}
 
-    function newTrading(
+    function newTrading37BD1242(
         FactoryOutcome[] memory _outcomes,
         address _oracle,
         bool _isDPM,

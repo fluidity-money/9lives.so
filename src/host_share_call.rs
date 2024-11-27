@@ -1,10 +1,10 @@
-use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{Address, U256};
 
 use crate::{erc20_call, error::Error};
 
 // Construct the ERC20 with the description in bytes provided, and an
 // admin that can mint more tokens on request.
-pub fn ctor(_addr: Address, _identifier: FixedBytes<8>, _admin: Address) -> Result<(), Error> {
+pub fn ctor(_addr: Address, _name: String, _admin: Address) -> Result<(), Error> {
     Ok(())
 }
 

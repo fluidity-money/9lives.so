@@ -24,7 +24,7 @@ impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.
     #[allow(non_snake_case)]
-    pub fn new_trading(
+    pub fn new_trading_37_B_D_1242(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,

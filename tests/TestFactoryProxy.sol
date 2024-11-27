@@ -24,9 +24,10 @@ contract MockImpl2_1 {
     }
 }
 
-struct Outcome {
+struct FactoryOutcome {
     bytes8 identifier;
     uint256 seed;
+    string name;
 }
 
 contract MockImpl1_2 {
@@ -35,8 +36,14 @@ contract MockImpl1_2 {
     function swagC82F43C4() external pure returns (uint256) {
         return 2;
     }
-    function newTrading(
-        Outcome[] memory /* outcomes */
+    function newTrading37BD1242(
+        FactoryOutcome[] memory /* _outcomes */,
+        address /* _oracle */,
+        bool /* _isDPM */,
+        uint64 /* _timeStart */,
+        uint64 /* _timeEnding */,
+        bytes32 /* _documentation */,
+        address /* _feeRecipient */
     ) external view returns (uint256) {
         return count;
     }
@@ -87,7 +94,15 @@ contract TestFactoryProxy is Test {
             address(new MockImpl2_2()),
             abi.encodeWithSelector(MockImpl2_2.migration.selector, 123)
         );
-        Outcome[] memory o;
-        assertEq(MockImpl1_2(address(factoryProxy)).newTrading(o), 9999);
+        FactoryOutcome[] memory o;
+        assertEq(MockImpl1_2(address(factoryProxy)).newTrading37BD1242(
+            o,
+            address(0),
+            true,
+            0,
+            0,
+            bytes32(0),
+            address(0)
+        ), 9999);
     }
 }

@@ -46,7 +46,7 @@ interface INineLivesFactory {
      * @param feeRecipient to send fees earned from the 10% commission to.
      * @return tradingAddr address of the newly created Trading contract deployment.
      */
-    function newTrading(
+    function newTrading37BD1242(
         FactoryOutcome[] memory outcomes,
         address oracle,
         bool isDPM,

@@ -50,16 +50,16 @@ fn test_maths_row(
 
     //price_before_A = price(M1, M2, N1, N2, 0)
     assert_eq_f!(
-        maths::price(m1, m2, n1, n2, Decimal::from(0))?,
+        maths::dpm_price(m1, m2, n1, n2, Decimal::from(0))?,
         price_before_a
     );
     //price_before_B = price(M2, M1, N2, N1, 0)
     assert_eq_f!(
-        maths::price(m2, m1, n2, n1, Decimal::from(0))?,
+        maths::dpm_price(m2, m1, n2, n1, Decimal::from(0))?,
         price_before_b
     );
     //shares_purchased = shares(M1, M2, N1, N2, cost)
-    let our_shares_purchased = maths::shares(m1, m2, n1, n2, cost)?;
+    let our_shares_purchased = maths::dpm_shares(m1, m2, n1, n2, cost)?;
     assert_eq_f!(our_shares_purchased, shares_purchased);
 
     let our_m1 = cost + m1;
@@ -69,11 +69,11 @@ fn test_maths_row(
 
     //price_after_A = price(M1, M2, N1, N2, 0)
     assert_eq_f!(
-        maths::price(our_m1, m2, our_n1, n2, Decimal::from(0))?,
+        maths::dpm_price(our_m1, m2, our_n1, n2, Decimal::from(0))?,
         price_after_a
     );
     assert_eq_f!(
-        maths::price(m2, our_m1, n2, our_n1, Decimal::from(0))?,
+        maths::dpm_price(m2, our_m1, n2, our_n1, Decimal::from(0))?,
         price_after_b
     );
     Ok(())

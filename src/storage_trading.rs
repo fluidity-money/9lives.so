@@ -58,7 +58,7 @@ pub struct StorageTrading {
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-impl crate::host::StorageNew for StorageTradingDPM {
+impl crate::host::StorageNew for StorageTrading {
     fn new(i: U256, v: u8) -> Self {
         unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
     }
