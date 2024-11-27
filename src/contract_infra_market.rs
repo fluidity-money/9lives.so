@@ -46,7 +46,9 @@ impl StorageInfraMarket {
             msg::sender() == self.factory_addr.get(),
             Error::NotFactoryContract
         );
-        self.campaign_starts.setter(trading_addr).set(U64::from(launch_ts));
+        self.campaign_starts
+            .setter(trading_addr)
+            .set(U64::from(launch_ts));
         self.campaign_desc.setter(trading_addr).set(desc);
         // Take the incentive amount base amount to give to the user who
         // calls sweep for the first time with the correct calldata.
@@ -159,6 +161,22 @@ impl StorageInfraMarket {
             outcome: winner,
         });
         Ok(())
+    }
+
+    pub fn winner(&self, trading: Address) -> Result<FixedBytes<8>, Error> {
+        Ok(self.campaign_winner.get(trading))
+    }
+
+    pub fn market_power_vested(
+        &self,
+        trading: Address,
+        outcome: FixedBytes<8>,
+    ) -> Result<U256, Error> {
+        Ok(self.campaign_vested_power.getter(trading).get(outcome))
+    }
+
+    pub fn global_power_vested(&self, trading: Address) -> Result<U256, Error> {
+        Ok(self.campaign_global_power_vested.get(trading))
     }
 
     /// Checks if the time is over the time for this infra campaign to expire. If
