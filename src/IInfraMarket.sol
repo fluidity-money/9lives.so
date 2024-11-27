@@ -25,12 +25,4 @@ interface IInfraMarket {
         address victim,
         bytes8[] calldata outcomes
     ) external returns (uint256 yieldForCaller);
-
-    // Claim some Staked ARB that the user is owed by collecting from the user's global share. Calls sweep too.
-    function claim(
-        address trading,
-        address victim,
-        bytes8 winner,
-        address recipient
-    ) external returns (uint256);
 }

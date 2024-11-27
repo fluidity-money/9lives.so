@@ -15,8 +15,8 @@ proptest! {
         seed_amount_2 in 1..MAX_DECIMAL,
         fusdc_quote in 1..MAX_DECIMAL,
     ) {
-        use lib9lives::trading_storage::StorageTrading;
-        host::with_storage::<_, StorageTrading, _>(|c| {
+        use lib9lives::trading_storage::StorageDPM;
+        host::with_storage::<_, StorageDPM, _>(|c| {
             c.ctor(
                 Address::from([1_u8; 20]),
                 vec![

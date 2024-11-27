@@ -22,8 +22,8 @@ pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
 
 pub fn get_trading_addr(
     factory_addr: Address,
-    trading_extras: Address,
-    trading_mint: Address,
+    dpm_extras: Address,
+    dpm_mint: Address,
     outcome_ids: &[FixedBytes<8>],
 ) -> Address {
     let trading_id =
@@ -33,7 +33,7 @@ pub fn get_trading_addr(
     b[1..21].copy_from_slice(factory_addr.as_slice());
     // Leaving some spacing so that we can have an empty part of the word.
     b[21..53].copy_from_slice(trading_id.as_slice());
-    b[53..85].copy_from_slice(&trading_proxy_hash(trading_extras, trading_mint));
+    b[53..85].copy_from_slice(&trading_proxy_hash(dpm_extras, dpm_mint));
     Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
 

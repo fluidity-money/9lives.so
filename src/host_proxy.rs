@@ -15,8 +15,8 @@ pub fn deploy_erc20(_erc20_impl: &Address, seed: FixedBytes<32>) -> Result<Addre
 // Deploy a new Trading contract using CREATE2 and the seed given. Returns the
 // address.
 pub fn deploy_trading(
-    _trading_extras: &Address,
-    _trading_mint: &Address,
+    _dpm_extras: &Address,
+    _dpm_mint: &Address,
     seed: FixedBytes<32>,
 ) -> Result<Address, Vec<u8>> {
     Ok(addr_slice(seed))

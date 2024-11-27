@@ -48,8 +48,8 @@ impl StorageFactory {
 
         // Deploy the contract, and emit a log that it was created.
         let trading_addr = proxy::deploy_trading(
-            self.trading_extras_impl.get(),
-            self.trading_mint_impl.get(),
+            self.dpm_extras_impl.get(),
+            self.dpm_mint_impl.get(),
             trading_id,
         )?;
 

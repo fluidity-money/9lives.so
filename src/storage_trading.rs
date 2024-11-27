@@ -15,8 +15,8 @@ pub struct StorageOutcome {
 }
 
 #[storage]
-#[cfg_attr(any(feature = "contract-trading-mint", feature = "contract-trading-extras"), entrypoint)]
-pub struct StorageTrading {
+#[cfg_attr(any(feature = "contract-dpm-trading-mint", feature = "contract-dpm-trading-extras"), entrypoint)]
+pub struct StorageDPM {
     /// Outcome was determined! It should be impossible to mint, only to burn.
     /// This is the timestamp the locking took place. If it's 0, then we haven't
     /// decided the outcome yet.
@@ -60,7 +60,7 @@ pub struct StorageTrading {
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-impl crate::host::StorageNew for StorageTrading {
+impl crate::host::StorageNew for StorageDPM {
     fn new(i: U256, v: u8) -> Self {
         unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
     }

@@ -12,8 +12,8 @@ pub struct StorageFactory {
     /// Implementation of ERC20 for the Shares that we give out
     pub share_impl: StorageAddress,
 
-    pub trading_extras_impl: StorageAddress,
-    pub trading_mint_impl: StorageAddress,
+    pub dpm_extras_impl: StorageAddress,
+    pub dpm_mint_impl: StorageAddress,
 
     // Trading contracts mapped to the creators that were created by this Factory
     pub trading_contracts: StorageMap<Address, StorageAddress>,

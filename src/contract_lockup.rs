@@ -7,7 +7,7 @@ pub use crate::{nineliveslockedarb_call, storage_lockup::*};
 #[cfg_attr(feature = "contract-lockup", stylus_sdk::prelude::public)]
 impl StorageLockup {
     pub fn ctor(&mut self, token: Address, infra_market: Address) -> Result<(), Error> {
-        assert_or!(self.created.get().is_zero(), Error::AlreadyConstructed);
+        assert_or!(!self.created.get(), Error::AlreadyConstructed);
         self.enabled.set(true);
         self.token_addr.set(token);
         self.infra_market_addr.set(infra_market);

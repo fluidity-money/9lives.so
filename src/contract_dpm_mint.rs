@@ -13,16 +13,16 @@ use crate::{
     events, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    storage_trading::StorageTrading,
+    storage_trading::StorageDPM,
 };
 
 use rust_decimal::Decimal;
 
-#[cfg(feature = "contract-trading-mint")]
+#[cfg(feature = "contract-dpm-trading-mint")]
 pub use crate::storage_trading::user_entrypoint;
 
-#[cfg_attr(feature = "contract-trading-mint", stylus_sdk::prelude::public)]
-impl StorageTrading {
+#[cfg_attr(feature = "contract-dpm-trading-mint", stylus_sdk::prelude::public)]
+impl StorageDPM {
     fn internal_mint(
         &mut self,
         outcome_id: FixedBytes<8>,

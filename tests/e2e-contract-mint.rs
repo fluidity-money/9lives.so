@@ -6,8 +6,8 @@ use stylus_sdk::{
 
 #[test]
 fn test_e2e_mint() {
-    use lib9lives::trading_storage::StorageTrading;
-    host::with_storage::<_, StorageTrading, _>(|c| {
+    use lib9lives::trading_storage::StorageDPM;
+    host::with_storage::<_, StorageDPM, _>(|c| {
         let outcome_1 = fixed_bytes!("0541d76af67ad076");
         c.ctor(
             msg::sender(),

@@ -9,15 +9,15 @@ impl StorageFactory {
     pub fn ctor(
         &mut self,
         share_impl: Address,
-        trading_extras_impl: Address,
-        trading_mint_impl: Address,
+        dpm_extras_impl: Address,
+        dpm_mint_impl: Address,
         oracle_addr: Address,
     ) -> Result<(), Vec<u8>> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);
         self.share_impl.set(share_impl);
-        self.trading_extras_impl.set(trading_extras_impl);
-        self.trading_mint_impl.set(trading_mint_impl);
+        self.dpm_extras_impl.set(dpm_extras_impl);
+        self.dpm_mint_impl.set(dpm_mint_impl);
         self.infra_market.set(oracle_addr);
         self.version.set(U8::from(1));
         Ok(())
@@ -25,8 +25,8 @@ impl StorageFactory {
 
     pub fn trading_hash(&self) -> Result<FixedBytes<32>, Error> {
         Ok(FixedBytes::from_slice(&trading_proxy_hash(
-            self.trading_extras_impl.get(),
-            self.trading_mint_impl.get(),
+            self.dpm_extras_impl.get(),
+            self.dpm_mint_impl.get(),
         )))
     }
 

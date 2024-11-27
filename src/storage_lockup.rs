@@ -4,7 +4,7 @@ use stylus_sdk::{alloy_primitives::*, storage::*, prelude::*};
 #[cfg_attr(feature = "contract-lockup", entrypoint)]
 pub struct StorageLockup {
     /// Was this contract created successfully?
-    pub created: StorageU256,
+    pub created: StorageBool,
 
     /// Is the contract enabled? Did an emergency take place?
     pub enabled: StorageBool,
