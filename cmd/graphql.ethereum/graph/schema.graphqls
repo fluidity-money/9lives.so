@@ -109,9 +109,29 @@ type Mutation {
     ending: Int!,
 
     """
+    Expected starting timestamp.
+    """
+    starting: Int!,
+
+    """
     Creator address. Hex encoded. Verified to be the creator later.
     """
     creator: String!
+
+    """
+    X/Twitter username
+    """
+    x: String
+    
+    """
+    Telegram username
+    """
+    telegram: String
+    
+    """
+    Web url
+    """
+    web: String
   ): Boolean
 }
 
@@ -158,9 +178,29 @@ type Campaign {
   outcomes: [Outcome!]!
 
   """
+  Expected starting timestamp.
+  """
+  starting: Int!,
+
+  """
   Ending date of the campaign in timestamp
   """
   ending: Int!
+
+  """
+  X/Twitter username
+  """
+  x: String
+    
+  """
+  Telegram username
+  """
+  telegram: String
+  
+  """
+  Web url
+  """
+  web: String
 }
 
 type Outcome {

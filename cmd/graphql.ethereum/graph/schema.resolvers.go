@@ -74,12 +74,44 @@ func (r *campaignResolver) Outcomes(ctx context.Context, obj *types.Campaign) ([
 	return obj.Content.Outcomes, nil
 }
 
+// Starting is the resolver for the starting field.
+func (r *campaignResolver) Starting(ctx context.Context, obj *types.Campaign) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Starting, nil
+}
+
 // Ending is the resolver for the ending field.
 func (r *campaignResolver) Ending(ctx context.Context, obj *types.Campaign) (int, error) {
 	if obj == nil {
 		return 0, fmt.Errorf("campaign is nil")
 	}
 	return obj.Content.Ending, nil
+}
+
+// X is the resolver for the x field.
+func (r *campaignResolver) X(ctx context.Context, obj *types.Campaign) (*string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.X, nil
+}
+
+// Telegram is the resolver for the telegram field.
+func (r *campaignResolver) Telegram(ctx context.Context, obj *types.Campaign) (*string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Telegram, nil
+}
+
+// Web is the resolver for the web field.
+func (r *campaignResolver) Web(ctx context.Context, obj *types.Campaign) (*string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Web, nil
 }
 
 // ID is the resolver for the id field.
@@ -132,7 +164,7 @@ func (r *frontpageResolver) Content(ctx context.Context, obj *types.Frontpage) (
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, creator string) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error) {
 	tradingAddr := crypto.GetTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingHash)
 	contractOwner_, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {
@@ -188,6 +220,10 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			PoolAddress: tradingAddr.Hex(),
 			Outcomes:    campaignOutcomes,
 			Ending:      ending,
+			Starting:    starting,
+			X:           x,
+			Telegram:    telegram,
+			Web:         web,
 		},
 	}
 	result := r.DB.Table("ninelives_campaigns_1").Create(&campaign)

@@ -59,6 +59,18 @@ type (
 
 		// Ending date of the campaign. Unix timestamp in miliseconds.
 		Ending int `json:"ending"`
+
+		// Starting date of the campaign. Unix timestamp in miliseconds.
+		Starting int `json:"starting"`
+
+		// X/Twitter username.
+		X *string `json:"x"`
+
+		// Telegram username.
+		Telegram *string `json:"telegram"`
+
+		// Web url
+		Web *string `json:"web"`
 	}
 
 	// Wallet of the creator of a campaign.
