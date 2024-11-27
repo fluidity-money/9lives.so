@@ -38,6 +38,7 @@ interface INineLivesFactory {
      * AI resolver, depending on the circumstances). If the infrastructure market
      * was chosen, then the code calls the Infrastructure Market to create a new market there
      * with its own creation time.
+     * @param isDPM, whether to use the DPM or the AMM function.
      * @param timeStart to begin this contract at. This should be in the future.
      * @param timeEnding to end this contract at. This should be in the future.
      * @param documentation keccak'd hash of the information that makes up the description
@@ -48,6 +49,7 @@ interface INineLivesFactory {
     function newTrading(
         FactoryOutcome[] memory outcomes,
         address oracle,
+        bool isDPM,
         uint64 timeStart,
         uint64 timeEnding,
         bytes32 documentation,

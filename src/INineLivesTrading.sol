@@ -19,6 +19,7 @@ interface INineLivesTrading {
     function ctor(
         TradingOutcome[] memory outcomes,
         address oracle,
+        bool isDPM,
         uint256 timeStart,
         uint256 timeEnding,
         address feeRecipient

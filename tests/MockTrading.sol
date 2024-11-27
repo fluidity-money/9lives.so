@@ -28,6 +28,7 @@ contract MockTrading is INineLivesTrading {
     function ctor(
         TradingOutcome[] memory outcomes,
         address _oracle,
+        bool /* _isDPM */,
         uint256 _timeStart,
         uint256 _timeEnding,
         address _feeRecipient

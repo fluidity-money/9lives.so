@@ -10,6 +10,7 @@ sol! {
     function ctor(
         (bytes8,uint256)[] outcomes,
         address oracle,
+        bool isDPM,
         uint64 timeStart,
         uint64 timeEnding,
         address feeRecipient
@@ -22,6 +23,7 @@ pub fn ctor(
     contract: Address,
     outcomes: Vec<(FixedBytes<8>, U256)>,
     oracle: Address,
+    is_dpm: bool,
     time_start: u64,
     time_ending: u64,
     fee_recipient: Address,
@@ -32,6 +34,7 @@ pub fn ctor(
             &ctorCall {
                 outcomes,
                 oracle,
+                isDPM: is_dpm,
                 timeStart: time_start,
                 timeEnding: time_ending,
                 feeRecipient: fee_recipient,

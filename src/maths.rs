@@ -18,7 +18,7 @@ fn div(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
 }
 
 #[allow(non_snake_case)]
-pub fn price(
+pub fn dpm_price(
     M1: Decimal,
     M2: Decimal,
     N1: Decimal,
@@ -43,7 +43,7 @@ pub fn price(
 }
 
 #[allow(non_snake_case)]
-pub fn shares(
+pub fn dpm_shares(
     M1: Decimal,
     M2: Decimal,
     N1: Decimal,

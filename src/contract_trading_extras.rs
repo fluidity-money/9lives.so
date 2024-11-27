@@ -1,24 +1,21 @@
 use stylus_sdk::{alloy_primitives::*, block, contract, evm, msg};
 
-use rust_decimal::Decimal;
-
 use crate::error::Error;
 
 use crate::{
     decimal::{
-        fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal,
+        fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_u256_to_decimal,
     },
     events, factory_call, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    storage_trading_dpm::StorageTradingDPM,
 };
 
-#[cfg(feature = "contract-trading-extras")]
-pub use crate::storage_trading_dpm::user_entrypoint;
+// This exports user_entrypoint, which we need to have the entrypoint code.
+pub use crate::storage_trading::*;
 
 #[cfg_attr(feature = "contract-trading-extras", stylus_sdk::prelude::public)]
-impl StorageTradingDPM {
+impl StorageTrading {
     // Seeds the pool with the first outcome. Assumes msg.sender is
     // the factory. Seeder is the address to take the money from. It
     // should have the approval done beforehand with its own
@@ -28,6 +25,7 @@ impl StorageTradingDPM {
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256)>,
         oracle: Address,
+        is_dpm: bool,
         time_start: u64,
         time_ending: u64,
         fee_recipient: Address
@@ -40,15 +38,16 @@ impl StorageTradingDPM {
         let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
         // We assume that the Factory already supplied the liquidity to us.
         self.global_invested.set(fusdc_amt);
+        self.seed_invested.set(fusdc_amt);
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
         assert_or!(outcomes_len == 2, Error::TwoOutcomesOnly);
-        self.global_shares.set(Decimal::from(outcomes_len));
+        self.global_shares.set(U256::from(outcomes_len));
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
         for (outcome_id, outcome_amt) in outcomes {
             assert_or!(!outcome_amt.is_zero(), Error::OddsMustBeSet);
             self.outcome_invested.setter(outcome_id).set(outcome_amt);
-            self.outcome_shares.setter(outcome_id).set(Decimal::from(1));
+            self.outcome_shares.setter(outcome_id).set(U256::from(1));
             self.outcome_list.push(outcome_id);
         }
         self.share_impl.set(factory_call::share_impl(FACTORY_ADDR)?);
@@ -108,7 +107,7 @@ impl StorageTradingDPM {
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg::sender(), share_bal)?;
         let n = share_u256_to_decimal(share_bal)?;
-        let n_1 = self.outcome_shares.get(outcome_id);
+        let n_1 = share_u256_to_decimal(self.outcome_shares.get(outcome_id))?;
         #[allow(non_snake_case)]
         let M = fusdc_u256_to_decimal(self.global_invested.get())?;
         // Get the cumulative payout for the user.
@@ -128,7 +127,7 @@ impl StorageTradingDPM {
 
     pub fn details(&self, outcome_id: FixedBytes<8>) -> Result<(U256, U256, U256, FixedBytes<8>), Error> {
         Ok((
-            share_decimal_to_u256(self.outcome_shares.get(outcome_id))?,
+            self.outcome_shares.get(outcome_id),
             self.outcome_invested.get(outcome_id),
             self.global_invested.get(),
             self.winner.get(),

@@ -28,6 +28,7 @@ impl StorageFactory {
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
+        is_dpm: bool,
         time_start: u64,
         time_ending: u64,
         documentation: FixedBytes<32>,
@@ -94,7 +95,7 @@ impl StorageFactory {
             // We use the sqrt price to seed Longtail with the initial trading amounts for this
             // so there's an immediate arbitrage opportunity for LPing.
 
-            let sqrt_price = maths::price_to_sqrt_price(fusdc_decimal_to_u256(maths::price(
+            let sqrt_price = maths::price_to_sqrt_price(fusdc_decimal_to_u256(maths::dpm_price(
                 m_1,
                 m_2,
                 Decimal::from(n_1),
@@ -121,6 +122,7 @@ impl StorageFactory {
             trading_addr,
             trading_outcomes,
             oracle,
+            is_dpm,
             time_start,
             time_ending,
             fee_recipient,

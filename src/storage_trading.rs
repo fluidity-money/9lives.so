@@ -1,14 +1,15 @@
 use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
-use crate::decimal::StorageDecimal;
-
 #[storage]
 #[cfg_attr(any(feature = "contract-trading-mint", feature = "contract-trading-extras"), entrypoint)]
-pub struct StorageTradingDPM {
+pub struct StorageTrading {
     /// Outcome was determined! It should be impossible to mint, only to burn.
     /// This is the timestamp the locking took place. If it's 0, then we haven't
     /// decided the outcome yet.
     pub when_decided: StorageU64,
+
+    /// Is this code in the DPM form?
+    pub is_dpm: StorageBool,
 
     /// Was this contract shut down? This is called once the deadline has
     /// expired to pause trading.
@@ -32,10 +33,13 @@ pub struct StorageTradingDPM {
     pub share_impl: StorageAddress,
 
     /// Shares invested in every outcome cumulatively.
-    pub global_shares: StorageDecimal,
+    pub global_shares: StorageU256,
 
     /// Shares invested in a specific outome.
-    pub outcome_shares: StorageMap<FixedBytes<8>, StorageDecimal>,
+    pub outcome_shares: StorageMap<FixedBytes<8>, StorageU256>,
+
+    /// Amount that was invested to seed this pool. Used as liquidity by the AMM.
+    pub seed_invested: StorageU256,
 
     /// Global amount invested to this pool of the native asset.
     pub global_invested: StorageU256,
@@ -50,7 +54,7 @@ pub struct StorageTradingDPM {
     pub winner: StorageFixedBytes<8>,
 
     /// The amount paid out so far by the decided amount.
-    pub amount_paid_out: StorageDecimal
+    pub amount_paid_out: StorageU256,
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
