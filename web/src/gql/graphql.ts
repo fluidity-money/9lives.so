@@ -74,6 +74,32 @@ export type Campaign = {
   poolAddress: Scalars['String']['output'];
 };
 
+/**
+ * News that could be rendered to a viewer who hasn't viewed the site in a while.
+ * This is CHANGELOG.md that's parsed to be of the form:
+ * ```
+ * ### (date) (description)
+ *
+ * * Markdown unsorted list
+ *
+ * 1. Markdown sorted list
+ *
+ * ... yadda yadda
+ * ```
+ *
+ * This is converted to HTML.
+ */
+export type Changelog = {
+  __typename?: 'Changelog';
+  /** The timestamp that this item is relevant for after. */
+  afterTs: Scalars['Int']['output'];
+  /** HTML rendered from the Markdown CHANGELOG.md file. */
+  html: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  /** The title of the changelog item. */
+  title: Scalars['String']['output'];
+};
+
 /** Frontpage that should be displayed for a time window. */
 export type Frontpage = {
   __typename?: 'Frontpage';
@@ -221,6 +247,8 @@ export type Query = {
   achievements: Array<Achievement>;
   /** Campaign List that can be filtered according to categories */
   campaigns: Array<Campaign>;
+  /** Any new changelog items that have come up recently. */
+  changelog: Array<Maybe<Changelog>>;
   /**
    * Frontpage display. Should have a timeline as to when it should (from) and should
    * not be displayed (until).
@@ -237,6 +265,8 @@ export type Query = {
   points: Points;
   /** Number of users who used this product. */
   productUserCount: Scalars['Int']['output'];
+  /** Suggested headlines for the day based on AI input. */
+  suggestedHeadlines: Array<Scalars['String']['output']>;
 };
 
 
@@ -313,8 +343,21 @@ export type GetTotalUserCountQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetTotalUserCountQuery = { __typename?: 'Query', productUserCount: number };
 
+export type CreateCampaignMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  desc: Scalars['String']['input'];
+  outcomes: Array<OutcomeInput> | OutcomeInput;
+  seed: Scalars['Int']['input'];
+  creator: Scalars['String']['input'];
+  ending: Scalars['Int']['input'];
+}>;
+
+
+export type CreateCampaignMutation = { __typename?: 'Mutation', explainCampaign?: boolean | null };
+
 
 export const CampaignListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CampaignList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"campaigns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"oracle"}},{"kind":"Field","name":{"kind":"Name","value":"poolAddress"}},{"kind":"Field","name":{"kind":"Name","value":"creator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}},{"kind":"Field","name":{"kind":"Name","value":"outcomes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"share"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"ending"}}]}}]}}]} as unknown as DocumentNode<CampaignListQuery, CampaignListQueryVariables>;
 export const GetAchievementsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAchievements"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"wallet"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"achievements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"wallet"},"value":{"kind":"Variable","name":{"kind":"Name","value":"wallet"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"shouldCountMatter"}},{"kind":"Field","name":{"kind":"Name","value":"product"}}]}}]}}]} as unknown as DocumentNode<GetAchievementsQuery, GetAchievementsQueryVariables>;
 export const GetLeaderboardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getLeaderboard"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"season"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"leaderboards"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"product"},"value":{"kind":"StringValue","value":"9lives","block":false}},{"kind":"Argument","name":{"kind":"Name","value":"season"},"value":{"kind":"Variable","name":{"kind":"Name","value":"season"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"wallet"}},{"kind":"Field","name":{"kind":"Name","value":"ranking"}},{"kind":"Field","name":{"kind":"Name","value":"scoring"}}]}}]}}]}}]} as unknown as DocumentNode<GetLeaderboardQuery, GetLeaderboardQueryVariables>;
 export const GetTotalUserCountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getTotalUserCount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"productUserCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"product"},"value":{"kind":"StringValue","value":"9lives","block":false}}]}]}}]} as unknown as DocumentNode<GetTotalUserCountQuery, GetTotalUserCountQueryVariables>;
+export const CreateCampaignDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createCampaign"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"desc"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"outcomes"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OutcomeInput"}}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"seed"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"creator"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ending"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"explainCampaign"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"PUT"}},{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"Argument","name":{"kind":"Name","value":"description"},"value":{"kind":"Variable","name":{"kind":"Name","value":"desc"}}},{"kind":"Argument","name":{"kind":"Name","value":"outcomes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"outcomes"}}},{"kind":"Argument","name":{"kind":"Name","value":"ending"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ending"}}},{"kind":"Argument","name":{"kind":"Name","value":"creator"},"value":{"kind":"Variable","name":{"kind":"Name","value":"creator"}}},{"kind":"Argument","name":{"kind":"Name","value":"seed"},"value":{"kind":"Variable","name":{"kind":"Name","value":"seed"}}}]}]}}]} as unknown as DocumentNode<CreateCampaignMutation, CreateCampaignMutationVariables>;
