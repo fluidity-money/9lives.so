@@ -11,11 +11,11 @@ use crate::{
     events, factory_call, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    storage_trading::StorageDPM,
+    storage_dpm::StorageDPM,
 };
 
 #[cfg(feature = "contract-dpm-trading-extras")]
-pub use crate::storage_trading::user_entrypoint;
+pub use crate::storage_dpm::user_entrypoint;
 
 #[cfg_attr(feature = "contract-dpm-trading-extras", stylus_sdk::prelude::public)]
 impl StorageDPM {

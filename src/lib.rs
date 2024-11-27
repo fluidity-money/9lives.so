@@ -79,7 +79,7 @@ pub mod storage_factory;
 pub mod contract_factory_1;
 pub mod contract_factory_2;
 
-pub mod storage_trading;
+pub mod storage_dpm;
 pub mod contract_dpm_extras;
 pub mod contract_dpm_mint;
 
