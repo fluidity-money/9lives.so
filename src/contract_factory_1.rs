@@ -15,7 +15,7 @@ use crate::{
     maths, proxy, share_call, trading_call,
 };
 
-pub use crate::factory_storage::*;
+pub use crate::storage_factory::*;
 
 use rust_decimal::Decimal;
 

@@ -2,7 +2,7 @@ use stylus_sdk::{alloy_primitives::*, contract, msg};
 
 use crate::{amm_call, error::*, immutables::*, proxy};
 
-pub use crate::factory_storage::*;
+pub use crate::storage_factory::*;
 
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {

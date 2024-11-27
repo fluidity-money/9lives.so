@@ -28,11 +28,13 @@ interface ILockup {
     function slash(address victim) external;
 
     /**
-     * @notice takeStakedArb from the pool that we have locked up
+     * @notice confiscate from the victim that bet incorrectly.
      * @param victim to take money from, setting their staked arb to 0.
      * @param recipient to send the staked arb to
      */
-    function takeStakedArb(address victim, address recipient) external;
+    function confiscate(address victim, address recipient) external returns (
+        uint256 amountTaken
+    );
 
     /**
      * @notice freeze a user's position to prevent it from being taken until after this deadline. If the amount is already set, then we use the latest value.

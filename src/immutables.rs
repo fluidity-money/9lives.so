@@ -63,6 +63,10 @@ pub const A_WEEK_SECS: u64 = 604800;
 // percentage.
 pub const SCALING_AMT: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
 
+// Scaling amount for checking if a bad predictor went above 50% in their
+// incorrect bets relative ot the winning outcome.
+pub const FIFTY_PCT_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
+
 // Incentive amount to take from users who create markets. $10 FUSDC.
 pub const INCENTIVE_AMT: U256 = U256::from_limbs([1e7 as u64, 0, 0, 0]);
 

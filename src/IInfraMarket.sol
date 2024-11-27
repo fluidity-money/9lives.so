@@ -2,7 +2,7 @@
 pragma solidity 0.8.18;
 
 interface IInfraMarket {
-    function register(address trading, uint256 launchTs) external;
+    function register(address trading, uint64 launchTs) external;
     function predict(address trading, bytes8 winner, uint256 amount) external;
     function winner() external view returns (bytes8 winnerId);
 
@@ -18,7 +18,7 @@ interface IInfraMarket {
         address trading,
         address victim,
         bytes8[] calldata outcomes
-    ) external;
+    ) external returns (uint256 yieldForCaller);
 
     // Claim some Staked ARB that the user is owed by collecting from the user's global share. Calls sweep too.
     function claim(

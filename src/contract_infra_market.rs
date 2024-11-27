@@ -1,6 +1,14 @@
-use crate::storage_infra_campaign::StorageInfraMarket;
+use stylus_sdk::{alloy_primitives::*, block, contract, evm, msg};
 
-#[cfg_attr(feature = "contract-infra-campaign", stylus_sdk::prelude::public)]
+use crate::{
+    error::Error, events, fusdc_call, immutables::*, lockup_call, maths,
+    storage_infra_market::StorageInfraMarket, trading_call,
+};
+
+#[cfg_attr(
+    feature = "contract-infrastructure-market",
+    stylus_sdk::prelude::public
+)]
 impl StorageInfraMarket {
     pub fn ctor(
         &mut self,
@@ -9,11 +17,13 @@ impl StorageInfraMarket {
         locked_arb_token_addr: Address,
         factory_addr: Address,
     ) -> Result<(), Error> {
-        assert_or!(self.enabled.is_zero(), Error::AlreadyExists);
+        assert_or!(!self.created.get(), Error::AlreadyConstructed);
+        self.created.set(true);
         self.enabled.set(true);
         self.emergency_council.set(emergency_council);
         self.lockup_addr.set(lockup_addr);
         self.factory_addr.set(factory_addr);
+        Ok(())
     }
 
     /// Register a campaign. We take a small finders fee from the user who created this campaign.
@@ -21,8 +31,8 @@ impl StorageInfraMarket {
         &mut self,
         trading_addr: Address,
         incentive_sender: Address,
-        desc: B32,
-        launch_ts: U256,
+        desc: FixedBytes<32>,
+        launch_ts: U64,
     ) -> Result<(), Error> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
@@ -38,7 +48,7 @@ impl StorageInfraMarket {
         // Take the incentive amount to give to the user who calls sweep for the first time
         // with the correct calldata.
         fusdc_call::take_from_funder_to(incentive_sender, contract::address(), INCENTIVE_AMT)?;
-        evm::emit(events::MarketCreated {
+        evm::log(events::MarketCreated {
             incentiveSender: incentive_sender,
             tradingAddr: trading_addr,
         });
@@ -53,96 +63,70 @@ impl StorageInfraMarket {
     /// in a list of people who've chosen to participate in the vested
     /// amount. We decay the amount that we add for the user based on
     /// the amount of seconds that have gone by so far until the end.
-    pub fn predict(&mut self, trading_addr: Address, winner: B8, amt: U256) -> Result<(), Error> {
+    pub fn predict(
+        &mut self,
+        trading_addr: Address,
+        winner: FixedBytes<8>,
+        amt: U256,
+    ) -> Result<(), Error> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
-        assert_or!(winner != B8::ZERO, Error::MustContainOutcomes);
+        assert_or!(!winner.is_zero(), Error::MustContainOutcomes);
         let campaign_start_ts =
             u64::from_le_bytes(self.campaign_starts.getter(trading_addr).to_le_bytes());
         assert_or!(
-            campaign_start_ts > block::timestamp()
+            campaign_start_ts > block::timestamp(),
             Error::InfraMarketHasNotStarted
         );
         assert_or!(
             campaign_start_ts + THREE_DAYS_SECS > block::timestamp(),
             Error::InfraMarketHasExpired
         );
-        // The amount that the user was already added from their balance in the past.
-        let amt_already_added = self
-            .user_vested_arb
-            .getter(trading_addr)
-            .get(msg::sender());
+
         // We track the amount of ARB that the user has in the Lockup contract
-        // to punish bad behaviour here.
-        let user_staked_arb_bal =
-            lockup_call::staked_arb_bal(self.lockup_addr.get(), msg::sender())?;
-        let existing_user_tracked_staked_arb_bal = self
-            .campaign_user_vested_arb
-            .getter(trading_addr)
-            .get(msg::sender());
-        // We check if they've previously updated this balance, and we track their new amount.
-        let new_user_staked_arb_amt = if user_staked_arb_bal > existing_user_tracked_staked_arb {
-            user_staked_arb_bal - existing_user_tracked_staked_arb
-        } else {
-            U256::ZERO
-        };
-        // We update the tracked amount for the user here. It's worth
-        // noting that later, if someone tries to draw down from this
-        // user's staked amount in the event of slashing, then we
-        // actually check their locked up staked ARB balance to see if
-        // it's greater than or equal to this amount here. And if it
-        // isn't, then we don't send anything to prevent weird slashing
-        // behaviour.
-        self.campaign_user_vested_arb
+        // to punish bad behaviour here. This is not based on the point in history
+        // when this contract was called, and it's purely for slashing and to protect
+        // tokenholders from being affected during a slash. If Lockup is functioning
+        // correctly, the user should not be able to take their staked ARB from the
+        // contract until a week has passed after the end of this infrastructure market.
+        let cur_user_arb_amt = lockup_call::staked_arb_bal(self.lockup_addr.get(), msg::sender())?;
+        // We'll check that when someone goes to slash this user,
+        // that their recorded staked ARB in the lockup contract is either greater
+        // or lower than the amount tracked here. If the amount tracked here
+        // exceeds the amount in the Lockup contract, then we assume that
+        // someone slashed them already, and we don't take the Staked ARB.
+        // If they're lower than or equal to, then we take their Staked ARB.
+        self.user_global_vested_arb
             .setter(trading_addr)
             .setter(msg::sender())
-            .set(user_staked_arb_bal);
-        let existing_campaign_vested_arb = self.campaign_vested_arb.getter(trading_arb);
-        self.campaign_global_vested_arb
-            .setter(trading_addr)
-            .set(existing_campaign_global_vested_arb + new_user_staked_arb_amt);
-        // If the user is trying to allocate more than they possibly could at this timepoint,
-        // we blow up.
-        let amt_new_vested_arb = amt_already_added + amt;
-        assert_or!(
-            amt_new_vested
-                < ninelives_lockedarb_call::get_past_votes(
-                    self.locked_arb_token.get(),
-                    msg::sender(),
-                    U256::from(campaign_start_ts)
-                ),
-            Error::InfraMarketTooMuchVested
-        );
-        self.user_vested_arb
-            .setter(trading_addr)
-            .setter(msg::sender())
-            .set(amt_new_vested_arb);
+            .set(cur_user_arb_amt);
+
+        // Now that we've tracked the Arb amount, we need to start using the timepoint
+        // tracked power contract to know at the point in time how much they had,
+        // and start to figure out their voting power.
+        // TODO USE THE TOKEN FOR HTIS
         // Get the voting power that we're adding to this outcome based
         // on how many seconds have passed.
         let secs_passed = block::timestamp() - campaign_start_ts;
         let existing_vested_power = self.campaign_vested_power.getter(trading_addr).get(winner);
         // Now we need to update the global amount vested in the outcome.
-        let voting_power = maths::infra_voting_power(amt, secs_passed);
+        let voting_power = maths::infra_voting_power(amt, secs_passed)?;
         self.campaign_vested_power
             .setter(trading_addr)
             .setter(winner)
             .set(existing_vested_power + voting_power);
-        let user_vested_power = self
-            .user_vested_power
+        let user_campaign_vested_power = self
+            .user_campaign_vested_power
             .getter(trading_addr)
             .getter(winner)
             .get(msg::sender());
         // We also track the amount that the user vested in this outcome
         // in terms of voting power, for figuring out the proportion of
         // the loser funds to send to them.
-        self.user_vested_power
+        self.user_campaign_vested_power
             .setter(trading_addr)
             .setter(winner)
             .setter(msg::sender())
-            .set(user_vested_power + voting_power);
-        let existing_global_power = self.campaign_global_power_vested.get(trading_addr);
-        self.campaign_global_power_vested
-            .setter(trading_addr)
-            .set(existing_global_power + voting_power);
+            .set(user_campaign_vested_power + voting_power);
         // Indicate to the Lockup contract that the user is unable to withdraw their funds
         // for the expiry time of this contract + a week.
         lockup_call::freeze(
@@ -150,7 +134,7 @@ impl StorageInfraMarket {
             msg::sender(),
             U256::from(campaign_start_ts + THREE_DAYS_SECS),
         )?;
-        evm::emit(events::UserPredicted {
+        evm::log(events::UserPredicted {
             trading: trading_addr,
             predictor: msg::sender(),
             tokenAmount: amt,
@@ -185,18 +169,24 @@ impl StorageInfraMarket {
     /// being taken from them if their recorded share in this pool is either
     /// 0, or that their recorded ARB allocated to this outcome is more than
     /// their reported current amount of ARB in the rest of the lockup contract.
+    /// Once they take the amount from a victim, their global voting power
+    /// is reduced by the amount that the victim had. This way, they can
+    /// continue to slash users, and presumably, the caller was identified as
+    /// having correctly bet already, so it's safe for the check that their position
+    /// bet on the correct outcome to start to become odd.
     /// This way, the system should be tolerable of bad behaviour and unusal
     /// interaction, say, if a user gets slashed across multiple pools at once.
     /// A bad edge case scenario in this slashing situation is funds are stuck
     /// in the other contract, as a victim's tracked vested ARB is less than
     /// what's locked in the pool. That situation is tolerable, as that amount
-    /// would go to governance.
+    /// would go to governance potentially, after being taken by another user.
     pub fn sweep(
         &mut self,
         trading_addr: Address,
         victim_addr: Address,
-        mut outcomes: Vec<B8>,
-    ) -> Result<(), Error> {
+        mut outcomes: Vec<FixedBytes<8>>,
+        recipient: Address,
+    ) -> Result<U256, Error> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         let campaign_start_ts =
             u64::from_le_bytes(self.campaign_starts.getter(trading_addr).to_le_bytes());
@@ -221,11 +211,11 @@ impl StorageInfraMarket {
             let mut current_voting_power_winner_amt = U256::ZERO;
             let mut current_voting_power_winner_id = None;
             for winner in outcomes {
-                assert_or!(winner != B8::ZERO, Error::MustContainOutcomes);
+                assert_or!(!winner.is_zero(), Error::MustContainOutcomes);
                 let power = self.campaign_vested_power.getter(trading_addr).get(winner);
                 voting_power_global += power;
                 // Set the current power winner to whoever's greatest.
-                if power > current_voting_power_winner {
+                if power > current_voting_power_winner_amt {
                     current_voting_power_winner_amt = power;
                     current_voting_power_winner_id = Some(winner);
                 }
@@ -242,22 +232,30 @@ impl StorageInfraMarket {
                     .setter(trading_addr)
                     .set(voting_power_winner);
                 // Looks like we owe the caller some money.
-                fusdc_call::transfer(msg::sender(), INCENTIVE_AMT)?;
+                fusdc_call::transfer(recipient, INCENTIVE_AMT)?;
                 // At this point we call the campaign that this is
-                // connected to to let them know that there was a winner.
-                trading_call::decide(voting_power_winner)?;
+                // connected to to let them know that there was a winner. Hopefully
+                // someone called shutdown on the contract in the past to prevent
+                // users from calling Longtail constantly.
+                trading_call::decide(trading_addr, voting_power_winner)?;
             }
         }
-        if victim_addr == U256::ZERO {
-	    // We don't bother to slash the user if this is the case. We
-	    // just return nicely. This might be paired with the
-	    // interaction with sweep to collect the incentive amount.
+        // The winning outcome in this campaign.
+        let campaign_winner = self.campaign_winner.get(trading_addr);
+        if victim_addr.is_zero() {
+            // We don't bother to slash the user if this is the case. We
+            // just return nicely. This might be paired with the
+            // interaction with sweep to collect the incentive amount.
             return Ok(U256::ZERO);
         }
         // We check if the victim's vested power is 0. If it is, then we assume
-        // that someone already claimed this victim's position!
-        let victim_vested_power = self.user_vested_power.getter(target_addr).get(victim_addr);
-        if victim_vested_power.is_zero() {
+        // that someone already claimed this victim's position! Or, they never bet
+        // wrong, and someone is trying to abuse this system.
+        let victim_global_vested_power = self
+            .user_global_vested_power
+            .getter(trading_addr)
+            .get(victim_addr);
+        if victim_global_vested_power.is_zero() {
             return Ok(U256::ZERO);
         }
         // We check the victim's vested arb in the lockup contract, and
@@ -266,23 +264,91 @@ impl StorageInfraMarket {
         // power to 0 should hopefully be enough to prevent
         // double claiming later.
         let victim_vested_arb_amt = self
-            .campaign_user_vested_arb
+            .user_global_vested_arb
             .getter(trading_addr)
             .get(victim_addr);
-        let victim_staked_arb_amt = lockup_call::staked_arb_bal(victim_addr)?;
+        let victim_staked_arb_amt =
+            lockup_call::staked_arb_bal(self.lockup_addr.get(), victim_addr)?;
         if victim_vested_arb_amt > victim_staked_arb_amt {
             return Ok(U256::ZERO);
         }
         // We check the caller's share of the power vested in this losing campaign,
         // and if the victim's share of the incorrectly allocated profit is below
-        // the caller's share, then we claim their amounts here. If the amount of
-        // time that's exceeded is 5 days, then we're inside a "ANYTHING GOES"
-        // period where someone could claim the victim's entire position without
-        // beating them on the percentage of the share that's held.
+        // the caller's share, then we claim their amounts here. First, check if the
+        // user actually bet incorrectly by checking
+        // if their share of the winning outcome is less than 50% of all
+        // of their voting power.
+        let victim_correct_power_amt = self
+            .user_campaign_vested_power
+            .getter(trading_addr)
+            .getter(campaign_winner)
+            .get(victim_addr);
+        let global_power_amt = self
+            .user_global_vested_power
+            .getter(trading_addr)
+            .get(victim_addr);
+        //if 50 > victim bet on winning amt / victim bet on everything
+        let victim_bet_incorrectly =
+            U256::from(50) > (FIFTY_PCT_SCALING * victim_correct_bet_amt) / global_power_amt;
+        // If the victim did not bet incorrectly, we assume the user made
+        // a mistake in calling this function, and break out.
+        assert_or!(victim_bet_incorrectly, Error::BadVictim);
+        // We need to now take the amount that the victim bet in the
+        // incorrect outcome, and we need to dilute their power down by
+        // the amount of the global power relative to the winning power.
+        // So if 51% of the power invested was in the correct outcome,
+        // then we need to take 49% power away from the victim, then do
+        // our comparison to see if it's valid for the claimer to take
+        // money from the victim.
+        //campaign vested power / global vested power
+        let pct_of_global_power_is_winner = self
+            .campaign_vested_power
+            .getter(trading_addr)
+            .get(campaign_winner)
+            .checked_mul(SCALING_FACTOR)
+            .ok_or(Error::CheckedMulOverflow)
+            .checked_div(self.campaign_global_power_vested.get(trading_addr))
+            .ok_or(Error::CheckedDivOverflow);
+        //victim victed power * (1 - global power percent)
+        let diluted_victim_power = self
+            .user_global_vested_power
+            .getter(trading_addr)
+            .get(victim_addr)
+            .checked_mul(SCALING_FACTOR)
+            .ok_or(Error::CheckedMulOverflow)
+            .checked_mul(SCALING_FACTOR - pct_of_global_power)
+            .ok_or(Error::CheckedDivOverflow)?
+            .checked_div(SCALING_FACTOR)
+            .ok_or(Error::CheckedDivOverflow)?;
+        // Now that we know the amounts allocated, let's test if the
+        // caller can claim this amount by looking at the power of the
+        // caller.
+        let caller_winning_power = self
+            .user_campaign_vested_power
+            .getter(trading_power)
+            .getter(campaign_winner)
+            .get(msg::sender());
+        // If the amount of time that's exceeded is 5 days, then we're
+        // inside a "ANYTHING GOES" period where someone could claim the
+        // victim's entire position without beating them on the
+        // percentage of the share that's held.
         let are_we_anything_goes_period = block::timestamp() > campaign_start_ts + FIVE_DAYS_SECS;
-	// Does our share of the power exceed the share they have of the
-	// staked arb vested in this campaign?
-	//let caller_share_of_power = self
-	Ok(())
+        let can_winner_claim_victim =
+            are_we_anything_goes_period || caller_winner_power > diluted_victim_power;
+        assert_or!(can_winner_claim_victim, Error::VictimCannotClaim);
+        // Prevent the victim from being drained again, and dilute the caller's voting
+        // power down in line with the amount the victim had.
+        self.user_global_vested_power
+            .setter(trading_addr)
+            .setter(victim_addr)
+            .set(U256::ZERO);
+        self.user_global_vested_power
+            .setter(trading_addr)
+            .setter(msg::sender())
+            .set(caller_winning_power - diluted_victim_power);
+        // Transfer the victim's entire staked ARB position to the
+        // caller. Make sure noone can drain from this user in this
+        // contract again!
+        lockup_call::confiscate(self.lockup_addr.get(), recipient)
     }
 }

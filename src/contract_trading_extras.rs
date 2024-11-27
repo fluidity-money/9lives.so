@@ -11,11 +11,11 @@ use crate::{
     events, factory_call, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    trading_storage::StorageTrading,
+    storage_trading::StorageTrading,
 };
 
 #[cfg(feature = "contract-trading-extras")]
-pub use crate::trading_storage::user_entrypoint;
+pub use crate::storage_trading::user_entrypoint;
 
 #[cfg_attr(feature = "contract-trading-extras", stylus_sdk::prelude::public)]
 impl StorageTrading {

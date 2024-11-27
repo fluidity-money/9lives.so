@@ -271,6 +271,26 @@ pub enum Error {
     /// The caller is not the factory!
     #[error("Caller is not factory")]
     CallerIsNotFactory,
+
+    // 0x34
+    /// The contract is disabled!
+    #[error("The contract is disabled")]
+    NotEnabled,
+
+    // 0x35
+    /// Unable to unpack from a Lockup call!
+    #[error("Unable to unpack Lockup")]
+    LockupUnableToUnpack,
+
+    // 0x36
+    /// The victim did not predict incorrectly!
+    #[error("Victim did not predict incorrectly")]
+    BadVictim,
+
+    // 0x37
+    /// The caller cannot claim the victim's funds (yet?) due to less power.
+    #[error("Caller cannot claim victim's funds")]
+    VictimCannotClaim,
 }
 
 impl From<Error> for Vec<u8> {

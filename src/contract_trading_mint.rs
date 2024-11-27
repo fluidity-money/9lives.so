@@ -13,13 +13,13 @@ use crate::{
     events, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    trading_storage::StorageTrading,
+    storage_trading::StorageTrading,
 };
 
 use rust_decimal::Decimal;
 
 #[cfg(feature = "contract-trading-mint")]
-pub use crate::trading_storage::user_entrypoint;
+pub use crate::storage_trading::user_entrypoint;
 
 #[cfg_attr(feature = "contract-trading-mint", stylus_sdk::prelude::public)]
 impl StorageTrading {
