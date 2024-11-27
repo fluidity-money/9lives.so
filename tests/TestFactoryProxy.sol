@@ -35,7 +35,7 @@ contract MockImpl1_2 {
     function swagC82F43C4() external pure returns (uint256) {
         return 2;
     }
-    function newTradingC11AAA3B(
+    function newTrading(
         Outcome[] memory /* outcomes */
     ) external view returns (uint256) {
         return count;
@@ -88,6 +88,6 @@ contract TestFactoryProxy is Test {
             abi.encodeWithSelector(MockImpl2_2.migration.selector, 123)
         );
         Outcome[] memory o;
-        assertEq(MockImpl1_2(address(factoryProxy)).newTradingC11AAA3B(o), 9999);
+        assertEq(MockImpl1_2(address(factoryProxy)).newTrading(o), 9999);
     }
 }

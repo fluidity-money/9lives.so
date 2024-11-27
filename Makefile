@@ -19,7 +19,14 @@ RELEASE_WASM_OPT_9LIVES := \
 
 OUT_SHARE := out/Share.sol/Share.json
 
-build: ${OUT_SHARE} contract-factory-1 contract-factory-2 contract-trading-mint contract-trading-extras
+build: \
+	${OUT_SHARE} \
+	contract-factory-1 \
+	contract-factory-2 \
+	contract-trading-mint \
+	contract-trading-extras \
+	contract-lockup \
+	contract-infrastructure-market
 
 solidity: ${OUT_SHARE}
 
@@ -32,7 +39,9 @@ contract-factory-2: contract-factory-2.wasm
 contract-trading-mint: contract-trading-mint.wasm
 contract-trading-extras: contract-trading-extras.wasm
 
-infra-pool: infra-pool.wasm
+contract-lockup: contract-lockup.wasm
+
+contract-infrastructure-market: contract-infrastructure-market.wasm
 
 contract-factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-1.wasm
@@ -54,10 +63,15 @@ contract-trading-extras.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-trading-extras
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-extras.wasm
 
-infra-pool.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f infra-pool.wasm
-	@${CARGO_BUILD_STYLUS} infra-pool-wasm
-	@${RELEASE_WASM_OPT_9LIVES} infra-pool.wasm
+contract-lockup.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-lockup.wasm
+	@${CARGO_BUILD_STYLUS} contract-lockup
+	@${RELEASE_WASM_OPT_9LIVES} contract-lockup.wasm
+
+contract-infrastructure-market.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-infrastructure-market.wasm
+	@${CARGO_BUILD_STYLUS} contract-infrastructure-market
+	@${RELEASE_WASM_OPT_9LIVES} contract-infrastructure-market.wasm
 
 clean:
 	@rm -rf \

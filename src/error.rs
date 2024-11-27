@@ -291,6 +291,21 @@ pub enum Error {
     /// The caller cannot claim the victim's funds (yet?) due to less power.
     #[error("Caller cannot claim victim's funds")]
     VictimCannotClaim,
+
+    // 0x38
+    /// The caller is out of vested power to allocate!
+    #[error("Caller is out of vested power")]
+    NoVestedPower,
+
+    // 0x39
+    /// Tried to call with a zero amount!
+    #[error("Zero amount passed!")]
+    ZeroAmount,
+
+    // 0x3a
+    /// Error calling the Infrastructure Market!
+    #[error("Error calling the Infra Market!")]
+    InfraMarketCallError(Vec<u8>),
 }
 
 impl From<Error> for Vec<u8> {
@@ -318,6 +333,7 @@ impl From<Error> for Vec<u8> {
         const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
         const ERR_LOCKED_ARB_PREAMBLE: [u8; 2] = [0x99, 0x07];
         const ERR_FACTORY_PREAMBLE: [u8; 2] = [0x99, 0x07];
+        const ERR_INFRA_MARKET_PREAMBLE: [u8; 2] = [0x99, 0x08];
 
         match val {
             Error::LongtailError(b) => ext(&ERR_LONGTAIL_PREAMBLE, &[&b]),
@@ -337,6 +353,7 @@ impl From<Error> for Vec<u8> {
             Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
             Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
             Error::FactoryCallError(b) => ext(&ERR_FACTORY_PREAMBLE, &[&b]),
+            Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
         }
     }

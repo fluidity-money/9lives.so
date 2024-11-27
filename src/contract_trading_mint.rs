@@ -30,6 +30,7 @@ impl StorageTrading {
         recipient: Address,
     ) -> Result<U256, Error> {
         assert_or!(self.when_decided.get().is_zero(), Error::DoneVoting);
+        assert_or!(value > U256::ZERO, Error::ZeroAmount);
 
         // Assume we already took the user's balance. Get the state of
         // everything else as u256s.
@@ -47,6 +48,11 @@ impl StorageTrading {
                 .checked_sub(outcome.invested.get())
                 .ok_or(Error::CheckedSubOverflow)?,
         )?;
+
+        // Here we do some fee adjustment to send the fee recipient their money.
+        let fee_for_creator = ((FEE_SCALING * value) * MINT_FEE_PCT) / FEE_SCALING;
+        fusdc_call::transfer(self.fee_recipient.get(), fee_for_creator)?;
+        let value = value - fee_for_creator;
 
         let m = round_down(fusdc_u256_to_decimal(value)?);
 

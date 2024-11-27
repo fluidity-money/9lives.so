@@ -39,11 +39,11 @@ interface INineLivesFactory {
      * @param feeRecipient to send fees earned from the 10% commission to.
      * @return tradingAddr address of the newly created Trading contract deployment.
      */
-    function newTradingC11AAA3B(
+    function newTrading(
         Outcome[] memory outcomes,
         address oracle,
-        uint256 timeStart,
-        uint256 timeEnding,
+        uint64 timeStart,
+        uint64 timeEnding,
         bytes32 documentation,
         address feeRecipient
     ) external returns (address tradingAddr);

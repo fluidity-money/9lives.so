@@ -1,6 +1,9 @@
 use crate::{calldata::unpack_u256, error::Error};
 
-use stylus_sdk::alloy_primitives::{Address, U256};
+use stylus_sdk::{
+    alloy_primitives::{Address, U256},
+    call::RawCall,
+};
 
 use alloy_sol_macro::sol;
 
@@ -21,9 +24,9 @@ pub use crate::share_call::mint;
 /// Get the past votes for a address at a point in time.
 pub fn get_past_votes(addr: Address, spender: Address, timepoint: U256) -> Result<U256, Error> {
     unpack_u256(
-        RawCall::new()
+        &RawCall::new()
             .call(addr, &getPastVotesCall { spender, timepoint }.abi_encode())
-            .map_err(|b| Error::LockedARBError(addr, b)),
+            .map_err(|b| Error::LockedARBError(addr, b))?,
     )
     .ok_or(Error::LockedARBUnableToUnpack)
 }

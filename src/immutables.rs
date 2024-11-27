@@ -50,6 +50,13 @@ env_addr!(FACTORY_ADDR, "SPN_FACTORY_ADDR");
 // Three days in seconds, for the infra market. This is when the market expires.
 pub const THREE_DAYS_SECS: u64 = 259200;
 
+// Scaling that's done for any fees taken from the incentive amount, or
+// the mint fee amount.
+pub const FEE_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
+
+// 5% of all trading to buy shares goes to the creator of the contract.
+pub const MINT_FEE_PCT: U256 = U256::from_limbs([5, 0, 0, 0]);
+
 // FIVE_DAYS_SECS powers ANYTHING GOES period where anyone can claim a
 // victim (user who bet incorrectly in an infrastructure market)'s
 // entire position. This is 5 days in seconds.
@@ -61,14 +68,22 @@ pub const A_WEEK_SECS: u64 = 604800;
 
 // Scaled amount to use for drawing down funds on request based on a
 // percentage.
-pub const SCALING_AMT: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
+pub const SCALING_FACTOR: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
 
 // Scaling amount for checking if a bad predictor went above 50% in their
 // incorrect bets relative ot the winning outcome.
 pub const FIFTY_PCT_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
 
 // Incentive amount to take from users who create markets. $10 FUSDC.
-pub const INCENTIVE_AMT: U256 = U256::from_limbs([1e7 as u64, 0, 0, 0]);
+pub const INCENTIVE_AMT_BASE: U256 = U256::from_limbs([1e7 as u64, 0, 0, 0]);
+
+// Share of the incentive amount that we take for Fluidity Labs
+// operations (10% of incentive amount base).
+pub const INCENTIVE_AMT_MODERATION: U256 = U256::from_limbs([1e6 as u64, 0, 0, 0]);
+
+// Amount that's sent to incentive callers of the sweep function (80% of
+// the incentive amount base).
+pub const INCENTIVE_AMT_SWEEP: U256 = U256::from_limbs([8000000, 0, 0, 0]);
 
 // Minimal viable proxy bytecode.
 pub const NORMAL_PROXY_BYTECODE_1: [u8; 18] = [

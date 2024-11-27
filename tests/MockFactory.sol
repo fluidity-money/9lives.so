@@ -19,11 +19,11 @@ contract MockFactory is INineLivesFactory {
         address /* infraMarketOracle */
     ) external {}
 
-    function newTradingC11AAA3B(
+    function newTrading(
         Outcome[] memory _outcomes,
         address _oracle,
-        uint256 _timeStart,
-        uint256 _timeEnding,
+        uint64 _timeStart,
+        uint64 _timeEnding,
         bytes32 /* _documentation */,
         address _feeRecipient
     ) external returns (address) {

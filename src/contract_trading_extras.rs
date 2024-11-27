@@ -26,8 +26,11 @@ impl StorageTrading {
     // Does not prevent a user from submitting the same outcome twice!
     pub fn ctor(
         &mut self,
-        oracle: Address,
         outcomes: Vec<(FixedBytes<8>, U256)>,
+        oracle: Address,
+        time_start: u64,
+        time_ending: u64,
+        fee_recipient: Address
     ) -> Result<(), Vec<u8>> {
         // We check that the caller is the factory, and if they are, we allow them
         // to call us willy-nilly. Factory could harm us by calling this function again,
@@ -50,6 +53,9 @@ impl StorageTrading {
             self.outcome_list.push(outcome_id);
         }
         self.share_impl.set(factory_call::share_impl(FACTORY_ADDR)?);
+        self.fee_recipient.set(fee_recipient);
+        self.time_start.set(U64::from(time_start));
+        self.time_ending.set(U64::from(time_ending));
         self.oracle.set(oracle);
         Ok(())
     }

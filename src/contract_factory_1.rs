@@ -13,6 +13,7 @@ use crate::{
     events, fusdc_call,
     immutables::*,
     maths, proxy, share_call, trading_call,
+    infra_market_call,
 };
 
 pub use crate::storage_factory::*;
@@ -24,12 +25,12 @@ impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds.
     #[allow(non_snake_case)]
-    pub fn new_trading_C_11_A_A_A_3_B(
+    pub fn new_trading(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256)>,
         oracle: Address,
-        time_start: U256,
-        time_ending: U256,
+        time_start: u64,
+        time_ending: u64,
         documentation: FixedBytes<32>,
         fee_recipient: Address,
     ) -> Result<Address, Vec<u8>> {
@@ -103,11 +104,7 @@ impl StorageFactory {
             )?)?)?;
 
             // Use the current AMM to create a pool of this share for aftermarket trading.
-            amm_call::enable_pool(amm_call::create_pool(
-                erc20_addr,
-                sqrt_price,
-                LONGTAIL_FEE,
-            )?)?;
+            amm_call::enable_pool(amm_call::create_pool(erc20_addr, sqrt_price, LONGTAIL_FEE)?)?;
 
             evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_id,
@@ -116,7 +113,22 @@ impl StorageFactory {
             });
         }
 
-        trading_call::ctor(trading_addr, oracle, outcomes)?;
+        trading_call::ctor(
+            trading_addr,
+            outcomes,
+            oracle,
+            time_start,
+            time_ending,
+            fee_recipient,
+        )?;
+
+        infra_market_call::register(
+            self.infra_market.get(),
+            trading_addr,
+            msg::sender(),
+            documentation,
+            time_ending,
+        )?;
 
         Ok(trading_addr)
     }

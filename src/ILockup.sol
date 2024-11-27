@@ -5,11 +5,13 @@ interface ILockup {
     /**
      * @notice lockup funds to receive StakedARB until the deadline given.
      * @param amount to lock up.
+     * @param untilTimestamp to do the lockup for, to earn extra power.
      * @param recipient to send the Locked ARB to.
      * @dev a debt id that's needed to redeem amounts deposited.
      */
     function lockup(
         uint256 amount,
+        uint256 untilTimestamp,
         address recipient
     ) external returns (uint256 debtId);
 
@@ -28,7 +30,8 @@ interface ILockup {
     function slash(address victim) external;
 
     /**
-     * @notice confiscate from the victim that bet incorrectly.
+     * @notice confiscate from the victim that bet incorrectly. This should be called
+     * after slash, and the infra market is responsible for doing this correctly.
      * @param victim to take money from, setting their staked arb to 0.
      * @param recipient to send the staked arb to
      */
@@ -37,7 +40,9 @@ interface ILockup {
     );
 
     /**
-     * @notice freeze a user's position to prevent it from being taken until after this deadline. If the amount is already set, then we use the latest value.
+     * @notice freeze a user's position to prevent it from being taken until after this
+     * deadline. If the amount is already set, then we use the latest value. The infra
+     * market is responsible for a correct interaction here.
      */
     function freeze(address spender, uint256 until) external;
 }

@@ -59,21 +59,36 @@ mod host_lockup_call;
 mod wasm_lockup_call;
 pub mod lockup_call;
 
+#[cfg(not(target_arch = "wasm32"))]
+mod host_nineliveslockedarb_call;
+#[cfg(target_arch = "wasm32")]
+mod wasm_nineliveslockedarb_call;
+pub mod nineliveslockedarb_call;
+
+#[cfg(not(target_arch = "wasm32"))]
+mod host_infra_market_call;
+#[cfg(target_arch = "wasm32")]
+mod wasm_infra_market_call;
+pub mod infra_market_call;
+
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub mod host;
 
 extern crate alloc;
 
+pub mod storage_factory;
 pub mod contract_factory_1;
 pub mod contract_factory_2;
-pub mod storage_factory;
 
+pub mod storage_trading;
 pub mod contract_trading_extras;
 pub mod contract_trading_mint;
-pub mod storage_trading;
 
-pub mod contract_infra_market;
+pub mod storage_lockup;
+pub mod contract_lockup;
+
 pub mod storage_infra_market;
+pub mod contract_infra_market;
 
 #[cfg(feature = "contract-factory-1")]
 pub use contract_factory_1::user_entrypoint;

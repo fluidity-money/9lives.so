@@ -26,6 +26,15 @@ pub struct StorageTrading {
     /// expired to pause trading.
     pub is_shutdown: StorageBool,
 
+    /// The fee recipient of funds.
+    pub fee_recipient: StorageAddress,
+
+    /// When the time of trading is possible for this.
+    pub time_start: StorageU64,
+
+    /// When the time of trading has ended.
+    pub time_ending: StorageU64,
+
     /// Oracle responsible for determine the outcome.
     pub oracle: StorageAddress,
 
