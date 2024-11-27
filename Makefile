@@ -23,8 +23,8 @@ build: \
 	${OUT_SHARE} \
 	contract-factory-1 \
 	contract-factory-2 \
-	contract-trading-dpm-trading-mint \
-	contract-trading-dpm-trading-extras \
+	contract-trading-trading-mint \
+	contract-trading-trading-extras \
 	contract-lockup \
 	contract-infrastructure-market
 
@@ -36,8 +36,8 @@ ${OUT_SHARE}: $(shell find src tests -name '*.sol')
 contract-factory-1: contract-factory-1.wasm
 contract-factory-2: contract-factory-2.wasm
 
-contract-trading-dpm-trading-mint: contract-trading-dpm-trading-mint.wasm
-contract-trading-dpm-trading-extras: contract-trading-dpm-trading-extras.wasm
+contract-trading-trading-mint: contract-trading-trading-mint.wasm
+contract-trading-trading-extras: contract-trading-trading-extras.wasm
 
 contract-lockup: contract-lockup.wasm
 
@@ -55,15 +55,15 @@ contract-factory-2.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-factory-2
 	@${RELEASE_WASM_OPT_9LIVES} contract-factory-2.wasm
 
-contract-trading-dpm-trading-mint.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f contract-trading-dpm-trading-mint.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-dpm-trading-mint
-	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-trading-mint.wasm
+contract-trading-trading-mint.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-trading-trading-mint.wasm
+	@${CARGO_BUILD_STYLUS} contract-trading-trading-mint
+	@${RELEASE_WASM_OPT_9LIVES} contract-trading-trading-mint.wasm
 
-contract-trading-dpm-trading-extras.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f contract-trading-dpm-trading-extras.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-dpm-trading-extras
-	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-trading-extras.wasm
+contract-trading-trading-extras.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-trading-trading-extras.wasm
+	@${CARGO_BUILD_STYLUS} contract-trading-trading-extras
+	@${RELEASE_WASM_OPT_9LIVES} contract-trading-trading-extras.wasm
 
 contract-lockup.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-lockup.wasm
@@ -79,7 +79,7 @@ clean:
 	@rm -rf \
 		ninelives.wasm \
 		factory.wasm \
-		contract-trading-dpm-trading-mint.wasm \
-		contract-trading-dpm-trading-extras.wasm \
+		contract-trading-trading-mint.wasm \
+		contract-trading-trading-extras.wasm \
 		target \
 		liblib9lives.rlib

@@ -18,11 +18,11 @@ use crate::{
 
 use rust_decimal::Decimal;
 
-#[cfg(feature = "contract-trading-dpm-trading-mint")]
+#[cfg(feature = "contract-trading-trading-mint")]
 pub use crate::storage_trading_dpm::user_entrypoint;
 
 #[cfg_attr(
-    feature = "contract-trading-dpm-trading-mint",
+    feature = "contract-trading-trading-mint",
     stylus_sdk::prelude::public
 )]
 impl StorageTradingDPM {

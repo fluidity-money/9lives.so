@@ -24,11 +24,11 @@ pub fn deploy_proxy(impl_addr: Address) -> Result<Address, Vec<u8>> {
 // Deploy a new Trading contract using CREATE2 and the seed given.
 // Returns the address.
 pub fn deploy_trading(
-    dpm_extras: Address,
-    dpm_mint: Address,
+    trading_extras: Address,
+    trading_mint: Address,
     seed: FixedBytes<32>,
 ) -> Result<Address, Vec<u8>> {
     let d = RawDeploy::new().salt(seed);
-    let c = trading_proxy_code(dpm_extras, dpm_mint);
+    let c = trading_proxy_code(trading_extras, trading_mint);
     unsafe { d.deploy(&c, U256::ZERO) }
 }

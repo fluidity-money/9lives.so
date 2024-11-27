@@ -80,8 +80,8 @@ pub mod contract_factory_1;
 pub mod contract_factory_2;
 
 pub mod storage_trading_dpm;
-pub mod contract_trading_dpm_extras;
-pub mod contract_trading_dpm_mint;
+pub mod contract_trading_extras;
+pub mod contract_trading_mint;
 
 pub mod storage_lockup;
 pub mod contract_lockup;
@@ -95,11 +95,11 @@ pub use contract_factory_1::user_entrypoint;
 #[cfg(feature = "contract-factory-2")]
 pub use contract_factory_2::user_entrypoint;
 
-#[cfg(feature = "contract-trading-dpm-trading-mint")]
-pub use contract_trading_dpm_mint::user_entrypoint;
+#[cfg(feature = "contract-trading-trading-mint")]
+pub use contract_trading_mint::user_entrypoint;
 
-#[cfg(feature = "contract-trading-dpm-trading-extras")]
-pub use contract_trading_dpm_extras::user_entrypoint;
+#[cfg(feature = "contract-trading-trading-extras")]
+pub use contract_trading_extras::user_entrypoint;
 
 #[cfg(feature = "contract-lockup")]
 pub use contract_lockup::user_entrypoint;
@@ -112,12 +112,12 @@ pub use contract_infra_market::user_entrypoint;
     not(any(
         feature = "contract-factory-1",
         feature = "contract-factory-2",
-        feature = "contract-trading-dpm-trading-mint",
-        feature = "contract-trading-dpm-trading-extras",
+        feature = "contract-trading-trading-mint",
+        feature = "contract-trading-trading-extras",
         feature = "contract-lockup",
         feature = "contract-infrastructure-market"
     ))
 ))]
 compile_error!(
-    "contract-factory-1, contract-factory-2, contract-trading-dpm-trading-mint, contract-trading-dpm-trading-extras, contract-lockup, or contract-trading-dpm-trading-impl feature must be enabled."
+    "contract-factory-1, contract-factory-2, contract-trading-trading-mint, contract-trading-trading-extras, contract-lockup, or contract-trading-trading-impl feature must be enabled."
 );

@@ -14,10 +14,10 @@ use crate::{
     storage_trading_dpm::StorageTradingDPM,
 };
 
-#[cfg(feature = "contract-trading-dpm-trading-extras")]
+#[cfg(feature = "contract-trading-trading-extras")]
 pub use crate::storage_trading_dpm::user_entrypoint;
 
-#[cfg_attr(feature = "contract-trading-dpm-trading-extras", stylus_sdk::prelude::public)]
+#[cfg_attr(feature = "contract-trading-trading-extras", stylus_sdk::prelude::public)]
 impl StorageTradingDPM {
     // Seeds the pool with the first outcome. Assumes msg.sender is
     // the factory. Seeder is the address to take the money from. It
