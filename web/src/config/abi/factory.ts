@@ -4,7 +4,22 @@ const factoryAbi = [
     name: "ctor",
     inputs: [
       {
-        name: "oracle",
+        name: "shareImpl",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "tradingExtrasImpl",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "tradingMintImpl",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "infraMarketOracle",
         type: "address",
         internalType: "address",
       },
@@ -64,7 +79,7 @@ const factoryAbi = [
       {
         name: "outcomes",
         type: "tuple[]",
-        internalType: "struct INineLivesFactory.Outcome[]",
+        internalType: "struct Outcome[]",
         components: [
           {
             name: "identifier",
@@ -78,10 +93,35 @@ const factoryAbi = [
           },
         ],
       },
+      {
+        name: "oracle",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "timeStart",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "timeEnding",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "documentation",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "feeRecipient",
+        type: "address",
+        internalType: "address",
+      },
     ],
     outputs: [
       {
-        name: "",
+        name: "tradingAddr",
         type: "address",
         internalType: "address",
       },

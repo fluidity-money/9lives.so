@@ -1,6 +1,51 @@
 const tradingAbi = [
   {
     type: "function",
+    name: "ctor",
+    inputs: [
+      {
+        name: "outcomes",
+        type: "tuple[]",
+        internalType: "struct Outcome[]",
+        components: [
+          {
+            name: "identifier",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
+          {
+            name: "amount",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
+      },
+      {
+        name: "oracle",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "timeStart",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "timeEnding",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "feeRecipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "decide",
     inputs: [
       {
@@ -232,6 +277,13 @@ const tradingAbi = [
       },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "shutdown",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
