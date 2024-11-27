@@ -3,7 +3,7 @@ use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 use crate::decimal::StorageDecimal;
 
 #[storage]
-#[cfg_attr(any(feature = "contract-trading-trading-mint", feature = "contract-trading-trading-extras"), entrypoint)]
+#[cfg_attr(any(feature = "contract-trading-mint", feature = "contract-trading-extras"), entrypoint)]
 pub struct StorageTradingDPM {
     /// Outcome was determined! It should be impossible to mint, only to burn.
     /// This is the timestamp the locking took place. If it's 0, then we haven't

@@ -95,10 +95,10 @@ pub use contract_factory_1::user_entrypoint;
 #[cfg(feature = "contract-factory-2")]
 pub use contract_factory_2::user_entrypoint;
 
-#[cfg(feature = "contract-trading-trading-mint")]
+#[cfg(feature = "contract-trading-mint")]
 pub use contract_trading_mint::user_entrypoint;
 
-#[cfg(feature = "contract-trading-trading-extras")]
+#[cfg(feature = "contract-trading-extras")]
 pub use contract_trading_extras::user_entrypoint;
 
 #[cfg(feature = "contract-lockup")]
@@ -112,12 +112,12 @@ pub use contract_infra_market::user_entrypoint;
     not(any(
         feature = "contract-factory-1",
         feature = "contract-factory-2",
-        feature = "contract-trading-trading-mint",
-        feature = "contract-trading-trading-extras",
+        feature = "contract-trading-mint",
+        feature = "contract-trading-extras",
         feature = "contract-lockup",
         feature = "contract-infrastructure-market"
     ))
 ))]
 compile_error!(
-    "contract-factory-1, contract-factory-2, contract-trading-trading-mint, contract-trading-trading-extras, contract-lockup, or contract-trading-trading-impl feature must be enabled."
+    "contract-factory-1, contract-factory-2, contract-trading-mint, contract-trading-extras, contract-lockup, or contract-trading-impl feature must be enabled."
 );
