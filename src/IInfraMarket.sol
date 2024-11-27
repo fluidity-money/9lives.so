@@ -14,15 +14,10 @@ interface IInfraMarket {
 
     function marketVested(address trading, bytes8 outcome) external view returns (uint256);
 
-    // Utility that calls slash on the user that was specified by seeing if they bet
-    // on the wrong outcome. If the market wasn't "called" as being over, then
-    // the calldata of all the winner ids is taken into consideration to see if it
-    // ends up as the final amount that was tracked in voting power,
-    // and if they are, then the winner is chosen, and the incentive amount
-    // is sent to the caller. It then sets the flag of which outcome won.
     function sweep(
         address trading,
         address victim,
-        bytes8[] calldata outcomes
+        bytes8[] calldata outcomes,
+        address recipient
     ) external returns (uint256 yieldForCaller);
 }
