@@ -28,11 +28,12 @@ export type Detail = {
 export type OutcomeType = "custom" | "default";
 export type SettlementType = "url" | "beauty" | "contract" | "ai";
 export type CampaignInput = {
-  id: string;
+  id: `0x${string}`;
   name: string;
-  description: string;
+  desc: string;
   picture: string;
-  endDate: string;
+  starting: string;
+  ending: string;
   outcomes: OutcomeInput[];
   seed: number;
   x?: string;
@@ -42,9 +43,9 @@ export type CampaignInput = {
   settlementType: SettlementType;
 };
 export type OutcomeInput = {
-  id?: `0x${string}`;
+  id: `0x${string}`;
   picture?: string;
   name: string;
   description: string;
-  seed?: number;
+  seed: number;
 };

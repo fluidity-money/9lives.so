@@ -1,10 +1,14 @@
-import { CampaignInput } from "@/types";
+import { CampaignInput, OutcomeInput } from "@/types";
 import { generateId, randomValue4Uint8 } from "@/utils/generateId";
 import { create } from "zustand";
 
 interface FormStore {
   form?: CampaignInput;
-  fillForm: (fields: Omit<CampaignInput, "id" | "seed">) => void;
+  fillForm: (
+    fields: Omit<CampaignInput, "id" | "seed" | "outcomes"> & {
+      outcomes: Omit<OutcomeInput, "id" | "seed">[];
+    },
+  ) => void;
 }
 export const useFormStore = create<FormStore>()((set) => ({
   form: undefined,
@@ -15,7 +19,7 @@ export const useFormStore = create<FormStore>()((set) => ({
         form: {
           ...fields,
           seed: campaignSeed,
-          id: generateId(fields.name, fields.description, campaignSeed),
+          id: generateId(fields.name, fields.desc, campaignSeed),
           outcomes: fields.outcomes?.map((outcome, index) => {
             const existingOutcome = form?.outcomes?.[index];
             const outcomeSeed = existingOutcome?.seed ?? randomValue4Uint8();

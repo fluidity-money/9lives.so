@@ -25,7 +25,7 @@ export function generateId(
     seedBuffer.writeUInt8(seed); // Write seed as uint8
     const combinedBuffer = Buffer.concat([nameBuffer, descBuffer, seedBuffer]);
     const hash = keccak("keccak256").update(combinedBuffer).digest();
-    return `0x${hash.subarray(0, 8).toString("hex")}`;
+    return `0x${hash.subarray(0, 8).toString("hex")}` as `0x${string}`;
   } catch (err) {
     console.error("Error generating outcome ID:", err);
     throw err;

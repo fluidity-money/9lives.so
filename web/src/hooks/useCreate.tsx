@@ -5,13 +5,17 @@ import { keccak256 } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { OutcomeInput } from "@/types";
+import { CampaignInput, OutcomeInput } from "@/types";
 import { useRouter } from "next/router";
+import { requestCreateCampaign } from "@/providers/graphqlClient";
+import { useCampaignStore } from "@/stores/campaignStore";
 
 const useCreate = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const upsertCampaign = useCampaignStore((s) => s.upsertCampaign);
   const create = async (
+    input: CampaignInput,
     account: Account,
     amounts: number[],
     outcomes: OutcomeInput[],
@@ -43,6 +47,15 @@ const useCreate = () => {
           await sendTransaction({
             transaction: createTx,
             account,
+          });
+          // upsert campaign if on-chain campaign is created
+          // so backend creation can be retried again
+          upsertCampaign(input);
+          await requestCreateCampaign({
+            ...input,
+            starting: new Date(input.starting).getTime(),
+            ending: new Date(input.ending).getTime(),
+            creator: account.address,
           });
           queryClient.invalidateQueries({
             queryKey: ["campaigns"],

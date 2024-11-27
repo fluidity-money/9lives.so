@@ -68,6 +68,10 @@ const createCampaign = graphql(`
     $seed: Int!
     $creator: String!
     $ending: Int!
+    $starting: Int!
+    $x: String
+    $telegram: String
+    $web: String
   ) {
     explainCampaign(
       type: PUT
@@ -75,8 +79,12 @@ const createCampaign = graphql(`
       description: $desc
       outcomes: $outcomes
       ending: $ending
+      starting: $starting
       creator: $creator
       seed: $seed
+      x: $x
+      telegram: $telegram
+      web: $web
     )
   }
 `);
@@ -93,8 +101,12 @@ export const requestTotalUserCount = graphPoints.request(getTotalUserCount);
 export const requestCreateCampaign = (params: {
   name: string;
   desc: string;
-  outcomes: (OutcomeInput & { seed: number })[];
+  outcomes: OutcomeInput[];
   seed: number;
   creator: string;
   ending: number;
+  starting: number;
+  x?: string;
+  telegram?: string;
+  web?: string;
 }) => graph9Lives.request(createCampaign, params);

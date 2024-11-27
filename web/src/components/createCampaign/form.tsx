@@ -69,13 +69,14 @@ export default function CreateCampaignForm() {
     () =>
       z.object({
         name: z.string().min(3),
-        description: z.string().min(5),
+        desc: z.string().min(5),
         picture: z
           .instanceof(File, { message: "You have to upload a picture" })
           .refine((file) => file.size <= 1024 * 1024, {
             message: "File size must be under 1MB",
           }),
-        endDate: z.string().date(),
+        starting: z.string().date(),
+        ending: z.string().date(),
         telegram: z.string().min(2).optional().or(z.literal("")),
         x: z.string().min(2).optional().or(z.literal("")),
         web: z.string().url().optional().or(z.literal("")),
@@ -213,13 +214,11 @@ export default function CreateCampaignForm() {
         <Label text="Campaign Description" required />
         <Input
           type="textarea"
-          {...register("description")}
-          className={combineClass(
-            errors.description && "border-2 border-red-500",
-          )}
+          {...register("desc")}
+          className={combineClass(errors.desc && "border-2 border-red-500")}
           placeholder="Description"
         />
-        {errors.description && <ErrorInfo text={errors.description.message} />}
+        {errors.desc && <ErrorInfo text={errors.desc.message} />}
       </Field>
       <Field className={fieldClass}>
         <Label text="Campaign Type & Outcomes" required />
@@ -418,16 +417,28 @@ export default function CreateCampaignForm() {
         {errors.picture && <ErrorInfo text={errors.picture.message} />}
       </Field>
       <Field className={fieldClass}>
-        <Label text="End Date" required />
+        <Label text="Start Date" required />
         <Input
           type="date"
-          {...register("endDate")}
+          {...register("starting")}
           className={combineClass(
-            errors.endDate && "border-2 border-red-500",
+            errors.starting && "border-2 border-red-500",
             "text-center uppercase",
           )}
         />
-        {errors.endDate && <ErrorInfo text={errors.endDate.message} />}
+        {errors.starting && <ErrorInfo text={errors.starting.message} />}
+      </Field>
+      <Field className={fieldClass}>
+        <Label text="End Date" required />
+        <Input
+          type="date"
+          {...register("ending")}
+          className={combineClass(
+            errors.ending && "border-2 border-red-500",
+            "text-center uppercase",
+          )}
+        />
+        {errors.ending && <ErrorInfo text={errors.ending.message} />}
       </Field>
       <Field className={fieldClass}>
         <Label text="Select Settlement Source" required />
