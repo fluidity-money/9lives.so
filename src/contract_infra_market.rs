@@ -179,6 +179,10 @@ impl StorageInfraMarket {
         Ok(self.campaign_global_power_vested.get(trading))
     }
 
+    pub fn user_power_vested(&self, trading: Address, spender: Address) -> Result<U256, Error> {
+        Ok(self.user_global_vested_power.getter(trading).get(spender))
+    }
+
     /// Checks if the time is over the time for this infra campaign to expire. If
     /// so, then we tally up the amounts invested, and we determine who
     /// the winner was, if we haven't already. We check a flag to know

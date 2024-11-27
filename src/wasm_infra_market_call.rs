@@ -3,7 +3,7 @@ use stylus_sdk::{
     call::RawCall,
 };
 
-use alloy_sol_macro::sol;
+use stylus_sdk::alloy_sol_types::sol;
 
 use alloy_sol_types::SolCall;
 

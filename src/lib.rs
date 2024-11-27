@@ -18,7 +18,6 @@ pub mod calldata;
 
 pub mod erc20_cd;
 pub mod longtail_cd;
-pub mod share_cd;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod host_trading_call;

@@ -12,8 +12,7 @@ use crate::{
     error::*,
     events, fusdc_call,
     immutables::*,
-    maths, proxy, share_call, trading_call,
-    infra_market_call,
+    infra_market_call, maths, proxy, share_call, trading_call,
 };
 
 pub use crate::storage_factory::*;
@@ -27,7 +26,7 @@ impl StorageFactory {
     #[allow(non_snake_case)]
     pub fn new_trading(
         &mut self,
-        outcomes: Vec<(FixedBytes<8>, U256)>,
+        outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
         time_start: u64,
         time_ending: u64,
@@ -36,7 +35,7 @@ impl StorageFactory {
     ) -> Result<Address, Vec<u8>> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
-        let outcome_identifiers = outcomes.iter().map(|(c, _)| c).collect::<Vec<_>>();
+        let outcome_identifiers = outcomes.iter().map(|(c, _, _)| c).collect::<Vec<_>>();
 
         // Create the trading identifier to derive the outcome addresses from.
         let trading_id = proxy::create_identifier(
@@ -66,7 +65,7 @@ impl StorageFactory {
         // We take the amount that the user has allocated to the outcomes, and
         // send it to the trading contract, which assumes it has the money it's entitled to.
 
-        let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
+        let fusdc_amt = outcomes.iter().map(|(_, i, _)| i).sum::<U256>();
         assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
         fusdc_call::take_from_sender_to(trading_addr, fusdc_amt)?;
 
@@ -76,7 +75,7 @@ impl StorageFactory {
         let n_1 = outcome_identifiers.len();
         let n_2 = n_1 - 1;
 
-        for (outcome_identifier, seed_amt) in outcomes.iter() {
+        for (outcome_identifier, seed_amt, outcome_name) in outcomes.iter() {
             // For the DPM (at least right now), we can only take 1 from the user for both sides.
             assert_or!(
                 *seed_amt == U256::from(10).pow(U256::from(FUSDC_DECIMALS)),
@@ -90,7 +89,7 @@ impl StorageFactory {
             let m_2 = m_1 - fusdc_u256_to_decimal(*seed_amt)?;
 
             // Set up the share ERC20 asset, with the description.
-            share_call::ctor(erc20_addr, *outcome_identifier, trading_addr)?;
+            share_call::ctor(erc20_addr, outcome_name.clone(), trading_addr)?;
 
             // We use the sqrt price to seed Longtail with the initial trading amounts for this
             // so there's an immediate arbitrage opportunity for LPing.
@@ -113,22 +112,31 @@ impl StorageFactory {
             });
         }
 
+        let trading_outcomes = outcomes
+            .into_iter()
+            .map(|(id, amt, _)| (id, amt))
+            .collect::<Vec<_>>();
+
         trading_call::ctor(
             trading_addr,
-            outcomes,
+            trading_outcomes,
             oracle,
             time_start,
             time_ending,
             fee_recipient,
         )?;
 
-        infra_market_call::register(
-            self.infra_market.get(),
-            trading_addr,
-            msg::sender(),
-            documentation,
-            time_ending,
-        )?;
+        if oracle == self.infra_market.get() {
+            infra_market_call::register(
+                self.infra_market.get(),
+                trading_addr,
+                msg::sender(),
+                documentation,
+                time_ending,
+            )?;
+        } else {
+            panic!("unimplemented");
+        }
 
         Ok(trading_addr)
     }

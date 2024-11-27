@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 /// @notice outcome used by Trading as bettable situations
-struct Outcome {
+struct TradingOutcome {
     bytes8 identifier;
     uint256 amount;
 }
@@ -17,7 +17,7 @@ interface INineLivesTrading {
      * @param feeRecipient to send fees earned from trading.
      */
     function ctor(
-        Outcome[] memory outcomes,
+        TradingOutcome[] memory outcomes,
         address oracle,
         uint256 timeStart,
         uint256 timeEnding,

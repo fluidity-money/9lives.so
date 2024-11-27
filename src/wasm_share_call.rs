@@ -1,29 +1,36 @@
 use stylus_sdk::{
-    alloy_primitives::{Address, FixedBytes, U256},
+    alloy_primitives::{Address, U256},
     call::RawCall,
+    alloy_sol_types::{sol, SolCall}
 };
 
-use crate::{erc20_call, error::Error, share_cd::*};
+use crate::{erc20_call, error::Error};
+
+sol! {
+    function ctor(string name, address admin);
+    function mint(address spender, uint256 amount);
+    function burn(address spender, uint256 amount);
+}
 
 // Construct the ERC20 with the description in bytes provided, and an
 // admin that can mint more tokens on request.
-pub fn ctor(addr: Address, identifier: FixedBytes<8>, admin: Address) -> Result<(), Error> {
+pub fn ctor(addr: Address, name: String, admin: Address) -> Result<(), Error> {
     RawCall::new()
-        .call(addr, &pack_ctor(identifier, admin))
-        .map_err(Error::ShareError)?;
-    Ok(())
-}
-
-pub fn burn(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
-    RawCall::new()
-        .call(addr, &pack_burn(spender, amount))
+        .call(addr, &ctorCall { name, admin }.abi_encode())
         .map_err(Error::ShareError)?;
     Ok(())
 }
 
 pub fn mint(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
     RawCall::new()
-        .call(addr, &pack_mint(spender, amount))
+        .call(addr, &mintCall { spender, amount }.abi_encode())
+        .map_err(Error::ShareError)?;
+    Ok(())
+}
+
+pub fn burn(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
+    RawCall::new()
+        .call(addr, &burnCall { spender, amount }.abi_encode())
         .map_err(Error::ShareError)?;
     Ok(())
 }

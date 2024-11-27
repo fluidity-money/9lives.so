@@ -24,6 +24,13 @@ case with a string), or textual and pointing to a URL (as is the case with URL
 committees). Losers that bet incorrectly in the Infrastructure Market have their funds
 slashed.
 
+Oracle State oracles are very simple comparatively, as presumably the associated Trading
+contract was configured to allow early activation, so all a caller must do is activate the
+associated Oracle State contract. These could communicate with LayerZero to pull
+information from another chain, and the contract will simply check the result of the
+message. If it's not activated by the date that's given, then it defaults to a "DEFAULT"
+clause that could be "no" if a user were to try to estimate the price of something.
+
 ![Diagram of the system](diagram.svg)
 
 ## Roadmap

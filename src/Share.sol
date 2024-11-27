@@ -19,18 +19,16 @@ contract Share is
         _disableInitializers();
     }
 
-    function ctor(bytes8 identifier, address admin) initializer public {
-        string memory name = string.concat(
-            "9lives Share #",
-            Strings.toString(uint256(uint64(identifier)))
-        );
+    function ctor(string calldata name, address admin) initializer public {
+        string memory newName = string.concat("9lives Prediction ", name);
+        bytes8 id = bytes8(keccak256(abi.encodePacked(name)));
         string memory symbol = string.concat(
             "9#",
-            Strings.toString(uint256(uint64(identifier)))
+            Strings.toString(uint256(uint64(id)))
         );
         __ERC20_init(name, symbol);
         __Ownable_init(admin);
-        __ERC20Permit_init(name);
+        __ERC20Permit_init(newName);
     }
 
     function decimals() public override pure returns (uint8) {

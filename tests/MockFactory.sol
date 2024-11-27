@@ -20,7 +20,7 @@ contract MockFactory is INineLivesFactory {
     ) external {}
 
     function newTrading(
-        Outcome[] memory _outcomes,
+        FactoryOutcome[] memory _outcomes,
         address _oracle,
         uint64 _timeStart,
         uint64 _timeEnding,
@@ -28,7 +28,12 @@ contract MockFactory is INineLivesFactory {
         address _feeRecipient
     ) external returns (address) {
         MockTrading t = new MockTrading(ADDR_FUSDC);
-        t.ctor(_outcomes, _oracle, _timeStart, _timeEnding, _feeRecipient);
+        TradingOutcome[] memory outcomes = new TradingOutcome[](_outcomes.length);
+        for (uint i = 0; i < _outcomes.length; ++i) {
+            outcomes[i].identifier = _outcomes[i].identifier;
+            outcomes[i].amount = _outcomes[i].amount;
+        }
+        t.ctor(outcomes, _oracle, _timeStart, _timeEnding, _feeRecipient);
         return address(t);
     }
 

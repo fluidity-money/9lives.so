@@ -26,7 +26,7 @@ contract MockTrading is INineLivesTrading {
     }
 
     function ctor(
-        Outcome[] memory outcomes,
+        TradingOutcome[] memory outcomes,
         address _oracle,
         uint256 _timeStart,
         uint256 _timeEnding,
@@ -37,7 +37,7 @@ contract MockTrading is INineLivesTrading {
         // track the oracles that were created.
         for (uint i = 0; i < outcomes.length; ++i) {
             shares_[outcomes[i].identifier] = new Share();
-            shares_[outcomes[i].identifier].ctor(outcomes[i].identifier, address(this));
+            shares_[outcomes[i].identifier].ctor("", address(this));
         }
         oracle_ = _oracle;
         timeStart_ = _timeStart;

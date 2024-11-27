@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import {Outcome} from "./INineLivesTrading.sol";
+import {TradingOutcome} from "./INineLivesTrading.sol";
+
+struct FactoryOutcome {
+    bytes8 identifier;
+    uint256 amount;
+    string name;
+}
 
 interface INineLivesFactory {
     /**
@@ -40,7 +46,7 @@ interface INineLivesFactory {
      * @return tradingAddr address of the newly created Trading contract deployment.
      */
     function newTrading(
-        Outcome[] memory outcomes,
+        FactoryOutcome[] memory outcomes,
         address oracle,
         uint64 timeStart,
         uint64 timeEnding,

@@ -1,11 +1,8 @@
 use stylus_sdk::{
     alloy_primitives::{Address, U256},
     call::RawCall,
+    alloy_sol_types::{SolCall, sol}
 };
-
-use alloy_sol_macro::sol;
-
-use alloy_sol_types::SolCall;
 
 use crate::{calldata::unpack_u256, error::Error};
 

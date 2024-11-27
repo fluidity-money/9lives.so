@@ -17,6 +17,10 @@ interface IInfraMarket {
     /// @param outcome to check
     function marketPowerVested(address trading, bytes8 outcome) external view returns (uint256);
 
+    function globalPowerVested(address trading) external view returns (uint256);
+
+    function userPowerVested(address trading, address spender) external view returns (uint256);
+
     function sweep(
         address trading,
         address victim,

@@ -43,6 +43,8 @@ contract-lockup: contract-lockup.wasm
 
 contract-infrastructure-market: contract-infrastructure-market.wasm
 
+contract-oracle-state: contract-oracle-state.wasm
+
 contract-factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-1.wasm
 	@${CARGO_BUILD_STYLUS} contract-factory-1
