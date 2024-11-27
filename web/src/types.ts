@@ -42,7 +42,7 @@ export type CampaignInput = {
   settlementType: SettlementType;
 };
 export type OutcomeInput = {
-  id?: string;
+  id?: `0x${string}`;
   picture?: string;
   name: string;
   description: string;
