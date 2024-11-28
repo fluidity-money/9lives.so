@@ -43,6 +43,11 @@ impl StorageFactory {
             proxy::create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
 
         let backend_is_dpm = outcome_ids.len() == 2;
+        let backend_type = if backend_is_dpm {
+            TradingBackendType::DPM as u8
+        } else {
+            TradingBackendType::AMM as u8
+        };
 
         // Deploy the contract, and emit a log that it was created.
         let trading_addr = (if backend_is_dpm {
@@ -60,20 +65,17 @@ impl StorageFactory {
         })
         .map_err(|_| Error::DeployError)?;
 
-        self.trading_contracts
+        self.trading_owners.setter(trading_addr).set(fee_recipient);
+        self.trading_backends
             .setter(trading_addr)
-            .set(msg::sender());
+            .set(U8::from(backend_type));
+        self.trading_addresses.setter(trading_id).set(trading_addr);
 
         evm::log(events::NewTrading2 {
             identifier: trading_id,
             addr: trading_addr,
             oracle,
-            backend: (if backend_is_dpm {
-                events::BackendType::DPM
-            } else {
-                events::BackendType::AMM
-            })
-            .into(),
+            backend: backend_type.into(),
         });
 
         // We take the amount that the user has allocated to the outcomes, and

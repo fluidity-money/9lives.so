@@ -60,16 +60,28 @@ impl StorageFactory {
     }
 
     pub fn get_owner(&self, trading_addr: Address) -> R<Address> {
-        ok(self.trading_contracts.getter(trading_addr).get())
+        ok(self.trading_owners.getter(trading_addr).get())
+    }
+
+    pub fn get_backend(&self, trading_addr: Address) -> R<U8> {
+        ok(self.trading_backends.getter(trading_addr).get())
+    }
+
+    pub fn get_address(&self, id: FixedBytes<32>) -> R<Address> {
+        ok(self.trading_addresses.get(id))
     }
 
     /// Disable shares from being traded via Longtail.
     pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> R<()> {
+        // Check if the caller is a trading contract by checking the map
+        // of created contracts. This check should be safe since the trading
+        // backend enum is only ever 1 or 2.
         assert_or!(
-            self.trading_contracts.getter(msg::sender()).get() != Address::default(),
+            !self.trading_backends.get(msg::sender()).is_zero(),
             Error::NotTradingContract
         );
         // Start to derive the outcomes that were given to find the share addresses.
+        // It should be safe to do this as we rederive the share address every time.
         for outcome_id in outcomes {
             amm_call::pause_pool(proxy::get_share_addr(
                 contract::address(),   // Factory address.
