@@ -34,6 +34,14 @@ func (r *campaignResolver) Description(ctx context.Context, obj *types.Campaign)
 	return obj.Content.Description, nil
 }
 
+// Picture is the resolver for the picture field.
+func (r *campaignResolver) Picture(ctx context.Context, obj *types.Campaign) (string, error) {
+	if obj == nil {
+		return "", fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Picture, nil
+}
+
 // Creator is the resolver for the creator field.
 func (r *campaignResolver) Creator(ctx context.Context, obj *types.Campaign) (*types.Wallet, error) {
 	if obj == nil {
@@ -164,7 +172,7 @@ func (r *frontpageResolver) Content(ctx context.Context, obj *types.Frontpage) (
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error) {
 	tradingAddr := crypto.GetTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingHash)
 	contractOwner_, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {
@@ -197,6 +205,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		campaignOutcomes[i] = types.Outcome{
 			Name:        outcome.Name,
 			Description: outcome.Description,
+			Picture:     outcome.Picture,
 			Seed:        outcome.Seed,
 			Identifier:  hexOutcomeId,
 			Share: &types.Share{
@@ -212,6 +221,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		Content: types.CampaignContent{
 			Name:        name,
 			Description: description,
+			Picture:     picture,
 			Seed:        seed,
 			Creator: &types.Wallet{
 				Address: creator,

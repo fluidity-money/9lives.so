@@ -60,6 +60,7 @@ type ComplexityRoot struct {
 		Name        func(childComplexity int) int
 		Oracle      func(childComplexity int) int
 		Outcomes    func(childComplexity int) int
+		Picture     func(childComplexity int) int
 		PoolAddress func(childComplexity int) int
 		Starting    func(childComplexity int) int
 		Telegram    func(childComplexity int) int
@@ -83,7 +84,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) int
+		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) int
 	}
 
 	Outcome struct {
@@ -112,6 +113,7 @@ type ComplexityRoot struct {
 type CampaignResolver interface {
 	Name(ctx context.Context, obj *types.Campaign) (string, error)
 	Description(ctx context.Context, obj *types.Campaign) (string, error)
+	Picture(ctx context.Context, obj *types.Campaign) (string, error)
 	Creator(ctx context.Context, obj *types.Campaign) (*types.Wallet, error)
 	Oracle(ctx context.Context, obj *types.Campaign) (string, error)
 	Identifier(ctx context.Context, obj *types.Campaign) (string, error)
@@ -137,7 +139,7 @@ type FrontpageResolver interface {
 	Content(ctx context.Context, obj *types.Frontpage) (*types.Campaign, error)
 }
 type MutationResolver interface {
-	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error)
+	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error)
 }
 type QueryResolver interface {
 	Campaigns(ctx context.Context, category []string) ([]types.Campaign, error)
@@ -213,6 +215,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.Outcomes(childComplexity), true
+
+	case "Campaign.picture":
+		if e.complexity.Campaign.Picture == nil {
+			break
+		}
+
+		return e.complexity.Campaign.Picture(childComplexity), true
 
 	case "Campaign.poolAddress":
 		if e.complexity.Campaign.PoolAddress == nil {
@@ -322,7 +331,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string)), true
+		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string)), true
 
 	case "Outcome.description":
 		if e.complexity.Outcome.Description == nil {
@@ -559,78 +568,87 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 		}
 	}
 	args["description"] = arg2
-	var arg3 int
+	var arg3 string
+	if tmp, ok := rawArgs["picture"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("picture"))
+		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["picture"] = arg3
+	var arg4 int
 	if tmp, ok := rawArgs["seed"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seed"))
-		arg3, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg4, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["seed"] = arg3
-	var arg4 []model.OutcomeInput
+	args["seed"] = arg4
+	var arg5 []model.OutcomeInput
 	if tmp, ok := rawArgs["outcomes"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outcomes"))
-		arg4, err = ec.unmarshalNOutcomeInput2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeInputᚄ(ctx, tmp)
+		arg5, err = ec.unmarshalNOutcomeInput2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["outcomes"] = arg4
-	var arg5 int
+	args["outcomes"] = arg5
+	var arg6 int
 	if tmp, ok := rawArgs["ending"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ending"))
-		arg5, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["ending"] = arg5
-	var arg6 int
-	if tmp, ok := rawArgs["starting"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting"))
 		arg6, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["starting"] = arg6
-	var arg7 string
+	args["ending"] = arg6
+	var arg7 int
+	if tmp, ok := rawArgs["starting"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting"))
+		arg7, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["starting"] = arg7
+	var arg8 string
 	if tmp, ok := rawArgs["creator"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("creator"))
-		arg7, err = ec.unmarshalNString2string(ctx, tmp)
+		arg8, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["creator"] = arg7
-	var arg8 *string
+	args["creator"] = arg8
+	var arg9 *string
 	if tmp, ok := rawArgs["x"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("x"))
-		arg8, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["x"] = arg8
-	var arg9 *string
-	if tmp, ok := rawArgs["telegram"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telegram"))
 		arg9, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["telegram"] = arg9
+	args["x"] = arg9
 	var arg10 *string
-	if tmp, ok := rawArgs["web"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("web"))
+	if tmp, ok := rawArgs["telegram"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telegram"))
 		arg10, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["web"] = arg10
+	args["telegram"] = arg10
+	var arg11 *string
+	if tmp, ok := rawArgs["web"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("web"))
+		arg11, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["web"] = arg11
 	return args, nil
 }
 
@@ -793,6 +811,50 @@ func (ec *executionContext) _Campaign_description(ctx context.Context, field gra
 }
 
 func (ec *executionContext) fieldContext_Campaign_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Campaign_picture(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_picture(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().Picture(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_picture(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Campaign",
 		Field:      field,
@@ -1645,6 +1707,8 @@ func (ec *executionContext) fieldContext_Frontpage_content(_ context.Context, fi
 				return ec.fieldContext_Campaign_name(ctx, field)
 			case "description":
 				return ec.fieldContext_Campaign_description(ctx, field)
+			case "picture":
+				return ec.fieldContext_Campaign_picture(ctx, field)
 			case "creator":
 				return ec.fieldContext_Campaign_creator(ctx, field)
 			case "oracle":
@@ -1686,7 +1750,7 @@ func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string))
+		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1947,6 +2011,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_name(ctx, field)
 			case "description":
 				return ec.fieldContext_Campaign_description(ctx, field)
+			case "picture":
+				return ec.fieldContext_Campaign_picture(ctx, field)
 			case "creator":
 				return ec.fieldContext_Campaign_creator(ctx, field)
 			case "oracle":
@@ -4147,7 +4213,7 @@ func (ec *executionContext) unmarshalInputOutcomeInput(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "description", "seed"}
+	fieldsInOrder := [...]string{"name", "description", "seed", "picture"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4175,6 +4241,13 @@ func (ec *executionContext) unmarshalInputOutcomeInput(ctx context.Context, obj 
 				return it, err
 			}
 			it.Seed = data
+		case "picture":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("picture"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Picture = data
 		}
 	}
 
@@ -4246,6 +4319,42 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Campaign_description(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "picture":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_picture(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

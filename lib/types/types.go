@@ -22,6 +22,9 @@ type (
 		// Text description of this campaign.
 		Description string `json:"description"`
 
+		// Picture of the outcome as base64 string.
+		Picture string `json:"picture"`
+
 		// Number to salt the identifier of the outcome
 		Seed int `json:"seed"`
 
@@ -41,6 +44,9 @@ type (
 
 		// Description of the campaign in simple text.
 		Description string `json:"description"`
+
+		// Picture of the campaign as base64 string.
+		Picture string `json:"picture"`
 
 		// Number to salt the identifier (id of the campaigns) of the outcome
 		Seed int `json:"seed"`

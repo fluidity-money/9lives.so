@@ -70,6 +70,11 @@ input OutcomeInput {
   Randomly chosen seed for the creation of the identifier.
   """
   seed: Int!
+
+  """
+  Picture of the outcome.
+  """
+  picture: String!,
 }
 
 type Mutation {
@@ -91,6 +96,11 @@ type Mutation {
     Description of the campaign.
     """
     description: String!,
+
+    """
+    Picture of the campaign.
+    """
+    picture: String!,
 
     """
     Randomly chosen seed for the creation of the identifier.
@@ -149,6 +159,11 @@ type Campaign {
   Description of the campaign in simple text.
   """
   description: String!
+
+  """
+  Picture of the campaign.
+  """
+  picture: String!,
 
   """
   Creator of the campaign.
