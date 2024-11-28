@@ -14,8 +14,10 @@ contract MockFactory is INineLivesFactory {
 
     function ctor(
         address /* shareImpl */,
-        address /* tradingExtrasImpl */,
-        address /* tradingMintImpl */,
+        address /* tradingDPMExtrasImpl */,
+        address /* tradingDPMMintImpl */,
+        address /* tradingAMMExtrasImpl */,
+        address /* tradingAMMMintImpl */,
         address /* infraMarketOracle */
     ) external {}
 

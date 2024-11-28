@@ -13,8 +13,15 @@ use lib9lives::host;
 fn test_factory_new_trading() {
     use lib9lives::storage_factory::StorageFactory;
     host::with_storage::<_, StorageFactory, _>(|c| {
-        c.ctor(Address::ZERO, Address::ZERO, Address::ZERO, Address::ZERO)
-            .unwrap();
+        c.ctor(
+            Address::ZERO,
+            Address::ZERO,
+            Address::ZERO,
+            Address::ZERO,
+            Address::ZERO,
+            Address::ZERO,
+        )
+        .unwrap();
         let id = FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let id2 = FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         c.new_trading_09393_D_A_8(

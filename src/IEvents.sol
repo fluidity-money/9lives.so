@@ -4,10 +4,11 @@ pragma solidity ^0.8.18;
 interface IEvents {
     /* FACTORY CONTRACT */
 
-    event NewTrading(
+    event NewTrading2(
         bytes32 indexed identifier,
         address indexed addr,
-        address indexed oracle
+        address indexed oracle,
+        uint8 backend
     );
 
     event OutcomeCreated(

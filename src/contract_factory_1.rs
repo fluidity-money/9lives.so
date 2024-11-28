@@ -36,48 +36,59 @@ impl StorageFactory {
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
-        let outcome_identifiers = outcomes.iter().map(|(c, _, _)| c).collect::<Vec<_>>();
+        let outcome_ids = outcomes.iter().map(|(c, _, _)| c).collect::<Vec<_>>();
 
         // Create the trading identifier to derive the outcome addresses from.
-        let trading_id = proxy::create_identifier(
-            &outcome_identifiers
-                .iter()
-                .map(|c| c.as_slice())
-                .collect::<Vec<_>>(),
-        );
+        let trading_id =
+            proxy::create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
+
+        let backend_is_dpm = outcome_ids.len() == 2;
 
         // Deploy the contract, and emit a log that it was created.
-        let trading_addr = proxy::deploy_trading(
-            self.trading_extras_impl.get(),
-            self.trading_mint_impl.get(),
-            trading_id,
-        )
+        let trading_addr = (if backend_is_dpm {
+            proxy::deploy_trading(
+                self.trading_dpm_extras_impl.get(),
+                self.trading_dpm_mint_impl.get(),
+                trading_id,
+            )
+        } else {
+            proxy::deploy_trading(
+                self.trading_amm_extras_impl.get(),
+                self.trading_amm_mint_impl.get(),
+                trading_id,
+            )
+        })
         .map_err(|_| Error::DeployError)?;
 
         self.trading_contracts
             .setter(trading_addr)
             .set(msg::sender());
 
-        evm::log(events::NewTrading {
+        evm::log(events::NewTrading2 {
             identifier: trading_id,
             addr: trading_addr,
             oracle,
+            backend: (if backend_is_dpm {
+                events::BackendType::DPM
+            } else {
+                events::BackendType::AMM
+            })
+            .into(),
         });
 
         // We take the amount that the user has allocated to the outcomes, and
         // send it to the trading contract, which assumes it has the money it's entitled to.
 
-        let seed_liq = U256::from(outcome_identifiers.len()) * SHARE_DECIMALS_EXP;
+        let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
         fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
 
         // Used for the price function for seeding Longtail.
 
         let m_1 = fusdc_u256_to_decimal(seed_liq)?;
-        let n_1 = outcome_identifiers.len();
+        let n_1 = outcome_ids.len();
         let n_2 = n_1 - 1;
 
         for (outcome_identifier, seed_amt, outcome_name) in outcomes.iter() {
-            // For the DPM (at least right now), we can only take 1 from the user for both sides.
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
@@ -109,11 +120,11 @@ impl StorageFactory {
             });
         }
 
-        let outcome_identifiers = outcomes.into_iter().map(|(c, _, _)| c).collect::<Vec<_>>();
+        let outcome_ids = outcomes.into_iter().map(|(c, _, _)| c).collect::<Vec<_>>();
 
         trading_call::ctor(
             trading_addr,
-            outcome_identifiers,
+            outcome_ids,
             oracle,
             time_start,
             time_ending,

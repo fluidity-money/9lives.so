@@ -12,16 +12,20 @@ interface INineLivesFactory {
      * @notice Construct the Factory, configuring all Trading instances to use the oracle
      *         given.
      * @notice shareImpl to use for the share creations with a proxy.
-     * @param tradingExtrasImpl to use as the extras implementation for the extras trading
+     * @param tradingDPMExtrasImpl to use as the extras implementation for the extras trading
      * code.
-     * @param tradingMintImpl to use as the implementation of the mint code for deployed
+     * @param tradingDPMMintImpl to use as the implementation of the mint code for deployed
      * Tradings.
+     * @param tradingAMMExtrasImpl to use as the implementation for the extras AMM code.
+     * @param tradingAMMMintImpl to use as the implementation for the mint AMM code.
      * @param infraMarketOracle to set as the oracle for infrastructure market oracles
      */
     function ctor(
         address shareImpl,
-        address tradingExtrasImpl,
-        address tradingMintImpl,
+        address tradingDPMExtrasImpl,
+        address tradingDPMMintImpl,
+        address tradingAMMExtrasImpl,
+        address tradingAMMMintImpl,
         address infraMarketOracle
     ) external;
 
