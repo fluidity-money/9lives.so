@@ -19,6 +19,7 @@ const CampaignList = graphql(`
         identifier
         name
         description
+        picture
         share {
           address
         }

@@ -74,7 +74,7 @@ input OutcomeInput {
   """
   Picture of the outcome.
   """
-  picture: String!,
+  picture: String!
 }
 
 type Mutation {
@@ -85,22 +85,22 @@ type Mutation {
     """
     Type of the modification to the campaign explanation.
     """
-    type: Modification!,
+    type: Modification!
 
     """
     Name of the campaign.
     """
-    name: String!,
+    name: String!
 
     """
     Description of the campaign.
     """
-    description: String!,
+    description: String!
 
     """
     Picture of the campaign.
     """
-    picture: String!,
+    picture: String!
 
     """
     Randomly chosen seed for the creation of the identifier.
@@ -111,17 +111,17 @@ type Mutation {
     Outcomes associated with this campaign. An outcome can either be something like
     Trump winning the election, or something else.
     """
-    outcomes: [OutcomeInput!]!,
+    outcomes: [OutcomeInput!]!
 
     """
     Expected ending timestamp.
     """
-    ending: Int!,
+    ending: Int!
 
     """
     Expected starting timestamp.
     """
-    starting: Int!,
+    starting: Int!
 
     """
     Creator address. Hex encoded. Verified to be the creator later.
@@ -163,7 +163,7 @@ type Campaign {
   """
   Picture of the campaign.
   """
-  picture: String!,
+  picture: String!
 
   """
   Creator of the campaign.
@@ -230,6 +230,10 @@ type Outcome {
   """
   description: String!
 
+  """
+  Picture of the outcome.
+  """
+  picture: String!
 
   """
   Identifier hex encoded associated with this outcome. Used to derive addresses.
