@@ -82,7 +82,7 @@ pub unsafe extern "C" fn storage_load_bytes32(key: *const u8, out: *mut u8) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn msg_sender(_sender: *mut u8) {}
+pub unsafe extern "C" fn msg_sender(ptr: *mut u8) {}
 
 #[no_mangle]
 pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}

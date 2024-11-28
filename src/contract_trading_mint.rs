@@ -34,10 +34,22 @@ impl StorageTrading {
         assert_or!(self.when_decided.get().is_zero(), Error::DoneVoting);
         assert_or!(value > U256::ZERO, Error::ZeroAmount);
 
+        let recipient = if recipient.is_zero() {
+            msg::sender()
+        } else {
+            recipient
+        };
+
+        // Make sure that the outcome exists.
+        assert_or!(
+            self.outcome_shares.get(outcome_id) > U256::ZERO,
+            Error::NonexistentOutcome
+        );
+
         let outcome_invested = self.outcome_invested.get(outcome_id);
 
         // Here we do some fee adjustment to send the fee recipient their money.
-        let fee_for_creator = ((FEE_SCALING * value) * MINT_FEE_PCT) / FEE_SCALING;
+        let fee_for_creator = ((FEE_SCALING_BEFORE * value) * MINT_FEE_PCT) / FEE_SCALING_AFTER;
         fusdc_call::transfer(self.fee_recipient.get(), fee_for_creator)?;
         let value = value - fee_for_creator;
 
@@ -55,6 +67,7 @@ impl StorageTrading {
 
         let n_1 = self.outcome_shares.get(outcome_id);
 
+        // Use the DPM if we have two outcomes.
         let shares = if self.is_dpm.get() {
             let m = round_down(fusdc_u256_to_decimal(value)?);
             // Prevent them from taking less than the minimum amount to LP with.

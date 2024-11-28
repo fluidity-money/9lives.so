@@ -28,7 +28,7 @@ macro_rules! env_addr {
     ($name:ident, $input:literal) => {
         paste! {
             #[allow(unused)]
-            const [<$name _BYTES>]: [u8; 20] = [0_u8; 20];
+            const [<$name _BYTES>]: [u8; 20] = [1_u8; 20];
             #[allow(unused)]
             pub const $name: Address = Address::ZERO;
         }
@@ -50,9 +50,12 @@ env_addr!(FACTORY_ADDR, "SPN_FACTORY_ADDR");
 // Three days in seconds, for the infra market. This is when the market expires.
 pub const THREE_DAYS_SECS: u64 = 259200;
 
-// Scaling that's done for any fees taken from the incentive amount, or
+// Scaling that's done before for any fees taken from the incentive amount, or
 // the mint fee amount.
-pub const FEE_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
+pub const FEE_SCALING_BEFORE: U256 = U256::from_limbs([100, 0, 0, 0]);
+
+// Scaling that's done after scaling to do the multiplication for fees.
+pub const FEE_SCALING_AFTER: U256 = U256::from_limbs([10_000, 0, 0, 0]);
 
 // 5% of all trading to buy shares goes to the creator of the contract.
 pub const MINT_FEE_PCT: U256 = U256::from_limbs([5, 0, 0, 0]);

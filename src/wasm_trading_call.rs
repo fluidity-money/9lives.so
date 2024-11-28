@@ -10,7 +10,6 @@ sol! {
     function ctor(
         (bytes8,uint256)[] outcomes,
         address oracle,
-        bool isDPM,
         uint64 timeStart,
         uint64 timeEnding,
         address feeRecipient
@@ -34,7 +33,6 @@ pub fn ctor(
             &ctorCall {
                 outcomes,
                 oracle,
-                isDPM: is_dpm,
                 timeStart: time_start,
                 timeEnding: time_ending,
                 feeRecipient: fee_recipient,

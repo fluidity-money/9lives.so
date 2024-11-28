@@ -18,15 +18,16 @@ fn test_e2e_mint() {
                 (fixed_bytes!("3be0d8814450a582"), U256::from(1e6)),
             ],
             msg::sender(),
-            true,
             block::timestamp() + 1,
             block::timestamp() + 2,
             msg::sender()
         )
         .unwrap();
 
+        // To the contract after fee taking, this will be 5.7.
+        let value = U256::from(1e6) * U256::from(6);
         assert_eq!(
-            c.mint_227_C_F_432(outcome_1, U256::from(1e6) * U256::from(6), msg::sender(),)
+            c.mint_227_C_F_432(outcome_1, value, msg::sender(),)
                 .unwrap(),
             U256::from(4476926)
         );

@@ -23,7 +23,6 @@ proptest! {
                     (fixed_bytes!("3be0d8814450a582"), U256::from(seed_amount_2)),
                 ],
                 Address::from([1_u8; 20]),
-                true,
                 block::timestamp() + 1,
                 block::timestamp() + 2,
                 msg::sender()

@@ -25,7 +25,6 @@ impl StorageTrading {
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256)>,
         oracle: Address,
-        is_dpm: bool,
         time_start: u64,
         time_ending: u64,
         fee_recipient: Address
@@ -40,7 +39,8 @@ impl StorageTrading {
         self.global_invested.set(fusdc_amt);
         self.seed_invested.set(fusdc_amt);
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
-        assert_or!(outcomes_len == 2, Error::TwoOutcomesOnly);
+        // If there are two outcomes, then we default to the DPM.
+        self.is_dpm.set(outcomes_len == 2);
         self.global_shares.set(U256::from(outcomes_len));
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
@@ -55,7 +55,6 @@ impl StorageTrading {
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));
         self.oracle.set(oracle);
-        self.is_dpm.set(is_dpm);
         Ok(())
     }
 

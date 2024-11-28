@@ -19,10 +19,9 @@ contract MockFactory is INineLivesFactory {
         address /* infraMarketOracle */
     ) external {}
 
-    function newTrading37BD1242(
+    function newTrading09393DA8(
         FactoryOutcome[] memory _outcomes,
         address _oracle,
-        bool _isDPM,
         uint64 _timeStart,
         uint64 _timeEnding,
         bytes32 /* _documentation */,
@@ -34,7 +33,7 @@ contract MockFactory is INineLivesFactory {
             outcomes[i].identifier = _outcomes[i].identifier;
             outcomes[i].amount = _outcomes[i].amount;
         }
-        t.ctor(outcomes, _oracle, _isDPM,_timeStart, _timeEnding, _feeRecipient);
+        t.ctor(outcomes, _oracle,_timeStart, _timeEnding, _feeRecipient);
         return address(t);
     }
 

@@ -36,10 +36,9 @@ contract MockImpl1_2 {
     function swagC82F43C4() external pure returns (uint256) {
         return 2;
     }
-    function newTrading37BD1242(
+    function newTrading09393DA8(
         FactoryOutcome[] memory /* _outcomes */,
         address /* _oracle */,
-        bool /* _isDPM */,
         uint64 /* _timeStart */,
         uint64 /* _timeEnding */,
         bytes32 /* _documentation */,
@@ -95,10 +94,9 @@ contract TestFactoryProxy is Test {
             abi.encodeWithSelector(MockImpl2_2.migration.selector, 123)
         );
         FactoryOutcome[] memory o;
-        assertEq(MockImpl1_2(address(factoryProxy)).newTrading37BD1242(
+        assertEq(MockImpl1_2(address(factoryProxy)).newTrading09393DA8(
             o,
             address(0),
-            true,
             0,
             0,
             bytes32(0),

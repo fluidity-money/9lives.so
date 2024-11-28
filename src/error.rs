@@ -311,6 +311,11 @@ pub enum Error {
     /// Error creating the NinelivesLockedArb contract!
     #[error("Error creating the NinelivesLockedArb contract!")]
     NinelivesLockedArbCreateError,
+
+    // 0x3c
+    /// The outcome does not exist!
+    #[error("Outcome does not exist!")]
+    NonexistentOutcome,
 }
 
 impl From<Error> for Vec<u8> {

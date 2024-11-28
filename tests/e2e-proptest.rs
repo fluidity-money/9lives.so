@@ -48,7 +48,6 @@ fn test_trading_edgecase() {
         c.ctor(
             outcomes.to_vec(),
             Address::ZERO,
-            true,
             block::timestamp() + 1,
             block::timestamp() + 2,
             msg::sender(),
@@ -74,7 +73,6 @@ fn test_unit_1() {
         c.ctor(
             outcomes.to_vec(),
             Address::ZERO,
-            true,
             block::timestamp() + 1,
             block::timestamp() + 2,
             Address::ZERO,
@@ -108,7 +106,6 @@ proptest! {
             c.ctor(
                 outcomes.to_vec(),
                 Address::ZERO,
-                true,
                 block::timestamp(),
                 block::timestamp() + 100, msg::sender()
             )

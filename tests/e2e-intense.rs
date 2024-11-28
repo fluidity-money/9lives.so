@@ -75,7 +75,6 @@ proptest! {
             c.ctor(
                 outcomes,
                 msg::sender(),
-                true,
                 block::timestamp() + 1,
                 block::timestamp() + 2,
                 msg::sender()
