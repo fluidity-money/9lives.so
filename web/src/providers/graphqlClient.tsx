@@ -9,6 +9,7 @@ const CampaignList = graphql(`
       name
       identifier
       description
+      picture
       oracle
       poolAddress
       creator {
@@ -23,6 +24,7 @@ const CampaignList = graphql(`
         }
       }
       ending
+      starting
     }
   }
 `);
@@ -64,6 +66,7 @@ const createCampaign = graphql(`
   mutation createCampaign(
     $name: String!
     $desc: String!
+    $picture: String!
     $outcomes: [OutcomeInput!]!
     $seed: Int!
     $creator: String!
@@ -77,6 +80,7 @@ const createCampaign = graphql(`
       type: PUT
       name: $name
       description: $desc
+      picture: $picture
       outcomes: $outcomes
       ending: $ending
       starting: $starting
@@ -101,6 +105,7 @@ export const requestTotalUserCount = graphPoints.request(getTotalUserCount);
 export const requestCreateCampaign = (params: {
   name: string;
   desc: string;
+  picture: string;
   outcomes: OutcomeInput[];
   seed: number;
   creator: string;

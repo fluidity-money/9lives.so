@@ -41,6 +41,9 @@ importers:
       graphql-request:
         specifier: ^7.1.0
         version: 7.1.0(graphql@16.9.0)
+      graphql-ws:
+        specifier: ^5.16.0
+        version: 5.16.0(graphql@16.9.0)
       keccak:
         specifier: ^3.0.4
         version: 3.0.4

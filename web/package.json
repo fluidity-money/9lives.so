@@ -1,7 +1,7 @@
 {
   "name": "web",
   "version": "0.1.0",
-  "packageManager": "pnpm@9.10.0",
+  "packageManager": "pnpm@9.14.2+sha256.06e65a4965baff6d6097f9c8f75c35f6d420974dbc03d775009056a69edfd271",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -32,6 +32,7 @@
     "ethers": "^6.13.3",
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",
+    "graphql-ws": "^5.16.0",
     "keccak": "^3.0.4",
     "next": "14.2.15",
     "posthog-js": "^1.186.3",

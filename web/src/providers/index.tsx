@@ -4,6 +4,7 @@ import ReactQueryProvider from "./reactQuery";
 import ContextInjector from "./contextInjector";
 import { Campaign } from "@/types";
 import PostHogProvider from "./postHog";
+import WebSocketProvider from "./websocket";
 
 export default function Providers({
   children,
@@ -16,6 +17,7 @@ export default function Providers({
     <ThirdwebProvider>
       <ReactQueryProvider initialData={initialData}>
         <ContextInjector />
+        <WebSocketProvider />
         <PostHogProvider>{children}</PostHogProvider>
       </ReactQueryProvider>
     </ThirdwebProvider>

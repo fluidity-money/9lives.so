@@ -37,6 +37,10 @@ const clientEnvSchema = z.object({
    * Infastructure market as oracle address
    */
   NEXT_PUBLIC_INFRA_ORACLE_ADDR: z.string().length(42),
+  /**
+   * Websocket url
+   */
+  NEXT_PUBLIC_WS_URL: z.string().url(),
 });
 
 type ClientEnvSchemaType = z.infer<typeof clientEnvSchema>;
@@ -57,6 +61,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_LENS_ADDR: process.env.NEXT_PUBLIC_LENS_ADDR,
   NEXT_PUBLIC_POINTS_URL: process.env.NEXT_PUBLIC_POINTS_URL,
   NEXT_PUBLIC_INFRA_ORACLE_ADDR: process.env.NEXT_PUBLIC_INFRA_ORACLE_ADDR,
+  NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
 });
 
 if (!clientEnv.success) {

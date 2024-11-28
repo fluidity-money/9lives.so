@@ -188,7 +188,7 @@ export default function CreateCampaignForm() {
           return {
             name: outcome.name,
             description: outcome.description,
-            picture: outcomeImageBlobs[index],
+            picture: outcomeImageBlobs[index] ?? "",
           };
         }),
       });

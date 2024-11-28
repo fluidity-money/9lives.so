@@ -44,8 +44,18 @@ export type CampaignInput = {
 };
 export type OutcomeInput = {
   id: `0x${string}`;
-  picture?: string;
+  picture: string;
   name: string;
   description: string;
   seed: number;
+};
+export type Action = {
+  id: string;
+  campaignName: string;
+  type: "create" | "buy" | "sell";
+  campaignPic: string;
+  timestamp: string;
+  campaignVol?: string;
+  actionValue?: string;
+  outcomeName?: string;
 };
