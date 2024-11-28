@@ -131,7 +131,7 @@ impl StorageTrading {
     pub(crate) fn internal_is_dpm(&self) -> bool {
         #[cfg(feature = "trading-backend-dpm")]
         { true }
-        #[cfg(feature = "trading-backend-amm")]
+        #[cfg(not(feature = "trading-backend-dpm"))]
         { false }
     }
 

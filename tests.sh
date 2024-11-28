@@ -4,6 +4,8 @@ make solidity
 
 cargo test -q --features testing,trading-backend-dpm $@
 
+cargo test -q --features testing,trading-backend-amm $@
+
 forge test
 
 exit 0

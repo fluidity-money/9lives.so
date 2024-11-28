@@ -81,6 +81,7 @@ pub mod storage_factory;
 pub mod contract_factory_1;
 pub mod contract_factory_2;
 
+pub mod contract_trading;
 pub mod storage_trading;
 pub mod contract_trading_extras;
 pub mod contract_trading_mint;
@@ -91,17 +92,14 @@ pub mod contract_lockup;
 pub mod storage_infra_market;
 pub mod contract_infra_market;
 
+#[cfg(any(feature = "contract-trading-mint", feature = "contract-trading-extras"))]
+pub use contract_trading::user_entrypoint;
+
 #[cfg(feature = "contract-factory-1")]
 pub use contract_factory_1::user_entrypoint;
 
 #[cfg(feature = "contract-factory-2")]
 pub use contract_factory_2::user_entrypoint;
-
-#[cfg(feature = "contract-trading-mint")]
-pub use contract_trading_mint::user_entrypoint;
-
-#[cfg(feature = "contract-trading-extras")]
-pub use contract_trading_extras::user_entrypoint;
 
 #[cfg(feature = "contract-lockup")]
 pub use contract_lockup::user_entrypoint;
@@ -122,20 +120,4 @@ pub use contract_infra_market::user_entrypoint;
 ))]
 compile_error!(
     "contract-factory-1, contract-factory-2, contract-trading-mint, contract-trading-extras, contract-lockup, or contract-trading-impl feature must be enabled."
-);
-
-#[cfg(not(any(
-    feature = "trading-backend-dpm",
-    feature = "trading-backend-amm"
-)))]
-compile_error!(
-    "trading-backend-dpm or trading-backenda-amm must be configured."
-);
-
-#[cfg(all(
-    feature = "trading-backend-dpm",
-    feature = "trading-backend-amm"
-))]
-compile_error!(
-    "trading-backend-dpm and trading-backenda-amm cannot be configured at the same time."
 );
