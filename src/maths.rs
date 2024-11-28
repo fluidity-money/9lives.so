@@ -11,7 +11,6 @@ fn mul(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
     x.checked_mul(y).ok_or(Error::CheckedMulOverflow)
 }
 fn sub(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    dbg!(x, y);
     x.checked_sub(y).ok_or(Error::CheckedSubOverflow)
 }
 fn div(x: Decimal, y: Decimal) -> Result<Decimal, Error> {

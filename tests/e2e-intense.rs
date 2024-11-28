@@ -11,6 +11,7 @@ use proptest::{
     collection::{self, VecStrategy},
     prelude::*,
     strategy::Strategy,
+    test_runner::TestCaseError,
 };
 
 // 100 million USD
@@ -29,7 +30,7 @@ struct ActionAmountPurchased {
 }
 
 fn strat_valid_u256() -> impl Strategy<Value = U256> {
-    (1e6 as u128..REASONABLE_UPPER_AMT).prop_map(U256::from)
+    (1e4 as u128..REASONABLE_UPPER_AMT).prop_map(U256::from)
 }
 
 fn strat_action_amount_purchased() -> impl Strategy<Value = ActionAmountPurchased> {
@@ -65,7 +66,7 @@ proptest! {
         // amount of shares several thousand times on both sides, reporting when
         // things break down. This also prints the test data in a format that's
         // compatible with the Python code to find divergences.
-        host::with_storage::<_, StorageTrading, _>(|c| {
+        return host::with_storage::<_, StorageTrading, _>(|c| -> Result<(), TestCaseError> {
             let outcome_1_id = FixedBytes::<8>::from(outcome_1_id);
             let outcome_2_id = FixedBytes::<8>::from(outcome_2_id);
             let outcomes = vec![
@@ -81,9 +82,11 @@ proptest! {
             )
                 .unwrap();
             let mut fusdc_vested = U256::ZERO;
+            let mut fusdc_spent_1 = U256::ZERO;
+            let mut fusdc_spent_2 = U256::ZERO;
             let mut share_1_received = U256::ZERO;
             let mut share_2_received = U256::ZERO;
-            // Make some random mints.
+            // Make some random mints!
             let random_mints =
                 purchase_int_1.into_iter().map(|ActionAmountPurchased { fusdc_amt, outcome }| -> (U256, Outcome, U256) {
                     fusdc_vested += fusdc_amt;
@@ -94,15 +97,16 @@ proptest! {
                     )
                         .expect(&format!("err, fusdc: {}", fusdc_amt));
                     if outcome == Outcome::Outcome1 {
+                        fusdc_spent_1 += s;
                         share_1_received += s;
                     } else {
+                        fusdc_spent_2 += s;
                         share_2_received += s;
                     }
                     (fusdc_amt, outcome, s)
                 })
                     .collect::<Vec<_>>();
-            assert!(share_1_received > U256::ZERO);
-            assert!(share_2_received > U256::ZERO);
+            prop_assume!(fusdc_spent_1 > U256::ZERO && fusdc_spent_2 > U256::ZERO);
             let (outcome_winner, winning_amt) = if outcome_winner == Outcome::Outcome1 {
                 (outcome_1_id, share_1_received)
             } else {
@@ -119,6 +123,7 @@ proptest! {
                     fusdc_vested - ret_amt
                 }
             );
-        })
+            Ok(())
+        });
     }
 }

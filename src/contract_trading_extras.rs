@@ -3,9 +3,7 @@ use stylus_sdk::{alloy_primitives::*, block, contract, evm, msg};
 use crate::error::*;
 
 use crate::{
-    decimal::{
-        fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_u256_to_decimal,
-    },
+    decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_u256_to_decimal},
     events, factory_call, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
@@ -27,7 +25,7 @@ impl StorageTrading {
         oracle: Address,
         time_start: u64,
         time_ending: u64,
-        fee_recipient: Address
+        fee_recipient: Address,
     ) -> R<()> {
         // We check that the caller is the factory, and if they are, we allow them
         // to call us willy-nilly. Factory could harm us by calling this function again,
@@ -41,13 +39,16 @@ impl StorageTrading {
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
         // If there are two outcomes, then we default to the DPM.
         self.is_dpm.set(outcomes_len == 2);
-        self.global_shares.set(U256::from(outcomes_len));
+        self.global_shares
+            .set(U256::from(outcomes_len) * SHARE_DECIMALS_EXP);
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
         for (outcome_id, outcome_amt) in outcomes {
             assert_or!(!outcome_amt.is_zero(), Error::OddsMustBeSet);
             self.outcome_invested.setter(outcome_id).set(outcome_amt);
-            self.outcome_shares.setter(outcome_id).set(U256::from(1e6));
+            self.outcome_shares
+                .setter(outcome_id)
+                .set(U256::from(1) * SHARE_DECIMALS_EXP);
             self.outcome_list.push(outcome_id);
         }
         self.share_impl.set(factory_call::share_impl(FACTORY_ADDR)?);
@@ -87,12 +88,7 @@ impl StorageTrading {
         ok(())
     }
 
-    pub fn payoff(
-        &mut self,
-        outcome_id: FixedBytes<8>,
-        amt: U256,
-        recipient: Address,
-    ) -> R<U256> {
+    pub fn payoff(&mut self, outcome_id: FixedBytes<8>, amt: U256, recipient: Address) -> R<U256> {
         assert_or!(self.winner.get() == outcome_id, Error::NotWinner);
         // Get the user's balance of the share they own for this outcome.
         let share_addr = proxy::get_share_addr(

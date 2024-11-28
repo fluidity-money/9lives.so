@@ -86,15 +86,6 @@ impl StorageTrading {
                     .ok_or(Error::CheckedSubOverflow)?,
             )?;
             let n_2 = share_u256_to_decimal(n_2)?;
-            dbg!(
-                m_1,
-                m_2,
-                n_1,
-                n_2,
-                m,
-                maths::dpm_shares(m_1, m_2, n_1, n_2, m)?,
-                share_decimal_to_u256(maths::dpm_shares(m_1, m_2, n_1, n_2, m)?)?
-            );
             share_decimal_to_u256(maths::dpm_shares(m_1, m_2, n_1, n_2, m)?)?
         } else {
             let mut product = U256::from(1);

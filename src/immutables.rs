@@ -143,12 +143,12 @@ pub fn erc20_proxy_hash(erc20_impl: Address) -> [u8; 32] {
         .finalize()
 }
 
-pub fn trading_proxy_hash(
-    trading_proxy_extras: Address,
-    trading_proxy_impl: Address,
-) -> [u8; 32] {
+pub fn trading_proxy_hash(trading_proxy_extras: Address, trading_proxy_impl: Address) -> [u8; 32] {
     Keccak256::new()
-        .update(&trading_proxy_code(trading_proxy_extras, trading_proxy_impl))
+        .update(&trading_proxy_code(
+            trading_proxy_extras,
+            trading_proxy_impl,
+        ))
         .finalize()
 }
 
@@ -157,6 +157,9 @@ pub const FUSDC_DECIMALS: u8 = 6;
 
 // Share decimals should be this low!
 pub const SHARE_DECIMALS: u8 = 6;
+
+// Share decimals (1e6) that are in an exp-able form.
+pub const SHARE_DECIMALS_EXP: U256 = U256::from_limbs([1000000, 0, 0, 0]);
 
 pub const FEE_RECIPIENT: Address = address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7");
 
