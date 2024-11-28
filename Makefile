@@ -38,8 +38,8 @@ ${OUT_SHARE}: $(shell find src tests -name '*.sol')
 contract-factory-1: contract-factory-1.wasm
 contract-factory-2: contract-factory-2.wasm
 
-contract-trading-dpm-mint: contract-dpm-trading-mint.wasm
-contract-trading-dpm-extras: contract-dpm-trading-extras.wasm
+contract-trading-dpm-mint: contract-trading-dpm-mint.wasm
+contract-trading-dpm-extras: contract-trading-dpm-extras.wasm
 
 contract-trading-amm-mint: contract-trading-amm-mint.wasm
 contract-trading-amm-extras: contract-trading-amm-extras.wasm

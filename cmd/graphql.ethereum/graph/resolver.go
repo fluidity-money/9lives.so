@@ -17,6 +17,5 @@ type Resolver struct {
 	Geth        *ethclient.Client     // needed to do lookups with geth
 	C           config.C              // config for connecting to the right endpoints
 	FactoryAddr ethCommon.Address     // address of the factory contract
-	TradingHash []byte                // the keccak256 hash of the trading contract
 	ChangelogItems   []changelog.Changelog // the changelog for this.
 }

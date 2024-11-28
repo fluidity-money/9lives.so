@@ -62,12 +62,21 @@ interface INineLivesFactory {
      */
     function getOwner(address addr) external view returns (address);
 
+    function getBackend(address addr) external view returns (uint8);
+
+    function getTradingAddr(bytes32 id) external view returns (address);
+
     function erc20Impl() external pure returns (address);
 
     /**
-     * @notice return the keccak256 hash of the trading contract
+     * @notice return the keccak256 hash of the trading contract in DPM form.
      */
-    function tradingHash() external view returns (bytes32);
+    function dpmTradingHash() external view returns (bytes32);
+
+    /**
+     * @notice return the keccak256 hash of the trading contract in AMM form.
+     */
+    function ammTradingHash() external view returns (bytes32);
 
     /**
      * @notice return the keccak256 hash of the ERC20

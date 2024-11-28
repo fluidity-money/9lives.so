@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"sort"
 
-	ethCommon "github.com/ethereum/go-ethereum/common"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
 
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
@@ -51,15 +50,7 @@ func GetOutcomeIds(outcomes []Outcome) (ids [][]byte, err error) {
 	return
 }
 
-func GetTradingAddr(ids [][]byte, factoryAddr ethCommon.Address, bytecodeHash []byte) ethCommon.Address {
-	return ethCrypto.CreateAddress2(
-		factoryAddr,
-		[32]byte(ethCrypto.Keccak256(ids...)),
-		bytecodeHash,
-	)
-}
-
-func GetTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCommon.Address, hash []byte) *ethCommon.Address {
+func GetMarketId(outcomes []model.OutcomeInput) []byte {
 	var outcomes_ = make([]Outcome, len(outcomes))
 	for i, o := range outcomes {
 		outcomes_[i] = Outcome{
@@ -72,6 +63,5 @@ func GetTradingAddrWithOutcomes(outcomes []model.OutcomeInput, factoryAddr ethCo
 	if err != nil {
 		return nil
 	}
-	x := GetTradingAddr(ids, factoryAddr, hash)
-	return &x
+	return ethCrypto.Keccak256(ids...)
 }

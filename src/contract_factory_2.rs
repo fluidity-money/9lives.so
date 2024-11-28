@@ -63,11 +63,16 @@ impl StorageFactory {
         ok(self.trading_owners.getter(trading_addr).get())
     }
 
-    pub fn get_backend(&self, trading_addr: Address) -> R<U8> {
-        ok(self.trading_backends.getter(trading_addr).get())
+    pub fn get_backend(&self, trading_addr: Address) -> R<u8> {
+        ok(u8::from_le_bytes(
+            self.trading_backends
+                .getter(trading_addr)
+                .get()
+                .to_le_bytes(),
+        ))
     }
 
-    pub fn get_address(&self, id: FixedBytes<32>) -> R<Address> {
+    pub fn get_trading_addr(&self, id: FixedBytes<32>) -> R<Address> {
         ok(self.trading_addresses.get(id))
     }
 

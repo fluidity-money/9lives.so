@@ -42,8 +42,20 @@ contract MockFactory is INineLivesFactory {
         return address(2);
     }
 
-    function tradingHash() external pure returns (bytes32) {
-        return keccak256(abi.encodePacked(address(3)));
+    function getBackend(address) external pure returns (uint8) {
+        return 1;
+    }
+
+    function getTradingAddr(bytes32 id) external view returns (address) {
+        return address(uint160(uint256(keccak256(abi.encodePacked(id)))));
+    }
+
+    function ammTradingHash() external pure returns (bytes32) {
+        return keccak256(abi.encodePacked(address(4)));
+    }
+
+    function dpmTradingHash() external pure returns (bytes32) {
+        return keccak256(abi.encodePacked(address(5)));
     }
 
     function erc20Impl() external pure returns (address) {
