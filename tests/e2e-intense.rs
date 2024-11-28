@@ -92,7 +92,7 @@ proptest! {
                         U256::from(fusdc_amt),
                         msg::sender()
                     )
-                        .unwrap();
+                        .expect(&format!("err, fusdc: {}", fusdc_amt));
                     if outcome == Outcome::Outcome1 {
                         share_1_received += s;
                     } else {
@@ -101,6 +101,8 @@ proptest! {
                     (fusdc_amt, outcome, s)
                 })
                     .collect::<Vec<_>>();
+            assert!(share_1_received > U256::ZERO);
+            assert!(share_2_received > U256::ZERO);
             let (outcome_winner, winning_amt) = if outcome_winner == Outcome::Outcome1 {
                 (outcome_1_id, share_1_received)
             } else {

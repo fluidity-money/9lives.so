@@ -1,330 +1,277 @@
 use alloc::vec::Vec;
-use thiserror::Error;
 
 use stylus_sdk::alloy_primitives::Address;
+
+use std::{
+    backtrace::Backtrace,
+    convert::Infallible,
+    ops::{ControlFlow, FromResidual, Try},
+};
 
 #[macro_export]
 macro_rules! assert_or {
     ($cond:expr, $err:expr) => {
         if !($cond) {
-            Err($err)?; // question mark forces coercion
+            Err($err)?;
         }
     };
 }
 
-#[derive(Error, Debug)]
+#[derive(Debug)]
 #[repr(u8)]
 pub enum Error {
     // 0x01
     /// Proxy already created.
-    #[error("Already constructed")]
     AlreadyConstructed,
 
     // 0x02
     /// Outcomes must be defined to create Trading.
-    #[error("Must contain outcomes")]
     MustContainOutcomes,
 
     // 0x03
     /// Some odds must be set beforehand.
-    #[error("Odds must be set")]
     OddsMustBeSet,
 
     // 0x04
     /// The number that we're trying to make into a float is too large.
-    #[error("U256 is too high")]
     U256TooLarge,
 
     // 0x05
     /// The number is too small. Maybe you need to pass in 1e<decimals>.
-    #[error("The amount given is too small")]
     TooSmallNumber,
 
     // 0x06
     /// The number is too big!
-    #[error("Too big number")]
     TooBigNumber,
 
     // 0x07
     /// Somehow, the number became negative!
-    #[error("Number is negative")]
     NegNumber,
 
     // 0x08
     /// Longtail had an error, we'll bubble up what happened.
-    #[error("Longtail had an error.")]
     LongtailError(Vec<u8>),
 
     // 0x09
     /// A share had an error!
-    #[error("Share had an error.")]
     ShareError(Vec<u8>),
 
     // 0x0a
     /// ERC20 error on transfer!
-    #[error("ERC20 error on transfer")]
     ERC20ErrorTransfer(Address, Vec<u8>),
 
     // 0x0b
     /// Trading error! Probably during construction.
-    #[error("Trading error")]
     TradingError(Vec<u8>),
 
     // 0x0c
     /// ERC20 unable to unpack a value!
-    #[error("ERC20 unable to unpack")]
     ERC20UnableToUnpack,
 
     // 0x0d
     /// ERC20 error! Returned false!
-    #[error("ERC20 returned false")]
     ERC20ReturnedFalse,
 
     // 0x0e
     /// You called a trusted function you shouldn't have.
-    #[error("Not oracle")]
     NotOracle,
 
     // 0x0f
     /// Done voting!
-    #[error("Done voting")]
     DoneVoting,
 
     // 0x10
     /// The msg.sender isn't a trading contract that the Factory deployed!
-    #[error("Not trading contract")]
     NotTradingContract,
 
     // 0x11
     /// Tried do a payoff for an outcome that didn't come true!
-    #[error("Not winner!")]
     NotWinner,
 
     // 0x12
     /// Negative amount was attempted to be made a uint256!
-    #[error("Negative amount to uint256")]
     NegU256,
 
     // 0x13
     /// Checked overflow in the pow function!
-    #[error("Checked pow overflow")]
     CheckedPowOverflow,
 
     // 0x14
     /// Checked overflow in a multiplication!
-    #[error("Checked mul overflow")]
     CheckedMulOverflow,
 
     // 0x15
     /// Checked addition overflowed!
-    #[error("Checked add overflow")]
     CheckedAddOverflow,
 
     // 0x16
     /// Checked subtraction overflowed!
-    #[error("Checked sub overflow")]
     CheckedSubOverflow,
 
     // 0x17
     /// Checked division overflowed!
-    #[error("Checked div overflow")]
     CheckedDivOverflow,
 
     // 0x18
     /// Two outcomes only!
-    #[error("Two outcomes only")]
     TwoOutcomesOnly,
 
     // 0x19
     /// Infinity log!
-    #[error("Infinity")]
     Infinity,
 
     // 0x1a
     /// Negative number that was attempted to be converted to U256
-    #[error("Negative number")]
     NegativeFixedToUintConv,
 
     // 0x1b
     /// Unusual amounts (more than 10 million liquidity at first?) were
     /// supplied.
-    #[error("Unusual amount supplied at first")]
     UnusualAmountCreated,
 
     // 0x1c
     /// Sqrt function returned None!
-    #[error("Sqrt function returned none")]
     SqrtOpNone,
 
     // 0x1d
     /// ERC20 error on transfer from!
-    #[error("ERC20 error on transfer")]
     ERC20ErrorTransferFrom(Address, Vec<u8>),
 
     // 0x1e
     /// ERC20 error on permit!
-    #[error("ERC20 error on permit")]
     ERC20ErrorPermit(Address, Vec<u8>),
 
     // 0x1f
     /// ERC20 error on balanceOf!
-    #[error("ERC20 error on balanceOf")]
     ERC20ErrorBalanceOf(Address, Vec<u8>),
 
     // 0x20
     /// No shares were burned.
-    #[error("No shares were burned!")]
     ZeroShares,
 
     // 0x21
     /// Camelot had an error, we'll bubble up what happened. UNUSED.
-    #[error("Camelot had an error.")]
     CamelotError(Vec<u8>),
 
     // 0x22
     /// DPM you can only set 1!
-    #[error("DPM must be 1e6")]
     BadSeedAmount,
 
     // 0x23
     /// Error using the locked ARB code!
-    #[error("Locked ARB error")]
     LockedARBError(Address, Vec<u8>),
 
     // 0x24
     /// Error unpacking a U256!
-    #[error("Error unpacking ARB!")]
     LockedARBUnableToUnpack,
 
     // 0x25
     /// The Trading contract was already registered with the
     /// Infrastructure Markets contract!
-    #[error("Already registered with Infrastructure Markets!")]
     AlreadyRegistered,
 
     // 0x26
     /// The sender is not the factory contract!
-    #[error("Not factory contract")]
     NotFactoryContract,
 
     // 0x27
     /// The sender is not the infrastructure market!
-    #[error("Not infrastructure market")]
     NotInfraMarket,
 
     // 0x28
     /// Infrastructure market has not started yet!
-    #[error("Infrastructure market has not started!")]
     InfraMarketHasNotStarted,
 
     // 0x29
     /// User has tried to allocate more than they possibly should to the infra market.
-    #[error("Infrastructure market too much vested!")]
     InfraMarketTooMuchVested,
 
     // 0x2a
     /// Infrastructure market has expired!
-    #[error("Infrastructure market has expired!")]
     InfraMarketHasExpired,
 
     // 0x2b
     /// Error interacting with the lockup contract!
-    #[error("Lockup contract error!")]
     LockupError(Address, Vec<u8>),
 
     // 0x2c
     /// The infrastructure market has not expired!
-    #[error("Infrastructure market has not expired yet!")]
     InfraMarketHasNotExpired,
 
     // 0x2d
     /// Sweep wasn't called with calldata to reconstruct the winner.
-    #[error("Incorrect sweep invocation")]
     IncorrectSweepInvocation,
 
     // 0x2e
     /// User was already targeted by the sweep/they can't be targeted!
-    #[error("User already targeted by sweep")]
     UserAlreadyTargeted,
 
     // 2f
     /// The window for this market has closed! It's been longer than a week.
-    #[error("Infrastructure market window has closed!")]
     InfraMarketWindowClosed,
 
     // 0x30
     /// The Trading contract's shutdown function was already called.
-    #[error("Trading is shutdown!")]
     IsShutdown,
 
     // 0x31
     /// The factory call failed!
-    #[error("Factory call failed!")]
     FactoryCallError(Vec<u8>),
 
     // 0x32
     /// We were unable to unpack the factory call!
-    #[error("Factory call unable to unpack!")]
     FactoryCallUnableToUnpack,
 
     // 0x33
     /// The caller is not the factory!
-    #[error("Caller is not factory")]
     CallerIsNotFactory,
 
     // 0x34
     /// The contract is disabled!
-    #[error("The contract is disabled")]
     NotEnabled,
 
     // 0x35
     /// Unable to unpack from a Lockup call!
-    #[error("Unable to unpack Lockup")]
     LockupUnableToUnpack,
 
     // 0x36
     /// The victim did not predict incorrectly!
-    #[error("Victim did not predict incorrectly")]
     BadVictim,
 
     // 0x37
     /// The caller cannot claim the victim's funds (yet?) due to less power.
-    #[error("Caller cannot claim victim's funds")]
     VictimCannotClaim,
 
     // 0x38
     /// The caller is out of vested power to allocate!
-    #[error("Caller is out of vested power")]
     NoVestedPower,
 
     // 0x39
     /// Tried to call with a zero amount!
-    #[error("Zero amount passed!")]
     ZeroAmount,
 
     // 0x3a
     /// Error calling the Infrastructure Market!
-    #[error("Error calling the Infra Market!")]
     InfraMarketCallError(Vec<u8>),
 
     // 0x3b
     /// Error creating the NinelivesLockedArb contract!
-    #[error("Error creating the NinelivesLockedArb contract!")]
     NinelivesLockedArbCreateError,
 
     // 0x3c
     /// The outcome does not exist!
-    #[error("Outcome does not exist!")]
     NonexistentOutcome,
+
+    // 0x3d
+    /// Error deploying a contract!
+    DeployError,
 }
 
-impl From<Error> for Vec<u8> {
-    #[cfg(not(target_arch = "wasm32"))]
-    fn from(val: Error) -> Self {
-        val.to_string().into()
-    }
+/// Error that will unwrap if it fails instead of propagating to the toplevel.
+#[derive(Debug)]
+pub struct R<T>(Result<T, Error>);
 
-    #[cfg(target_arch = "wasm32")]
+impl From<Error> for Vec<u8> {
     fn from(val: Error) -> Self {
         fn ext(preamble: &[u8], b: &[&[u8]]) -> Vec<u8> {
             let mut x = preamble.to_vec();
@@ -366,5 +313,88 @@ impl From<Error> for Vec<u8> {
             Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
         }
+    }
+}
+
+impl<T> FromResidual<<Self as Try>::Residual> for R<T> {
+    #[track_caller]
+    fn from_residual(residual: Error) -> Self {
+        #[cfg(feature = "testing")]
+        {
+            let bt = Backtrace::force_capture();
+            panic!("err, {residual:?}: {bt}");
+        }
+        #[cfg(not(feature = "testing"))]
+        R(Err(err))
+    }
+}
+
+impl<T> FromResidual<Result<Infallible, Error>> for R<T> {
+    #[track_caller]
+    fn from_residual(residual: Result<Infallible, Error>) -> Self {
+        match residual {
+            Err(err) => {
+                #[cfg(feature = "testing")]
+                {
+                    let bt = Backtrace::force_capture();
+                    panic!("err, {err:?}: {bt}");
+                }
+                #[cfg(not(feature = "testing"))]
+                R(Err(err))
+            }
+            Ok(_) => unreachable!(),
+        }
+    }
+}
+
+// This behaviour will unwrap instead of propogating to the top level if
+// the code is in the "testing" feature mode.
+impl<T> Try for R<T> {
+    type Output = T;
+    type Residual = Error;
+
+    fn from_output(o: Self::Output) -> Self {
+        R(Ok(o))
+    }
+
+    fn branch(self) -> ControlFlow<Self::Residual, Self::Output> {
+        match self.0 {
+            Ok(v) => ControlFlow::Continue(v),
+            Err(err) => {
+                #[cfg(feature = "testing")]
+                panic!("unpacking: {:?}", err);
+                #[cfg(not(feature = "testing"))]
+                ControlFlow::Break(err)
+            }
+        }
+    }
+}
+
+impl<T> From<Result<T, Error>> for R<T> {
+    fn from(result: Result<T, Error>) -> Self {
+        R(result)
+    }
+}
+
+impl<T> From<R<T>> for Result<T, Error> {
+    fn from(result: R<T>) -> Self {
+        result.0
+    }
+}
+
+pub fn ok<T>(v: T) -> R<T> {
+    R(Ok(v))
+}
+
+pub fn err<T>(v: Error) -> R<T> {
+    R(Err(v))
+}
+
+impl<T> R<T> {
+    pub fn unwrap(self: R<T>) -> T {
+        self.0.unwrap()
+    }
+    pub fn expect(self: R<T>, msg: &str) -> T {
+        self.0.expect(msg)
     }
 }

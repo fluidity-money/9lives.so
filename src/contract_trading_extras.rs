@@ -1,6 +1,6 @@
 use stylus_sdk::{alloy_primitives::*, block, contract, evm, msg};
 
-use crate::error::Error;
+use crate::error::*;
 
 use crate::{
     decimal::{
@@ -28,7 +28,7 @@ impl StorageTrading {
         time_start: u64,
         time_ending: u64,
         fee_recipient: Address
-    ) -> Result<(), Vec<u8>> {
+    ) -> R<()> {
         // We check that the caller is the factory, and if they are, we allow them
         // to call us willy-nilly. Factory could harm us by calling this function again,
         // but with the current implementation, that's not the case, allowing us to
@@ -47,7 +47,7 @@ impl StorageTrading {
         for (outcome_id, outcome_amt) in outcomes {
             assert_or!(!outcome_amt.is_zero(), Error::OddsMustBeSet);
             self.outcome_invested.setter(outcome_id).set(outcome_amt);
-            self.outcome_shares.setter(outcome_id).set(U256::from(1));
+            self.outcome_shares.setter(outcome_id).set(U256::from(1e6));
             self.outcome_list.push(outcome_id);
         }
         self.share_impl.set(factory_call::share_impl(FACTORY_ADDR)?);
@@ -55,10 +55,10 @@ impl StorageTrading {
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));
         self.oracle.set(oracle);
-        Ok(())
+        ok(())
     }
 
-    pub fn shutdown(&mut self) -> Result<U256, Error> {
+    pub fn shutdown(&mut self) -> R<U256> {
         // Notify Longtail to pause trading on every outcome pool.
         // TODO, send a "thank you" amount to the caller of this function
         // when it's called for the first time.
@@ -70,10 +70,10 @@ impl StorageTrading {
                 .collect::<Vec<_>>(),
         )?;
         self.is_shutdown.set(true);
-        Ok(U256::ZERO)
+        ok(U256::ZERO)
     }
 
-    pub fn decide(&mut self, outcome: FixedBytes<8>) -> Result<(), Error> {
+    pub fn decide(&mut self, outcome: FixedBytes<8>) -> R<()> {
         let oracle_addr = self.oracle.get();
         assert_or!(msg::sender() == oracle_addr, Error::NotOracle);
         assert_or!(self.when_decided.get().is_zero(), Error::NotTradingContract);
@@ -84,7 +84,7 @@ impl StorageTrading {
             identifier: outcome,
             oracle: oracle_addr,
         });
-        Ok(())
+        ok(())
     }
 
     pub fn payoff(
@@ -92,7 +92,7 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         amt: U256,
         recipient: Address,
-    ) -> Result<U256, Error> {
+    ) -> R<U256> {
         assert_or!(self.winner.get() == outcome_id, Error::NotWinner);
         // Get the user's balance of the share they own for this outcome.
         let share_addr = proxy::get_share_addr(
@@ -122,11 +122,11 @@ impl StorageTrading {
             recipient,
             fusdcReceived: fusdc,
         });
-        Ok(fusdc)
+        ok(fusdc)
     }
 
-    pub fn details(&self, outcome_id: FixedBytes<8>) -> Result<(U256, U256, U256, FixedBytes<8>), Error> {
-        Ok((
+    pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
+        ok((
             self.outcome_shares.get(outcome_id),
             self.outcome_invested.get(outcome_id),
             self.global_invested.get(),
@@ -134,16 +134,16 @@ impl StorageTrading {
         ))
     }
 
-    pub fn ended(&self) -> Result<bool, Error> {
-        Ok(!self.when_decided.is_zero())
+    pub fn ended(&self) -> R<bool> {
+        ok(!self.when_decided.is_zero())
     }
 
-    pub fn invested(&self) -> Result<U256, Error> {
-        Ok(self.global_invested.get())
+    pub fn invested(&self) -> R<U256> {
+        ok(self.global_invested.get())
     }
 
-    pub fn share_addr(&self, outcome: FixedBytes<8>) -> Result<Address, Error> {
-        Ok(proxy::get_share_addr(
+    pub fn share_addr(&self, outcome: FixedBytes<8>) -> R<Address> {
+        ok(proxy::get_share_addr(
             FACTORY_ADDR,
             contract::address(),
             self.share_impl.get(),

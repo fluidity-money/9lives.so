@@ -33,7 +33,7 @@ impl StorageFactory {
         time_ending: u64,
         documentation: FixedBytes<32>,
         fee_recipient: Address,
-    ) -> Result<Address, Vec<u8>> {
+    ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
         let outcome_identifiers = outcomes.iter().map(|(c, _, _)| c).collect::<Vec<_>>();
@@ -51,7 +51,8 @@ impl StorageFactory {
             self.trading_extras_impl.get(),
             self.trading_mint_impl.get(),
             trading_id,
-        )?;
+        )
+        .map_err(|_| Error::DeployError)?;
 
         self.trading_contracts
             .setter(trading_addr)
@@ -85,7 +86,8 @@ impl StorageFactory {
 
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
-            let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)?;
+            let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
+                .map_err(|_| Error::DeployError)?;
 
             let m_2 = m_1 - fusdc_u256_to_decimal(*seed_amt)?;
 
@@ -137,10 +139,10 @@ impl StorageFactory {
                 time_ending,
             )?;
         } else {
-            panic!("unimplemented");
+            unimplemented!();
         }
 
-        Ok(trading_addr)
+        ok(trading_addr)
     }
 }
 

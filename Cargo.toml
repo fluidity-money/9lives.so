@@ -30,7 +30,6 @@ incremental = false
 
 [dependencies]
 stylus-sdk = "0.6.0"
-thiserror = "1.0.48"
 tiny-keccak = "2.0.2"
 num-traits = "0.2.19"
 alloy-sol-types = "=0.7.6"

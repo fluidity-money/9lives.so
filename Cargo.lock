@@ -780,7 +780,6 @@ dependencies = [
  "rust_decimal_macros",
  "sha3-const",
  "stylus-sdk",
- "thiserror",
  "tiny-keccak",
 ]
 

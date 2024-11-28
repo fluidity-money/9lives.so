@@ -1,6 +1,9 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
-use stylus_sdk::{block, alloy_primitives::{fixed_bytes, Address, U256}};
+use stylus_sdk::{
+    alloy_primitives::{fixed_bytes, Address, U256},
+    block,
+};
 
 use lib9lives::{decimal::MAX_DECIMAL, error::Error, host};
 
@@ -34,7 +37,7 @@ proptest! {
                     fixed_bytes!("0541d76af67ad076"),
                     U256::from(fusdc_quote),
                     msg::sender(),
-                )
+                ).into()
                 {
                     Ok(_) => (),
                     Err(Error::CheckedMulOverflow) => (), // We assume this is fine.

@@ -30,7 +30,7 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         value: U256,
         recipient: Address,
-    ) -> Result<U256, Error> {
+    ) -> R<U256> {
         assert_or!(self.when_decided.get().is_zero(), Error::DoneVoting);
         assert_or!(value > U256::ZERO, Error::ZeroAmount);
 
@@ -49,7 +49,7 @@ impl StorageTrading {
         let outcome_invested = self.outcome_invested.get(outcome_id);
 
         // Here we do some fee adjustment to send the fee recipient their money.
-        let fee_for_creator = ((FEE_SCALING_BEFORE * value) * MINT_FEE_PCT) / FEE_SCALING_AFTER;
+        let fee_for_creator = (value * MINT_FEE_PCT) / FEE_SCALING;
         fusdc_call::transfer(self.fee_recipient.get(), fee_for_creator)?;
         let value = value - fee_for_creator;
 
@@ -86,6 +86,15 @@ impl StorageTrading {
                     .ok_or(Error::CheckedSubOverflow)?,
             )?;
             let n_2 = share_u256_to_decimal(n_2)?;
+            dbg!(
+                m_1,
+                m_2,
+                n_1,
+                n_2,
+                m,
+                maths::dpm_shares(m_1, m_2, n_1, n_2, m)?,
+                share_decimal_to_u256(maths::dpm_shares(m_1, m_2, n_1, n_2, m)?)?
+            );
             share_decimal_to_u256(maths::dpm_shares(m_1, m_2, n_1, n_2, m)?)?
         } else {
             let mut product = U256::from(1);
@@ -141,7 +150,7 @@ impl StorageTrading {
             fusdcSpent: value,
         });
 
-        Ok(shares)
+        ok(shares)
     }
 
     #[allow(non_snake_case)]
@@ -150,7 +159,7 @@ impl StorageTrading {
         outcome: FixedBytes<8>,
         value: U256,
         recipient: Address,
-    ) -> Result<U256, Error> {
+    ) -> R<U256> {
         fusdc_call::take_from_sender(value)?;
         self.internal_mint(outcome, value, recipient)
     }
@@ -161,9 +170,9 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         value: U256,
         _recipient: Address,
-    ) -> Result<U256, Error> {
+    ) -> R<U256> {
         if !self.when_decided.is_zero() {
-            return Ok(U256::ZERO);
+            return ok(U256::ZERO);
         }
         let m_1 = fusdc_u256_to_decimal(self.outcome_invested.get(outcome_id))?;
         let n_1 = self.global_shares.get();
@@ -200,16 +209,16 @@ impl StorageTrading {
         v: u8,
         r: FixedBytes<32>,
         s: FixedBytes<32>,
-    ) -> Result<U256, Error> {
+    ) -> R<U256> {
         fusdc_call::take_from_sender_permit(value, deadline, v, r, s)?;
         self.internal_mint(outcome, value, recipient)
     }
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> Result<U256, Error> {
+    pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> R<U256> {
         if !self.when_decided.is_zero() {
-            return Ok(U256::ZERO);
+            return ok(U256::ZERO);
         }
         let m_1 = fusdc_u256_to_decimal(self.outcome_invested.get(id))?;
         let n_1 = self.outcome_shares.get(id);

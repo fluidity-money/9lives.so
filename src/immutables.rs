@@ -52,10 +52,7 @@ pub const THREE_DAYS_SECS: u64 = 259200;
 
 // Scaling that's done before for any fees taken from the incentive amount, or
 // the mint fee amount.
-pub const FEE_SCALING_BEFORE: U256 = U256::from_limbs([100, 0, 0, 0]);
-
-// Scaling that's done after scaling to do the multiplication for fees.
-pub const FEE_SCALING_AFTER: U256 = U256::from_limbs([10_000, 0, 0, 0]);
+pub const FEE_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
 
 // 5% of all trading to buy shares goes to the creator of the contract.
 pub const MINT_FEE_PCT: U256 = U256::from_limbs([5, 0, 0, 0]);
@@ -173,4 +170,4 @@ pub const LONGTAIL_TICK_SPACING: u8 = 10;
 pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 
 /// Minimum amount of fUSDC that can be minted with.
-pub const MINIMUM_MINT_AMT: i64 = 1;
+pub const MINIMUM_MINT_AMT: i64 = 0;

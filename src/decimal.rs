@@ -4,31 +4,31 @@ use stylus_sdk::alloy_primitives::U256;
 
 use rust_decimal::{prelude::*, Decimal, MathematicalOps};
 
-use crate::{assert_or, error::Error};
+use crate::{assert_or, error::*};
 
 /// Max decimal straight from rust_decimal documentation.
 pub const MAX_DECIMAL: u128 = 79_228_162_514_264_337_593_543_950_335;
 
-fn u256_to_decimal(n: U256, decimals: u8) -> Result<Decimal, Error> {
+fn u256_to_decimal(n: U256, decimals: u8) -> R<Decimal> {
     if n.is_zero() {
-        return Ok(Decimal::ZERO);
+        return ok(Decimal::ZERO);
     }
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
     let n: u128 = u128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
     let rem: u128 = u128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
     if n > MAX_DECIMAL {
-        return Err(Error::U256TooLarge);
+        return err(Error::U256TooLarge);
     }
     let n = Decimal::from(n);
     let rem = Decimal::from(rem);
-    Ok(n + rem
+    ok(n + rem
         .checked_div(Decimal::from(10).powi(decimals as i64))
         .ok_or(Error::CheckedDivOverflow)?)
 }
 
-fn decimal_to_u256(n: Decimal, decimals: u8) -> Result<U256, Error> {
+fn decimal_to_u256(n: Decimal, decimals: u8) -> R<U256> {
     if n.is_zero() {
-        return Ok(U256::ZERO);
+        return ok(U256::ZERO);
     }
     assert_or!(n.is_sign_positive(), Error::NegativeFixedToUintConv);
     let q = U256::from(n.to_u128().unwrap());
@@ -40,21 +40,21 @@ fn decimal_to_u256(n: Decimal, decimals: u8) -> Result<U256, Error> {
             .to_u128()
             .ok_or(Error::CheckedMulOverflow)?,
     );
-    Ok(q * U256::from(10).pow(U256::from(decimals)) + r)
+    ok(q * U256::from(10).pow(U256::from(decimals)) + r)
 }
 
-pub fn share_decimal_to_u256(x: Decimal) -> Result<U256, Error> {
+pub fn share_decimal_to_u256(x: Decimal) -> R<U256> {
     decimal_to_u256(x, SHARE_DECIMALS)
 }
-pub fn share_u256_to_decimal(x: U256) -> Result<Decimal, Error> {
+pub fn share_u256_to_decimal(x: U256) -> R<Decimal> {
     u256_to_decimal(x, SHARE_DECIMALS)
 }
 
-pub fn fusdc_decimal_to_u256(x: Decimal) -> Result<U256, Error> {
+pub fn fusdc_decimal_to_u256(x: Decimal) -> R<U256> {
     decimal_to_u256(x, FUSDC_DECIMALS)
 }
-pub fn fusdc_u256_to_decimal(x: U256) -> Result<Decimal, Error> {
-    Ok(u256_to_decimal(x, FUSDC_DECIMALS)?)
+pub fn fusdc_u256_to_decimal(x: U256) -> R<Decimal> {
+    ok(u256_to_decimal(x, FUSDC_DECIMALS)?)
 }
 
 pub fn round_down(x: Decimal) -> Decimal {
