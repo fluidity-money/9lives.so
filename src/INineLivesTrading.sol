@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-/// @notice outcome used by Trading as bettable situations
-struct TradingOutcome {
-    bytes8 identifier;
-    uint256 amount;
-}
-
 interface INineLivesTrading {
     /**
      * @notice ctor to set the values for this contract.
@@ -17,7 +11,7 @@ interface INineLivesTrading {
      * @param feeRecipient to send fees earned from trading.
      */
     function ctor(
-        TradingOutcome[] memory outcomes,
+        bytes8[] memory outcomes,
         address oracle,
         uint256 timeStart,
         uint256 timeEnding,
@@ -105,6 +99,9 @@ interface INineLivesTrading {
         uint256 globalInvested,
         bytes8 winner
     );
+
+    /// @notice is this trading contract running the DPM?
+    function isDpm() external view returns (bool);
 
     /**
      * @notice Invested amount of fusdc in the betting pool.

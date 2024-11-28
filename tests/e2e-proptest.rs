@@ -17,44 +17,18 @@ fn test_factory_new_trading() {
             .unwrap();
         let id = FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let id2 = FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
-        c.new_trading_37_B_D_1242(
+        c.new_trading_09393_D_A_8(
             vec![
                 (id, U256::from(1e6), String::new()),
                 (id2, U256::from(1e6), String::new()),
             ],
-            Address::from([1_u8; 20]),
-            true,
+            msg::sender(), // This is needed to have the same as the infra market until our scaffolding is better.
             block::timestamp(),
             block::timestamp() + 100,
             FixedBytes::ZERO,
             Address::ZERO,
         )
         .unwrap();
-    })
-}
-
-#[test]
-fn test_trading_edgecase() {
-    let amount_0 = U256::from(23560214097017_u64);
-    let amount_1 = U256::from(1000000_u64);
-    let mint_amount = U256::from(64682966_u64);
-    use lib9lives::storage_trading::StorageTrading;
-    host::with_storage::<_, StorageTrading, _>(|c| {
-        let outcome_0 =
-            FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
-        let outcome_1 =
-            FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
-        let outcomes = [(outcome_0, amount_0), (outcome_1, amount_1)];
-        c.ctor(
-            outcomes.to_vec(),
-            Address::ZERO,
-            block::timestamp() + 1,
-            block::timestamp() + 2,
-            msg::sender(),
-        )
-        .unwrap();
-        c.mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO)
-            .unwrap();
     })
 }
 
@@ -69,7 +43,7 @@ fn test_unit_1() {
         let amount_0 = U256::from(1000000);
         let amount_1 = U256::from(1000000);
         let mint_amount = U256::from(10000000);
-        let outcomes = [(outcome_0, amount_0), (outcome_1, amount_1)];
+        let outcomes = [outcome_0, outcome_1];
         c.ctor(
             outcomes.to_vec(),
             Address::ZERO,
@@ -99,10 +73,7 @@ proptest! {
             let outcome_0 =
                 FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
             let outcome_1 = FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
-            let outcomes = [
-                (outcome_0, amount_0),
-                (outcome_1, amount_1),
-            ];
+            let outcomes = [outcome_0, outcome_1];
             c.ctor(
                 outcomes.to_vec(),
                 Address::ZERO,

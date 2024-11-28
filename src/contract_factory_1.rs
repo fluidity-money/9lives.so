@@ -22,13 +22,13 @@ use rust_decimal::Decimal;
 #[cfg_attr(feature = "contract-factory-1", stylus_sdk::prelude::public)]
 impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
-    // and their day 1 odds.
+    // and their day 1 odds. We use these to seed the liquidity but only take
+    // as much as the amount that the pool was made for.
     #[allow(non_snake_case)]
-    pub fn new_trading_37_B_D_1242(
+    pub fn new_trading_09393_D_A_8(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
-        is_dpm: bool,
         time_start: u64,
         time_ending: u64,
         documentation: FixedBytes<32>,
@@ -67,23 +67,17 @@ impl StorageFactory {
         // We take the amount that the user has allocated to the outcomes, and
         // send it to the trading contract, which assumes it has the money it's entitled to.
 
-        let fusdc_amt = outcomes.iter().map(|(_, i, _)| i).sum::<U256>();
-        assert_or!(fusdc_amt > U256::ZERO, Error::OddsMustBeSet);
-        fusdc_call::take_from_sender_to(trading_addr, fusdc_amt)?;
+        let seed_liq = U256::from(outcome_identifiers.len()) * SHARE_DECIMALS_EXP;
+        fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
 
         // Used for the price function for seeding Longtail.
 
-        let m_1 = fusdc_u256_to_decimal(fusdc_amt)?;
+        let m_1 = fusdc_u256_to_decimal(seed_liq)?;
         let n_1 = outcome_identifiers.len();
         let n_2 = n_1 - 1;
 
         for (outcome_identifier, seed_amt, outcome_name) in outcomes.iter() {
             // For the DPM (at least right now), we can only take 1 from the user for both sides.
-            assert_or!(
-                *seed_amt == U256::from(10).pow(U256::from(FUSDC_DECIMALS)),
-                Error::BadSeedAmount
-            );
-
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
@@ -115,16 +109,12 @@ impl StorageFactory {
             });
         }
 
-        let trading_outcomes = outcomes
-            .into_iter()
-            .map(|(id, amt, _)| (id, amt))
-            .collect::<Vec<_>>();
+        let outcome_identifiers = outcomes.into_iter().map(|(c, _, _)| c).collect::<Vec<_>>();
 
         trading_call::ctor(
             trading_addr,
-            trading_outcomes,
+            outcome_identifiers,
             oracle,
-            is_dpm,
             time_start,
             time_ending,
             fee_recipient,

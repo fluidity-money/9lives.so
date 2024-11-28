@@ -4,7 +4,7 @@ use lib9lives::host;
 
 use stylus_sdk::{
     alloy_primitives::{FixedBytes, U256},
-    msg, block,
+    block, msg,
 };
 
 use proptest::{
@@ -70,8 +70,8 @@ proptest! {
             let outcome_1_id = FixedBytes::<8>::from(outcome_1_id);
             let outcome_2_id = FixedBytes::<8>::from(outcome_2_id);
             let outcomes = vec![
-                (outcome_1_id, U256::from(1e6)),
-                (outcome_2_id, U256::from(1e6))
+                outcome_1_id,
+                outcome_2_id,
             ];
             c.ctor(
                 outcomes,

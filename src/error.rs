@@ -1,12 +1,14 @@
 use alloc::vec::Vec;
 
-use stylus_sdk::alloy_primitives::Address;
+use stylus_sdk::{abi::internal::EncodableReturnType, alloy_primitives::Address, ArbResult};
 
 use std::{
-    backtrace::Backtrace,
     convert::Infallible,
     ops::{ControlFlow, FromResidual, Try},
 };
+
+#[cfg(feature = "testing")]
+use std::backtrace::Backtrace;
 
 #[macro_export]
 macro_rules! assert_or {
@@ -316,6 +318,18 @@ impl From<Error> for Vec<u8> {
     }
 }
 
+impl<T> EncodableReturnType for R<T>
+where
+    T: EncodableReturnType,
+{
+    fn encode(self) -> ArbResult {
+        match self.0 {
+            Ok(v) => v.encode(),
+            Err(err) => Err(err.into())
+        }
+    }
+}
+
 impl<T> FromResidual<<Self as Try>::Residual> for R<T> {
     #[track_caller]
     fn from_residual(residual: Error) -> Self {
@@ -325,7 +339,7 @@ impl<T> FromResidual<<Self as Try>::Residual> for R<T> {
             panic!("err, {residual:?}: {bt}");
         }
         #[cfg(not(feature = "testing"))]
-        R(Err(err))
+        R(Err(residual))
     }
 }
 
@@ -353,10 +367,12 @@ impl<T> Try for R<T> {
     type Output = T;
     type Residual = Error;
 
+    #[track_caller]
     fn from_output(o: Self::Output) -> Self {
         R(Ok(o))
     }
 
+    #[track_caller]
     fn branch(self) -> ControlFlow<Self::Residual, Self::Output> {
         match self.0 {
             Ok(v) => ControlFlow::Continue(v),

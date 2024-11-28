@@ -8,9 +8,6 @@ pub struct StorageTrading {
     /// decided the outcome yet.
     pub when_decided: StorageU64,
 
-    /// Is this code in the DPM form?
-    pub is_dpm: StorageBool,
-
     /// Was this contract shut down? This is called once the deadline has
     /// expired to pause trading.
     pub is_shutdown: StorageBool,

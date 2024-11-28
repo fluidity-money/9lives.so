@@ -85,6 +85,10 @@ pub const INCENTIVE_AMT_MODERATION: U256 = U256::from_limbs([1e6 as u64, 0, 0, 0
 // the incentive amount base).
 pub const INCENTIVE_AMT_SWEEP: U256 = U256::from_limbs([8000000, 0, 0, 0]);
 
+// Default price to use for Longtail.
+//79228162514264337593543950336
+pub const LONGTAIL_PRICE: U256 = U256::from_limbs([0, 4294967296, 0, 0]);
+
 // Minimal viable proxy bytecode.
 pub const NORMAL_PROXY_BYTECODE_1: [u8; 18] = [
     0x60, 0x2d, 0x5f, 0x81, 0x60, 0x09, 0x5f, 0x39, 0xf3, 0x5f, 0x5f, 0x36, 0x5f, 0x5f, 0x37, 0x36,
@@ -155,6 +159,9 @@ pub fn trading_proxy_hash(trading_proxy_extras: Address, trading_proxy_impl: Add
 // fUSDC decimals should be this low!
 pub const FUSDC_DECIMALS: u8 = 6;
 
+// fUSDC decimals (1e6) that are in an exp-able form.
+pub const FUSDC_DECIMALS_EXP: U256 = U256::from_limbs([1000000, 0, 0, 0]);
+
 // Share decimals should be this low!
 pub const SHARE_DECIMALS: u8 = 6;
 
@@ -162,9 +169,6 @@ pub const SHARE_DECIMALS: u8 = 6;
 pub const SHARE_DECIMALS_EXP: U256 = U256::from_limbs([1000000, 0, 0, 0]);
 
 pub const FEE_RECIPIENT: Address = address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7");
-
-//79228162514264337593543950336
-pub const LONGTAIL_PRICE: U256 = U256::from_limbs([0, 4294967296, 0, 0]);
 
 pub const LONGTAIL_FEE: u32 = 3000;
 

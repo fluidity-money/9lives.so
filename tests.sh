@@ -2,7 +2,7 @@
 
 make solidity
 
-cargo test -q --features testing $@
+cargo test -q --features testing,trading-backend-dpm $@
 
 forge test
 

@@ -26,7 +26,7 @@ contract MockTrading is INineLivesTrading {
     }
 
     function ctor(
-        TradingOutcome[] memory outcomes,
+        bytes8[] memory outcomes,
         address _oracle,
         uint256 _timeStart,
         uint256 _timeEnding,
@@ -36,8 +36,8 @@ contract MockTrading is INineLivesTrading {
         // We track some things to set up to prevent abuse in testing, but we don't
         // track the oracles that were created.
         for (uint i = 0; i < outcomes.length; ++i) {
-            shares_[outcomes[i].identifier] = new Share();
-            shares_[outcomes[i].identifier].ctor("", address(this));
+            shares_[outcomes[i]] = new Share();
+            shares_[outcomes[i]].ctor("", address(this));
         }
         oracle_ = _oracle;
         timeStart_ = _timeStart;
@@ -114,6 +114,10 @@ contract MockTrading is INineLivesTrading {
         bytes8 winner
     ) {
         return (100, 10_000, 19291, bytes8(uint64(1)));
+    }
+
+    function isDpm() external pure returns (bool) {
+        return true;
     }
 
     function invested() external pure returns (uint256) {

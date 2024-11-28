@@ -21,7 +21,7 @@ impl StorageTrading {
     // Does not prevent a user from submitting the same outcome twice!
     pub fn ctor(
         &mut self,
-        outcomes: Vec<(FixedBytes<8>, U256)>,
+        outcomes: Vec<FixedBytes<8>>,
         oracle: Address,
         time_start: u64,
         time_ending: u64,
@@ -32,20 +32,18 @@ impl StorageTrading {
         // but with the current implementation, that's not the case, allowing us to
         // save on gas.
         assert_or!(msg::sender() == FACTORY_ADDR, Error::CallerIsNotFactory);
-        let fusdc_amt = outcomes.iter().map(|(_, i)| i).sum::<U256>();
         // We assume that the Factory already supplied the liquidity to us.
-        self.global_invested.set(fusdc_amt);
-        self.seed_invested.set(fusdc_amt);
+        let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;
+        self.global_invested.set(seed_liquidity);
+        self.seed_invested.set(seed_liquidity);
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
-        // If there are two outcomes, then we default to the DPM.
-        self.is_dpm.set(outcomes_len == 2);
         self.global_shares
             .set(U256::from(outcomes_len) * SHARE_DECIMALS_EXP);
         // Start to go through each outcome, and seed it with its initial amount. And
         // set each slot in the storage with the outcome id for Longtail later.
-        for (outcome_id, outcome_amt) in outcomes {
-            assert_or!(!outcome_amt.is_zero(), Error::OddsMustBeSet);
-            self.outcome_invested.setter(outcome_id).set(outcome_amt);
+        for outcome_id in outcomes {
+            // We always set this to 1 now.
+            self.outcome_invested.setter(outcome_id).set(SHARE_DECIMALS_EXP);
             self.outcome_shares
                 .setter(outcome_id)
                 .set(U256::from(1) * SHARE_DECIMALS_EXP);
@@ -128,6 +126,17 @@ impl StorageTrading {
             self.global_invested.get(),
             self.winner.get(),
         ))
+    }
+
+    pub(crate) fn internal_is_dpm(&self) -> bool {
+        #[cfg(feature = "trading-backend-dpm")]
+        { true }
+        #[cfg(feature = "trading-backend-amm")]
+        { false }
+    }
+
+    pub fn is_dpm(&self) -> R<bool> {
+        ok(self.internal_is_dpm())
     }
 
     pub fn ended(&self) -> R<bool> {

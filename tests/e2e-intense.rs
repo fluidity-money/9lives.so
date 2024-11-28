@@ -69,10 +69,7 @@ proptest! {
         return host::with_storage::<_, StorageTrading, _>(|c| -> Result<(), TestCaseError> {
             let outcome_1_id = FixedBytes::<8>::from(outcome_1_id);
             let outcome_2_id = FixedBytes::<8>::from(outcome_2_id);
-            let outcomes = vec![
-                (outcome_1_id, U256::from(1e6)),
-                (outcome_2_id, U256::from(1e6))
-            ];
+            let outcomes = vec![outcome_1_id, outcome_2_id];
             c.ctor(
                 outcomes,
                 msg::sender(),
@@ -87,7 +84,7 @@ proptest! {
             let mut share_1_received = U256::ZERO;
             let mut share_2_received = U256::ZERO;
             // Make some random mints!
-            let random_mints =
+            let _random_mints =
                 purchase_int_1.into_iter().map(|ActionAmountPurchased { fusdc_amt, outcome }| -> (U256, Outcome, U256) {
                     fusdc_vested += fusdc_amt;
                     let s = c.mint_227_C_F_432(

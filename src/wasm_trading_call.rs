@@ -1,5 +1,5 @@
 use stylus_sdk::{
-    alloy_primitives::{Address, FixedBytes, U256},
+    alloy_primitives::{Address, FixedBytes},
     alloy_sol_types::{sol, SolCall},
     call::RawCall,
 };
@@ -8,7 +8,7 @@ use crate::error::Error;
 
 sol! {
     function ctor(
-        (bytes8,uint256)[] outcomes,
+        bytes8[] outcomes,
         address oracle,
         uint64 timeStart,
         uint64 timeEnding,
@@ -20,9 +20,8 @@ sol! {
 
 pub fn ctor(
     contract: Address,
-    outcomes: Vec<(FixedBytes<8>, U256)>,
+    outcomes: Vec<FixedBytes<8>>,
     oracle: Address,
-    is_dpm: bool,
     time_start: u64,
     time_ending: u64,
     fee_recipient: Address,

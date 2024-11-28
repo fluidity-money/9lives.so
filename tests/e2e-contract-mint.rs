@@ -1,8 +1,6 @@
-
 use stylus_sdk::{
     alloy_primitives::{fixed_bytes, U256},
-    msg,
-    block
+    block, msg,
 };
 
 use lib9lives::host;
@@ -13,14 +11,11 @@ fn test_e2e_mint() {
     host::with_storage::<_, StorageTrading, _>(|c| {
         let outcome_1 = fixed_bytes!("0541d76af67ad076");
         c.ctor(
-            vec![
-                (outcome_1, U256::from(1e6)),
-                (fixed_bytes!("3be0d8814450a582"), U256::from(1e6)),
-            ],
+            vec![outcome_1, fixed_bytes!("3be0d8814450a582")],
             msg::sender(),
             block::timestamp() + 1,
             block::timestamp() + 2,
-            msg::sender()
+            msg::sender(),
         )
         .unwrap();
 

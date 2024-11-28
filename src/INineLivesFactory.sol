@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import {TradingOutcome} from "./INineLivesTrading.sol";
-
 struct FactoryOutcome {
     bytes8 identifier;
     uint256 amount;

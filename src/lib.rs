@@ -123,3 +123,19 @@ pub use contract_infra_market::user_entrypoint;
 compile_error!(
     "contract-factory-1, contract-factory-2, contract-trading-mint, contract-trading-extras, contract-lockup, or contract-trading-impl feature must be enabled."
 );
+
+#[cfg(not(any(
+    feature = "trading-backend-dpm",
+    feature = "trading-backend-amm"
+)))]
+compile_error!(
+    "trading-backend-dpm or trading-backenda-amm must be configured."
+);
+
+#[cfg(all(
+    feature = "trading-backend-dpm",
+    feature = "trading-backend-amm"
+))]
+compile_error!(
+    "trading-backend-dpm and trading-backenda-amm cannot be configured at the same time."
+);
