@@ -38,7 +38,7 @@ pub struct StorageOptimisticInfraMarket {
 
     /// If we have a situation where there's no liquidity that declares a winner (or
     /// it's the kind of contract where things can just expire), who do we pick?
-    pub campaign_default_winner: StorageMap<Address, StorageB8>,
+    pub campaign_default_winner: StorageMap<Address, StorageFixedBytes<8>>,
 
     /// What outcome did the original caller of this market declare as the winner?
     pub campaign_what_called: StorageMap<Address, StorageFixedBytes<8>>,
@@ -53,7 +53,7 @@ pub struct StorageOptimisticInfraMarket {
 
     /// Who whinged about this outcome? We track them so as to return
     /// their bond if they're correct, plus the caller incentive amount.
-    pub campaign_who_whinged: StorageMap<Address, StorageU64>,
+    pub campaign_who_whinged: StorageMap<Address, StorageAddress>,
 
     /// Market description. This should be keccak256(<(url committee|beauty contest)>:<description>). This is used to figure out how this should resolve.
     pub campaign_desc: StorageMap<Address, StorageB256>,

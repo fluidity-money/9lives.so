@@ -4,6 +4,8 @@ use crate::{erc20_call, error::Error, fusdc_call, immutables::*, maths};
 
 pub use crate::{nineliveslockedarb_call, proxy, storage_lockup::*};
 
+use std::cmp::max;
+
 #[cfg_attr(feature = "contract-lockup", stylus_sdk::prelude::public)]
 impl StorageLockup {
     pub fn ctor(&mut self, token_impl: Address, infra_market: Address) -> Result<(), Error> {
@@ -85,7 +87,11 @@ impl StorageLockup {
             msg::sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
-        self.deadlines.setter(spender).set(U64::from(until));
+        // Make sure that their deadline is as late as possible.
+        let existing_deadline = self.deadlines.get(spender);
+        self.deadlines
+            .setter(spender)
+            .set(max(existing_deadline, U64::from(until)));
         Ok(())
     }
 }

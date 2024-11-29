@@ -267,6 +267,50 @@ pub enum Error {
     // 0x3d
     /// Error deploying a contract!
     DeployError,
+
+    // 0x3e
+    /// The called field is unset during our check in the timing functions
+    CalledTimeUnset,
+
+    // 0x3f
+    /// The whinged time is unset!
+    WhingedTimeUnset,
+
+    // 0x40
+    /// The campaign is not inside the calling period!
+    NotInsideCallingPeriod,
+
+    // 0x41
+    /// Someone already called the outcome!
+    CampaignAlreadyCalled,
+
+    // 0x42
+    /// Predicting hasn't started for this campaign!
+    PredictingNotStarted,
+
+    // 0x43
+    /// The campaign is still in the calling period!
+    InCallingPeriod,
+
+    // 0x44
+    /// Someone whinged, closing is not allowed!
+    SomeoneWhinged,
+
+    // 0x45
+    /// The winner was already declared!
+    WinnerAlreadyDeclared,
+
+    // 0x46
+    /// We're not in the whinging period!
+    NotInWhingingPeriod,
+
+    // 0x47
+    /// The preferred outcome is 0!
+    PreferredOutcomeIsZero,
+
+    // 0x48
+    /// Someone already whinged!
+    AlreadyWhinged,
 }
 
 /// Error that will unwrap if it fails instead of propagating to the toplevel.
