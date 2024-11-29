@@ -12,7 +12,7 @@ use crate::{
     error::*,
     events, fusdc_call,
     immutables::*,
-    infra_market_call, maths, proxy, share_call, trading_call,
+    opt_infra_market_call, maths, proxy, share_call, trading_call,
 };
 
 pub use crate::storage_factory::*;
@@ -134,7 +134,7 @@ impl StorageFactory {
         )?;
 
         if oracle == self.infra_market.get() {
-            infra_market_call::register(
+            opt_infra_market_call::register(
                 self.infra_market.get(),
                 trading_addr,
                 msg::sender(),

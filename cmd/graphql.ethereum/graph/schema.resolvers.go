@@ -173,8 +173,6 @@ func (r *frontpageResolver) Content(ctx context.Context, obj *types.Frontpage) (
 
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error) {
-	tradingAddr := crypto.GetTradingAddrWithOutcomes(outcomes, r.FactoryAddr, r.TradingHash)
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error) {
 	marketId := crypto.GetMarketId(outcomes)
 	tradingAddr, err := getTradingAddr(r.Geth, r.FactoryAddr, marketId)
 	if err != nil {

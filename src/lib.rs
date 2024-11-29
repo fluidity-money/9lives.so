@@ -9,6 +9,9 @@ pub mod error;
 pub mod events;
 
 pub mod immutables;
+pub mod fees;
+
+pub mod timing_opt_infra_market;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod host_proxy;
@@ -67,10 +70,10 @@ mod wasm_nineliveslockedarb_call;
 pub mod nineliveslockedarb_call;
 
 #[cfg(not(target_arch = "wasm32"))]
-mod host_infra_market_call;
+mod host_opt_infra_market_call;
 #[cfg(target_arch = "wasm32")]
-mod wasm_infra_market_call;
-pub mod infra_market_call;
+mod wasm_opt_infra_market_call;
+pub mod opt_infra_market_call;
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub mod host;
@@ -89,8 +92,8 @@ pub mod contract_trading_mint;
 pub mod storage_lockup;
 pub mod contract_lockup;
 
-pub mod storage_infra_market;
-pub mod contract_infra_market;
+pub mod storage_opt_infra_market;
+pub mod contract_opt_infra_market;
 
 #[cfg(any(feature = "contract-trading-mint", feature = "contract-trading-extras"))]
 pub use contract_trading::user_entrypoint;

@@ -15,7 +15,9 @@ use crate::{
         share_u256_to_decimal,
     },
     error::*,
-    events, fusdc_call,
+    events,
+    fees::*,
+    fusdc_call,
     immutables::*,
     maths, proxy, share_call,
 };

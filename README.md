@@ -13,16 +13,23 @@ Interaction type of outcome. The Inventor must communicate to the Factory which 
 they would like to use, and provide the hash of the string that must be used to determine
 the outcome. This will then set the correct behaviour.
 
-Infrastructure Markets are betting situations where Staked ARB is locked up as LARB, which
-is used to predict the outcome of a situation. A voting ERC20 from OpenZeppellin is used
-as the wrapped asset. Lockup does the conversion. The outcome voting power is a linear
-curve that decays until the end of the voting period. Infrastructure Markets are markets
-that are created which resolve at a period of 3 days. These markets are designed to be
-risk free positions that infrastructure providers can take to "call" an outcome based on
-the results of a text field. These text fields can be empty or purely textual (as is the
-case with a string), or textual and pointing to a URL (as is the case with URL
-committees). Losers that bet incorrectly in the Infrastructure Market have their funds
-slashed.
+Optimistic Infra Markets are betting situations where Staked ARB is locked up as LARB,
+which is used to predict the outcome of a situation. They exist in an "optimistic" state
+where anyone can claim which outcome took place for 2 days, then for a grace period of two
+days, anyone can "whinge" about the outcome, supplying collateral that is slashed if they
+are incorrect. This begins a stage of betting on the outcome. A voting ERC20 from
+OpenZeppellin is used as the wrapped asset. Lockup does the conversion. The outcome voting
+power is a linear curve that decays until the end of the voting period. Optimistic Infra
+Markets in progress are markets that are created which resolve after a period of 3 days.
+These markets are designed to be risk free positions that infrastructure providers can
+take to "call" an outcome based on the results of a text field. These text fields can be
+empty or purely textual (as is the case with a string), or textual and pointing to a URL
+(as is the case with URL committees). Losers that bet incorrectly in the Optimistic Infra
+Market have their funds slashed. After 3 days, a 2 day period begins where correct bettors
+can slash loser Infra Market predictions and receive the funds themselves. After this 2
+day window (5 days has elapsed in total), a "ANYTHING GOES" period begins, where users can
+slash any bad bettors prediction without regard for their token position (as long as they
+bet correctly).
 
 Oracle State oracles are very simple comparatively, as presumably the associated Trading
 contract was configured to allow early activation, so all a caller must do is activate the
@@ -30,6 +37,7 @@ associated Oracle State contract. These could communicate with LayerZero to pull
 information from another chain, and the contract will simply check the result of the
 message. If it's not activated by the date that's given, then it defaults to a "DEFAULT"
 clause that could be "no" if a user were to try to estimate the price of something.
+
 
 ![Diagram of the system](diagram.svg)
 

@@ -2,7 +2,7 @@ use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
 #[storage]
 #[cfg_attr(feature = "contract-infrastructure-market", entrypoint)]
-pub struct StorageInfraMarket {
+pub struct StorageOptimisticInfraMarket {
     /// Was this contract created successfully?
     pub created: StorageBool,
 
@@ -23,10 +23,37 @@ pub struct StorageInfraMarket {
     /// campaigns.
     pub factory_addr: StorageAddress,
 
-    /// Currently outstanding campaign start timestamps with the trading address.
-    /// Infra campaigns run for 3 days, then they begin the period where slashing is
-    /// possible.
-    pub campaign_starts: StorageMap<Address, StorageU64>,
+    /// Currently outstanding campaign call timestamps. This period is a
+    /// time when anyone can call the contract to "call" the outcome, and which
+    /// immediately follows a "grace" period of a day.
+    pub campaign_call_begins: StorageMap<Address, StorageU64>,
+
+    /// Addresses of users who "called" the campaign outcome, before the
+    /// 3 day contest window begins.
+    pub campaign_who_called: StorageMap<Address, StorageAddress>,
+
+    /// When someone "called" this contract, taking it out of the optimistic
+    /// state period into the whinging stage.
+    pub campaign_when_called: StorageMap<Address, StorageU64>,
+
+    /// If we have a situation where there's no liquidity that declares a winner (or
+    /// it's the kind of contract where things can just expire), who do we pick?
+    pub campaign_default_winner: StorageMap<Address, StorageB8>,
+
+    /// What outcome did the original caller of this market declare as the winner?
+    pub campaign_what_called: StorageMap<Address, StorageFixedBytes<8>>,
+
+    /// When did someone whinge about the called outcome?
+    pub campaign_when_whinged: StorageMap<Address, StorageU64>,
+
+    /// Which outcome does the whinger prefer? Needed to refund their bond
+    /// or, in the event of a close call in the predict stage, used to tip the scales to
+    /// this preferred outcome.
+    pub campaign_whinger_preferred_winner: StorageMap<Address, StorageFixedBytes<8>>,
+
+    /// Who whinged about this outcome? We track them so as to return
+    /// their bond if they're correct, plus the caller incentive amount.
+    pub campaign_who_whinged: StorageMap<Address, StorageU64>,
 
     /// Market description. This should be keccak256(<(url committee|beauty contest)>:<description>). This is used to figure out how this should resolve.
     pub campaign_desc: StorageMap<Address, StorageB256>,
@@ -48,8 +75,7 @@ pub struct StorageInfraMarket {
     /// globally to find the percent we must dilute user global power down by.
     /// We use this information to allow victims to be slashed by predictors
     /// who had a share of the winning outcome that exceeded the victim's.
-    pub user_global_vested_power:
-        StorageMap<Address, StorageMap<Address, StorageU256>>,
+    pub user_global_vested_power: StorageMap<Address, StorageMap<Address, StorageU256>>,
 
     /// Per campaign specific user power voting. This is needed to
     /// determine the share that the caller to the sweeping function had

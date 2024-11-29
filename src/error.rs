@@ -198,7 +198,7 @@ pub enum Error {
 
     // 0x2c
     /// The infrastructure market has not expired!
-    InfraMarketHasNotExpired,
+    NotInsideSweepingPeriod,
 
     // 0x2d
     /// Sweep wasn't called with calldata to reconstruct the winner.
