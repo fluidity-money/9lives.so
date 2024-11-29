@@ -10,7 +10,7 @@ import LoginIcon from "#/icons/login.svg";
 export default function ConnectButton() {
   const account = useActiveAccount();
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center border-l-2 border-l-black">
       <ThirdWebButton
         client={appConfig.thirdweb.client}
         chain={arbitrum}

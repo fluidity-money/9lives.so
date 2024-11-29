@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
 import GetFusdcButton from "./getFusdcButton";
 import DisclaimerButton from "./disclaimerButton";
+import DegenMode from "./degenMode";
 
 const Clock = dynamic(() => import("@/components/clock"), { ssr: false });
 
@@ -23,8 +24,11 @@ export default function Header() {
       <GetFusdcButton />
       <NavigationMenu />
       <CreateCampaingButton />
-      <ConnectButton />
-      <Clock />
+      <div className="relative flex items-center">
+        <ConnectButton />
+        <DegenMode />
+        <Clock />
+      </div>
     </header>
   );
 }
