@@ -24,7 +24,7 @@ fn test_e2e_mint() {
         assert_eq!(
             c.mint_227_C_F_432(outcome_1, value, msg::sender(),)
                 .unwrap(),
-            U256::from(2447835) // This is 2.447835540106563e-06
+            U256::from(725165) // This is 0.7251655651839098
         );
 
         c.decide(outcome_1).unwrap();

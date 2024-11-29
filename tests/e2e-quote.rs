@@ -1,8 +1,6 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
-use stylus_sdk::{
-    alloy_primitives::{fixed_bytes, Address, U256},
-};
+use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
 
 use lib9lives::{decimal::MAX_DECIMAL, error::Error, host, utils::block_timestamp};
 
@@ -30,10 +28,9 @@ proptest! {
             .unwrap();
 
             match c
-                .quote_101_C_B_E_35(
+                .quote_8168_F_301(
                     fixed_bytes!("0541d76af67ad076"),
                     U256::from(fusdc_quote),
-                    msg::sender(),
                 ).into()
                 {
                     Ok(_) => (),

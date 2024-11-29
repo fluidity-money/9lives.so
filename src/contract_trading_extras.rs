@@ -110,8 +110,9 @@ impl StorageTrading {
                 fusdc_u256_to_decimal(self.global_invested.get())?,
             )?)?
         } else {
-            // Do AMM functionality here.
-            U256::ZERO
+            let share_payoff = self.global_invested.get() / self.outcome_shares.get(outcome_id);
+            self.outcome_invested.get(outcome_id) / self.outcome_shares.get(outcome_id)
+                + share_payoff
         };
         fusdc_call::transfer(recipient, fusdc)?;
         evm::log(events::PayoffActivated {
@@ -135,13 +136,9 @@ impl StorageTrading {
 
     pub(crate) fn internal_is_dpm(&self) -> bool {
         #[cfg(feature = "trading-backend-dpm")]
-        {
-            true
-        }
+        return true;
         #[cfg(not(feature = "trading-backend-dpm"))]
-        {
-            false
-        }
+        return false;
     }
 
     pub fn is_dpm(&self) -> R<bool> {

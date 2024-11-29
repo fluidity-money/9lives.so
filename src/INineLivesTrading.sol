@@ -34,12 +34,10 @@ interface INineLivesTrading {
      * @notice Quote function for testing the amount that could be minted.
      * @param outcome to test for
      * @param value to test spending for
-     * @param recipient of the funds spent (unused)
      */
-    function quote101CBE35(
+    function quote8168F301(
         bytes8 outcome,
-        uint256 value,
-        address recipient
+        uint256 value
     ) external returns (uint256);
 
     /**

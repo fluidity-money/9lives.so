@@ -60,10 +60,9 @@ contract MockTrading is INineLivesTrading {
         return value;
     }
 
-    function quote101CBE35(
+    function quote8168F301(
         bytes8 /* outcome */,
-        uint256 value,
-        address /* recipient */
+        uint256 value
     ) external returns (uint256) {
         ++counter_;
         return value;
