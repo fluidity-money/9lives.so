@@ -26,7 +26,7 @@ const config: Config = {
         "9yellow": "#FFD699",
         "9black": "#0C0C0C",
         "9gray": "#EEEEEE",
-        "9layer": "#F5F5F5"
+        "9layer": "#F5F5F5",
       },
       boxShadow: {
         "9btnPrimaryIdle":
@@ -52,7 +52,10 @@ const config: Config = {
         "9input": "3px 3px 0 rgba(0, 0, 0, 0.25) inset",
         "9selectedOutcome": "2px 2px 0 rgba(0, 0, 0, 0.25)",
         "9orderSummary": "2px 2px 0px 0px rgba(0, 0, 0, 0.25) inset;",
-        "9tableHeader": "-2px -2px 0px 0px rgba(102, 102, 102, 0.50) inset, 2px 2px 0px 0px rgba(255, 255, 255, 0.40) inset;"
+        "9tableHeader":
+          "-2px -2px 0px 0px rgba(102, 102, 102, 0.50) inset, 2px 2px 0px 0px rgba(255, 255, 255, 0.40) inset;",
+        "9degen":
+          "1px 1px 0px 0px rgba(255, 255, 255, 0.25) inset, -1px -1px 0px 0px rgba(0, 0, 0, 0.25) inset;",
       },
     },
   },
