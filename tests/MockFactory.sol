@@ -46,7 +46,7 @@ contract MockFactory is INineLivesFactory {
         return 1;
     }
 
-    function getTradingAddr(bytes32 id) external view returns (address) {
+    function getTradingAddr(bytes32 id) external pure returns (address) {
         return address(uint160(uint256(keccak256(abi.encodePacked(id)))));
     }
 

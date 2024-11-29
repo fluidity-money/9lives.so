@@ -133,6 +133,10 @@ impl StorageFactory {
             fee_recipient,
         )?;
 
+        // If the infra market wasn't chosen, then we assume that the caller has done
+        // some setup work to ensure that this is fine. The caller should be very
+        // careful regarding the circumstances of their oracle choice, and it should be
+        // explained in the UI if this is the case or not.
         if oracle == self.infra_market.get() {
             opt_infra_market_call::register(
                 self.infra_market.get(),
@@ -141,8 +145,6 @@ impl StorageFactory {
                 documentation,
                 time_ending,
             )?;
-        } else {
-            unimplemented!();
         }
 
         ok(trading_addr)
