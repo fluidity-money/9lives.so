@@ -39,18 +39,29 @@ class PredMarket:
             self.shares[i] += amount
             product *= self.shares[i]
             self.total_shares[i] += amount
-
-        shares_before = self.shares[outcome]
         
         # Adjust the specified outcome's share to keep balance
         product /= self.shares[outcome]
         self.shares[outcome] = (self.liquidity ** self.outcomes) / product
 
         self.total_liquidity[outcome] += amount
-
-        self.user_shares = shares_before - self.shares[outcome]
         
         return self.shares
+
+    def mintusershares(self, outcome, amount):
+        product = 1
+        for i in range(len(self.shares)):
+            self.shares[i] += amount
+            product *= self.shares[i]
+
+        shares_before = self.shares[outcome]
+
+        product /= self.shares[outcome]
+        self.shares[outcome] = (self.liquidity ** self.outcomes) / product
+
+        self.user_shares = shares_before - self.shares[outcome]
+
+        return self.user_shares
 
     def payoff(self, total_liquidity, total_shares):
         # this is for the frontend display
@@ -88,7 +99,7 @@ print("Shares after first buy:", market.shares)
 print("Outcome Prices after first buy:", market.get_outcome_prices())
 print("Liquidity after first buy:", market.total_liquidity)
 print("Payoff per share after first buy:", market.payoff(market.total_liquidity,market.total_shares))
-print("Shares purchased by the user:", market.user_shares)
+print("Shares purchased by the user:", market.mintusershares(outcome=0, amount=200))
 
 # Execute another buy order
 market.buy(outcome=0, amount=200)
@@ -96,7 +107,7 @@ print("Shares after second buy:", market.shares)
 print("Outcome Prices after second buy:", market.get_outcome_prices())
 print("Liquidity after second buy:", market.total_liquidity)
 print("Payoff per share after second buy:", market.payoff(market.total_liquidity,market.total_shares))
-print("Shares purchased by the user:", market.user_shares)
+print("Shares purchased by the user:", market.mintusershares(outcome=0, amount=200))
 
 # Resolve the market
 print(market.resolution(market.total_liquidity, market.total_shares, market.payoff(market.total_liquidity,market.total_shares), winning_outcome = 1))
