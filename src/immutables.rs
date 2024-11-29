@@ -70,17 +70,25 @@ pub const NORMAL_PROXY_BYTECODE_2: [u8; 16] = [
 ];
 
 // Trading bytecode followed by the extras impl address.
-pub const TRADING_PROXY_BYTECODE_1: [u8; 30] = [
-    0x60, 0x59, 0x80, 0x60, 0x09, 0x3d, 0x39, 0x3d, 0xf3, 0x36, 0x5f, 0x5f, 0x37, 0x5f, 0x5f, 0x36,
-    0x5f, 0x60, 0x02, 0x35, 0x5f, 0x1a, 0x60, 0x01, 0x14, 0x61, 0x00, 0x2d, 0x57, 0x73,
+pub const TRADING_PROXY_BYTECODE_1: [u8; 44] = [
+    0x60, 0x9b, 0x80, 0x60, 0x09, 0x3d, 0x39, 0x3d, 0xf3, 0x36, 0x5f, 0x5f, 0x37, 0x5f, 0x5f, 0x36,
+    0x5f, 0x60, 0x02, 0x35, 0x5f, 0x1a, 0x60, 0x01, 0x14, 0x61, 0x00, 0x3b, 0x57, 0x60, 0x02, 0x14,
+    0x61, 0x00, 0x55, 0x57, 0x60, 0x03, 0x14, 0x61, 0x00, 0x6f, 0x57, 0x73,
 ];
 
-pub const TRADING_PROXY_BYTECODE_2: [u8; 6] = [0x61, 0x00, 0x47, 0x56, 0x5b, 0x73];
+// Trading bytecode followed by the mint address.
+pub const TRADING_PROXY_BYTECODE_2: [u8; 6] = [0x61, 0x00, 0x89, 0x56, 0x5b, 0x73];
 
-// Preceded by the mints address.
-pub const TRADING_PROXY_BYTECODE_3: [u8; 22] = [
-    0x61, 0x00, 0x47, 0x56, 0x5b, 0x5a, 0xf4, 0x5f, 0x3d, 0x5f, 0x5f, 0x3e, 0x3d, 0x91, 0x15, 0x61,
-    0x00, 0x57, 0x57, 0xf3, 0x5b, 0xfd,
+// Trading bytecode followed by the quotes impl address.
+pub const TRADING_PROXY_BYTECODE_3: [u8; 6] = [0x61, 0x00, 0x89, 0x56, 0x5b, 0x73];
+
+// Trading bytecode followed by the price impl address.
+pub const TRADING_PROXY_BYTECODE_4: [u8; 6] = [0x61, 0x00, 0x89, 0x56, 0x5b, 0x73];
+
+// Final bit of the trading bytecode.
+pub const TRADING_PROXY_BYTECODE_5: [u8; 22] = [
+    0x61, 0x00, 0x89, 0x56, 0x5b, 0x5a, 0xf4, 0x5f, 0x3d, 0x5f, 0x5f, 0x3e, 0x3d, 0x91, 0x15, 0x61,
+    0x00, 0x99, 0x57, 0xf3, 0x5b, 0xfd,
 ];
 
 pub fn boring_proxy_code(
@@ -96,18 +104,26 @@ pub fn boring_proxy_code(
 pub fn trading_proxy_code(
     extras_addr: Address,
     mint_addr: Address,
-) -> [u8; (2 * 20)
+    quotes_addr: Address,
+    price_addr: Address,
+) -> [u8; (4 * 20)
        + concat_arrays_size!(
     TRADING_PROXY_BYTECODE_1,
     TRADING_PROXY_BYTECODE_2,
-    TRADING_PROXY_BYTECODE_3
+    TRADING_PROXY_BYTECODE_3,
+    TRADING_PROXY_BYTECODE_4,
+    TRADING_PROXY_BYTECODE_5
 )] {
     concat_arrays!(
         TRADING_PROXY_BYTECODE_1,
         extras_addr.into_array(),
         TRADING_PROXY_BYTECODE_2,
         mint_addr.into_array(),
-        TRADING_PROXY_BYTECODE_3
+        TRADING_PROXY_BYTECODE_3,
+        quotes_addr.into_array(),
+        TRADING_PROXY_BYTECODE_4,
+        price_addr.into_array(),
+        TRADING_PROXY_BYTECODE_5
     )
 }
 
@@ -117,12 +133,14 @@ pub fn erc20_proxy_hash(erc20_impl: Address) -> [u8; 32] {
         .finalize()
 }
 
-pub fn trading_proxy_hash(trading_proxy_extras: Address, trading_proxy_impl: Address) -> [u8; 32] {
+pub fn trading_proxy_hash(
+    extras: Address,
+    mint: Address,
+    quotes: Address,
+    price: Address,
+) -> [u8; 32] {
     Keccak256::new()
-        .update(&trading_proxy_code(
-            trading_proxy_extras,
-            trading_proxy_impl,
-        ))
+        .update(&trading_proxy_code(extras, mint, quotes, price))
         .finalize()
 }
 

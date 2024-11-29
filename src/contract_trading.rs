@@ -1,8 +1,10 @@
 
 #[cfg(all(
     any(
+        feature = "contract-trading-extras",
         feature = "contract-trading-mint",
-        feature = "contract-trading-extras"
+        feature = "contract-trading-quotes",
+        feature = "contract-trading-price"
     ),
     not(any(
         feature = "trading-backend-dpm",
@@ -10,7 +12,7 @@
     ))
 ))]
 compile_error!(
-    "trading-backend-dpm or trading-backenda-amm must be configured."
+    "trading-backend-dpm or trading-backend-amm must be configured."
 );
 
 #[cfg(all(
@@ -26,3 +28,9 @@ pub use crate::contract_trading_mint::user_entrypoint;
 
 #[cfg(feature = "contract-trading-extras")]
 pub use crate::contract_trading_extras::user_entrypoint;
+
+#[cfg(feature = "contract-trading-quotes")]
+pub use crate::contract_trading_quotes::user_entrypoint;
+
+#[cfg(feature = "contract-trading-price")]
+pub use crate::contract_trading_price::user_entrypoint;

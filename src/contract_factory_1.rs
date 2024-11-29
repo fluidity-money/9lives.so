@@ -12,7 +12,7 @@ use crate::{
     error::*,
     events, fusdc_call,
     immutables::*,
-    opt_infra_market_call, maths, proxy, share_call, trading_call,
+    maths, opt_infra_market_call, proxy, share_call, trading_call,
 };
 
 pub use crate::storage_factory::*;
@@ -57,12 +57,16 @@ impl StorageFactory {
             proxy::deploy_trading(
                 self.trading_dpm_extras_impl.get(),
                 self.trading_dpm_mint_impl.get(),
+                self.trading_dpm_quotes_impl.get(),
+                self.trading_dpm_price_impl.get(),
                 trading_id,
             )
         } else {
             proxy::deploy_trading(
                 self.trading_amm_extras_impl.get(),
                 self.trading_amm_mint_impl.get(),
+                self.trading_amm_quotes_impl.get(),
+                self.trading_amm_price_impl.get(),
                 trading_id,
             )
         })

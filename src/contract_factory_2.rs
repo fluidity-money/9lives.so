@@ -31,6 +31,8 @@ impl StorageFactory {
         ok(FixedBytes::from_slice(&trading_proxy_hash(
             self.trading_dpm_extras_impl.get(),
             self.trading_dpm_mint_impl.get(),
+            self.trading_dpm_quotes_impl.get(),
+            self.trading_dpm_price_impl.get(),
         )))
     }
 
@@ -38,6 +40,8 @@ impl StorageFactory {
         ok(FixedBytes::from_slice(&trading_proxy_hash(
             self.trading_amm_extras_impl.get(),
             self.trading_amm_mint_impl.get(),
+            self.trading_amm_quotes_impl.get(),
+            self.trading_amm_price_impl.get(),
         )))
     }
 

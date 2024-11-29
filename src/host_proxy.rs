@@ -21,6 +21,8 @@ pub fn deploy_proxy(_impl_addr: Address) -> Result<Address, Vec<u8>> {
 pub fn deploy_trading(
     _trading_extras: Address,
     _trading_mint: Address,
+    _trading_quotes: Address,
+    _trading_price: Address,
     seed: FixedBytes<32>,
 ) -> Result<Address, Vec<u8>> {
     Ok(addr_slice(seed))

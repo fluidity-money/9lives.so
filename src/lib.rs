@@ -8,8 +8,8 @@ pub mod error;
 
 pub mod events;
 
-pub mod immutables;
 pub mod fees;
+pub mod immutables;
 
 pub mod timing_opt_infra_market;
 
@@ -47,57 +47,64 @@ mod wasm_erc20_call;
 
 pub mod fusdc_call;
 
+pub mod amm_call;
 #[cfg(not(target_arch = "wasm32"))]
 mod host_longtail_call;
 #[cfg(target_arch = "wasm32")]
 mod wasm_longtail_call;
-pub mod amm_call;
 
+pub mod factory_call;
 #[cfg(not(target_arch = "wasm32"))]
 mod host_factory_call;
 #[cfg(target_arch = "wasm32")]
 mod wasm_factory_call;
-pub mod factory_call;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod host_lockup_call;
+pub mod lockup_call;
 #[cfg(target_arch = "wasm32")]
 mod wasm_lockup_call;
-pub mod lockup_call;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod host_nineliveslockedarb_call;
+pub mod nineliveslockedarb_call;
 #[cfg(target_arch = "wasm32")]
 mod wasm_nineliveslockedarb_call;
-pub mod nineliveslockedarb_call;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod host_opt_infra_market_call;
+pub mod opt_infra_market_call;
 #[cfg(target_arch = "wasm32")]
 mod wasm_opt_infra_market_call;
-pub mod opt_infra_market_call;
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub mod host;
 
 extern crate alloc;
 
-pub mod storage_factory;
 pub mod contract_factory_1;
 pub mod contract_factory_2;
+pub mod storage_factory;
 
 pub mod contract_trading;
-pub mod storage_trading;
 pub mod contract_trading_extras;
 pub mod contract_trading_mint;
+pub mod contract_trading_price;
+pub mod contract_trading_quotes;
+pub mod storage_trading;
 
-pub mod storage_lockup;
 pub mod contract_lockup;
+pub mod storage_lockup;
 
-pub mod storage_opt_infra_market;
 pub mod contract_opt_infra_market;
+pub mod storage_opt_infra_market;
 
-#[cfg(any(feature = "contract-trading-mint", feature = "contract-trading-extras"))]
+#[cfg(any(
+    feature = "contract-trading-mint",
+    feature = "contract-trading-extras",
+    feature = "contract-trading-quotes",
+    feature = "contract-trading-price"
+))]
 pub use contract_trading::user_entrypoint;
 
 #[cfg(feature = "contract-factory-1")]
@@ -117,12 +124,12 @@ pub use contract_opt_infra_market::user_entrypoint;
     not(any(
         feature = "contract-factory-1",
         feature = "contract-factory-2",
-        feature = "contract-trading-mint",
         feature = "contract-trading-extras",
+        feature = "contract-trading-mint",
+        feature = "contract-trading-quotes",
+        feature = "contract-trading-price",
         feature = "contract-lockup",
         feature = "contract-infrastructure-market"
     ))
 ))]
-compile_error!(
-    "contract-factory-1, contract-factory-2, contract-trading-mint, contract-trading-extras, contract-lockup, or contract-trading-impl feature must be enabled."
-);
+compile_error!("one of the contract-* features must be enabled!");

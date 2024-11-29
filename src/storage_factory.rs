@@ -8,11 +8,13 @@ use stylus_sdk::{
 #[repr(C)]
 pub enum TradingBackendType {
     DPM = 1,
-    AMM = 2
+    AMM = 2,
 }
 
 impl Into<u8> for TradingBackendType {
-    fn into(self) -> u8 { self as u8 }
+    fn into(self) -> u8 {
+        self as u8
+    }
 }
 
 #[storage]
@@ -32,9 +34,13 @@ pub struct StorageFactory {
 
     pub trading_dpm_extras_impl: StorageAddress,
     pub trading_dpm_mint_impl: StorageAddress,
+    pub trading_dpm_quotes_impl: StorageAddress,
+    pub trading_dpm_price_impl: StorageAddress,
 
     pub trading_amm_extras_impl: StorageAddress,
     pub trading_amm_mint_impl: StorageAddress,
+    pub trading_amm_quotes_impl: StorageAddress,
+    pub trading_amm_price_impl: StorageAddress,
 
     /// Trading contracts mapped to the creators that were created by this Factory.
     pub trading_owners: StorageMap<Address, StorageAddress>,

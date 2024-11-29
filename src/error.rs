@@ -375,7 +375,7 @@ where
 }
 
 impl<T> FromResidual<<Self as Try>::Residual> for R<T> {
-    #[track_caller]
+    #[cfg_attr(feature = "testing", track_caller)]
     fn from_residual(residual: Error) -> Self {
         #[cfg(feature = "testing")]
         {
@@ -388,7 +388,7 @@ impl<T> FromResidual<<Self as Try>::Residual> for R<T> {
 }
 
 impl<T> FromResidual<Result<Infallible, Error>> for R<T> {
-    #[track_caller]
+    #[cfg_attr(feature = "testing", track_caller)]
     fn from_residual(residual: Result<Infallible, Error>) -> Self {
         match residual {
             Err(err) => {
@@ -411,12 +411,12 @@ impl<T> Try for R<T> {
     type Output = T;
     type Residual = Error;
 
-    #[track_caller]
+    #[cfg_attr(feature = "testing", track_caller)]
     fn from_output(o: Self::Output) -> Self {
         R(Ok(o))
     }
 
-    #[track_caller]
+    #[cfg_attr(feature = "testing", track_caller)]
     fn branch(self) -> ControlFlow<Self::Residual, Self::Output> {
         match self.0 {
             Ok(v) => ControlFlow::Continue(v),
