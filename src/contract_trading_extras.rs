@@ -104,7 +104,7 @@ impl StorageTrading {
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg::sender(), share_bal)?;
         let fusdc = if self.internal_is_dpm() {
-            fusdc_decimal_to_u256(maths::payoff(
+            fusdc_decimal_to_u256(maths::dpm_payoff(
                 share_u256_to_decimal(share_bal)?,
                 share_u256_to_decimal(self.outcome_shares.get(outcome_id))?,
                 fusdc_u256_to_decimal(self.global_invested.get())?,

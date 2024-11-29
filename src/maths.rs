@@ -68,7 +68,7 @@ pub fn dpm_shares(
 /// invested amount, N_1 is the amount of shares for the outcome that's
 /// won, and n is the user's amount of shares.
 #[allow(non_snake_case)]
-pub fn payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error> {
+pub fn dpm_payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error> {
     mul(div(n, N_1)?, M)
 }
 
