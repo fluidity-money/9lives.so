@@ -97,7 +97,7 @@ export default function CreateCampaignForm() {
             ? z.string().startsWith("0x").min(42)
             : z.undefined(),
       }),
-    [outcomeType, settlementType],
+    [outcomeType, outcomeschema, settlementType],
   );
   type FormData = z.infer<typeof formSchema>;
   const {
@@ -194,7 +194,14 @@ export default function CreateCampaignForm() {
         }),
       });
     }
-  }, [fields, pictureBlob, debouncedFillForm, outcomeImageBlobs]);
+  }, [
+    fields,
+    pictureBlob,
+    debouncedFillForm,
+    outcomeImageBlobs,
+    outcomeType,
+    settlementType,
+  ]);
 
   return (
     <form

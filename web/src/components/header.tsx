@@ -3,7 +3,7 @@ import NavigationMenu from "@/components/navMenu";
 import Link from "next/link";
 import HeaderLogo from "./headerLogo";
 import dynamic from "next/dynamic";
-import CreateCampaingButton from "./createCampaign/headerButton";
+import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
 import GetFusdcButton from "./getFusdcButton";
 import DisclaimerButton from "./disclaimerButton";
 

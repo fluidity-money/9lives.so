@@ -1,6 +1,6 @@
-import CreateCampaignForm from "@/components/createCampaign/form";
-import CreateCampaignPreview from "@/components/createCampaign/preview";
-import CreateCampaignTutorial from "@/components/createCampaign/tutorial";
+import CreateCampaignForm from "@/components/createCampaign/createCampaignForm";
+import CreateCampaignPreview from "@/components/createCampaign/createCampaignPreview";
+import CreateCampaignTutorial from "@/components/createCampaign/createCampaignTutorial";
 
 export default function CreateCampaign() {
   return (

@@ -55,7 +55,7 @@ export default function WebSocketProvider() {
     return () => {
       unsub();
     };
-  }, [queryClient, wsClient]);
+  }, [queryClient]);
 
   return null;
 }
