@@ -35,10 +35,10 @@ num-traits = "0.2.19"
 alloy-sol-types = "=0.7.6"
 alloy-sol-macro = "=0.7.6"
 array-concat = "0.5.3"
-sha3-const = "0.1.1"
 const-hex = { version = "1.12.0" }
 paste = "1.0.15"
 rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths"] }
+keccak-const = "0.2.0"
 
 [dev-dependencies]
 proptest = "1.5.0"

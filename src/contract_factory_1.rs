@@ -27,7 +27,7 @@ impl StorageFactory {
     #[allow(non_snake_case)]
     pub fn new_trading_09393_D_A_8(
         &mut self,
-        outcomes: Vec<(FixedBytes<8>, U256, String)>,
+        mut outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
         time_start: u64,
         time_ending: u64,
@@ -35,6 +35,9 @@ impl StorageFactory {
         fee_recipient: Address,
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
+
+        outcomes.sort();
+        outcomes.dedup();
 
         let outcome_ids = outcomes.iter().map(|(c, _, _)| c).collect::<Vec<_>>();
 

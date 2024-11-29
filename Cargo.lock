@@ -773,12 +773,12 @@ dependencies = [
  "alloy-sol-types",
  "array-concat",
  "const-hex",
+ "keccak-const",
  "num-traits",
  "paste",
  "proptest",
  "rust_decimal",
  "rust_decimal_macros",
- "sha3-const",
  "stylus-sdk",
  "tiny-keccak",
 ]
@@ -1250,12 +1250,6 @@ dependencies = [
  "cc",
  "cfg-if",
 ]
-
-[[package]]
-name = "sha3-const"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b04774de876479a8f712e787f8271b14712971329a4be66c6dff144db7cfc343"
 
 [[package]]
 name = "shlex"

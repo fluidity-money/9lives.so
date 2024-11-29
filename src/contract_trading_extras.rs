@@ -28,12 +28,9 @@ impl StorageTrading {
         time_ending: u64,
         fee_recipient: Address,
     ) -> R<()> {
-        // We check that the caller is the factory, and if they are, we allow them
-        // to call us willy-nilly. Factory could harm us by calling this function again,
-        // but with the current implementation, that's not the case, allowing us to
-        // save on gas.
-        assert_or!(msg::sender() == FACTORY_ADDR, Error::CallerIsNotFactory);
-        // We assume that the Factory already supplied the liquidity to us.
+        assert_or!(!self.created.get(), Error::AlreadyConstructed);
+	// We assume that the caller already supplied the liquidity to
+	// us, and we set them as the factory.
         let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;
         self.global_invested.set(seed_liquidity);
         self.seed_invested.set(seed_liquidity);
@@ -52,7 +49,9 @@ impl StorageTrading {
                 .set(U256::from(1) * SHARE_DECIMALS_EXP);
             self.outcome_list.push(outcome_id);
         }
-        self.share_impl.set(factory_call::share_impl(FACTORY_ADDR)?);
+        // We assume that the sender is the factory.
+        self.factory_addr.set(msg::sender());
+        self.share_impl.set(factory_call::share_impl(self.factory_addr.get())?);
         self.fee_recipient.set(fee_recipient);
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));
@@ -66,7 +65,7 @@ impl StorageTrading {
         // when it's called for the first time.
         assert_or!(self.is_shutdown.get(), Error::IsShutdown);
         factory_call::disable_shares(
-            FACTORY_ADDR,
+            self.factory_addr.get(),
             &(0..self.outcome_list.len())
                 .map(|i| self.outcome_list.get(i).unwrap())
                 .collect::<Vec<_>>(),
@@ -93,7 +92,7 @@ impl StorageTrading {
         assert_or!(self.winner.get() == outcome_id, Error::NotWinner);
         // Get the user's balance of the share they own for this outcome.
         let share_addr = proxy::get_share_addr(
-            FACTORY_ADDR,
+            self.factory_addr.get(),
             contract::address(), // Address of this contract, the Trading contract.
             self.share_impl.get(),
             outcome_id,
@@ -155,7 +154,7 @@ impl StorageTrading {
 
     pub fn share_addr(&self, outcome: FixedBytes<8>) -> R<Address> {
         ok(proxy::get_share_addr(
-            FACTORY_ADDR,
+            self.factory_addr.get(),
             contract::address(),
             self.share_impl.get(),
             outcome,

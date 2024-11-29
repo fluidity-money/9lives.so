@@ -149,7 +149,7 @@ impl StorageTrading {
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
         let share_addr = proxy::get_share_addr(
-            FACTORY_ADDR,
+            self.factory_addr.get(),
             contract::address(),
             self.share_impl.get(),
             outcome_id,
@@ -170,22 +170,22 @@ impl StorageTrading {
 
     pub fn test_dpm_mint(
         &mut self,
-        outcome_id: FixedBytes<8>,
-        value: U256,
+        _outcome_id: FixedBytes<8>,
+        _value: U256,
     ) -> Result<U256, Vec<u8>> {
         #[cfg(feature = "testing")]
-        return Ok(self.internal_dpm_mint(outcome_id, value).unwrap());
+        return Ok(self.internal_dpm_mint(_outcome_id, _value).unwrap());
         #[cfg(not(feature = "testing"))]
         Err(vec![])
     }
 
     pub fn test_amm_mint(
         &mut self,
-        outcome_id: FixedBytes<8>,
-        value: U256,
+        _outcome_id: FixedBytes<8>,
+        _value: U256,
     ) -> Result<U256, Vec<u8>> {
         #[cfg(feature = "testing")]
-        return Ok(self.internal_amm_mint(outcome_id, value).unwrap());
+        return Ok(self.internal_amm_mint(_outcome_id, _value).unwrap());
         #[cfg(not(feature = "testing"))]
         Err(vec![])
     }

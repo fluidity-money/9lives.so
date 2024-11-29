@@ -8,7 +8,7 @@ use array_concat::{concat_arrays, concat_arrays_size};
 
 use paste::paste;
 
-use sha3_const::Keccak256;
+use keccak_const::Keccak256;
 
 #[cfg(not(feature = "testing"))]
 macro_rules! env_addr {
@@ -43,9 +43,6 @@ env_addr!(AMM_ADDR, "SPN_AMM_ADDR");
 
 // Staked ARB address to use for taking amounts for Infrastructure Markets.
 env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR");
-
-// Address of the factory contract.
-env_addr!(FACTORY_ADDR, "SPN_FACTORY_ADDR");
 
 // Three days in seconds, for the infra market. This is when the market expires.
 pub const THREE_DAYS_SECS: u64 = 259200;

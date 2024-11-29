@@ -97,12 +97,14 @@ clean:
 		contract-factory-1.wasm \
 		contract-factory-2.wasm \
 		factory-2.wasm \
-		contract-dpm-trading-extras.wasm \
-		contract-dpm-trading-mint.wasm \
+		contract-trading-dpm-extras.wasm \
+		contract-trading-dpm-mint.wasm \
 		contract-trading-amm-extras.wasm \
 		contract-trading-amm-mint.wasm \
 		contract-trading-dpm-trading-extras.wasm \
 		contract-trading-dpm-trading-mint.wasm \
+		contract-infrastructure-market.wasm \
+		contract-lockup.wasm \
 		trading-extras.wasm \
 		trading-mint.wasm \
 		target \

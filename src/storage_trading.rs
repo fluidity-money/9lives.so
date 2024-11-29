@@ -3,6 +3,12 @@ use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 #[storage]
 #[cfg_attr(any(feature = "contract-trading-mint", feature = "contract-trading-extras"), entrypoint)]
 pub struct StorageTrading {
+    /// Was this contract created?
+    pub created: StorageBool,
+
+    /// The address of the factory.
+    pub factory_addr: StorageAddress,
+
     /// Outcome was determined! It should be impossible to mint, only to burn.
     /// This is the timestamp the locking took place. If it's 0, then we haven't
     /// decided the outcome yet.

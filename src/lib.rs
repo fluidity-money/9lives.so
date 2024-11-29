@@ -110,7 +110,7 @@ pub use contract_factory_2::user_entrypoint;
 pub use contract_lockup::user_entrypoint;
 
 #[cfg(feature = "contract-infrastructure-market")]
-pub use contract_infra_market::user_entrypoint;
+pub use contract_opt_infra_market::user_entrypoint;
 
 #[cfg(all(
     target_arch = "wasm32",
