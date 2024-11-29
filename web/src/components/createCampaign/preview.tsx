@@ -51,12 +51,12 @@ export default function CreateCampaignPreview() {
           {preview?.desc ||
             "Your campaign preview is going to be displayed here"}
         </p>
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <span className="text-sm font-bold">Start Date: </span>
           <span className="bg-9yellow p-1 font-chicago text-xs">
             {preview?.starting || "DD/MM/YYY"}
           </span>
-        </div>
+        </div> */}
         <div className="flex items-center justify-between">
           <span className="text-sm font-bold">End Date: </span>
           <span className="bg-9yellow p-1 font-chicago text-xs">

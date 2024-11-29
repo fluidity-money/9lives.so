@@ -110,6 +110,7 @@ export default function CreateCampaignForm() {
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      starting: new Date().toISOString().split("T")[0],
       outcomes: [
         { name: "", description: "", picture: new File([], "") },
         { name: "", description: "", picture: new File([], "") },
@@ -416,7 +417,7 @@ export default function CreateCampaignForm() {
         </div>
         {errors.picture && <ErrorInfo text={errors.picture.message} />}
       </Field>
-      <Field className={fieldClass}>
+      {/* <Field className={fieldClass}>
         <Label text="Start Date" required />
         <Input
           type="date"
@@ -427,7 +428,7 @@ export default function CreateCampaignForm() {
           )}
         />
         {errors.starting && <ErrorInfo text={errors.starting.message} />}
-      </Field>
+      </Field> */}
       <Field className={fieldClass}>
         <Label text="End Date" required />
         <Input
