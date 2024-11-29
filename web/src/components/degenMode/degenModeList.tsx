@@ -13,7 +13,8 @@ export default function DegenModeList() {
         </h5>
         <div className="h-[1px] w-full bg-9black" />
       </div>
-      {isLoading ? (
+      <p className="text-center font-chicago text-base">Coming Soon</p>
+      {/* {isLoading ? (
         <div>Loading</div>
       ) : (
         <ul>
@@ -23,7 +24,7 @@ export default function DegenModeList() {
             </li>
           ))}
         </ul>
-      )}
+      )} */}
     </div>
   );
 }
