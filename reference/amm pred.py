@@ -8,6 +8,7 @@ class PredMarket:
         self.total_liquidity = [liquidity/outcomes] * outcomes
         self.total_shares = [liquidity] * outcomes
         self.user_shares = 0
+        self.shares_before = 0
 
     def get_outcome_prices(self):
         outcome_price_weights = []
@@ -39,27 +40,20 @@ class PredMarket:
             self.shares[i] += amount
             product *= self.shares[i]
             self.total_shares[i] += amount
+
+        self.shares_before = self.shares[outcome]
         
         # Adjust the specified outcome's share to keep balance
         product /= self.shares[outcome]
         self.shares[outcome] = (self.liquidity ** self.outcomes) / product
-
+        
         self.total_liquidity[outcome] += amount
         
         return self.shares
 
     def mintusershares(self, outcome, amount):
-        product = 1
-        for i in range(len(self.shares)):
-            self.shares[i] += amount
-            product *= self.shares[i]
-
-        shares_before = self.shares[outcome]
-
-        product /= self.shares[outcome]
-        self.shares[outcome] = (self.liquidity ** self.outcomes) / product
-
-        self.user_shares = shares_before - self.shares[outcome]
+        
+        self.user_shares = self.shares_before - self.shares[outcome]
 
         return self.user_shares
 
@@ -85,7 +79,7 @@ class PredMarket:
         
 
 # Example usage
-market = PredMarket(liquidity=1000, outcomes=4)
+market = PredMarket(liquidity=100, outcomes=3)
 
 # Initial prices
 print("Initial Shares:", market.shares)
@@ -94,20 +88,20 @@ print("Initial Liquidity:", market.total_liquidity)
 print("Initial Payoff per share:", market.payoff(market.total_liquidity,market.total_shares))
 
 # Execute a buy order
-market.buy(outcome=0, amount=200)
+market.buy(outcome=2, amount=10)
 print("Shares after first buy:", market.shares)
 print("Outcome Prices after first buy:", market.get_outcome_prices())
 print("Liquidity after first buy:", market.total_liquidity)
 print("Payoff per share after first buy:", market.payoff(market.total_liquidity,market.total_shares))
-print("Shares purchased by the user:", market.mintusershares(outcome=0, amount=200))
+print("Shares purchased by the user:", market.mintusershares(outcome=2, amount=10))
 
 # Execute another buy order
-market.buy(outcome=0, amount=200)
+market.buy(outcome=0, amount=20)
 print("Shares after second buy:", market.shares)
 print("Outcome Prices after second buy:", market.get_outcome_prices())
 print("Liquidity after second buy:", market.total_liquidity)
 print("Payoff per share after second buy:", market.payoff(market.total_liquidity,market.total_shares))
-print("Shares purchased by the user:", market.mintusershares(outcome=0, amount=200))
+print("Shares purchased by the user:", market.mintusershares(outcome=0, amount=20))
 
 # Resolve the market
 print(market.resolution(market.total_liquidity, market.total_shares, market.payoff(market.total_liquidity,market.total_shares), winning_outcome = 1))
