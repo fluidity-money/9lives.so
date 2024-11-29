@@ -41,6 +41,19 @@ class PredMarket:
         
         return self.shares
 
+	def payoff(self, total_liquidity, shares):
+        # total liquidity is an array of liquidity per outcome
+        # payoffs is the payoff per share for each outcome
+        payoffs = []
+        for i in range(len(self.shares)):
+            sum = 0
+            for j in range(len(self.shares)):
+                if i != j:
+                    sum += total_liquidity[j]
+            payoffs.append(sum/shares[i])
+
+        return payoffs
+
 # Example usage
 market = PredMarket(liquidity=1000, outcomes=4)
 
