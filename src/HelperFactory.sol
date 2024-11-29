@@ -34,7 +34,7 @@ contract HelperFactory {
     // Create a campaign with an infra market, doing all the setup legwork that's needed
     // with approvals stemming from a single signature.
     function createWithInfraMarket(
-        FactoryOutcome[] memory outcomes,
+        FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
         bytes32 documentation,
         address feeRecipient,
