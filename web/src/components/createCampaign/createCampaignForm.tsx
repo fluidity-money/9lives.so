@@ -40,7 +40,7 @@ import AIActiveIcon from "#/icons/ai.svg";
 import AIInactiveIcon from "#/icons/ai-black.svg";
 import Link from "next/link";
 import RightCaretIcon from "#/icons/right-caret.svg";
-import SourceWrapper from "./settlementSource";
+import SourceWrapper from "./createCampaignSettlementSource";
 import { useFormStore } from "@/stores/formStore";
 import useDebounce from "@/hooks/useDebounce";
 import { OutcomeType, SettlementType } from "@/types";
