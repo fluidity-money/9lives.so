@@ -1,4 +1,4 @@
-use stylus_sdk::{alloy_primitives::*, block, contract, evm, msg};
+use stylus_sdk::{alloy_primitives::*, contract, evm, msg};
 
 use crate::error::*;
 
@@ -7,6 +7,7 @@ use crate::{
     events, factory_call, fusdc_call,
     immutables::*,
     maths, proxy, share_call,
+    utils::block_timestamp,
 };
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
@@ -78,7 +79,7 @@ impl StorageTrading {
         assert_or!(self.when_decided.get().is_zero(), Error::NotTradingContract);
         // Set the outcome that's winning as the winner!
         self.winner.set(outcome);
-        self.when_decided.set(U64::from(block::timestamp()));
+        self.when_decided.set(U64::from(block_timestamp()));
         evm::log(events::OutcomeDecided {
             identifier: outcome,
             oracle: oracle_addr,

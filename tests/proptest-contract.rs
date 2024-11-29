@@ -1,10 +1,8 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
-use lib9lives::host;
-
 use stylus_sdk::{
     alloy_primitives::{FixedBytes, U256},
-    block, msg,
+    msg,
 };
 
 use proptest::{
@@ -12,6 +10,8 @@ use proptest::{
     prelude::*,
     strategy::Strategy,
 };
+
+use lib9lives::{utils::block_timestamp, host};
 
 // 100 million USD
 const REASONABLE_UPPER_AMT: u128 = 100_000_000 * 1e6 as u128;
@@ -76,8 +76,8 @@ proptest! {
             c.ctor(
                 outcomes,
                 msg::sender(),
-                block::timestamp() + 1,
-                block::timestamp() + 2,
+                block_timestamp() + 1,
+                block_timestamp() + 2,
                 msg::sender()
             ).unwrap();
             let mut fusdc_vested = U256::ZERO;

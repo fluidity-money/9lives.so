@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashMap, ptr, time};
+use std::{cell::RefCell, collections::HashMap, ptr};
 
 use stylus_sdk::alloy_primitives::U256;
 
@@ -7,6 +7,7 @@ pub type Word = [u8; WORD_BYTES];
 
 thread_local! {
     static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
+    static CUR_TIME: RefCell<u64> = RefCell::new(0);
 }
 
 unsafe fn read_word(key: *const u8) -> Word {
@@ -53,10 +54,11 @@ pub unsafe extern "C" fn native_keccak256(bytes: *const u8, len: usize, output: 
 
 #[no_mangle]
 pub fn block_timestamp() -> u64 {
-    time::SystemTime::now()
-        .duration_since(time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
+    CUR_TIME.with(|v| v.clone().into_inner())
+}
+
+pub fn add_time(secs: u64) {
+    CUR_TIME.with(|v| { *v.borrow_mut() += secs });
 }
 
 #[no_mangle]

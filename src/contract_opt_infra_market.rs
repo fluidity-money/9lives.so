@@ -1,8 +1,9 @@
-use stylus_sdk::{alloy_primitives::*, block, contract, evm, msg};
+use stylus_sdk::{alloy_primitives::*, contract, evm, msg};
 
 use crate::{
     error::*, events, fees::*, fusdc_call, immutables::*, lockup_call, maths,
     nineliveslockedarb_call, timing_opt_infra_market::*, trading_call,
+    utils::block_timestamp,
 };
 
 pub use crate::storage_opt_infra_market::*;
@@ -74,7 +75,7 @@ impl StorageOptimisticInfraMarket {
         assert_or!(
             are_we_in_calling_period(
                 self.campaign_call_begins.get(trading_addr),
-                block::timestamp()
+                block_timestamp()
             )?,
             Error::NotInsideCallingPeriod
         );
@@ -89,7 +90,7 @@ impl StorageOptimisticInfraMarket {
         };
         self.campaign_when_called
             .setter(trading_addr)
-            .set(U64::from(block::timestamp()));
+            .set(U64::from(block_timestamp()));
         self.campaign_who_called
             .setter(trading_addr)
             .set(incentive_recipient);
@@ -112,7 +113,7 @@ impl StorageOptimisticInfraMarket {
         assert_or!(!winner.is_zero(), Error::MustContainOutcomes);
         // We need the seconds since the whinge was recorded so we can
         // determine voting power.
-        let secs_since_whinge = block::timestamp()
+        let secs_since_whinge = block_timestamp()
             .checked_sub(u64::from_le_bytes(
                 self.campaign_when_whinged
                     .getter(trading_addr)
@@ -122,7 +123,7 @@ impl StorageOptimisticInfraMarket {
         assert_or!(
             are_we_in_predicting_period(
                 self.campaign_when_whinged.get(trading_addr),
-                block::timestamp()
+                block_timestamp()
             )?,
             Error::PredictingNotStarted
         );
@@ -191,7 +192,7 @@ impl StorageOptimisticInfraMarket {
         lockup_call::freeze(
             self.lockup_addr.get(),
             msg::sender(),
-            U256::from(block::timestamp() + A_WEEK_SECS),
+            U256::from(block_timestamp() + A_WEEK_SECS),
         )?;
         evm::log(events::UserPredicted {
             trading: trading_addr,
@@ -226,7 +227,7 @@ impl StorageOptimisticInfraMarket {
         assert_or!(
             !are_we_in_calling_period(
                 self.campaign_when_called.get(trading_addr),
-                block::timestamp()
+                block_timestamp()
             )?,
             Error::InCallingPeriod
         );
@@ -301,7 +302,7 @@ impl StorageOptimisticInfraMarket {
         assert_or!(
             are_we_in_whinging_period(
                 self.campaign_when_called.get(trading_addr),
-                block::timestamp()
+                block_timestamp()
             )?,
             Error::NotInWhingingPeriod
         );
@@ -369,7 +370,7 @@ impl StorageOptimisticInfraMarket {
         assert_or!(
             are_we_in_sweeping_period(
                 self.campaign_when_whinged.get(trading_addr),
-                block::timestamp()
+                block_timestamp()
             )?,
             Error::NotInsideSweepingPeriod
         );
@@ -538,7 +539,7 @@ impl StorageOptimisticInfraMarket {
         // percentage of the share that's held.
         let are_we_anything_goes_period = are_we_in_anything_goes_period(
             self.campaign_when_whinged.get(trading_addr),
-            block::timestamp(),
+            block_timestamp(),
         )?;
         let can_winner_claim_victim =
             are_we_anything_goes_period || caller_winning_power > diluted_victim_power;

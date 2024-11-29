@@ -21,6 +21,8 @@ mod wasm_proxy;
 
 pub mod calldata;
 
+pub mod utils;
+
 pub mod erc20_cd;
 pub mod longtail_cd;
 

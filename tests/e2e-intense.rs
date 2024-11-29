@@ -2,10 +2,10 @@
 
 use stylus_sdk::{
     alloy_primitives::{FixedBytes, U256},
-    block, msg,
+    msg,
 };
 
-use lib9lives::host;
+use lib9lives::{utils::block_timestamp, host};
 
 use proptest::{
     collection::{self, VecStrategy},
@@ -73,8 +73,8 @@ proptest! {
             c.ctor(
                 outcomes,
                 msg::sender(),
-                block::timestamp() + 1,
-                block::timestamp() + 2,
+                block_timestamp() + 1,
+                block_timestamp() + 2,
                 msg::sender()
             )
                 .unwrap();

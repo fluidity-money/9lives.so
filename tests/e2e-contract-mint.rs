@@ -1,9 +1,9 @@
 use stylus_sdk::{
     alloy_primitives::{fixed_bytes, U256},
-    block, msg,
+    msg,
 };
 
-use lib9lives::host;
+use lib9lives::{utils::block_timestamp, host};
 
 #[test]
 fn test_e2e_mint() {
@@ -13,8 +13,8 @@ fn test_e2e_mint() {
         c.ctor(
             vec![outcome_1, fixed_bytes!("3be0d8814450a582")],
             msg::sender(),
-            block::timestamp() + 1,
-            block::timestamp() + 2,
+            block_timestamp() + 1,
+            block_timestamp() + 2,
             msg::sender(),
         )
         .unwrap();

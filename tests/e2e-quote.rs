@@ -2,10 +2,9 @@
 
 use stylus_sdk::{
     alloy_primitives::{fixed_bytes, Address, U256},
-    block,
 };
 
-use lib9lives::{decimal::MAX_DECIMAL, error::Error, host};
+use lib9lives::{decimal::MAX_DECIMAL, error::Error, host, utils::block_timestamp};
 
 use stylus_sdk::msg;
 
@@ -24,8 +23,8 @@ proptest! {
                     fixed_bytes!("3be0d8814450a582"),
                 ],
                 Address::from([1_u8; 20]),
-                block::timestamp() + 1,
-                block::timestamp() + 2,
+                block_timestamp() + 1,
+                block_timestamp() + 2,
                 msg::sender()
             )
             .unwrap();
