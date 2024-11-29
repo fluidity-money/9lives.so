@@ -5,6 +5,8 @@ class PredMarket:
         self.liquidity = liquidity
         self.outcomes = outcomes
         self.shares = [liquidity] * outcomes
+        self.total_liquidity = [liquidity/outcomes] * outcomes
+        self.total_shares = [liquidity] * outcomes
 
     def get_outcome_prices(self):
         outcome_price_weights = []
@@ -17,7 +19,7 @@ class PredMarket:
                 if i != j:
                     product *= self.shares[j]
             outcome_price_weights.append(product)
-        
+
         # Calculate PriceWeightOfAllOutcomes
         price_weight_of_all_outcomes = sum(outcome_price_weights)
         
@@ -34,39 +36,53 @@ class PredMarket:
         for i in range(len(self.shares)):
             self.shares[i] += amount
             product *= self.shares[i]
+            self.total_shares[i] += amount
         
         # Adjust the specified outcome's share to keep balance
         product /= self.shares[outcome]
         self.shares[outcome] = (self.liquidity ** self.outcomes) / product
+
+        self.total_liquidity[outcome] += amount
         
         return self.shares
 
-	def payoff(self, total_liquidity, shares):
+    def payoff(self, total_liquidity, total_shares):
         # total liquidity is an array of liquidity per outcome
         # payoffs is the payoff per share for each outcome
         payoffs = []
-        for i in range(len(self.shares)):
+        for i in range(len(self.total_shares)):
             sum = 0
-            for j in range(len(self.shares)):
+            for j in range(len(self.total_shares)):
                 if i != j:
-                    sum += total_liquidity[j]
-            payoffs.append(sum/shares[i])
+                    sum += self.total_liquidity[j]
+            payoffs.append(sum/total_shares[i])
 
         return payoffs
+        
 
 # Example usage
-market = PredMarket(liquidity=1000, outcomes=4)
+market = PredMarket(liquidity=1000, outcomes=2)
 
 # Initial prices
 print("Initial Shares:", market.shares)
 print("Initial Outcome Prices:", market.get_outcome_prices())
+print("Initial Liquidity:", market.total_liquidity)
+print("Initial Payoff per share:", market.payoff(market.total_liquidity,market.total_shares))
+print(market.total_shares)
 
 # Execute a buy order
-market.buy(outcome=0, amount=294)
+market.buy(outcome=0, amount=200)
 print("Shares after first buy:", market.shares)
 print("Outcome Prices after first buy:", market.get_outcome_prices())
+print("Liquidity after first buy:", market.total_liquidity)
+print("Payoff per share after first buy:", market.payoff(market.total_liquidity,market.total_shares))
+print(market.total_shares)
 
 # Execute another buy order
-market.buy(outcome=0, amount=-294)
+market.buy(outcome=1, amount=100)
 print("Shares after second buy:", market.shares)
 print("Outcome Prices after second buy:", market.get_outcome_prices())
+print("Liquidity after second buy:", market.total_liquidity)
+print("Payoff per share after second buy:", market.payoff(market.total_liquidity,market.total_shares))
+print(market.total_shares)
+
