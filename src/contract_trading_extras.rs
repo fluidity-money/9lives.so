@@ -44,7 +44,9 @@ impl StorageTrading {
         // set each slot in the storage with the outcome id for Longtail later.
         for outcome_id in outcomes {
             // We always set this to 1 now.
-            self.outcome_invested.setter(outcome_id).set(SHARE_DECIMALS_EXP);
+            self.outcome_invested
+                .setter(outcome_id)
+                .set(SHARE_DECIMALS_EXP);
             self.outcome_shares
                 .setter(outcome_id)
                 .set(U256::from(1) * SHARE_DECIMALS_EXP);
@@ -101,14 +103,16 @@ impl StorageTrading {
         let share_bal = U256::min(share_call::balance_of(share_addr, msg::sender())?, amt);
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg::sender(), share_bal)?;
-        let n = share_u256_to_decimal(share_bal)?;
-        let n_1 = share_u256_to_decimal(self.outcome_shares.get(outcome_id))?;
-        #[allow(non_snake_case)]
-        let M = fusdc_u256_to_decimal(self.global_invested.get())?;
-        // Get the cumulative payout for the user.
-        let p = maths::payoff(n, n_1, M)?;
-        // Send the user some fUSDC now!
-        let fusdc = fusdc_decimal_to_u256(p)?;
+        let fusdc = if self.internal_is_dpm() {
+            fusdc_decimal_to_u256(maths::payoff(
+                share_u256_to_decimal(share_bal)?,
+                share_u256_to_decimal(self.outcome_shares.get(outcome_id))?,
+                fusdc_u256_to_decimal(self.global_invested.get())?,
+            )?)?
+        } else {
+            // Do AMM functionality here.
+            U256::ZERO
+        };
         fusdc_call::transfer(recipient, fusdc)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
@@ -131,9 +135,13 @@ impl StorageTrading {
 
     pub(crate) fn internal_is_dpm(&self) -> bool {
         #[cfg(feature = "trading-backend-dpm")]
-        { true }
+        {
+            true
+        }
         #[cfg(not(feature = "trading-backend-dpm"))]
-        { false }
+        {
+            false
+        }
     }
 
     pub fn is_dpm(&self) -> R<bool> {
