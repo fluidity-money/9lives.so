@@ -56,31 +56,10 @@ describe("End to end tests", async () => {
   await longtailDeploy.waitForDeployment();
   const longtailAddress = await longtailDeploy.getAddress();
 
-  // Build everything from a fresh state, get addresses first.
-
-  const {
-    factoryProxy: factoryProxyAddr,
-    factory1Impl,
-    factory2Impl,
-    erc20Impl,
-    tradingMintImpl,
-    tradingExtrasImpl
-  } =
-    JSON.parse(execSync(
-      `go run scripts/get-addresses-full-deploy.go ${defaultAccountAddr}`,
-      {
-        env: {
-          ...process.env,
-          "SPN_SUPERPOSITION_URL": RPC_URL,
-        },
-        stdio: ["ignore", "pipe", "ignore"]
-      },
-    ));
-
   // Do the actual building and deployment, pointing everything to the
   // factory implementation instead of the proxy.
 
-  execSync(
+  const { lockupAddr } = JSON.parse(execSync(
     "./build-and-deploy.sh",
     {
       env: {
@@ -93,7 +72,7 @@ describe("End to end tests", async () => {
       },
       stdio: ["ignore", "ignore", "ignore"]
     },
-  );
+  ));
 
   const factoryProxy = new Contract(
     factoryProxyAddr,

@@ -11,17 +11,25 @@ impl StorageFactory {
         share_impl: Address,
         trading_dpm_extras_impl: Address,
         trading_dpm_mint_impl: Address,
+        trading_dpm_quotes_impl: Address,
+        trading_dpm_price_impl: Address,
         trading_amm_extras_impl: Address,
         trading_amm_mint_impl: Address,
-        oracle_addr: Address,
+        trading_amm_quotes_impl: Address,
+        trading_amm_price_impl: Address,
+        oracle_addr: Address
     ) -> R<()> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);
         self.share_impl.set(share_impl);
         self.trading_dpm_extras_impl.set(trading_dpm_extras_impl);
         self.trading_dpm_mint_impl.set(trading_dpm_mint_impl);
+        self.trading_dpm_quotes_impl.set(trading_dpm_quotes_impl);
+        self.trading_dpm_price_impl.set(trading_dpm_price_impl);
         self.trading_amm_extras_impl.set(trading_amm_extras_impl);
         self.trading_amm_mint_impl.set(trading_amm_mint_impl);
+        self.trading_amm_quotes_impl.set(trading_amm_quotes_impl);
+        self.trading_amm_price_impl.set(trading_amm_price_impl);
         self.infra_market.set(oracle_addr);
         self.version.set(U8::from(1));
         ok(())

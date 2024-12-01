@@ -1,6 +1,5 @@
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes},
-    prelude::*,
     storage::*,
 };
 
@@ -17,10 +16,9 @@ impl Into<u8> for TradingBackendType {
     }
 }
 
-#[storage]
 #[cfg_attr(
     any(feature = "contract-factory-1", feature = "contract-factory-2"),
-    entrypoint
+    stylus_sdk::prelude::storage, stylus_sdk::prelude::entrypoint
 )]
 pub struct StorageFactory {
     pub version: StorageU8,

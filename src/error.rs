@@ -311,6 +311,14 @@ pub enum Error {
     // 0x48
     /// Someone already whinged!
     AlreadyWhinged,
+
+    // 0x49
+    /// An outcome was duplicated.
+    OutcomeDuplicated,
+
+    // 0x4a
+    /// It's not past the deadline for this contract!
+    NotPastDeadline,
 }
 
 /// Error that will unwrap if it fails instead of propagating to the toplevel.

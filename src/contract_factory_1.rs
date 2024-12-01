@@ -7,17 +7,11 @@ use stylus_sdk::{
 };
 
 use crate::{
-    amm_call,
-    decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal},
-    error::*,
-    events, fusdc_call,
-    immutables::*,
-    maths, opt_infra_market_call, proxy, share_call, trading_call,
+    amm_call, error::*, events, fusdc_call, immutables::*, opt_infra_market_call, proxy,
+    share_call, trading_call,
 };
 
 pub use crate::storage_factory::*;
-
-use rust_decimal::Decimal;
 
 #[cfg_attr(feature = "contract-factory-1", stylus_sdk::prelude::public)]
 impl StorageFactory {
@@ -27,7 +21,7 @@ impl StorageFactory {
     #[allow(non_snake_case)]
     pub fn new_trading_09393_D_A_8(
         &mut self,
-        mut outcomes: Vec<(FixedBytes<8>, U256, String)>,
+        outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
         time_start: u64,
         time_ending: u64,
@@ -36,10 +30,7 @@ impl StorageFactory {
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
-        outcomes.sort();
-        outcomes.dedup();
-
-        let outcome_ids = outcomes.iter().map(|(c, _, _)| c).collect::<Vec<_>>();
+        let outcome_ids = outcomes.iter().map(|(c, _, _)| *c).collect::<Vec<_>>();
 
         // Create the trading identifier to derive the outcome addresses from.
         let trading_id =
@@ -93,34 +84,23 @@ impl StorageFactory {
 
         // Used for the price function for seeding Longtail.
 
-        let m_1 = fusdc_u256_to_decimal(seed_liq)?;
-        let n_1 = outcome_ids.len();
-        let n_2 = n_1 - 1;
-
-        for (outcome_identifier, seed_amt, outcome_name) in outcomes.iter() {
+        for (outcome_identifier, sqrt_price, outcome_name) in outcomes.iter() {
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
                 .map_err(|_| Error::DeployError)?;
 
-            let m_2 = m_1 - fusdc_u256_to_decimal(*seed_amt)?;
-
             // Set up the share ERC20 asset, with the description.
             share_call::ctor(erc20_addr, outcome_name.clone(), trading_addr)?;
 
-            // We use the sqrt price to seed Longtail with the initial trading amounts for this
-            // so there's an immediate arbitrage opportunity for LPing.
-
-            let sqrt_price = maths::price_to_sqrt_price(fusdc_decimal_to_u256(maths::dpm_price(
-                m_1,
-                m_2,
-                Decimal::from(n_1),
-                Decimal::from(n_2),
-                Decimal::ZERO,
-            )?)?)?;
-
-            // Use the current AMM to create a pool of this share for aftermarket trading.
-            amm_call::enable_pool(amm_call::create_pool(erc20_addr, sqrt_price, LONGTAIL_FEE)?)?;
+            // Use the current AMM to create a pool of this share for
+            // aftermarket trading. Longtail should revert if the sqrt
+            // price is bad.
+            amm_call::enable_pool(amm_call::create_pool(
+                erc20_addr,
+                *sqrt_price,
+                LONGTAIL_FEE,
+            )?)?;
 
             evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_id,
@@ -128,8 +108,6 @@ impl StorageFactory {
                 erc20Addr: erc20_addr,
             });
         }
-
-        let outcome_ids = outcomes.into_iter().map(|(c, _, _)| c).collect::<Vec<_>>();
 
         trading_call::ctor(
             trading_addr,

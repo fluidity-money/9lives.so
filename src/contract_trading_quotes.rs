@@ -10,6 +10,24 @@ pub use crate::storage_trading::*;
 
 #[cfg_attr(feature = "contract-trading-quotes", stylus_sdk::prelude::public)]
 impl StorageTrading {
+    #[allow(non_snake_case)]
+    pub fn quote_8168_F_301(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
+        if !self.when_decided.is_zero() {
+            return ok(U256::ZERO);
+        }
+        assert_or!(
+            self.outcome_shares.get(outcome_id) > U256::ZERO,
+            Error::NonexistentOutcome
+        );
+        #[cfg(feature = "trading-backend-dpm")]
+        return self.internal_dpm_quote(outcome_id, value);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_quote(outcome_id, value);
+    }
+}
+
+impl StorageTrading {
+    #[allow(unused)]
     fn internal_dpm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let m_1 = fusdc_u256_to_decimal(self.outcome_invested.get(outcome_id))?;
         let n_1 = self.outcome_shares.get(outcome_id);
@@ -28,6 +46,7 @@ impl StorageTrading {
         )?)
     }
 
+    #[allow(unused)]
     fn internal_amm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let mut product = U256::from(1);
         let outcome_list_len = self.outcome_list.len();
@@ -57,21 +76,5 @@ impl StorageTrading {
             .checked_div(product)
             .ok_or(Error::CheckedDivOverflow)?;
         ok(shares)
-    }
-
-    #[allow(non_snake_case)]
-    pub fn quote_8168_F_301(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
-        if !self.when_decided.is_zero() {
-            return ok(U256::ZERO);
-        }
-        assert_or!(
-            self.outcome_shares.get(outcome_id) > U256::ZERO,
-            Error::NonexistentOutcome
-        );
-        if self.internal_is_dpm() {
-            self.internal_dpm_quote(outcome_id, value)
-        } else {
-            self.internal_amm_quote(outcome_id, value)
-        }
     }
 }

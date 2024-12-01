@@ -1,5 +1,5 @@
 // SPDX-Identifier: MIT
-pragma solidity 0.8.18;
+pragma solidity 0.8.20;
 
 interface ILockup {
     /**
@@ -14,6 +14,8 @@ interface ILockup {
         uint256 untilTimestamp,
         address recipient
     ) external returns (uint256 debtId);
+
+    function tokenAddr() external view returns (address);
 
     /**
      * @notice Staked ARB vested by the user at this point in time.

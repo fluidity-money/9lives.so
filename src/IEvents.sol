@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
 interface IEvents {
+    /* LOCKUP CONTRACT */
+
+    event LockupTokenProxyDeployed(address indexed token);
+
     /* FACTORY CONTRACT */
 
     event NewTrading2(

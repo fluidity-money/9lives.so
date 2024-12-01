@@ -18,7 +18,7 @@ contract TestShare is Test {
 
     function setUp() public {
         longtail = new MockLongtail();
-        factory = INineLivesFactory(new MockFactory(address(0)));
+        factory = INineLivesFactory(new MockFactory(address(0), address(1)));
         lenses = new LensesV1(ILongtail(address(longtail)), factory);
         mockLenses = new MockLensesV1();
     }

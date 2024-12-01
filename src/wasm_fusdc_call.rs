@@ -17,25 +17,6 @@ pub fn take_from_funder(funder: Address, amount: U256) -> Result<(), Error> {
     transfer_from(FUSDC_ADDR, funder, contract::address(), amount)
 }
 
-pub fn take_from_sender_permit(
-    value: U256,
-    deadline: U256,
-    v: u8,
-    r: FixedBytes<32>,
-    s: FixedBytes<32>,
-) -> Result<(), Error> {
-    permit(
-        FUSDC_ADDR,
-        contract::address(),
-        msg::sender(),
-        value,
-        deadline,
-        v,
-        r,
-        s,
-    )
-}
-
 pub fn transfer(recipient: Address, value: U256) -> Result<(), Error> {
     erc20_call::transfer(FUSDC_ADDR, recipient, value)
 }

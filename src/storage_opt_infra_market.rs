@@ -1,7 +1,10 @@
-use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
+use stylus_sdk::{alloy_primitives::*, storage::*};
 
-#[storage]
-#[cfg_attr(feature = "contract-infrastructure-market", entrypoint)]
+#[cfg_attr(
+    feature = "contract-infrastructure-market",
+    stylus_sdk::prelude::storage,
+    stylus_sdk::prelude::entrypoint
+)]
 pub struct StorageOptimisticInfraMarket {
     /// Was this contract created successfully?
     pub created: StorageBool,

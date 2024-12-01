@@ -1,8 +1,8 @@
-use stylus_sdk::{alloy_primitives::*, contract, msg};
+use stylus_sdk::{evm, alloy_primitives::*, contract, msg};
 
 use crate::{erc20_call, error::Error, fusdc_call, immutables::*, maths};
 
-pub use crate::{nineliveslockedarb_call, proxy, storage_lockup::*};
+pub use crate::{nineliveslockedarb_call, proxy, storage_lockup::*, events};
 
 use std::cmp::max;
 
@@ -10,13 +10,18 @@ use std::cmp::max;
 impl StorageLockup {
     pub fn ctor(&mut self, token_impl: Address, infra_market: Address) -> Result<(), Error> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
-        self.enabled.set(true);
         let token =
             proxy::deploy_proxy(token_impl).map_err(|_| Error::NinelivesLockedArbCreateError)?;
         nineliveslockedarb_call::ctor(token, contract::address())?;
+        evm::log(events::LockupTokenProxyDeployed { token });
         self.token_addr.set(token);
         self.infra_market_addr.set(infra_market);
+        self.enabled.set(true);
         Ok(())
+    }
+
+    pub fn token_addr(&self) -> Result<Address, Error> {
+        Ok(self.token_addr.get())
     }
 
     /// Lockup sends Locked ARB to the user after taking Staked ARB from

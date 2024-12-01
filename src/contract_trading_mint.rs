@@ -4,10 +4,7 @@ use stylus_sdk::{
 };
 
 use crate::{
-    decimal::{
-        fusdc_u256_to_decimal, round_down, share_decimal_to_u256,
-        share_u256_to_decimal,
-    },
+    decimal::{fusdc_u256_to_decimal, round_down, share_decimal_to_u256, share_u256_to_decimal},
     error::*,
     events,
     fees::*,
@@ -16,6 +13,9 @@ use crate::{
     maths, proxy, share_call,
 };
 
+#[cfg(feature = "trading-backend-dpm")]
+use crate::decimal::fusdc_decimal_to_u256;
+
 use rust_decimal::Decimal;
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
@@ -23,7 +23,58 @@ pub use crate::storage_trading::*;
 
 #[cfg_attr(feature = "contract-trading-mint", stylus_sdk::prelude::public)]
 impl StorageTrading {
+    #[allow(non_snake_case)]
+    pub fn mint_227_C_F_432(
+        &mut self,
+        outcome: FixedBytes<8>,
+        value: U256,
+        recipient: Address,
+    ) -> R<U256> {
+        fusdc_call::take_from_sender(value)?;
+        self.internal_mint(outcome, value, recipient)
+    }
+
+    pub fn payoff(&mut self, outcome_id: FixedBytes<8>, amt: U256, recipient: Address) -> R<U256> {
+        assert_or!(self.winner.get() == outcome_id, Error::NotWinner);
+        // Get the user's balance of the share they own for this outcome.
+        let share_addr = proxy::get_share_addr(
+            self.factory_addr.get(),
+            contract::address(), // Address of this contract, the Trading contract.
+            self.share_impl.get(),
+            outcome_id,
+        );
+        // Start to burn their share of the supply to convert to a payoff amount.
+        // Take the max of what they asked.
+        let share_bal = U256::min(share_call::balance_of(share_addr, msg::sender())?, amt);
+        assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
+        share_call::burn(share_addr, msg::sender(), share_bal)?;
+        #[cfg(feature = "trading-backend-dpm")]
+        let fusdc = fusdc_decimal_to_u256(maths::dpm_payoff(
+            share_u256_to_decimal(share_bal)?,
+            share_u256_to_decimal(self.outcome_shares.get(outcome_id))?,
+            fusdc_u256_to_decimal(self.global_invested.get())?,
+        )?)?;
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        let fusdc = {
+            let share_payoff = self.global_invested.get() / self.outcome_shares.get(outcome_id);
+            self.outcome_invested.get(outcome_id) / self.outcome_shares.get(outcome_id)
+                + share_payoff
+        };
+        fusdc_call::transfer(recipient, fusdc)?;
+        evm::log(events::PayoffActivated {
+            identifier: outcome_id,
+            sharesSpent: share_bal,
+            spender: msg::sender(),
+            recipient,
+            fusdcReceived: fusdc,
+        });
+        ok(fusdc)
+    }
+}
+
+impl StorageTrading {
     // Shares returned by the DPM. Does not set any state.
+    #[allow(unused)]
     fn internal_dpm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let n_1 = self.outcome_shares.get(outcome_id);
         let outcome_invested = self.outcome_invested.get(outcome_id);
@@ -40,6 +91,7 @@ impl StorageTrading {
 
     /// Calculate the AMM amount of shares you would receive. Sets the
     /// shares for each outcome in the outcomes list during its operation.
+    #[allow(unused)]
     fn internal_amm_mint(&mut self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let mut product = U256::from(1);
         let outcome_list_len = self.outcome_list.len();
@@ -115,9 +167,10 @@ impl StorageTrading {
         );
 
         let shares_before = self.outcome_shares.get(outcome_id);
-        let shares = if self.internal_is_dpm() {
-            // We need to increase by the amount we allocate, the AMM should do that
-            // internally. Some extra fields are needed for the DPM's calculations.
+        // We need to increase by the amount we allocate, the AMM should do that
+        // internally. Some extra fields are needed for the DPM's calculations.
+        #[cfg(feature = "trading-backend-dpm")]
+        let shares = {
             let shares = self.internal_dpm_mint(outcome_id, value)?;
             self.outcome_shares.setter(outcome_id).set(
                 shares_before
@@ -131,15 +184,15 @@ impl StorageTrading {
                     .ok_or(Error::CheckedAddOverflow)?,
             );
             shares
-        } else {
-            // This function is needing to be used this way, since it is side effect heavy.
-            // Internally it will set variables including the global shares count.
-            // We take the difference between the shares that already existed, and ours
-            // now, to get the correct number.
-            self.internal_amm_mint(outcome_id, value)?
-                .checked_sub(shares_before)
-                .ok_or(Error::CheckedSubOverflow)?
         };
+        // This function is needing to be used this way, since it is side effect heavy.
+        // Internally it will set variables including the global shares count.
+        // We take the difference between the shares that already existed, and ours
+        // now, to get the correct number.
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        let shares = shares_before
+            .checked_sub(self.internal_amm_mint(outcome_id, value)?)
+            .ok_or(Error::CheckedSubOverflow)?;
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
         let share_addr = proxy::get_share_addr(
@@ -161,53 +214,19 @@ impl StorageTrading {
 
         ok(shares)
     }
+}
 
+#[cfg(feature = "testing")]
+impl StorageTrading {
     pub fn test_dpm_mint(
         &mut self,
         _outcome_id: FixedBytes<8>,
         _value: U256,
     ) -> Result<U256, Vec<u8>> {
-        #[cfg(feature = "testing")]
-        return Ok(self.internal_dpm_mint(_outcome_id, _value).unwrap());
-        #[cfg(not(feature = "testing"))]
-        Err(vec![])
+        self.internal_dpm_mint(_outcome_id, _value).unwrap()
     }
 
-    pub fn test_amm_mint(
-        &mut self,
-        _outcome_id: FixedBytes<8>,
-        _value: U256,
-    ) -> Result<U256, Vec<u8>> {
-        #[cfg(feature = "testing")]
-        return Ok(self.internal_amm_mint(_outcome_id, _value).unwrap());
-        #[cfg(not(feature = "testing"))]
-        Err(vec![])
-    }
-
-    #[allow(non_snake_case)]
-    pub fn mint_227_C_F_432(
-        &mut self,
-        outcome: FixedBytes<8>,
-        value: U256,
-        recipient: Address,
-    ) -> R<U256> {
-        fusdc_call::take_from_sender(value)?;
-        self.internal_mint(outcome, value, recipient)
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    #[allow(non_snake_case)]
-    pub fn mint_permit_B8_D_681_A_D(
-        &mut self,
-        outcome: FixedBytes<8>,
-        value: U256,
-        recipient: Address,
-        deadline: U256,
-        v: u8,
-        r: FixedBytes<32>,
-        s: FixedBytes<32>,
-    ) -> R<U256> {
-        fusdc_call::take_from_sender_permit(value, deadline, v, r, s)?;
-        self.internal_mint(outcome, value, recipient)
+    pub fn test_amm_mint(&mut self, _outcome_id: FixedBytes<8>, _value: U256) -> U256 {
+        self.internal_amm_mint(_outcome_id, _value).unwrap()
     }
 }

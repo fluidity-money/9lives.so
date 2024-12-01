@@ -103,11 +103,6 @@ contract-trading-amm-quotes.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-trading-quotes,trading-backend-amm
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-amm-quotes.wasm
 
-contract-trading-amm-quotes.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f contract-trading-quotes.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-quotes,trading-backend-amm
-	@${RELEASE_WASM_OPT_9LIVES} contract-trading-amm-quotes.wasm
-
 contract-trading-amm-price.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-price.wasm
 	@${CARGO_BUILD_STYLUS} contract-trading-price,trading-backend-amm

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
 interface ILongtail {
     function quote72E2ADE7(address, bool, int256, uint256) external;

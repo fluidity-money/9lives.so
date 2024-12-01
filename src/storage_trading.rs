@@ -1,6 +1,5 @@
-use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
+use stylus_sdk::{alloy_primitives::*, storage::*};
 
-#[storage]
 #[cfg_attr(
     any(
         feature = "contract-trading-mint",
@@ -8,7 +7,7 @@ use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
         feature = "contract-trading-quotes",
         feature = "contract-trading-price"
     ),
-    entrypoint
+    stylus_sdk::prelude::storage, stylus_sdk::prelude::entrypoint
 )]
 pub struct StorageTrading {
     /// Was this contract created?
@@ -72,14 +71,5 @@ pub struct StorageTrading {
 impl crate::host::StorageNew for StorageTrading {
     fn new(i: U256, v: u8) -> Self {
         unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
-    }
-}
-
-impl StorageTrading {
-    pub(crate) fn internal_is_dpm(&self) -> bool {
-        #[cfg(feature = "trading-backend-dpm")]
-        return true;
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        return false;
     }
 }

@@ -38,7 +38,6 @@ information from another chain, and the contract will simply check the result of
 message. If it's not activated by the date that's given, then it defaults to a "DEFAULT"
 clause that could be "no" if a user were to try to estimate the price of something.
 
-
 ![Diagram of the system](diagram.svg)
 
 ## Roadmap
@@ -94,13 +93,25 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 ### Superposition testnet
 
-|      Deployment name     |              Deployment address            |
-|--------------------------|--------------------------------------------|
-| Proxy admin              | 0x0256a089553ae26fd45fc36495d7cf3a044d0fdb |
-| Factory 1 implementation | 0xF1b485d0a0D79FCEAd35E9923E3A07deD14D9A1A |
-| Factory 2 implementation | 0xE30f69f9F2A439db7A5fA89707403a4A231368F5 |
-| Trading mint impl        | 0xeCAC5280Ad9bF4E2a1AC7a16b884945E134A2c36 |
-| Trading extras impl      | 0x3C4bD874746C0EbD3e438900B226Dde963a1eB0c |
-| Factory proxy            | 0x22E844526b3921BE5c42f8208a4FEfC5db8d82CB |
-| ERC20 implementation     | 0xd27d3c46A66b6F496a67C9cb881f9dF13091A777 |
-| LensesV1                 | 0xfCd4E63563D561D979D280B52eD4AB7e7678F204 |
+|            Deployment name             |              Deployment address            |
+|----------------------------------------|--------------------------------------------|
+| Proxy admin                            | 0xFEb6034FC7dF27dF18a3a6baD5Fb94C0D3dCb6d5 |
+| Factory 1 implementation               | 0xe7918a07158e5303c50816eee23ddd16cce985e4 |
+| Factory 2 implementation               | 0x5653cc20ebe2d4a205ef55edeb58150cb48a7c08 |
+| Lockup implementation                  | 0x3a98589ef50a8433966491354b9a182ca1cdc95a |
+| Optimistic infra market implementation | 0xfe359f63eee88bb453b8a5957bfb209087057800 |
+| Trading DPM mint impl                  | 0x434f0501680b8d30c069e81fa9e119c977b57623 |
+| Trading DPM extras impl                | 0x28652521432cb65825d5ce834902e1387e137ad8 |
+| Trading DPM price impl                 | 0x1b9f3cc7738e942ddd8973bd0129582107a5ae2f |
+| Trading DPM quotes impl                | 0xc5370074c9bcb81086cf50057db76e46d0850932 |
+| Trading DPM price impl                 | 0x1b9f3cc7738e942ddd8973bd0129582107a5ae2f |
+| Trading AMM mint impl                  | 0xe6b7ff7d1cc6b105b7083096fd8ba6d9f89b30ca |
+| Trading AMM extras impl                | 0x831664ed6c1a498822124c94c12461078efbcfdc |
+| Trading AMM price impl                 | 0x7816536a927faa40213962874eba85c30203bb71 |
+| Trading AMM quotes impl                | 0xd28bc82b6c1fbfa7ed99be2109cf330511af8c6a |
+| Trading AMM price impl                 | 0x7816536a927faa40213962874eba85c30203bb71 |
+| Share implementation                   | 0xaF962315062b8999807796BF19F126585815e996 |
+| Lockup token implementation            | 0x6836cbC634D17F051Ab4f5F966F28B5b85f8CF1F |
+| Infrastructure market proxy            | 0x8cb5f36721ee506bfe0e6439c56445739dff3a78 |
+| Lockup proxy                           | 0xc68b7395bdd6bbe7943f66055d06f2cd55631a67 |
+| Factory proxy                          | 0xa893fe339383ddb745415cdd4124ba51bfbc32fb |

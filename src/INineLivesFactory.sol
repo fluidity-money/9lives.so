@@ -1,34 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
 struct FactoryOutcome {
     bytes8 identifier;
-    uint256 amount;
+    uint256 sqrtPrice;
     string name;
 }
 
 interface INineLivesFactory {
-    /**
-     * @notice Construct the Factory, configuring all Trading instances to use the oracle
-     *         given.
-     * @notice shareImpl to use for the share creations with a proxy.
-     * @param tradingDPMExtrasImpl to use as the extras implementation for the extras trading
-     * code.
-     * @param tradingDPMMintImpl to use as the implementation of the mint code for deployed
-     * Tradings.
-     * @param tradingAMMExtrasImpl to use as the implementation for the extras AMM code.
-     * @param tradingAMMMintImpl to use as the implementation for the mint AMM code.
-     * @param infraMarketOracle to set as the oracle for infrastructure market oracles
-     */
-    function ctor(
-        address shareImpl,
-        address tradingDPMExtrasImpl,
-        address tradingDPMMintImpl,
-        address tradingAMMExtrasImpl,
-        address tradingAMMMintImpl,
-        address infraMarketOracle
-    ) external;
-
     /**
      * @notice set up new trading contract, seeding the initial amounts
      * @param outcomes to set up as the default

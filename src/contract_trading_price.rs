@@ -14,6 +14,21 @@ pub use crate::storage_trading::*;
 
 #[cfg_attr(feature = "contract-trading-price", stylus_sdk::prelude::public)]
 impl StorageTrading {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(non_snake_case)]
+    pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> R<U256> {
+        if !self.when_decided.is_zero() {
+            return ok(U256::ZERO);
+        }
+        #[cfg(feature = "trading-backend-dpm")]
+        return self.internal_dpm_price(id);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_price(id);
+    }
+}
+
+impl StorageTrading {
+    #[allow(unused)]
     fn internal_dpm_price(&self, id: FixedBytes<8>) -> R<U256> {
         let m_1 = fusdc_u256_to_decimal(self.outcome_invested.get(id))?;
         let n_1 = self.outcome_shares.get(id);
@@ -33,6 +48,7 @@ impl StorageTrading {
         fusdc_decimal_to_u256(maths::dpm_price(m_1, m_2, n_1, n_2, Decimal::ZERO)?)
     }
 
+    #[allow(unused)]
     fn internal_amm_price(&self, id: FixedBytes<8>) -> R<U256> {
         let outcome_list_len = self.outcome_list.len();
         let mut price_weights = HashMap::new();
@@ -56,18 +72,5 @@ impl StorageTrading {
         }
         //outcome_price_weights[k] / price_weight_of_all_outcomes
         ok(price_weights.get(&id).unwrap() / price_weights.values().sum::<U256>())
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    #[allow(non_snake_case)]
-    pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> R<U256> {
-        if !self.when_decided.is_zero() {
-            return ok(U256::ZERO);
-        }
-        if self.internal_is_dpm() {
-            self.internal_dpm_price(id)
-        } else {
-            self.internal_amm_price(id)
-        }
     }
 }

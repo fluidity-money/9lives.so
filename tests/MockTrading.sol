@@ -21,8 +21,9 @@ contract MockTrading is INineLivesTrading {
     uint256 timeEnding_;
     address feeRecipient_;
 
-    constructor(address _fusdc) {
+    constructor(address _fusdc, address _shareAddr) {
         FUSDC_ADDR = _fusdc;
+        SHARE_ADDR = IERC20(_shareAddr);
     }
 
     function ctor(

@@ -2,13 +2,7 @@ use stylus_sdk::{alloy_primitives::*, contract, evm, msg};
 
 use crate::error::*;
 
-use crate::{
-    decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_u256_to_decimal},
-    events, factory_call, fusdc_call,
-    immutables::*,
-    maths, proxy, share_call,
-    utils::block_timestamp,
-};
+use crate::{events, factory_call, immutables::*, proxy, utils::block_timestamp};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
@@ -29,8 +23,8 @@ impl StorageTrading {
         fee_recipient: Address,
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
-	// We assume that the caller already supplied the liquidity to
-	// us, and we set them as the factory.
+        // We assume that the caller already supplied the liquidity to
+        // us, and we set them as the factory.
         let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;
         self.global_invested.set(seed_liquidity);
         self.seed_invested.set(seed_liquidity);
@@ -51,7 +45,8 @@ impl StorageTrading {
         }
         // We assume that the sender is the factory.
         self.factory_addr.set(msg::sender());
-        self.share_impl.set(factory_call::share_impl(self.factory_addr.get())?);
+        self.share_impl
+            .set(factory_call::share_impl(self.factory_addr.get())?);
         self.fee_recipient.set(fee_recipient);
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));
@@ -62,8 +57,13 @@ impl StorageTrading {
     pub fn shutdown(&mut self) -> R<U256> {
         // Notify Longtail to pause trading on every outcome pool.
         // TODO, send a "thank you" amount to the caller of this function
-        // when it's called for the first time.
-        assert_or!(self.is_shutdown.get(), Error::IsShutdown);
+        // when it's called for the first time. This should be called by anyone
+        // after the date of this closing.
+        assert_or!(
+            u64::from_le_bytes(self.time_ending.get().to_le_bytes()) < block_timestamp(),
+            Error::NotPastDeadline
+        );
+        assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
         factory_call::disable_shares(
             self.factory_addr.get(),
             &(0..self.outcome_list.len())
@@ -88,42 +88,6 @@ impl StorageTrading {
         ok(())
     }
 
-    pub fn payoff(&mut self, outcome_id: FixedBytes<8>, amt: U256, recipient: Address) -> R<U256> {
-        assert_or!(self.winner.get() == outcome_id, Error::NotWinner);
-        // Get the user's balance of the share they own for this outcome.
-        let share_addr = proxy::get_share_addr(
-            self.factory_addr.get(),
-            contract::address(), // Address of this contract, the Trading contract.
-            self.share_impl.get(),
-            outcome_id,
-        );
-        // Start to burn their share of the supply to convert to a payoff amount.
-        // Take the max of what they asked.
-        let share_bal = U256::min(share_call::balance_of(share_addr, msg::sender())?, amt);
-        assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
-        share_call::burn(share_addr, msg::sender(), share_bal)?;
-        let fusdc = if self.internal_is_dpm() {
-            fusdc_decimal_to_u256(maths::dpm_payoff(
-                share_u256_to_decimal(share_bal)?,
-                share_u256_to_decimal(self.outcome_shares.get(outcome_id))?,
-                fusdc_u256_to_decimal(self.global_invested.get())?,
-            )?)?
-        } else {
-            let share_payoff = self.global_invested.get() / self.outcome_shares.get(outcome_id);
-            self.outcome_invested.get(outcome_id) / self.outcome_shares.get(outcome_id)
-                + share_payoff
-        };
-        fusdc_call::transfer(recipient, fusdc)?;
-        evm::log(events::PayoffActivated {
-            identifier: outcome_id,
-            sharesSpent: share_bal,
-            spender: msg::sender(),
-            recipient,
-            fusdcReceived: fusdc,
-        });
-        ok(fusdc)
-    }
-
     pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
         ok((
             self.outcome_shares.get(outcome_id),
@@ -134,7 +98,14 @@ impl StorageTrading {
     }
 
     pub fn is_dpm(&self) -> R<bool> {
-        ok(self.internal_is_dpm())
+        #[cfg(feature = "trading-backend-dpm")]
+        {
+            ok(true)
+        }
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        {
+            ok(false)
+        }
     }
 
     pub fn ended(&self) -> R<bool> {
