@@ -22,6 +22,7 @@ flowchart TD
     Factory --> |Deploys ERC20 assets for each outcome| ERC20s
     Trading --> |Disables Longtail once trading is done| Factory
     ERC20s --> |Burns and mints supply| Trading
+    Infra --> |Tells Trading who won| Trading
 ```
 
 Optimistic Infra Markets are betting situations where Staked ARB is locked up as LARB,
