@@ -31,6 +31,23 @@ day window (5 days has elapsed in total), a "ANYTHING GOES" period begins, where
 slash any bad bettors prediction without regard for their token position (as long as they
 bet correctly).
 
+```mermaid
+flowchart TD
+    Caller --> |Designates who the winning outcome is| Infra[Infra market]
+    Infra --> Challenge{Challenge period pass?}
+    Challenge --> |No| Disputed[Disputed by whinger]
+    Disputed --> Predicting
+    Predictor --> |Votes on outcome| Predicting
+    Predicting --> |3 day window passes| Sweeping
+    Sweeping --> |Collects funds from loser bettors| Lockup
+    Lockup --> |Sends money to correct infra market predictors| Predictors
+    Sweeping --> |"Decides" the outcome| Trading
+    Challenge --> |Yes| Trading
+    Trading --> Correct{Did caller correctly designate outcome?}
+    Correct --> |Yes| CallerYes[Caller gets fees]
+    Correct --> |No | CallerNo[Caller gets no fees]
+```
+
 Oracle State oracles are very simple comparatively, as presumably the associated Trading
 contract was configured to allow early activation, so all a caller must do is activate the
 associated Oracle State contract. These could communicate with LayerZero to pull
