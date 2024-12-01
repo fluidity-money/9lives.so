@@ -13,6 +13,17 @@ Interaction type of outcome. The Inventor must communicate to the Factory which 
 they would like to use, and provide the hash of the string that must be used to determine
 the outcome. This will then set the correct behaviour.
 
+```mermaid
+flowchart TD
+    Trader --> |Locks up incentive amount, sets parameters| Factory
+    Factory --> |Sets start, end, description, if infra market oracle chosen| Infra[Infra market]
+    Factory --> |Deploys contract. Sets parameters| Trading
+    Factory --> |Configures Longtail pool| Longtail
+    Factory --> |Deploys ERC20 assets for each outcome| ERC20s
+    Trading --> |Disables Longtail once trading is done| Factory
+    ERC20s --> |Burns and mints supply| Trading
+```
+
 Optimistic Infra Markets are betting situations where Staked ARB is locked up as LARB,
 which is used to predict the outcome of a situation. They exist in an "optimistic" state
 where anyone can claim which outcome took place for 2 days, then for a grace period of two
@@ -54,6 +65,8 @@ associated Oracle State contract. These could communicate with LayerZero to pull
 information from another chain, and the contract will simply check the result of the
 message. If it's not activated by the date that's given, then it defaults to a "DEFAULT"
 clause that could be "no" if a user were to try to estimate the price of something.
+
+---
 
 ![Diagram of the system](diagram.svg)
 
