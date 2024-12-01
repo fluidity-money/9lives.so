@@ -13,7 +13,10 @@ use crate::{
 
 pub use crate::storage_factory::*;
 
-#[cfg_attr(feature = "contract-factory-1", stylus_sdk::prelude::public)]
+#[cfg_attr(
+    any(feature = "contract-factory-1", test),
+    stylus_sdk::prelude::public
+)]
 impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds. We use these to seed the liquidity but only take
@@ -133,12 +136,5 @@ impl StorageFactory {
         }
 
         ok(trading_addr)
-    }
-}
-
-#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-impl crate::host::StorageNew for StorageFactory {
-    fn new(i: U256, v: u8) -> Self {
-        unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
     }
 }

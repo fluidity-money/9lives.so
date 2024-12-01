@@ -5,9 +5,19 @@ use stylus_sdk::{alloy_primitives::*, storage::*};
         feature = "contract-trading-mint",
         feature = "contract-trading-extras",
         feature = "contract-trading-quotes",
+        feature = "contract-trading-price",
+        feature = "testing"
+    ),
+    stylus_sdk::prelude::storage
+)]
+#[cfg_attr(
+    any(
+        feature = "contract-trading-mint",
+        feature = "contract-trading-extras",
+        feature = "contract-trading-quotes",
         feature = "contract-trading-price"
     ),
-    stylus_sdk::prelude::storage, stylus_sdk::prelude::entrypoint
+    stylus_sdk::prelude::entrypoint
 )]
 pub struct StorageTrading {
     /// Was this contract created?
@@ -67,9 +77,9 @@ pub struct StorageTrading {
     pub amount_paid_out: StorageU256,
 }
 
-#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+#[cfg(feature = "testing")]
 impl crate::host::StorageNew for StorageTrading {
     fn new(i: U256, v: u8) -> Self {
-        unsafe { <Self as stylus_sdk::storage::StorageType>::new(i, v) }
+        unsafe { <Self as StorageType>::new(i, v) }
     }
 }

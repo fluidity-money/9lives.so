@@ -3,6 +3,9 @@ use stylus_sdk::{
     storage::*,
 };
 
+#[cfg(feature = "testing")]
+use stylus_sdk::{alloy_primitives::U256, storage::StorageType};
+
 #[derive(Debug)]
 #[repr(C)]
 pub enum TradingBackendType {
@@ -17,11 +20,23 @@ impl Into<u8> for TradingBackendType {
 }
 
 #[cfg_attr(
+    any(
+        feature = "contract-factory-1",
+        feature = "contract-factory-2",
+        feature = "testing"
+    ),
+    stylus_sdk::prelude::storage
+)]
+#[cfg_attr(
     any(feature = "contract-factory-1", feature = "contract-factory-2"),
-    stylus_sdk::prelude::storage, stylus_sdk::prelude::entrypoint
+    stylus_sdk::prelude::entrypoint
 )]
 pub struct StorageFactory {
+    /// The version of this contract after it was deployed. Useful for any
+    /// migrations.
     pub version: StorageU8,
+
+    /// Is the contract currently in an enabled state (not an emergency)?
     pub enabled: StorageBool,
 
     /// Infrastructure market address.
@@ -48,4 +63,11 @@ pub struct StorageFactory {
 
     /// Utility for getting trading addresses quickly based on their inputs.
     pub trading_addresses: StorageMap<FixedBytes<32>, StorageAddress>,
+}
+
+#[cfg(feature = "testing")]
+impl crate::host::StorageNew for StorageFactory {
+    fn new(i: U256, v: u8) -> Self {
+        unsafe { <Self as StorageType>::new(i, v) }
+    }
 }

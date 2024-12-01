@@ -22,9 +22,6 @@ describe("End to end tests", async () => {
   const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
   const DEPLOY_KEY = process.env.SPN_SUPERPOSITION_KEY;
 
-  if (!RPC_URL) throw new Error("SPN_SUPERPOSITION_URL unset");
-  if (!DEPLOY_KEY) throw new Error("SPN_SUPERPOSITION_KEY unset");
-
   const provider = new JsonRpcProvider(RPC_URL);
 
   const chainId = Number((await provider.getNetwork()).chainId);
@@ -32,6 +29,7 @@ describe("End to end tests", async () => {
   const signer = new Wallet(DEPLOY_KEY, provider);
 
   const defaultAccountAddr = await signer.getAddress();
+  const emergencyCouncilAddr = defaultAccountAddr;
 
   // Deploy a test ERC20.
 
@@ -68,7 +66,8 @@ describe("End to end tests", async () => {
         "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
         "SPN_AMM_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
-        "SPN_PROXY_ADMIN": defaultAccountAddr
+        "SPN_PROXY_ADMIN": defaultAccountAddr,
+        "SPN_EMERGENCY_COUNCIL": emergencyCouncilAddr
       },
       stdio: ["ignore", "ignore", "ignore"]
     },

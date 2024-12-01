@@ -222,7 +222,7 @@ impl StorageTrading {
         &mut self,
         _outcome_id: FixedBytes<8>,
         _value: U256,
-    ) -> Result<U256, Vec<u8>> {
+    ) -> U256 {
         self.internal_dpm_mint(_outcome_id, _value).unwrap()
     }
 
