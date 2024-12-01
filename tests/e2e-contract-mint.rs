@@ -6,6 +6,7 @@ use stylus_sdk::{
 use lib9lives::{utils::block_timestamp, host};
 
 #[test]
+#[cfg(feature = "trading-backend-dpm")]
 fn test_e2e_mint() {
     use lib9lives::storage_trading::StorageTrading;
     host::with_storage::<_, StorageTrading, _>(|c| {

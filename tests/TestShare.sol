@@ -19,11 +19,11 @@ contract TestShare is Test {
             share_ := create(0, add(proxyBytecode, 32), mload(proxyBytecode))
         }
         share = Share(share_);
-        share.ctor("Hello", address(this));
+        share.ctor("9lives Hello", address(this));
     }
 
     function testSymbol() public view {
-        assertEq(share.symbol(), "9#1311693406324658740");
+        assertEq(share.symbol(), "9#6201151562395654043");
     }
 
     function testName() public view {

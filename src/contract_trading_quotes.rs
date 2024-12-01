@@ -11,7 +11,7 @@ pub use crate::storage_trading::*;
 #[cfg_attr(feature = "contract-trading-quotes", stylus_sdk::prelude::public)]
 impl StorageTrading {
     #[allow(non_snake_case)]
-    pub fn quote_8168_F_301(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
+    pub fn quote_C_0_E_17_F_C_7(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         if !self.when_decided.is_zero() {
             return ok(U256::ZERO);
         }

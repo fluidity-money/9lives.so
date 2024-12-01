@@ -25,6 +25,7 @@ interface IInfraMarket {
         address trading,
         address victim,
         bytes8[] calldata outcomes,
-        address recipient
+        address onBehalfOfAddr,
+        address feeRecipientAddr
     ) external returns (uint256 yieldForCaller);
 }

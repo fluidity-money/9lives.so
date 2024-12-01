@@ -16,7 +16,7 @@ pub use crate::storage_trading::*;
 impl StorageTrading {
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn price_F_3_C_364_B_C(&self, id: FixedBytes<8>) -> R<U256> {
+    pub fn price_A_827_E_D_27(&self, id: FixedBytes<8>) -> R<U256> {
         if !self.when_decided.is_zero() {
             return ok(U256::ZERO);
         }

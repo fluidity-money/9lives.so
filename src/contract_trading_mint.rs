@@ -24,7 +24,7 @@ pub use crate::storage_trading::*;
 #[cfg_attr(feature = "contract-trading-mint", stylus_sdk::prelude::public)]
 impl StorageTrading {
     #[allow(non_snake_case)]
-    pub fn mint_227_C_F_432(
+    pub fn mint_0_D_365_E_C_6(
         &mut self,
         outcome: FixedBytes<8>,
         value: U256,
@@ -34,7 +34,13 @@ impl StorageTrading {
         self.internal_mint(outcome, value, recipient)
     }
 
-    pub fn payoff(&mut self, outcome_id: FixedBytes<8>, amt: U256, recipient: Address) -> R<U256> {
+    #[allow(non_snake_case)]
+    pub fn payoff_91_F_A_8_C_2_E(
+        &mut self,
+        outcome_id: FixedBytes<8>,
+        amt: U256,
+        recipient: Address,
+    ) -> R<U256> {
         assert_or!(self.winner.get() == outcome_id, Error::NotWinner);
         // Get the user's balance of the share they own for this outcome.
         let share_addr = proxy::get_share_addr(
@@ -218,11 +224,7 @@ impl StorageTrading {
 
 #[cfg(feature = "testing")]
 impl StorageTrading {
-    pub fn test_dpm_mint(
-        &mut self,
-        _outcome_id: FixedBytes<8>,
-        _value: U256,
-    ) -> U256 {
+    pub fn test_dpm_mint(&mut self, _outcome_id: FixedBytes<8>, _value: U256) -> U256 {
         self.internal_dpm_mint(_outcome_id, _value).unwrap()
     }
 

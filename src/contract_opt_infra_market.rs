@@ -1,9 +1,8 @@
 use stylus_sdk::{alloy_primitives::*, contract, evm, msg};
 
 use crate::{
-    error::*, events, fees::*, fusdc_call, immutables::*, lockup_call, maths,
-    nineliveslockedarb_call, timing_opt_infra_market::*, trading_call,
-    utils::block_timestamp,
+    erc20_call, error::*, events, fees::*, fusdc_call, immutables::*, lockup_call, maths,
+    nineliveslockedarb_call, timing_opt_infra_market::*, trading_call, utils::block_timestamp,
 };
 
 pub use crate::storage_opt_infra_market::*;
@@ -350,7 +349,7 @@ impl StorageOptimisticInfraMarket {
     /// current amount of ARB in the rest of the lockup contract. Once they
     /// take the amount from a victim, their global voting power is reduced by
     /// the amount that the victim had. This way, they can continue to slash
-    /// users, and presumably, the caller was identified as having correctly
+    /// users, and presumably, the recipient was identified as having correctly
     /// bet already, so it's safe for the check that their position bet on the
     /// correct outcome to start to become odd. This way, the system should be
     /// tolerable of bad behaviour and unusal interaction, say, if a user gets
@@ -358,14 +357,20 @@ impl StorageOptimisticInfraMarket {
     /// this slashing situation is funds are stuck in the other contract, as a
     /// victim's tracked vested ARB is less than what's locked in the pool.
     /// That situation is tolerable, as that amount would go to governance
-    /// potentially, after being taken by another user.
+    /// potentially, after being taken by another user. Since it's a good idea
+    /// for users to call this on behalf of other users based on their financial
+    /// position, then we reward msg::sender with a small fee of what the
+    /// fee recipient would receive in the form of a fee.
+    /// Returns the caller's yield taken (for acting as an agent for another user,
+    /// and for calling sweep), and the amount the fee recipient would get.
     pub fn sweep(
         &mut self,
         trading_addr: Address,
         victim_addr: Address,
         mut outcomes: Vec<FixedBytes<8>>,
-        recipient: Address,
-    ) -> R<U256> {
+        on_behalf_of_addr: Address,
+        fee_recipient_addr: Address,
+    ) -> R<(U256, U256)> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
             are_we_in_sweeping_period(
@@ -380,8 +385,10 @@ impl StorageOptimisticInfraMarket {
         // If it isn't enabled, then we collect every identifier they specified, and
         // if it's identical (or over to accomodate for any decimal point errors),
         // we send them the finders fee, and we set the flag for the winner.
-        // We track their yield so we can give it to them at the end of this function.
-        let mut yield_taken = U256::ZERO;
+        // We track the yield of the recipient and the caller so we can give it
+        // to them at the end of this function.
+        let mut caller_yield_taken = U256::ZERO;
+        let mut on_behalf_of_yield_taken = U256::ZERO;
         if self.campaign_winner.get(trading_addr).is_zero() {
             let mut voting_power_global = U256::ZERO;
             let mut current_voting_power_winner_amt = U256::ZERO;
@@ -435,9 +442,9 @@ impl StorageOptimisticInfraMarket {
                         BOND_FOR_WHINGE,
                     )?;
                 }
-                // Looks like we owe the caller some money.
-                fusdc_call::transfer(recipient, INCENTIVE_AMT_SWEEP)?;
-                yield_taken += INCENTIVE_AMT_SWEEP;
+                // Looks like we owe the fee recipient some money.
+                fusdc_call::transfer(fee_recipient_addr, INCENTIVE_AMT_SWEEP)?;
+                caller_yield_taken += INCENTIVE_AMT_SWEEP;
                 // At this point we call the campaign that this is
                 // connected to let them know that there was a winner. Hopefully
                 // someone called shutdown on the contract in the past to prevent
@@ -451,7 +458,7 @@ impl StorageOptimisticInfraMarket {
             // We don't bother to slash the user if this is the case. We
             // just return nicely. This might be paired with the
             // interaction with sweep to collect the incentive amount.
-            return ok(U256::ZERO);
+            return ok((caller_yield_taken, U256::ZERO));
         }
         // We check if the victim's vested power is 0. If it is, then we assume
         // that someone already claimed this victim's position! Or, they never bet
@@ -461,7 +468,7 @@ impl StorageOptimisticInfraMarket {
             .getter(trading_addr)
             .get(victim_addr);
         if victim_global_vested_power.is_zero() {
-            return ok(U256::ZERO);
+            return ok((caller_yield_taken, on_behalf_of_yield_taken));
         }
         // We check the victim's vested arb in the lockup contract, and
         // if it's not greater than or equal to what's here, then we
@@ -475,7 +482,7 @@ impl StorageOptimisticInfraMarket {
         let victim_staked_arb_amt =
             lockup_call::staked_arb_bal(self.lockup_addr.get(), victim_addr)?;
         if victim_vested_arb_amt > victim_staked_arb_amt {
-            return ok(U256::ZERO);
+            return ok((caller_yield_taken, on_behalf_of_yield_taken));
         }
         // We check the caller's share of the power vested in this losing campaign,
         // and if the victim's share of the incorrectly allocated profit is below
@@ -526,13 +533,12 @@ impl StorageOptimisticInfraMarket {
             .checked_div(SCALING_FACTOR)
             .ok_or(Error::CheckedDivOverflow)?;
         // Now that we know the amounts allocated, let's test if the
-        // caller can claim this amount by looking at the power of the
-        // caller.
+        // recipient can claim this amount by looking at their power.
         let caller_winning_power = self
             .user_campaign_vested_power
             .getter(trading_addr)
             .getter(campaign_winner)
-            .get(msg::sender());
+            .get(on_behalf_of_addr);
         // If the amount of time that's exceeded is 5 days, then we're
         // inside a "ANYTHING GOES" period where someone could claim the
         // victim's entire position without beating them on the
@@ -552,13 +558,31 @@ impl StorageOptimisticInfraMarket {
             .set(U256::ZERO);
         self.user_global_vested_power
             .setter(trading_addr)
-            .setter(msg::sender())
+            .setter(on_behalf_of_addr)
             .set(caller_winning_power - diluted_victim_power);
         // Transfer the victim's entire staked ARB position to the
         // caller. Make sure noone can drain from this user in this
         // contract again! We shouldn't need to worry about overflow here due
         // to the amount being sent being quite low and passing other checks.
-        yield_taken += lockup_call::confiscate(self.lockup_addr.get(), victim_addr, recipient)?;
-        ok(yield_taken)
+        let confiscated =
+            lockup_call::confiscate(self.lockup_addr.get(), victim_addr, contract::address())?;
+        if confiscated.is_zero() {
+            return ok((caller_yield_taken, on_behalf_of_yield_taken));
+        }
+        // Now we send the confiscated amount and a small fee to the
+        // caller for being first.
+        if on_behalf_of_addr == fee_recipient_addr {
+            on_behalf_of_yield_taken +=
+                lockup_call::confiscate(self.lockup_addr.get(), victim_addr, on_behalf_of_addr)?;
+        } else {
+            let confiscate_fee = (confiscated * FEE_OTHER_CALLER_CONFISCATE_PCT) / FEE_SCALING;
+            let confiscate_no_fee = confiscated - confiscate_fee;
+            on_behalf_of_yield_taken += confiscate_no_fee;
+            erc20_call::transfer(STAKED_ARB_ADDR, on_behalf_of_addr, confiscate_no_fee)?;
+            erc20_call::transfer(STAKED_ARB_ADDR, fee_recipient_addr, confiscate_fee)?;
+            caller_yield_taken += confiscate_fee;
+            on_behalf_of_yield_taken += confiscate_no_fee;
+        }
+        ok((caller_yield_taken, on_behalf_of_yield_taken))
     }
 }

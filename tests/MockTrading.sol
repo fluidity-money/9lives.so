@@ -49,7 +49,7 @@ contract MockTrading is INineLivesTrading {
         feeRecipient_ = _feeRecipient;
     }
 
-    function mint227CF432(
+    function mint0D365EC6(
         bytes8 outcome,
         uint256 value,
         address recipient
@@ -61,7 +61,7 @@ contract MockTrading is INineLivesTrading {
         return value;
     }
 
-    function quote8168F301(
+    function quoteC0E17FC7(
         bytes8 /* outcome */,
         uint256 value
     ) external returns (uint256) {
@@ -69,22 +69,9 @@ contract MockTrading is INineLivesTrading {
         return value;
     }
 
-    function priceF3C364BC(bytes8 /* outcome */) external returns (uint256) {
+    function priceA827ED27(bytes8 /* outcome */) external returns (uint256) {
         ++counter_;
         return uint256(keccak256(abi.encodePacked(block.timestamp)));
-    }
-
-    function mintPermitB8D681AD(
-        bytes8 /* outcome */,
-        uint256 /* value */,
-        uint256 /* deadline */,
-        address /* recipient */,
-        uint8 /* v */,
-        bytes32 /* r */,
-        bytes32 /* s */
-    ) external returns (uint256) {
-        ++counter_;
-        revert("not implemented");
     }
 
     function shutdown() external {
@@ -97,7 +84,7 @@ contract MockTrading is INineLivesTrading {
         ++counter_;
     }
 
-    function payoff(
+    function payoff91FA8C2E(
         bytes8 outcome,
         uint256 amount,
         address recipient

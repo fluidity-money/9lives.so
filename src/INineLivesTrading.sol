@@ -24,7 +24,7 @@ interface INineLivesTrading {
      * @param value to spend of fUSDC.
      * @param recipient of the funds spent.
      */
-    function mint227CF432(
+    function mint0D365EC6(
         bytes8 outcome,
         uint256 value,
         address recipient
@@ -35,7 +35,7 @@ interface INineLivesTrading {
      * @param outcome to test for
      * @param value to test spending for
      */
-    function quote8168F301(
+    function quoteC0E17FC7(
         bytes8 outcome,
         uint256 value
     ) external returns (uint256);
@@ -44,27 +44,7 @@ interface INineLivesTrading {
      * @notice Get the price of an outcome in fUSDC.
      * @param outcome to test for
      */
-    function priceF3C364BC(bytes8 outcome) external returns (uint256);
-
-    /**
-     * @notice Mint some shares in exchange for fUSDC.
-     * @param outcome to bet on.
-     * @param value to spend of fUSDC.
-     * @param deadline to spend by.
-     * @param recipient of the funds spent.
-     * @param v to use for the permit signature
-     * @param r to use for permit.
-     * @param s to use for permit.
-     */
-    function mintPermitB8D681AD(
-        bytes8 outcome,
-        uint256 value,
-        uint256 deadline,
-        address recipient,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external returns (uint256);
+    function priceA827ED27(bytes8 outcome) external returns (uint256);
 
     /**
      * @notice Shutdown this contract by disabling associated pools. Compensates callers
@@ -85,7 +65,11 @@ interface INineLivesTrading {
      * @param amount of share to use for receiving the payoff.
      * @param recipient to send the winnings to.
      */
-    function payoff(bytes8 outcomeId, uint256 amount, address recipient) external returns (uint256);
+    function payoff91FA8C2E(
+        bytes8 outcomeId,
+        uint256 amount,
+        address recipient
+    ) external returns (uint256);
 
     /**
      * @notice Details that're available for this outcome.
