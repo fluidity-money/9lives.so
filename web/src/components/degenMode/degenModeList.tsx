@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import DegenModeListItem from "./degenModeListItem";
-import { Action } from "@/types";
+// import { useQuery } from "@tanstack/react-query";
+// import DegenModeListItem from "./degenModeListItem";
+// import { Action } from "@/types";
 
 export default function DegenModeList() {
-  const { data, isLoading } = useQuery<Action[]>({ queryKey: ["actions"] });
+  // const { data, isLoading } = useQuery<Action[]>({ queryKey: ["actions"] });
 
   return (
     <div className="flex flex-col gap-5 p-5">
@@ -17,7 +17,7 @@ export default function DegenModeList() {
       {/* {isLoading ? (
         <div>Loading</div>
       ) : (
-        <ul>
+        <ul className="flex flex-col gap-5">
           {data?.map((item) => (
             <li key={item.id}>
               <DegenModeListItem data={item} />

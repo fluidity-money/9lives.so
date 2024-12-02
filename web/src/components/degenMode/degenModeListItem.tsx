@@ -16,7 +16,7 @@ export default function DegenModeListItem({ data }: { data: Action }) {
     >
       <div
         className={combineClass(
-          "absolute inset-0 z-[1] animate-pulse2s",
+          "absolute inset-0 z-[1] animate-fade opacity-0",
           typeColorBgClass,
         )}
       />

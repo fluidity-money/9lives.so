@@ -58,7 +58,13 @@ const config: Config = {
           "1px 1px 0px 0px rgba(255, 255, 255, 0.25) inset, -1px -1px 0px 0px rgba(0, 0, 0, 0.25) inset;",
       },
       animation: {
-        pulse2s: "pulse 1s cubic-bezier(0.4, 1, 0.6, 0) 2s;",
+        fade: "fade linear 2s;",
+      },
+      keyframes: {
+        fade: {
+          "0%, 100%": { opacity: "0" },
+          "50%": { opacity: "1" },
+        },
       },
     },
   },
