@@ -56,6 +56,9 @@ const config: Config = {
           "-2px -2px 0px 0px rgba(102, 102, 102, 0.50) inset, 2px 2px 0px 0px rgba(255, 255, 255, 0.40) inset;",
         "9degen":
           "1px 1px 0px 0px rgba(255, 255, 255, 0.25) inset, -1px -1px 0px 0px rgba(0, 0, 0, 0.25) inset;",
+        "9aiButtonEnabled":
+          "1px 1px 0px 0px rgba(0, 0, 0, 0.25), -2px -2px 0px 0px rgba(68, 68, 68, 0.20) inset;",
+        "9aiButtonDisabled": "2px 2px 0px 0px rgba(68, 68, 68, 0.20) inset;",
       },
       animation: {
         fade: "fade linear 2s;",

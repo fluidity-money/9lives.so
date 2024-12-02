@@ -10,7 +10,7 @@ export default function DegenModeButton() {
       }
     >
       <span className="font-chicago text-xs underline">🐵 Degen Mode 🐵</span>
-      <Image alt="" src={RightCaretIcon} width={20} height={20} />
+      <Image alt="" src={RightCaretIcon} width={20} />
       <div className="absolute inset-x-0 -bottom-0.5 z-10 hidden h-0.5 w-full bg-9layer group-data-[open]:flex" />
     </PopoverButton>
   );

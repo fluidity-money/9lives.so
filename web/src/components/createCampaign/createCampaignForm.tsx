@@ -44,11 +44,12 @@ import SourceWrapper from "./createCampaignSettlementSource";
 import { useFormStore } from "@/stores/formStore";
 import useDebounce from "@/hooks/useDebounce";
 import { OutcomeType, SettlementType } from "@/types";
+import CreateCampaignFormName from "./form/formName";
 
+export const fieldClass = "flex flex-col gap-2.5";
+export const inputStyle = "shadow-9input border border-9black bg-9gray";
 export default function CreateCampaignForm() {
   const onSubmit = (data: any) => console.log(data);
-  const fieldClass = "flex flex-col gap-2.5";
-  const inputStyle = "shadow-9input border border-9black bg-9gray";
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("default");
   const [settlementType, setSettlementType] = useState<SettlementType>("url");
   const outcomeschema = z.object({
@@ -209,15 +210,11 @@ export default function CreateCampaignForm() {
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="absolute inset-0 z-10 bg-9layer/75" />
-      <Field className={fieldClass}>
-        <Label text="Campaign Name" required />
-        <Input
-          {...register("name")}
-          className={combineClass(errors.name && "border-2 border-red-500")}
-          placeholder="Name"
-        />
-        {errors.name && <ErrorInfo text={errors.name.message} />}
-      </Field>
+      <CreateCampaignFormName
+        register={register}
+        error={errors.name}
+        setValue={setValue}
+      />
       <Field className={fieldClass}>
         <Label text="Campaign Description" required />
         <Input
