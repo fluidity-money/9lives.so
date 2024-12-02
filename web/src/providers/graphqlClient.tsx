@@ -94,6 +94,12 @@ const createCampaign = graphql(`
   }
 `);
 
+const getAITitles = graphql(`
+  query AITitles {
+    suggestedHeadlines
+  }
+`);
+
 const graph9Lives = new GraphQLClient(appConfig.NEXT_PUBLIC_GRAPHQL_URL);
 const graphPoints = new GraphQLClient(appConfig.NEXT_PUBLIC_POINTS_URL);
 
@@ -116,3 +122,4 @@ export const requestCreateCampaign = (params: {
   telegram?: string;
   web?: string;
 }) => graph9Lives.request(createCampaign, params);
+export const requestGetAITitles = () => graph9Lives.request(getAITitles);

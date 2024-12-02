@@ -18,6 +18,7 @@ const documents = {
     "\n  query getLeaderboard($season: Int) {\n    leaderboards(product: \"9lives\", season: $season) {\n      id\n      items {\n        id\n        wallet\n        ranking\n        scoring\n      }\n    }\n  }\n": types.GetLeaderboardDocument,
     "\n  query getTotalUserCount {\n    productUserCount(product: \"9lives\")\n  }\n": types.GetTotalUserCountDocument,
     "\n  mutation createCampaign(\n    $name: String!\n    $desc: String!\n    $picture: String!\n    $outcomes: [OutcomeInput!]!\n    $seed: Int!\n    $creator: String!\n    $ending: Int!\n    $starting: Int!\n    $x: String\n    $telegram: String\n    $web: String\n  ) {\n    explainCampaign(\n      type: PUT\n      name: $name\n      description: $desc\n      picture: $picture\n      outcomes: $outcomes\n      ending: $ending\n      starting: $starting\n      creator: $creator\n      seed: $seed\n      x: $x\n      telegram: $telegram\n      web: $web\n    )\n  }\n": types.CreateCampaignDocument,
+    "\n  query AITitles {\n    suggestedHeadlines\n  }\n": types.AiTitlesDocument,
 };
 
 /**
@@ -54,6 +55,10 @@ export function graphql(source: "\n  query getTotalUserCount {\n    productUserC
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation createCampaign(\n    $name: String!\n    $desc: String!\n    $picture: String!\n    $outcomes: [OutcomeInput!]!\n    $seed: Int!\n    $creator: String!\n    $ending: Int!\n    $starting: Int!\n    $x: String\n    $telegram: String\n    $web: String\n  ) {\n    explainCampaign(\n      type: PUT\n      name: $name\n      description: $desc\n      picture: $picture\n      outcomes: $outcomes\n      ending: $ending\n      starting: $starting\n      creator: $creator\n      seed: $seed\n      x: $x\n      telegram: $telegram\n      web: $web\n    )\n  }\n"): (typeof documents)["\n  mutation createCampaign(\n    $name: String!\n    $desc: String!\n    $picture: String!\n    $outcomes: [OutcomeInput!]!\n    $seed: Int!\n    $creator: String!\n    $ending: Int!\n    $starting: Int!\n    $x: String\n    $telegram: String\n    $web: String\n  ) {\n    explainCampaign(\n      type: PUT\n      name: $name\n      description: $desc\n      picture: $picture\n      outcomes: $outcomes\n      ending: $ending\n      starting: $starting\n      creator: $creator\n      seed: $seed\n      x: $x\n      telegram: $telegram\n      web: $web\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AITitles {\n    suggestedHeadlines\n  }\n"): (typeof documents)["\n  query AITitles {\n    suggestedHeadlines\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
