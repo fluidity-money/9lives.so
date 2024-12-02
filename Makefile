@@ -37,7 +37,7 @@ build: \
 solidity: ${OUT_SHARE}
 
 ${OUT_SHARE}: $(shell find src tests -name '*.sol')
-	@forge build
+	@>&2 forge build
 
 contract-factory-1: contract-factory-1.wasm
 contract-factory-2: contract-factory-2.wasm

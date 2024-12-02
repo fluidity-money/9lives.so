@@ -7,6 +7,17 @@ use std::{
     ops::{ControlFlow, FromResidual, Try},
 };
 
+const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
+const ERR_ERC20_TRANSFER_PREAMBLE: [u8; 2] = [0x99, 0x01];
+const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];
+const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x02];
+const ERR_ERC20_TRANSFER_FROM_PREAMBLE: [u8; 2] = [0x99, 0x04];
+const ERR_ERC20_PERMIT_PREAMBLE: [u8; 2] = [0x99, 0x05];
+const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
+const ERR_LOCKED_ARB_PREAMBLE: [u8; 2] = [0x99, 0x07];
+const ERR_FACTORY_PREAMBLE: [u8; 2] = [0x99, 0x07];
+const ERR_INFRA_MARKET_PREAMBLE: [u8; 2] = [0x99, 0x08];
+
 #[cfg(feature = "testing")]
 use std::backtrace::Backtrace;
 
@@ -334,17 +345,6 @@ impl From<Error> for Vec<u8> {
             }
             x
         }
-
-        const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
-        const ERR_ERC20_TRANSFER_PREAMBLE: [u8; 2] = [0x99, 0x01];
-        const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];
-        const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x02];
-        const ERR_ERC20_TRANSFER_FROM_PREAMBLE: [u8; 2] = [0x99, 0x04];
-        const ERR_ERC20_PERMIT_PREAMBLE: [u8; 2] = [0x99, 0x05];
-        const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
-        const ERR_LOCKED_ARB_PREAMBLE: [u8; 2] = [0x99, 0x07];
-        const ERR_FACTORY_PREAMBLE: [u8; 2] = [0x99, 0x07];
-        const ERR_INFRA_MARKET_PREAMBLE: [u8; 2] = [0x99, 0x08];
 
         match val {
             Error::LongtailError(b) => ext(&ERR_LONGTAIL_PREAMBLE, &[&b]),

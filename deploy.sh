@@ -72,13 +72,16 @@ log "SPN_TRADING_AMM_PRICE_IMPL_ADDR=$SPN_TRADING_AMM_PRICE_IMPL_ADDR"
 json="$(./deploy-proxies.sh)"
 
 SPN_INFRA_MARKET_PROXY_ADDR="$(echo "$json" | jq -r .infraMarketAddr)"
-echo "SPN_INFRA_MARKET_PROXY_ADDR=$SPN_INFRA_MARKET_PROXY_ADDR"
+log "SPN_INFRA_MARKET_PROXY_ADDR=$SPN_INFRA_MARKET_PROXY_ADDR"
 
 SPN_LOCKUP_PROXY_ADDR="$(echo "$json" | jq -r .lockupAddr)"
-echo "SPN_LOCKUP_PROXY_ADDR=$SPN_LOCKUP_PROXY_ADDR"
+log "SPN_LOCKUP_PROXY_ADDR=$SPN_LOCKUP_PROXY_ADDR"
 
 SPN_FACTORY_PROXY_ADDR="$(echo "$json" | jq -r .factoryAddr)"
-echo "SPN_FACTORY_PROXY_ADDR=$SPN_FACTORY_PROXY_ADDR"
+log "SPN_FACTORY_PROXY_ADDR=$SPN_FACTORY_PROXY_ADDR"
+
+SPN_LOCKUP_TOKEN_PROXY_ADDR="$(echo "$json" | jq -r .lockupTokenProxyAddr)"
+log "SPN_LOCKUP_TOKEN_PROXY_ADDR=$SPN_LOCKUP_TOKEN_PROXY_ADDR"
 
 >&2 cat <<EOF
 |            Deployment name             |              Deployment address            |
@@ -102,8 +105,9 @@ echo "SPN_FACTORY_PROXY_ADDR=$SPN_FACTORY_PROXY_ADDR"
 | Lockup token implementation            | $SPN_LOCKUP_TOKEN_IMPL_ADDR |
 | Infrastructure market proxy            | $SPN_INFRA_MARKET_PROXY_ADDR |
 | Lockup proxy                           | $SPN_LOCKUP_PROXY_ADDR |
+| Lockup token proxy                     | $SPN_LOCKUP_TOKEN_PROXY_ADDR |
 | Factory proxy                          | $SPN_FACTORY_PROXY_ADDR |
 EOF
 
 cat <<EOF
-{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "lockupImplementation":"$SPN_LOCKUP_IMPL_ADDR", "optimisticInfraMarketImplementation":"$SPN_INFRA_MARKET_IMPL_ADDR", "tradingDpmMintImplementation":"$SPN_TRADING_DPM_MINT_IMPL_ADDR", "tradingDpmExtrasImplementation":"$SPN_TRADING_DPM_EXTRAS_IMPL_ADDR", "tradingDpmPriceImplementation":"$SPN_TRADING_DPM_PRICE_IMPL_ADDR", "tradingDpmQuotesImplementation":"$SPN_TRADING_DPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "lockupTokenImplementation":"$SPN_LOCKUP_TOKEN_IMPL_ADDR", "infrastructureMarketProxy":"$SPN_INFRA_MARKET_PROXY_ADDR", "lockupProxy":"$SPN_LOCKUP_PROXY_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR"}
+{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "lockupImplementation":"$SPN_LOCKUP_IMPL_ADDR", "optimisticInfraMarketImplementation":"$SPN_INFRA_MARKET_IMPL_ADDR", "tradingDpmMintImplementation":"$SPN_TRADING_DPM_MINT_IMPL_ADDR", "tradingDpmExtrasImplementation":"$SPN_TRADING_DPM_EXTRAS_IMPL_ADDR", "tradingDpmPriceImplementation":"$SPN_TRADING_DPM_PRICE_IMPL_ADDR", "tradingDpmQuotesImplementation":"$SPN_TRADING_DPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "lockupTokenImplementation":"$SPN_LOCKUP_TOKEN_IMPL_ADDR", "infrastructureMarketProxy":"$SPN_INFRA_MARKET_PROXY_ADDR", "lockupProxy":"$SPN_LOCKUP_PROXY_ADDR", "lockupProxyToken": "$SPN_FACTORY_PROXY_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR"}

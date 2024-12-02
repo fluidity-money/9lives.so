@@ -29,7 +29,6 @@ describe("End to end tests", async () => {
   const signer = new Wallet(DEPLOY_KEY, provider);
 
   const defaultAccountAddr = await signer.getAddress();
-  const emergencyCouncilAddr = defaultAccountAddr;
 
   // Deploy a test ERC20.
 
@@ -38,10 +37,15 @@ describe("End to end tests", async () => {
     TestERC20.bytecode,
     signer
   );
-  const erc20Deploy = await erc20Factory.deploy();
-  await erc20Deploy.waitForDeployment();
-  const fusdcAddress = await erc20Deploy.getAddress();
+  const shareDeploy = await erc20Factory.deploy();
+  await shareDeploy.waitForDeployment();
+  const fusdcAddress = await shareDeploy.getAddress();
   const fusdc = new Contract(fusdcAddress, TestERC20.abi, signer);
+
+  const stakedArbDeploy = await erc20Factory.deploy();
+  await stakedArbDeploy.waitForDeployment();
+  const stakedArbAddress = await stakedArbDeploy.getAddress();
+  const stakedArb = new Contract(stakedArbAddress, TestERC20.abi, signer);
 
   // Deploy a mocked out Longtail.
 
@@ -54,22 +58,26 @@ describe("End to end tests", async () => {
   await longtailDeploy.waitForDeployment();
   const longtailAddress = await longtailDeploy.getAddress();
 
-  // Do the actual building and deployment, pointing everything to the
-  // factory implementation instead of the proxy.
-
-  const { lockupAddr } = JSON.parse(execSync(
+  const {
+    lockupProxy: lockupProxyAddr,
+    lockupProxyToken: lockupProxyTokenAddr,
+    factoryProxy: factoryProxyAddr,
+    infrastructureMarketProxy: infraMarketProxyAddr,
+    shareImplementation
+  } = JSON.parse(execSync(
     "./build-and-deploy.sh",
     {
       env: {
-        ...process.env,
+        "PATH": process.env.PATH,
         "SPN_SUPERPOSITION_URL": RPC_URL,
         "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
         "SPN_AMM_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
+        "SPN_STAKED_ARB_ADDR": stakedArbAddress,
         "SPN_PROXY_ADMIN": defaultAccountAddr,
-        "SPN_EMERGENCY_COUNCIL": emergencyCouncilAddr
+        "SPN_EMERGENCY_COUNCIL": defaultAccountAddr
       },
-      stdio: ["ignore", "ignore", "ignore"]
+      stdio: ["ignore", "pipe", "ignore"]
     },
   ));
 
@@ -80,21 +88,26 @@ describe("End to end tests", async () => {
   );
 
   assert.equal(
-    erc20Impl.toLowerCase(),
+    shareImplementation.toLowerCase(),
     (await factoryProxy.erc20Impl()).toLowerCase()
   );
 
   const outcome1 = "0x1e9e51837f3ea6ea";
   const outcome2 = "0x1e9e51837f3ea6eb";
 
+  const timestamp = 100;
+
+  // We set both outcomes to $1 for the price.
   const outcomes = [
     {
       identifier: outcome1,
-      amount: 1e6
+      sqrtPrice: 79228162514264337593543950336n,
+      name: "Shahmeer"
     },
     {
       identifier: outcome2,
-      amount: 1e6
+      sqrtPrice: 79228162514264337593543950336n,
+      name: "Ivan"
     },
   ];
 
@@ -104,8 +117,25 @@ describe("End to end tests", async () => {
 
   await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
 
-  const tradingAddr = await factoryProxy.newTradingC11AAA3B.staticCall(outcomes);
-  await (await factoryProxy.newTradingC11AAA3B(outcomes)).wait();
+  const documentationHash =
+    "0x482762a5bf88a80830135ebdf2bb2abca30d3ebe991712570faf4b85e5e27f1d";
+
+  const tradingAddr = await factoryProxy.newTrading09393DA8.staticCall(
+      outcomes,
+      infraMarketProxyAddr,
+      timestamp + 10,   // Time start
+      timestamp + 100,  // Time end
+      documentationHash,
+      defaultAccountAddr // Fee recipient
+  );
+  await (await factoryProxy.newTrading09393DA8(
+      outcomes,
+      infraMarketProxyAddr,
+      timestamp + 10,   // Time start
+      timestamp + 100,  // Time end
+      documentationHash,
+      defaultAccountAddr // Fee recipient
+  )).wait();
 
   const trading = new Contract(tradingAddr, Trading.abi, signer);
 
