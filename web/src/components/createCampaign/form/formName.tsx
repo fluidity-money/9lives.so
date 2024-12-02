@@ -16,8 +16,6 @@ import AIInactive from "#/icons/ai-sad.svg";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import useAiTitles from "@/hooks/useAiTitles";
-import { set } from "zod";
-
 export default function CreateCampaignFormName({
   register,
   setValue,
@@ -34,7 +32,6 @@ export default function CreateCampaignFormName({
     setSelectedAITitle("");
     setValue("name", "");
   }, [aiEnabled]);
-
   return (
     <Field className={fieldClass}>
       <div className="flex items-center justify-between">
