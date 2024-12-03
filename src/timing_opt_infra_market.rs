@@ -66,3 +66,23 @@ define_period_checker!(
     WhingedTimeUnset,
     2
 );
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod test {
+    use proptest::prelude::*;
+    use super::*;
+
+    proptest! {
+        #[test]
+        fn test_are_we_in_two_week_period(start in 0..u64::MAX, secs in 1..u64::MAX) {
+            let start = U64::from(start);
+            let two_weeks = U64::from(1209600);
+            let secs_ = U64::from(secs);
+            let should_pass = secs_ > start && two_weeks > secs_ - start;
+            assert!(
+                should_pass && are_we_in_calling_period(start, secs).unwrap(),
+                "two weeks: start: {start}, secs: {secs_}"
+            );
+        }
+    }
+}

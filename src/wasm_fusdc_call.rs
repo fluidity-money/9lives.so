@@ -10,7 +10,7 @@ use crate::{
 };
 
 pub fn take_from_sender(_amount: U256) -> Result<(), Error> {
-    take_from_funder(msg::sender(), _amount)
+    take_from_funder(msg_sender(), _amount)
 }
 
 pub fn take_from_funder(funder: Address, amount: U256) -> Result<(), Error> {

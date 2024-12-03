@@ -1,8 +1,8 @@
-use stylus_sdk::{alloy_primitives::*, contract, evm, msg};
+use stylus_sdk::{alloy_primitives::*, contract, evm};
 
-use crate::error::*;
-
-use crate::{events, factory_call, immutables::*, proxy, utils::block_timestamp};
+use crate::{
+    error::*, events, factory_call, immutables::*, proxy, utils::block_timestamp, utils::msg_sender,
+};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
@@ -45,7 +45,7 @@ impl StorageTrading {
             self.outcome_list.push(outcome_id);
         }
         // We assume that the sender is the factory.
-        self.factory_addr.set(msg::sender());
+        self.factory_addr.set(msg_sender());
         self.share_impl.set(share_impl);
         self.fee_recipient.set(fee_recipient);
         self.time_start.set(U64::from(time_start));
@@ -76,7 +76,7 @@ impl StorageTrading {
 
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> R<()> {
         let oracle_addr = self.oracle.get();
-        assert_or!(msg::sender() == oracle_addr, Error::NotOracle);
+        assert_or!(msg_sender() == oracle_addr, Error::NotOracle);
         assert_or!(self.when_decided.get().is_zero(), Error::NotTradingContract);
         // Set the outcome that's winning as the winner!
         self.winner.set(outcome);

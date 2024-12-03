@@ -1,6 +1,6 @@
-use stylus_sdk::{evm, alloy_primitives::*, contract, msg};
+use stylus_sdk::{evm, alloy_primitives::*, contract};
 
-use crate::{erc20_call, error::Error, fusdc_call, immutables::*, maths};
+use crate::{utils::msg_sender, erc20_call, error::Error, fusdc_call, immutables::*, maths};
 
 pub use crate::{nineliveslockedarb_call, proxy, storage_lockup::*, events};
 
@@ -35,7 +35,7 @@ impl StorageLockup {
         let debt_id = self.debt_id_counter.get();
         self.debt_id_counter.set(debt_id + U256::from(1));
         // Lock up the amounts for the user, giving them back some Locked ARB.
-        erc20_call::transfer_from(STAKED_ARB_ADDR, msg::sender(), contract::address(), amt)?;
+        erc20_call::transfer_from(STAKED_ARB_ADDR, msg_sender(), contract::address(), amt)?;
         let voting_power = maths::locked_arb_amt(amt)?;
         self.locked_initial.setter(debt_id).set(amt);
         self.locked_voting_power.setter(debt_id).set(voting_power);
@@ -56,7 +56,7 @@ impl StorageLockup {
 
     pub fn slash(&mut self, addr: Address) -> Result<(), Error> {
         assert_or!(
-            msg::sender() == self.infra_market_addr.get(),
+            msg_sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
         let debt_ids_len = self.locked_debt_ids.getter(addr).len();
@@ -73,7 +73,7 @@ impl StorageLockup {
 
     pub fn confiscate(&mut self, victim: Address, recipient: Address) -> Result<U256, Error> {
         assert_or!(
-            msg::sender() == self.infra_market_addr.get(),
+            msg_sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
         let debt_ids_len = self.locked_debt_ids.getter(victim).len();
@@ -89,7 +89,7 @@ impl StorageLockup {
 
     pub fn freeze(&mut self, spender: Address, until: u64) -> Result<(), Error> {
         assert_or!(
-            msg::sender() == self.infra_market_addr.get(),
+            msg_sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
         // Make sure that their deadline is as late as possible.

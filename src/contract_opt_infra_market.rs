@@ -1,8 +1,9 @@
-use stylus_sdk::{alloy_primitives::*, contract, evm, msg};
+use stylus_sdk::{alloy_primitives::*, contract, evm, prelude::AddressVM};
 
 use crate::{
     erc20_call, error::*, events, fees::*, fusdc_call, immutables::*, lockup_call, maths,
     nineliveslockedarb_call, timing_opt_infra_market::*, trading_call, utils::block_timestamp,
+    utils::msg_sender,
 };
 
 pub use crate::storage_opt_infra_market::*;
@@ -29,23 +30,34 @@ impl StorageOptimisticInfraMarket {
         ok(())
     }
 
-    /// Register a campaign. We take a small finders fee from the user who created this campaign.
+    /// Register a campaign. We take a small finders fee from the user who
+    /// created this campaign. This could be feasibly registered to a
+    /// non-existent trading address, to a address that could be created in
+    /// the future. It's not possible to grief the factory/trading address as
+    /// during setup it would attempt to register with this contract, and any
+    /// client should check if the factory was registered with the trading
+    /// address before voting.This could be useful in some contexts, like
+    /// receiving validation that an idea is taken seriously, and the address
+    /// derived using some seeds. It's our hope that there are no conflicts in
+    /// practice, hopefully this isn't likely with the seeds system.
     pub fn register(
         &mut self,
         trading_addr: Address,
         incentive_sender: Address,
         desc: FixedBytes<32>,
         launch_ts: u64,
-    ) -> R<()> {
+    ) -> R<U256> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
             self.campaign_call_begins.get(trading_addr).is_zero(),
             Error::AlreadyRegistered
         );
         assert_or!(
-            msg::sender() == self.factory_addr.get(),
+            msg_sender() == self.factory_addr.get(),
             Error::NotFactoryContract
         );
+        assert_or!(!trading_addr.is_zero(), Error::ZeroTradingAddr);
+        assert_or!(!desc.is_zero(), Error::ZeroDesc);
         self.campaign_call_begins
             .setter(trading_addr)
             .set(U64::from(launch_ts));
@@ -57,7 +69,7 @@ impl StorageOptimisticInfraMarket {
             incentiveSender: incentive_sender,
             tradingAddr: trading_addr,
         });
-        ok(())
+        ok(INCENTIVE_AMT_BASE)
     }
 
     // Transition this function from being in the state of the campaign being
@@ -65,12 +77,20 @@ impl StorageOptimisticInfraMarket {
     // the call that a user made here. Anyone can call this function, and
     // if the caller provided the correct outcome (no-one challenges it, or
     // if it's challenged, if they end up being the correct settor of the outcome).
+    // A user here could feasibly lie that an outcome exists, but there'd be no
+    // point, as they'd simply forfeit their bond for no reason (as everyone,
+    // if the oracle functions correctly conceptually, would crush them).
     pub fn call(
         &mut self,
         trading_addr: Address,
         winner: FixedBytes<8>,
         incentive_recipient: Address,
     ) -> R<()> {
+        assert_or!(
+            !self.campaign_call_begins.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
+        dbg!(block_timestamp(), self.campaign_call_begins.get(trading_addr));
         assert_or!(
             are_we_in_calling_period(
                 self.campaign_call_begins.get(trading_addr),
@@ -83,7 +103,7 @@ impl StorageOptimisticInfraMarket {
             Error::CampaignAlreadyCalled
         );
         let incentive_recipient = if incentive_recipient.is_zero() {
-            msg::sender()
+            msg_sender()
         } else {
             incentive_recipient
         };
@@ -109,6 +129,10 @@ impl StorageOptimisticInfraMarket {
     /// the amount of seconds that have gone by so far until the end.
     pub fn predict(&mut self, trading_addr: Address, winner: FixedBytes<8>, amt: U256) -> R<()> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
+        assert_or!(
+            !self.campaign_call_begins.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
         assert_or!(!winner.is_zero(), Error::MustContainOutcomes);
         // We need the seconds since the whinge was recorded so we can
         // determine voting power.
@@ -126,14 +150,14 @@ impl StorageOptimisticInfraMarket {
             )?,
             Error::PredictingNotStarted
         );
-        let cur_user_arb_amt = lockup_call::staked_arb_bal(self.lockup_addr.get(), msg::sender())?;
+        let cur_user_arb_amt = lockup_call::staked_arb_bal(self.lockup_addr.get(), msg_sender())?;
         self.user_global_vested_arb
             .setter(trading_addr)
-            .setter(msg::sender())
+            .setter(msg_sender())
             .set(cur_user_arb_amt);
         let caller_past_votes = nineliveslockedarb_call::get_past_votes(
             self.locked_arb_token_addr.get(),
-            msg::sender(),
+            msg_sender(),
             U256::from(self.campaign_call_begins.get(trading_addr)),
         )?;
         let voting_power = maths::infra_voting_power(amt, secs_since_whinge)?;
@@ -143,7 +167,7 @@ impl StorageOptimisticInfraMarket {
         let user_vested_power = self
             .user_global_vested_power
             .getter(trading_addr)
-            .get(msg::sender());
+            .get(msg_sender());
         let extra_user_vested_power = user_vested_power
             .checked_add(voting_power)
             .ok_or(Error::CheckedAddOverflow)?;
@@ -154,7 +178,7 @@ impl StorageOptimisticInfraMarket {
         );
         self.user_global_vested_power
             .setter(trading_addr)
-            .setter(msg::sender())
+            .setter(msg_sender())
             .set(extra_user_vested_power);
         // Update the campaign's vested power to include the amount the
         // user just vested + what's there already.
@@ -172,11 +196,11 @@ impl StorageOptimisticInfraMarket {
             .user_campaign_vested_power
             .getter(trading_addr)
             .getter(winner)
-            .get(msg::sender());
+            .get(msg_sender());
         self.user_campaign_vested_power
             .setter(trading_addr)
             .setter(winner)
-            .setter(msg::sender())
+            .setter(msg_sender())
             .set(user_campaign_vested_power + voting_power);
         let existing_global_power_vested = self
             .campaign_global_power_vested
@@ -190,12 +214,12 @@ impl StorageOptimisticInfraMarket {
         // for the time of this interaction + a week.
         lockup_call::freeze(
             self.lockup_addr.get(),
-            msg::sender(),
+            msg_sender(),
             U256::from(block_timestamp() + A_WEEK_SECS),
         )?;
         evm::log(events::UserPredicted {
             trading: trading_addr,
-            predictor: msg::sender(),
+            predictor: msg_sender(),
             tokenAmount: amt,
             powerAmount: voting_power,
             outcome: winner,
@@ -224,6 +248,10 @@ impl StorageOptimisticInfraMarket {
     /// This will set the campaign_winner storage field to what was declared by the caller.
     pub fn close(&mut self, trading_addr: Address, fee_recipient: Address) -> R<U256> {
         assert_or!(
+            !self.campaign_call_begins.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
+        assert_or!(
             !are_we_in_calling_period(
                 self.campaign_when_called.get(trading_addr),
                 block_timestamp()
@@ -240,7 +268,7 @@ impl StorageOptimisticInfraMarket {
             Error::WinnerAlreadyDeclared
         );
         let fee_recipient = if fee_recipient.is_zero() {
-            msg::sender()
+            msg_sender()
         } else {
             fee_recipient
         };
@@ -281,10 +309,21 @@ impl StorageOptimisticInfraMarket {
         self.campaign_winner
             .setter(trading_addr)
             .set(campaign_winner);
-        // Since no-one will call the sweep stage, we're going to
-        // contract we're attached to to the outcome.
-        trading_call::decide(trading_addr, campaign_winner)?;
-        // TODO: send event
+        // Since no-one will call the sweep stage, we're going to contract we're
+        // attached to to the outcome. We're going to check if the contract has
+        // code before calling this however as a precaution.
+        evm::log(events::InfraMarketClosed {
+            incentiveRecipient: fee_recipient,
+            tradingAddr: trading_addr,
+            winner: campaign_winner,
+        });
+        if trading_addr.has_code() {
+            trading_call::decide(trading_addr, campaign_winner)?;
+            evm::log(events::InfraMarketDecided {
+                tradingAddr: trading_addr,
+                winner: campaign_winner,
+            });
+        }
         ok(fees_earned)
     }
 
@@ -298,6 +337,10 @@ impl StorageOptimisticInfraMarket {
         preferred_outcome: FixedBytes<8>,
         bond_recipient: Address,
     ) -> R<()> {
+        assert_or!(
+            !self.campaign_call_begins.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
         assert_or!(
             are_we_in_whinging_period(
                 self.campaign_when_called.get(trading_addr),
@@ -359,7 +402,7 @@ impl StorageOptimisticInfraMarket {
     /// That situation is tolerable, as that amount would go to governance
     /// potentially, after being taken by another user. Since it's a good idea
     /// for users to call this on behalf of other users based on their financial
-    /// position, then we reward msg::sender with a small fee of what the
+    /// position, then we reward msg_sender with a small fee of what the
     /// fee recipient would receive in the form of a fee.
     /// Returns the caller's yield taken (for acting as an agent for another user,
     /// and for calling sweep), and the amount the fee recipient would get.
@@ -372,6 +415,10 @@ impl StorageOptimisticInfraMarket {
         fee_recipient_addr: Address,
     ) -> R<(U256, U256)> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
+        assert_or!(
+            !self.campaign_call_begins.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
         assert_or!(
             are_we_in_sweeping_period(
                 self.campaign_when_whinged.get(trading_addr),

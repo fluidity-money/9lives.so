@@ -7,7 +7,7 @@ interface IInfraMarket {
         address incentiveSender,
         bytes32 desc,
         uint64 launchTs
-    ) external;
+    ) external returns (uint256);
 
     function predict(address trading, bytes8 winner, uint256 amount) external;
     function winner(address trading) external view returns (bytes8 winnerId);

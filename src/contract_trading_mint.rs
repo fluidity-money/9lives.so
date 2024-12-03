@@ -1,6 +1,6 @@
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
-    contract, evm, msg,
+    contract, evm,
 };
 
 use crate::{
@@ -11,6 +11,7 @@ use crate::{
     fusdc_call,
     immutables::*,
     maths, proxy, share_call,
+    utils::msg_sender,
 };
 
 #[cfg(feature = "trading-backend-dpm")]
@@ -51,9 +52,9 @@ impl StorageTrading {
         );
         // Start to burn their share of the supply to convert to a payoff amount.
         // Take the max of what they asked.
-        let share_bal = U256::min(share_call::balance_of(share_addr, msg::sender())?, amt);
+        let share_bal = U256::min(share_call::balance_of(share_addr, msg_sender())?, amt);
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
-        share_call::burn(share_addr, msg::sender(), share_bal)?;
+        share_call::burn(share_addr, msg_sender(), share_bal)?;
         #[cfg(feature = "trading-backend-dpm")]
         let fusdc = fusdc_decimal_to_u256(maths::dpm_payoff(
             share_u256_to_decimal(share_bal)?,
@@ -70,7 +71,7 @@ impl StorageTrading {
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
             sharesSpent: share_bal,
-            spender: msg::sender(),
+            spender: msg_sender(),
             recipient,
             fusdcReceived: fusdc,
         });
@@ -142,7 +143,7 @@ impl StorageTrading {
         assert_or!(value > U256::ZERO, Error::ZeroAmount);
 
         let recipient = if recipient.is_zero() {
-            msg::sender()
+            msg_sender()
         } else {
             recipient
         };
@@ -213,7 +214,7 @@ impl StorageTrading {
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,
-            spender: msg::sender(),
+            spender: msg_sender(),
             recipient,
             fusdcSpent: value,
         });

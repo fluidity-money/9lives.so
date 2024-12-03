@@ -17,6 +17,7 @@ sol! {
 
 }
 
+// Call register on the infra market, disregarding the return value.
 pub fn register(
     infra_market: Address,
     trading: Address,

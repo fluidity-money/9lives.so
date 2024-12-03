@@ -331,7 +331,17 @@ pub enum Error {
     /// It's not past the deadline for this contract!
     NotPastDeadline,
 
-    FuckShit,
+    // 0x4b
+    /// A zero description was passed!
+    ZeroDesc,
+
+    // 0x4c
+    /// A zero trading address was passed!
+    ZeroTradingAddr,
+
+    // 0x4d
+    /// This contract was not registered!
+    NotRegistered,
 }
 
 /// Error that will unwrap if it fails instead of propagating to the toplevel.

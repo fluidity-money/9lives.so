@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::HashMap, ptr};
 
-use stylus_sdk::alloy_primitives::U256;
+use stylus_sdk::alloy_primitives::{Address, U256};
 
 const WORD_BYTES: usize = 32;
 pub type Word = [u8; WORD_BYTES];
@@ -8,6 +8,7 @@ pub type Word = [u8; WORD_BYTES];
 thread_local! {
     static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
     static CUR_TIME: RefCell<u64> = RefCell::new(0);
+    static MSG_SENDER: RefCell<Address> = RefCell::new(Address::ZERO);
 }
 
 unsafe fn read_word(key: *const u8) -> Word {
@@ -57,8 +58,12 @@ pub fn block_timestamp() -> u64 {
     CUR_TIME.with(|v| v.clone().into_inner())
 }
 
-pub fn add_time(secs: u64) {
-    CUR_TIME.with(|v| { *v.borrow_mut() += secs });
+pub fn ts_add_time(secs: u64) {
+    CUR_TIME.with(|v| *v.borrow_mut() += secs);
+}
+
+pub fn set_block_timestamp(t: u64) {
+    CUR_TIME.with(|v| *v.borrow_mut() = t);
 }
 
 #[no_mangle]
@@ -86,12 +91,22 @@ pub unsafe extern "C" fn storage_load_bytes32(key: *const u8, out: *mut u8) {
 #[no_mangle]
 pub unsafe extern "C" fn msg_sender(_ptr: *mut u8) {}
 
+pub fn get_msg_sender() -> Address {
+    MSG_SENDER.with(|v| v.clone().into_inner())
+}
+
+pub fn set_msg_sender(a: Address) {
+    MSG_SENDER.with(|v| *v.borrow_mut() = a)
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}
 
 #[allow(dead_code)]
 pub fn with_storage<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {
     STORAGE.with(|s| s.borrow_mut().clear());
+    set_msg_sender(Address::ZERO);
+    set_block_timestamp(0);
     f(&mut P::new(U256::ZERO, 0))
 }
 

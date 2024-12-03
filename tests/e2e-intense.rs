@@ -1,11 +1,11 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
-use stylus_sdk::{
-    alloy_primitives::{FixedBytes, U256},
-    msg,
-};
+use stylus_sdk::alloy_primitives::{FixedBytes, U256, Address};
 
-use lib9lives::{host, utils::block_timestamp};
+use lib9lives::{
+    host,
+    utils::{block_timestamp, msg_sender},
+};
 
 use proptest::{
     collection::{self, VecStrategy},
@@ -72,10 +72,11 @@ proptest! {
             let outcomes = vec![outcome_1_id, outcome_2_id];
             c.ctor(
                 outcomes,
-                msg::sender(),
+                msg_sender(),
                 block_timestamp() + 1,
                 block_timestamp() + 2,
-                msg::sender()
+                msg_sender(),
+                Address::ZERO
             )
                 .unwrap();
             let mut fusdc_vested = U256::ZERO;
@@ -90,7 +91,7 @@ proptest! {
                     let s = c.mint_0_D_365_E_C_6(
                         if outcome == Outcome::Outcome1 { outcome_1_id } else { outcome_2_id },
                         U256::from(fusdc_amt),
-                        msg::sender()
+                        msg_sender()
                     )
                         .expect(&format!("err, fusdc: {}", fusdc_amt));
                     if outcome == Outcome::Outcome1 {
@@ -110,7 +111,7 @@ proptest! {
                 (outcome_2_id, share_2_received)
             };
             c.decide(outcome_winner).unwrap();
-            let ret_amt = c.payoff_91_F_A_8_C_2_E(outcome_winner, winning_amt, msg::sender()).unwrap();
+            let ret_amt = c.payoff_91_F_A_8_C_2_E(outcome_winner, winning_amt, msg_sender()).unwrap();
             assert!(
                 ret_amt <= fusdc_vested,
                 "ret_amt: {ret_amt} <= fusdc_vested: {fusdc_vested}, diff: {}",

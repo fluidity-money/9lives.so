@@ -1,8 +1,11 @@
 use stylus_sdk::{alloy_primitives::*, storage::*};
 
 #[cfg_attr(
+    any(feature = "contract-infrastructure-market", feature = "testing"),
+    stylus_sdk::prelude::storage
+)]
+#[cfg_attr(
     feature = "contract-infrastructure-market",
-    stylus_sdk::prelude::storage,
     stylus_sdk::prelude::entrypoint
 )]
 pub struct StorageOptimisticInfraMarket {

@@ -31,9 +31,25 @@ contract HelperFactory {
         FUSDC.approve(address(INFRA_MARKET), type(uint256).max);
     }
 
+    function createWithInfraMarket(
+        FactoryOutcome[] calldata outcomes,
+        uint64 timeEnding,
+        bytes32 documentation,
+        address feeRecipient
+    ) public returns (address tradingAddr) {
+        return FACTORY.newTrading09393DA8(
+            outcomes,
+            INFRA_MARKET,
+            uint64(block.timestamp + 1),
+            timeEnding,
+            documentation,
+            feeRecipient
+        );
+    }
+
     // Create a campaign with an infra market, doing all the setup legwork that's needed
     // with approvals stemming from a single signature.
-    function createWithInfraMarket(
+    function createWithInfraMarketPermit(
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
         bytes32 documentation,
@@ -46,13 +62,6 @@ contract HelperFactory {
         // We need to take some money from the sender for all the setup costs we're expecting.
         // This should be the (number of outcomes * 1e6) + 10e6
         FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6) + 1e7, deadline, v, r, s);
-        return FACTORY.newTrading09393DA8(
-            outcomes,
-            INFRA_MARKET,
-            uint64(block.timestamp + 1),
-            timeEnding,
-            documentation,
-            feeRecipient
-        );
+        return createWithInfraMarket(outcomes, timeEnding, documentation, feeRecipient);
     }
 }

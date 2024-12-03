@@ -3,12 +3,13 @@
 
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
-    evm, msg,
+    evm,
 };
 
 use crate::{
     amm_call, error::*, events, fusdc_call, immutables::*, opt_infra_market_call, proxy,
     share_call, trading_call,
+    utils::msg_sender,
 };
 
 pub use crate::storage_factory::*;
@@ -127,7 +128,7 @@ impl StorageFactory {
             opt_infra_market_call::register(
                 self.infra_market.get(),
                 trading_addr,
-                msg::sender(),
+                msg_sender(),
                 documentation,
                 time_ending,
             )?;

@@ -2,9 +2,12 @@
 
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
 
-use lib9lives::{decimal::MAX_DECIMAL, error::Error, host, utils::block_timestamp};
-
-use stylus_sdk::msg;
+use lib9lives::{
+    decimal::MAX_DECIMAL,
+    error::Error,
+    host,
+    utils::{block_timestamp, msg_sender},
+};
 
 use proptest::prelude::*;
 
@@ -23,7 +26,8 @@ proptest! {
                 Address::from([1_u8; 20]),
                 block_timestamp() + 1,
                 block_timestamp() + 2,
-                msg::sender()
+                msg_sender(),
+                Address::ZERO
             )
             .unwrap();
 

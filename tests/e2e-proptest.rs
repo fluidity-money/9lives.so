@@ -4,10 +4,9 @@ use proptest::prelude::*;
 
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes, U256},
-    msg,
 };
 
-use lib9lives::{utils::block_timestamp, host};
+use lib9lives::{utils::{block_timestamp, msg_sender}, host};
 
 #[test]
 fn test_factory_new_trading() {
@@ -21,7 +20,7 @@ fn test_factory_new_trading() {
                 (id, U256::from(1e6), String::new()),
                 (id2, U256::from(1e6), String::new()),
             ],
-            msg::sender(), // This is needed to have the same as the infra market until our scaffolding is better.
+            msg_sender(), // This is needed to have the same as the infra market until our scaffolding is better.
             block_timestamp(),
             block_timestamp() + 100,
             FixedBytes::ZERO,
@@ -49,6 +48,7 @@ fn test_unit_1() {
             block_timestamp() + 1,
             block_timestamp() + 2,
             Address::ZERO,
+            Address::ZERO
         )
         .unwrap();
         dbg!(c
@@ -77,7 +77,8 @@ proptest! {
                 outcomes.to_vec(),
                 Address::ZERO,
                 block_timestamp(),
-                block_timestamp() + 100, msg::sender()
+                block_timestamp() + 100, msg_sender(),
+                Address::ZERO
             )
                 .unwrap();
             c

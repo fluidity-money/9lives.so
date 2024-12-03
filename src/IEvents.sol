@@ -58,4 +58,15 @@ interface IEvents {
         uint256 powerAmount,
         bytes8 outcome
     );
+
+    event InfraMarketClosed(
+        address indexed incentiveRecipient,
+        address indexed tradingAddr,
+        bytes8 indexed winner
+    );
+
+    event InfraMarketDecided(
+        address indexed tradingAddr,
+        bytes8 indexed winner
+    );
 }

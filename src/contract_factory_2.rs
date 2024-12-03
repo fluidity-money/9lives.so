@@ -1,8 +1,8 @@
-use stylus_sdk::{alloy_primitives::*, contract, msg};
+use stylus_sdk::{alloy_primitives::*, contract};
 
 use crate::{amm_call, error::*, immutables::*, proxy};
 
-pub use crate::storage_factory::*;
+pub use crate::{utils::msg_sender, storage_factory::*};
 
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {
@@ -94,7 +94,7 @@ impl StorageFactory {
         // of created contracts. This check should be safe since the trading
         // backend enum is only ever 1 or 2.
         assert_or!(
-            !self.trading_backends.get(msg::sender()).is_zero(),
+            !self.trading_backends.get(msg_sender()).is_zero(),
             Error::NotTradingContract
         );
         // Start to derive the outcomes that were given to find the share addresses.
@@ -102,7 +102,7 @@ impl StorageFactory {
         for outcome_id in outcomes {
             amm_call::pause_pool(proxy::get_share_addr(
                 contract::address(),   // Factory address.
-                msg::sender(),         // Trading address (this is the caller).
+                msg_sender(),         // Trading address (this is the caller).
                 self.share_impl.get(), // The share address.
                 outcome_id,            // The outcome that should be banned from continuing.
             ))?;
