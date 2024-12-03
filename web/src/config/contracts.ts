@@ -5,6 +5,7 @@ import thirdweb from "@/config/thirdweb";
 import factoryAbi from "./abi/factory";
 import ERC20Abi from "./abi/erc20";
 import ammAbi from "./abi/amm";
+import helperAbi from "./abi/helper";
 import clientEnv from "./clientEnv";
 import lensAbi from "./abi/lens";
 
@@ -28,6 +29,7 @@ const allContractSchema = z.object({
   factory: contractSchema,
   amm: contractSchema,
   lens: contractSchema,
+  helper: contractSchema,
 });
 
 const fusdc = getContract({
@@ -54,7 +56,12 @@ const lens = getContract({
   chain: arbitrum,
   client: thirdweb.client,
 });
-
+const helper = getContract({
+  abi: helperAbi,
+  address: clientEnv.NEXT_PUBLIC_HELPER_ADDR,
+  chain: arbitrum,
+  client: thirdweb.client,
+});
 const contractValidation = allContractSchema.safeParse({
   decimals: {
     fusdc: 6,
@@ -64,6 +71,7 @@ const contractValidation = allContractSchema.safeParse({
   factory,
   amm,
   lens,
+  helper,
 });
 
 type ContractsType = z.infer<typeof allContractSchema>;
@@ -79,4 +87,5 @@ export default contractValidation.data as {
   factory: typeof factory;
   amm: typeof amm;
   lens: typeof lens;
+  helper: typeof helper;
 };
