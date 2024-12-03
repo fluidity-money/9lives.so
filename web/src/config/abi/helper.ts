@@ -142,5 +142,5 @@ const helperAbi = [
     ],
     stateMutability: "nonpayable",
   },
-];
+] as const;
 export default helperAbi;
