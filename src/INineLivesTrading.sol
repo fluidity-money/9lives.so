@@ -20,15 +20,17 @@ interface INineLivesTrading {
     ) external;
 
     /**
-     * @notice Mint some shares in exchange for fUSDC.
-     * @param outcome to bet on.
-     * @param value to spend of fUSDC.
-     * @param recipient of the funds spent.
+     * @notice Mint some shares in exchange for fUSDC. Optionally branches to permit or a
+     * classic approval based on the deadline argument (if set to 0, assumes approval)
      */
-    function mint0D365EC6(
+    function mintPermitB8D681AD(
         bytes8 outcome,
         uint256 value,
-        address recipient
+        address recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
     ) external returns (uint256);
 
     /**

@@ -46,9 +46,10 @@ interface IEvents {
 
     /* INFRASTRUCTURE MARKET */
 
-    event MarketCreated(
+    event MarketCreated2(
         address indexed incentiveSender,
-        address indexed tradingAddr
+        address indexed tradingAddr,
+        bytes8 indexed defaultWinner
     );
 
     event UserPredicted(

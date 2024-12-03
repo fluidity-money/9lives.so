@@ -8,7 +8,7 @@ use lib9lives::{utils::{block_timestamp, msg_sender}, host};
 #[cfg(feature = "trading-backend-dpm")]
 fn test_e2e_mint() {
     use lib9lives::storage_trading::StorageTrading;
-    host::with_storage::<_, StorageTrading, _>(|c| {
+    host::with_contract::<_, StorageTrading, _>(|c| {
         let outcome_1 = fixed_bytes!("0541d76af67ad076");
         c.ctor(
             vec![outcome_1, fixed_bytes!("3be0d8814450a582")],

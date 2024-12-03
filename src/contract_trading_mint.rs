@@ -24,14 +24,23 @@ pub use crate::storage_trading::*;
 
 #[cfg_attr(feature = "contract-trading-mint", stylus_sdk::prelude::public)]
 impl StorageTrading {
+    #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn mint_0_D_365_E_C_6(
+    pub fn mint_permit_B8_D_681_A_D(
         &mut self,
         outcome: FixedBytes<8>,
         value: U256,
         recipient: Address,
+        deadline: U256,
+        v: u8,
+        r: FixedBytes<32>,
+        s: FixedBytes<32>,
     ) -> R<U256> {
-        fusdc_call::take_from_sender(value)?;
+        if deadline.is_zero() {
+            fusdc_call::take_from_sender(value)?;
+        } else {
+            fusdc_call::take_from_sender_permit(value, deadline, v, r, s)?;
+        }
         self.internal_mint(outcome, value, recipient)
     }
 

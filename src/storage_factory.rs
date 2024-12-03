@@ -33,6 +33,9 @@ pub struct StorageFactory {
     /// migrations.
     pub version: StorageU8,
 
+    /// The operator of this contract (able to replace the implementations).
+    pub operator: StorageAddress,
+
     /// Is the contract currently in an enabled state (not an emergency)?
     pub enabled: StorageBool,
 

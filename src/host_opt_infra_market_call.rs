@@ -9,6 +9,7 @@ pub fn register(
     _incentive_sender: Address,
     _desc: FixedBytes<32>,
     _launch_ts: u64,
+    _default_winner: FixedBytes<8>
 ) -> Result<(), Error> {
     Ok(())
 }
