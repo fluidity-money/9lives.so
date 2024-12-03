@@ -29,7 +29,7 @@ export default function useSharePrices({
           simulateTransaction({
             transaction: prepareContractCall({
               contract: tradingContract,
-              method: "priceF3C364BC",
+              method: "priceA827ED27",
               params: [outcomeId],
             }),
           }),
