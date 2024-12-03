@@ -1,7 +1,6 @@
 import config from "@/config";
 import { prepareContractCall, sendTransaction } from "thirdweb";
-import { toUnits } from "thirdweb/utils";
-import { keccak256 } from "ethers";
+import { keccak256, toUtf8Bytes } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -26,7 +25,8 @@ const useCreate = () => {
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
               name: o.name,
             }));
-            const hashedUrl = keccak256(input.urlCommitee) as `0x${string}`;
+            const urlBytes = toUtf8Bytes(input.urlCommitee);
+            const hashedUrl = keccak256(urlBytes) as `0x${string}`;
             const createTx = prepareContractCall({
               contract: config.contracts.helper,
               method: "createWithInfraMarket",
