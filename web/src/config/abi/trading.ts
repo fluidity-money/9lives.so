@@ -112,7 +112,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "mint0D365EC6",
+    name: "mintPermitB8D681AD",
     inputs: [
       {
         name: "outcome",
@@ -128,6 +128,26 @@ const tradingAbi = [
         name: "recipient",
         type: "address",
         internalType: "address",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "v",
+        type: "uint8",
+        internalType: "uint8",
+      },
+      {
+        name: "r",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "s",
+        type: "bytes32",
+        internalType: "bytes32",
       },
     ],
     outputs: [
