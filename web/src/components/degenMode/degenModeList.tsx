@@ -11,7 +11,7 @@ export default function DegenModeList() {
         <h5 className="block text-right font-chicago text-xs">
           🐵 Degen Timeline 🐵
         </h5>
-        <div className="h-[1px] w-full bg-9black" />
+        <div className="h-px w-full bg-9black" />
       </div>
       <p className="text-center font-chicago text-base">Coming Soon</p>
       {/* {isLoading ? (
