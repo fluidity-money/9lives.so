@@ -5,20 +5,8 @@ const tradingAbi = [
     inputs: [
       {
         name: "outcomes",
-        type: "tuple[]",
-        internalType: "struct Outcome[]",
-        components: [
-          {
-            name: "identifier",
-            type: "bytes8",
-            internalType: "bytes8",
-          },
-          {
-            name: "amount",
-            type: "uint256",
-            internalType: "uint256",
-          },
-        ],
+        type: "bytes8[]",
+        internalType: "bytes8[]",
       },
       {
         name: "oracle",
@@ -37,6 +25,11 @@ const tradingAbi = [
       },
       {
         name: "feeRecipient",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "shareImpl",
         type: "address",
         internalType: "address",
       },
@@ -84,9 +77,9 @@ const tradingAbi = [
         internalType: "uint256",
       },
       {
-        name: "isWinner",
-        type: "bool",
-        internalType: "bool",
+        name: "winner",
+        type: "bytes8",
+        internalType: "bytes8",
       },
     ],
     stateMutability: "view",
@@ -106,7 +99,20 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "mint227CF432",
+    name: "isDpm",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "mint0D365EC6",
     inputs: [
       {
         name: "outcome",
@@ -135,56 +141,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "mintPermitB8D681AD",
-    inputs: [
-      {
-        name: "outcome",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
-      {
-        name: "value",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "deadline",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "recipient",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "v",
-        type: "uint8",
-        internalType: "uint8",
-      },
-      {
-        name: "r",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
-      {
-        name: "s",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "payoff",
+    name: "payoff91FA8C2E",
     inputs: [
       {
         name: "outcomeId",
@@ -213,7 +170,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "priceF3C364BC",
+    name: "priceA827ED27",
     inputs: [
       {
         name: "outcome",
@@ -232,7 +189,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "quote101CBE35",
+    name: "quoteC0E17FC7",
     inputs: [
       {
         name: "outcome",
@@ -243,11 +200,6 @@ const tradingAbi = [
         name: "value",
         type: "uint256",
         internalType: "uint256",
-      },
-      {
-        name: "recipient",
-        type: "address",
-        internalType: "address",
       },
     ],
     outputs: [

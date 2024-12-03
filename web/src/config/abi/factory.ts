@@ -1,31 +1,29 @@
 const factoryAbi = [
   {
     type: "function",
-    name: "ctor",
-    inputs: [
+    name: "ammTradingHash",
+    inputs: [],
+    outputs: [
       {
-        name: "shareImpl",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "tradingExtrasImpl",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "tradingMintImpl",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "infraMarketOracle",
-        type: "address",
-        internalType: "address",
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
       },
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "dpmTradingHash",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -42,16 +40,22 @@ const factoryAbi = [
   },
   {
     type: "function",
-    name: "erc20Impl",
-    inputs: [],
-    outputs: [
+    name: "getBackend",
+    inputs: [
       {
-        name: "",
+        name: "addr",
         type: "address",
         internalType: "address",
       },
     ],
-    stateMutability: "pure",
+    outputs: [
+      {
+        name: "",
+        type: "uint8",
+        internalType: "uint8",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -74,12 +78,31 @@ const factoryAbi = [
   },
   {
     type: "function",
-    name: "newTradingC11AAA3B",
+    name: "getTradingAddr",
+    inputs: [
+      {
+        name: "id",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "newTrading09393DA8",
     inputs: [
       {
         name: "outcomes",
         type: "tuple[]",
-        internalType: "struct Outcome[]",
+        internalType: "struct FactoryOutcome[]",
         components: [
           {
             name: "identifier",
@@ -87,9 +110,14 @@ const factoryAbi = [
             internalType: "bytes8",
           },
           {
-            name: "amount",
+            name: "sqrtPrice",
             type: "uint256",
             internalType: "uint256",
+          },
+          {
+            name: "name",
+            type: "string",
+            internalType: "string",
           },
         ],
       },
@@ -100,13 +128,13 @@ const factoryAbi = [
       },
       {
         name: "timeStart",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint64",
+        internalType: "uint64",
       },
       {
         name: "timeEnding",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint64",
+        internalType: "uint64",
       },
       {
         name: "documentation",
@@ -130,16 +158,16 @@ const factoryAbi = [
   },
   {
     type: "function",
-    name: "tradingHash",
+    name: "shareImpl",
     inputs: [],
     outputs: [
       {
         name: "",
-        type: "bytes32",
-        internalType: "bytes32",
+        type: "address",
+        internalType: "address",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
 ] as const;
 
