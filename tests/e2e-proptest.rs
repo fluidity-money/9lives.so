@@ -11,7 +11,7 @@ use lib9lives::{utils::{block_timestamp, msg_sender}, host};
 #[test]
 fn test_factory_new_trading() {
     use lib9lives::storage_factory::StorageFactory;
-    host::with_storage::<_, StorageFactory, _>(|c| {
+    host::with_contract::<_, StorageFactory, _>(|c| {
         c.enabled.set(true);
         let id = FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let id2 = FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
@@ -33,7 +33,7 @@ fn test_factory_new_trading() {
 #[test]
 fn test_unit_1() {
     use lib9lives::storage_trading::StorageTrading;
-    host::with_storage::<_, StorageTrading, _>(|c| {
+    host::with_contract::<_, StorageTrading, _>(|c| {
         let outcome_0 =
             FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let outcome_1 =
@@ -68,7 +68,7 @@ proptest! {
         let amount_1 = U256::from(amount_1);
         let mint_amount = U256::from(mint_amount);
         use lib9lives::storage_trading::StorageTrading;
-        host::with_storage::<_, StorageTrading, _>(|c| {
+        host::with_contract::<_, StorageTrading, _>(|c| {
             let outcome_0 =
                 FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
             let outcome_1 = FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);

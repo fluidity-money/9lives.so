@@ -1,0 +1,70 @@
+
+## 1. Repository Links
+
+- https://github.com/fluidity-money/9lives.so
+
+## 2. Branches
+
+- main
+
+## File paths to INCLUDE
+
+**v3-core**
+```
+src/fees.rs
+src/contract_lockup.rs
+src/contract_trading_extras.rs
+src/storage_factory.rs
+src/contract_trading_mint.rs
+src/contract_factory_1.rs
+src/contract_factory_2.rs
+src/storage_opt_infra_market.rs
+src/storage_trading.rs
+src/contract_trading_price.rs
+src/decimal.rs
+src/storage_lockup.rs
+src/proxy.rs
+src/contract_opt_infra_market.rs
+src/maths.rs
+src/contract_trading.rs
+src/lib.rs
+src/events.rs
+src/immutables.rs
+src/contract_trading_payoff.rs
+src/contract_trading_quotes.rs
+```
+
+## Priority files
+
+✅ Identify files that should receive extra attention:
+```
+src/contract_trading_mint.rs
+src/contract_factory_1.rs
+src/contract_factory_2.rs
+src/storage_opt_infra_market.rs
+src/contract_trading.rs
+src/contract_trading_payoff.rs
+src/contract_trading_quotes.rs
+```
+
+## Areas of concern
+
+✅ List specific issues or vulnerabilities you want the audit to focus on:
+
+```
+- Infrastructure markets can be adversely influenced with a unintended timing issue.
+
+- An extra amount than the user was entitled to is accessible inside the trading contract.
+
+- Incorrect access controls.
+
+- Incorrect fee awarding.
+
+- Denial of service for the trading contract.
+
+- The DPM or the AMM is not functioning equivalent to the Python implementation.
+
+- Undue slashing of amounts not in line with the intended behaviour.
+
+- Incorrect implementation of any specifications.
+```

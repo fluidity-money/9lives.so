@@ -1,3 +1,5 @@
+#![doc(hidden)]
+
 use std::{cell::RefCell, collections::HashMap, ptr};
 
 use stylus_sdk::alloy_primitives::{Address, U256};
@@ -103,7 +105,7 @@ pub fn set_msg_sender(a: Address) {
 pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}
 
 #[allow(dead_code)]
-pub fn with_storage<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {
+pub fn with_contract<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {
     STORAGE.with(|s| s.borrow_mut().clear());
     set_msg_sender(Address::ZERO);
     set_block_timestamp(0);

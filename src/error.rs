@@ -14,36 +14,47 @@ use std::{
 };
 
 #[cfg(feature = "testing")]
-use std::cell::RefCell;
-
-const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
-const ERR_ERC20_TRANSFER_PREAMBLE: [u8; 2] = [0x99, 0x01];
-const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];
-const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x03];
-const ERR_ERC20_TRANSFER_FROM_PREAMBLE: [u8; 2] = [0x99, 0x04];
-const ERR_ERC20_PERMIT_PREAMBLE: [u8; 2] = [0x99, 0x05];
-const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
-const ERR_LOCKED_ARB_PREAMBLE: [u8; 2] = [0x99, 0x07];
-const ERR_FACTORY_PREAMBLE: [u8; 2] = [0x99, 0x07];
-const ERR_INFRA_MARKET_PREAMBLE: [u8; 2] = [0x99, 0x08];
-
-#[cfg(feature = "testing")]
 use std::backtrace::Backtrace;
 
+macro_rules! err_pre {
+    ($name:ident, $val:literal) => { const $name: [u8; 2] = [0x99, $val]; };
+}
+
+err_pre!(ERR_LONGTAIL_PREAMBLE, 0x00);
+err_pre!(ERR_ERC20_TRANSFER_PREAMBLE, 0x01);
+err_pre!(ERR_SHARE_PREAMBLE, 0x02);
+err_pre!(ERR_TRADING_PREAMBLE, 0x03);
+err_pre!(ERR_ERC20_TRANSFER_FROM_PREAMBLE, 0x04);
+err_pre!(ERR_ERC20_PERMIT_PREAMBLE, 0x05);
+err_pre!(ERR_ERC20_BALANCE_OF_PREAMBLE, 0x06);
+err_pre!(ERR_LOCKED_ARB_PREAMBLE, 0x07);
+err_pre!(ERR_FACTORY_PREAMBLE, 0x07);
+err_pre!(ERR_INFRA_MARKET_PREAMBLE, 0x08);
+
+// Some testing affordances to make life easier with tracing the source
+// of issues.
 #[cfg(feature = "testing")]
-thread_local! {
-    static SHOULD_PANIC: RefCell<bool> = RefCell::new(true);
+mod testing {
+    use std::{cell::RefCell};
+
+    thread_local! {
+        static SHOULD_PANIC: RefCell<bool> = RefCell::new(true);
+    }
+
+    pub fn should_panic() -> bool {
+        SHOULD_PANIC.with(|v| v.clone().into_inner())
+    }
+
+    pub fn panic_guard<T>(f: impl FnOnce() -> T) -> T {
+        SHOULD_PANIC.with(|v| *v.borrow_mut() = false);
+        let r = f();
+        SHOULD_PANIC.with(|v| *v.borrow_mut() = true);
+        r
+    }
 }
 
 #[cfg(feature = "testing")]
-fn should_panic() -> bool {
-    SHOULD_PANIC.with(|v| v.clone().into_inner())
-}
-
-#[cfg(feature = "testing")]
-pub fn set_panic(answer: bool) {
-    SHOULD_PANIC.with(|v| *v.borrow_mut() = answer)
-}
+pub use testing::*;
 
 #[macro_export]
 macro_rules! assert_or {
@@ -366,6 +377,10 @@ pub enum Error {
     // 0x4d
     /// This contract was not registered!
     NotRegistered,
+
+    // 0x4e
+    /// This user is not the operator!
+    NotOperator,
 }
 
 /// Error that will unwrap if it fails instead of propagating to the toplevel.

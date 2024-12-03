@@ -2,7 +2,7 @@ use stylus_sdk::{alloy_primitives::*, contract};
 
 use crate::{amm_call, error::*, immutables::*, proxy};
 
-pub use crate::{utils::msg_sender, storage_factory::*};
+pub use crate::{storage_factory::*, utils::msg_sender};
 
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {
@@ -17,7 +17,7 @@ impl StorageFactory {
         trading_amm_mint_impl: Address,
         trading_amm_quotes_impl: Address,
         trading_amm_price_impl: Address,
-        oracle_addr: Address
+        oracle_addr: Address,
     ) -> R<()> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);
@@ -88,6 +88,52 @@ impl StorageFactory {
         ok(self.trading_addresses.get(id))
     }
 
+    pub fn upgrade_dpm_contracts(
+        &mut self,
+        extras: Address,
+        mint: Address,
+        quotes: Address,
+        price: Address,
+    ) -> R<()> {
+        assert_or!(self.operator.get() == msg_sender(), Error::NotOperator);
+        if !extras.is_zero() {
+            self.trading_dpm_extras_impl.set(extras);
+        }
+        if !mint.is_zero() {
+            self.trading_dpm_mint_impl.set(mint);
+        }
+        if !quotes.is_zero() {
+            self.trading_dpm_quotes_impl.set(quotes);
+        }
+        if !price.is_zero() {
+            self.trading_dpm_price_impl.set(price);
+        }
+        ok(())
+    }
+
+    pub fn upgrade_amm_contracts(
+        &mut self,
+        extras: Address,
+        mint: Address,
+        quotes: Address,
+        price: Address,
+    ) -> R<()> {
+        assert_or!(self.operator.get() == msg_sender(), Error::NotOperator);
+        if !extras.is_zero() {
+            self.trading_amm_extras_impl.set(extras);
+        }
+        if !mint.is_zero() {
+            self.trading_amm_mint_impl.set(mint);
+        }
+        if !quotes.is_zero() {
+            self.trading_amm_quotes_impl.set(quotes);
+        }
+        if !price.is_zero() {
+            self.trading_amm_price_impl.set(price);
+        }
+        ok(())
+    }
+
     /// Disable shares from being traded via Longtail.
     pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> R<()> {
         // Check if the caller is a trading contract by checking the map
@@ -102,7 +148,7 @@ impl StorageFactory {
         for outcome_id in outcomes {
             amm_call::pause_pool(proxy::get_share_addr(
                 contract::address(),   // Factory address.
-                msg_sender(),         // Trading address (this is the caller).
+                msg_sender(),          // Trading address (this is the caller).
                 self.share_impl.get(), // The share address.
                 outcome_id,            // The outcome that should be banned from continuing.
             ))?;

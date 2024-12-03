@@ -17,7 +17,7 @@ proptest! {
         fusdc_quote in 1..MAX_DECIMAL,
     ) {
         use lib9lives::storage_trading::StorageTrading;
-        host::with_storage::<_, StorageTrading, _>(|c| {
+        host::with_contract::<_, StorageTrading, _>(|c| {
             c.ctor(
                 vec![
                     fixed_bytes!("0541d76af67ad076"),

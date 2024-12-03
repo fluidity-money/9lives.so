@@ -46,6 +46,7 @@ impl StorageOptimisticInfraMarket {
         incentive_sender: Address,
         desc: FixedBytes<32>,
         launch_ts: u64,
+        default_winner: FixedBytes<8>,
     ) -> R<U256> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
@@ -62,12 +63,16 @@ impl StorageOptimisticInfraMarket {
             .setter(trading_addr)
             .set(U64::from(launch_ts));
         self.campaign_desc.setter(trading_addr).set(desc);
+        self.campaign_default_winner
+            .setter(trading_addr)
+            .set(default_winner);
         // Take the incentive amount base amount to give to the user who
         // calls sweep for the first time with the correct calldata.
         fusdc_call::take_from_funder_to(incentive_sender, contract::address(), INCENTIVE_AMT_BASE)?;
-        evm::log(events::MarketCreated {
+        evm::log(events::MarketCreated2 {
             incentiveSender: incentive_sender,
             tradingAddr: trading_addr,
+            defaultWinner: default_winner,
         });
         ok(INCENTIVE_AMT_BASE)
     }
@@ -313,8 +318,8 @@ impl StorageOptimisticInfraMarket {
             tradingAddr: trading_addr,
             winner: campaign_winner,
         });
-	// It should be okay to just call this contract since the factory
-	// will guarantee that there's an associated contract here.
+        // It should be okay to just call this contract since the factory
+        // will guarantee that there's an associated contract here.
         trading_call::decide(trading_addr, campaign_winner)?;
         ok(fees_earned)
     }

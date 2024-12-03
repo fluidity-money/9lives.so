@@ -12,7 +12,8 @@ sol! {
         address trading,
         address incentiveSender,
         bytes32 desc,
-        uint64 launchTs
+        uint64 launchTs,
+        bytes8 defaultWinner
     ) external;
 
 }
@@ -24,6 +25,7 @@ pub fn register(
     incentive_sender: Address,
     desc: FixedBytes<32>,
     launch_ts: u64,
+    default_winner: FixedBytes<8>
 ) -> Result<(), Error> {
     RawCall::new()
         .call(
@@ -33,6 +35,7 @@ pub fn register(
                 incentiveSender: incentive_sender,
                 desc,
                 launchTs: launch_ts,
+                defaultWinner: default_winner
             }
             .abi_encode(),
         )

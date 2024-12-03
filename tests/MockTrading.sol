@@ -50,10 +50,14 @@ contract MockTrading is INineLivesTrading {
         feeRecipient_ = _feeRecipient;
     }
 
-    function mint0D365EC6(
+    function mintPermitB8D681AD(
         bytes8 outcome,
         uint256 value,
-        address recipient
+        address recipient,
+        uint256 /* deadline */,
+        uint8 /* v */,
+        bytes32 /* r */,
+        bytes32 /* s */
     ) external returns (uint256) {
         require(block.timestamp > timeStart_, "hasn't started");
         require(block.timestamp < timeEnding_, "has ended");

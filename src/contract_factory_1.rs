@@ -18,7 +18,8 @@ pub use crate::storage_factory::*;
 impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds. We use these to seed the liquidity but only take
-    // as much as the amount that the pool was made for.
+    // as much as the amount that the pool was made for. For now, we take the
+    // default winner as the first outcome that was supplied to this function.
     #[allow(non_snake_case)]
     pub fn new_trading_09393_D_A_8(
         &mut self,
@@ -85,6 +86,8 @@ impl StorageFactory {
 
         // Used for the price function for seeding Longtail.
 
+        let default_winner = outcome_ids[0].clone();
+
         for (outcome_identifier, sqrt_price, outcome_name) in outcomes.iter() {
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
@@ -131,6 +134,7 @@ impl StorageFactory {
                 msg_sender(),
                 documentation,
                 time_ending,
+                default_winner,
             )?;
         }
 
