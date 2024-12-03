@@ -50,18 +50,3 @@ pub fn decide(addr: Address, winner: FixedBytes<8>) -> Result<(), Error> {
         .map_err(Error::TradingError)?;
     Ok(())
 }
-
-#[test]
-fn test_pack_calldata() {
-    use stylus_sdk::alloy_primitives::address;
-    dbg!(const_hex::encode(
-        &ctorCall {
-            outcomes: vec![FixedBytes::from([1u8; 8]), FixedBytes::from([2u8; 8])],
-            oracle: address!("feb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5"),
-            timeStart: 100,
-            timeEnding: 200,
-            feeRecipient: address!("b048dfe9930a022e4b78f0c699eca6f883e954ec"),
-        }
-        .abi_encode()
-    ));
-}

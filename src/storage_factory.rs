@@ -1,10 +1,7 @@
-use stylus_sdk::{
-    alloy_primitives::{Address, FixedBytes},
-    storage::*,
-};
+use stylus_sdk::{alloy_primitives::*, storage::*};
 
 #[cfg(feature = "testing")]
-use stylus_sdk::{alloy_primitives::U256, storage::StorageType};
+use stylus_sdk::storage::StorageType;
 
 #[derive(Debug)]
 #[repr(C)]

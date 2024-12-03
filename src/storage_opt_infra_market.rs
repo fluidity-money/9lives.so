@@ -100,3 +100,10 @@ pub struct StorageOptimisticInfraMarket {
     /// Was a winner determined?
     pub campaign_winner: StorageMap<Address, StorageFixedBytes<8>>,
 }
+
+#[cfg(feature = "testing")]
+impl crate::host::StorageNew for StorageOptimisticInfraMarket {
+    fn new(i: U256, v: u8) -> Self {
+        unsafe { <Self as StorageType>::new(i, v) }
+    }
+}

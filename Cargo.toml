@@ -29,16 +29,20 @@ opt-level = "z"
 incremental = false
 
 [dependencies]
-stylus-sdk = "0.6.0"
+stylus-sdk = "=0.6.0"
 tiny-keccak = "2.0.2"
 num-traits = "0.2.19"
 alloy-sol-types = "=0.7.6"
 alloy-sol-macro = "=0.7.6"
+alloy-core = "=0.7.6"
+alloy-primitives = "=0.7.6"
 array-concat = "0.5.3"
 const-hex = { version = "1.12.0" }
 paste = "1.0.15"
 rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths"] }
 keccak-const = "0.2.0"
+alloy-sol-macro-expander = "=0.7.6"
+alloy-sol-macro-input = "=0.7.6"
 
 [dev-dependencies]
 proptest = "1.5.0"
@@ -49,12 +53,6 @@ rust_decimal_macros = "1.36.0"
 alloy-primitives = { version = "0.7.6", features = ["getrandom"] }
 proptest = "1.5.0"
 rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths", "proptest"] }
-
-[patch.crates-io]
-alloy-sol-types = { git = "https://github.com/fluidity-money/alloy-core" }
-alloy-sol-macro = { git = "https://github.com/fluidity-money/alloy-core" }
-alloy-core = { git = "https://github.com/fluidity-money/alloy-core" }
-alloy-primitives = { git = "https://github.com/fluidity-money/alloy-core" }
 
 [features]
 contract-factory-1 = []

@@ -1,10 +1,6 @@
 use alloc::vec::Vec;
 
-use stylus_sdk::{
-    abi::internal::EncodableReturnType,
-    alloy_primitives::{Address, Bytes},
-    ArbResult,
-};
+use stylus_sdk::{abi::internal::EncodableReturnType, alloy_primitives::Address, ArbResult};
 
 use std::{
     convert::Infallible,
@@ -21,10 +17,6 @@ const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
 const ERR_LOCKED_ARB_PREAMBLE: [u8; 2] = [0x99, 0x07];
 const ERR_FACTORY_PREAMBLE: [u8; 2] = [0x99, 0x07];
 const ERR_INFRA_MARKET_PREAMBLE: [u8; 2] = [0x99, 0x08];
-
-sol! {
-    error Failure(bytes);
-}
 
 #[cfg(feature = "testing")]
 use std::backtrace::Backtrace;

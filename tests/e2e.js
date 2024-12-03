@@ -154,13 +154,12 @@ describe("End to end tests", async () => {
 
   await (await fusdc.approve(tradingAddr, MaxUint256)).wait();
 
-  return;
-
   it("Should support minting shares, then activating payoff, and receiving all of the pool.", async () => {
     const balBefore = await share1.balanceOf(defaultAccountAddr);
     await (await trading.mint227CF432(outcome1, 6 * 1e6, defaultAccountAddr)).wait();
     const balAfter = await share1.balanceOf(defaultAccountAddr);
     assert.equal(balAfter, "4476926");
+    return;
     await (await trading.decide(outcome1)).wait();
     const fusdcBalBefore = await fusdc.balanceOf(defaultAccountAddr);
     await (await trading.payoff(outcome1, balAfter, defaultAccountAddr)).wait();
