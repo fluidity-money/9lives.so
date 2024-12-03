@@ -19,4 +19,5 @@ forge create --json \
 	--libraries "src/WordPackingLib.sol:WordPackingLib:$word_packing_lib_addr" \
 	--constructor-args \
 	"$SPN_LONGTAIL_ADDR" \
-	"$SPN_FACTORY_PROXY_ADDR"
+	"$SPN_FACTORY_PROXY_ADDR" \
+		| jq -r .deployedTo

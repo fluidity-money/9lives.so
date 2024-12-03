@@ -143,7 +143,9 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Trading AMM price impl                 | `0xe82dacbdc16122adca7bc83d89087c8ff6dcdb7a` |
 | Share implementation                   | `0x7f53B18Aba1873bdb0C0f205126fC452106187CB` |
 | Lockup token implementation            | `0xe71F986281A8Af932D08866D98c55228A81eB6c0` |
-| Infrastructure market proxy            | `0xfed7cd757103689cf92ab871608467b3ddd0d871` |
-| Lockup proxy                           | `0x909a817ab7c6eae0f4fc9811d027ab018e1d1026` |
-| Lockup token proxy                     | `0xdd705850e2045558a55cf751e73a20b42b176865` |
-| Factory proxy                          | `0x952f404867bb7539545efd8a9438d7d4fc5259d5` |
+| Infrastructure market proxy            | `0x95256012886c4c48c959fa1a0f9b9a4f6a149e70` |
+| Lockup proxy                           | `0xa6dfe65121a171ed79843a4e696b2ae090b8bc44` |
+| Lockup token proxy                     | `0x28e2134e482aa53cc9928a3a2bac2cc4daf7e228` |
+| Factory proxy                          | `0x91c640d0ad449ff7438efee48d44d02ecd855fe0` |
+| Helper factory                         | `0x2f8576D427ef5969b74Ed04Ab97a7afE49595436` |
+| LensesV1                               | `0x77BAA92Da7Dd0e9940DB0Cb89F127aC12AdCefeb` |
