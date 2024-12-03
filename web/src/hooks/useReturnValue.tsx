@@ -42,33 +42,27 @@ export default function useReturnValue({
       }),
     [tradingAddr],
   );
-  const zeroAddress = "0x0000000000000000000000000000000000000000";
   const check9liveReturnTx = useMemo(
     () =>
       prepareContractCall({
         contract: tradingContract,
-        method: "quote101CBE35",
-        params: [outcomeId, amount, zeroAddress],
+        method: "quoteC0E17FC7",
+        params: [outcomeId, amount],
       }),
     [amount, outcomeId, tradingContract],
   );
   const getReturns = useCallback(
     async function () {
       return await Promise.all<bigint>([
-        // simulateTransaction({
-        //   transaction: checkAmmReturnTx,
-        // }),
-        // disable checking long tail for now on mainnet
-        BigInt(0),
+        simulateTransaction({
+          transaction: checkAmmReturnTx,
+        }),
         simulateTransaction({
           transaction: check9liveReturnTx,
         }),
       ]);
     },
-    [
-      check9liveReturnTx,
-      // checkAmmReturnTx
-    ],
+    [check9liveReturnTx, checkAmmReturnTx],
   );
   return useQuery({
     queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
