@@ -31,7 +31,8 @@ contract MockTrading is INineLivesTrading {
         address _oracle,
         uint256 _timeStart,
         uint256 _timeEnding,
-        address _feeRecipient
+        address _feeRecipient,
+        address /* _shareImpl */
     ) external {
         require(timeStart_ == 0, "already created");
         // We track some things to set up to prevent abuse in testing, but we don't

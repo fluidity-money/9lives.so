@@ -21,6 +21,7 @@ impl StorageTrading {
         time_start: u64,
         time_ending: u64,
         fee_recipient: Address,
+        share_impl: Address,
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // We assume that the caller already supplied the liquidity to
@@ -45,9 +46,7 @@ impl StorageTrading {
         }
         // We assume that the sender is the factory.
         self.factory_addr.set(msg::sender());
-
-        self.share_impl
-            .set(factory_call::share_impl(self.factory_addr.get())?);
+        self.share_impl.set(share_impl);
         self.fee_recipient.set(fee_recipient);
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));

@@ -15,7 +15,8 @@ interface INineLivesTrading {
         address oracle,
         uint256 timeStart,
         uint256 timeEnding,
-        address feeRecipient
+        address feeRecipient,
+        address shareImpl
     ) external;
 
     /**

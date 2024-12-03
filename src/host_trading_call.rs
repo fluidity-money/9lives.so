@@ -9,6 +9,7 @@ pub fn ctor(
     _time_start: u64,
     _time_ending: u64,
     _fee_recipient: Address,
+    _share_impl: Address
 ) -> Result<(), Error> {
     Ok(())
 }

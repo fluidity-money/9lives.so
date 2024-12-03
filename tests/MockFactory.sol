@@ -36,7 +36,7 @@ contract MockFactory is INineLivesFactory {
         for (uint i = 0; i < _outcomes.length; ++i) {
             outcomes[i] = _outcomes[i].identifier;
         }
-        t.ctor(outcomes, _oracle,_timeStart, _timeEnding, _feeRecipient);
+        t.ctor(outcomes, _oracle,_timeStart, _timeEnding, _feeRecipient, address(0));
         return address(t);
     }
 

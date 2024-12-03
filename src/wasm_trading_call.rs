@@ -12,7 +12,8 @@ sol! {
         address oracle,
         uint64 timeStart,
         uint64 timeEnding,
-        address feeRecipient
+        address feeRecipient,
+        address shareImpl
     );
 
     function decide(bytes8 winner);
@@ -25,6 +26,7 @@ pub fn ctor(
     time_start: u64,
     time_ending: u64,
     fee_recipient: Address,
+    share_impl: Address
 ) -> Result<(), Error> {
     let a = ctorCall {
         outcomes,
@@ -32,6 +34,7 @@ pub fn ctor(
         timeStart: time_start,
         timeEnding: time_ending,
         feeRecipient: fee_recipient,
+        shareImpl: share_impl
     }
     .abi_encode();
     RawCall::new()

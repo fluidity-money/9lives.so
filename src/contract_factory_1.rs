@@ -13,10 +13,7 @@ use crate::{
 
 pub use crate::storage_factory::*;
 
-#[cfg_attr(
-    any(feature = "contract-factory-1", test),
-    stylus_sdk::prelude::public
-)]
+#[cfg_attr(any(feature = "contract-factory-1", test), stylus_sdk::prelude::public)]
 impl StorageFactory {
     // Construct a new Trading construct, taking from the user some outcomes
     // and their day 1 odds. We use these to seed the liquidity but only take
@@ -119,6 +116,7 @@ impl StorageFactory {
             time_start,
             time_ending,
             fee_recipient,
+            self.share_impl.get(),
         )?;
 
         // If the infra market wasn't chosen, then we assume that the caller has done
