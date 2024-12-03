@@ -39,8 +39,9 @@ export type CampaignInput = {
   x?: string;
   telegram?: string;
   web?: string;
-  outcomeType: OutcomeType;
-  settlementType: SettlementType;
+  outcomeType?: OutcomeType;
+  settlementType?: SettlementType;
+  urlCommitee: string;
 };
 export type OutcomeInput = {
   id: `0x${string}`;

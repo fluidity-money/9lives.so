@@ -14,6 +14,9 @@ import CreateCampaignFormPicture from "./form/formPic";
 import CreateCampaignFormEndDate from "./form/formEndDate";
 import CreateCampaignFormSettlmentSource from "./form/formSettlementSource";
 import CreateCampaignFormSocials from "./form/formSocials";
+import useCreate from "@/hooks/useCreate";
+import { useActiveAccount } from "thirdweb/react";
+import useConnectWallet from "@/hooks/useConnectWallet";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -30,7 +33,9 @@ export function onFileChange(
   reader.readAsDataURL(file!);
 }
 export default function CreateCampaignForm() {
-  const onSubmit = (data: any) => console.log(data);
+  const { create } = useCreate();
+  const account = useActiveAccount();
+  const { connect } = useConnectWallet();
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("default");
   const [pictureBlob, setPictureBlob] = useState<string>();
   const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
@@ -76,8 +81,8 @@ export default function CreateCampaignForm() {
                   description: z.string(),
                 }),
               ),
-        urlCommitee:
-          settlementType === "url" ? z.string().url() : z.undefined(),
+        urlCommitee: z.string().url(), // committee url is required in this version. Toggle below line to change this behaviour.
+        // settlementType === "url" ? z.string().url() : z.undefined(),
         contractAddress:
           settlementType === "contract"
             ? z.string().startsWith("0x").min(42)
@@ -106,6 +111,27 @@ export default function CreateCampaignForm() {
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
+  const form = useFormStore((s) => s.form);
+  const onSubmit = (data: FormData) => {
+    if (!account) return connect();
+
+    const outcomes = data.outcomes.map((o, idx) => ({
+      ...o,
+      id: form!.outcomes[idx].id,
+      picture: form!.outcomes[idx].picture,
+      seed: form!.outcomes[idx].seed,
+    }));
+    create(
+      {
+        ...data,
+        picture: form!.picture,
+        outcomes,
+        id: form!.id,
+        seed: form!.seed,
+      },
+      account,
+    );
+  };
   useEffect(() => {
     if (fields) {
       debouncedFillForm({
