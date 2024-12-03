@@ -52,7 +52,8 @@ pub struct StorageTrading {
     /// during the construction of this.
     pub share_impl: StorageAddress,
 
-    /// Shares invested in every outcome cumulatively.
+    /// Shares invested in every outcome cumulatively. NOT IN USE BY THE
+    /// AMM.
     pub global_shares: StorageU256,
 
     /// Shares invested in a specific outome.
