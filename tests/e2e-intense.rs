@@ -88,7 +88,7 @@ proptest! {
             let _random_mints =
                 purchase_int_1.into_iter().map(|ActionAmountPurchased { fusdc_amt, outcome }| -> (U256, Outcome, U256) {
                     fusdc_vested += fusdc_amt;
-                    let s = c.mint_0_D_365_E_C_6(
+                    let s = c.mint_test(
                         if outcome == Outcome::Outcome1 { outcome_1_id } else { outcome_2_id },
                         U256::from(fusdc_amt),
                         msg_sender()

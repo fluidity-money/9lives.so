@@ -66,15 +66,20 @@ fn test_infra_market_call_close_only_happy_path() {
         let two_days = 172800;
         ts_add_time(two_days + 10);
         // No-one called claim! It's time for us to call close.
-        c.close(trading, msg_sender()).unwrap();
+        //assert_eq!(c.close(trading, msg_sender()).unwrap(), fees::
         // Let's confirm that the winner was set correctly.
         assert_eq!(c.campaign_winner.get(trading), winner);
     })
 }
 
 #[test]
-fn test_unhappy_call_whinge_claim_path() {
-
+fn test_unhappy_call_whinge_claim_no_bettors_path() {
+    // In this situation, someone calls the call code, but unfortunately,
+    // someone whinges about it. During the 7 day period that follows, NO-ONE
+    // calls the contract (strangely enough). Let's test here what happens if
+    // that's the case.
+    use lib9lives::storage_opt_infra_market::StorageOptimisticInfraMarket;
+    with_contract::<_, StorageOptimisticInfraMarket, _>(|c| {
 }
 
 proptest! {

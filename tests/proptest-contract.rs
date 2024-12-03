@@ -86,7 +86,7 @@ proptest! {
             // Make the first group of random mints.
             for ActionAmountPurchased { fusdc_amt, outcome } in purchase_int_1 {
                 fusdc_vested += fusdc_amt;
-                let s = c.mint_0_D_365_E_C_6(
+                let s = c.mint_test(
                     if outcome == Outcome::Outcome1 { outcome_1_id } else { outcome_2_id },
                     U256::from(fusdc_amt),
                     msg_sender()
@@ -101,7 +101,7 @@ proptest! {
             // Make the second group of random mints.
             for ActionAmountPurchased { fusdc_amt, outcome } in purchase_int_2 {
                 fusdc_vested += fusdc_amt;
-                let s = c.mint_0_D_365_E_C_6(
+                let s = c.mint_test(
                     if outcome == Outcome::Outcome1 { outcome_1_id } else { outcome_2_id },
                     U256::from(fusdc_amt),
                     msg_sender()

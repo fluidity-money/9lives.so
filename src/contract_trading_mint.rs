@@ -70,12 +70,9 @@ impl StorageTrading {
             share_u256_to_decimal(self.outcome_shares.get(outcome_id))?,
             fusdc_u256_to_decimal(self.global_invested.get())?,
         )?)?;
+        // This should be $1!
         #[cfg(not(feature = "trading-backend-dpm"))]
-        let fusdc = {
-            let share_payoff = self.global_invested.get() / self.outcome_shares.get(outcome_id);
-            self.outcome_invested.get(outcome_id) / self.outcome_shares.get(outcome_id)
-                + share_payoff
-        };
+        let fusdc = self.global_invested.get() / self.outcome_shares.get(outcome_id);
         fusdc_call::transfer(recipient, fusdc)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
@@ -114,7 +111,7 @@ impl StorageTrading {
         /*
         for i in range(len(self.shares)):
             self.shares[i] += amount
-            product *= self.shares[i]
+            product = product.checked_mul(self.shares[i]).ok_or(Error::CheckedMulOverflow)?;
             self.total_shares[i] += amount
         */
         for i in 0..outcome_list_len {
@@ -129,16 +126,23 @@ impl StorageTrading {
                 .checked_mul(self.outcome_shares.get(o))
                 .ok_or(Error::CheckedMulOverflow)?;
         }
+        let shares_before = self.outcome_shares.get(outcome_id);
         product = product
             .checked_div(self.outcome_shares.get(outcome_id))
             .ok_or(Error::CheckedDivOverflow)?;
         //self.shares[outcome] = (self.liquidity ** self.outcomes) / product
-        self.seed_invested
+        let shares = self
+            .seed_invested
             .get()
             .checked_pow(U256::from(self.outcome_list.len()))
             .ok_or(Error::CheckedPowOverflow)?
             .checked_div(product)
-            .ok_or(Error::CheckedDivOverflow)
+            .ok_or(Error::CheckedDivOverflow)?;
+        self.outcome_shares.setter(outcome_id).set(shares);
+        //self.user_shares = self.shares_before - self.shares[outcome]
+        shares_before
+            .checked_sub(shares)
+            .ok_or(Error::CheckedSubOverflow)
             .into()
     }
 
@@ -182,11 +186,11 @@ impl StorageTrading {
                 .ok_or(Error::CheckedAddOverflow)?,
         );
 
-        let shares_before = self.outcome_shares.get(outcome_id);
         // We need to increase by the amount we allocate, the AMM should do that
         // internally. Some extra fields are needed for the DPM's calculations.
         #[cfg(feature = "trading-backend-dpm")]
         let shares = {
+            let shares_before = self.outcome_shares.get(outcome_id);
             let shares = self.internal_dpm_mint(outcome_id, value)?;
             self.outcome_shares.setter(outcome_id).set(
                 shares_before
@@ -206,9 +210,7 @@ impl StorageTrading {
         // We take the difference between the shares that already existed, and ours
         // now, to get the correct number.
         #[cfg(not(feature = "trading-backend-dpm"))]
-        let shares = shares_before
-            .checked_sub(self.internal_amm_mint(outcome_id, value)?)
-            .ok_or(Error::CheckedSubOverflow)?;
+        let shares = self.internal_amm_mint(outcome_id, value)?;
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
         let share_addr = proxy::get_share_addr(
@@ -240,5 +242,22 @@ impl StorageTrading {
 
     pub fn test_amm_mint(&mut self, _outcome_id: FixedBytes<8>, _value: U256) -> U256 {
         self.internal_amm_mint(_outcome_id, _value).unwrap()
+    }
+
+    pub fn mint_test(
+        &mut self,
+        outcome: FixedBytes<8>,
+        value: U256,
+        recipient: Address,
+    ) -> R<U256> {
+        self.mint_permit_B8_D_681_A_D(
+            outcome,
+            value,
+            recipient,
+            U256::ZERO,
+            0,
+            FixedBytes::ZERO,
+            FixedBytes::ZERO,
+        )
     }
 }
