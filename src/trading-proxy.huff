@@ -6,8 +6,8 @@
 	calldatasize 0x0 0x0 calldatacopy
 	0x0 0x0 calldatasize
 	0x0 0x02 calldataload 0x0 byte
-	0x01 eq MINT jumpi
-	0x02 eq QUOTES jumpi
+	dup1 0x01 eq MINT jumpi
+	dup1 0x02 eq QUOTES jumpi
 	0x03 eq PRICE jumpi
 	0x4000000000000000000000000000000000000004
 	CONTINUE jump

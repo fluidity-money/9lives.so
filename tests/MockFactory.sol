@@ -60,7 +60,7 @@ contract MockFactory is INineLivesFactory {
         return keccak256(abi.encodePacked(address(5)));
     }
 
-    function erc20Impl() external pure returns (address) {
+    function shareImpl() external pure returns (address) {
         return address(4);
     }
 

@@ -45,7 +45,7 @@ interface INineLivesFactory {
 
     function getTradingAddr(bytes32 id) external view returns (address);
 
-    function erc20Impl() external pure returns (address);
+    function shareImpl() external pure returns (address);
 
     /**
      * @notice return the keccak256 hash of the trading contract in DPM form.

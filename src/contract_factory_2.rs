@@ -63,7 +63,7 @@ impl StorageFactory {
         )))
     }
 
-    pub fn erc20_impl(&self) -> R<Address> {
+    pub fn share_impl(&self) -> R<Address> {
         ok(self.share_impl.get())
     }
 

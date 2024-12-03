@@ -52,7 +52,7 @@ fn test_unit_1() {
         )
         .unwrap();
         dbg!(c
-            .mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO)
+            .mint_0_D_365_E_C_6(outcome_1, mint_amount, Address::ZERO)
             .unwrap());
     })
 }
@@ -81,7 +81,7 @@ proptest! {
             )
                 .unwrap();
             c
-                .mint_227_C_F_432(outcome_1, mint_amount, Address::ZERO)
+                .mint_0_D_365_E_C_6(outcome_1, mint_amount, Address::ZERO)
                 .unwrap();
         })
     }

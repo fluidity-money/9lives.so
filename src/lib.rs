@@ -29,56 +29,39 @@ pub mod utils;
 pub mod erc20_cd;
 pub mod longtail_cd;
 
-#[cfg(not(target_arch = "wasm32"))]
-mod host_trading_call;
+pub mod host_trading_call;
 pub mod trading_call;
-#[cfg(target_arch = "wasm32")]
-mod wasm_trading_call;
+pub mod wasm_trading_call;
 
-#[cfg(not(target_arch = "wasm32"))]
-mod host_share_call;
+pub mod host_share_call;
 pub mod share_call;
-#[cfg(target_arch = "wasm32")]
-mod wasm_share_call;
+pub mod wasm_share_call;
 
 pub mod erc20_call;
-
-#[cfg(not(target_arch = "wasm32"))]
-mod host_erc20_call;
-#[cfg(target_arch = "wasm32")]
-mod wasm_erc20_call;
+pub mod host_erc20_call;
+pub mod wasm_erc20_call;
 
 pub mod fusdc_call;
 
 pub mod amm_call;
-#[cfg(not(target_arch = "wasm32"))]
-mod host_longtail_call;
-#[cfg(target_arch = "wasm32")]
-mod wasm_longtail_call;
+pub mod host_longtail_call;
+pub mod wasm_longtail_call;
 
 pub mod factory_call;
-#[cfg(not(target_arch = "wasm32"))]
-mod host_factory_call;
-#[cfg(target_arch = "wasm32")]
-mod wasm_factory_call;
+pub mod host_factory_call;
+pub mod wasm_factory_call;
 
-#[cfg(not(target_arch = "wasm32"))]
-mod host_lockup_call;
+pub mod host_lockup_call;
 pub mod lockup_call;
-#[cfg(target_arch = "wasm32")]
-mod wasm_lockup_call;
+pub mod wasm_lockup_call;
 
-#[cfg(not(target_arch = "wasm32"))]
-mod host_nineliveslockedarb_call;
+pub mod host_nineliveslockedarb_call;
 pub mod nineliveslockedarb_call;
-#[cfg(target_arch = "wasm32")]
-mod wasm_nineliveslockedarb_call;
+pub mod wasm_nineliveslockedarb_call;
 
-#[cfg(not(target_arch = "wasm32"))]
-mod host_opt_infra_market_call;
+pub mod host_opt_infra_market_call;
 pub mod opt_infra_market_call;
-#[cfg(target_arch = "wasm32")]
-mod wasm_opt_infra_market_call;
+pub mod wasm_opt_infra_market_call;
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub mod host;

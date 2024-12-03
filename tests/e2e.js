@@ -63,7 +63,11 @@ describe("End to end tests", async () => {
     lockupProxyToken: lockupProxyTokenAddr,
     factoryProxy: factoryProxyAddr,
     infrastructureMarketProxy: infraMarketProxyAddr,
-    shareImplementation
+    shareImplementation,
+    tradingDpmExtrasImplementation,
+    tradingDpmMintImplementation,
+    tradingDpmPriceImplementation,
+    tradingDpmQuotesImplementation
   } = JSON.parse(execSync(
     "./build-and-deploy.sh",
     {
@@ -71,7 +75,7 @@ describe("End to end tests", async () => {
         "PATH": process.env.PATH,
         "SPN_SUPERPOSITION_URL": RPC_URL,
         "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
-        "SPN_AMM_ADDR": longtailAddress,
+        "SPN_LONGTAIL_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
         "SPN_STAKED_ARB_ADDR": stakedArbAddress,
         "SPN_PROXY_ADMIN": defaultAccountAddr,
@@ -81,6 +85,11 @@ describe("End to end tests", async () => {
     },
   ));
 
+  console.log("tradingDpmExtrasImplementation:", tradingDpmExtrasImplementation);
+  console.log("tradingDpmMintImplementation:", tradingDpmMintImplementation);
+  console.log("tradingDpmPriceImplementation:", tradingDpmPriceImplementation);
+  console.log("tradingDpmQuotesImplementation:", tradingDpmQuotesImplementation);
+
   const factoryProxy = new Contract(
     factoryProxyAddr,
     Factory.abi,
@@ -89,7 +98,7 @@ describe("End to end tests", async () => {
 
   assert.equal(
     shareImplementation.toLowerCase(),
-    (await factoryProxy.erc20Impl()).toLowerCase()
+    (await factoryProxy.shareImpl()).toLowerCase()
   );
 
   const outcome1 = "0x1e9e51837f3ea6ea";
@@ -123,16 +132,16 @@ describe("End to end tests", async () => {
   const tradingAddr = await factoryProxy.newTrading09393DA8.staticCall(
       outcomes,
       infraMarketProxyAddr,
-      timestamp + 10,   // Time start
-      timestamp + 100,  // Time end
+      timestamp + 10,    // Time start
+      timestamp + 100,   // Time end
       documentationHash,
       defaultAccountAddr // Fee recipient
   );
   await (await factoryProxy.newTrading09393DA8(
       outcomes,
       infraMarketProxyAddr,
-      timestamp + 10,   // Time start
-      timestamp + 100,  // Time end
+      timestamp + 10,    // Time start
+      timestamp + 100,   // Time end
       documentationHash,
       defaultAccountAddr // Fee recipient
   )).wait();

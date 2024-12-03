@@ -127,22 +127,23 @@ on the local environment, or with end to end tests with an Arbitrum node.
 |            Deployment name             |              Deployment address            |
 |----------------------------------------|--------------------------------------------|
 | Proxy admin                            | 0xFEb6034FC7dF27dF18a3a6baD5Fb94C0D3dCb6d5 |
-| Factory 1 implementation               | 0xe7918a07158e5303c50816eee23ddd16cce985e4 |
-| Factory 2 implementation               | 0x5653cc20ebe2d4a205ef55edeb58150cb48a7c08 |
-| Lockup implementation                  | 0x3a98589ef50a8433966491354b9a182ca1cdc95a |
-| Optimistic infra market implementation | 0xfe359f63eee88bb453b8a5957bfb209087057800 |
-| Trading DPM mint impl                  | 0x434f0501680b8d30c069e81fa9e119c977b57623 |
-| Trading DPM extras impl                | 0x28652521432cb65825d5ce834902e1387e137ad8 |
-| Trading DPM price impl                 | 0x1b9f3cc7738e942ddd8973bd0129582107a5ae2f |
-| Trading DPM quotes impl                | 0xc5370074c9bcb81086cf50057db76e46d0850932 |
-| Trading DPM price impl                 | 0x1b9f3cc7738e942ddd8973bd0129582107a5ae2f |
-| Trading AMM mint impl                  | 0xe6b7ff7d1cc6b105b7083096fd8ba6d9f89b30ca |
-| Trading AMM extras impl                | 0x831664ed6c1a498822124c94c12461078efbcfdc |
-| Trading AMM price impl                 | 0x7816536a927faa40213962874eba85c30203bb71 |
-| Trading AMM quotes impl                | 0xd28bc82b6c1fbfa7ed99be2109cf330511af8c6a |
-| Trading AMM price impl                 | 0x7816536a927faa40213962874eba85c30203bb71 |
-| Share implementation                   | 0xaF962315062b8999807796BF19F126585815e996 |
-| Lockup token implementation            | 0x6836cbC634D17F051Ab4f5F966F28B5b85f8CF1F |
-| Infrastructure market proxy            | 0x8cb5f36721ee506bfe0e6439c56445739dff3a78 |
-| Lockup proxy                           | 0xc68b7395bdd6bbe7943f66055d06f2cd55631a67 |
-| Factory proxy                          | 0xa893fe339383ddb745415cdd4124ba51bfbc32fb |
+| Factory 1 implementation               | 0x30e9fb5fda0922b72912c182f44f7f3f75003f4d |
+| Factory 2 implementation               | 0x17b0f2652947e3a3760d449b07b81b12a54f1061 |
+| Lockup implementation                  | 0x35c8b3c1dca5dd2de43317caa2ef1a65bfa88fc8 |
+| Optimistic infra market implementation | 0xdbbfdc36b8f043511392e18441727b4fde8e88e5 |
+| Trading DPM mint impl                  | 0x22446b59adf29b79e9428ed447fbbe848b7a47fd |
+| Trading DPM extras impl                | 0x7417ac905cc79b40104fbd145b3ec9350aa42ea2 |
+| Trading DPM price impl                 | 0xa6d625a5011a70cd1ccac1ac457b13cb677d3646 |
+| Trading DPM quotes impl                | 0xe87050c21a7e5f92b608da07b47f147a2069ff38 |
+| Trading DPM price impl                 | 0xa6d625a5011a70cd1ccac1ac457b13cb677d3646 |
+| Trading AMM mint impl                  | 0xf5d278c5c528418307ea0d593dfb36efc6e23c79 |
+| Trading AMM extras impl                | 0xfb0a8881d279b16abd0ae171271286793bf33d4c |
+| Trading AMM price impl                 | 0xe8e36d1fee5116bd21da16c44e6fc010d8ab590b |
+| Trading AMM quotes impl                | 0xa46a3966072e03e90640096b9e714ea7cfa7d36a |
+| Trading AMM price impl                 | 0xe8e36d1fee5116bd21da16c44e6fc010d8ab590b |
+| Share implementation                   | 0x161da6bb5Cf395099cF99528741c3B430d9E3B01 |
+| Lockup token implementation            | 0x09d464B7935e0eBFa6B9fcBbd55a8b8143d18085 |
+| Infrastructure market proxy            | 0xdce3f3cf46cf527c0e6731c2c72be3d4d677f18b |
+| Lockup proxy                           | 0xa8045863dc2e54b9a12ab840bc5372427899ea58 |
+| Lockup token proxy                     | 0xb241acfed5a4f6c7cf181817cbfdb88161a82919 |
+| Factory proxy                          | 0x9911f7014b09da39fef5bafc1ef1697e2562adc0 |

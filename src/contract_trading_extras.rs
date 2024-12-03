@@ -45,6 +45,7 @@ impl StorageTrading {
         }
         // We assume that the sender is the factory.
         self.factory_addr.set(msg::sender());
+
         self.share_impl
             .set(factory_call::share_impl(self.factory_addr.get())?);
         self.fee_recipient.set(fee_recipient);

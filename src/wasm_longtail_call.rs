@@ -5,7 +5,7 @@ use stylus_sdk::{
 
 use crate::{
     error::Error,
-    immutables::AMM_ADDR,
+    immutables::LONGTAIL_ADDR,
     longtail_cd::{pack_create_pool, pack_enable_pool},
 };
 
@@ -15,21 +15,21 @@ pub fn create_pool(
     fee: u32,
 ) -> Result<Address, Error> {
     RawCall::new()
-        .call(AMM_ADDR, &pack_create_pool(erc20, price, fee))
+        .call(LONGTAIL_ADDR, &pack_create_pool(erc20, price, fee))
         .map_err(Error::LongtailError)?;
     Ok(erc20)
 }
 
 pub fn enable_pool(erc20: Address) -> Result<(), Error> {
     RawCall::new()
-        .call(AMM_ADDR, &pack_enable_pool(erc20, true))
+        .call(LONGTAIL_ADDR, &pack_enable_pool(erc20, true))
         .map_err(Error::LongtailError)?;
     Ok(())
 }
 
 pub fn pause_pool(erc20: Address) -> Result<(), Error> {
     RawCall::new()
-        .call(AMM_ADDR, &pack_enable_pool(erc20, false))
+        .call(LONGTAIL_ADDR, &pack_enable_pool(erc20, false))
         .map_err(Error::LongtailError)?;
     Ok(())
 }

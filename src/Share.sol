@@ -20,13 +20,21 @@ contract Share is
     }
 
     function ctor(string calldata name, address admin) initializer public {
-        string memory newName = string.concat("9lives Prediction ", name);
+        string memory newName = string.concat(
+            "9lives #",
+            /// We do this to protect the user from being distracted by other tokens.
+            Strings.toString(uint256(uint8(uint256(
+                keccak256(abi.encodePacked(block.timestamp)
+            ))))),
+            " ",
+            name
+        );
         bytes8 id = bytes8(keccak256(abi.encodePacked(name)));
         string memory symbol = string.concat(
             "9#",
             Strings.toString(uint256(uint64(id)))
         );
-        __ERC20_init(name, symbol);
+        __ERC20_init(newName, symbol);
         __Ownable_init(admin);
         __ERC20Permit_init(newName);
     }

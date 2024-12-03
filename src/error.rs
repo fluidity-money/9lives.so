@@ -10,7 +10,7 @@ use std::{
 const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
 const ERR_ERC20_TRANSFER_PREAMBLE: [u8; 2] = [0x99, 0x01];
 const ERR_SHARE_PREAMBLE: [u8; 2] = [0x99, 0x02];
-const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x02];
+const ERR_TRADING_PREAMBLE: [u8; 2] = [0x99, 0x03];
 const ERR_ERC20_TRANSFER_FROM_PREAMBLE: [u8; 2] = [0x99, 0x04];
 const ERR_ERC20_PERMIT_PREAMBLE: [u8; 2] = [0x99, 0x05];
 const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
@@ -219,7 +219,7 @@ pub enum Error {
     /// User was already targeted by the sweep/they can't be targeted!
     UserAlreadyTargeted,
 
-    // 2f
+    // 0x2f
     /// The window for this market has closed! It's been longer than a week.
     InfraMarketWindowClosed,
 
@@ -330,6 +330,8 @@ pub enum Error {
     // 0x4a
     /// It's not past the deadline for this contract!
     NotPastDeadline,
+
+    FuckShit,
 }
 
 /// Error that will unwrap if it fails instead of propagating to the toplevel.
@@ -362,7 +364,9 @@ impl From<Error> for Vec<u8> {
             }
             Error::LockedARBError(addr, b) => ext(&ERR_LOCKED_ARB_PREAMBLE, &[&b, addr.as_slice()]),
             Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
-            Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
+            Error::TradingError(b) => {
+                ext(&ERR_TRADING_PREAMBLE, &[&b])
+            }
             Error::FactoryCallError(b) => ext(&ERR_FACTORY_PREAMBLE, &[&b]),
             Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
@@ -377,7 +381,7 @@ where
     fn encode(self) -> ArbResult {
         match self.0 {
             Ok(v) => v.encode(),
-            Err(err) => Err(err.into())
+            Err(err) => Err(err.into()),
         }
     }
 }

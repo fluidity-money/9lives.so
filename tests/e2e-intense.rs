@@ -5,7 +5,7 @@ use stylus_sdk::{
     msg,
 };
 
-use lib9lives::{utils::block_timestamp, host};
+use lib9lives::{host, utils::block_timestamp};
 
 use proptest::{
     collection::{self, VecStrategy},
@@ -87,7 +87,7 @@ proptest! {
             let _random_mints =
                 purchase_int_1.into_iter().map(|ActionAmountPurchased { fusdc_amt, outcome }| -> (U256, Outcome, U256) {
                     fusdc_vested += fusdc_amt;
-                    let s = c.mint_227_C_F_432(
+                    let s = c.mint_0_D_365_E_C_6(
                         if outcome == Outcome::Outcome1 { outcome_1_id } else { outcome_2_id },
                         U256::from(fusdc_amt),
                         msg::sender()
@@ -110,7 +110,7 @@ proptest! {
                 (outcome_2_id, share_2_received)
             };
             c.decide(outcome_winner).unwrap();
-            let ret_amt = c.payoff(outcome_winner, winning_amt, msg::sender()).unwrap();
+            let ret_amt = c.payoff_91_F_A_8_C_2_E(outcome_winner, winning_amt, msg::sender()).unwrap();
             assert!(
                 ret_amt <= fusdc_vested,
                 "ret_amt: {ret_amt} <= fusdc_vested: {fusdc_vested}, diff: {}",

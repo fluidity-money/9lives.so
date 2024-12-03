@@ -86,7 +86,7 @@ proptest! {
             // Make the first group of random mints.
             for ActionAmountPurchased { fusdc_amt, outcome } in purchase_int_1 {
                 fusdc_vested += fusdc_amt;
-                let s = c.mint_227_C_F_432(
+                let s = c.mint_0_D_365_E_C_6(
                     if outcome == Outcome::Outcome1 { outcome_1_id } else { outcome_2_id },
                     U256::from(fusdc_amt),
                     msg::sender()
@@ -101,7 +101,7 @@ proptest! {
             // Make the second group of random mints.
             for ActionAmountPurchased { fusdc_amt, outcome } in purchase_int_2 {
                 fusdc_vested += fusdc_amt;
-                let s = c.mint_227_C_F_432(
+                let s = c.mint_0_D_365_E_C_6(
                     if outcome == Outcome::Outcome1 { outcome_1_id } else { outcome_2_id },
                     U256::from(fusdc_amt),
                     msg::sender()
@@ -119,7 +119,7 @@ proptest! {
                 (outcome_2_id, share_2_received)
             };
             c.decide(outcome_winner).unwrap();
-            let ret_amt = c.payoff(outcome_winner, winning_amt, msg::sender()).unwrap();
+            let ret_amt = c.payoff_91_F_A_8_C_2_E(outcome_winner, winning_amt, msg::sender()).unwrap();
             assert!(
                 ret_amt <= fusdc_vested,
                 "ret_amt: {ret_amt} <= fusdc_vested: {fusdc_vested}, diff: {}",

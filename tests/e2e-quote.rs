@@ -28,7 +28,7 @@ proptest! {
             .unwrap();
 
             match c
-                .quote_8168_F_301(
+                .quote_C_0_E_17_F_C_7(
                     fixed_bytes!("0541d76af67ad076"),
                     U256::from(fusdc_quote),
                 ).into()
