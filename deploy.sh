@@ -86,27 +86,27 @@ log "SPN_LOCKUP_TOKEN_PROXY_ADDR=$SPN_LOCKUP_TOKEN_PROXY_ADDR"
 >&2 cat <<EOF
 |            Deployment name             |              Deployment address            |
 |----------------------------------------|--------------------------------------------|
-| Proxy admin                            | $SPN_PROXY_ADMIN |
-| Factory 1 implementation               | $SPN_FACTORY_1_IMPL_ADDR |
-| Factory 2 implementation               | $SPN_FACTORY_2_IMPL_ADDR |
-| Lockup implementation                  | $SPN_LOCKUP_IMPL_ADDR |
-| Optimistic infra market implementation | $SPN_INFRA_MARKET_IMPL_ADDR |
-| Trading DPM mint impl                  | $SPN_TRADING_DPM_MINT_IMPL_ADDR |
-| Trading DPM extras impl                | $SPN_TRADING_DPM_EXTRAS_IMPL_ADDR |
-| Trading DPM price impl                 | $SPN_TRADING_DPM_PRICE_IMPL_ADDR |
-| Trading DPM quotes impl                | $SPN_TRADING_DPM_QUOTES_IMPL_ADDR |
-| Trading DPM price impl                 | $SPN_TRADING_DPM_PRICE_IMPL_ADDR |
-| Trading AMM mint impl                  | $SPN_TRADING_AMM_MINT_IMPL_ADDR |
-| Trading AMM extras impl                | $SPN_TRADING_AMM_EXTRAS_IMPL_ADDR |
-| Trading AMM price impl                 | $SPN_TRADING_AMM_PRICE_IMPL_ADDR |
-| Trading AMM quotes impl                | $SPN_TRADING_AMM_QUOTES_IMPL_ADDR |
-| Trading AMM price impl                 | $SPN_TRADING_AMM_PRICE_IMPL_ADDR |
-| Share implementation                   | $SPN_SHARE_IMPL_ADDR |
-| Lockup token implementation            | $SPN_LOCKUP_TOKEN_IMPL_ADDR |
-| Infrastructure market proxy            | $SPN_INFRA_MARKET_PROXY_ADDR |
-| Lockup proxy                           | $SPN_LOCKUP_PROXY_ADDR |
-| Lockup token proxy                     | $SPN_LOCKUP_TOKEN_PROXY_ADDR |
-| Factory proxy                          | $SPN_FACTORY_PROXY_ADDR |
+| Proxy admin                            | \`$SPN_PROXY_ADMIN\` |
+| Factory 1 implementation               | \`$SPN_FACTORY_1_IMPL_ADDR\` |
+| Factory 2 implementation               | \`$SPN_FACTORY_2_IMPL_ADDR\` |
+| Lockup implementation                  | \`$SPN_LOCKUP_IMPL_ADDR\` |
+| Optimistic infra market implementation | \`$SPN_INFRA_MARKET_IMPL_ADDR\` |
+| Trading DPM mint impl                  | \`$SPN_TRADING_DPM_MINT_IMPL_ADDR\` |
+| Trading DPM extras impl                | \`$SPN_TRADING_DPM_EXTRAS_IMPL_ADDR\` |
+| Trading DPM price impl                 | \`$SPN_TRADING_DPM_PRICE_IMPL_ADDR\` |
+| Trading DPM quotes impl                | \`$SPN_TRADING_DPM_QUOTES_IMPL_ADDR\` |
+| Trading DPM price impl                 | \`$SPN_TRADING_DPM_PRICE_IMPL_ADDR\` |
+| Trading AMM mint impl                  | \`$SPN_TRADING_AMM_MINT_IMPL_ADDR\` |
+| Trading AMM extras impl                | \`$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR\` |
+| Trading AMM price impl                 | \`$SPN_TRADING_AMM_PRICE_IMPL_ADDR\` |
+| Trading AMM quotes impl                | \`$SPN_TRADING_AMM_QUOTES_IMPL_ADDR\` |
+| Trading AMM price impl                 | \`$SPN_TRADING_AMM_PRICE_IMPL_ADDR\` |
+| Share implementation                   | \`$SPN_SHARE_IMPL_ADDR\` |
+| Lockup token implementation            | \`$SPN_LOCKUP_TOKEN_IMPL_ADDR\` |
+| Infrastructure market proxy            | \`$SPN_INFRA_MARKET_PROXY_ADDR\` |
+| Lockup proxy                           | \`$SPN_LOCKUP_PROXY_ADDR\` |
+| Lockup token proxy                     | \`$SPN_LOCKUP_TOKEN_PROXY_ADDR\` |
+| Factory proxy                          | \`$SPN_FACTORY_PROXY_ADDR\` |
 EOF
 
 cat <<EOF

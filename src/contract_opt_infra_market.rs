@@ -1,4 +1,4 @@
-use stylus_sdk::{alloy_primitives::*, contract, evm, prelude::AddressVM};
+use stylus_sdk::{alloy_primitives::*, contract, evm};
 
 use crate::{
     erc20_call, error::*, events, fees::*, fusdc_call, immutables::*, lockup_call, maths,
@@ -90,7 +90,6 @@ impl StorageOptimisticInfraMarket {
             !self.campaign_call_begins.get(trading_addr).is_zero(),
             Error::NotRegistered
         );
-        dbg!(block_timestamp(), self.campaign_call_begins.get(trading_addr));
         assert_or!(
             are_we_in_calling_period(
                 self.campaign_call_begins.get(trading_addr),
@@ -309,21 +308,14 @@ impl StorageOptimisticInfraMarket {
         self.campaign_winner
             .setter(trading_addr)
             .set(campaign_winner);
-        // Since no-one will call the sweep stage, we're going to contract we're
-        // attached to to the outcome. We're going to check if the contract has
-        // code before calling this however as a precaution.
         evm::log(events::InfraMarketClosed {
             incentiveRecipient: fee_recipient,
             tradingAddr: trading_addr,
             winner: campaign_winner,
         });
-        if trading_addr.has_code() {
-            trading_call::decide(trading_addr, campaign_winner)?;
-            evm::log(events::InfraMarketDecided {
-                tradingAddr: trading_addr,
-                winner: campaign_winner,
-            });
-        }
+	// It should be okay to just call this contract since the factory
+	// will guarantee that there's an associated contract here.
+        trading_call::decide(trading_addr, campaign_winner)?;
         ok(fees_earned)
     }
 

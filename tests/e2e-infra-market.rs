@@ -1,8 +1,11 @@
+#![cfg(all(not(target_arch = "wasm32"), feature = "testing"))]
+
 use proptest::prelude::*;
 
-use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes};
+use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
 
 use lib9lives::{
+    error::{set_panic, Error},
     fees::INCENTIVE_AMT_BASE,
     host,
     utils::{block_timestamp, msg_sender},
@@ -31,6 +34,14 @@ fn test_infra_market_happy_path() {
         );
         host::ts_add_time(150);
         c.call(trading, winner, msg_sender()).unwrap();
+        // Prevent us from indisciminantly panicking (and unwinding) so we can check
+        // the return statuses here.
+        set_panic(false);
+        // Now we wait the period. Let's try to call different things while this is happening.
+        assert_eq!(
+            c.predict(trading, winner, U256::from(100)).unwrap_err(),
+            Error::WhingedTimeUnset
+        );
     })
 }
 

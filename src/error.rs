@@ -1,3 +1,9 @@
+// This code has some weird behaviour to make tracing backtraces easier.
+// This in the form of the SHOULD_PANIC code. The user can elect to
+// use should_backtrace to set whether unswap should happen instead of
+// returning values. This should not be used in a library context
+// (outside of this executable).
+
 use alloc::vec::Vec;
 
 use stylus_sdk::{abi::internal::EncodableReturnType, alloy_primitives::Address, ArbResult};
@@ -6,6 +12,9 @@ use std::{
     convert::Infallible,
     ops::{ControlFlow, FromResidual, Try},
 };
+
+#[cfg(feature = "testing")]
+use std::cell::RefCell;
 
 const ERR_LONGTAIL_PREAMBLE: [u8; 2] = [0x99, 0x00];
 const ERR_ERC20_TRANSFER_PREAMBLE: [u8; 2] = [0x99, 0x01];
@@ -21,6 +30,21 @@ const ERR_INFRA_MARKET_PREAMBLE: [u8; 2] = [0x99, 0x08];
 #[cfg(feature = "testing")]
 use std::backtrace::Backtrace;
 
+#[cfg(feature = "testing")]
+thread_local! {
+    static SHOULD_PANIC: RefCell<bool> = RefCell::new(true);
+}
+
+#[cfg(feature = "testing")]
+fn should_panic() -> bool {
+    SHOULD_PANIC.with(|v| v.clone().into_inner())
+}
+
+#[cfg(feature = "testing")]
+pub fn set_panic(answer: bool) {
+    SHOULD_PANIC.with(|v| *v.borrow_mut() = answer)
+}
+
 #[macro_export]
 macro_rules! assert_or {
     ($cond:expr, $err:expr) => {
@@ -30,7 +54,7 @@ macro_rules! assert_or {
     };
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 #[repr(u8)]
 pub enum Error {
     // 0x01
@@ -398,11 +422,10 @@ impl<T> FromResidual<<Self as Try>::Residual> for R<T> {
     #[cfg_attr(feature = "testing", track_caller)]
     fn from_residual(residual: Error) -> Self {
         #[cfg(feature = "testing")]
-        {
+        if should_panic() {
             let bt = Backtrace::force_capture();
             panic!("err, {residual:?}: {bt}");
         }
-        #[cfg(not(feature = "testing"))]
         R(Err(residual))
     }
 }
@@ -413,11 +436,10 @@ impl<T> FromResidual<Result<Infallible, Error>> for R<T> {
         match residual {
             Err(err) => {
                 #[cfg(feature = "testing")]
-                {
+                if should_panic() {
                     let bt = Backtrace::force_capture();
                     panic!("err, {err:?}: {bt}");
                 }
-                #[cfg(not(feature = "testing"))]
                 R(Err(err))
             }
             Ok(_) => unreachable!(),
@@ -442,8 +464,9 @@ impl<T> Try for R<T> {
             Ok(v) => ControlFlow::Continue(v),
             Err(err) => {
                 #[cfg(feature = "testing")]
-                panic!("unpacking: {:?}", err);
-                #[cfg(not(feature = "testing"))]
+                if should_panic() {
+                    panic!("unpacking: {:?}", err);
+                }
                 ControlFlow::Break(err)
             }
         }
@@ -476,5 +499,11 @@ impl<T> R<T> {
     }
     pub fn expect(self: R<T>, msg: &str) -> T {
         self.0.expect(msg)
+    }
+}
+
+impl<T: std::fmt::Debug> R<T> {
+    pub fn unwrap_err(self: R<T>) -> Error {
+        self.0.unwrap_err()
     }
 }

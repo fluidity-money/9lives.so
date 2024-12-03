@@ -64,9 +64,4 @@ interface IEvents {
         address indexed tradingAddr,
         bytes8 indexed winner
     );
-
-    event InfraMarketDecided(
-        address indexed tradingAddr,
-        bytes8 indexed winner
-    );
 }

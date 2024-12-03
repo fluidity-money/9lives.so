@@ -21,7 +21,7 @@ macro_rules! define_period_checker {
             }
             let when = u64::from_le_bytes($when.to_le_bytes()) + ($from_days * 24 * 60 * 60);
             let until = when + ($days * 24 * 60 * 60);
-            Ok(when >= current_ts && when <= until)
+            Ok(current_ts >= when && current_ts <= until)
         }
     };
 }
@@ -74,14 +74,15 @@ mod test {
 
     proptest! {
         #[test]
-        fn test_are_we_in_two_week_period(start in 0..u64::MAX, secs in 1..u64::MAX) {
+        fn test_are_we_in_two_week_period(start in 1..u64::MAX, secs in 1..u64::MAX) {
             let start = U64::from(start);
             let two_weeks = U64::from(1209600);
             let secs_ = U64::from(secs);
             let should_pass = secs_ > start && two_weeks > secs_ - start;
+            let calling_period = are_we_in_calling_period(start, secs).unwrap();
             assert!(
-                should_pass && are_we_in_calling_period(start, secs).unwrap(),
-                "two weeks: start: {start}, secs: {secs_}"
+                if should_pass { calling_period } else { !calling_period },
+                "start: {start}, secs: {secs_}, err: {calling_period:?}"
             );
         }
     }
