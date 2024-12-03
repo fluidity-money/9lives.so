@@ -1,6 +1,10 @@
 import config from "@/config";
-import { prepareContractCall, sendTransaction } from "thirdweb";
-import { keccak256, toUtf8Bytes } from "ethers";
+import {
+  prepareContractCall,
+  sendTransaction,
+  simulateTransaction,
+} from "thirdweb";
+import { keccak256, MaxUint256, toUtf8Bytes } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -8,7 +12,17 @@ import { CampaignInput } from "@/types";
 import { useRouter } from "next/navigation";
 import { requestCreateCampaign } from "@/providers/graphqlClient";
 import { useCampaignStore } from "@/stores/campaignStore";
-
+import clientEnv from "../config/clientEnv";
+const approveFactoryTx = prepareContractCall({
+  contract: config.contracts.fusdc,
+  method: "approve",
+  params: [clientEnv.NEXT_PUBLIC_FACTORY_ADDR, MaxUint256],
+});
+const approveInfraTx = prepareContractCall({
+  contract: config.contracts.fusdc,
+  method: "approve",
+  params: [clientEnv.NEXT_PUBLIC_INFRA_ORACLE_ADDR, MaxUint256],
+});
 const useCreate = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -32,11 +46,44 @@ const useCreate = () => {
               method: "createWithInfraMarket",
               params: [
                 creationList, // outcomes
-                BigInt(0), // time ending
+                BigInt(new Date(input.ending).getTime() * 1000), // time ending in seconds timestamp
                 hashedUrl, // documentation url committee
                 account.address, // fee recipient
               ],
             });
+            const allowanceFactoryTx = prepareContractCall({
+              contract: config.contracts.fusdc,
+              method: "allowance",
+              params: [account.address, clientEnv.NEXT_PUBLIC_FACTORY_ADDR],
+            });
+            const allowanceInfraTx = prepareContractCall({
+              contract: config.contracts.fusdc,
+              method: "allowance",
+              params: [
+                account.address,
+                clientEnv.NEXT_PUBLIC_INFRA_ORACLE_ADDR,
+              ],
+            });
+            const allowanceOfFactory = (await simulateTransaction({
+              transaction: allowanceFactoryTx,
+              account,
+            })) as bigint;
+            if (!(allowanceOfFactory > 0)) {
+              await sendTransaction({
+                transaction: approveFactoryTx,
+                account,
+              });
+            }
+            const allowanceOfInfra = (await simulateTransaction({
+              transaction: allowanceInfraTx,
+              account,
+            })) as bigint;
+            if (!(allowanceOfInfra > 0)) {
+              await sendTransaction({
+                transaction: approveInfraTx,
+                account,
+              });
+            }
             await sendTransaction({
               transaction: createTx,
               account,
