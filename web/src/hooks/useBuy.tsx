@@ -44,12 +44,11 @@ const useBuy = ({
             method: "getLongtailQuote",
             params: [shareAddr, true, amount, MaxUint256],
           });
-          const check9liveReturnTx = (receipent: string) =>
-            prepareContractCall({
-              contract: tradingContract,
-              method: "quote101CBE35",
-              params: [outcomeId, amount, receipent],
-            });
+          const check9liveReturnTx = prepareContractCall({
+            contract: tradingContract,
+            method: "quoteC0E17FC7",
+            params: [outcomeId, amount],
+          });
           const mintWith9LivesTx = (
             signature: string,
             accountAddress: string,
@@ -62,8 +61,8 @@ const useBuy = ({
               params: [
                 outcomeId,
                 amount,
-                BigInt(deadline),
                 accountAddress,
+                BigInt(deadline),
                 v,
                 r as `0x${string}`,
                 s as `0x${string}`,
@@ -76,14 +75,12 @@ const useBuy = ({
             params: [outcomeId, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
           });
           const [returnAmm, return9lives] = await Promise.all<bigint>([
-            // simulateTransaction({
-            //   transaction: checkAmmReturnTx,
-            //   account,
-            // }),
-            // disable checking long tail for now on mainnet
-            BigInt(0),
             simulateTransaction({
-              transaction: check9liveReturnTx(account.address),
+              transaction: checkAmmReturnTx,
+              account,
+            }),
+            simulateTransaction({
+              transaction: check9liveReturnTx,
               account,
             }),
           ]);
@@ -130,8 +127,18 @@ const useBuy = ({
             }
             const mintTx = prepareContractCall({
               contract: tradingContract,
-              method: "mint227CF432",
-              params: [outcomeId, amount, account.address],
+              method: "mintPermitB8D681AD",
+              // if deadline is zero, following params are not evaluated
+              // so it become a standard mint without permit
+              params: [
+                outcomeId,
+                amount,
+                account.address,
+                BigInt(0),
+                0,
+                "0x",
+                "0x",
+              ],
             });
             await sendTransaction({
               transaction: mintTx,
