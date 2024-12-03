@@ -3,9 +3,7 @@ use stylus_sdk::{
     call::RawCall,
 };
 
-use stylus_sdk::alloy_sol_types::sol;
-
-use alloy_sol_types::SolCall;
+use stylus_sdk::alloy_sol_types::{SolCall, sol};
 
 use crate::error::Error;
 

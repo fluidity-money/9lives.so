@@ -125,6 +125,7 @@ describe("End to end tests", async () => {
   Buffer.from(outcome2.substr(-16), "hex").copy(outcomeBals, 8);
 
   await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
+  await (await fusdc.approve(infraMarketProxyAddr, MaxUint256)).wait();
 
   const documentationHash =
     "0x482762a5bf88a80830135ebdf2bb2abca30d3ebe991712570faf4b85e5e27f1d";

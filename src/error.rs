@@ -1,6 +1,10 @@
 use alloc::vec::Vec;
 
-use stylus_sdk::{abi::internal::EncodableReturnType, alloy_primitives::Address, ArbResult};
+use stylus_sdk::{
+    abi::internal::EncodableReturnType,
+    alloy_primitives::{Address, Bytes},
+    ArbResult,
+};
 
 use std::{
     convert::Infallible,
@@ -17,6 +21,10 @@ const ERR_ERC20_BALANCE_OF_PREAMBLE: [u8; 2] = [0x99, 0x06];
 const ERR_LOCKED_ARB_PREAMBLE: [u8; 2] = [0x99, 0x07];
 const ERR_FACTORY_PREAMBLE: [u8; 2] = [0x99, 0x07];
 const ERR_INFRA_MARKET_PREAMBLE: [u8; 2] = [0x99, 0x08];
+
+sol! {
+    error Failure(bytes);
+}
 
 #[cfg(feature = "testing")]
 use std::backtrace::Backtrace;
@@ -364,9 +372,7 @@ impl From<Error> for Vec<u8> {
             }
             Error::LockedARBError(addr, b) => ext(&ERR_LOCKED_ARB_PREAMBLE, &[&b, addr.as_slice()]),
             Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
-            Error::TradingError(b) => {
-                ext(&ERR_TRADING_PREAMBLE, &[&b])
-            }
+            Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
             Error::FactoryCallError(b) => ext(&ERR_FACTORY_PREAMBLE, &[&b]),
             Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
