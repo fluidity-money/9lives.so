@@ -31,7 +31,7 @@ export default function CreateCampaignFormName({
   useEffect(() => {
     setSelectedAITitle("");
     setValue("name", "");
-  }, [aiEnabled]);
+  }, [aiEnabled, setValue]);
   return (
     <Field className={fieldClass}>
       <div className="flex items-center justify-between">
@@ -90,7 +90,7 @@ export default function CreateCampaignFormName({
                   setValue("name", title);
                   setSelectedAITitle(title);
                 }}
-                className="rounded-0 group flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-9blueLight"
+                className="group flex cursor-default select-none items-center gap-2 px-3 py-1.5 data-[focus]:bg-9blueLight"
               >
                 <div className="text-sm/6">{title}</div>
               </ListboxOption>

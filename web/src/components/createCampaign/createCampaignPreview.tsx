@@ -28,10 +28,10 @@ export default function CreateCampaignPreview() {
               alt={preview?.name}
               width={50}
               height={50}
-              className="size-[50px] flex-shrink-0 border border-9black object-contain"
+              className="size-[50px] shrink-0 border border-9black object-contain"
             />
           ) : (
-            <div className="flex size-[50px] flex-shrink-0 items-center justify-center border border-9black shadow-9input">
+            <div className="flex size-[50px] shrink-0 items-center justify-center border border-9black shadow-9input">
               <span className="font-geneva text-[10px] uppercase">PIC</span>
             </div>
           )}
