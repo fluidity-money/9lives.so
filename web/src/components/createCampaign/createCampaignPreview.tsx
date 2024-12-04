@@ -81,7 +81,10 @@ export default function CreateCampaignPreview() {
         ) : (
           <div className="flex flex-col gap-2">
             {preview?.outcomes.map((item, idx) => (
-              <div className="flex items-start gap-2" key={item.id}>
+              <div
+                className="flex items-start gap-2"
+                key={`preview_outcome_${idx}_${item.seed}`}
+              >
                 {item.picture ? (
                   <Image
                     src={item.picture}

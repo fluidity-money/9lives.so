@@ -32,6 +32,7 @@ import {
 import Button from "@/components/themed/button";
 import { inputStyle } from "../createCampaignForm";
 import UploadIcon from "#/icons/upload.svg";
+import { randomValue4Uint8 } from "@/utils/generateId";
 type CreateCampaignFormOutcomesFields = {
   outcomes: {
     name: string;
@@ -232,6 +233,7 @@ export default function CreateCampaignFormOutcomes({
                   name: "",
                   description: "",
                   picture: new File([], ""),
+                  seed: randomValue4Uint8(),
                 });
               }}
               intent={"default"}

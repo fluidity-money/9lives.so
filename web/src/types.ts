@@ -28,7 +28,6 @@ export type Detail = {
 export type OutcomeType = "custom" | "default";
 export type SettlementType = "url" | "beauty" | "contract" | "ai";
 export type CampaignInput = {
-  id: `0x${string}`;
   name: string;
   desc: string;
   picture: string;
@@ -44,7 +43,6 @@ export type CampaignInput = {
   urlCommitee: string;
 };
 export type OutcomeInput = {
-  id: `0x${string}`;
   picture: string;
   name: string;
   description: string;
