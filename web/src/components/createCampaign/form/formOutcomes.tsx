@@ -224,7 +224,7 @@ export default function CreateCampaignFormOutcomes({
                 </div>
               </Field>
             ))}
-            <Button
+            {/* <Button
               onClick={() => {
                 customOutcomePicturesRef.current.push(
                   createRef<HTMLInputElement>(),
@@ -239,7 +239,7 @@ export default function CreateCampaignFormOutcomes({
               intent={"default"}
               size={"large"}
               title="Add More Outcomes +"
-            />
+            /> */}
           </TabPanel>
         </TabPanels>
       </TabGroup>
