@@ -1,7 +1,7 @@
 import keccak from "keccak";
 
 export function randomValue4Uint8() {
-  return Math.floor(Math.random() * 256);
+  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 }
 
 export function generateId(
@@ -10,11 +10,11 @@ export function generateId(
   seed: number,
 ) {
   try {
-    // Ensure the seed is a valid uint8 value
+    // Ensure the seed is a valid max safe integer of js value
     if (
       typeof seed !== "number" ||
       seed < 0 ||
-      seed > 255 ||
+      seed > Number.MAX_SAFE_INTEGER ||
       !Number.isInteger(seed)
     ) {
       throw new Error("Seed must be an 8-bit unsigned integer (uint8).");
