@@ -17,6 +17,7 @@ import CreateCampaignFormSocials from "./form/formSocials";
 import useCreate from "@/hooks/useCreate";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import { randomValue4Uint8 } from "@/utils/generateId";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -55,12 +56,14 @@ export default function CreateCampaignForm() {
       }),
     name: z.string().min(3),
     description: z.string().min(5),
+    seed: z.number().int().min(0).max(255),
   });
   const formSchema = useMemo(
     () =>
       z.object({
         name: z.string().min(3),
         desc: z.string().min(5),
+        seed: z.number().int().min(0).max(255),
         picture: z
           .instanceof(File, { message: "You have to upload a picture" })
           .refine((file) => file.size <= 1024 * 1024, {
@@ -79,6 +82,7 @@ export default function CreateCampaignForm() {
                   picture: z.instanceof(File),
                   name: z.string(),
                   description: z.string(),
+                  seed: z.number().int().min(0).max(255),
                 }),
               ),
         urlCommitee: z.string().url(), // committee url is required in this version. Toggle below line to change this behaviour.
@@ -101,42 +105,56 @@ export default function CreateCampaignForm() {
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      seed: randomValue4Uint8(),
       starting: new Date().toISOString().split("T")[0],
       outcomes: [
-        { name: "", description: "", picture: new File([], "") },
-        { name: "", description: "", picture: new File([], "") },
+        {
+          name: "",
+          description: "",
+          picture: new File([], ""),
+          seed: randomValue4Uint8(),
+        },
+        {
+          name: "",
+          description: "",
+          picture: new File([], ""),
+          seed: randomValue4Uint8(),
+        },
       ],
     },
   });
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
-  const form = useFormStore((s) => s.form);
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (input: FormData) => {
     if (!account) return connect();
-
-    const outcomes = data.outcomes.map((o, idx) => ({
-      ...o,
-      id: form!.outcomes[idx].id,
-      picture: form!.outcomes[idx].picture,
-      seed: form!.outcomes[idx].seed,
-    }));
-    create(
-      {
-        ...data,
-        picture: form!.picture,
-        outcomes,
-        id: form!.id,
-        seed: form!.seed,
-      },
-      account,
-    );
+    let outcomes;
+    if (outcomeType === "default") {
+      outcomes = input.outcomes.slice(0, 2).map((o, idx) => ({
+        ...o,
+        name: idx === 0 ? "Yes" : "No",
+        description: "",
+        picture: "",
+      }));
+    } else {
+      outcomes = input.outcomes.map((o, idx) => ({
+        ...o,
+        picture: outcomeImageBlobs[idx]!,
+      }));
+    }
+    const preparedInput = {
+      ...input,
+      picture: pictureBlob!,
+      outcomes,
+    };
+    create(preparedInput, account);
   };
   useEffect(() => {
     if (fields) {
       debouncedFillForm({
         ...fields,
         picture: pictureBlob ?? "",
+        seed: 0,
         outcomeType,
         settlementType,
         outcomes: fields.outcomes.map((outcome, index) => {
@@ -144,6 +162,7 @@ export default function CreateCampaignForm() {
             name: outcome.name,
             description: outcome.description,
             picture: outcomeImageBlobs[index] ?? "",
+            seed: 0,
           };
         }),
       });
@@ -184,18 +203,6 @@ export default function CreateCampaignForm() {
         setPictureBlob={setPictureBlob}
         setValue={setValue}
       />
-      {/* <Field className={fieldClass}>
-        <Label text="Start Date" required />
-        <Input
-          type="date"
-          {...register("starting")}
-          className={combineClass(
-            errors.starting && "border-2 border-red-500",
-            "text-center uppercase",
-          )}
-        />
-        {errors.starting && <ErrorInfo text={errors.starting.message} />}
-      </Field> */}
       <CreateCampaignFormEndDate register={register} error={errors.ending} />
       <CreateCampaignFormSettlmentSource
         register={register}

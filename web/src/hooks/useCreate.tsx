@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { requestCreateCampaign } from "@/providers/graphqlClient";
 import { useCampaignStore } from "@/stores/campaignStore";
 import clientEnv from "../config/clientEnv";
+import { generateId } from "@/utils/generateId";
 const approveFactoryTx = prepareContractCall({
   contract: config.contracts.fusdc,
   method: "approve",
@@ -32,10 +33,11 @@ const useCreate = () => {
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const draftCampaign = draftCampaigns.find((c) => c.id === input.id);
+          const campaignId = generateId(input.name, input.desc, input.seed);
+          const draftCampaign = draftCampaigns.find((c) => c.id === campaignId);
           if (!draftCampaign) {
             const creationList = input.outcomes.map((o) => ({
-              identifier: o.id!,
+              identifier: generateId(o.name, o.description, o.seed),
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
               name: o.name,
             }));
