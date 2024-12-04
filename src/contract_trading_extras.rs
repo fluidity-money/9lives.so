@@ -60,7 +60,7 @@ impl StorageTrading {
         // when it's called for the first time. This should be called by anyone
         // after the date of this closing.
         assert_or!(
-            u64::from_le_bytes(self.time_ending.get().to_le_bytes()) < block_timestamp(),
+            u64::from_be_bytes(self.time_ending.get().to_be_bytes()) < block_timestamp(),
             Error::NotPastDeadline
         );
         assert_or!(!self.is_shutdown.get(), Error::IsShutdown);

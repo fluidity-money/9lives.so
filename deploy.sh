@@ -13,6 +13,11 @@ log() {
 	>&2 echo $@
 }
 
+if [ "$SPN_PROXY_ADMIN" = "0x0000000000000000000000000000000000000000"]; then
+	log "zero proxy admin not possible for deploy"
+	exit 1
+fi
+
 log "SPN_PROXY_ADMIN=$SPN_PROXY_ADMIN"
 log "SPN_EMERGENCY_COUNCIL=$SPN_EMERGENCY_COUNCIL"
 
@@ -87,11 +92,11 @@ log "SPN_LOCKUP_TOKEN_PROXY_ADDR=$SPN_LOCKUP_TOKEN_PROXY_ADDR"
 
 export SPN_HELPER_FACTORY="${SPN_HELPER_FACTORY:-$(./deploy-helper-factory.sh)}"
 [ -z "$SPN_HELPER_FACTORY" ] && exit 1
-echo "SPN_HELPER_FACTORY=$SPN_HELPER_FACTORY"
+log "SPN_HELPER_FACTORY=$SPN_HELPER_FACTORY"
 
 export SPN_LENSESV1="${SPN_LENSESV1:-$(./deploy-lenses.sh)}"
 [ -z "$SPN_LENSESV1" ] && exit 1
-echo "SPN_LENSESV1=$SPN_LENSESV1"
+log "SPN_LENSESV1=$SPN_LENSESV1"
 
 >&2 cat <<EOF
 |            Deployment name             |              Deployment address            |

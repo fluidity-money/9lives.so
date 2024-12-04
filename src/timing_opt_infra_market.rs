@@ -19,7 +19,7 @@ macro_rules! define_period_checker {
             if $when.is_zero() {
                 return Err(Error::$unset_err);
             }
-            let when = u64::from_le_bytes($when.to_le_bytes()) + ($from_days * 24 * 60 * 60);
+            let when = u64::from_be_bytes($when.to_be_bytes()) + ($from_days * 24 * 60 * 60);
             let until = when + ($days * 24 * 60 * 60);
             Ok(current_ts >= when && current_ts <= until)
         }

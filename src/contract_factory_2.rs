@@ -76,11 +76,11 @@ impl StorageFactory {
     }
 
     pub fn get_backend(&self, trading_addr: Address) -> R<u8> {
-        ok(u8::from_le_bytes(
+        ok(u8::from_be_bytes(
             self.trading_backends
                 .getter(trading_addr)
                 .get()
-                .to_le_bytes(),
+                .to_be_bytes(),
         ))
     }
 

@@ -12,6 +12,6 @@ pub fn block_timestamp() -> u64 {
 pub fn msg_sender() -> Address {
     #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
     return crate::host::get_msg_sender();
-    #[cfg(target_arch = "wasm32")]
-    return stylus_sdk::msg::sender();
+    #[allow(unreachable_code)]
+    stylus_sdk::msg::sender()
 }

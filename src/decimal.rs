@@ -14,8 +14,8 @@ fn u256_to_decimal(n: U256, decimals: u8) -> R<Decimal> {
         return ok(Decimal::ZERO);
     }
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
-    let n: u128 = u128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
-    let rem: u128 = u128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
+    let n: u128 = u128::from_be_bytes(n.to_be_bytes::<32>()[..16].try_into().unwrap());
+    let rem: u128 = u128::from_be_bytes(rem.to_be_bytes::<32>()[..16].try_into().unwrap());
     if n > MAX_DECIMAL {
         return err(Error::U256TooLarge);
     }

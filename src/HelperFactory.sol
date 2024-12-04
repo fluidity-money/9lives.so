@@ -27,8 +27,8 @@ contract HelperFactory {
         FACTORY = _factory;
         INFRA_MARKET = _infraMarket;
         FUSDC = _fusdc;
-        FUSDC.approve(address(FACTORY), type(uint256).max);
-        FUSDC.approve(address(INFRA_MARKET), type(uint256).max);
+        FUSDC.approve(address(_factory), type(uint256).max);
+        FUSDC.approve(address(_infraMarket), type(uint256).max);
     }
 
     function createWithInfraMarket(
@@ -37,6 +37,8 @@ contract HelperFactory {
         bytes32 documentation,
         address feeRecipient
     ) public returns (address tradingAddr) {
+        // We need to take the base incentive amount for transfers.
+        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6) + 1e7);
         return FACTORY.newTrading09393DA8(
             outcomes,
             INFRA_MARKET,

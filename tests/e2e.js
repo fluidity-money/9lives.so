@@ -17,6 +17,7 @@ const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
 const FactoryProxy = require("../out/FactoryProxy.sol/FactoryProxy.json");
 const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 const LensesV1 = require("../out/LensesV1.sol/LensesV1.json");
+const HelperFactory = require("../out/HelperFactory.sol/HelperFactory.json");
 
 describe("End to end tests", async () => {
   const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
@@ -58,17 +59,7 @@ describe("End to end tests", async () => {
   await longtailDeploy.waitForDeployment();
   const longtailAddress = await longtailDeploy.getAddress();
 
-  const {
-    lockupProxy: lockupProxyAddr,
-    lockupProxyToken: lockupProxyTokenAddr,
-    factoryProxy: factoryProxyAddr,
-    infrastructureMarketProxy: infraMarketProxyAddr,
-    shareImplementation,
-    tradingDpmExtrasImplementation,
-    tradingDpmMintImplementation,
-    tradingDpmPriceImplementation,
-    tradingDpmQuotesImplementation
-  } = JSON.parse(execSync(
+  const deployStr = execSync(
     "./build-and-deploy.sh",
     {
       env: {
@@ -83,12 +74,45 @@ describe("End to end tests", async () => {
       },
       stdio: ["ignore", "pipe", "ignore"]
     },
-  ));
+  );
 
-  console.log("tradingDpmExtrasImplementation:", tradingDpmExtrasImplementation);
-  console.log("tradingDpmMintImplementation:", tradingDpmMintImplementation);
-  console.log("tradingDpmPriceImplementation:", tradingDpmPriceImplementation);
-  console.log("tradingDpmQuotesImplementation:", tradingDpmQuotesImplementation);
+  const {
+    lockupProxy: lockupProxyAddr,
+    lockupProxyToken: lockupProxyTokenAddr,
+    factoryProxy: factoryProxyAddr,
+    infrastructureMarketProxy: infraMarketProxyAddr,
+    shareImplementation,
+    tradingDpmExtrasImplementation,
+    tradingDpmMintImplementation,
+    tradingDpmPriceImplementation,
+    tradingDpmQuotesImplementation
+  } = (() => {
+    try {
+      return JSON.parse(deployStr);
+    } catch (err) {
+      throw new Error(`deploy str: ${deployStr}`);
+    }
+  })();
+
+  const helperFactoryFactory = new ContractFactory(
+    HelperFactory.abi,
+    HelperFactory.bytecode,
+    signer
+  );
+
+  const helperFactoryDeploy = await helperFactoryFactory.deploy(
+    fusdcAddress,
+    factoryProxyAddr,
+    infraMarketProxyAddr
+  );
+
+  await helperFactoryDeploy.waitForDeployment();
+
+  const helperFactory = new Contract(
+    await helperFactoryDeploy.getAddress(),
+    HelperFactory.abi,
+    signer
+  );
 
   const factoryProxy = new Contract(
     factoryProxyAddr,
@@ -124,24 +148,19 @@ describe("End to end tests", async () => {
   Buffer.from(outcome1.substr(-16), "hex").copy(outcomeBals, 0);
   Buffer.from(outcome2.substr(-16), "hex").copy(outcomeBals, 8);
 
-  await (await fusdc.approve(factoryProxyAddr, MaxUint256)).wait();
-  await (await fusdc.approve(infraMarketProxyAddr, MaxUint256)).wait();
+  await (await fusdc.approve(helperFactory, MaxUint256)).wait();
 
   const documentationHash =
     "0x482762a5bf88a80830135ebdf2bb2abca30d3ebe991712570faf4b85e5e27f1d";
 
-  const tradingAddr = await factoryProxy.newTrading09393DA8.staticCall(
+  const tradingAddr = await helperFactory.createWithInfraMarket.staticCall(
       outcomes,
-      infraMarketProxyAddr,
-      timestamp + 10,    // Time start
       timestamp + 100,   // Time end
       documentationHash,
       defaultAccountAddr // Fee recipient
   );
-  await (await factoryProxy.newTrading09393DA8(
+  await (await helperFactory.createWithInfraMarket(
       outcomes,
-      infraMarketProxyAddr,
-      timestamp + 10,    // Time start
       timestamp + 100,   // Time end
       documentationHash,
       defaultAccountAddr // Fee recipient
