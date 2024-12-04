@@ -17,12 +17,14 @@ export function generateId(
       seed > Number.MAX_SAFE_INTEGER ||
       !Number.isInteger(seed)
     ) {
-      throw new Error("Seed must be an 8-bit unsigned integer (uint8).");
+      throw new Error(
+        "Seed must be an max safe integer (2 ^ 53 -1) unsigned integer (uint64 float).",
+      );
     }
     const nameBuffer = Buffer.from(name ?? "", "utf-8");
     const descBuffer = Buffer.from(desc ?? "", "utf-8");
     const seedBuffer = Buffer.alloc(1);
-    seedBuffer.writeUInt8(seed); // Write seed as uint8
+    seedBuffer.writeDoubleBE(seed); // Write seed as double big-endian
     const combinedBuffer = Buffer.concat([nameBuffer, descBuffer, seedBuffer]);
     const hash = keccak("keccak256").update(combinedBuffer).digest();
     return `0x${hash.subarray(0, 8).toString("hex")}` as `0x${string}`;
