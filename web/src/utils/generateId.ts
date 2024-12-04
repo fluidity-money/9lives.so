@@ -23,7 +23,7 @@ export function generateId(
     }
     const nameBuffer = Buffer.from(name ?? "", "utf-8");
     const descBuffer = Buffer.from(desc ?? "", "utf-8");
-    const seedBuffer = Buffer.alloc(1);
+    const seedBuffer = Buffer.allocUnsafe(8);
     seedBuffer.writeDoubleBE(seed); // Write seed as double big-endian
     const combinedBuffer = Buffer.concat([nameBuffer, descBuffer, seedBuffer]);
     const hash = keccak("keccak256").update(combinedBuffer).digest();
