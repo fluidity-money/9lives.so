@@ -1,6 +1,8 @@
 import { defineChain } from "thirdweb/chains";
 import z from "zod";
 import "thirdweb/utils";
+// import { arbitrum } from "thirdweb/chains";
+export { arbitrum } from "thirdweb/chains";
 
 export const networkSchema = z.object({
   id: z.number(),
@@ -46,3 +48,6 @@ if (!chainValidation.success) {
   console.error("Invalid chain: ", chainValidation.error.name);
   throw new Error(chainValidation.error.message);
 }
+
+// export const currentChain = arbitrum
+export const currentChain = superpositionTestnet;

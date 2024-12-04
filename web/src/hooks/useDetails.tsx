@@ -6,7 +6,6 @@ import {
   simulateTransaction,
 } from "thirdweb";
 import config from "@/config";
-import { arbitrum } from "thirdweb/chains";
 import { Detail } from "@/types";
 interface useDetailsProps {
   tradingAddr: `0x${string}`;
@@ -26,7 +25,7 @@ export default function useDetails({
         abi: tradingAbi,
         address: tradingAddr,
         client: config.thirdweb.client,
-        chain: arbitrum,
+        chain: config.chains.currentChain,
       });
       const promises = outcomeIds.map((id) =>
         simulateTransaction({

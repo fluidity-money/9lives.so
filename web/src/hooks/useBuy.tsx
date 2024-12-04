@@ -13,7 +13,6 @@ import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
-import { arbitrum } from "thirdweb/chains";
 
 const useBuy = ({
   shareAddr,
@@ -37,7 +36,7 @@ const useBuy = ({
             abi: tradingAbi,
             address: tradingAddr,
             client: config.thirdweb.client,
-            chain: arbitrum,
+            chain: config.chains.currentChain,
           });
           const checkAmmReturnTx = prepareContractCall({
             contract: config.contracts.lens,

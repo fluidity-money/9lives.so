@@ -2,10 +2,8 @@ import z from "zod";
 import { createThirdwebClient } from "thirdweb";
 import clientEnv from "./clientEnv";
 import appConfig from "./app";
-import { networkSchema } from "./chains";
-import { arbitrum } from "thirdweb/chains";
+import { networkSchema, currentChain } from "./chains";
 import { inAppWallet, createWallet } from "thirdweb/wallets";
-const chain = arbitrum;
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 const thirdwebClient = createThirdwebClient({
   clientId: thirdwebClientId,
@@ -39,7 +37,7 @@ const thirdwebSchema = z.object({
 const wallets = [
   inAppWallet({
     smartAccount: {
-      chain: arbitrum,
+      chain: currentChain,
       sponsorGas: true,
     },
   }),
@@ -53,7 +51,7 @@ const thirdwebValidation = thirdwebSchema.safeParse({
     url: appConfig.metadata.metadataBase.href,
     logoUrl: appConfig.metadata.metadataBase.origin + "/images/logo.svg",
   },
-  chain,
+  chain: currentChain,
   wallets,
   theme: "light",
   detailsButton: {
@@ -109,7 +107,7 @@ if (!thirdwebValidation.success) {
 }
 const thirdweb = {
   ...(thirdwebValidation.data as ThirdwebSchemaType & {
-    chain: typeof chain;
+    chain: typeof currentChain;
     wallets: typeof wallets;
   }),
   client: thirdwebClient,
