@@ -141,10 +141,10 @@ impl StorageOptimisticInfraMarket {
         // We need the seconds since the whinge was recorded so we can
         // determine voting power.
         let secs_since_whinge = block_timestamp()
-            .checked_sub(u64::from_le_bytes(
+            .checked_sub(u64::from_be_bytes(
                 self.campaign_when_whinged
                     .getter(trading_addr)
-                    .to_le_bytes(),
+                    .to_be_bytes(),
             ))
             .ok_or(Error::CheckedSubOverflow)?;
         assert_or!(

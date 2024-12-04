@@ -6,7 +6,11 @@
 
 use alloc::vec::Vec;
 
-use stylus_sdk::{abi::internal::EncodableReturnType, alloy_primitives::Address, ArbResult};
+use stylus_sdk::{
+    abi::internal::EncodableReturnType,
+    alloy_primitives::{Address, U256},
+    ArbResult,
+};
 
 use std::{
     convert::Infallible,
@@ -17,7 +21,9 @@ use std::{
 use std::backtrace::Backtrace;
 
 macro_rules! err_pre {
-    ($name:ident, $val:literal) => { const $name: [u8; 2] = [0x99, $val]; };
+    ($name:ident, $val:literal) => {
+        const $name: [u8; 2] = [0x99, $val];
+    };
 }
 
 err_pre!(ERR_LONGTAIL_PREAMBLE, 0x00);
@@ -35,7 +41,7 @@ err_pre!(ERR_INFRA_MARKET_PREAMBLE, 0x08);
 // of issues.
 #[cfg(feature = "testing")]
 mod testing {
-    use std::{cell::RefCell};
+    use std::cell::RefCell;
 
     thread_local! {
         static SHOULD_PANIC: RefCell<bool> = RefCell::new(true);
@@ -183,7 +189,7 @@ pub enum Error {
 
     // 0x1d
     /// ERC20 error on transfer from!
-    ERC20ErrorTransferFrom(Address, Vec<u8>),
+    ERC20ErrorTransferFrom(Address, Address, Address, U256),
 
     // 0x1e
     /// ERC20 error on permit!
@@ -402,9 +408,15 @@ impl From<Error> for Vec<u8> {
             Error::ERC20ErrorTransfer(addr, b) => {
                 ext(&ERR_ERC20_TRANSFER_PREAMBLE, &[&b, addr.as_slice()])
             }
-            Error::ERC20ErrorTransferFrom(addr, b) => {
-                ext(&ERR_ERC20_TRANSFER_FROM_PREAMBLE, &[&b, addr.as_slice()])
-            }
+            Error::ERC20ErrorTransferFrom(addr, from, to, amt) => ext(
+                &ERR_ERC20_TRANSFER_FROM_PREAMBLE,
+                &[
+                    addr.as_slice(),
+                    from.as_slice(),
+                    to.as_slice(),
+                    &amt.to_be_bytes::<32>(),
+                ],
+            ),
             Error::ERC20ErrorPermit(addr, b) => {
                 ext(&ERR_ERC20_PERMIT_PREAMBLE, &[&b, addr.as_slice()])
             }
