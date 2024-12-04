@@ -147,5 +147,5 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Lockup proxy                           | `0x99679399ac062644a0bec4b3d4ef3973bee264c3` |
 | Lockup token proxy                     | `0xfbb18d325c935cbf4325dbb62b4258e6604bf887` |
 | Factory proxy                          | `0x2e56a38de9c07df064704a14b479435f67b2a625` |
-| Helper factory                         | `0xD331DA34d68BD6Ef0eF92B7535cf162f69E30c7e` |
+| Helper factory                         | `0x51daCe91D85d59bD4AE867Eb403B4D5f55D65B4e` |
 | LensesV1                               | `0x6B8ceA22DA83B4de5CF14B324ebf0F065015a84B` |

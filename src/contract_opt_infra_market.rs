@@ -53,6 +53,8 @@ impl StorageOptimisticInfraMarket {
             self.campaign_call_begins.get(trading_addr).is_zero(),
             Error::AlreadyRegistered
         );
+        // Only the factory can use this, so it should be safe to have
+        // taking from a user.
         assert_or!(
             msg_sender() == self.factory_addr.get(),
             Error::NotFactoryContract
