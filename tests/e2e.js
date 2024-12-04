@@ -175,7 +175,15 @@ describe("End to end tests", async () => {
 
   it("Should support minting shares, then activating payoff, and receiving all of the pool.", async () => {
     const balBefore = await share1.balanceOf(defaultAccountAddr);
-    await (await trading.mint227CF432(outcome1, 6 * 1e6, defaultAccountAddr)).wait();
+    await (await trading.mintPermitB8D681AD(
+      outcome1,
+      6 * 1e6,
+      defaultAccountAddr,
+      0,
+      0,
+      [],
+      []
+    )).wait();
     const balAfter = await share1.balanceOf(defaultAccountAddr);
     assert.equal(balAfter, "4476926");
     return;
