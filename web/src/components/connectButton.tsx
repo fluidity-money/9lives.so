@@ -4,7 +4,6 @@ import {
   useActiveAccount,
 } from "thirdweb/react";
 import appConfig from "@/config";
-import { arbitrum } from "thirdweb/chains";
 import Image from "next/image";
 import LoginIcon from "#/icons/login.svg";
 export default function ConnectButton() {
@@ -13,7 +12,7 @@ export default function ConnectButton() {
     <div className="flex items-center justify-center border-l-2 border-l-black">
       <ThirdWebButton
         client={appConfig.thirdweb.client}
-        chain={arbitrum}
+        chain={appConfig.chains.currentChain}
         appMetadata={appConfig.thirdweb.metadata}
         wallets={appConfig.thirdweb.wallets}
         theme={appConfig.thirdweb.theme}

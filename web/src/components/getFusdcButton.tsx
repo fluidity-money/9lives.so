@@ -1,6 +1,4 @@
 "use client";
-import { useActiveWallet } from "thirdweb/react";
-
 export default function GetFusdcButton() {
   return (
     <a

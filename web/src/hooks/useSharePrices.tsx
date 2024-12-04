@@ -7,7 +7,6 @@ import {
 } from "thirdweb";
 import { formatUnits } from "ethers";
 import { useQuery } from "@tanstack/react-query";
-import { arbitrum } from "thirdweb/chains";
 export default function useSharePrices({
   tradingAddr,
   outcomeIds,
@@ -22,7 +21,7 @@ export default function useSharePrices({
         abi: tradingAbi,
         address: tradingAddr,
         client: config.thirdweb.client,
-        chain: arbitrum,
+        chain: config.chains.currentChain,
       });
       const res = await Promise.all<bigint>(
         outcomeIds.map((outcomeId) =>

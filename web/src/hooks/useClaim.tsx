@@ -7,7 +7,6 @@ import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
-import { arbitrum } from "thirdweb/chains";
 import ERC20Abi from "@/config/abi/erc20";
 
 const useClaim = ({
@@ -37,7 +36,7 @@ const useClaim = ({
             abi: ERC20Abi,
             address: shareAddr,
             client: config.thirdweb.client,
-            chain: arbitrum,
+            chain: config.chains.currentChain,
           });
           const approveTx = prepareContractCall({
             contract: shareContract,
@@ -48,7 +47,7 @@ const useClaim = ({
             abi: tradingAbi,
             address: tradingAddr,
             client: config.thirdweb.client,
-            chain: arbitrum,
+            chain: config.chains.currentChain,
           });
           const claimTx = prepareContractCall({
             contract: tradingContract,
