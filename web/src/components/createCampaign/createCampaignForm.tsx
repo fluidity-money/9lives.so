@@ -82,7 +82,7 @@ export default function CreateCampaignForm() {
                   picture: z.instanceof(File),
                   name: z.string(),
                   description: z.string(),
-                  seed: z.number().int().min(0).max(255),
+                  seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
                 }),
               ),
         urlCommitee: z.string().url(), // committee url is required in this version. Toggle below line to change this behaviour.
