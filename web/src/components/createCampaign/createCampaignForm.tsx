@@ -56,14 +56,14 @@ export default function CreateCampaignForm() {
       }),
     name: z.string().min(3),
     description: z.string().min(5),
-    seed: z.number().int().min(0).max(255),
+    seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
   });
   const formSchema = useMemo(
     () =>
       z.object({
         name: z.string().min(3),
         desc: z.string().min(5),
-        seed: z.number().int().min(0).max(255),
+        seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
         picture: z
           .instanceof(File, { message: "You have to upload a picture" })
           .refine((file) => file.size <= 1024 * 1024, {
