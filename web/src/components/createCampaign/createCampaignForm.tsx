@@ -158,10 +158,9 @@ export default function CreateCampaignForm() {
   ]);
   return (
     <form
-      className="relative flex flex-[2] flex-col gap-7 p-0.5"
+      className="flex flex-[2] flex-col gap-7"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="absolute inset-0 z-10 bg-9layer/75" />
       <CreateCampaignFormName
         register={register}
         error={errors.name}
