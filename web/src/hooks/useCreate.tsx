@@ -123,7 +123,7 @@ const useCreate = () => {
           queryClient.invalidateQueries({
             queryKey: ["campaigns"],
           });
-          router.replace("/");
+          router.replace(`/campaign/${campaignId}`);
           res(null);
         } catch (e) {
           rej(e);
