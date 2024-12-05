@@ -56,7 +56,7 @@ const useBuy = ({
             const deadline = Date.now();
             return prepareContractCall({
               contract: tradingContract,
-              method: "mintPermitB8D681AD",
+              method: "mintPermitE90275AB",
               params: [
                 outcomeId,
                 amount,
@@ -126,7 +126,7 @@ const useBuy = ({
             }
             const mintTx = prepareContractCall({
               contract: tradingContract,
-              method: "mintPermitB8D681AD",
+              method: "mintPermitE90275AB",
               // if deadline is zero, following params are not evaluated
               // so it become a standard mint without permit
               params: [
