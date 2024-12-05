@@ -1,5 +1,7 @@
 use stylus_sdk::alloy_primitives::{Address, FixedBytes};
 
+use alloc::vec::Vec;
+
 use crate::error::Error;
 
 pub fn ctor(

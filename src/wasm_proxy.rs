@@ -3,6 +3,8 @@ use stylus_sdk::{
     deploy::RawDeploy,
 };
 
+use alloc::vec::Vec;
+
 use crate::immutables::{boring_proxy_code, trading_proxy_code};
 
 // Deploy a new ERC20 using CREATE2 and the seed given. Returns the

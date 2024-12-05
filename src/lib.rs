@@ -1,6 +1,8 @@
 // NOTE: A lot of work has been done to get this to go under the
 // codesize.
 
+#![cfg_attr(target_arch = "wasm32", no_std)]
+
 #![feature(try_trait_v2)]
 
 pub mod decimal;

@@ -3,6 +3,8 @@ use stylus_sdk::{
     crypto,
 };
 
+use alloc::vec::Vec;
+
 use crate::immutables::{erc20_proxy_hash, trading_proxy_hash};
 
 #[cfg(target_arch = "wasm32")]

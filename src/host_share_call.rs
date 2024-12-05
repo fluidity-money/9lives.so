@@ -1,5 +1,7 @@
 use stylus_sdk::alloy_primitives::{Address, U256};
 
+use alloc::string::String;
+
 use crate::{erc20_call, error::Error};
 
 // Construct the ERC20 with the description in bytes provided, and an

@@ -4,6 +4,8 @@ use stylus_sdk::{
     alloy_sol_types::{sol, SolCall}
 };
 
+use alloc::string::String;
+
 use crate::{erc20_call, error::Error};
 
 sol! {

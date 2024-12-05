@@ -2,7 +2,7 @@
 /// variable, and are in some cases (ie, the Factory), configured based on
 /// nonce management. We have a preference for online keccak256,
 /// but we use a constant function here to simplify CREATE2 interaction.
-use stylus_sdk::alloy_primitives::{address, Address, U256};
+use stylus_sdk::alloy_primitives::{Address, U256};
 
 use array_concat::{concat_arrays, concat_arrays_size};
 
@@ -151,8 +151,6 @@ pub const SHARE_DECIMALS: u8 = 6;
 
 // Share decimals (1e6) that are in an exp-able form.
 pub const SHARE_DECIMALS_EXP: U256 = U256::from_limbs([1000000, 0, 0, 0]);
-
-pub const FEE_RECIPIENT: Address = address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7");
 
 pub const LONGTAIL_FEE: u32 = 3000;
 

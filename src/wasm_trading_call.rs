@@ -4,6 +4,8 @@ use stylus_sdk::{
     call::RawCall,
 };
 
+use alloc::vec::Vec;
+
 use crate::error::Error;
 
 sol! {

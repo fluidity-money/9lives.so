@@ -1,4 +1,4 @@
-#!/bin/sh -eu
+#!/usr/bin/env -S bash -eu
 
 cat >/dev/null <<EOF
 $SPN_SUPERPOSITION_URL
@@ -12,11 +12,6 @@ EOF
 log() {
 	>&2 echo $@
 }
-
-if [ "$SPN_PROXY_ADMIN" = "0x0000000000000000000000000000000000000000"]; then
-	log "zero proxy admin not possible for deploy"
-	exit 1
-fi
 
 log "SPN_PROXY_ADMIN=$SPN_PROXY_ADMIN"
 log "SPN_EMERGENCY_COUNCIL=$SPN_EMERGENCY_COUNCIL"
