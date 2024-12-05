@@ -14,44 +14,6 @@
 	},
 	{
 		"type": "function",
-		"name": "ctor",
-		"inputs": [
-			{
-				"name": "shareImpl",
-				"type": "address",
-				"internalType": "address"
-			},
-			{
-				"name": "tradingDPMExtrasImpl",
-				"type": "address",
-				"internalType": "address"
-			},
-			{
-				"name": "tradingDPMMintImpl",
-				"type": "address",
-				"internalType": "address"
-			},
-			{
-				"name": "tradingAMMExtrasImpl",
-				"type": "address",
-				"internalType": "address"
-			},
-			{
-				"name": "tradingAMMMintImpl",
-				"type": "address",
-				"internalType": "address"
-			},
-			{
-				"name": "infraMarketOracle",
-				"type": "address",
-				"internalType": "address"
-			}
-		],
-		"outputs": [],
-		"stateMutability": "nonpayable"
-	},
-	{
-		"type": "function",
 		"name": "dpmTradingHash",
 		"inputs": [],
 		"outputs": [
@@ -75,19 +37,6 @@
 			}
 		],
 		"stateMutability": "view"
-	},
-	{
-		"type": "function",
-		"name": "erc20Impl",
-		"inputs": [],
-		"outputs": [
-			{
-				"name": "",
-				"type": "address",
-				"internalType": "address"
-			}
-		],
-		"stateMutability": "pure"
 	},
 	{
 		"type": "function",
@@ -161,7 +110,7 @@
 						"internalType": "bytes8"
 					},
 					{
-						"name": "amount",
+						"name": "sqrtPrice",
 						"type": "uint256",
 						"internalType": "uint256"
 					},
@@ -206,5 +155,18 @@
 			}
 		],
 		"stateMutability": "nonpayable"
+	},
+	{
+		"type": "function",
+		"name": "shareImpl",
+		"inputs": [],
+		"outputs": [
+			{
+				"name": "",
+				"type": "address",
+				"internalType": "address"
+			}
+		],
+		"stateMutability": "pure"
 	}
 ]

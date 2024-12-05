@@ -1,6 +1,44 @@
 [
     {
         "type": "function",
+        "name": "ctor",
+        "inputs": [
+            {
+                "name": "outcomes",
+                "type": "bytes8[]",
+                "internalType": "bytes8[]"
+            },
+            {
+                "name": "oracle",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "timeStart",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "timeEnding",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "feeRecipient",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "shareImpl",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
         "name": "decide",
         "inputs": [
             {
@@ -39,9 +77,9 @@
                 "internalType": "uint256"
             },
             {
-                "name": "isWinner",
-                "type": "bool",
-                "internalType": "bool"
+                "name": "winner",
+                "type": "bytes8",
+                "internalType": "bytes8"
             }
         ],
         "stateMutability": "view"
@@ -61,32 +99,16 @@
     },
     {
         "type": "function",
-        "name": "mint227CF432",
-        "inputs": [
-            {
-                "name": "outcome",
-                "type": "bytes8",
-                "internalType": "bytes8"
-            },
-            {
-                "name": "value",
-                "type": "uint256",
-                "internalType": "uint256"
-            },
-            {
-                "name": "recipient",
-                "type": "address",
-                "internalType": "address"
-            }
-        ],
+        "name": "isDpm",
+        "inputs": [],
         "outputs": [
             {
                 "name": "",
-                "type": "uint256",
-                "internalType": "uint256"
+                "type": "bool",
+                "internalType": "bool"
             }
         ],
-        "stateMutability": "nonpayable"
+        "stateMutability": "view"
     },
     {
         "type": "function",
@@ -103,14 +125,14 @@
                 "internalType": "uint256"
             },
             {
-                "name": "deadline",
-                "type": "uint256",
-                "internalType": "uint256"
-            },
-            {
                 "name": "recipient",
                 "type": "address",
                 "internalType": "address"
+            },
+            {
+                "name": "deadline",
+                "type": "uint256",
+                "internalType": "uint256"
             },
             {
                 "name": "v",
@@ -139,7 +161,7 @@
     },
     {
         "type": "function",
-        "name": "payoff",
+        "name": "payoff91FA8C2E",
         "inputs": [
             {
                 "name": "outcomeId",
@@ -168,7 +190,7 @@
     },
     {
         "type": "function",
-        "name": "priceF3C364BC",
+        "name": "priceA827ED27",
         "inputs": [
             {
                 "name": "outcome",
@@ -187,7 +209,7 @@
     },
     {
         "type": "function",
-        "name": "quote101CBE35",
+        "name": "quoteC0E17FC7",
         "inputs": [
             {
                 "name": "outcome",
@@ -198,11 +220,6 @@
                 "name": "value",
                 "type": "uint256",
                 "internalType": "uint256"
-            },
-            {
-                "name": "recipient",
-                "type": "address",
-                "internalType": "address"
             }
         ],
         "outputs": [
@@ -232,5 +249,12 @@
             }
         ],
         "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "shutdown",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
     }
 ]
