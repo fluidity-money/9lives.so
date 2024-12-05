@@ -6,6 +6,9 @@ use stylus_sdk::{
     evm,
 };
 
+#[cfg(target_arch = "wasm32")]
+use alloc::{string::String, vec::Vec};
+
 use crate::{
     amm_call, error::*, events, fusdc_call, immutables::*, opt_infra_market_call, proxy,
     share_call, trading_call,

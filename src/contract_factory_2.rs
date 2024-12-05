@@ -1,5 +1,7 @@
 use stylus_sdk::{alloy_primitives::*, contract};
 
+use alloc::vec::Vec;
+
 use crate::{amm_call, error::*, immutables::*, proxy};
 
 pub use crate::{storage_factory::*, utils::msg_sender};

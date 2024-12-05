@@ -1,10 +1,8 @@
-use stylus_sdk::{evm, alloy_primitives::*, contract};
+use stylus_sdk::{alloy_primitives::*, contract, evm};
 
-use crate::{utils::msg_sender, erc20_call, error::Error, fusdc_call, immutables::*, maths};
+use crate::{erc20_call, error::Error, fusdc_call, immutables::*, maths, utils::msg_sender};
 
-pub use crate::{nineliveslockedarb_call, proxy, storage_lockup::*, events};
-
-use std::cmp::max;
+pub use crate::{events, nineliveslockedarb_call, proxy, storage_lockup::*};
 
 #[cfg_attr(feature = "contract-lockup", stylus_sdk::prelude::public)]
 impl StorageLockup {
@@ -94,9 +92,14 @@ impl StorageLockup {
         );
         // Make sure that their deadline is as late as possible.
         let existing_deadline = self.deadlines.get(spender);
+        let until = U64::from(until);
         self.deadlines
             .setter(spender)
-            .set(max(existing_deadline, U64::from(until)));
+            .set(if existing_deadline > until {
+                until
+            } else {
+                existing_deadline
+            });
         Ok(())
     }
 }

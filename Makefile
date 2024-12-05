@@ -1,4 +1,8 @@
 
+comma=,
+CARGO_EXTRA_FEATURES := \
+	$(if ${SPN_HARNESS_BACKEND},${comma}harness-stylus-interpreter)
+
 CARGO_BUILD_STYLUS := \
 	cargo build \
 		--release \
@@ -60,62 +64,62 @@ contract-oracle-state: contract-oracle-state.wasm
 
 contract-factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-1.wasm
-	@${CARGO_BUILD_STYLUS} contract-factory-1
+	${CARGO_BUILD_STYLUS} contract-factory-1${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-factory-1.wasm
 
 contract-factory-2.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-2.wasm
-	@${CARGO_BUILD_STYLUS} contract-factory-2
+	@${CARGO_BUILD_STYLUS} contract-factory-2${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-factory-2.wasm
 
 contract-trading-dpm-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-mint.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-mint,trading-backend-dpm
+	@${CARGO_BUILD_STYLUS} contract-trading-mint,trading-backend-dpm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-mint.wasm
 
 contract-trading-dpm-extras.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-extras.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-extras,trading-backend-dpm
+	@${CARGO_BUILD_STYLUS} contract-trading-extras,trading-backend-dpm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-extras.wasm
 
 contract-trading-dpm-quotes.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-quotes.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-quotes,trading-backend-dpm
+	@${CARGO_BUILD_STYLUS} contract-trading-quotes,trading-backend-dpm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-quotes.wasm
 
 contract-trading-dpm-price.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-price.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-price,trading-backend-dpm
+	@${CARGO_BUILD_STYLUS} contract-trading-price,trading-backend-dpm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-price.wasm
 
 contract-trading-amm-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-mint.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-mint,trading-backend-amm
+	@${CARGO_BUILD_STYLUS} contract-trading-mint,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-amm-mint.wasm
 
 contract-trading-amm-extras.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-extras.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-extras,trading-backend-amm
+	@${CARGO_BUILD_STYLUS} contract-trading-extras,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-amm-extras.wasm
 
 contract-trading-amm-quotes.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-quotes.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-quotes,trading-backend-amm
+	@${CARGO_BUILD_STYLUS} contract-trading-quotes,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-amm-quotes.wasm
 
 contract-trading-amm-price.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-price.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-price,trading-backend-amm
+	@${CARGO_BUILD_STYLUS} contract-trading-price,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-amm-price.wasm
 
 contract-lockup.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-lockup.wasm
-	@${CARGO_BUILD_STYLUS} contract-lockup
+	@${CARGO_BUILD_STYLUS} contract-lockup${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-lockup.wasm
 
 contract-infrastructure-market.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-infrastructure-market.wasm
-	@${CARGO_BUILD_STYLUS} contract-infrastructure-market
+	@${CARGO_BUILD_STYLUS} contract-infrastructure-market${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-infrastructure-market.wasm
 
 clean:

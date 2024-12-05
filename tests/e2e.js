@@ -7,7 +7,8 @@ const {
   JsonRpcProvider,
   MaxUint256,
   Provider,
-  Wallet } = require("ethers");
+  Wallet,
+  encodeBytes32String, } = require("ethers");
 
 const {execSync} = require("node:child_process");
 
@@ -175,14 +176,14 @@ describe("End to end tests", async () => {
 
   it("Should support minting shares, then activating payoff, and receiving all of the pool.", async () => {
     const balBefore = await share1.balanceOf(defaultAccountAddr);
-    await (await trading.mintPermitB8D681AD(
+    await (await trading.mintPermitE90275AB(
       outcome1,
       6 * 1e6,
       defaultAccountAddr,
       0,
       0,
-      [],
-      []
+      encodeBytes32String(""),
+      encodeBytes32String("")
     )).wait();
     const balAfter = await share1.balanceOf(defaultAccountAddr);
     assert.equal(balAfter, "4476926");

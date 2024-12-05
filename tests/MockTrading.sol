@@ -50,7 +50,7 @@ contract MockTrading is INineLivesTrading {
         feeRecipient_ = _feeRecipient;
     }
 
-    function mintPermitB8D681AD(
+    function mintPermitE90275AB(
         bytes8 outcome,
         uint256 value,
         address recipient,

@@ -1,5 +1,8 @@
 use stylus_sdk::{alloy_primitives::*, contract, evm};
 
+#[cfg(target_arch = "wasm32")]
+use alloc::vec::Vec;
+
 use crate::{
     erc20_call, error::*, events, fees::*, fusdc_call, immutables::*, lockup_call, maths,
     nineliveslockedarb_call, timing_opt_infra_market::*, trading_call, utils::block_timestamp,

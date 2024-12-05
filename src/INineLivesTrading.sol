@@ -23,7 +23,7 @@ interface INineLivesTrading {
      * @notice Mint some shares in exchange for fUSDC. Optionally branches to permit or a
      * classic approval based on the deadline argument (if set to 0, assumes approval)
      */
-    function mintPermitB8D681AD(
+    function mintPermitE90275AB(
         bytes8 outcome,
         uint256 value,
         address recipient,
