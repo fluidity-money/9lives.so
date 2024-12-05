@@ -3,7 +3,6 @@ package main
 //go:generate go run github.com/99designs/gqlgen generate
 
 import (
-	"encoding/hex"
 	"net/http"
 	"os"
 
@@ -66,12 +65,12 @@ func main() {
 	defer geth.Close()
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB:          db,
-			F:           features.Get(),
-			Geth:        geth,
-			C:           config,
-			FactoryAddr: ethCommon.HexToAddress(config.FactoryAddress),
-			ChangelogItems:   Changelog[:min(ChangelogLen, len(Changelog))],
+			DB:             db,
+			F:              features.Get(),
+			Geth:           geth,
+			C:              config,
+			FactoryAddr:    ethCommon.HexToAddress(config.FactoryAddress),
+			ChangelogItems: Changelog[:min(ChangelogLen, len(Changelog))],
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})
