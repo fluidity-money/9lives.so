@@ -1,7 +1,7 @@
 // NOTE: A lot of work has been done to get this to go under the
 // codesize.
 
-#![cfg_attr(target_arch = "wasm32", no_std)]
+#![cfg_attr(target_arch = "wasm32", no_std, no_main)]
 
 #![feature(try_trait_v2)]
 
@@ -68,7 +68,7 @@ pub mod wasm_opt_infra_market_call;
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub mod host;
 
-extern crate alloc;
+pub extern crate alloc;
 
 pub mod contract_factory_1;
 pub mod contract_factory_2;

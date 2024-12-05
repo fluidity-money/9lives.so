@@ -7,15 +7,10 @@
 #[cfg(target_arch = "wasm32")]
 use alloc::{vec, vec::Vec};
 
-#[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
-use alloc::format;
-
-use stylus_sdk::{
-    alloy_primitives::{Address, U256},
-};
+use stylus_sdk::alloy_primitives::{Address, U256};
 
 #[cfg(not(target_arch = "wasm32"))]
-use stylus_sdk::{ArbResult, abi::internal::EncodableReturnType};
+use stylus_sdk::{abi::internal::EncodableReturnType, ArbResult};
 
 #[cfg(not(target_arch = "wasm32"))]
 use std::{
@@ -32,6 +27,25 @@ macro_rules! err_pre {
     };
 }
 
+macro_rules! c {
+    ($v:expr) => {
+        match $v {
+            Ok(v) => v,
+            Err(_e) => {
+                #[allow(unreachable_code)]
+                {
+                    #[cfg(any(
+                        feature = "testing",
+                        all(target_arch = "wasm32", feature = "harness-stylus-interpreter")
+                    ))]
+                    panic!("called `Result::unwrap()` on an `Err` value: {_e:?}");
+                    $v?
+                }
+            }
+        }
+    };
+}
+
 err_pre!(ERR_LONGTAIL_PREAMBLE, 0x00);
 err_pre!(ERR_ERC20_TRANSFER_PREAMBLE, 0x01);
 err_pre!(ERR_SHARE_PREAMBLE, 0x02);
@@ -42,21 +56,6 @@ err_pre!(ERR_ERC20_BALANCE_OF_PREAMBLE, 0x06);
 err_pre!(ERR_LOCKED_ARB_PREAMBLE, 0x07);
 err_pre!(ERR_FACTORY_PREAMBLE, 0x07);
 err_pre!(ERR_INFRA_MARKET_PREAMBLE, 0x08);
-
-#[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
-#[link(wasm_import_module = "stylus_interpreter")]
-extern "C" {
-    #[allow(dead_code)]
-    fn die(ptr: *const u8, len: usize, code: i32);
-}
-
-#[cfg(feature = "harness-stylus-interpreter")]
-#[panic_handler]
-fn panic(info: &core::info::PanicInfo) -> ! {
-    let msg = format!("{}", info);
-    unsafe { die(msg.as_ptr(), msg.len()) }
-    loop {}
-}
 
 // Some testing affordances to make life easier with tracing the source
 // of issues.
@@ -412,12 +411,6 @@ pub enum Error {
     FuckShit,
 }
 
-/// Error that will unwrap if it fails instead of propagating to the toplevel.
-#[cfg(not(target_arch = "wasm32"))]
-#[derive(Debug)]
-pub struct R<T>(Result<T, Error>);
-
-#[cfg(target_arch = "wasm32")]
 pub type R<T> = Result<T, Error>;
 
 impl From<Error> for Vec<u8> {
@@ -460,122 +453,10 @@ impl From<Error> for Vec<u8> {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-impl<T> EncodableReturnType for R<T>
-where
-    T: EncodableReturnType,
-{
-    fn encode(self) -> ArbResult {
-        match self.0 {
-            Ok(v) => v.encode(),
-            Err(err) => Err(err.into()),
-        }
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-impl<T> FromResidual<<Self as Try>::Residual> for R<T> {
-    #[cfg_attr(feature = "testing", track_caller)]
-    fn from_residual(residual: Error) -> Self {
-        #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-        if should_panic_f() {
-            let bt = Backtrace::force_capture();
-            panic!("err, {residual:?}: {bt}");
-        }
-        R(Err(residual))
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-impl<T> FromResidual<Result<Infallible, Error>> for R<T> {
-    #[cfg_attr(feature = "testing", track_caller)]
-    fn from_residual(residual: Result<Infallible, Error>) -> Self {
-        match residual {
-            Err(err) => {
-                #[cfg(feature = "testing")]
-                if should_panic_f() {
-                    let bt = Backtrace::force_capture();
-                    panic!("err, {err:?}: {bt}");
-                }
-                R(Err(err))
-            }
-            Ok(_) => unreachable!(),
-        }
-    }
-}
-
-// This behaviour will unwrap instead of propogating to the top level if
-// the code is in the "testing" feature mode.
-#[cfg(not(target_arch = "wasm32"))]
-impl<T> Try for R<T> {
-    type Output = T;
-    type Residual = Error;
-
-    #[cfg_attr(feature = "testing", track_caller)]
-    fn from_output(o: Self::Output) -> Self {
-        R(Ok(o))
-    }
-
-    #[cfg_attr(feature = "testing", track_caller)]
-    fn branch(self) -> ControlFlow<Self::Residual, Self::Output> {
-        match self.0 {
-            Ok(v) => ControlFlow::Continue(v),
-            Err(err) => {
-                #[cfg(feature = "testing")]
-                if should_panic_f() {
-                    panic!("unpacking: {:?}", err);
-                }
-                ControlFlow::Break(err)
-            }
-        }
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-impl<T> From<Result<T, Error>> for R<T> {
-    fn from(result: Result<T, Error>) -> Self {
-        R(result)
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-impl<T> From<R<T>> for Result<T, Error> {
-    fn from(result: R<T>) -> Self {
-        result.0
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub fn ok<T>(v: T) -> R<T> {
-    R(Ok(v))
-}
-#[cfg(target_arch = "wasm32")]
 pub fn ok<T>(v: T) -> R<T> {
     Ok(v)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-pub fn err<T>(v: Error) -> R<T> {
-    R(Err(v))
-}
-#[cfg(target_arch = "wasm32")]
 pub fn err<T>(v: Error) -> R<T> {
     Err(v)
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-impl<T> R<T> {
-    pub fn unwrap(self: R<T>) -> T {
-        self.0.unwrap()
-    }
-    pub fn expect(self: R<T>, msg: &str) -> T {
-        self.0.expect(msg)
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-impl<T: std::fmt::Debug> R<T> {
-    pub fn unwrap_err(self: R<T>) -> Error {
-        self.0.unwrap_err()
-    }
 }

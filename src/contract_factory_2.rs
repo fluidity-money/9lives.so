@@ -56,7 +56,7 @@ impl StorageFactory {
     }
 
     pub fn trading_hashes(&self) -> R<(FixedBytes<32>, FixedBytes<32>)> {
-        ok((self.dpm_trading_hash()?, self.amm_trading_hash()?))
+        ok((c!(self.dpm_trading_hash()), c!(self.amm_trading_hash())))
     }
 
     pub fn erc20_hash(&self) -> R<FixedBytes<32>> {
@@ -148,12 +148,12 @@ impl StorageFactory {
         // Start to derive the outcomes that were given to find the share addresses.
         // It should be safe to do this as we rederive the share address every time.
         for outcome_id in outcomes {
-            amm_call::pause_pool(proxy::get_share_addr(
+            c!(amm_call::pause_pool(proxy::get_share_addr(
                 contract::address(),   // Factory address.
                 msg_sender(),          // Trading address (this is the caller).
                 self.share_impl.get(), // The share address.
                 outcome_id,            // The outcome that should be banned from continuing.
-            ))?;
+            )));
         }
         ok(())
     }

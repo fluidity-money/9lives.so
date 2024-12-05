@@ -16,9 +16,9 @@ sol! {
 
 /// Construct the Locked ARB token that we're going to supply control.
 pub fn ctor(addr: Address, owner: Address) -> Result<(), Error> {
-    RawCall::new()
+    c!(RawCall::new()
         .call(addr, &ctorCall { owner }.abi_encode())
-        .map_err(|b| Error::LockedARBError(addr, b))?;
+        .map_err(|b| Error::LockedARBError(addr, b)));
     Ok(())
 }
 

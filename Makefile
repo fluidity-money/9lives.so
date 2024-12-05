@@ -64,7 +64,7 @@ contract-oracle-state: contract-oracle-state.wasm
 
 contract-factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-1.wasm
-	${CARGO_BUILD_STYLUS} contract-factory-1${CARGO_EXTRA_FEATURES}
+	@${CARGO_BUILD_STYLUS} contract-factory-1${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-factory-1.wasm
 
 contract-factory-2.wasm: $(shell find src -type f -name '*.rs')
