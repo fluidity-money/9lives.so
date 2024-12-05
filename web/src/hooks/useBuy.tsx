@@ -56,7 +56,7 @@ const useBuy = ({
             const deadline = Date.now();
             return prepareContractCall({
               contract: tradingContract,
-              method: "mintPermitE90275AB",
+              method: "mintPermitB8D681AD",
               params: [
                 outcomeId,
                 amount,
