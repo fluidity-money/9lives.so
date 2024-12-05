@@ -9,12 +9,6 @@ use alloc::{vec, vec::Vec};
 
 use stylus_sdk::alloy_primitives::{Address, U256};
 
-#[cfg(not(target_arch = "wasm32"))]
-use std::{
-    convert::Infallible,
-    ops::{ControlFlow, FromResidual, Try},
-};
-
 macro_rules! err_pre {
     ($name:ident, $val:literal) => {
         const $name: [u8; 2] = [0x99, $val];
