@@ -22,6 +22,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(
       title,
       activeIcon,
       inactiveIcon,
+      className,
       ...props
     },
     ref,
@@ -33,6 +34,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(
           selected
             ? "bg-[#DDD] shadow-9btnPrimaryActive"
             : "shadow-9btnPrimaryIdle",
+          className,
         )}
         ref={ref}
         {...props}

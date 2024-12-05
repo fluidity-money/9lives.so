@@ -79,6 +79,7 @@ export default function CreateCampaignFormSettlmentSource({
                 activeIcon={LipsActiveIcon}
                 inactiveIcon={LipsInactiveIcon}
                 {...props}
+                className="opacity-30"
               />
             )}
           </Tab>
@@ -99,6 +100,7 @@ export default function CreateCampaignFormSettlmentSource({
                 activeIcon={ContractIcon}
                 inactiveIcon={ContractBlackIcon}
                 {...props}
+                className="opacity-30"
               />
             )}
           </Tab>
@@ -109,6 +111,7 @@ export default function CreateCampaignFormSettlmentSource({
                 activeIcon={AIActiveIcon}
                 inactiveIcon={AIInactiveIcon}
                 {...props}
+                className="opacity-30"
               />
             )}
           </Tab>
