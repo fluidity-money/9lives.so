@@ -104,8 +104,14 @@ pub use contract_factory_2::user_entrypoint;
 #[cfg(feature = "contract-lockup")]
 pub use contract_lockup::user_entrypoint;
 
-#[cfg(feature = "contract-infra-market")]
-pub use contract_opt_infra_market::user_entrypoint;
+#[cfg(feature = "contract-infra-market-predict")]
+pub use contract_opt_infra_market_predict::user_entrypoint;
+
+#[cfg(feature = "contract-infra-market-sweep")]
+pub use contract_opt_infra_market_sweep::user_entrypoint;
+
+#[cfg(feature = "contract-infra-market-extras")]
+pub use contract_opt_infra_market_extras::user_entrypoint;
 
 #[cfg(all(
     target_arch = "wasm32",
@@ -117,7 +123,9 @@ pub use contract_opt_infra_market::user_entrypoint;
         feature = "contract-trading-quotes",
         feature = "contract-trading-price",
         feature = "contract-lockup",
-        feature = "contract-infra-market"
+        feature = "contract-infra-market-predict",
+        feature = "contract-infra-market-sweep",
+        feature = "contract-infra-market-extras"
     ))
 ))]
 compile_error!("one of the contract-* features must be enabled!");
