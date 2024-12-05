@@ -60,7 +60,9 @@ contract-trading-amm-price: contract-trading-amm-price.wasm
 
 contract-lockup: contract-lockup.wasm
 
-contract-infra-market: contract-infra-market.wasm
+contract-infra-market-predict: contract-infra-market-predict.wasm
+contract-infra-market-sweep: contract-infra-market-sweep.wasm
+contract-infra-market-extras: contract-infra-market-extras.wasm
 
 contract-oracle-state: contract-oracle-state.wasm
 

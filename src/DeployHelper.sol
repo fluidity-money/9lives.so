@@ -45,7 +45,9 @@ struct DeployArgs {
     address shareImpl;
     address factory1Impl;
     address factory2Impl;
-    address infraMarketImpl;
+    address infraMarketImplPredict;
+    address infraMarketImplSweep;
+    address infraMarketImplExtras;
     address lockupImpl;
     address tradingDpmExtrasImpl;
     address tradingDpmMintImpl;
@@ -73,9 +75,10 @@ contract DeployHelper {
         emit FactoryDeployed(address(factory));
         // Here we deploy the infra market proxy, but we don't do any setup on it (yet).
         InfraMarket infraMarket = InfraMarket(address(new UpgradeableInfraMarketProxy(
-            _a.infraMarketImpl,
             _a.admin,
-            ""
+            _a.infraMarketImplPredict,
+            _a.infraMarketImplSweep,
+            _a.infraMarketImplExtras
         )));
         emit InfraMarketDeployed(address(infraMarket));
         // Then, we deploy the lockup proxy.

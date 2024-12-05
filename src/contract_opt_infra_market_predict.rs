@@ -1,20 +1,13 @@
-use stylus_sdk::{alloy_primitives::*, contract, evm};
-
-#[cfg(target_arch = "wasm32")]
-use alloc::vec::Vec;
+use stylus_sdk::{alloy_primitives::*, evm};
 
 use crate::{
-    erc20_call, error::*, events, fees::*, fusdc_call, immutables::*, lockup_call, maths,
-    nineliveslockedarb_call, timing_opt_infra_market::*, trading_call, utils::block_timestamp,
-    utils::msg_sender,
+    error::*, events, lockup_call, maths, nineliveslockedarb_call, timing_opt_infra_market::*,
+    utils::block_timestamp, utils::msg_sender,
 };
 
 pub use crate::storage_opt_infra_market::*;
 
-#[cfg_attr(
-    feature = "contract-infra-market-predict",
-    stylus_sdk::prelude::public
-)]
+#[cfg_attr(feature = "contract-infra-market-predict", stylus_sdk::prelude::public)]
 impl StorageOptimisticInfraMarket {
     /// This function must be called during the predicting period.
     /// Check the balance for a user's locked up ARB for the timestamp

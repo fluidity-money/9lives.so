@@ -84,7 +84,9 @@ pub mod storage_trading;
 pub mod contract_lockup;
 pub mod storage_lockup;
 
-pub mod contract_opt_infra_market;
+pub mod contract_opt_infra_market_predict;
+pub mod contract_opt_infra_market_sweep;
+pub mod contract_opt_infra_market_extras;
 pub mod storage_opt_infra_market;
 
 #[cfg(any(
