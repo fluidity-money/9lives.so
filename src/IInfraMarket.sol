@@ -11,16 +11,19 @@ interface IInfraMarket {
     ) external returns (uint256);
 
     function predict(address trading, bytes8 winner, uint256 amount) external;
-    function winner(address trading) external view returns (bytes8 winnerId);
+    function winner(address trading) external returns (bytes8 winnerId);
 
     /// @notice marketPowerVested to this trading and outcome
     /// @param trading contract to check the results of
     /// @param outcome to check
-    function marketPowerVested(address trading, bytes8 outcome) external view returns (uint256);
+    function marketPowerVested(
+        address trading,
+        bytes8 outcome
+    ) external returns (uint256);
 
-    function globalPowerVested(address trading) external view returns (uint256);
+    function globalPowerVested(address trading) external returns (uint256);
 
-    function userPowerVested(address trading, address spender) external view returns (uint256);
+    function userPowerVested(address trading, address spender) external returns (uint256);
 
     function sweep(
         address trading,

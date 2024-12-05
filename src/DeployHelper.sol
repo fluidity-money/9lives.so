@@ -1,13 +1,14 @@
 // SPDX-Identifier: MIT
 pragma solidity 0.8.20;
 
-import {INineLivesFactory} from "./INineLivesFactory.sol";
-import {ILockup} from "./ILockup.sol";
+import {UpgradeableTwoProxy} from "./UpgradeableTwoProxy.sol";
+import {UpgradeableInfraMarketProxy} from "./UpgradeableInfraMarketProxy.sol";
 
 import {
     TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-import {FactoryProxy} from "./FactoryProxy.sol";
+import {INineLivesFactory} from "./INineLivesFactory.sol";
+import {ILockup} from "./ILockup.sol";
 
 interface InfraMarket {
     function ctor(
@@ -63,7 +64,7 @@ contract DeployHelper {
 
     constructor(DeployArgs memory _a) {
         // First, we deploy the factory proxy, but we don't do any setup on it.
-        Factory factory = Factory(address(new FactoryProxy(
+        Factory factory = Factory(address(new UpgradeableTwoProxy(
             _a.admin,
             _a.factory1Impl,
             _a.factory2Impl,
@@ -71,7 +72,7 @@ contract DeployHelper {
         )));
         emit FactoryDeployed(address(factory));
         // Here we deploy the infra market proxy, but we don't do any setup on it (yet).
-        InfraMarket infraMarket = InfraMarket(address(new TransparentUpgradeableProxy(
+        InfraMarket infraMarket = InfraMarket(address(new UpgradeableInfraMarketProxy(
             _a.infraMarketImpl,
             _a.admin,
             ""

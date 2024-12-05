@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-/// @dev 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103
+import "./ProxyAdmin.sol";
+
 bytes32 constant ADMIN_SLOT = bytes32(uint256(keccak256('eip1967.proxy.admin')) - 1);
-
-/// @dev bytes32(uint256(keccak256('eip1967.proxy.implementation.1')) - 1)
-bytes32 constant IMPL_1_SLOT = 0xb1367b25ecdd0d2df3db9449bc5ce8a546c54d6e9893823c94910167e4916b2e;
-
-/// @dev bytes32(uint256(keccak256('eip1967.proxy.implementation.2')) - 1)
-bytes32 constant IMPL_2_SLOT = 0xcd1ea76c08b49bd72e6fe67cc2f2768df0db665b5c9963a4b15b34c9fd225c4e;
+bytes32 constant IMPL_1_SLOT = bytes32(uint256(keccak256('eip1967.proxy.implementation.1')) - 1);
+bytes32 constant IMPL_2_SLOT = bytes32(uint256(keccak256('eip1967.proxy.implementation.2')) - 1);
 
 library StorageSlot {
     struct AddressSlot {
@@ -21,39 +18,11 @@ library StorageSlot {
     }
 }
 
-interface IProxy {
-    function upgradeAndCall(address, address, bytes memory) external;
-}
-
-contract ProxyAdmin {
-    event TransferOwnership(address old, address new_);
-
-    address public admin;
-    constructor(address _admin) {
-        admin = _admin;
-        emit TransferOwnership(address(0), _admin);
-    }
-    function transferOwnership(address _newAdmin) external {
-        require(msg.sender == admin, "only admin");
-        emit TransferOwnership(admin, _newAdmin);
-        admin = _newAdmin;
-    }
-    function upgrade(
-        address _proxy,
-        address _impl1,
-        address _impl2,
-        bytes memory _data
-    ) external {
-        require(msg.sender == admin, "only admin");
-        IProxy(_proxy).upgradeAndCall(_impl1, _impl2, _data);
-    }
-}
-
 /**
- * @notice FactoryProxy is a proxy that does delegation based on the 3rd byte
+ * @notice UpgradeableTwoProxy is a proxy that does delegation based on the 3rd byte
  * of the signature used in the message received to the contract.
  */
-contract FactoryProxy {
+contract UpgradeableTwoProxy {
     event Upgraded1(address impl);
     event Upgraded2(address impl);
     event AdminChanged(address previousAdmin, address newAdmin);

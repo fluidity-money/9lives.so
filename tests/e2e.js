@@ -15,7 +15,6 @@ const {execSync} = require("node:child_process");
 const TestERC20 = require("../out/TestERC20.sol/TestERC20.json");
 const MockLongtail = require("../out/MockLongtail.sol/MockLongtail.json");
 const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
-const FactoryProxy = require("../out/FactoryProxy.sol/FactoryProxy.json");
 const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 const LensesV1 = require("../out/LensesV1.sol/LensesV1.json");
 const HelperFactory = require("../out/HelperFactory.sol/HelperFactory.json");

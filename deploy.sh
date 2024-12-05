@@ -31,7 +31,7 @@ export SPN_FACTORY_2_IMPL_ADDR="${SPN_FACTORY_2_IMPL_ADDR:-$(./deploy-stylus.sh 
 [ -z "$SPN_FACTORY_2_IMPL_ADDR" ] && exit 1
 log "SPN_FACTORY_2_IMPL_ADDR=$SPN_FACTORY_2_IMPL_ADDR"
 
-export SPN_INFRA_MARKET_IMPL_ADDR="${SPN_INFRA_MARKET_IMPL_ADDR:-$(./deploy-stylus.sh contract-infrastructure-market.wasm)}"
+export SPN_INFRA_MARKET_IMPL_ADDR="${SPN_INFRA_MARKET_IMPL_ADDR:-$(./deploy-stylus.sh contract-infra-market.wasm)}"
 [ -z "$SPN_INFRA_MARKET_IMPL_ADDR" ] && exit 1
 log "SPN_INFRA_MARKET_IMPL_ADDR=$SPN_INFRA_MARKET_IMPL_ADDR"
 

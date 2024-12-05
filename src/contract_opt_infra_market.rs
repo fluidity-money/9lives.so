@@ -12,7 +12,7 @@ use crate::{
 pub use crate::storage_opt_infra_market::*;
 
 #[cfg_attr(
-    feature = "contract-infrastructure-market",
+    feature = "contract-infra-market",
     stylus_sdk::prelude::public
 )]
 impl StorageOptimisticInfraMarket {

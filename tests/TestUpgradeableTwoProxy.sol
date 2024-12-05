@@ -3,7 +3,7 @@ pragma solidity ^0.8.18;
 
 import "forge-std/Test.sol";
 
-import "../src/FactoryProxy.sol";
+import "../src/UpgradeableTwoProxy.sol";
 
 contract MockImpl1_1 {
     uint256[50] __empty;
@@ -65,11 +65,11 @@ interface IProxyAdmin {
     function upgrade(address, address, address, bytes memory) external;
 }
 
-contract TestFactoryProxy is Test {
+contract TestUpgradeableTwoProxy is Test {
     IMockedFactory factoryProxy;
 
     function setUp() external {
-        factoryProxy = IMockedFactory(address(new FactoryProxy(
+        factoryProxy = IMockedFactory(address(new UpgradeableTwoProxy(
             address(this),
             address(new MockImpl1_1()),
             address(new MockImpl2_1()),

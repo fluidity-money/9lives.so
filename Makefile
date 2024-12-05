@@ -36,7 +36,9 @@ build: \
 	contract-trading-amm-quotes \
 	contract-trading-amm-price \
 	contract-lockup \
-	contract-infrastructure-market
+	contract-infra-market-predict \
+	contract-infra-market-sweep \
+	contract-infra-market-extras
 
 solidity: ${OUT_SHARE}
 
@@ -58,7 +60,7 @@ contract-trading-amm-price: contract-trading-amm-price.wasm
 
 contract-lockup: contract-lockup.wasm
 
-contract-infrastructure-market: contract-infrastructure-market.wasm
+contract-infra-market: contract-infra-market.wasm
 
 contract-oracle-state: contract-oracle-state.wasm
 
@@ -117,10 +119,20 @@ contract-lockup.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-lockup${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-lockup.wasm
 
-contract-infrastructure-market.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f contract-infrastructure-market.wasm
-	@${CARGO_BUILD_STYLUS} contract-infrastructure-market${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_OPT_9LIVES} contract-infrastructure-market.wasm
+contract-infra-market-predict.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-infra-market-predict.wasm
+	@${CARGO_BUILD_STYLUS} contract-infra-market-predict${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-predict.wasm
+
+contract-infra-market-sweep.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-infra-market-sweep.wasm
+	@${CARGO_BUILD_STYLUS} contract-infra-market-sweep${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-sweep.wasm
+
+contract-infra-market-extras.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-infra-market-extras.wasm
+	@${CARGO_BUILD_STYLUS} contract-infra-market-extras${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-extras.wasm
 
 clean:
 	@rm -rf \
@@ -135,7 +147,9 @@ clean:
 		contract-trading-amm-mint.wasm \
 		contract-trading-dpm-trading-extras.wasm \
 		contract-trading-dpm-trading-mint.wasm \
-		contract-infrastructure-market.wasm \
+		contract-infra-market-predict.wasm \
+		contract-infra-market-sweep.wasm \
+		contract-infra-market-extras.wasm \
 		contract-lockup.wasm \
 		trading-extras.wasm \
 		trading-mint.wasm \

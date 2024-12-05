@@ -104,7 +104,7 @@ pub use contract_factory_2::user_entrypoint;
 #[cfg(feature = "contract-lockup")]
 pub use contract_lockup::user_entrypoint;
 
-#[cfg(feature = "contract-infrastructure-market")]
+#[cfg(feature = "contract-infra-market")]
 pub use contract_opt_infra_market::user_entrypoint;
 
 #[cfg(all(
@@ -117,7 +117,7 @@ pub use contract_opt_infra_market::user_entrypoint;
         feature = "contract-trading-quotes",
         feature = "contract-trading-price",
         feature = "contract-lockup",
-        feature = "contract-infrastructure-market"
+        feature = "contract-infra-market"
     ))
 ))]
 compile_error!("one of the contract-* features must be enabled!");
