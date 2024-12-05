@@ -17,4 +17,4 @@ revm = "17.1.0"
 tiny-keccak = { version = "2.0.0", features = ["sha3"] }
 tokio = { version = "1.41.1", features = ["full"] }
 url = "2.5.3"
-wasmtime = { version = "25.0.1", features = ["runtime", "cranelift"] }
+wasmtime = { version = "25.0.3", features = ["runtime", "cranelift"] }
