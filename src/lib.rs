@@ -5,11 +5,11 @@
 
 #![feature(try_trait_v2)]
 
-pub mod decimal;
-pub mod maths;
-
 #[macro_use]
 pub mod error;
+
+pub mod decimal;
+pub mod maths;
 
 pub mod events;
 

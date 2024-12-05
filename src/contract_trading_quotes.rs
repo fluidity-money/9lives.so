@@ -29,21 +29,21 @@ impl StorageTrading {
 impl StorageTrading {
     #[allow(unused)]
     fn internal_dpm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
-        let m_1 = fusdc_u256_to_decimal(self.outcome_invested.get(outcome_id))?;
+        let m_1 = c!(fusdc_u256_to_decimal(self.outcome_invested.get(outcome_id)));
         let n_1 = self.outcome_shares.get(outcome_id);
         let n_2 = self.global_shares.get() - n_1;
-        let n_1 = share_u256_to_decimal(n_1)?;
-        let n_2 = share_u256_to_decimal(n_2)?;
-        let m_2 = fusdc_u256_to_decimal(
+        let n_1 = c!(share_u256_to_decimal(n_1));
+        let n_2 = c!(share_u256_to_decimal(n_2));
+        let m_2 = c!(fusdc_u256_to_decimal(
             self.global_invested.get() - self.outcome_invested.get(outcome_id),
-        )?;
-        share_decimal_to_u256(maths::dpm_shares(
+        ));
+        ok(c!(share_decimal_to_u256(c!(maths::dpm_shares(
             m_1,
             m_2,
             n_1,
             n_2,
-            fusdc_u256_to_decimal(value)?,
-        )?)
+            c!(fusdc_u256_to_decimal(value))
+        )))))
     }
 
     #[allow(unused)]
@@ -54,27 +54,25 @@ impl StorageTrading {
         for i in 0..outcome_list_len {
             let o = self.outcome_list.get(i).unwrap();
             let outcome_shares = self.outcome_shares.get(o);
-            let shares = outcome_shares
+            let shares = c!(outcome_shares
                 .checked_add(value)
-                .ok_or(Error::CheckedAddOverflow)?;
+                .ok_or(Error::CheckedAddOverflow));
             if o == outcome_id {
                 our_shares = shares;
             }
-            product = product
-                .checked_mul(shares)
-                .ok_or(Error::CheckedMulOverflow)?;
+            product = c!(product.checked_mul(shares).ok_or(Error::CheckedMulOverflow));
         }
-        product = product
+        product = c!(product
             .checked_div(our_shares)
-            .ok_or(Error::CheckedDivOverflow)?;
+            .ok_or(Error::CheckedDivOverflow));
         //self.shares[outcome] = (self.liquidity ** self.outcomes) / product
-        let shares = self
+        let shares = c!(c!(self
             .seed_invested
             .get()
             .checked_pow(U256::from(self.outcome_list.len()))
-            .ok_or(Error::CheckedPowOverflow)?
-            .checked_div(product)
-            .ok_or(Error::CheckedDivOverflow)?;
+            .ok_or(Error::CheckedPowOverflow))
+        .checked_div(product)
+        .ok_or(Error::CheckedDivOverflow));
         ok(shares)
     }
 }
