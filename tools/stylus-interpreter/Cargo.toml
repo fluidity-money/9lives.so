@@ -1,0 +1,20 @@
+[package]
+name = "stylus-interpreter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+alloy-primitives = "=0.8.11"
+alloy-provider = "=0.6.4"
+alloy-transport-http = "=0.6.4"
+const-hex = "1.13.1"
+futures = "0.3.31"
+getrandom = "0.2.15"
+keccak-const = "0.2.0"
+maplit = "1.0.2"
+reqwest = { version = "0.12.8", features = ["blocking"] }
+revm = "17.1.0"
+tiny-keccak = { version = "2.0.0", features = ["sha3"] }
+tokio = { version = "1.41.1", features = ["full"] }
+url = "2.5.3"
+wasmtime = { version = "25.0.1", features = ["runtime", "cranelift"] }

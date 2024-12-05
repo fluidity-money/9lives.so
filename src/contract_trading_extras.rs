@@ -54,7 +54,7 @@ impl StorageTrading {
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));
         self.oracle.set(oracle);
-        ok(())
+        Ok(())
     }
 
     pub fn shutdown(&mut self) -> R<U256> {
@@ -74,7 +74,7 @@ impl StorageTrading {
                 .collect::<Vec<_>>(),
         )?;
         self.is_shutdown.set(true);
-        ok(U256::ZERO)
+        Ok(U256::ZERO)
     }
 
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> R<()> {
@@ -88,11 +88,11 @@ impl StorageTrading {
             identifier: outcome,
             oracle: oracle_addr,
         });
-        ok(())
+        Ok(())
     }
 
     pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
-        ok((
+        Ok((
             self.outcome_shares.get(outcome_id),
             self.outcome_invested.get(outcome_id),
             self.global_invested.get(),
@@ -103,24 +103,24 @@ impl StorageTrading {
     pub fn is_dpm(&self) -> R<bool> {
         #[cfg(feature = "trading-backend-dpm")]
         {
-            ok(true)
+            Ok(true)
         }
         #[cfg(not(feature = "trading-backend-dpm"))]
         {
-            ok(false)
+            Ok(false)
         }
     }
 
     pub fn ended(&self) -> R<bool> {
-        ok(!self.when_decided.is_zero())
+        Ok(!self.when_decided.is_zero())
     }
 
     pub fn invested(&self) -> R<U256> {
-        ok(self.global_invested.get())
+        Ok(self.global_invested.get())
     }
 
     pub fn share_addr(&self, outcome: FixedBytes<8>) -> R<Address> {
-        ok(proxy::get_share_addr(
+        Ok(proxy::get_share_addr(
             self.factory_addr.get(),
             contract::address(),
             self.share_impl.get(),

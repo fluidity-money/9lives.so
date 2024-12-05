@@ -81,7 +81,7 @@ impl StorageTrading {
             recipient,
             fusdcReceived: fusdc,
         });
-        ok(fusdc)
+        Ok(fusdc)
     }
 }
 
@@ -230,7 +230,7 @@ impl StorageTrading {
             fusdcSpent: value,
         });
 
-        ok(shares)
+        Ok(shares)
     }
 }
 

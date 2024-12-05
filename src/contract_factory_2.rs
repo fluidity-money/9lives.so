@@ -34,11 +34,11 @@ impl StorageFactory {
         self.trading_amm_price_impl.set(trading_amm_price_impl);
         self.infra_market.set(oracle_addr);
         self.version.set(U8::from(1));
-        ok(())
+        Ok(())
     }
 
     pub fn dpm_trading_hash(&self) -> R<FixedBytes<32>> {
-        ok(FixedBytes::from_slice(&trading_proxy_hash(
+        Ok(FixedBytes::from_slice(&trading_proxy_hash(
             self.trading_dpm_extras_impl.get(),
             self.trading_dpm_mint_impl.get(),
             self.trading_dpm_quotes_impl.get(),
@@ -47,7 +47,7 @@ impl StorageFactory {
     }
 
     pub fn amm_trading_hash(&self) -> R<FixedBytes<32>> {
-        ok(FixedBytes::from_slice(&trading_proxy_hash(
+        Ok(FixedBytes::from_slice(&trading_proxy_hash(
             self.trading_amm_extras_impl.get(),
             self.trading_amm_mint_impl.get(),
             self.trading_amm_quotes_impl.get(),
@@ -56,29 +56,29 @@ impl StorageFactory {
     }
 
     pub fn trading_hashes(&self) -> R<(FixedBytes<32>, FixedBytes<32>)> {
-        ok((c!(self.dpm_trading_hash()), c!(self.amm_trading_hash())))
+        Ok((c!(self.dpm_trading_hash()), c!(self.amm_trading_hash())))
     }
 
     pub fn erc20_hash(&self) -> R<FixedBytes<32>> {
-        ok(FixedBytes::from_slice(&erc20_proxy_hash(
+        Ok(FixedBytes::from_slice(&erc20_proxy_hash(
             self.share_impl.get(),
         )))
     }
 
     pub fn share_impl(&self) -> R<Address> {
-        ok(self.share_impl.get())
+        Ok(self.share_impl.get())
     }
 
     pub fn fusdc_addr(&self) -> R<Address> {
-        ok(FUSDC_ADDR)
+        Ok(FUSDC_ADDR)
     }
 
     pub fn get_owner(&self, trading_addr: Address) -> R<Address> {
-        ok(self.trading_owners.getter(trading_addr).get())
+        Ok(self.trading_owners.getter(trading_addr).get())
     }
 
     pub fn get_backend(&self, trading_addr: Address) -> R<u8> {
-        ok(u8::from_be_bytes(
+        Ok(u8::from_be_bytes(
             self.trading_backends
                 .getter(trading_addr)
                 .get()
@@ -87,7 +87,7 @@ impl StorageFactory {
     }
 
     pub fn get_trading_addr(&self, id: FixedBytes<32>) -> R<Address> {
-        ok(self.trading_addresses.get(id))
+        Ok(self.trading_addresses.get(id))
     }
 
     pub fn upgrade_dpm_contracts(
@@ -110,7 +110,7 @@ impl StorageFactory {
         if !price.is_zero() {
             self.trading_dpm_price_impl.set(price);
         }
-        ok(())
+        Ok(())
     }
 
     pub fn upgrade_amm_contracts(
@@ -133,7 +133,7 @@ impl StorageFactory {
         if !price.is_zero() {
             self.trading_amm_price_impl.set(price);
         }
-        ok(())
+        Ok(())
     }
 
     /// Disable shares from being traded via Longtail.
@@ -155,6 +155,6 @@ impl StorageFactory {
                 outcome_id,            // The outcome that should be banned from continuing.
             )));
         }
-        ok(())
+        Ok(())
     }
 }

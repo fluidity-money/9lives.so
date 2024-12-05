@@ -42,6 +42,7 @@ rust_decimal = { version =  "1.36.0", default-features = false, features = ["mat
 keccak-const = "0.2.0"
 alloy-sol-macro-expander = "=0.7.6"
 alloy-sol-macro-input = "=0.7.6"
+#hashbrown = { version = "0.15.2", default-features = false }
 hashbrown = "0.15.2"
 
 [dev-dependencies]

@@ -2,19 +2,27 @@ use stylus_sdk::alloy_primitives::U256;
 
 use rust_decimal::{Decimal, MathematicalOps};
 
-use crate::error::*;
+use crate::error::Error;
 
-fn add(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    ok(c!(x.checked_add(y).ok_or(Error::CheckedAddOverflow)))
+macro_rules! add {
+    ($x:expr, $y:expr) => {
+        c!($x.checked_add($y).ok_or(Error::CheckedAddOverflow))
+    }
 }
-fn mul(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    ok(c!(x.checked_mul(y).ok_or(Error::CheckedMulOverflow)))
+macro_rules! mul {
+    ($x:expr, $y:expr) => {
+        c!($x.checked_mul($y).ok_or(Error::CheckedMulOverflow))
+    }
 }
-fn sub(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    ok(c!(x.checked_sub(y).ok_or(Error::CheckedSubOverflow)))
+macro_rules! sub {
+    ($x:expr, $y:expr) => {
+        c!($x.checked_sub($y).ok_or(Error::CheckedSubOverflow))
+    }
 }
-fn div(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    ok(c!(x.checked_div(y).ok_or(Error::CheckedDivOverflow)))
+macro_rules! div {
+    ($x:expr, $y:expr) => {
+        c!($x.checked_div($y).ok_or(Error::CheckedDivOverflow))
+    }
 }
 
 #[allow(non_snake_case)]
@@ -26,20 +34,20 @@ pub fn dpm_price(
     m: Decimal,
 ) -> Result<Decimal, Error> {
     //T = M1 + M2
-    let T = add(M1, M2)?;
+    let T = add!(M1, M2);
     //a = (M1 + m) * M2 * N1
-    let a = mul(mul(add(M1, m)?, M2)?, N1)?;
+    let a = mul!(mul!(add!(M1, m), M2), N1);
     //b = (M2 - m) * M2 * N2
-    let b = mul(mul(sub(M2, m)?, M2)?, N2)?;
+    let b = mul!(mul!(sub!(M2, m), M2), N2);
     //c = T * (M1 + m) * N2
-    let c = mul(mul(T, add(M1, m)?)?, N2)?;
+    let c = mul!(mul!(T, add!(M1, m)), N2);
     //d = math.log(T * (M1 + m) / (M1 * (T + m)))
-    let d_1 = div(mul(T, add(M1, m)?)?, mul(M1, add(T, m)?)?)?;
+    let d_1 = div!(mul!(T, add!(M1, m)), mul!(M1, add!(T, m)));
     let d = d_1.ln();
     //e = a + b + c * d
-    let e = add(add(a, b)?, mul(c, d)?)?;
+    let e = add!(add!(a, b), mul!(c, d));
     //p = (M1 + m) * M2 * T / e
-    div(mul(mul(add(M1, m)?, M2)?, T)?, e)
+    Ok(div!(mul!(mul!(add!(M1, m), M2), T), e))
 }
 
 #[allow(non_snake_case)]
@@ -51,17 +59,17 @@ pub fn dpm_shares(
     m: Decimal,
 ) -> Result<Decimal, Error> {
     //T = M1 + M2
-    let T = add(M1, M2)?;
+    let T = add!(M1, M2);
     //a = m * (N1 - N2) / T
-    let a = div(mul(m, sub(N1, N2)?)?, T)?;
+    let a = div!(mul!(m, sub!(N1, N2)), T);
     //b = N2 * (T + m) / M2
-    let b = div(mul(N2, add(T, m)?)?, M2)?;
+    let b = div!(mul!(N2, add!(T, m)), M2);
     //c = T * (M1 + m) / (M1 * (T + m))
-    let c = div(mul(T, add(M1, m)?)?, mul(M1, add(T, m)?)?)?;
+    let c = div!(mul!(T, add!(M1, m)), mul!(M1, add!(T, m)));
     //d = log(c)
     let d = c.ln();
     //e = a + b * d
-    add(a, mul(b, d)?)
+    Ok(add!(a, mul!(b, d)))
 }
 
 /// Get the payoff for the shares given, with M being the globally
@@ -69,7 +77,7 @@ pub fn dpm_shares(
 /// won, and n is the user's amount of shares.
 #[allow(non_snake_case)]
 pub fn dpm_payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error> {
-    mul(div(n, N_1)?, M)
+    Ok(mul!(div!(n, N_1), M))
 }
 
 fn sqrt_u256_round_down(x: U256) -> Result<U256, Error> {
