@@ -2,19 +2,19 @@ use stylus_sdk::alloy_primitives::U256;
 
 use rust_decimal::{Decimal, MathematicalOps};
 
-use crate::error::Error;
+use crate::error::*;
 
 fn add(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    x.checked_add(y).ok_or(Error::CheckedAddOverflow)
+    ok(c!(x.checked_add(y).ok_or(Error::CheckedAddOverflow)))
 }
 fn mul(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    x.checked_mul(y).ok_or(Error::CheckedMulOverflow)
+    ok(c!(x.checked_mul(y).ok_or(Error::CheckedMulOverflow)))
 }
 fn sub(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    x.checked_sub(y).ok_or(Error::CheckedSubOverflow)
+    ok(c!(x.checked_sub(y).ok_or(Error::CheckedSubOverflow)))
 }
 fn div(x: Decimal, y: Decimal) -> Result<Decimal, Error> {
-    x.checked_div(y).ok_or(Error::CheckedDivOverflow)
+    ok(c!(x.checked_div(y).ok_or(Error::CheckedDivOverflow)))
 }
 
 #[allow(non_snake_case)]

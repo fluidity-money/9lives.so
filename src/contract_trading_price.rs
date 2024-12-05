@@ -30,22 +30,20 @@ impl StorageTrading {
 impl StorageTrading {
     #[allow(unused)]
     fn internal_dpm_price(&self, id: FixedBytes<8>) -> R<U256> {
-        let m_1 = fusdc_u256_to_decimal(self.outcome_invested.get(id))?;
+        let m_1 = c!(fusdc_u256_to_decimal(self.outcome_invested.get(id)));
         let n_1 = self.outcome_shares.get(id);
-        let n_2 = share_u256_to_decimal(
-            self.global_shares
-                .get()
-                .checked_sub(n_1)
-                .ok_or(Error::CheckedSubOverflow)?,
-        )?;
-        let n_1 = share_u256_to_decimal(n_1)?;
-        let m_2 = fusdc_u256_to_decimal(
-            self.global_invested
-                .get()
-                .checked_sub(self.outcome_invested.get(id))
-                .ok_or(Error::CheckedSubOverflow)?,
-        )?;
-        fusdc_decimal_to_u256(maths::dpm_price(m_1, m_2, n_1, n_2, Decimal::ZERO)?)
+        let n_2 = c!(share_u256_to_decimal(c!(self
+            .global_shares
+            .get()
+            .checked_sub(n_1)
+            .ok_or(Error::CheckedSubOverflow))));
+        let n_1 = c!(share_u256_to_decimal(n_1));
+        let m_2 = c!(fusdc_u256_to_decimal(c!(self
+            .global_invested
+            .get()
+            .checked_sub(self.outcome_invested.get(id))
+            .ok_or(Error::CheckedSubOverflow))));
+        fusdc_decimal_to_u256(c!(maths::dpm_price(m_1, m_2, n_1, n_2, Decimal::ZERO)))
     }
 
     #[allow(unused)]
@@ -62,9 +60,9 @@ impl StorageTrading {
                 //if i != j:
                 if i != j {
                     //product *= self.shares[j]
-                    product = product
+                    product = c!(product
                         .checked_mul(self.outcome_shares.get(o))
-                        .ok_or(Error::CheckedMulOverflow)?;
+                        .ok_or(Error::CheckedMulOverflow));
                 }
             }
             //outcome_price_weights.append(product)
