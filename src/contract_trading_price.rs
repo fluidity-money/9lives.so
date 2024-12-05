@@ -1,7 +1,5 @@
 use stylus_sdk::alloy_primitives::{aliases::*, *};
 
-use hashbrown::HashMap;
-
 use rust_decimal::Decimal;
 
 use crate::{
@@ -49,7 +47,8 @@ impl StorageTrading {
     #[allow(unused)]
     fn internal_amm_price(&self, id: FixedBytes<8>) -> R<U256> {
         let outcome_list_len = self.outcome_list.len();
-        let mut price_weights = HashMap::new();
+        let mut price_weight_sum = U256::ZERO;
+        let mut price_weight_ours = None;
         //for i in range(len(self.shares)):
         for i in 0..outcome_list_len {
             //product = 1
@@ -66,9 +65,15 @@ impl StorageTrading {
                 }
             }
             //outcome_price_weights.append(product)
-            price_weights.insert(self.outcome_list.get(i).unwrap(), product);
+            price_weight_sum = c!(price_weight_sum
+                .checked_add(product)
+                .ok_or(Error::CheckedAddOverflow));
+            // Stylus will memoise this access for us so we can cheaply do this.
+            if self.outcome_list.get(i).unwrap() == id {
+                price_weight_ours = Some(product);
+            }
         }
         //outcome_price_weights[k] / price_weight_of_all_outcomes
-        Ok(price_weights.get(&id).unwrap() / price_weights.values().sum::<U256>())
+        Ok(c!(price_weight_ours.ok_or(Error::NonexistentOutcome)) / price_weight_sum)
     }
 }
