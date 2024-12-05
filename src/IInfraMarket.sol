@@ -13,6 +13,23 @@ interface IInfraMarket {
     function predict(address trading, bytes8 winner, uint256 amount) external;
     function winner(address trading) external returns (bytes8 winnerId);
 
+    function call(
+        address trading,
+        bytes8 winner,
+        address incentiveRecipient
+    ) external;
+
+    function close(
+        address trading,
+        address feeRecipient
+    ) external;
+
+    function whinge(
+        address trading,
+        bytes8 preferredOutcome,
+        address bondRecipient
+    ) external;
+
     /// @notice marketPowerVested to this trading and outcome
     /// @param trading contract to check the results of
     /// @param outcome to check

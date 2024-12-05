@@ -4,6 +4,7 @@
 #![cfg_attr(target_arch = "wasm32", no_std, no_main)]
 
 #![feature(try_trait_v2)]
+#![feature(coverage_attribute)]
 
 #[macro_use]
 pub mod error;

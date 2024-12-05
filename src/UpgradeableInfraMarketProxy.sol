@@ -84,6 +84,29 @@ contract UpgradeableInfraMarketProxy is IInfraMarket {
         directDelegate(StorageSlot.getAddressSlot(IMPL_EXTRAS_SLOT).value);
     }
 
+    function call(
+        address /* trading */,
+        bytes8 /* winner */,
+        address /* incentiveRecipient */
+    ) external {
+        directDelegate(StorageSlot.getAddressSlot(IMPL_EXTRAS_SLOT).value);
+    }
+
+    function close(
+        address /* trading */,
+        address /* feeRecipient */
+    ) external {
+        directDelegate(StorageSlot.getAddressSlot(IMPL_EXTRAS_SLOT).value);
+    }
+
+    function whinge(
+        address /* trading */,
+        bytes8 /* preferredOutcome */,
+        address /* bondRecipient */
+    ) external {
+        directDelegate(StorageSlot.getAddressSlot(IMPL_EXTRAS_SLOT).value);
+    }
+
     /// @inheritdoc IInfraMarket
     function predict(
         address /* tradingAddr */,

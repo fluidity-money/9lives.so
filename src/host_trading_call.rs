@@ -1,3 +1,5 @@
+#![coverage(off)]
+
 use stylus_sdk::alloy_primitives::{Address, FixedBytes};
 
 use alloc::vec::Vec;

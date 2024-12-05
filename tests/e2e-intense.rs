@@ -1,6 +1,10 @@
-#![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+#![cfg(all(
+    feature = "trading-backend-dpm",
+    feature = "testing",
+    not(target_arch = "wasm32")
+))]
 
-use stylus_sdk::alloy_primitives::{FixedBytes, U256, Address};
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use lib9lives::{
     host,

@@ -1,3 +1,5 @@
+#![coverage(off)]
+
 use crate::error::Error;
 
 use stylus_sdk::alloy_primitives::{Address, U256};

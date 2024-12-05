@@ -1,3 +1,5 @@
+#![coverage(off)]
+
 // This code has some weird behaviour to make tracing backtraces easier.
 // This in the form of the SHOULD_PANIC code. The user can elect to
 // use should_backtrace to set whether unswap should happen instead of

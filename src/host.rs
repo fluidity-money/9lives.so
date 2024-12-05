@@ -1,3 +1,4 @@
+#![coverage(off)]
 #![doc(hidden)]
 
 use std::{cell::RefCell, collections::HashMap, ptr};

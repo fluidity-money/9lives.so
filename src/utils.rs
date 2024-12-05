@@ -1,3 +1,4 @@
+#![coverage(off)]
 #![doc(hidden)]
 
 use stylus_sdk::alloy_primitives::Address;
