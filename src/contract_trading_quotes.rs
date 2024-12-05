@@ -13,7 +13,7 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn quote_C_0_E_17_F_C_7(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         if !self.when_decided.is_zero() {
-            return ok(U256::ZERO);
+            return Ok(U256::ZERO);
         }
         assert_or!(
             self.outcome_shares.get(outcome_id) > U256::ZERO,
@@ -37,7 +37,7 @@ impl StorageTrading {
         let m_2 = c!(fusdc_u256_to_decimal(
             self.global_invested.get() - self.outcome_invested.get(outcome_id),
         ));
-        ok(c!(share_decimal_to_u256(c!(maths::dpm_shares(
+        Ok(c!(share_decimal_to_u256(c!(maths::dpm_shares(
             m_1,
             m_2,
             n_1,
@@ -73,6 +73,6 @@ impl StorageTrading {
             .ok_or(Error::CheckedPowOverflow))
         .checked_div(product)
         .ok_or(Error::CheckedDivOverflow));
-        ok(shares)
+        Ok(shares)
     }
 }

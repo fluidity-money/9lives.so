@@ -10,16 +10,10 @@ use alloc::{vec, vec::Vec};
 use stylus_sdk::alloy_primitives::{Address, U256};
 
 #[cfg(not(target_arch = "wasm32"))]
-use stylus_sdk::{abi::internal::EncodableReturnType, ArbResult};
-
-#[cfg(not(target_arch = "wasm32"))]
 use std::{
     convert::Infallible,
     ops::{ControlFlow, FromResidual, Try},
 };
-
-#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-use std::backtrace::Backtrace;
 
 macro_rules! err_pre {
     ($name:ident, $val:literal) => {
@@ -451,12 +445,4 @@ impl From<Error> for Vec<u8> {
             v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
         }
     }
-}
-
-pub fn ok<T>(v: T) -> R<T> {
-    Ok(v)
-}
-
-pub fn err<T>(v: Error) -> R<T> {
-    Err(v)
 }

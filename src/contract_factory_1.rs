@@ -141,6 +141,6 @@ impl StorageFactory {
             )?;
         }
 
-        ok(trading_addr)
+        Ok(trading_addr)
     }
 }

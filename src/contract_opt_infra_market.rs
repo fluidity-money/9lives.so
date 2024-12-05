@@ -30,7 +30,7 @@ impl StorageOptimisticInfraMarket {
         self.lockup_addr.set(lockup_addr);
         self.locked_arb_token_addr.set(locked_arb_token_addr);
         self.factory_addr.set(factory_addr);
-        ok(())
+        Ok(())
     }
 
     /// Register a campaign. We take a small finders fee from the user who
@@ -79,7 +79,7 @@ impl StorageOptimisticInfraMarket {
             tradingAddr: trading_addr,
             defaultWinner: default_winner,
         });
-        ok(INCENTIVE_AMT_BASE)
+        Ok(INCENTIVE_AMT_BASE)
     }
 
     // Transition this function from being in the state of the campaign being
@@ -124,7 +124,7 @@ impl StorageOptimisticInfraMarket {
             .set(incentive_recipient);
         self.campaign_what_called.setter(trading_addr).set(winner);
         // TODO: event here
-        ok(())
+        Ok(())
     }
 
     /// This function must be called during the predicting period.
@@ -233,23 +233,23 @@ impl StorageOptimisticInfraMarket {
             powerAmount: voting_power,
             outcome: winner,
         });
-        ok(())
+        Ok(())
     }
 
     pub fn winner(&self, trading: Address) -> R<FixedBytes<8>> {
-        ok(self.campaign_winner.get(trading))
+        Ok(self.campaign_winner.get(trading))
     }
 
     pub fn market_power_vested(&self, trading: Address, outcome: FixedBytes<8>) -> R<U256> {
-        ok(self.campaign_vested_power.getter(trading).get(outcome))
+        Ok(self.campaign_vested_power.getter(trading).get(outcome))
     }
 
     pub fn global_power_vested(&self, trading: Address) -> R<U256> {
-        ok(self.campaign_global_power_vested.get(trading))
+        Ok(self.campaign_global_power_vested.get(trading))
     }
 
     pub fn user_power_vested(&self, trading: Address, spender: Address) -> R<U256> {
-        ok(self.user_global_vested_power.getter(trading).get(spender))
+        Ok(self.user_global_vested_power.getter(trading).get(spender))
     }
 
     /// This should be called by someone after the whinging period has ended, but only if we're
@@ -326,7 +326,7 @@ impl StorageOptimisticInfraMarket {
         // It should be okay to just call this contract since the factory
         // will guarantee that there's an associated contract here.
         trading_call::decide(trading_addr, campaign_winner)?;
-        ok(fees_earned)
+        Ok(fees_earned)
     }
 
     // Whinge about the called outcome if we're within the period to do
@@ -362,7 +362,7 @@ impl StorageOptimisticInfraMarket {
         self.campaign_whinger_preferred_winner
             .setter(trading_addr)
             .set(preferred_outcome);
-        ok(())
+        Ok(())
     }
 
     /// Checks if the time is over the time for this infra campaign to expire
@@ -507,7 +507,7 @@ impl StorageOptimisticInfraMarket {
             // We don't bother to slash the user if this is the case. We
             // just return nicely. This might be paired with the
             // interaction with sweep to collect the incentive amount.
-            return ok((caller_yield_taken, U256::ZERO));
+            return Ok((caller_yield_taken, U256::ZERO));
         }
         // We check if the victim's vested power is 0. If it is, then we assume
         // that someone already claimed this victim's position! Or, they never bet
@@ -517,7 +517,7 @@ impl StorageOptimisticInfraMarket {
             .getter(trading_addr)
             .get(victim_addr);
         if victim_global_vested_power.is_zero() {
-            return ok((caller_yield_taken, on_behalf_of_yield_taken));
+            return Ok((caller_yield_taken, on_behalf_of_yield_taken));
         }
         // We check the victim's vested arb in the lockup contract, and
         // if it's not greater than or equal to what's here, then we
@@ -531,7 +531,7 @@ impl StorageOptimisticInfraMarket {
         let victim_staked_arb_amt =
             lockup_call::staked_arb_bal(self.lockup_addr.get(), victim_addr)?;
         if victim_vested_arb_amt > victim_staked_arb_amt {
-            return ok((caller_yield_taken, on_behalf_of_yield_taken));
+            return Ok((caller_yield_taken, on_behalf_of_yield_taken));
         }
         // We check the caller's share of the power vested in this losing campaign,
         // and if the victim's share of the incorrectly allocated profit is below
@@ -616,7 +616,7 @@ impl StorageOptimisticInfraMarket {
         let confiscated =
             lockup_call::confiscate(self.lockup_addr.get(), victim_addr, contract::address())?;
         if confiscated.is_zero() {
-            return ok((caller_yield_taken, on_behalf_of_yield_taken));
+            return Ok((caller_yield_taken, on_behalf_of_yield_taken));
         }
         // Now we send the confiscated amount and a small fee to the
         // caller for being first.
@@ -632,6 +632,6 @@ impl StorageOptimisticInfraMarket {
             caller_yield_taken += confiscate_fee;
             on_behalf_of_yield_taken += confiscate_no_fee;
         }
-        ok((caller_yield_taken, on_behalf_of_yield_taken))
+        Ok((caller_yield_taken, on_behalf_of_yield_taken))
     }
 }

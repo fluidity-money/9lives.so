@@ -11,24 +11,24 @@ pub const MAX_DECIMAL: u128 = 79_228_162_514_264_337_593_543_950_335;
 
 fn u256_to_decimal(n: U256, decimals: u8) -> R<Decimal> {
     if n.is_zero() {
-        return ok(Decimal::ZERO);
+        return Ok(Decimal::ZERO);
     }
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
     let n: u128 = u128::from_be_bytes(n.to_be_bytes::<32>()[..16].try_into().unwrap());
     let rem: u128 = u128::from_be_bytes(rem.to_be_bytes::<32>()[..16].try_into().unwrap());
     if n > MAX_DECIMAL {
-        return err(Error::U256TooLarge);
+        return Err(Error::U256TooLarge);
     }
     let n = Decimal::from(n);
     let rem = Decimal::from(rem);
-    ok(n + rem
+    Ok(n + rem
         .checked_div(Decimal::from(10).powi(decimals as i64))
         .ok_or(Error::CheckedDivOverflow)?)
 }
 
 fn decimal_to_u256(n: Decimal, decimals: u8) -> R<U256> {
     if n.is_zero() {
-        return ok(U256::ZERO);
+        return Ok(U256::ZERO);
     }
     assert_or!(n.is_sign_positive(), Error::NegativeFixedToUintConv);
     let q = U256::from(n.to_u128().unwrap());
@@ -40,7 +40,7 @@ fn decimal_to_u256(n: Decimal, decimals: u8) -> R<U256> {
             .to_u128()
             .ok_or(Error::CheckedMulOverflow)?,
     );
-    ok(q * U256::from(10).pow(U256::from(decimals)) + r)
+    Ok(q * U256::from(10).pow(U256::from(decimals)) + r)
 }
 
 pub fn share_decimal_to_u256(x: Decimal) -> R<U256> {
@@ -54,7 +54,7 @@ pub fn fusdc_decimal_to_u256(x: Decimal) -> R<U256> {
     decimal_to_u256(x, FUSDC_DECIMALS)
 }
 pub fn fusdc_u256_to_decimal(x: U256) -> R<Decimal> {
-    ok(u256_to_decimal(x, FUSDC_DECIMALS)?)
+    Ok(u256_to_decimal(x, FUSDC_DECIMALS)?)
 }
 
 pub fn round_down(x: Decimal) -> Decimal {

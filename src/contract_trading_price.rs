@@ -18,7 +18,7 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn price_A_827_E_D_27(&self, id: FixedBytes<8>) -> R<U256> {
         if !self.when_decided.is_zero() {
-            return ok(U256::ZERO);
+            return Ok(U256::ZERO);
         }
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_price(id);
@@ -69,6 +69,6 @@ impl StorageTrading {
             price_weights.insert(self.outcome_list.get(i).unwrap(), product);
         }
         //outcome_price_weights[k] / price_weight_of_all_outcomes
-        ok(price_weights.get(&id).unwrap() / price_weights.values().sum::<U256>())
+        Ok(price_weights.get(&id).unwrap() / price_weights.values().sum::<U256>())
     }
 }
