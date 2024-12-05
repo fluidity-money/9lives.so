@@ -24,6 +24,11 @@ const approveInfraTx = prepareContractCall({
   method: "approve",
   params: [clientEnv.NEXT_PUBLIC_INFRA_ORACLE_ADDR, MaxUint256],
 });
+const approveHelperTx = prepareContractCall({
+  contract: config.contracts.fusdc,
+  method: "approve",
+  params: [clientEnv.NEXT_PUBLIC_HELPER_ADDR, MaxUint256],
+});
 const useCreate = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -66,6 +71,11 @@ const useCreate = () => {
                 clientEnv.NEXT_PUBLIC_INFRA_ORACLE_ADDR,
               ],
             });
+            const allowanceHelperTx = prepareContractCall({
+              contract: config.contracts.fusdc,
+              method: "allowance",
+              params: [account.address, clientEnv.NEXT_PUBLIC_HELPER_ADDR],
+            });
             const allowanceOfFactory = (await simulateTransaction({
               transaction: allowanceFactoryTx,
               account,
@@ -83,6 +93,16 @@ const useCreate = () => {
             if (!(allowanceOfInfra > 0)) {
               await sendTransaction({
                 transaction: approveInfraTx,
+                account,
+              });
+            }
+            const allowanceOfHelper = (await simulateTransaction({
+              transaction: allowanceHelperTx,
+              account,
+            })) as bigint;
+            if (!(allowanceOfHelper > 0)) {
+              await sendTransaction({
+                transaction: approveHelperTx,
                 account,
               });
             }
