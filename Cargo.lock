@@ -115,7 +115,6 @@ dependencies = [
  "alloy-primitives",
  "alloy-sol-macro",
  "const-hex",
- "serde",
 ]
 
 [[package]]
