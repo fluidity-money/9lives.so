@@ -11,6 +11,9 @@ const config: Config = {
         chicago: ["var(--font-chicago)"],
         geneva: ["var(--font-geneva)"],
       },
+      height: {
+        "degen-panel": "calc(var(--body-height) - 42px)",
+      },
       backgroundImage: {
         closeIdle: "url('/icons/close.svg')",
         closePressed: "url('/icons/close-pressed.svg')",
