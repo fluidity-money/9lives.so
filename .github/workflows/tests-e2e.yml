@@ -30,7 +30,7 @@ jobs:
       - name: Run Playwright tests
         env:
           NEXT_PUBLIC_THIRDWEB_ID: ${{ vars.NEXT_PUBLIC_THIRDWEB_ID }}
-          NEXT_PUBLIC_GRAPHQL_URL: "https://graph.9lives.so"
+          NEXT_PUBLIC_GRAPHQL_URL: "https://testnet-graph.9lives.so"
           NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
           NEXT_PUBLIC_POINTS_URL: "https://points-graph.superposition.so"
           NEXT_PUBLIC_FUSDC_ADDR: "0xa8ea92c819463efbeddfb670fefc881a480f0115"
