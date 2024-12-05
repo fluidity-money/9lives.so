@@ -112,7 +112,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "mintPermitB8D681AD",
+    name: "mintPermitE90275AB",
     inputs: [
       {
         name: "outcome",
