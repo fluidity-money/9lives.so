@@ -1,8 +1,10 @@
-#![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+#![cfg(all(
+    feature = "trading-backend-dpm",
+    feature = "testing",
+    not(target_arch = "wasm32")
+))]
 
-use stylus_sdk::{
-    alloy_primitives::{FixedBytes, U256, Address},
-};
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use proptest::{
     collection::{self, VecStrategy},
@@ -10,7 +12,10 @@ use proptest::{
     strategy::Strategy,
 };
 
-use lib9lives::{host, utils::{block_timestamp, msg_sender}};
+use lib9lives::{
+    host,
+    utils::{block_timestamp, msg_sender},
+};
 
 // 100 million USD
 const REASONABLE_UPPER_AMT: u128 = 100_000_000 * 1e6 as u128;

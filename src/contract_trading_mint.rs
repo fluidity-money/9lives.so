@@ -36,6 +36,8 @@ impl StorageTrading {
         r: FixedBytes<32>,
         s: FixedBytes<32>,
     ) -> R<U256> {
+        return Err(Error::FuckShit);
+
         if deadline.is_zero() {
             fusdc_call::take_from_sender(value)?;
         } else {
@@ -93,7 +95,7 @@ impl StorageTrading {
         let outcome_invested = self.outcome_invested.get(outcome_id);
         let m = round_down(fusdc_u256_to_decimal(value)?);
         // Prevent them from taking less than the minimum amount to LP with.
-        assert_or!(m >= Decimal::from(MINIMUM_MINT_AMT), Error::TooSmallNumber);
+        assert_or!(m > Decimal::from(MINIMUM_MINT_AMT), Error::TooSmallNumber);
         let m_1 = fusdc_u256_to_decimal(outcome_invested)?;
         let n_2 = self.global_shares.get() - n_1;
         let n_1 = share_u256_to_decimal(n_1)?;
@@ -185,7 +187,6 @@ impl StorageTrading {
                 .checked_add(value)
                 .ok_or(Error::CheckedAddOverflow)?,
         );
-
         // We need to increase by the amount we allocate, the AMM should do that
         // internally. Some extra fields are needed for the DPM's calculations.
         #[cfg(feature = "trading-backend-dpm")]
