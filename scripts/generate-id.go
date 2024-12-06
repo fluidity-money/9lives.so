@@ -14,7 +14,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	identifier, err := crypto.GetOutcomeId(os.Args[1], os.Args[2], int(seed))
+	identifier, err := crypto.GetOutcomeId(os.Args[1], os.Args[2], uint64(seed))
 	if err != nil {
 		panic(err)
 	}

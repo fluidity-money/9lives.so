@@ -5,12 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "node tests/e2e.js",
-    "test:trading": "node tests/tradingContract.js"
+    "test:trading": "node tests/tradingContract.js",
+    "test:ids": "npx tsx tests/generate-id.test.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "ethers": "^6.13.2"
+    "ethers": "^6.13.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   }
 }
