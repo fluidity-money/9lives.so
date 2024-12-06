@@ -6,12 +6,7 @@
 use lib9lives::alloc::format;
 
 #[cfg(target_arch = "wasm32")]
-use lib9lives::user_entrypoint as stylus_entrypoint;
-
-#[cfg(target_arch = "wasm32")]
-pub extern "C" fn user_entrypoint(len: usize) -> usize {
-    stylus_entrypoint(len)
-}
+pub use lib9lives::user_entrypoint;
 
 #[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
 #[link(wasm_import_module = "stylus_interpreter")]

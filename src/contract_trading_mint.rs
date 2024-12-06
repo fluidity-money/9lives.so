@@ -36,14 +36,16 @@ impl StorageTrading {
         r: FixedBytes<32>,
         s: FixedBytes<32>,
     ) -> R<U256> {
-        return Err(Error::FuckShit);
-
         if deadline.is_zero() {
             fusdc_call::take_from_sender(value)?;
         } else {
             fusdc_call::take_from_sender_permit(value, deadline, v, r, s)?;
         }
         self.internal_mint(outcome, value, recipient)
+    }
+
+    pub fn swag_7_D449_F_53() -> R<U256> {
+        Ok(U256::from(123))
     }
 
     #[allow(non_snake_case)]

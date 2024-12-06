@@ -1,20 +1,21 @@
-
 // This trading proxy is a simple proxy that selects the function to
-// delegatecall to based on the signature of the function given.
+// delegatecall to based on the selector of the function given.
 
 #define macro MAIN() = takes(0) returns(0) {
 	calldatasize 0x0 0x0 calldatacopy
 	0x0 0x0 calldatasize
 	0x0 0x02 calldataload 0x0 byte
-	dup1 iszero MINT jumpi
-	dup1 0x01 eq QUOTES jumpi
-	0x02 eq PRICE jumpi
+	dup1 0x01 eq MINT jumpi
+	dup1 0x02 eq QUOTES jumpi
+	0x03 eq PRICE jumpi
 	0x4000000000000000000000000000000000000004
 	CONTINUE jump
 	MINT:
+		pop
 		0x1000000000000000000000000000000000000001
 		CONTINUE jump
 	QUOTES:
+		pop
 		0x2000000000000000000000000000000000000002
 		CONTINUE jump
 	PRICE:

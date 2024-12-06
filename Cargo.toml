@@ -13,7 +13,7 @@ name = "ninelives"
 
 [profile.release]
 codegen-units = 1
-opt-level = 3
+opt-level = "z"
 strip = true
 lto = true
 debug = false
