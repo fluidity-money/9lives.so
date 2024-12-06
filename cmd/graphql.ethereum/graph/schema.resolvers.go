@@ -180,7 +180,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	for i, o := range outcomes {
 		outcomes_[i] = crypto.Outcome{
 			Name: o.Name,
-			Desc: description,
+			Desc: o.Description,
 			Seed: uint64(o.Seed),
 		}
 	}
