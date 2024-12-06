@@ -44,10 +44,6 @@ impl StorageTrading {
         self.internal_mint(outcome, value, recipient)
     }
 
-    pub fn swag_7_D449_F_53() -> R<U256> {
-        Ok(U256::from(123))
-    }
-
     #[allow(non_snake_case)]
     pub fn payoff_91_F_A_8_C_2_E(
         &mut self,
