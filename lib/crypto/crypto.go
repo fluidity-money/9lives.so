@@ -7,8 +7,6 @@ import (
 	"sort"
 
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
-
-	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 )
 
 type Outcome struct {
@@ -24,7 +22,7 @@ func GetOutcomeId(name, desc string, seed int) ([]byte, error) {
 	if _, err := buf.WriteString(desc); err != nil {
 		return nil, err
 	}
-	err := binary.Write(&buf, binary.BigEndian, uint8(seed))
+	err := binary.Write(&buf, binary.BigEndian, uint64(seed))
 	if err != nil {
 		return nil, err
 	}
@@ -50,16 +48,8 @@ func GetOutcomeIds(outcomes []Outcome) (ids [][]byte, err error) {
 	return
 }
 
-func GetMarketId(outcomes []model.OutcomeInput) []byte {
-	var outcomes_ = make([]Outcome, len(outcomes))
-	for i, o := range outcomes {
-		outcomes_[i] = Outcome{
-			Name: o.Name,
-			Desc: o.Description,
-			Seed: o.Seed,
-		}
-	}
-	ids, err := GetOutcomeIds(outcomes_)
+func GetMarketId(outcomes []Outcome) []byte {
+	ids, err := GetOutcomeIds(outcomes)
 	if err != nil {
 		return nil
 	}
