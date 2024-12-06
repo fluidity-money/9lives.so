@@ -40,7 +40,7 @@ export type CampaignInput = {
   web?: string;
   outcomeType?: OutcomeType;
   settlementType?: SettlementType;
-  urlCommitee: string;
+  oracleDescription: string;
 };
 export type OutcomeInput = {
   picture: string;

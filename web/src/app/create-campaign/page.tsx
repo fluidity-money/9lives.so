@@ -15,6 +15,9 @@ export default function CreateCampaign() {
         <p className="text-center text-xs">
           This is where you can create your own campaign for other people to
           participate in!
+          <br />
+          <strong>Earn fees by creating markets:</strong> collect 5% of every
+          deposit created!
         </p>
       </div>
       <div className="flex flex-1 gap-7">

@@ -19,6 +19,31 @@ export default function CreateCampaignTutorial() {
           Enter the name of the event or scenario you want to create a market
           for.{" "}
         </p>
+        <span className="font-chicago text-xs">Market Description:</span>
+        <p className="pl-2.5 text-xs">
+          A good description is one that answers the following:
+        </p>
+        <ul className="list-inside list-disc pl-4">
+          <li>
+            <span className="text-xs">
+              What is the current state of this prediction market?
+            </span>
+          </li>
+          <li>
+            <span className="text-xs">
+              What are some of the reasons why this prediction market could
+              resolve to a supplied outcome?
+            </span>
+          </li>
+          <li>
+            <span className="text-xs">Why is this the ending date?</span>
+          </li>
+          <li>
+            <span className="text-xs">
+              What news sources should be depended on to resolve this outcome?
+            </span>
+          </li>
+        </ul>
         <span className="font-chicago text-xs">Types of Campaigns:</span>
         <p className="pl-2.5 text-xs">There are 2 types of campaigns:</p>
         <ul className="list-inside list-disc pl-4">
@@ -39,6 +64,23 @@ export default function CreateCampaignTutorial() {
         <p className="pl-2.5 text-xs">
           Provide the name of the possible outcomes.
         </p>
+        <span className="font-chicago text-xs">Oracle Description :</span>
+        <p className="pl-2.5 text-xs">
+          A good description is one that answers the following:
+        </p>
+        <ul className="list-inside list-disc pl-4">
+          <li>
+            <span className="text-xs">
+              Under what circumstances should this resolve?
+            </span>
+          </li>
+          <li>
+            <span className="text-xs">
+              Which websites (ideally 3) should determine the outcome of this
+              prediction market?
+            </span>
+          </li>
+        </ul>
       </RetroCard>
     )
   );

@@ -35,7 +35,7 @@ function SourceWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 type CreateCampaignFormSettlmentSourceFields = {
-  urlCommitee: string;
+  oracleDescription: string;
   contractAddress: string;
 };
 export default function CreateCampaignFormSettlmentSource({
@@ -86,7 +86,7 @@ export default function CreateCampaignFormSettlmentSource({
           <Tab as={Fragment}>
             {(props) => (
               <TabIconButton
-                title="Url Commitee"
+                title="Oracle Description"
                 activeIcon={GlobeActiveIcon}
                 inactiveIcon={GlobeInactiveIcon}
                 {...props}
@@ -140,22 +140,39 @@ export default function CreateCampaignFormSettlmentSource({
           <TabPanel>
             <SourceWrapper>
               <Input
-                placeholder="Enter URL Here"
+                placeholder="Enter Oracle Description"
                 className={combineClass(
-                  "text-center",
-                  errors.urlCommitee && "border-2 border-red-500",
+                  "text-left",
+                  errors.oracleDescription && "border-2 border-red-500",
                 )}
-                type="url"
-                {...register("urlCommitee")}
+                type="text"
+                {...register("oracleDescription")}
               />
-              {errors.urlCommitee && (
-                <ErrorInfo text={errors.urlCommitee.message} />
+              {errors.oracleDescription && (
+                <ErrorInfo text={errors.oracleDescription.message} />
               )}
-              <p className="text-xs">
-                URL committee: outcome is determined by the contents of a
-                webpage. This could include a political party announcing defeat
-                during an election.
-              </p>
+              {errors.oracleDescription && (
+                <>
+                  {" "}
+                  <p className="text-xs">
+                    A good description is one that answers the following:
+                  </p>
+                  <ul className="list-inside list-disc pl-4">
+                    <li>
+                      <span className="text-xs">
+                        Under what circumstances should this resolve?
+                      </span>
+                    </li>
+                    <li>
+                      <span className="text-xs">
+                        Which websites (ideally 3) should determine the outcome
+                        of this prediction market?
+                      </span>
+                    </li>
+                  </ul>
+                </>
+              )}
+
               <Link
                 className="flex gap-2 font-chicago text-xs underline"
                 href={"#"}

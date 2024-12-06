@@ -85,7 +85,7 @@ export default function CreateCampaignForm() {
                   seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
                 }),
               ),
-        urlCommitee: z.string().url(), // committee url is required in this version. Toggle below line to change this behaviour.
+        oracleDescription: z.string().min(10), // Oracle description is required in this version. Toggle below line to change this behaviour.
         // settlementType === "url" ? z.string().url() : z.undefined(),
         contractAddress:
           settlementType === "contract"
