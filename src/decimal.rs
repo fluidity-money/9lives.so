@@ -2,7 +2,7 @@ use crate::immutables::{FUSDC_DECIMALS, SHARE_DECIMALS};
 
 use stylus_sdk::alloy_primitives::U256;
 
-use rust_decimal::{prelude::*, Decimal, MathematicalOps};
+use rust_decimal::{prelude::*, Decimal};
 
 use crate::{assert_or, error::*};
 
@@ -14,8 +14,8 @@ fn u256_to_decimal(n: U256, decimals: u8) -> R<Decimal> {
         return Ok(Decimal::ZERO);
     }
     let (n, rem) = n.div_rem(U256::from(10).pow(U256::from(decimals)));
-    let n: u128 = u128::from_be_bytes(n.to_be_bytes::<32>()[16..].try_into().unwrap());
-    let rem: u128 = u128::from_be_bytes(rem.to_be_bytes::<32>()[16..].try_into().unwrap());
+    let n: u128 = u128::from_le_bytes(n.to_le_bytes::<32>()[..16].try_into().unwrap());
+    let rem: u128 = u128::from_le_bytes(rem.to_le_bytes::<32>()[..16].try_into().unwrap());
     if n > MAX_DECIMAL {
         return Err(Error::U256TooLarge);
     }
@@ -57,10 +57,6 @@ pub fn fusdc_u256_to_decimal(x: U256) -> R<Decimal> {
     u256_to_decimal(x, FUSDC_DECIMALS)
 }
 
-pub fn round_down(x: Decimal) -> Decimal {
-    x.round_dp_with_strategy(0, RoundingStrategy::ToZero)
-}
-
 #[macro_export]
 macro_rules! assert_eq_f {
     ($left:expr, $right:expr $(,)?) => {
@@ -95,7 +91,7 @@ mod proptesting {
             let d = 6;
             let n = U256::from(x);
             let res = decimal_to_u256(u256_to_decimal(n, d).unwrap(), d).unwrap();
-            assert!(res <= n, "res: {res} <= {n}");
+            assert!(res == n, "res: {res} == {n}");
         }
     }
 }

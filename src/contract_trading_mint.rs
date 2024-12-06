@@ -4,7 +4,7 @@ use stylus_sdk::{
 };
 
 use crate::{
-    decimal::{fusdc_u256_to_decimal, round_down, share_decimal_to_u256, share_u256_to_decimal},
+    decimal::{fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal},
     error::*,
     events,
     fees::*,
@@ -91,7 +91,7 @@ impl StorageTrading {
     fn internal_dpm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let n_1 = self.outcome_shares.get(outcome_id);
         let outcome_invested = self.outcome_invested.get(outcome_id);
-        let m = round_down(fusdc_u256_to_decimal(value)?);
+        let m = fusdc_u256_to_decimal(value)?;
         // Prevent them from taking less than the minimum amount to LP with.
         assert_or!(m > Decimal::from(MINIMUM_MINT_AMT), Error::TooSmallNumber);
         let m_1 = fusdc_u256_to_decimal(outcome_invested)?;

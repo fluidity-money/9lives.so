@@ -90,18 +90,18 @@ proptest! {
             let mut share_2_received = U256::ZERO;
             // Make the first group of random mints.
             for ActionAmountPurchased { fusdc_amt, outcome } in purchase_int_1 {
-                fusdc_vested += fusdc_amt;
                 let s = c.mint_test(
                     if outcome == Outcome::Outcome1 { outcome_1_id } else { outcome_2_id },
                     U256::from(fusdc_amt),
                     msg_sender()
                 )
-                    .unwrap();
+                    .expect(&format!("mint: fusdc vested: {fusdc_vested}, share 1 received so far: {share_1_received}, share 2 received so far: {share_2_received}"));
                 if outcome == Outcome::Outcome1 {
                     share_1_received += s;
                 } else {
                     share_2_received += s;
                 }
+                fusdc_vested += fusdc_amt;
             }
             // Make the second group of random mints.
             for ActionAmountPurchased { fusdc_amt, outcome } in purchase_int_2 {
@@ -111,7 +111,7 @@ proptest! {
                     U256::from(fusdc_amt),
                     msg_sender()
                 )
-                    .unwrap();
+                    .expect(&format!("fusdc vested: {fusdc_vested}, fusdc amt: {fusdc_amt}, outcome: {outcome:?}, share 1 received: {share_1_received}, share 2 received: {share_2_received}"));
                 if outcome == Outcome::Outcome1 {
                     share_1_received += s;
                 } else {

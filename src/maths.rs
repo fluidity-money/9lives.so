@@ -80,28 +80,6 @@ pub fn dpm_payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error
     Ok(mul!(div!(n, N_1), M))
 }
 
-fn sqrt_u256_round_down(x: U256) -> Result<U256, Error> {
-    // Since the Rust implementation uses some floating point conversions
-    // the Stylus runtime doesn't have. Uses the Babylonian Method. Rounds down.
-    if x.is_zero() {
-        return Ok(U256::ZERO);
-    }
-    let mut z = (x >> 1) + U256::from(1);
-    let mut y = x;
-    while z < y {
-        y = z;
-        z = (x / z + z) >> 1;
-    }
-    if y * y > x {
-        y -= U256::from(1);
-    }
-    Ok(y)
-}
-
-pub fn price_to_sqrt_price(x: U256) -> Result<U256, Error> {
-    Ok(sqrt_u256_round_down(x)? * U256::from(2).pow(U256::from(96)))
-}
-
 /// Locked ARB to give the user based on their lockup time and amount.
 pub fn locked_arb_amt(initial_amt: U256) -> Result<U256, Error> {
     Ok(initial_amt)
@@ -112,14 +90,6 @@ pub fn locked_arb_amt(initial_amt: U256) -> Result<U256, Error> {
 pub fn infra_voting_power(_amt: U256, _secs_passed: u64) -> Result<U256, Error> {
     // TODO: have this do stuff.
     Ok(U256::ZERO)
-}
-
-#[test]
-fn test_sqrt_rounding_down() {
-    assert_eq!(sqrt_u256_round_down(U256::from(1)).unwrap(), U256::from(1));
-    assert_eq!(sqrt_u256_round_down(U256::from(2)).unwrap(), U256::from(1));
-    assert_eq!(sqrt_u256_round_down(U256::from(3)).unwrap(), U256::from(1));
-    assert_eq!(sqrt_u256_round_down(U256::from(4)).unwrap(), U256::from(2));
 }
 
 #[test]

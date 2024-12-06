@@ -29,8 +29,8 @@ fn test_e2e_mint() {
         // To the contract after fee taking, this will be 5.7.
         let value = U256::from(1e6) * U256::from(6);
         assert_eq!(
-            c.mint_test(outcome_1, value, msg_sender(),).unwrap(),
-            U256::from(725165) // This is 0.7251655651839098
+            c.mint_test(outcome_1, value, msg_sender()).unwrap(),
+            U256::from(824831)
         );
 
         c.decide(outcome_1).unwrap();

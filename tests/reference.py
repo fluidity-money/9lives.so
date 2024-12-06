@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import math
+import math, sys, json
 
 def price(M1,M2,N1,N2,m):
     # price per share
@@ -63,14 +63,17 @@ def place_order(outcome, cost, M1, M2, N1, N2):
 
 if __name__ == "__main__":
 	# Seed liquidity
-	initial_M1 = 1.95
-	initial_M2 = 1
-	initial_N1 = 1
-	initial_N2 = 1
+	initial_M1 = float(sys.argv[1])
+	initial_M2 = float(sys.argv[2])
+	initial_N1 = float(sys.argv[3])
+	initial_N2 = float(sys.argv[4])
+	m = float(sys.argv[5])
 
-	# Place an order for outcome A with a cost of 1
-	order_result = place_order('A', 1, initial_M1, initial_M2, initial_N1, initial_N2)
-
-	print("Order Result:")
-	for key, value in order_result.items():
-	    print(f"{key}: {value}")
+	json.dump(place_order(
+		'A',
+		m,
+		initial_M1,
+		initial_M2,
+		initial_N1,
+		initial_N2),
+		sys.stdout)

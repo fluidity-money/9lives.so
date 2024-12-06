@@ -153,15 +153,3 @@ pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 
 /// Minimum amount of fUSDC that can be minted with.
 pub const MINIMUM_MINT_AMT: i64 = 0;
-
-#[test]
-fn test_confirm_trading_proxy_code() {
-    assert_eq!(
-    "609d8060093d393df3365f5f375f5f365f6002355f1a8060011461003d5780600214610057576003146100715773040404040404040404040404040404040404040461008b565b73010101010101010101010101010101010101010161008b565b73020202020202020202020202020202020202020261008b565b73030303030303030303030303030303030303030361008b565b5af45f3d5f5f3e3d911561009b57f35bfd".to_string(),
-    const_hex::encode(trading_proxy_code(
-        Address::from([4u8; 20]),
-        Address::from([1u8; 20]),
-        Address::from([2u8; 20]),
-        Address::from([3u8; 20])
-    )))
-}

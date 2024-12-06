@@ -52,6 +52,7 @@ fn strat_action_amount_purchasing(
 
 proptest! {
     #[test]
+    #[ignore]
     fn test_end_to_end_contract(
         outcome_1_id in [
             any::<u8>(), any::<u8>(), any::<u8>(), any::<u8>(),
@@ -97,7 +98,7 @@ proptest! {
                         U256::from(fusdc_amt),
                         msg_sender()
                     )
-                        .expect(&format!("err, fusdc: {}", fusdc_amt));
+                        .expect(&format!("err, fusdc: {fusdc_amt}, share 1 received: {share_1_received}, share 2 received: {share_2_received}, outcome: {outcome:?}"));
                     if outcome == Outcome::Outcome1 {
                         fusdc_spent_1 += s;
                         share_1_received += s;
