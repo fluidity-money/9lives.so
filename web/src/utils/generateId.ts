@@ -1,5 +1,5 @@
 import keccak from "keccak";
-
+import { Buffer } from "buffer";
 export function randomValue4Uint8() {
   return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 }
