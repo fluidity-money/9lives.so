@@ -31,8 +31,8 @@ export default function DetailWrapper({
     tradingAddr: initialData.poolAddress,
     outcomeIds,
   });
-  const isEnded = !!initialData.ending && initialData.ending < Date.now();
-  const isConcluded = !!details?.winner || !!isEnded;
+  const isEnded = initialData.ending < Date.now();
+  const isConcluded = Boolean(details?.winner) || isEnded;
   const { data: sharePrices } = useSharePrices({
     tradingAddr: initialData.poolAddress as `0x${string}`,
     outcomeIds,

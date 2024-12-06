@@ -2,8 +2,6 @@ import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import { Outcome, SelectedOutcome } from "@/types";
 import React from "react";
-import TrumpImg from "#/images/trump.webp";
-import KamalaImg from "#/images/kamala.webp";
 import { formatUnits } from "ethers";
 import config from "@/config";
 import CrownImg from "#/images/crown.svg";
@@ -67,9 +65,7 @@ export default function DetailOutcomeRow({
               width={40}
               height={40}
               alt={data.name}
-              src={
-                data.identifier === "0x1b8fb68f7c2e19b8" ? TrumpImg : KamalaImg
-              }
+              src={data.picture}
               className="border border-9black"
             />
           </div>

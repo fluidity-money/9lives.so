@@ -10,8 +10,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import TrumpImg from "#/images/trump.webp";
-import KamalaImg from "#/images/kamala.webp";
 import { prepareContractCall, simulateTransaction } from "thirdweb";
 import config from "@/config";
 import { formatUnits } from "ethers";
@@ -132,9 +130,7 @@ export default function DetailCall2Action({
             width={40}
             height={40}
             alt={outcome.name}
-            src={
-              outcome.identifier === "0x1b8fb68f7c2e19b8" ? TrumpImg : KamalaImg
-            }
+            src={outcome.picture}
             className="size-full object-cover"
           />
         </div>

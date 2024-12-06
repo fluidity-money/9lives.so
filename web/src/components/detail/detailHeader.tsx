@@ -1,5 +1,4 @@
 import Image from "next/image";
-import ElectionImg from "#/images/usa-election.webp";
 import WatchlistButton from "../watchlistButton";
 import { Campaign } from "@/types";
 import useInvestedAmount from "@/hooks/useInvestedAmount";
@@ -29,7 +28,7 @@ export default function DetailHeader({
           width={60}
           height={60}
           className="border border-9black"
-          src={ElectionImg}
+          src={data.picture}
         />
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2.5">
@@ -55,7 +54,7 @@ export default function DetailHeader({
                 "px-1 py-0.5 text-9black",
               )}
             >
-              End: {new Date(data.ending || 1730803847000).toDateString()}
+              End: {new Date(data.ending).toDateString()}
             </span>
           </div>
         </div>

@@ -16,6 +16,7 @@ export default function CampaignBody({
       <CampaignItemHeader
         name={data.name}
         identifier={data.identifier}
+        picture={data.picture}
         solo={data.outcomes.length === 1}
         soloRatio={32}
       />

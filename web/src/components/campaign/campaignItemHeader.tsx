@@ -1,24 +1,25 @@
 import Image from "next/image";
-import ElectionImage from "#/images/usa-election.webp";
 import { Campaign } from "@/gql/graphql";
 import Link from "next/link";
 import PixelRing from "#/icons/pixel-ring.svg";
 interface CampaignItemHeaderProps {
   name: Campaign["name"];
   identifier: Campaign["identifier"];
+  picture: Campaign["picture"];
   solo?: boolean;
   soloRatio?: number;
 }
 export default function CampaignItemHeader({
   name,
   identifier,
+  picture,
   solo,
   soloRatio,
 }: CampaignItemHeaderProps) {
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-2">
-        <Image src={ElectionImage} width={40} height={40} alt={name} />
+        <Image src={picture} width={40} height={40} alt={name} />
         <Link href={`/campaign/${identifier}`}>
           <h4 className="font-chicago text-sm font-bold">{name}</h4>
         </Link>

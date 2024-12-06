@@ -1,7 +1,5 @@
 import { Detail, Outcome } from "@/types";
 import ShadowCard from "../cardShadow";
-import TrumpImg from "#/images/trump.webp";
-import KamalaImg from "#/images/kamala.webp";
 import CrownImg from "#/images/crown.svg";
 import Image from "next/image";
 import Button from "../themed/button";
@@ -96,11 +94,7 @@ export default function DetailResults({
               width={40}
               height={40}
               alt={winner.name}
-              src={
-                winner.identifier === "0x1b8fb68f7c2e19b8"
-                  ? TrumpImg
-                  : KamalaImg
-              }
+              src={winner.picture}
               className="size-full object-cover"
             />
           </div>
@@ -112,7 +106,7 @@ export default function DetailResults({
           </h3>
           <div className="flex items-center gap-1 font-geneva text-[10px]">
             <span className="uppercase">Chance</span>
-            <span className="bg-9green px-1 py-0.5">83%</span>
+            <span className="bg-9green px-1 py-0.5">?%</span>
           </div>
         </div>
       </div>
