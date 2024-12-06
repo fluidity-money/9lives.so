@@ -21,12 +21,12 @@ var (
 )
 
 var (
-	factoryAbi, _  = ethAbi.JSON(bytes.NewReader(factoryAbiBytes))
+	factoryAbi, _ = ethAbi.JSON(bytes.NewReader(factoryAbiBytes))
 	tradingAbi, _ = ethAbi.JSON(bytes.NewReader(tradingAbiBytes))
 )
 
 func getTradingAddr(c *ethclient.Client, factoryAddr ethCommon.Address, id []byte) (*ethCommon.Address, error) {
-	calldata, err := factoryAbi.Pack("getTradingAddr", id)
+	calldata, err := factoryAbi.Pack("getTradingAddr", [32]byte(id))
 	if err != nil {
 		slog.Error("calldata could not be prepared",
 			"factory address", factoryAddr,
