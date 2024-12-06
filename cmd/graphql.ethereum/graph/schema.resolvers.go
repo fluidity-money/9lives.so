@@ -204,7 +204,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			"market id", marketId,
 		)
 		return nil, fmt.Errorf(
-			"staged creator is not the contract owner for id %v, owner is %v",
+			"staged creator is not the contract owner for id %v, owner is %x",
 			marketId,
 			contractOwner,
 		)
