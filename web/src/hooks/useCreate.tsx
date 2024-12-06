@@ -46,15 +46,15 @@ const useCreate = () => {
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
               name: o.name,
             }));
-            const urlBytes = toUtf8Bytes(input.urlCommitee);
-            const hashedUrl = keccak256(urlBytes) as `0x${string}`;
+            const descBytes = toUtf8Bytes(input.oracleDescription);
+            const hashedOracleDesc = keccak256(descBytes) as `0x${string}`;
             const createTx = prepareContractCall({
               contract: config.contracts.helper,
               method: "createWithInfraMarket",
               params: [
                 creationList, // outcomes
                 BigInt(new Date(input.ending).getTime() * 1000), // time ending in seconds timestamp
-                hashedUrl, // documentation url committee
+                hashedOracleDesc, // documentation (oracle description)
                 account.address, // fee recipient
               ],
             });
