@@ -11,10 +11,10 @@ import (
 
 type Outcome struct {
 	Name, Desc string
-	Seed       int
+	Seed       uint64
 }
 
-func GetOutcomeId(name, desc string, seed int) ([]byte, error) {
+func GetOutcomeId(name, desc string, seed uint64) ([]byte, error) {
 	var buf bytes.Buffer
 	if _, err := buf.WriteString(name); err != nil {
 		return nil, err

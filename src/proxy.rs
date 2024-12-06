@@ -68,7 +68,7 @@ pub fn get_share_addr(
 fn test_create_identifier() {
     assert_eq!(
         FixedBytes::from_slice(
-            &const_hex::decode("39724fec301ea7b725bb44b4273e1f4aa8c429ff4dc7e8d63dabd70ba4c32cd1")
+            &const_hex::decode("c27b300def7bb415cd56c150b2cb186e10a55980a39d974f8c6feb083f745514")
                 .unwrap()
         ),
         create_identifier(&[

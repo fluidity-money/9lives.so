@@ -173,7 +173,18 @@ func (r *frontpageResolver) Content(ctx context.Context, obj *types.Frontpage) (
 
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error) {
-	marketId := crypto.GetMarketId(outcomes)
+	outcomes_ := make([]crypto.Outcome, len(outcomes))
+	if seed < 0 {
+		return nil, fmt.Errorf("negative seed")
+	}
+	for i, o := range outcomes {
+		outcomes_[i] = crypto.Outcome{
+			Name: o.Name,
+			Desc: description,
+			Seed: uint64(o.Seed),
+		}
+	}
+	marketId := crypto.GetMarketId(outcomes_)
 	tradingAddr, err := getTradingAddr(r.Geth, r.FactoryAddr, marketId)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
@@ -212,7 +223,11 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	// Create outcomes object
 	var campaignOutcomes = make([]types.Outcome, len(outcomes))
 	for i, outcome := range outcomes {
-		outcomeId, _ := crypto.GetOutcomeId(outcome.Name, outcome.Description, outcome.Seed)
+		outcomeId, _ := crypto.GetOutcomeId(
+			outcome.Name,
+			outcome.Description,
+			uint64(outcome.Seed),
+		)
 		hexOutcomeId := "0x" + hex.EncodeToString(outcomeId)
 		shareAddress, _ := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
 		campaignOutcomes[i] = types.Outcome{
@@ -227,7 +242,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		}
 	}
 	// Create the campaign object
-	campaignId, _ := crypto.GetOutcomeId(name, description, seed)
+	campaignId, _ := crypto.GetOutcomeId(name, description, uint64(seed))
 	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
 	campaign := types.Campaign{
 		ID: hexCampaignId,
