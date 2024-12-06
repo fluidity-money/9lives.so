@@ -5,7 +5,10 @@ use stylus_sdk::alloy_primitives::U256;
 pub const FEE_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
 
 // 5% of all trading to buy shares goes to the creator of the contract.
-pub const FEE_MINT_PCT: U256 = U256::from_limbs([5, 0, 0, 0]);
+pub const FEE_CREATOR_MINT_PCT: U256 = U256::from_limbs([5, 0, 0, 0]);
+
+// 2% of all trading to buy shares goes to SPN.
+pub const FEE_SPN_MINT_PCT: U256 = U256::from_limbs([2, 0, 0, 0]);
 
 // 2% of all confiscation fees go to the caller of the sweep function if
 // they differ from the recipient.

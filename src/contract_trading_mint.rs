@@ -168,7 +168,7 @@ impl StorageTrading {
         );
 
         // Here we do some fee adjustment to send the fee recipient their money.
-        let fee_for_creator = (value * FEE_MINT_PCT) / FEE_SCALING;
+        let fee_for_creator = (value * FEE_CREATOR_MINT_PCT) / FEE_SCALING;
         fusdc_call::transfer(self.fee_recipient.get(), fee_for_creator)?;
         let value = value - fee_for_creator;
 
