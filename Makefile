@@ -42,8 +42,12 @@ build: \
 
 solidity: ${OUT_SHARE}
 
+coverage: ${OUT_COVERAGE}
+
 ${OUT_SHARE}: $(shell find src tests -name '*.sol')
 	@>&2 forge build --silent
+
+OUT_COVERAGE := coverage-out/index.html
 
 contract-factory-1: contract-factory-1.wasm
 contract-factory-2: contract-factory-2.wasm

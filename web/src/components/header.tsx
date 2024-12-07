@@ -4,7 +4,6 @@ import Link from "next/link";
 import HeaderLogo from "./headerLogo";
 import dynamic from "next/dynamic";
 import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
-import GetFusdcButton from "./getFusdcButton";
 import DisclaimerButton from "./disclaimerButton";
 import DegenMode from "./degenMode";
 
@@ -21,7 +20,6 @@ export default function Header() {
         <HeaderLogo />
       </Link>
       <DisclaimerButton />
-      <GetFusdcButton />
       <NavigationMenu />
       <CreateCampaingButton />
       <div className="relative flex items-center">

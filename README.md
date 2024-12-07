@@ -75,21 +75,19 @@ clause that could be "no" if a user were to try to estimate the price of somethi
 
 - [X] UX improvements (shares are more visible, smart account behaviour)
 - [X] Mainnet is supported as well. Mainnet has disclosure that funds are locked up until the election is over.
-- [X] Achievements and portfolio page is supported. Some socialfi elements.
-    1. Users can choose their favourite achievements to display in a minified form next to their Meow Domain.
-    2. Meow domains is supported in the UI.
+- Achievements and portfolio page is supported. Some socialfi elements.
+    1. [ ] Users can choose their favourite achievements to display in a minified form next to their Meow Domain.
+    2. [ ] Meow domains is supported in the UI.
 - [X] Collect payoff from the campaign ending in the frontend.
 - [ ] Custom fee collection and pool configuration supported (use beauty contest with fixed date, many outcomes if they want)
-- [ ] Anyone can create pools. Custom display of pools a la Ebay customisation.
-    1. A fixed fee is sent to creator of when shares are created.
-    2. Behind the scenes deferring to the AMM model if more than two outcomes.
-    3. Customise the UI of the frontpage for the info
-    4. Settlement based on a website URL
-    5. Stack ranking is done for automated updating of frontpage
-    6. Campaign report functionality. Images are screened automatically for bad images with A
-    7. API to update campaign by the original sender
-    8. Anti bad content screening API used
-    9. Custom embed when sharing URL
+- Anyone can create pools. Custom display of pools a la Ebay customisation.
+    1. [X] A fixed fee is sent to creator of when shares are created.
+    2. [X] Behind the scenes deferring to the AMM model if more than two outcomes.
+    3. [ ] Customise the UI of the frontpage for the info
+    4. [ ] Stack ranking is done for automated updating of frontpage
+    5. [ ] Campaign report functionality. Images are screened automatically for bad content with CSAM
+    6. [ ] API to update campaign by the original sender
+    9. [ ] Custom embed when sharing URL
 - [ ] Prediction market DAO. Token launch
 
 ## Building contracts

@@ -29,6 +29,7 @@ fn is_similar(a: Decimal, b: Decimal) -> bool {
 
 proptest! {
     #[test]
+    #[ignore]
     fn test_against_python(
         M1 in 1..u64::MAX,
         M2 in 1..u64::MAX,

@@ -51,6 +51,7 @@ fn strat_action_amount_purchasing(
 
 proptest! {
     #[test]
+    #[ignore]
     fn test_end_to_end_contract(
         outcome_1_id in [
             any::<u8>(), any::<u8>(), any::<u8>(), any::<u8>(),

@@ -46,9 +46,6 @@ function About() {
       <List
         items={[
           "Use at Your Own Risk: This contract is unaudited. Please be aware of the risks involved.",
-          "Testing on Arbitrum One: This is a preview deployment specialized for Arbitrum One. In the near future, 9Lives will transition to the Superposition Mainnet.",
-          "Limited Campaign During Testing: During this testing phase, the only available campaign will be centered on the U.S. presidential election.",
-          "Aftermarket Liquidity: The aftermarket for selling shares currently relies on the Camelot DEX, to be replaced by Longtail on Superposition Mainnet.",
           "About the Dynamic Pari-Mutuel Market (DPM) Model: The Dynamic Pari-Mutuel Market (DPM) model is a novel approach adopted by Superposition for prediction markets. Its pricing dynamics differ from conventional models, offering unique opportunities for trading strategies but also introducing new risks. Wager payoffs are based on both the trade price and the final market payoff per share at close. Unlike some models, the initial price paid for a winning wager is not refunded. This can mean that, under volatile market conditions, even a wager on the correct outcome could lose money. If a trader buys in at a high price that later drops significantly, they may lose funds regardless of the outcome. While we believe such situations to be rare, please proceed with caution. For further details on the DPM model, refer to the original paper below.",
         ]}
       />
