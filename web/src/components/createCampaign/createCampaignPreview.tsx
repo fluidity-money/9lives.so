@@ -128,7 +128,7 @@ export default function CreateCampaignPreview() {
           <span className="font-chicago text-xs">
             {preview?.settlementType === "beauty"
               ? "Beauty Contest"
-              : "URL Committee"}
+              : "Oracle Description"}
           </span>
         </div>
         {preview?.telegram || preview?.x || preview?.web ? (
