@@ -70,7 +70,10 @@ pub struct StorageOptimisticInfraMarket {
     /// their bond if they're correct, plus the caller incentive amount.
     pub campaign_who_whinged: StorageMap<Address, StorageAddress>,
 
-    /// Market description. This should be keccak256(<(url committee|beauty contest)>:<description>). This is used to figure out how this should resolve.
+    /// Market description. This should be keccak256(any string). This
+    /// is used to figure out how this should resolve. This should be checked
+    /// off-chain to find where data was stored (at the expense of some centralisation
+    /// with the current system).
     pub campaign_desc: StorageMap<Address, StorageB256>,
 
     /// Voting power vested globally in the different outcomes cumulative
