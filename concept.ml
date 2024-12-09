@@ -102,3 +102,28 @@ type 's m =
   | Claim : outcome * int * s_m_claiming m -> s_m_claiming m
 
 (* Edit ,.-1>ai can you convert this gadt into a state mermaid diagram? *)
+
+(*
+stateDiagram
+    [*] --> Locked_up : Lock in Lockup
+    Locked_up --> Spent : Vest
+    [*] --> Waiting : Create Trading
+    Spent --> Predicting : Vested`
+    Waiting --> Calling : Declare
+    Calling --> Whinged : Contest
+    Whinged --> Predicting : Predict
+    Predicting --> Predicting_over : Time Passes
+    Calling --> Calling_over : Time Passes
+    Predicting_over --> Completed : End
+    Calling_over --> Completed : End
+    Completed --> Slashing_begun : Start Slashing
+    Completed --> Oracle_submission : Oracle submission
+    Slashing_begun --> Slashed : Slash
+    Slashed --> Slashing_two_days_over : End Period
+    Slashing_two_days_over --> Anything_goes_slash : Slash
+    Anything_goes_slash --> Anything_goes_slashing_over : End Period
+    Created --> Traded : Trade
+    Traded --> Deadline_passed : Deadline
+    Deadline_passed --> Oracle_submission : Submit Oracle
+    Oracle_submission --> Claim : Claim
+*)
