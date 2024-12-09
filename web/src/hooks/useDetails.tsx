@@ -7,6 +7,7 @@ import {
 } from "thirdweb";
 import config from "@/config";
 import { Detail } from "@/types";
+import { toBigInt } from "ethers";
 interface useDetailsProps {
   tradingAddr: `0x${string}`;
   outcomeIds: `0x${string}`[];
@@ -41,14 +42,16 @@ export default function useDetails({
         (acc: Detail, cur: any[], curIdx) => {
           acc.totalInvestment += cur[investedIdx];
           acc.totalShares += cur[shareIdx];
-          acc.winner = cur[isWinnerIdx] ? outcomeIds[curIdx] : acc.winner;
+          acc.winner = Boolean(toBigInt(cur[isWinnerIdx]))
+            ? outcomeIds[curIdx]
+            : acc.winner;
           acc.outcomes = [
             ...acc.outcomes,
             {
               id: outcomeIds[curIdx],
               share: cur[shareIdx],
               invested: cur[investedIdx],
-              isWinner: cur[isWinnerIdx],
+              isWinner: Boolean(toBigInt(cur[isWinnerIdx])),
             },
           ];
           return acc;
