@@ -1,5 +1,21 @@
 #!/usr/bin/env -S ocaml -w +A
 
+(* s l is the Lockup, 's o is the Infrastructure Market, 's m is the Trading contract *)
+
+(**
+ * Lockup had an amount locked up and is able to be spent.
+ *)
+type s_l_unspent
+
+(**
+ * Lockup is in a spent stage and can't be spent again after it's vested.
+ *)
+type s_l_spent
+
+type 's l =
+  | Locked_up : int -> s_l_unspent l
+  | Spent : s_l_unspent l -> s_l_spent l
+
 type outcome = [`Outcome_a | `Outcome_b]
 
 type whinger = string
@@ -54,7 +70,7 @@ type 's o =
   | Waiting : s_o_waiting o
   | Calling : s_o_waiting o -> s_o_calling o
   | Whinged : outcome * whinger * s_o_calling o -> s_o_predicting o
-  | Prediction : [`Lockup_arb_spent of int] * s_o_whinged o -> s_o_predicting o
+  | Prediction : s_l_spent l * s_o_whinged o -> s_o_predicting o
   | Predicting_over : s_o_predicting o -> s_o_completed o
   | Calling_over : s_o_calling -> s_o_completed o
   | Slashing_begun : s_o_completed o -> s_o_slashing o
@@ -85,30 +101,4 @@ type 's m =
   | Oracle_submission :  s_o_completed o * s_m_pending_oracle m -> s_m_claiming m
   | Claim : outcome * int * s_m_claiming m -> s_m_claiming m
 
-(* Edit ,.-1>ai can you convert this gadt into a mermaid diagram? *)
-
-(*
-stateDiagram
-    [*] --> Waiting
-    Waiting --> Calling
-    Calling --> Whinged
-    Whinged --> Prediction
-    Whinged --> Predicting_over
-    Calling --> Calling_over
-    Predicting_over --> Completed
-    Calling_over --> Completed
-    Completed --> Slashing_begun
-    Completed --> Oracle_submission
-    Slashing_begun --> Slashing_two_days_over
-    Slashing_begun --> Slashed
-    Slashed --> Slashing_begun
-    Slashing_two_days_over --> Anything_goes
-    Anything_goes --> Anything_goes_slash
-    Anything_goes_slash --> Anything_goes
-    Anything_goes --> Anything_goes_slashing_over
-    Anything_goes_slashing_over --> Done_anything_goes
-    Created --> Traded
-    Traded --> Deadline_passed
-    Deadline_passed --> Oracle_submission
-    Oracle_submission --> Claim
-*)
+(* Edit ,.-1>ai can you convert this gadt into a state mermaid diagram? *)
