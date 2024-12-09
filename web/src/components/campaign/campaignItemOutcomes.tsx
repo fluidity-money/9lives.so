@@ -35,7 +35,7 @@ export default function CampaignItemOutcomes({
           <Button
             intent={isYesNo ? "no" : "default"}
             size={"large"}
-            title={isYesNo ? outcomes[0].name : `Predict ${outcomes[1].name}`}
+            title={isYesNo ? outcomes[1].name : `Predict ${outcomes[1].name}`}
             // onClick={() =>
             //   setSelectedOutcome({ id: outcomes[1].identifier, state: "buy" })
             // }
