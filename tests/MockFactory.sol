@@ -20,7 +20,8 @@ contract MockFactory is INineLivesFactory {
         address /* tradingDPMMintImpl */,
         address /* tradingAMMExtrasImpl */,
         address /* tradingAMMMintImpl */,
-        address /* infraMarketOracle */
+        address /* infraMarketOracle */,
+        address /* operator */
     ) external {}
 
     function newTrading09393DA8(

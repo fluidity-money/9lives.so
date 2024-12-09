@@ -133,17 +133,17 @@ on the local environment, or with end to end tests with an Arbitrum node.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xFEb6034FC7dF27dF18a3a6baD5Fb94C0D3dCb6d5` |
-| Factory 1 implementation      | `0x5ac4a47f6a785a2dccf6bda6d2959114f23c0149` |
-| Factory 2 implementation      | `0x6f6b153ac2d720dd7bd984f1f6a48aade348f424` |
+| Factory 1 implementation      | `0xa426c9c0c8c1a1796781c52272231e3756f5a9cc` |
+| Factory 2 implementation      | `0x8a3c11dc9fb21507a997fa44fd0377a1325f9a9a` |
 | Lockup implementation         | `0x017bb05e3385af991f706eb699d9da79096db657` |
 | Optimistic infra predict impl | `0xd89288ca3f38625e1fb259e88a35475a26e05424` |
 | Optimistic infra sweep impl   | `0xd98216645e6a154bf7220906e7eaf607d37953f8` |
 | Optimistic infra extras impl  | `0xca69e42b6b47e5c8c6b70a837a4d19a8558587fc` |
 | Trading DPM mint impl         | `0x386dc2d5ce72299e77be41eea7c097e0d6e2e375` |
-| Trading DPM extras impl       | `0x876701a2e81e670a1cf9b417fb3600ccb332bfba` |
-| Trading DPM price impl        | `0x0ab522d109827aeb5b1280af3b90346de3270981` |
-| Trading DPM quotes impl       | `0x443d83bc69af609ef5bf043ada258c9833817e65` |
-| Trading DPM price impl        | `0x0ab522d109827aeb5b1280af3b90346de3270981` |
+| Trading DPM extras impl       | `0x2f3d71e67cd7864ff12a79200982925846789755` |
+| Trading DPM price impl        | `0x6809b936baffc4118e12547013fa745d869576db` |
+| Trading DPM quotes impl       | `0xec5a096f7230566a4bb9d58a6ea4737cf3f21c09` |
+| Trading DPM price impl        | `0xb71586560702ab8b85b6513b31ee7264d91e3a04` |
 | Trading AMM mint impl         | `0xee0fddf33a81ccb9891b0265e11577144638bb8d` |
 | Trading AMM extras impl       | `0xc6f13c5b3ad68d236622f66d0c12c6501c128655` |
 | Trading AMM price impl        | `0x199da8fe8efe29a7fa8567a582b2b3c16ce00d74` |

@@ -20,6 +20,7 @@ impl StorageFactory {
         trading_amm_quotes_impl: Address,
         trading_amm_price_impl: Address,
         oracle_addr: Address,
+        operator_addr: Address
     ) -> R<()> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);

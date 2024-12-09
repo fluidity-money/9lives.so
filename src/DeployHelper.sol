@@ -34,7 +34,8 @@ interface Factory {
         address tradingAMMMintImpl,
         address tradingAmmQuotesImpl,
         address tradingAmmPriceImpl,
-        address infraMarketOracle
+        address infraMarketOracle,
+        address operator
     ) external;
 }
 
@@ -110,7 +111,8 @@ contract DeployHelper {
             _a.tradingAmmMintImpl,
             _a.tradingAmmQuotesImpl,
             _a.tradingAmmPriceImpl,
-            address(infraMarket)
+            address(infraMarket),
+            _a.admin
         );
     }
 }
