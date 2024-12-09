@@ -42,6 +42,7 @@ export default function DetailWrapper({
       <div className="flex flex-[2] flex-col gap-8">
         <DetailHeader data={initialData} isConcluded={isConcluded} />
         <DetailOutcomeTable
+          isYesNo={initialData.isYesNo}
           sharePrices={sharePrices}
           data={initialData.outcomes}
           tradingAddr={initialData.poolAddress}
@@ -65,6 +66,7 @@ export default function DetailWrapper({
             setSelectedOutcome={setSelectedOutcome}
             initalData={initialData.outcomes}
             tradingAddr={initialData.poolAddress}
+            isYesNo={initialData.isYesNo}
             price={
               sharePrices?.find((item) => item.id === selectedOutcome.id)
                 ?.price ?? "0"

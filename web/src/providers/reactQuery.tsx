@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
-import { requestCampaignList, requestTotalUserCount } from "./graphqlClient";
 import appConfig from "@/config";
 import { Campaign } from "@/types";
+import { getCampaigns } from "@/serverData/getCampaigns";
+import { getTotalUserCount } from "@/serverData/getTotalUserCount";
 
 export default function ReactQueryProvider({
   children,
@@ -20,18 +21,12 @@ export default function ReactQueryProvider({
     });
 
     client.setQueryDefaults(["campaigns"], {
-      queryFn: async () => {
-        const res = await requestCampaignList;
-        return res.campaigns;
-      },
+      queryFn: getCampaigns,
       initialData: initialData.campaigns,
     });
 
     client.setQueryDefaults(["totalUserCount"], {
-      queryFn: async () => {
-        const res = await requestTotalUserCount;
-        return res.productUserCount;
-      },
+      queryFn: getTotalUserCount,
       initialData: initialData.totalUserCount,
     });
 

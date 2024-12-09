@@ -13,6 +13,7 @@ export default function DetailOutcomes({
   setSelectedOutcome,
   details,
   isConcluded,
+  isYesNo,
 }: {
   data: Outcome[];
   sharePrices?: { id: string; price: string }[];
@@ -21,6 +22,7 @@ export default function DetailOutcomes({
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   details?: Detail;
   isConcluded: boolean;
+  isYesNo: boolean;
 }) {
   const outcomeIds = data.map((o) => o.identifier);
   const chances = useChances({
@@ -48,6 +50,7 @@ export default function DetailOutcomes({
       <tbody>
         {data.map((outcome) => (
           <DetailOutcomeRow
+            isYesNo={isYesNo}
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
             price={

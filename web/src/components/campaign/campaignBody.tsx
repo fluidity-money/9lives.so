@@ -21,6 +21,7 @@ export default function CampaignBody({
         soloRatio={32}
       />
       <CampaignItemOutcomes
+        isYesNo={data.isYesNo}
         campaignId={data.identifier}
         outcomes={data.outcomes}
         setSelectedOutcome={setSelectedOutcome}

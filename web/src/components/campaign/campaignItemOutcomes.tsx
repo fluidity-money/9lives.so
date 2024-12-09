@@ -6,20 +6,22 @@ interface CampaignItemOutcomesProps {
   campaignId: string;
   outcomes: Outcome[];
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
+  isYesNo: boolean;
 }
 export default function CampaignItemOutcomes({
   campaignId,
   outcomes,
   setSelectedOutcome,
+  isYesNo,
 }: CampaignItemOutcomesProps) {
-  if (outcomes.length === 2)
+  if (outcomes.length === 2 || isYesNo)
     return (
       <div className="my-5 flex flex-1 items-end gap-2">
         <Link href={`/campaign/${campaignId}`} className="flex flex-1">
           <Button
-            intent="default"
+            intent={isYesNo ? "yes" : "default"}
             size={"large"}
-            title={`Predict ${outcomes[0].name}`}
+            title={isYesNo ? outcomes[0].name : `Predict ${outcomes[0].name}`}
             // onClick={() =>
             //   setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
             // }
@@ -31,9 +33,9 @@ export default function CampaignItemOutcomes({
           className="flex flex-1"
         >
           <Button
-            intent="default"
+            intent={isYesNo ? "no" : "default"}
             size={"large"}
-            title={`Predict ${outcomes[1].name}`}
+            title={isYesNo ? outcomes[0].name : `Predict ${outcomes[1].name}`}
             // onClick={() =>
             //   setSelectedOutcome({ id: outcomes[1].identifier, state: "buy" })
             // }

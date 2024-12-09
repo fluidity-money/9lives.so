@@ -22,12 +22,14 @@ export default function DetailCall2Action({
   selectedOutcome,
   setSelectedOutcome,
   price,
+  isYesNo,
 }: {
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   tradingAddr: `0x${string}`;
   initalData: Outcome[];
   price: string;
+  isYesNo: boolean;
 }) {
   const [share, setShare] = useState<number>(0);
   const [fusdc, setFusdc] = useState<number>(0);
@@ -126,17 +128,32 @@ export default function DetailCall2Action({
     <ShadowCard className="sticky top-0 z-10 flex flex-col gap-4 p-4">
       <div className="flex items-center gap-4">
         <div className="size-10 overflow-hidden rounded-full">
-          <Image
-            width={40}
-            height={40}
-            alt={outcome.name}
-            src={outcome.picture}
-            className="size-full object-cover"
-          />
+          {isYesNo ? (
+            <div className="flex size-10 items-center justify-center">
+              <span
+                className={combineClass(
+                  outcome.name === "Yes" ? "text-green-500" : "text-red-500",
+                  "font-geneva text-xl uppercase",
+                )}
+              >
+                {outcome.name}
+              </span>
+            </div>
+          ) : (
+            <Image
+              width={40}
+              height={40}
+              alt={outcome.name}
+              src={outcome.picture}
+              className="size-full object-cover"
+            />
+          )}
         </div>
-        <h3 className="font-chicago text-base font-normal text-9black">
-          {outcome.name}
-        </h3>
+        {isYesNo ? null : (
+          <h3 className="font-chicago text-base font-normal text-9black">
+            {outcome.name}
+          </h3>
+        )}
       </div>
       <div>
         <span className="font-chicago text-xs font-normal text-9black">

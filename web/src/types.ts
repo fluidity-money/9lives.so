@@ -3,6 +3,7 @@ import { GetAchievementsQuery } from "./gql/graphql";
 export type Campaign = CampaignListQuery["campaigns"][number] & {
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
+  isYesNo: boolean;
   outcomes: Outcome[];
 };
 export type Outcome =

@@ -8,18 +8,13 @@ import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import dynamic from "next/dynamic";
 import appConfig from "@/config";
-import {
-  requestCampaignList,
-  requestTotalUserCount,
-} from "@/providers/graphqlClient";
-import { unstable_cache } from "next/cache";
-import { Campaign } from "@/types";
 import CustomToaster from "@/components/customToaster";
+import { getCachedCampaigns } from "@/serverData/getCampaigns";
+import { getCachedTotalUserCount } from "@/serverData/getTotalUserCount";
 
 const CookieBanner = dynamic(() => import("@/components/cookieBanner"), {
   ssr: false,
 });
-
 const chicago = localFont({
   src: [
     {
@@ -31,7 +26,6 @@ const chicago = localFont({
   display: "swap",
   variable: "--font-chicago",
 });
-
 const geneva = localFont({
   src: [
     {
@@ -43,26 +37,6 @@ const geneva = localFont({
   display: "swap",
   variable: "--font-geneva",
 });
-
-const getCampaigns = unstable_cache(
-  async () => {
-    return (await requestCampaignList).campaigns as Campaign[];
-  },
-  ["campaigns"],
-  { revalidate: appConfig.cacheRevalidation.homePage, tags: ["campaigns"] },
-);
-
-const getTotalUserCount = unstable_cache(
-  async () => {
-    return (await requestTotalUserCount).productUserCount as number;
-  },
-  ["totalUserCount"],
-  {
-    revalidate: appConfig.cacheRevalidation.homePage,
-    tags: ["totalUserCount"],
-  },
-);
-
 export const metadata: Metadata = {
   ...appConfig.metadata,
 };
@@ -72,8 +46,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const campaigns = await getCampaigns();
-  const totalUserCount = await getTotalUserCount();
+  const campaigns = await getCachedCampaigns();
+  const totalUserCount = await getCachedTotalUserCount();
   return (
     <html
       lang="en"

@@ -14,6 +14,7 @@ export default function DetailOutcomeRow({
   amount,
   selectedOutcome,
   setSelectedOutcome,
+  isYesNo,
   isWinner,
   isConcluded,
 }: {
@@ -23,6 +24,7 @@ export default function DetailOutcomeRow({
   chance?: number;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
+  isYesNo: boolean;
   isWinner: boolean;
   isConcluded: boolean;
 }) {
@@ -61,16 +63,31 @@ export default function DetailOutcomeRow({
                 src={CrownImg}
               />
             )}
-            <Image
-              width={40}
-              height={40}
-              alt={data.name}
-              src={data.picture}
-              className="border border-9black"
-            />
+            {isYesNo ? (
+              <div className="flex size-10 items-center justify-center">
+                <span
+                  className={combineClass(
+                    data.name === "Yes" ? "text-green-500" : "text-red-500",
+                    "font-geneva text-base uppercase",
+                  )}
+                >
+                  {data.name}
+                </span>
+              </div>
+            ) : (
+              <Image
+                width={40}
+                height={40}
+                alt={data.name}
+                src={data.picture}
+                className="border border-9black"
+              />
+            )}
           </div>
 
-          <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
+          {isYesNo ? null : (
+            <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
+          )}
         </div>
       </td>
       <td

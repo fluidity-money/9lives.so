@@ -1,26 +1,16 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
-import appConfig from "@/config";
-import { requestCampaignList } from "@/providers/graphqlClient";
-import { Campaign } from "@/types";
-import { unstable_cache } from "next/cache";
+import { getCampaigns } from "@/serverData/getCampaigns";
 import { Suspense } from "react";
+import appConfig from "@/config";
 
 export const dynamicParams = true;
-export const revalidate = 300; // per 5 minutes
+export const revalidate = appConfig.cacheRevalidation.detailPages;
 export async function generateStaticParams() {
-  const response = await requestCampaignList;
-  const { campaigns } = response;
+  const campaigns = await getCampaigns();
   return campaigns.map((campaign) => ({
     id: campaign.identifier,
   }));
 }
-const getCampaigns = unstable_cache(
-  async () => {
-    return (await requestCampaignList).campaigns as Campaign[];
-  },
-  ["campaigns"],
-  { revalidate: appConfig.cacheRevalidation.detailPages, tags: ["campaigns"] },
-);
 export default async function DetailPage({
   params,
 }: {
