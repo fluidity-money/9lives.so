@@ -18,7 +18,7 @@ export default function WatchlistButton({ id }: { id: string }) {
       onClick={handleToggle}
       className={combineClass(
         isInWatchlist && "group !bg-9yellow hover:!bg-9red",
-        "flex items-center gap-1",
+        "flex shrink-0 items-center gap-1",
       )}
     >
       <div
