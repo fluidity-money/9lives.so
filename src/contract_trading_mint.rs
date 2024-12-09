@@ -154,24 +154,22 @@ impl StorageTrading {
     ) -> R<U256> {
         assert_or!(self.when_decided.get().is_zero(), Error::DoneVoting);
         assert_or!(value > U256::ZERO, Error::ZeroAmount);
-
         let recipient = if recipient.is_zero() {
             msg_sender()
         } else {
             recipient
         };
-
         // Make sure that the outcome exists.
         assert_or!(
             self.outcome_shares.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
-
         // Here we do some fee adjustment to send the fee recipient their money.
         let fee_for_creator = (value * FEE_CREATOR_MINT_PCT) / FEE_SCALING;
         fusdc_call::transfer(self.fee_recipient.get(), fee_for_creator)?;
-        let value = value - fee_for_creator;
-
+        // Collect some fees for the team (for moderation reasons for screening).
+        let fee_for_team = (value * FEE_SPN_MINT_PCT) / FEE_SCALING;
+        let value = value - fee_for_creator - fee_for_team;
         // Set the global amounts that were invested.
         let outcome_invested_before = self.outcome_invested.get(outcome_id);
         self.outcome_invested.setter(outcome_id).set(

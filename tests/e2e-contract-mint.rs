@@ -30,7 +30,7 @@ fn test_e2e_mint() {
         let value = U256::from(1e6) * U256::from(6);
         assert_eq!(
             c.mint_test(outcome_1, value, msg_sender()).unwrap(),
-            U256::from(824831)
+            U256::from(821821)
         );
 
         c.decide(outcome_1).unwrap();
