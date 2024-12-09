@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+alloy-network-primitives = "^0.6"
 alloy-primitives = "=0.8.11"
 alloy-provider = "=0.6.4"
+alloy-eips = "^0.6"
 alloy-transport-http = "=0.6.4"
 const-hex = "1.13.1"
 futures = "0.3.31"

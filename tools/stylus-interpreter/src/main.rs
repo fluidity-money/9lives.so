@@ -2,6 +2,7 @@ use std::{collections::HashMap, env, future::Future, process, str::FromStr, sync
 
 use keccak_const::Keccak256;
 
+use alloy_network_primitives::BlockTransactionsKind;
 use alloy_primitives::{Address, U256};
 use alloy_provider::{Provider, RootProvider};
 
@@ -20,7 +21,8 @@ async fn main() -> Result<(), Error> {
         env::args().take(6).collect::<Vec<_>>().try_into().unwrap();
     static SENDER: OnceLock<Address> = OnceLock::new();
     SENDER.set(Address::from_str(&sender_str).unwrap()).unwrap();
-    let block = u64::from_str(&block).unwrap();
+    static BLOCK: OnceLock<u64> = OnceLock::new();
+    BLOCK.set(u64::from_str(&block).unwrap()).unwrap();
     let addr = Address::from_str(&addr).unwrap();
     let module = Module::from_file(&engine, file.clone()).unwrap();
 
@@ -167,7 +169,7 @@ async fn main() -> Result<(), Error> {
                         .lock()
                         .await
                         .get_storage_at(addr, U256::from_be_bytes(word))
-                        .number(block)
+                        .number(*BLOCK.get().unwrap())
                         .await
                         .unwrap()
                         .to_be_bytes();
@@ -199,6 +201,34 @@ async fn main() -> Result<(), Error> {
             // that were used in the operation, and write every SSTORE and result of
             // SLOAD that's used to our storage hashmap for the contract's address.
             0
+        },
+    )?;
+    linker.func_wrap_async(
+        "vm_hooks",
+        "block_timestamp",
+        |_: Caller<_>, _: ()| -> Box<dyn Future<Output = i64> + Send> {
+            Box::new(async move {
+                let block = BLOCK.get().unwrap();
+                u64::from_be_bytes(
+                    PROVIDER
+                        .get()
+                        .unwrap()
+                        .lock()
+                        .await
+                        .get_block_by_number(
+                            alloy_eips::eip1898::BlockNumberOrTag::Number(*block),
+                            BlockTransactionsKind::Full,
+                        )
+                        .await
+                        .unwrap()
+                        .unwrap()
+                        .header
+                        .timestamp
+                        .to_be_bytes(),
+                )
+                .try_into()
+                .unwrap()
+            })
         },
     )?;
     linker.func_wrap(

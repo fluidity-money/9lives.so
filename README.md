@@ -44,20 +44,29 @@ bad bettors prediction without regard for their token position (as long as they 
 correctly).
 
 ```mermaid
-flowchart TD
-    Caller --> |Designates who the winning outcome is| Infra[Infra market]
-    Infra --> Challenge{Challenge period pass?}
-    Challenge --> |No| Disputed[Disputed by whinger]
-    Disputed --> Predicting
-    Predictor --> |Votes on outcome| Predicting
-    Predicting --> |3 day window passes| Sweeping
-    Sweeping --> |Collects funds from loser bettors| Lockup
-    Lockup --> |Sends money to correct infra market predictors| Predictors
-    Sweeping --> |"Decides" the outcome| Trading
-    Challenge --> |Yes| Trading
-    Trading --> Correct{Did caller correctly designate outcome?}
-    Correct --> |Yes| CallerYes[Caller gets fees]
-    Correct --> |No | CallerNo[Caller gets no fees]
+stateDiagram
+    [*] --> Waiting
+    Waiting --> Calling
+    Calling --> Whinged
+    Whinged --> Prediction
+    Whinged --> Predicting_over
+    Calling --> Calling_over
+    Predicting_over --> Completed
+    Calling_over --> Completed
+    Completed --> Slashing_begun
+    Completed --> Oracle_submission
+    Slashing_begun --> Slashing_two_days_over
+    Slashing_begun --> Slashed
+    Slashed --> Slashing_begun
+    Slashing_two_days_over --> Anything_goes
+    Anything_goes --> Anything_goes_slash
+    Anything_goes_slash --> Anything_goes
+    Anything_goes --> Anything_goes_slashing_over
+    Anything_goes_slashing_over --> Done_anything_goes
+    Created --> Traded
+    Traded --> Deadline_passed
+    Deadline_passed --> Oracle_submission
+    Oracle_submission --> Claim
 ```
 
 Oracle State oracles are very simple comparatively, as presumably the associated Trading
