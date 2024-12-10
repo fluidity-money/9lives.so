@@ -14,6 +14,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 
+const EmptyBytes32 = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
 const useBuy = ({
   shareAddr,
   tradingAddr,
@@ -117,7 +119,7 @@ const useBuy = ({
               const approveTx = prepareContractCall({
                 contract: config.contracts.fusdc,
                 method: "approve",
-                params: [tradingAddr, MaxUint256],
+                params: [tradingAddr, amount],
               });
               await sendTransaction({
                 transaction: approveTx,
@@ -135,8 +137,8 @@ const useBuy = ({
                 account.address,
                 BigInt(0),
                 0,
-                "0x",
-                "0x",
+                EmptyBytes32,
+                EmptyBytes32,
               ],
             });
             await sendTransaction({
