@@ -16,10 +16,10 @@ jobs:
       NEXT_PUBLIC_POINTS_URL: "https://points-graph.superposition.so"
       NEXT_PUBLIC_FUSDC_ADDR: "0xa8ea92c819463efbeddfb670fefc881a480f0115"
       NEXT_PUBLIC_AMM_ADDR: "0x2A4a912970b780C29cf5b97aaD45ea5f98A07341"
-      NEXT_PUBLIC_FACTORY_ADDR: "0xe1fc0068ac7809d2a4635de64b59d18fdd9ce22d"
-      NEXT_PUBLIC_LENS_ADDR: "0x38710FC5EA5984A5eC7867c61910a7364b4620DE"
-      NEXT_PUBLIC_INFRA_ORACLE_ADDR: "0x330656e0f5f3d9eb6315df356176ce0251cf7a31"
-      NEXT_PUBLIC_HELPER_ADDR: "0xC0A66BFb62178B9048b3189Cb6f50AE67b5479bB"
+      NEXT_PUBLIC_FACTORY_ADDR: "0xa499aa7d8f65abd496b3d75e1ff6b9d8fb3eb0ff"
+      NEXT_PUBLIC_LENS_ADDR: "0x5F173EB43F869f4A887f99c2230536cc26F7e0e1"
+      NEXT_PUBLIC_INFRA_ORACLE_ADDR: "0x156768470de4685349c6033b9c6210dc94f22dca"
+      NEXT_PUBLIC_HELPER_ADDR: "0xDCE83C878721d49E5ffA97D4b00938329740dACA"
       NEXT_PUBLIC_POSTHOG_KEY: "phc_wFN8nVjgKYNURCUsE7MEFUdAjgKE6aDC01AAEXLUGyt"
       NEXT_PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com"
       NEXT_PUBLIC_WS_URL: "wss://superposition-test.hasura.app/v1/graphql"
@@ -31,7 +31,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
            node-version: 20
- 
+
       - uses: pnpm/action-setup@v4
         with:
           version: 8

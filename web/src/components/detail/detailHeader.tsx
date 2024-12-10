@@ -43,12 +43,12 @@ export default function DetailHeader({
           <div className="flex items-center justify-between font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
             <div className="flex items-center gap-4">
               <span>
-                Created by {data.creator.address.slice(0, 4)}...
                 <a
                   rel="noopener noreferrer"
                   target="_blank"
-                  href={`https://testnet-explorer.superposition.so/address/{data.creator.address}`}>
-                  {data.creator.address.slice(-4)}
+                  href={`https://testnet-explorer.superposition.so/address/${data.creator.address}`}
+                >
+                  Created by {data.creator.address.slice(0, 4)}...{data.creator.address.slice(-4)}
                 </a>
               </span>
               <span>{investedAmount} fUSDC Vol.</span>
