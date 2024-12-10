@@ -157,14 +157,14 @@ export default function DetailOutcomeRow({
         )}
       >
         <Link
-          href={`https://app.camelot.exchange/?token1=${data.share.address}`}
+          href={`https://long.so/stake/pool?id=${data.share.address}`}
           target="_blank"
           rel="noopener,noreferrer"
         >
           <Button size={"medium"} title="Trade" disabled={isConcluded} />
         </Link>
         <Link
-          href={`https://app.camelot.exchange/liquidity/?token1=${data.share.address}&token2=0x4CFA50B7Ce747e2D61724fcAc57f24B748FF2b2A`}
+          href={`https://long.so/stake/pool?id=${data.share.address}`}
           target="_blank"
           rel="noopener,noreferrer"
         >

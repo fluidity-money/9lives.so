@@ -185,7 +185,7 @@ export default function DetailCall2Action({
             onClick={
               () =>
                 window.open(
-                  `https://app.camelot.exchange/?token1=${outcome.share.address}`,
+                  `https://long.so/stake/pool?id=${outcome.share.address}`,
                   "_blank",
                   "noopener,noreferrer",
                 )

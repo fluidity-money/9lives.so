@@ -39,7 +39,7 @@ export default function PositionRow({
       </td>
       <td className="flex justify-end px-2">
         <a
-          href={`https://app.camelot.exchange/liquidity/?token1=${data.shareAddress}&token2=0x4CFA50B7Ce747e2D61724fcAc57f24B748FF2b2A`}
+          href={`https://long.so/stake/pool?id=${data.shareAddress}`}
           target="_blank"
           rel="noopener,noreferrer"
         >
