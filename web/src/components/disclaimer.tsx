@@ -18,7 +18,7 @@ function List({ items }: { items: string[] }) {
         const [title, description] = item.split(":");
         return (
           <li key={item.slice(0, 10)}>
-            <strong>{title}:</strong> {description}
+            <strong>{title}</strong> {description}
           </li>
         );
       })}
@@ -41,13 +41,18 @@ function About() {
     <Section>
       <Title text="What is 9Lives?" />
       <Parag text="9Lives is the most capital-efficient prediction market developed by the Superposition team. Inspired by decentralized finance, 9Lives combines parimutuel markets with a continuous double auction, providing deep liquidity and a risk-free environment for market participants." />
-      <Parag text="Built using Arbitrum Stylus, 9Lives is faster, more cost-efficient, and offers advanced options for leverage and trading. With 9Lives, traders can easily place bets, trade their positions, and maximise capital efficiency while benefiting from the safest and most affordable prediction market on Web3." />
+      <Parag text="Built using Arbitrum Stylus, 9Lives is the most cost-efficient, and the most advanced platform for trading. With 9Lives, traders can easily place bets, trade their positions, and maximise capital efficiency while benefiting from the safest and most affordable prediction market on Web3." />
       <Title text="Disclaimer" />
       <List
         items={[
           "Use at Your Own Risk: This contract is unaudited. Please be aware of the risks involved.",
           "About the Dynamic Pari-Mutuel Market (DPM) Model: The Dynamic Pari-Mutuel Market (DPM) model is a novel approach adopted by Superposition for prediction markets. Its pricing dynamics differ from conventional models, offering unique opportunities for trading strategies but also introducing new risks. Wager payoffs are based on both the trade price and the final market payoff per share at close. Unlike some models, the initial price paid for a winning wager is not refunded. This can mean that, under volatile market conditions, even a wager on the correct outcome could lose money. If a trader buys in at a high price that later drops significantly, they may lose funds regardless of the outcome. While we believe such situations to be rare, please proceed with caution. For further details on the DPM model, refer to the original paper below.",
+          "By accessing this web application, you agree that you are not a citizen of Cuba, Iran, North Korea, Syria, Ukraine, China, or Russia. You agree that you have read and agree with the Terms and Conditions."
         ]}
+      />
+      <Anchor
+        href="#terms-and-conditions"
+        text="Terms and Conditions"
       />
       <Anchor
         href="https://dl.acm.org/doi/10.1145/988772.988799"
