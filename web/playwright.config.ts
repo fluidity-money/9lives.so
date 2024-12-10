@@ -69,7 +69,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
   },
 
-  globalTeardown: "./playwright.teardown.js",
+  globalTeardown: "./playwright.teardown.ts",
 
   reporter: [
     ["list"],
