@@ -44,7 +44,7 @@ export default function DetailHeader({
             <div className="flex items-center gap-4">
               <span>
                 Created by {data.creator.address.slice(0, 4)}...
-                <a href=`https://testnet-explorer.superposition.so/address/{data.creator.address}`>
+                <a href={`https://testnet-explorer.superposition.so/address/{data.creator.address}`}>
                   {data.creator.address.slice(-4)}
                 </a>
               </span>
