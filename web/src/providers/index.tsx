@@ -11,7 +11,7 @@ export default function Providers({
   initialData,
 }: {
   children: React.ReactNode;
-  initialData: { campaigns: Campaign[]; totalUserCount: number };
+  initialData: { campaigns: Campaign[]; totalUserCount?: number };
 }) {
   return (
     <ThirdwebProvider>

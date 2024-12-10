@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
-import { CampaignListQuery } from "@/gql/graphql";
-import { Action } from "@/types";
+import { Action, Campaign } from "@/types";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -26,7 +25,7 @@ export default function WebSocketProvider() {
     const unsub = wsClient.subscribe<{
       id: string;
       created_at: string;
-      content: CampaignListQuery;
+      content: Campaign;
       updated_at: string;
     }>(
       { query: subTenLatestCreates },
@@ -35,9 +34,9 @@ export default function WebSocketProvider() {
           queryClient.setQueryData<Action[]>(["actions"], (oldData) => {
             const newAction = {
               id: data?.id,
-              campaignName: data?.content?.campaigns[0]?.name,
+              campaignName: data?.content?.name,
               type: "create",
-              campaignPic: data?.content?.campaigns[0]?.picture,
+              campaignPic: data?.content?.picture,
               timestamp: data?.created_at,
               campaignVol: undefined, // no direct data available
             } as Action;

@@ -6,7 +6,7 @@ export default function useLeaderboard() {
     queryKey: ["leaderboard"],
     queryFn: async () => {
       const res = await requestLeaderboard();
-      return res.leaderboards[0].items;
+      return res[0].items;
     },
   });
 }

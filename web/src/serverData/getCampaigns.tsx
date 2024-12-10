@@ -1,10 +1,10 @@
 import { requestCampaignList } from "@/providers/graphqlClient";
-import { Campaign } from "@/types";
 import { unstable_cache } from "next/cache";
-import appConfig from "@/config";
+import { Campaign } from "@/types";
 
 export async function getCampaigns() {
-  const campaigns = (await requestCampaignList).campaigns as Campaign[];
+  const campaigns = (await requestCampaignList) as Campaign[];
+  // const campaigns = res as Campaign[];
   return campaigns.map((campaign) => {
     campaign["isYesNo"] =
       campaign.outcomes.length === 2 &&
@@ -15,6 +15,6 @@ export async function getCampaigns() {
 }
 
 export const getCachedCampaigns = unstable_cache(getCampaigns, ["campaigns"], {
-  revalidate: appConfig.cacheRevalidation.homePage,
+  revalidate: 60,
   tags: ["campaigns"],
 });

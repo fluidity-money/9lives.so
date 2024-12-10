@@ -6,8 +6,10 @@ export default function useAchievements(props?: { walletAddress?: string }) {
   return useQuery({
     queryKey: ["achievements", props?.walletAddress],
     queryFn: async () => {
+      if (!props?.walletAddress) return [];
       const res = await requestAchievments(props?.walletAddress);
-      return res.achievements.filter((a) => a.product === "9lives");
+      if (!res) return [];
+      return res.filter((a) => a.product === "9lives");
     },
   });
 }

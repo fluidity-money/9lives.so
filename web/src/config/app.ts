@@ -25,18 +25,10 @@ const appSchema = z.object({
     metadataBase: z.instanceof(URL),
     keywords: z.array(z.string()),
   }),
-  cacheRevalidation: z.object({
-    homePage: z.number(),
-    detailPages: z.number(),
-  }),
 });
 
 const appVars = appSchema.safeParse({
   metadata,
-  cacheRevalidation: {
-    homePage: 60,
-    detailPages: 60,
-  },
 });
 
 if (!appVars.success) {

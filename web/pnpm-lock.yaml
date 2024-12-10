@@ -38,12 +38,12 @@ importers:
       ethers:
         specifier: ^6.13.3
         version: 6.13.3
+      graffle:
+        specifier: 8.0.0-next.137
+        version: 8.0.0-next.137(@opentelemetry/api@1.9.0)(graphql@16.9.0)(prettier@3.3.3)
       graphql:
         specifier: ^16.9.0
         version: 16.9.0
-      graphql-request:
-        specifier: ^7.1.0
-        version: 7.1.0(graphql@16.9.0)
       graphql-ws:
         specifier: ^5.16.0
         version: 5.16.0(graphql@16.9.0)
@@ -182,6 +182,14 @@ importers:
         version: 5.6.2
 
 packages:
+
+  '@0no-co/graphql.web@1.0.12':
+    resolution: {integrity: sha512-BTDjjsV/zSPy5fqItwm+KWUfh9CSe9tTtR6rCB72ddtkAxdcHbi4Ir4r/L1Et4lyxmL+i7Rb3m9sjLLi9tYrzA==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    peerDependenciesMeta:
+      graphql:
+        optional: true
 
   '@adobe/css-tools@4.4.0':
     resolution: {integrity: sha512-Ff9+ksdQQB3rMncgqDK78uLznstjyfIf2Arnh22pW8kBpLs6rpKDwgnZT46hin5Hl1WzazzK64DOrhSwYpS7bQ==}
@@ -3522,6 +3530,9 @@ packages:
     resolution: {integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==}
     engines: {node: '>= 0.4'}
 
+  es-toolkit@1.29.0:
+    resolution: {integrity: sha512-GjTll+E6APcfAQA09D89HdT8Qn2Yb+TeDSDBTMcxAo+V+w1amAtCI15LJu4YPH/UCPoSo/F47Gr1LIM0TE0lZA==}
+
   escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==}
     engines: {node: '>=6'}
@@ -3981,6 +3992,25 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
+  graffle@8.0.0-next.137:
+    resolution: {integrity: sha512-/lprB2UbQZy/B2LlaLxvrrl8t3z3xrb8igbLr1cm/eovdecgCjTEwOr0OOr96Ezsf28j1HW9yIShdN/Kg9og5w==}
+    hasBin: true
+    peerDependencies:
+      '@dprint/formatter': ^0.4.0
+      '@dprint/typescript': ^0.93.0
+      '@opentelemetry/api': ^1.9.0
+      graphql: 14 - 16
+      prettier: ^3.3.3
+    peerDependenciesMeta:
+      '@dprint/formatter':
+        optional: true
+      '@dprint/typescript':
+        optional: true
+      '@opentelemetry/api':
+        optional: true
+      prettier:
+        optional: true
+
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
@@ -3998,22 +4028,6 @@ packages:
     resolution: {integrity: sha512-p+XPfS4q7aIpKVcgmnZKhMNqhltk20hfXtkaIkTfjjmiKMJ5xrt5c743cL03y/K7y1rg3WrIC49xGiEQ4mxdNw==}
     peerDependencies:
       graphql: 14 - 16
-
-  graphql-request@7.1.0:
-    resolution: {integrity: sha512-Ouu/lYVFhARS1aXeZoVJWnGT6grFJXTLwXJuK4mUGGRo0EUk1JkyYp43mdGmRgUVezpRm6V5Sq3t8jBDQcajng==}
-    hasBin: true
-    peerDependencies:
-      '@dprint/formatter': ^0.3.0
-      '@dprint/typescript': ^0.91.1
-      dprint: ^0.46.2
-      graphql: 14 - 16
-    peerDependenciesMeta:
-      '@dprint/formatter':
-        optional: true
-      '@dprint/typescript':
-        optional: true
-      dprint:
-        optional: true
 
   graphql-tag@2.12.6:
     resolution: {integrity: sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==}
@@ -4322,6 +4336,10 @@ packages:
   is-path-inside@3.0.3:
     resolution: {integrity: sha512-Fd4gABb+ycGAmKou8eMftCupSir5lRxqf4aD/vd0cD2qc4HL07OjCeuHMr8Ro4CoMaeCKDB0/ECBOVWjTwUvPQ==}
     engines: {node: '>=8'}
+
+  is-plain-obj@4.1.0:
+    resolution: {integrity: sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==}
+    engines: {node: '>=12'}
 
   is-potential-custom-element-name@1.0.1:
     resolution: {integrity: sha512-bCYeRA2rVibKZd+s2625gGnGF/t7DSqDs4dP7CrLA1m7jKWz6pps0LpYLJN8Q64HtmPKJ1hrN3nzPNKFEKOUiQ==}
@@ -6261,8 +6279,8 @@ packages:
     resolution: {integrity: sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==}
     engines: {node: '>=8'}
 
-  type-fest@4.26.1:
-    resolution: {integrity: sha512-yOGpmOAL7CkKe/91I5O3gPICmJNLJ1G4zFYVAsRHg7M64biSnPtRj0WNQt++bRkjYOqjWXrhnUw1utzmVErAdg==}
+  type-fest@4.30.0:
+    resolution: {integrity: sha512-G6zXWS1dLj6eagy6sVhOMQiLtJdxQBHIA9Z6HFUNLOlr6MFOgzV8wvmidtPONfPtEUv0uZsy77XJNzTAfwPDaA==}
     engines: {node: '>=16'}
 
   type-is@1.6.18:
@@ -6703,6 +6721,10 @@ packages:
         optional: true
 
 snapshots:
+
+  '@0no-co/graphql.web@1.0.12(graphql@16.9.0)':
+    optionalDependencies:
+      graphql: 16.9.0
 
   '@adobe/css-tools@4.4.0': {}
 
@@ -8361,7 +8383,7 @@ snapshots:
       string-length: 6.0.0
       strip-ansi: 7.1.0
       ts-toolbelt: 9.6.0
-      type-fest: 4.26.1
+      type-fest: 4.30.0
       zod: 3.23.8
 
   '@molt/types@0.2.0':
@@ -11281,6 +11303,8 @@ snapshots:
       is-date-object: 1.0.5
       is-symbol: 1.0.4
 
+  es-toolkit@1.29.0: {}
+
   escalade@3.2.0: {}
 
   escape-html@1.0.3: {}
@@ -11844,6 +11868,18 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
+  graffle@8.0.0-next.137(@opentelemetry/api@1.9.0)(graphql@16.9.0)(prettier@3.3.3):
+    dependencies:
+      '@0no-co/graphql.web': 1.0.12(graphql@16.9.0)
+      '@graphql-typed-document-node/core': 3.2.0(graphql@16.9.0)
+      '@molt/command': 0.9.0
+      es-toolkit: 1.29.0
+      graphql: 16.9.0
+      is-plain-obj: 4.1.0
+    optionalDependencies:
+      '@opentelemetry/api': 1.9.0
+      prettier: 3.3.3
+
   graphemer@1.4.0: {}
 
   graphql-config@5.1.2(@types/node@22.10.1)(graphql@16.9.0)(typescript@5.6.2):
@@ -11874,13 +11910,6 @@ snapshots:
       graphql: 16.9.0
     transitivePeerDependencies:
       - encoding
-
-  graphql-request@7.1.0(graphql@16.9.0):
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.9.0)
-      '@molt/command': 0.9.0
-      graphql: 16.9.0
-      zod: 3.23.8
 
   graphql-tag@2.12.6(graphql@16.9.0):
     dependencies:
@@ -12197,6 +12226,8 @@ snapshots:
   is-number@7.0.0: {}
 
   is-path-inside@3.0.3: {}
+
+  is-plain-obj@4.1.0: {}
 
   is-potential-custom-element-name@1.0.1: {}
 
@@ -14335,7 +14366,7 @@ snapshots:
 
   type-fest@0.7.1: {}
 
-  type-fest@4.26.1: {}
+  type-fest@4.30.0: {}
 
   type-is@1.6.18:
     dependencies:

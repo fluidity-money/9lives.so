@@ -10,7 +10,7 @@ export default function ReactQueryProvider({
   initialData,
 }: {
   children: React.ReactNode;
-  initialData: { campaigns: Campaign[]; totalUserCount: number };
+  initialData: { campaigns: Campaign[]; totalUserCount?: number };
 }) {
   const [queryClient] = useState(() => {
     // eslint-disable-next-line @tanstack/query/stable-query-client

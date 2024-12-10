@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { Campaign } from "@/gql/graphql";
 import Link from "next/link";
 import PixelRing from "#/icons/pixel-ring.svg";
+import { Campaign } from "@/types";
 interface CampaignItemHeaderProps {
   name: Campaign["name"];
   identifier: Campaign["identifier"];

@@ -2,6 +2,7 @@
   "name": "web",
   "version": "0.1.0",
   "packageManager": "pnpm@9.14.2+sha256.06e65a4965baff6d6097f9c8f75c35f6d420974dbc03d775009056a69edfd271",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,8 +10,6 @@
     "start": "next start",
     "lint:next": "next lint",
     "lint:tests": "eslint '__tests__/**/*.{ts,tsx}'  && eslint 'e2e/**/*.{ts,tsx}'",
-    "codegen": "DOTENV_CONFIG_PATH=./.env.local graphql-codegen --config codegen.ts --require dotenv/config",
-    "codegen:watch": "DOTENV_CONFIG_PATH=./.env.local graphql-codegen --config codegen.ts --watch --require dotenv/config",
     "clean": "cross-env NODE_V8_COVERAGE=.v8-coverage node ./scripts/clean.js",
     "test:start": "cross-env NODE_V8_COVERAGE=.v8-coverage NODE_OPTIONS=--inspect=9229 next dev",
     "test:command": "pnpm clean && pnpm test:start",
@@ -18,7 +17,10 @@
     "test:e2e": "playwright test",
     "format:check": "prettier --check 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
     "format:fix": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
-    "prepare:husky": "cd .. && husky web/.husky"
+    "prepare:husky": "cd .. && husky web/.husky",
+    "gen:9lives": "pnpm graffle --project ./src/graffle/lives9.config.ts",
+    "gen:points": "pnpm graffle --project ./src/graffle/points.config.ts",
+    "codegen": "pnpm gen:9lives && pnpm gen:points"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.8",
@@ -31,8 +33,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "ethers": "^6.13.3",
+    "graffle": "8.0.0-next.137",
     "graphql": "^16.9.0",
-    "graphql-request": "^7.1.0",
     "graphql-ws": "^5.16.0",
     "keccak": "^3.0.4",
     "next": "15.0.4",

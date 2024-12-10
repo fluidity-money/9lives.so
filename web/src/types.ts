@@ -1,20 +1,29 @@
-import { CampaignListQuery, GetLeaderboardQuery } from "./gql/graphql";
-import { GetAchievementsQuery } from "./gql/graphql";
-export type Campaign = CampaignListQuery["campaigns"][number] & {
+import {
+  requestCampaignList,
+  requestLeaderboard,
+  requestAchievments,
+} from "./providers/graphqlClient";
+
+export type Campaign = Awaited<typeof requestCampaignList>[number] & {
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
   isYesNo: boolean;
   outcomes: Outcome[];
 };
-export type Outcome =
-  CampaignListQuery["campaigns"][number]["outcomes"][number] & {
-    identifier: `0x${string}`;
-    share: { address: `0x${string}` };
-  };
+export type Outcome = {
+  name: string;
+  description: string;
+  picture: string;
+  identifier: `0x${string}`;
+  share: { address: `0x${string}` };
+};
 export type SelectedOutcome = { id: string; state: "buy" | "sell" };
-export type Leader =
-  GetLeaderboardQuery["leaderboards"][number]["items"][number];
-export type Achievement = GetAchievementsQuery["achievements"][number];
+export type Leader = Awaited<
+  ReturnType<typeof requestLeaderboard>
+>[number]["items"][number];
+export type Achievement = Awaited<
+  ReturnType<typeof requestAchievments>
+>[number];
 export type Detail = {
   totalInvestment: bigint;
   totalShares: bigint;
