@@ -398,7 +398,9 @@ pub enum Error {
     /// This user is not the operator!
     NotOperator,
 
-    FuckShit,
+    // 0x4f
+    /// The trading contract is not set up.
+    TradingEmpty,
 }
 
 pub type R<T> = Result<T, Error>;

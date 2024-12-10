@@ -88,6 +88,9 @@ interface INineLivesTrading {
     /// @notice is this trading contract running the DPM?
     function isDpm() external view returns (bool);
 
+    /// @notice global shares minted.
+    function globalShares() external view returns (uint256);
+
     /**
      * @notice Invested amount of fusdc in the betting pool.
      */

@@ -100,6 +100,10 @@ impl StorageTrading {
         ))
     }
 
+    pub fn global_shares(&self) -> R<U256> {
+        Ok(self.global_shares.get())
+    }
+
     pub fn is_dpm(&self) -> R<bool> {
         #[cfg(feature = "trading-backend-dpm")]
         {

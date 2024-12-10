@@ -72,14 +72,13 @@ export default function CreateCampaignFormSettlmentSource({
         }}
       >
         <TabList className="flex gap-2.5">
-          <Tab as={Fragment} disabled>
+          <Tab as={Fragment}>
             {(props) => (
               <TabIconButton
                 title="Opinion Poll"
                 activeIcon={LipsActiveIcon}
                 inactiveIcon={LipsInactiveIcon}
                 {...props}
-                className="opacity-30"
               />
             )}
           </Tab>
@@ -119,8 +118,8 @@ export default function CreateCampaignFormSettlmentSource({
           <TabPanel>
             <SourceWrapper>
               <p className="text-xs">
-                Opinion Poll: outcome is determined by the weighting of fUSDC
-                in different outcomes. This is useful for gauging opinion of things!
+                Opinion Poll: winner is determined by which outcome has the most fUSDC
+                invested in it. This is useful for opinion gauging!
               </p>
               <Link
                 className="mt-2 flex gap-2 font-chicago text-xs underline"

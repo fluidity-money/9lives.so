@@ -95,7 +95,7 @@ export default function CreateCampaignFormOutcomes({
     <Field className={fieldClass}>
       <Label text="Campaign Type & Outcomes" required />
       <TabGroup
-        defaultIndex={0}
+        defaultIndex={1}
         onChange={(idx) => setOutcomeType(idx === 0 ? "default" : "custom")}
       >
         <TabList className="flex gap-2.5">

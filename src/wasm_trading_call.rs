@@ -21,6 +21,8 @@ sol! {
     );
 
     function decide(bytes8 winner);
+
+    function globalShares();
 }
 
 pub fn ctor(
@@ -30,7 +32,7 @@ pub fn ctor(
     time_start: u64,
     time_ending: u64,
     fee_recipient: Address,
-    share_impl: Address
+    share_impl: Address,
 ) -> Result<(), Error> {
     let a = ctorCall {
         outcomes,
@@ -38,19 +40,21 @@ pub fn ctor(
         timeStart: time_start,
         timeEnding: time_ending,
         feeRecipient: fee_recipient,
-        shareImpl: share_impl
+        shareImpl: share_impl,
     }
     .abi_encode();
-    RawCall::new()
-        .call(addr, &a)
-        .map_err(Error::TradingError)?;
+    RawCall::new().call(addr, &a).map_err(Error::TradingError)?;
     Ok(())
 }
 
 pub fn decide(addr: Address, winner: FixedBytes<8>) -> Result<(), Error> {
     let a = decideCall { winner }.abi_encode();
-    RawCall::new()
-        .call(addr, &a)
-        .map_err(Error::TradingError)?;
+    RawCall::new().call(addr, &a).map_err(Error::TradingError)?;
+    Ok(())
+}
+
+pub fn global_shares(addr: Address) -> Result<U256, Error> {
+    let a = globalSharesCall {}.abi_encode();
+    RawCall::new().call(addr).map_err(Error::TradingError)?;
     Ok(())
 }
