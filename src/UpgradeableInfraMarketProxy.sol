@@ -27,8 +27,6 @@ contract UpgradeableInfraMarketProxy is IInfraMarket {
 
     event AdminChanged(address previousAdmin, address newAdmin);
 
-    address private immutable admin_;
-
     // OpenZeppelin 2024.
     function directDelegate(address to) internal {
         assembly {
@@ -62,15 +60,28 @@ contract UpgradeableInfraMarketProxy is IInfraMarket {
         address _implExtras
     ) {
         address admin = address(new ProxyAdmin(_admin));
-        admin_ = admin;
         require(_implPredict.code.length > 0, "empty predict");
         require(_implSweep.code.length > 0, "empty sweep");
         require(_implExtras.code.length > 0, "empty extras");
         StorageSlot.getAddressSlot(ADMIN_SLOT).value = admin;
         StorageSlot.getAddressSlot(IMPL_PREDICT_SLOT).value = _implPredict;
+        emit UpgradedPredict(_implPredict);
+        StorageSlot.getAddressSlot(IMPL_SWEEP_SLOT).value = _implSweep;
+        emit UpgradedSweep(_implSweep);
+        StorageSlot.getAddressSlot(IMPL_EXTRAS_SLOT).value = _implExtras;
+        emit UpgradedExtras(_implExtras);
+        emit AdminChanged(address(0), admin);
+    }
+
+    function upgrade(
+        address _implPredict,
+        address _implSweep,
+        address _implExtras
+    ) external {
+        require(msg.sender == StorageSlot.getAddressSlot(ADMIN_SLOT).value, "not admin");
+        StorageSlot.getAddressSlot(IMPL_PREDICT_SLOT).value = _implPredict;
         StorageSlot.getAddressSlot(IMPL_SWEEP_SLOT).value = _implSweep;
         StorageSlot.getAddressSlot(IMPL_EXTRAS_SLOT).value = _implExtras;
-        emit AdminChanged(address(0), admin);
     }
 
     /// @inheritdoc IInfraMarket
