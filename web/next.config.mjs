@@ -1,3 +1,4 @@
+import * as childProcess from "child_process";
 import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
@@ -19,12 +20,21 @@ const nextConfig = {
   },
 };
 
+const gitHash = childProcess
+  .execSync("git rev-parse --short HEAD")
+  .toString()
+  .trim();
+
 export default withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
   org: "fluidity-money",
   project: "9lives",
+
+  env: {
+    NEXT_PUBLIC_GIT_HASH: gitHash,
+  },
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,

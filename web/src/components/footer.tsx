@@ -1,4 +1,5 @@
 import Link from "next/link";
+const gitHash = process.env.NEXT_PUBLIC_GIT_HASH;
 const socials = [
   {
     title: "X",
@@ -8,6 +9,10 @@ const socials = [
     title: "Discord",
     page: "https://discord.gg/VjUWjRQP8y",
   },
+  {
+    title: `Commit ${gitHash}`,
+    page: `https://github.com/fluidity-money/9lives.so/commit/${gitHash}`
+  }
 ];
 const menu = [
   {
@@ -19,16 +24,16 @@ const menu = [
     page: "https://static.9lives.so/privacy.pdf",
   },
   {
-    title: "Docs",
-    page: "https://docs.9lives.so",
-  },
-  {
     title: "TODO board",
     page: "https://issues.superposition.so",
   },
   {
     title: "Status",
     page: "https://status.9lives.so/",
+  },
+  {
+    title: "Docs",
+    page: "https://docs.9lives.so",
   },
 ];
 const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
