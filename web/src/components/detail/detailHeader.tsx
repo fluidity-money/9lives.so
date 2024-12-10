@@ -21,8 +21,8 @@ export default function DetailHeader({
     outcomeIds,
   });
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
+    <div className="flex items-center justify-between gap-2.5">
+      <div className="flex flex-1 items-center gap-4">
         <a href={data.picture} target="_blank" rel="noopener noreferrer">
           <Image
             alt="tldr"
@@ -42,7 +42,7 @@ export default function DetailHeader({
             />{" "}
             <h1 className="font-chicago text-2xl">{data.name}</h1>
           </div>
-          <div className="flex items-center justify-between font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+          <div className="flex items-center justify-between gap-4 font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
             <div className="flex items-center gap-4">
               <span>
                 <a
