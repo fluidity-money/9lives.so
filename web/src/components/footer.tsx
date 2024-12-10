@@ -11,8 +11,8 @@ const socials = [
   },
   {
     title: `Commit ${gitHash}`,
-    page: `https://github.com/fluidity-money/9lives.so/commit/${gitHash}`
-  }
+    page: `https://github.com/fluidity-money/9lives.so/commit/${gitHash}`,
+  },
 ];
 const menu = [
   {

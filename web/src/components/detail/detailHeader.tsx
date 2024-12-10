@@ -23,13 +23,15 @@ export default function DetailHeader({
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <Image
-          alt="tldr"
-          width={60}
-          height={60}
-          className="border border-9black"
-          src={data.picture}
-        />
+        <a href={data.picture} target="_blank" rel="noopener noreferrer">
+          <Image
+            alt="tldr"
+            width={120}
+            height={120}
+            className="border border-9black"
+            src={data.picture}
+          />
+        </a>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2.5">
             <Image
@@ -48,7 +50,8 @@ export default function DetailHeader({
                   target="_blank"
                   href={`https://testnet-explorer.superposition.so/address/${data.creator.address}`}
                 >
-                  Created by {data.creator.address.slice(0, 4)}...{data.creator.address.slice(-4)}
+                  Created by {data.creator.address.slice(0, 4)}...
+                  {data.creator.address.slice(-4)}
                 </a>
               </span>
               <span>{investedAmount} fUSDC Vol.</span>

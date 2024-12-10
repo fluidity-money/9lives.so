@@ -47,13 +47,10 @@ function About() {
         items={[
           "Use at Your Own Risk: This contract is unaudited. Please be aware of the risks involved.",
           "About the Dynamic Pari-Mutuel Market (DPM) Model: The Dynamic Pari-Mutuel Market (DPM) model is a novel approach adopted by Superposition for prediction markets. Its pricing dynamics differ from conventional models, offering unique opportunities for trading strategies but also introducing new risks. Wager payoffs are based on both the trade price and the final market payoff per share at close. Unlike some models, the initial price paid for a winning wager is not refunded. This can mean that, under volatile market conditions, even a wager on the correct outcome could lose money. If a trader buys in at a high price that later drops significantly, they may lose funds regardless of the outcome. While we believe such situations to be rare, please proceed with caution. For further details on the DPM model, refer to the original paper below.",
-          "By accessing this web application, you agree that you are not a citizen of a country where gambling is prohibited. You agree that you have read and agree with the Terms and Conditions."
+          "By accessing this web application, you agree that you are not a citizen of a country where gambling is prohibited. You agree that you have read and agree to the Terms and Conditions.",
         ]}
       />
-      <Anchor
-        href="#terms-and-conditions"
-        text="Terms and Conditions"
-      />
+      <Anchor href="#terms-and-conditions" text="Terms and Conditions" />
       <Anchor
         href="https://dl.acm.org/doi/10.1145/988772.988799"
         text="A dynamic pari-mutuel market for hedging, wagering, and information aggregation"
