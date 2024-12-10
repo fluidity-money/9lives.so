@@ -75,7 +75,7 @@ export default function CreateCampaignFormSettlmentSource({
           <Tab as={Fragment} disabled>
             {(props) => (
               <TabIconButton
-                title="Beauty Contest"
+                title="Opinion Poll"
                 activeIcon={LipsActiveIcon}
                 inactiveIcon={LipsInactiveIcon}
                 {...props}
@@ -119,9 +119,8 @@ export default function CreateCampaignFormSettlmentSource({
           <TabPanel>
             <SourceWrapper>
               <p className="text-xs">
-                Beauty contest: outcome is determined by the weighting of fUSDC
-                in different outcomes. Useful for situations where an oracle may
-                be inappropriate. The default setting for any new campaign.
+                Opinion Poll: outcome is determined by the weighting of fUSDC
+                in different outcomes. This is useful for gauging opinion of things!
               </p>
               <Link
                 className="mt-2 flex gap-2 font-chicago text-xs underline"

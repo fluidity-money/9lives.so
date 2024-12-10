@@ -127,7 +127,7 @@ export default function CreateCampaignPreview() {
           />
           <span className="font-chicago text-xs">
             {preview?.settlementType === "beauty"
-              ? "Beauty Contest"
+              ? "Opinion Poll"
               : "Oracle Description"}
           </span>
         </div>
