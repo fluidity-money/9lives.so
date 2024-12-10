@@ -157,3 +157,4 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Factory proxy                 | `0xa499aa7d8f65abd496b3d75e1ff6b9d8fb3eb0ff` |
 | Helper factory                | `0xDCE83C878721d49E5ffA97D4b00938329740dACA` |
 | LensesV1                      | `0x5F173EB43F869f4A887f99c2230536cc26F7e0e1` |
+| AI resolver                   | `0x15bebdf285bfe0039fd266af207f6d278aaac7f3` |

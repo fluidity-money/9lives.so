@@ -25,7 +25,7 @@ export default function CreateCampaignFormSocials({
   return (
     <>
       <Field className={fieldClass}>
-        <Label text="Social Links" />
+        <Label text="Creator Social Links" />
         <div className="flex items-center gap-5">
           <Image src={TelegramIcon} width={24} className="ml-2.5" alt="" />
           <Input

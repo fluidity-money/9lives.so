@@ -8,9 +8,6 @@ export default function CreateCampaign() {
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex items-center gap-2">
           <h2 className="font-chicago text-2xl">Create Campaign</h2>
-          <span className="bg-9yellow px-2 py-1 font-geneva text-sm">
-            Coming Soon
-          </span>
         </div>
         <p className="text-center text-xs">
           This is where you can create your own campaign for other people to

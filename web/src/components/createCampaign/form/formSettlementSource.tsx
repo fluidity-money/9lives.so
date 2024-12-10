@@ -104,14 +104,13 @@ export default function CreateCampaignFormSettlmentSource({
               />
             )}
           </Tab>
-          <Tab disabled as={Fragment}>
+          <Tab as={Fragment}>
             {(props) => (
               <TabIconButton
                 title="A.I Resolver"
                 activeIcon={AIActiveIcon}
                 inactiveIcon={AIInactiveIcon}
                 {...props}
-                className="opacity-30"
               />
             )}
           </Tab>
@@ -217,6 +216,25 @@ export default function CreateCampaignFormSettlmentSource({
                 <ErrorInfo text={errors.contractAddress.message} />
               )}
             </SourceWrapper>
+          </TabPanel>
+          <TabPanel>
+            <SourceWrapper>
+              <p className="text-xs">
+                Enable Sarp AI to make a informed decision based on the
+                description given.
+              </p>
+              <Link
+                className="flex gap-2 font-chicago text-xs underline"
+                href={"#"}
+              >
+                More Info{" "}
+                <Image
+                  src={RightCaretIcon}
+                  alt=""
+                  className="h-[15px] w-[14px]"
+                />
+              </Link>
+              </SourceWrapper>
           </TabPanel>
         </TabPanels>
       </TabGroup>
