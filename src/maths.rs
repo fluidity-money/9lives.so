@@ -89,7 +89,7 @@ pub fn locked_arb_amt(initial_amt: U256) -> Result<U256, Error> {
 /// infra market became available.
 pub fn infra_voting_power(_amt: U256, _secs_passed: u64) -> Result<U256, Error> {
     // TODO: have this do stuff.
-    Ok(U256::ZERO)
+    Ok(_amt)
 }
 
 #[test]
