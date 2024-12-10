@@ -73,7 +73,7 @@ contract UpgradeableInfraMarketProxy is IInfraMarket {
         emit AdminChanged(address(0), admin);
     }
 
-    function upgrade(
+    function upgradeProxy(
         address _implPredict,
         address _implSweep,
         address _implExtras
