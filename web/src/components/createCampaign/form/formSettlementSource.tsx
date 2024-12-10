@@ -118,8 +118,8 @@ export default function CreateCampaignFormSettlmentSource({
           <TabPanel>
             <SourceWrapper>
               <p className="text-xs">
-                Opinion Poll: winner is determined by which outcome has the most fUSDC
-                invested in it. This is useful for opinion gauging!
+                Opinion Poll: winner is determined by which outcome has the most
+                fUSDC invested in it. This is useful for opinion gauging!
               </p>
               <Link
                 className="mt-2 flex gap-2 font-chicago text-xs underline"
