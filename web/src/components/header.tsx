@@ -2,12 +2,10 @@ import ConnectButton from "@/components/connectButton";
 import NavigationMenu from "@/components/navMenu";
 import Link from "next/link";
 import HeaderLogo from "./headerLogo";
-import dynamic from "next/dynamic";
 import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
 import DisclaimerButton from "./disclaimerButton";
 import DegenMode from "./degenMode";
-
-const Clock = dynamic(() => import("@/components/clock"), { ssr: false });
+import Clock from "./clock";
 
 export default function Header() {
   return (

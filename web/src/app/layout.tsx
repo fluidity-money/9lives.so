@@ -6,15 +6,12 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
-import dynamic from "next/dynamic";
 import appConfig from "@/config";
 import CustomToaster from "@/components/customToaster";
-import { getCachedCampaigns } from "@/serverData/getCampaigns";
+import { getCampaigns } from "@/serverData/getCampaigns";
 import { getCachedTotalUserCount } from "@/serverData/getTotalUserCount";
+import CookieBanner from "@/components/cookieBanner";
 
-const CookieBanner = dynamic(() => import("@/components/cookieBanner"), {
-  ssr: false,
-});
 const chicago = localFont({
   src: [
     {
@@ -46,7 +43,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const campaigns = await getCachedCampaigns();
+  const campaigns = await getCampaigns();
   const totalUserCount = await getCachedTotalUserCount();
   return (
     <html
@@ -56,7 +53,7 @@ export default async function RootLayout({
       <body className="flex min-h-screen flex-col items-center bg-9layer">
         <Providers initialData={{ campaigns, totalUserCount }}>
           <Header />
-          <main className="mx-auto flex max-w-screen-xl flex-1 p-4">
+          <main className="mx-auto flex max-w-screen-xl flex-1 p-4 md:w-[1280px]">
             {children}
           </main>
           <Footer />
