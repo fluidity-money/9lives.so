@@ -161,20 +161,7 @@ export default function DetailOutcomeRow({
           target="_blank"
           rel="noopener,noreferrer"
         >
-          <Button size={"medium"} title="Trade" disabled={isConcluded} />
-        </Link>
-        <Link
-          href={`https://long.so/stake/pool?id=${data.share.address}`}
-          target="_blank"
-          rel="noopener,noreferrer"
-        >
           <Button size={"medium"} title="LP" disabled={isConcluded} />
-        </Link>
-        <Link
-          href={`https://arbiscan.io/token/${data.share.address}`}
-          target="_blank"
-        >
-          <Button size={"medium"} title="Arbiscan" />
         </Link>
       </td>
     </tr>
