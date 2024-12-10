@@ -133,27 +133,27 @@ on the local environment, or with end to end tests with an Arbitrum node.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xFEb6034FC7dF27dF18a3a6baD5Fb94C0D3dCb6d5` |
-| Factory 1 implementation      | `0xa426c9c0c8c1a1796781c52272231e3756f5a9cc` |
-| Factory 2 implementation      | `0x8a3c11dc9fb21507a997fa44fd0377a1325f9a9a` |
-| Lockup implementation         | `0x017bb05e3385af991f706eb699d9da79096db657` |
-| Optimistic infra predict impl | `0xd89288ca3f38625e1fb259e88a35475a26e05424` |
-| Optimistic infra sweep impl   | `0xd98216645e6a154bf7220906e7eaf607d37953f8` |
-| Optimistic infra extras impl  | `0xca69e42b6b47e5c8c6b70a837a4d19a8558587fc` |
-| Trading DPM mint impl         | `0x386dc2d5ce72299e77be41eea7c097e0d6e2e375` |
-| Trading DPM extras impl       | `0x2f3d71e67cd7864ff12a79200982925846789755` |
-| Trading DPM price impl        | `0x6809b936baffc4118e12547013fa745d869576db` |
-| Trading DPM quotes impl       | `0xec5a096f7230566a4bb9d58a6ea4737cf3f21c09` |
-| Trading DPM price impl        | `0xb71586560702ab8b85b6513b31ee7264d91e3a04` |
-| Trading AMM mint impl         | `0xee0fddf33a81ccb9891b0265e11577144638bb8d` |
-| Trading AMM extras impl       | `0xc6f13c5b3ad68d236622f66d0c12c6501c128655` |
-| Trading AMM price impl        | `0x199da8fe8efe29a7fa8567a582b2b3c16ce00d74` |
-| Trading AMM quotes impl       | `0x8baa4075fb83e8903a326a7ac089475d65ce0c9b` |
-| Trading AMM price impl        | `0x199da8fe8efe29a7fa8567a582b2b3c16ce00d74` |
-| Share implementation          | `0x886aF2442228578d95086518f1D333391Ad76335` |
-| Lockup token implementation   | `0x5c968D92795C12B14856eD1e33657c38D5071217` |
-| Infrastructure market proxy   | `0x330656e0f5f3d9eb6315df356176ce0251cf7a31` |
-| Lockup proxy                  | `0xb8a339ac7bbd11d68ef420fe1e1ab892a9af4097` |
-| Lockup token proxy            | `0x62e3f7aab06454d3159561b9d7397049c2594098` |
-| Factory proxy                 | `0xe1fc0068ac7809d2a4635de64b59d18fdd9ce22d` |
-| Helper factory                | `0xC0A66BFb62178B9048b3189Cb6f50AE67b5479bB` |
-| LensesV1                      | `0x38710FC5EA5984A5eC7867c61910a7364b4620DE` |
+| Factory 1 implementation      | `0x4e01d5c351d35410e4f04403caee0eca16527ce9` |
+| Factory 2 implementation      | `0x8960ad1a9a7f99616606b2fd71be1bbc82e62507` |
+| Lockup implementation         | `0xf6a9a9ddfcb37da2e9b9aa1f96b51ea83ffa4fef` |
+| Optimistic infra predict impl | `0x16f0d98e0f6d45081c66cedfac36739217a7f636` |
+| Optimistic infra sweep impl   | `0x23d6d1d2658bdff1b28633eeb650a78d7c0858e2` |
+| Optimistic infra extras impl  | `0x81efdc7105249c67a55abda84aa6f6773df5f5eb` |
+| Trading DPM mint impl         | `0xc547b71c9252ba8084f051fb365d08cdeaba7a12` |
+| Trading DPM extras impl       | `0x11c302d4ce84db5e27c8526676b11989f648a188` |
+| Trading DPM price impl        | `0xe53043d6454003a6367842221455b6f5a6238d12` |
+| Trading DPM quotes impl       | `0xe14253cf4fcda54e5bfb4c37667f017db313fbac` |
+| Trading DPM price impl        | `0xe53043d6454003a6367842221455b6f5a6238d12` |
+| Trading AMM mint impl         | `0x96ffb2dfc97bd5ec15793983c0f13c5093cc1d05` |
+| Trading AMM extras impl       | `0x4bdbacc936b1f23ce5f0b74bf84274284fe3ef4c` |
+| Trading AMM price impl        | `0x427c6936fbb7546cce3d772a293b5836d7b49383` |
+| Trading AMM quotes impl       | `0x1603dd14bd87c785dd9711cd401755cb8137b00c` |
+| Trading AMM price impl        | `0x427c6936fbb7546cce3d772a293b5836d7b49383` |
+| Share implementation          | `0xD8b1066bBb37789F478749d8eA224A89Fbf179be` |
+| Lockup token implementation   | `0x75b86E643371A9BC4F5047e2F826080Ce4e3bDee` |
+| Infrastructure market proxy   | `0x156768470de4685349c6033b9c6210dc94f22dca` |
+| Lockup proxy                  | `0x0eb32077a3b9dadbc1e62f8009645fce2d085b75` |
+| Lockup token proxy            | `0x8e9c329d316b7c31ea1409bdf54ef15bb324c0c6` |
+| Factory proxy                 | `0xa499aa7d8f65abd496b3d75e1ff6b9d8fb3eb0ff` |
+| Helper factory                | `0xDCE83C878721d49E5ffA97D4b00938329740dACA` |
+| LensesV1                      | `0x5F173EB43F869f4A887f99c2230536cc26F7e0e1` |
