@@ -155,6 +155,6 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Lockup proxy                  | `0x0eb32077a3b9dadbc1e62f8009645fce2d085b75` |
 | Lockup token proxy            | `0x8e9c329d316b7c31ea1409bdf54ef15bb324c0c6` |
 | Factory proxy                 | `0xa499aa7d8f65abd496b3d75e1ff6b9d8fb3eb0ff` |
-| Helper factory                | `0xDCE83C878721d49E5ffA97D4b00938329740dACA` |
+| Helper factory                | `0x1EE6F0fa7Ac5f87de8728ce40F8dDc4783E6547a` |
 | LensesV1                      | `0x5F173EB43F869f4A887f99c2230536cc26F7e0e1` |
 | AI resolver                   | `0x15bebdf285bfe0039fd266af207f6d278aaac7f3` |

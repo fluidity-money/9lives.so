@@ -4,7 +4,7 @@ import {
   sendTransaction,
   simulateTransaction,
 } from "thirdweb";
-import { keccak256, MaxUint256, toUtf8Bytes } from "ethers";
+import { keccak256, toUtf8Bytes } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -14,20 +14,14 @@ import { requestCreateCampaign } from "@/providers/graphqlClient";
 import { useCampaignStore } from "@/stores/campaignStore";
 import clientEnv from "../config/clientEnv";
 import { generateId } from "@/utils/generateId";
-const approveFactoryTx = prepareContractCall({
-  contract: config.contracts.fusdc,
-  method: "approve",
-  params: [clientEnv.NEXT_PUBLIC_FACTORY_ADDR, MaxUint256],
-});
-const approveInfraTx = prepareContractCall({
-  contract: config.contracts.fusdc,
-  method: "approve",
-  params: [clientEnv.NEXT_PUBLIC_INFRA_ORACLE_ADDR, MaxUint256],
-});
+
+// HelperApprovalAmount taken by the contract for every deployment (in the current
+// two outcome DPM mode).
+const HelperApprovalAmount = BigInt(5000000);
 const approveHelperTx = prepareContractCall({
   contract: config.contracts.fusdc,
   method: "approve",
-  params: [clientEnv.NEXT_PUBLIC_HELPER_ADDR, MaxUint256],
+  params: [clientEnv.NEXT_PUBLIC_HELPER_ADDR, HelperApprovalAmount],
 });
 const useCreate = () => {
   const queryClient = useQueryClient();
@@ -58,49 +52,16 @@ const useCreate = () => {
                 account.address, // fee recipient
               ],
             });
-            const allowanceFactoryTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "allowance",
-              params: [account.address, clientEnv.NEXT_PUBLIC_FACTORY_ADDR],
-            });
-            const allowanceInfraTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "allowance",
-              params: [
-                account.address,
-                clientEnv.NEXT_PUBLIC_INFRA_ORACLE_ADDR,
-              ],
-            });
             const allowanceHelperTx = prepareContractCall({
               contract: config.contracts.fusdc,
               method: "allowance",
               params: [account.address, clientEnv.NEXT_PUBLIC_HELPER_ADDR],
             });
-            const allowanceOfFactory = (await simulateTransaction({
-              transaction: allowanceFactoryTx,
-              account,
-            })) as bigint;
-            if (!(allowanceOfFactory > 0)) {
-              await sendTransaction({
-                transaction: approveFactoryTx,
-                account,
-              });
-            }
-            const allowanceOfInfra = (await simulateTransaction({
-              transaction: allowanceInfraTx,
-              account,
-            })) as bigint;
-            if (!(allowanceOfInfra > 0)) {
-              await sendTransaction({
-                transaction: approveInfraTx,
-                account,
-              });
-            }
             const allowanceOfHelper = (await simulateTransaction({
               transaction: allowanceHelperTx,
               account,
             })) as bigint;
-            if (!(allowanceOfHelper > 0)) {
+            if (allowanceOfHelper < HelperApprovalAmount) {
               await sendTransaction({
                 transaction: approveHelperTx,
                 account,

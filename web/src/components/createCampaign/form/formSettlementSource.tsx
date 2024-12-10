@@ -234,7 +234,7 @@ export default function CreateCampaignFormSettlmentSource({
                   className="h-[15px] w-[14px]"
                 />
               </Link>
-              </SourceWrapper>
+            </SourceWrapper>
           </TabPanel>
         </TabPanels>
       </TabGroup>
