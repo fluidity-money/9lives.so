@@ -32,12 +32,8 @@ const query = `
 export async function getCampaigns() {
   const res = await fetch(appConfig.NEXT_PUBLIC_GRAPHQL_URL, {
     method: "POST",
-    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": "no-cache, no-store, must-revalidate",
-      Pragma: "no-cache",
-      Expires: "0",
     },
     body: JSON.stringify({ query }),
   });
