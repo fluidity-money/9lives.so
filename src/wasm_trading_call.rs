@@ -20,7 +20,8 @@ sol! {
         uint64 timeStart,
         uint64 timeEnding,
         address feeRecipient,
-        address shareImpl
+        address shareImpl,
+        bool shouldBufferTime
     );
 
     function decide(bytes8 winner);
@@ -40,6 +41,7 @@ pub fn ctor(
     time_ending: u64,
     fee_recipient: Address,
     share_impl: Address,
+    should_buffer_time: bool
 ) -> Result<(), Error> {
     let a = ctorCall {
         outcomes,
@@ -48,6 +50,7 @@ pub fn ctor(
         timeEnding: time_ending,
         feeRecipient: fee_recipient,
         shareImpl: share_impl,
+        shouldBufferTime: should_buffer_time
     }
     .abi_encode();
     RawCall::new().call(addr, &a).map_err(Error::TradingError)?;

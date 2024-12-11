@@ -55,6 +55,13 @@ pub const SCALING_FACTOR: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
 // incorrect bets relative ot the winning outcome.
 pub const FIFTY_PCT_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
 
+/// Three hours in seconds to determine if we're inside the buffer window.
+pub const THREE_HOURS_SECS: u64 = 60 * 60 * 3;
+
+/// The minimum amount that must be paid to purchase into the Trading
+/// contract, if it's within a 3 hour closing window.
+pub const THREE_HOUR_WINDOW_MIN_BUYIN: U256 = U256::from_limbs([1e7 as u64, 0, 0, 0]);
+
 // Minimal viable proxy bytecode.
 pub const NORMAL_PROXY_BYTECODE_1: [u8; 18] = [
     0x60, 0x2d, 0x5f, 0x81, 0x60, 0x09, 0x5f, 0x39, 0xf3, 0x5f, 0x5f, 0x36, 0x5f, 0x5f, 0x37, 0x36,

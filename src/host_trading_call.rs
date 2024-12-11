@@ -14,6 +14,7 @@ pub fn ctor(
     _time_ending: u64,
     _fee_recipient: Address,
     _share_impl: Address,
+    _should_buffer_time: bool,
 ) -> Result<(), Error> {
     Ok(())
 }

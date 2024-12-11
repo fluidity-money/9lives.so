@@ -78,6 +78,10 @@ pub struct StorageTrading {
 
     /// The amount paid out so far by the decided amount.
     pub amount_paid_out: StorageU256,
+
+    /// Whether the contract should extend the deadline by 3 hours if purchases are made under 3
+    /// hours that pass the buffer requirement. This could be useful in a polling situation.
+    pub should_buffer_time: StorageBool,
 }
 
 #[cfg(feature = "testing")]

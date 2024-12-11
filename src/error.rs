@@ -409,6 +409,10 @@ pub enum Error {
     // 0x51
     /// Beauty contest had bad outcome calldata submitted to it.
     BeautyContestBadOutcomes,
+
+    // 0x52
+    /// We're below the three hour buyin for someone to enter the Trading contract!
+    BelowThreeHourBuyin,
 }
 
 pub type R<T> = Result<T, Error>;

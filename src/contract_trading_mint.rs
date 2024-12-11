@@ -11,7 +11,7 @@ use crate::{
     fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    utils::msg_sender,
+    utils::{block_timestamp, msg_sender},
 };
 
 #[cfg(feature = "trading-backend-dpm")]
@@ -152,7 +152,15 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> R<U256> {
-        assert_or!(self.when_decided.get().is_zero(), Error::DoneVoting);
+        // The old time ending, is not updated to reflect a new deadline.
+        let old_time_ending = u64::from_le_bytes(self.time_ending.get().to_le_bytes());
+        // Ensure that we're not complete, and that the time hasn't expired.
+        assert_or!(
+            self.when_decided.get().is_zero()
+                || self.is_shutdown.get()
+                || old_time_ending > block_timestamp(),
+            Error::DoneVoting
+        );
         assert_or!(value > U256::ZERO, Error::ZeroAmount);
         let recipient = if recipient.is_zero() {
             msg_sender()
@@ -164,6 +172,21 @@ impl StorageTrading {
             self.outcome_shares.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
+        // If we're within 3 hours left on the trading of this contract,
+        // then we want to enforce that they're above the limit, then
+        // delay the contract finalisation by 3 hours.
+        if block_timestamp() - old_time_ending < THREE_HOURS_SECS {
+            assert_or!(
+                value > THREE_HOUR_WINDOW_MIN_BUYIN,
+                Error::BelowThreeHourBuyin
+            );
+            let new_time_ending = old_time_ending + THREE_HOURS_SECS;
+            self.time_ending.set(U64::from(new_time_ending));
+            evm::log(events::DeadlineExtension {
+                timeBefore: old_time_ending,
+                timeAfter: new_time_ending,
+            });
+        }
         // Here we do some fee adjustment to send the fee recipient their money.
         let fee_for_creator = (value * FEE_CREATOR_MINT_PCT) / FEE_SCALING;
         fusdc_call::transfer(self.fee_recipient.get(), fee_for_creator)?;

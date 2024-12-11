@@ -124,6 +124,7 @@ impl StorageFactory {
             time_ending,
             fee_recipient,
             self.share_impl.get(),
+            false, // By default, this is the behaviour right now. (TODO)
         )?;
 
         // If the infra market wasn't chosen, then we assume that the caller has done

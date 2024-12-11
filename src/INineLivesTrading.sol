@@ -9,6 +9,9 @@ interface INineLivesTrading {
      * @param timeStart to begin this contract by.
      * @param timeEnding to end this contract by.
      * @param feeRecipient to send fees earned from trading.
+     * @param shouldBufferTime to extend time by 3 hours for every purchase within a 3
+     * hour window. If this is enabled, the contract will enforce purchases to exceed
+     * $10 if they are taking place within 3 hours of the contract's scheduled end time.
      */
     function ctor(
         bytes8[] memory outcomes,
@@ -16,7 +19,8 @@ interface INineLivesTrading {
         uint256 timeStart,
         uint256 timeEnding,
         address feeRecipient,
-        address shareImpl
+        address shareImpl,
+        address shouldBufferTime
     ) external;
 
     /**

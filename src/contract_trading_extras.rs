@@ -25,6 +25,7 @@ impl StorageTrading {
         time_ending: u64,
         fee_recipient: Address,
         share_impl: Address,
+        should_buffer_time: bool
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // We assume that the caller already supplied the liquidity to
@@ -54,6 +55,7 @@ impl StorageTrading {
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));
         self.oracle.set(oracle);
+        self.should_buffer_time.set(should_buffer_time);
         Ok(())
     }
 

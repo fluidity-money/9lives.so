@@ -44,6 +44,11 @@ interface IEvents {
         uint256 fusdcReceived
     );
 
+    event DeadlineExtension(
+        uint64 indexed timeBefore,
+        uint64 indexed timeAfter
+    );
+
     /* INFRASTRUCTURE MARKET */
 
     event MarketCreated2(
