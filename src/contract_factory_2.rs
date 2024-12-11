@@ -35,6 +35,7 @@ impl StorageFactory {
         self.trading_amm_price_impl.set(trading_amm_price_impl);
         self.infra_market.set(oracle_addr);
         self.version.set(U8::from(1));
+        self.operator.set(operator_addr);
         Ok(())
     }
 

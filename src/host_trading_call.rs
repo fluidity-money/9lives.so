@@ -1,6 +1,6 @@
 #![coverage(off)]
 
-use stylus_sdk::alloy_primitives::{Address, FixedBytes};
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use alloc::vec::Vec;
 
@@ -18,10 +18,21 @@ pub fn ctor(
     Ok(())
 }
 
-pub fn decide(_contract: Address, _winner: FixedBytes<8>) -> Result<(), Error> {
-    Ok(())
+pub fn decide(_contract: Address, _winner: FixedBytes<8>) -> Result<U256, Error> {
+    Ok(U256::ZERO)
 }
 
 pub fn global_shares(_addr: Address) -> Result<U256, Error> {
+    Ok(U256::ZERO)
+}
+
+pub fn details(
+    _addr: Address,
+    _outcome_id: FixedBytes<8>,
+) -> Result<(U256, U256, U256, FixedBytes<8>), Error> {
+    Ok((U256::ZERO, U256::ZERO, U256::ZERO, FixedBytes::ZERO))
+}
+
+pub fn shutdown(_addr: Address) -> Result<U256, Error> {
     Ok(U256::ZERO)
 }

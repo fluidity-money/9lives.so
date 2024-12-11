@@ -71,24 +71,27 @@ pub mod host;
 
 pub extern crate alloc;
 
+pub mod storage_factory;
 pub mod contract_factory_1;
 pub mod contract_factory_2;
-pub mod storage_factory;
 
+pub mod storage_trading;
 pub mod contract_trading;
 pub mod contract_trading_extras;
 pub mod contract_trading_mint;
 pub mod contract_trading_price;
 pub mod contract_trading_quotes;
-pub mod storage_trading;
 
-pub mod contract_lockup;
 pub mod storage_lockup;
+pub mod contract_lockup;
 
 pub mod contract_opt_infra_market_predict;
 pub mod contract_opt_infra_market_sweep;
 pub mod contract_opt_infra_market_extras;
 pub mod storage_opt_infra_market;
+
+pub mod storage_beauty_contest;
+pub mod contract_beauty_contest;
 
 #[cfg(any(
     feature = "contract-trading-mint",
@@ -116,6 +119,9 @@ pub use contract_opt_infra_market_sweep::user_entrypoint;
 #[cfg(feature = "contract-infra-market-extras")]
 pub use contract_opt_infra_market_extras::user_entrypoint;
 
+#[cfg(feature = "contract-beauty-contest")]
+pub use contract_beauty_contest::user_entrypoint;
+
 #[cfg(all(
     target_arch = "wasm32",
     not(any(
@@ -128,7 +134,8 @@ pub use contract_opt_infra_market_extras::user_entrypoint;
         feature = "contract-lockup",
         feature = "contract-infra-market-predict",
         feature = "contract-infra-market-sweep",
-        feature = "contract-infra-market-extras"
+        feature = "contract-infra-market-extras",
+        feature = "contract-beauty-contest"
     ))
 ))]
 compile_error!("one of the contract-* features must be enabled!");

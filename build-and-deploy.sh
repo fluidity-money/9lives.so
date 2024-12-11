@@ -10,6 +10,6 @@ $SPN_EMERGENCY_COUNCIL
 $SPN_STAKED_ARB_ADDR
 EOF
 
-make -B
+make build -B
 
 ./deploy.sh

@@ -8,4 +8,5 @@ forge create --json \
 	"$SPN_FUSDC_ADDR" \
 	"$SPN_FACTORY_PROXY_ADDR" \
 	"$SPN_INFRA_MARKET_PROXY_ADDR" \
+	"$SPN_BEAUTY_CONTEST_IMPL_ADDR" \
 		| jq -r .deployedTo

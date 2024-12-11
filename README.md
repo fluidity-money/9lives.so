@@ -158,3 +158,5 @@ on the local environment, or with end to end tests with an Arbitrum node.
 | Helper factory                | `0x1EE6F0fa7Ac5f87de8728ce40F8dDc4783E6547a` |
 | LensesV1                      | `0x5F173EB43F869f4A887f99c2230536cc26F7e0e1` |
 | AI resolver                   | `0x15bebdf285bfe0039fd266af207f6d278aaac7f3` |
+| Beauty contest impl           | `0xf09bf77cc7829e535c513b840ec7e452802c63b3` |
+| Beauty contest proxy          | 0x0bA9bA3A55c2cB203FDf636ffE003c0744E53385` |

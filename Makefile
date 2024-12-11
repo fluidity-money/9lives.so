@@ -36,9 +36,10 @@ build: \
 	contract-trading-amm-quotes \
 	contract-trading-amm-price \
 	contract-lockup \
+	contract-infra-market-extras \
 	contract-infra-market-predict \
 	contract-infra-market-sweep \
-	contract-infra-market-extras
+	contract-beauty-contest
 
 solidity: ${OUT_SHARE}
 
@@ -68,7 +69,7 @@ contract-infra-market-predict: contract-infra-market-predict.wasm
 contract-infra-market-sweep: contract-infra-market-sweep.wasm
 contract-infra-market-extras: contract-infra-market-extras.wasm
 
-contract-oracle-state: contract-oracle-state.wasm
+contract-beauty-contest: contract-beauty-contest.wasm
 
 contract-factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-1.wasm
@@ -140,24 +141,30 @@ contract-infra-market-extras.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-infra-market-extras${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-extras.wasm
 
+contract-beauty-contest.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-beauty-contest.wasm
+	@${CARGO_BUILD_STYLUS} contract-beauty-contest${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-beauty-contest.wasm
+
 clean:
 	@rm -rf \
-		ninelives.wasm \
-		factory-extras-.wasm \
+		contract-beauty-contest.wasm \
 		contract-factory-1.wasm \
 		contract-factory-2.wasm \
-		factory-2.wasm \
-		contract-trading-dpm-extras.wasm \
-		contract-trading-dpm-mint.wasm \
-		contract-trading-amm-extras.wasm \
-		contract-trading-amm-mint.wasm \
-		contract-trading-dpm-trading-extras.wasm \
-		contract-trading-dpm-trading-mint.wasm \
+		contract-infra-market-extras.wasm \
 		contract-infra-market-predict.wasm \
 		contract-infra-market-sweep.wasm \
-		contract-infra-market-extras.wasm \
 		contract-lockup.wasm \
-		trading-extras.wasm \
-		trading-mint.wasm \
+		contract-trading-amm-extras.wasm \
+		contract-trading-amm-mint.wasm \
+		contract-trading-dpm-extras.wasm \
+		contract-trading-dpm-mint.wasm \
+		contract-trading-dpm-trading-extras.wasm \
+		contract-trading-dpm-trading-mint.wasm \
+		factory-2.wasm \
+		factory-extras-.wasm \
+		liblib9lives.rlib \
+		ninelives.wasm \
 		target \
-		liblib9lives.rlib
+		trading-extras.wasm \
+		trading-mint.wasm

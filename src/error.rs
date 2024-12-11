@@ -401,9 +401,23 @@ pub enum Error {
     // 0x4f
     /// The trading contract is not set up.
     TradingEmpty,
+
+    // 0x50
+    /// Unable to unpack a response from the Trading contract.
+    TradingUnableToUnpack,
+
+    // 0x51
+    /// Beauty contest had bad outcome calldata submitted to it.
+    BeautyContestBadOutcomes,
 }
 
 pub type R<T> = Result<T, Error>;
+
+impl From<Error> for u8 {
+    fn from(v: Error) -> Self {
+        unsafe { *<*const _>::from(&v).cast::<u8>() }
+    }
+}
 
 impl From<Error> for Vec<u8> {
     fn from(val: Error) -> Self {
@@ -440,7 +454,7 @@ impl From<Error> for Vec<u8> {
             Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
             Error::FactoryCallError(b) => ext(&ERR_FACTORY_PREAMBLE, &[&b]),
             Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
-            v => vec![0x99, 0x90, unsafe { *<*const _>::from(&v).cast::<u8>() }],
+            v => vec![0x99, 0x90, v.into()],
         }
     }
 }

@@ -59,6 +59,37 @@ pub fn unpack_address(data: &[u8]) -> Option<Address> {
     }
 }
 
+pub fn unpack_bytes8(d: &[u8]) -> Option<FixedBytes<8>> {
+    if d.len() != 8 {
+        None
+    } else {
+        Some(FixedBytes::<8>::from_slice(&d))
+    }
+}
+
+pub fn unpack_details(data: &[u8]) -> Option<(U256, U256, U256, FixedBytes<8>)> {
+    if data.len() != 32 * 4 {
+        None
+    } else {
+        let shares = unpack_u256(&data[..32])?;
+        let invested = unpack_u256(&data[32..64])?;
+        let global_invested = unpack_u256(&data[64..96])?;
+        let winner = unpack_bytes8(&data[96..104])?;
+        Some((shares, invested, global_invested, winner))
+    }
+}
+
+#[test]
+fn test_unpack_details() {
+    use stylus_sdk::alloy_primitives::fixed_bytes;
+    let d = const_hex::decode("0000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000000000007b00000000000000000000000000000000000000000000000000000000000001c81c8aff950685c2ed000000000000000000000000000000000000000000000000").unwrap();
+    let (shares, invested, global_invested, winner) = unpack_details(&d).unwrap();
+    assert_eq!(U256::from(100), shares);
+    assert_eq!(U256::from(123), invested);
+    assert_eq!(U256::from(456), global_invested);
+    assert_eq!(fixed_bytes!("1c8aff950685c2ed"), winner);
+}
+
 #[test]
 fn test_write_address() {
     use stylus_sdk::alloy_primitives::address;

@@ -79,9 +79,10 @@ contract MockTrading is INineLivesTrading {
         return uint256(keccak256(abi.encodePacked(block.timestamp)));
     }
 
-    function shutdown() external {
+    function shutdown() external returns (uint256) {
         // Do nothing, for now...
         ++counter_;
+        return counter_;
     }
 
     function decide(bytes8 /* outcome */) external {
@@ -110,6 +111,10 @@ contract MockTrading is INineLivesTrading {
 
     function isDpm() external pure returns (bool) {
         return true;
+    }
+
+    function globalShares() external pure returns (uint256) {
+        return 50_000;
     }
 
     function invested() external pure returns (uint256) {

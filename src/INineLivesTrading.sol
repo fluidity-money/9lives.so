@@ -54,7 +54,7 @@ interface INineLivesTrading {
      * of this function by distributing them a small amount of token for doing so.
      * This can only be called when the contract has exceeded its deadline.
      */
-    function shutdown() external;
+    function shutdown() external returns (uint256);
 
     /**
      * @notice Decide an outcome. Only callable by the oracle!
