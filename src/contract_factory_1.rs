@@ -78,7 +78,7 @@ impl StorageFactory {
             identifier: trading_id,
             addr: trading_addr,
             oracle,
-            backend: backend_type.into(),
+            backend: backend_type,
         });
 
         // We take the amount that the user has allocated to the outcomes, and
@@ -89,7 +89,7 @@ impl StorageFactory {
 
         // Used for the price function for seeding Longtail.
 
-        let default_winner = outcome_ids[0].clone();
+        let default_winner = outcome_ids[0];
 
         for (outcome_identifier, sqrt_price, outcome_name) in outcomes.iter() {
             let erc20_identifier =

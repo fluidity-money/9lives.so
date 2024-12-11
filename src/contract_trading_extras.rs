@@ -17,6 +17,7 @@ impl StorageTrading {
     // should have the approval done beforehand with its own
     // estimation of the address based on the CREATE2 process.
     // Does not prevent a user from submitting the same outcome twice!
+    #[allow(clippy::too_many_arguments)]
     pub fn ctor(
         &mut self,
         outcomes: Vec<FixedBytes<8>>,

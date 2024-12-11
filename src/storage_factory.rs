@@ -12,9 +12,9 @@ pub enum TradingBackendType {
     AMM = 2,
 }
 
-impl Into<u8> for TradingBackendType {
-    fn into(self) -> u8 {
-        self as u8
+impl From<TradingBackendType> for u8 {
+    fn from(v: TradingBackendType) -> Self {
+        v as u8
     }
 }
 

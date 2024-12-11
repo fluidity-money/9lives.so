@@ -6,6 +6,7 @@ use alloc::vec::Vec;
 
 use crate::error::Error;
 
+#[allow(clippy::too_many_arguments)]
 pub fn ctor(
     _contract: Address,
     _outcomes: Vec<FixedBytes<8>>,

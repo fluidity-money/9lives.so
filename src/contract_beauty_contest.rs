@@ -22,7 +22,7 @@ impl StorageBeautyContest {
         let global_shares = trading_call::global_shares(trading_addr)?;
         // Sanity check that this isn't the AMM (currently), and that it's set up.
         assert_or!(!global_shares.is_zero(), Error::TradingEmpty);
-        assert_or!(outcome_ids.len() > 0, Error::MustContainOutcomes);
+        assert_or!(!outcome_ids.is_empty(), Error::MustContainOutcomes);
         let fee_recipient = if fee_recipient.is_zero() {
             msg_sender()
         } else {
@@ -30,7 +30,7 @@ impl StorageBeautyContest {
         };
         outcome_ids.sort();
         outcome_ids.dedup();
-        let outcome_fst = outcome_ids[0].clone();
+        let outcome_fst = outcome_ids[0];
         let (count_shares, _, min_shares, winning_outcome) =
             outcome_ids.into_iter().try_fold(
                 (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
@@ -87,7 +87,7 @@ impl StorageBeautyContest {
 // If we unpack the shutdown error, then we return Ok(()). If not, then
 // we revert with Error::TradingError.
 fn unpack_shutdown(b: &[u8]) -> Result<(), Error> {
-    if b == &[0x99, 0x90, Error::IsShutdown.into()] {
+    if b == [0x99, 0x90, Error::IsShutdown.into()] {
         Ok(())
     } else {
         Err(Error::TradingError(b.to_vec()))

@@ -32,6 +32,7 @@ pub fn transfer_from(
     )
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn permit(
     addr: Address,
     owner: Address,

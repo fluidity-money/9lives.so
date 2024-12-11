@@ -8,6 +8,7 @@ pub use crate::{storage_factory::*, utils::msg_sender};
 
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {
+    #[allow(clippy::too_many_arguments)]
     pub fn ctor(
         &mut self,
         share_impl: Address,

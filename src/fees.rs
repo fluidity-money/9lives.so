@@ -23,19 +23,19 @@ Base Amount:      100% (3 FUSDC)
 */
 
 // Incentive amount to take from users who create markets. $10 FUSDC.
-pub const INCENTIVE_AMT_BASE: U256 = U256::from_limbs([3000000 as u64, 0, 0, 0]);
+pub const INCENTIVE_AMT_BASE: U256 = U256::from_limbs([3000000, 0, 0, 0]);
 
 // Share of the incentive amount that we take for Fluidity Labs
 // operations.
-pub const INCENTIVE_AMT_MODERATION: U256 = U256::from_limbs([2000000 as u64, 0, 0, 0]);
+pub const INCENTIVE_AMT_MODERATION: U256 = U256::from_limbs([2000000, 0, 0, 0]);
 
 // Share of the amount for activating the call function for the first
 // time.
-pub const INCENTIVE_AMT_CALL: U256 = U256::from_limbs([600000 as u64, 0, 0, 0]);
+pub const INCENTIVE_AMT_CALL: U256 = U256::from_limbs([600000, 0, 0, 0]);
 
 // Share of the amount for calling the close function after someone has
 // called and the whinge period has ended.
-pub const INCENTIVE_AMT_CLOSE: U256 = U256::from_limbs([100000 as u64, 0, 0, 0]);
+pub const INCENTIVE_AMT_CLOSE: U256 = U256::from_limbs([100000, 0, 0, 0]);
 
 // Amount that's sent to incentive callers of the sweep function.
 pub const INCENTIVE_AMT_SWEEP: U256 = U256::from_limbs([300000, 0, 0, 0]);

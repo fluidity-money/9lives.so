@@ -54,7 +54,7 @@ mod testing {
     use std::cell::RefCell;
 
     thread_local! {
-        static SHOULD_PANIC: RefCell<bool> = RefCell::new(true);
+        static SHOULD_PANIC: RefCell<bool> = const { RefCell::new(true) };
     }
 
     pub fn should_panic_f() -> bool {

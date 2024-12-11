@@ -63,7 +63,7 @@ pub fn unpack_bytes8(d: &[u8]) -> Option<FixedBytes<8>> {
     if d.len() != 8 {
         None
     } else {
-        Some(FixedBytes::<8>::from_slice(&d))
+        Some(FixedBytes::<8>::from_slice(d))
     }
 }
 

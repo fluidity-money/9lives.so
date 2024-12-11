@@ -33,6 +33,7 @@ sol! {
     function shutdown();
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn ctor(
     addr: Address,
     outcomes: Vec<FixedBytes<8>>,

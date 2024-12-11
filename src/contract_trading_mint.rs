@@ -143,7 +143,6 @@ impl StorageTrading {
         shares_before
             .checked_sub(shares)
             .ok_or(Error::CheckedSubOverflow)
-            .into()
     }
 
     fn internal_mint(
