@@ -20,7 +20,7 @@ Resolve a market by getting the amounts of the outcomes specified, then tracking
         outcome_ids.sort();
         outcome_ids.dedup();
         // The maximum shares that we've seen so far, including the winner.
-        let (max_shares, current_winner) = outcome_ids.map(|outcome_id| {
+        let (max_shares, current_winner) = outcome_ids.map(U256::ZERO, outcome_ids[0], |outcome_id| {
 
         });
     }

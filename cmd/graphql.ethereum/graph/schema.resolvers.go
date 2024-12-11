@@ -146,31 +146,6 @@ func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) 
 	return obj.HtmlContent, nil
 }
 
-// ID is the resolver for the id field.
-func (r *frontpageResolver) ID(ctx context.Context, obj *types.Frontpage) (string, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
-}
-
-// From is the resolver for the from field.
-func (r *frontpageResolver) From(ctx context.Context, obj *types.Frontpage) (int, error) {
-	panic(fmt.Errorf("not implemented: From - from"))
-}
-
-// Until is the resolver for the until field.
-func (r *frontpageResolver) Until(ctx context.Context, obj *types.Frontpage) (int, error) {
-	panic(fmt.Errorf("not implemented: Until - until"))
-}
-
-// Categories is the resolver for the categories field.
-func (r *frontpageResolver) Categories(ctx context.Context, obj *types.Frontpage) ([]string, error) {
-	panic(fmt.Errorf("not implemented: Categories - categories"))
-}
-
-// Content is the resolver for the content field.
-func (r *frontpageResolver) Content(ctx context.Context, obj *types.Frontpage) (*types.Campaign, error) {
-	panic(fmt.Errorf("not implemented: Content - content"))
-}
-
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error) {
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
@@ -292,9 +267,17 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]typ
 	return campaigns, nil
 }
 
-// Frontpage is the resolver for the frontpage field.
-func (r *queryResolver) Frontpage(ctx context.Context, category []string) ([]types.Frontpage, error) {
-	panic(fmt.Errorf("not implemented: Frontpage - frontpage"))
+// CampaignByID is the resolver for the campaignById field.
+func (r *queryResolver) CampaignByID(ctx context.Context, id string) (*types.Campaign, error) {
+	if id == "" || !strings.HasPrefix(id, "0x") {
+		return nil, fmt.Errorf("bad id")
+	}
+	var c types.Campaign
+	err := r.DB.Table("ninelives_campaigns_1").Where("id = ?", id).Find(&c).Error
+	if err != nil {
+		return nil, fmt.Errorf("campaign find: %v", err)
+	}
+	return &c, nil
 }
 
 // SuggestedHeadlines is the resolver for the suggestedHeadlines field.
@@ -322,9 +305,6 @@ func (r *Resolver) Campaign() CampaignResolver { return &campaignResolver{r} }
 // Changelog returns ChangelogResolver implementation.
 func (r *Resolver) Changelog() ChangelogResolver { return &changelogResolver{r} }
 
-// Frontpage returns FrontpageResolver implementation.
-func (r *Resolver) Frontpage() FrontpageResolver { return &frontpageResolver{r} }
-
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
@@ -333,6 +313,5 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type campaignResolver struct{ *Resolver }
 type changelogResolver struct{ *Resolver }
-type frontpageResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

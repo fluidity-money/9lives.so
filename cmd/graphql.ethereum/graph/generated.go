@@ -43,7 +43,6 @@ type Config struct {
 type ResolverRoot interface {
 	Campaign() CampaignResolver
 	Changelog() ChangelogResolver
-	Frontpage() FrontpageResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
@@ -75,14 +74,6 @@ type ComplexityRoot struct {
 		Title   func(childComplexity int) int
 	}
 
-	Frontpage struct {
-		Categories func(childComplexity int) int
-		Content    func(childComplexity int) int
-		From       func(childComplexity int) int
-		ID         func(childComplexity int) int
-		Until      func(childComplexity int) int
-	}
-
 	Mutation struct {
 		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) int
 	}
@@ -96,9 +87,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		CampaignByID       func(childComplexity int, id string) int
 		Campaigns          func(childComplexity int, category []string) int
 		Changelog          func(childComplexity int) int
-		Frontpage          func(childComplexity int, category []string) int
 		SuggestedHeadlines func(childComplexity int) int
 	}
 
@@ -132,19 +123,12 @@ type ChangelogResolver interface {
 	AfterTs(ctx context.Context, obj *changelog.Changelog) (int, error)
 	HTML(ctx context.Context, obj *changelog.Changelog) (string, error)
 }
-type FrontpageResolver interface {
-	ID(ctx context.Context, obj *types.Frontpage) (string, error)
-	From(ctx context.Context, obj *types.Frontpage) (int, error)
-	Until(ctx context.Context, obj *types.Frontpage) (int, error)
-	Categories(ctx context.Context, obj *types.Frontpage) ([]string, error)
-	Content(ctx context.Context, obj *types.Frontpage) (*types.Campaign, error)
-}
 type MutationResolver interface {
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error)
 }
 type QueryResolver interface {
 	Campaigns(ctx context.Context, category []string) ([]types.Campaign, error)
-	Frontpage(ctx context.Context, category []string) ([]types.Frontpage, error)
+	CampaignByID(ctx context.Context, id string) (*types.Campaign, error)
 	SuggestedHeadlines(ctx context.Context) ([]string, error)
 	Changelog(ctx context.Context) ([]*changelog.Changelog, error)
 }
@@ -287,41 +271,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Changelog.Title(childComplexity), true
 
-	case "Frontpage.categories":
-		if e.complexity.Frontpage.Categories == nil {
-			break
-		}
-
-		return e.complexity.Frontpage.Categories(childComplexity), true
-
-	case "Frontpage.content":
-		if e.complexity.Frontpage.Content == nil {
-			break
-		}
-
-		return e.complexity.Frontpage.Content(childComplexity), true
-
-	case "Frontpage.from":
-		if e.complexity.Frontpage.From == nil {
-			break
-		}
-
-		return e.complexity.Frontpage.From(childComplexity), true
-
-	case "Frontpage.id":
-		if e.complexity.Frontpage.ID == nil {
-			break
-		}
-
-		return e.complexity.Frontpage.ID(childComplexity), true
-
-	case "Frontpage.until":
-		if e.complexity.Frontpage.Until == nil {
-			break
-		}
-
-		return e.complexity.Frontpage.Until(childComplexity), true
-
 	case "Mutation.explainCampaign":
 		if e.complexity.Mutation.ExplainCampaign == nil {
 			break
@@ -369,6 +318,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Outcome.Share(childComplexity), true
 
+	case "Query.campaignById":
+		if e.complexity.Query.CampaignByID == nil {
+			break
+		}
+
+		args, err := ec.field_Query_campaignById_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.CampaignByID(childComplexity, args["id"].(string)), true
+
 	case "Query.campaigns":
 		if e.complexity.Query.Campaigns == nil {
 			break
@@ -387,18 +348,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Changelog(childComplexity), true
-
-	case "Query.frontpage":
-		if e.complexity.Query.Frontpage == nil {
-			break
-		}
-
-		args, err := ec.field_Query_frontpage_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Frontpage(childComplexity, args["category"].([]string)), true
 
 	case "Query.suggestedHeadlines":
 		if e.complexity.Query.SuggestedHeadlines == nil {
@@ -675,22 +624,22 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_campaigns_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_campaignById_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []string
-	if tmp, ok := rawArgs["category"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["category"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_frontpage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_campaigns_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []string
@@ -1498,254 +1447,6 @@ func (ec *executionContext) fieldContext_Changelog_html(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Frontpage_id(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Frontpage_id(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Frontpage().ID(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Frontpage_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Frontpage",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Frontpage_from(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Frontpage_from(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Frontpage().From(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Frontpage_from(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Frontpage",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Frontpage_until(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Frontpage_until(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Frontpage().Until(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Frontpage_until(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Frontpage",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Frontpage_categories(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Frontpage_categories(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Frontpage().Categories(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Frontpage_categories(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Frontpage",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Frontpage_content(ctx context.Context, field graphql.CollectedField, obj *types.Frontpage) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Frontpage_content(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Frontpage().Content(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*types.Campaign)
-	fc.Result = res
-	return ec.marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Frontpage_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Frontpage",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "name":
-				return ec.fieldContext_Campaign_name(ctx, field)
-			case "description":
-				return ec.fieldContext_Campaign_description(ctx, field)
-			case "picture":
-				return ec.fieldContext_Campaign_picture(ctx, field)
-			case "creator":
-				return ec.fieldContext_Campaign_creator(ctx, field)
-			case "oracle":
-				return ec.fieldContext_Campaign_oracle(ctx, field)
-			case "identifier":
-				return ec.fieldContext_Campaign_identifier(ctx, field)
-			case "poolAddress":
-				return ec.fieldContext_Campaign_poolAddress(ctx, field)
-			case "outcomes":
-				return ec.fieldContext_Campaign_outcomes(ctx, field)
-			case "starting":
-				return ec.fieldContext_Campaign_starting(ctx, field)
-			case "ending":
-				return ec.fieldContext_Campaign_ending(ctx, field)
-			case "x":
-				return ec.fieldContext_Campaign_x(ctx, field)
-			case "telegram":
-				return ec.fieldContext_Campaign_telegram(ctx, field)
-			case "web":
-				return ec.fieldContext_Campaign_web(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_explainCampaign(ctx, field)
 	if err != nil {
@@ -2105,8 +1806,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_frontpage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_frontpage(ctx, field)
+func (ec *executionContext) _Query_campaignById(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_campaignById(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2119,24 +1820,21 @@ func (ec *executionContext) _Query_frontpage(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Frontpage(rctx, fc.Args["category"].([]string))
+		return ec.resolvers.Query().CampaignByID(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.([]types.Frontpage)
+	res := resTmp.(*types.Campaign)
 	fc.Result = res
-	return ec.marshalNFrontpage2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐFrontpageᚄ(ctx, field.Selections, res)
+	return ec.marshalOCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_frontpage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2144,18 +1842,34 @@ func (ec *executionContext) fieldContext_Query_frontpage(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Frontpage_id(ctx, field)
-			case "from":
-				return ec.fieldContext_Frontpage_from(ctx, field)
-			case "until":
-				return ec.fieldContext_Frontpage_until(ctx, field)
-			case "categories":
-				return ec.fieldContext_Frontpage_categories(ctx, field)
-			case "content":
-				return ec.fieldContext_Frontpage_content(ctx, field)
+			case "name":
+				return ec.fieldContext_Campaign_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Campaign_description(ctx, field)
+			case "picture":
+				return ec.fieldContext_Campaign_picture(ctx, field)
+			case "creator":
+				return ec.fieldContext_Campaign_creator(ctx, field)
+			case "oracle":
+				return ec.fieldContext_Campaign_oracle(ctx, field)
+			case "identifier":
+				return ec.fieldContext_Campaign_identifier(ctx, field)
+			case "poolAddress":
+				return ec.fieldContext_Campaign_poolAddress(ctx, field)
+			case "outcomes":
+				return ec.fieldContext_Campaign_outcomes(ctx, field)
+			case "starting":
+				return ec.fieldContext_Campaign_starting(ctx, field)
+			case "ending":
+				return ec.fieldContext_Campaign_ending(ctx, field)
+			case "x":
+				return ec.fieldContext_Campaign_x(ctx, field)
+			case "telegram":
+				return ec.fieldContext_Campaign_telegram(ctx, field)
+			case "web":
+				return ec.fieldContext_Campaign_web(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Frontpage", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
 	}
 	defer func() {
@@ -2165,7 +1879,7 @@ func (ec *executionContext) fieldContext_Query_frontpage(ctx context.Context, fi
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_frontpage_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_campaignById_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4956,220 +4670,6 @@ func (ec *executionContext) _Changelog(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
-var frontpageImplementors = []string{"Frontpage"}
-
-func (ec *executionContext) _Frontpage(ctx context.Context, sel ast.SelectionSet, obj *types.Frontpage) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, frontpageImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Frontpage")
-		case "id":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Frontpage_id(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "from":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Frontpage_from(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "until":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Frontpage_until(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "categories":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Frontpage_categories(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "content":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Frontpage_content(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -5316,19 +4816,16 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "frontpage":
+		case "campaignById":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_frontpage(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
+				res = ec._Query_campaignById(ctx, field)
 				return res
 			}
 
@@ -5880,16 +5377,6 @@ func (ec *executionContext) marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoney�
 	return ret
 }
 
-func (ec *executionContext) marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx context.Context, sel ast.SelectionSet, v *types.Campaign) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Campaign(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalNChangelog2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚋchangelogᚐChangelog(ctx context.Context, sel ast.SelectionSet, v []*changelog.Changelog) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -5924,54 +5411,6 @@ func (ec *executionContext) marshalNChangelog2ᚕᚖgithubᚗcomᚋfluidityᚑmo
 
 	}
 	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) marshalNFrontpage2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐFrontpage(ctx context.Context, sel ast.SelectionSet, v types.Frontpage) graphql.Marshaler {
-	return ec._Frontpage(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNFrontpage2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐFrontpageᚄ(ctx context.Context, sel ast.SelectionSet, v []types.Frontpage) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNFrontpage2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐFrontpage(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
 
 	return ret
 }
@@ -6434,6 +5873,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx context.Context, sel ast.SelectionSet, v *types.Campaign) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Campaign(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOChangelog2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚋchangelogᚐChangelog(ctx context.Context, sel ast.SelectionSet, v *changelog.Changelog) graphql.Marshaler {

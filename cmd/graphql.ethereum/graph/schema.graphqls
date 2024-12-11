@@ -6,10 +6,9 @@ type Query {
   campaigns(category:[String!]): [Campaign!]!
 
   """
-  Frontpage display. Should have a timeline as to when it should (from) and should
-  not be displayed (until).
+  Get a campaign by its ID. May or may not exist.
   """
-  frontpage(category:[String!]): [Frontpage!]!
+  campaignById(id: String!): Campaign
 
   """
   Suggested headlines for the day based on AI input.
@@ -20,36 +19,6 @@ type Query {
   Any new changelog items that have come up recently.
   """
   changelog: [Changelog]!
-}
-
-"""
-Frontpage that should be displayed for a time window.
-"""
-type Frontpage {
-  """
-  ID that's used to cache this frontend data.
-  """
-  id: ID!
-
-  """
-  From when this should be displayed (timestamp)!
-  """
-  from: Int!
-
-  """
-  Until when this should be displayed (timestamp)!
-  """
-  until: Int!
-
-  """
-  Categories that should be displayed on the frontend in the list.
-  """
-  categories: [String!]!
-
-  """
-  Campaign item which is assigned.
-  """
-  content: Campaign!
 }
 
 """
@@ -132,12 +101,12 @@ type Mutation {
     X/Twitter username
     """
     x: String
-    
+
     """
     Telegram username
     """
     telegram: String
-    
+
     """
     Web url
     """
@@ -206,12 +175,12 @@ type Campaign {
   X/Twitter username
   """
   x: String
-    
+
   """
   Telegram username
   """
   telegram: String
-  
+
   """
   Web url
   """
