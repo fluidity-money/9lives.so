@@ -50,9 +50,6 @@
     "zustand": "5.0.0-rc.2"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/client-preset": "^4.3.3",
-    "@graphql-typed-document-node/core": "^3.2.0",
     "@parcel/watcher": "^2.4.1",
     "@playwright/test": "^1.47.1",
     "@tanstack/eslint-plugin-query": "^5.56.1",
