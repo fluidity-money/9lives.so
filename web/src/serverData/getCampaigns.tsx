@@ -2,7 +2,6 @@
 import { unstable_cache } from "next/cache";
 import { Campaign } from "@/types";
 import appConfig from "@/config";
-import { requestCampaignList } from "@/providers/graphqlClient";
 const query = `
     query Campaigns {
       campaigns {
@@ -49,11 +48,7 @@ export async function getCampaigns() {
   });
 }
 
-export const getCachedCampaigns = unstable_cache(
-  () => requestCampaignList,
-  ["campaigns"],
-  {
-    revalidate: 60,
-    tags: ["campaigns"],
-  },
-);
+export const getCachedCampaigns = unstable_cache(getCampaigns, ["campaigns"], {
+  revalidate: 60,
+  tags: ["campaigns"],
+});
