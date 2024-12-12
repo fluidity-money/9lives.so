@@ -27,7 +27,8 @@ proptest! {
                 block_timestamp() + 1,
                 block_timestamp() + 2,
                 msg_sender(),
-                Address::ZERO
+                Address::ZERO,
+                false
             )
             .unwrap();
 

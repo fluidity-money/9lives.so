@@ -84,7 +84,8 @@ proptest! {
                 block_timestamp() + 1,
                 block_timestamp() + 2,
                 msg_sender(),
-                Address::ZERO
+                Address::ZERO,
+                false
             ).unwrap();
             let mut fusdc_vested = U256::ZERO;
             let mut share_1_received = U256::ZERO;

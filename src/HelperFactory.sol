@@ -23,17 +23,20 @@ contract HelperFactory {
     INineLivesFactory immutable FACTORY;
     address immutable INFRA_MARKET;
     address immutable BEAUTY_CONTEST;
+    address immutable SARP_AI;
 
     constructor(
         IERC20Permit _fusdc,
         INineLivesFactory _factory,
         address _infraMarket,
-        address _beautyContest
+        address _beautyContest,
+        address _sarpAi
     ) {
         FACTORY = _factory;
         INFRA_MARKET = _infraMarket;
         FUSDC = _fusdc;
         BEAUTY_CONTEST = _beautyContest;
+        SARP_AI = _sarpAi;
         FUSDC.approve(address(_factory), type(uint256).max);
         FUSDC.approve(address(_infraMarket), type(uint256).max);
     }
@@ -113,5 +116,30 @@ contract HelperFactory {
     ) external returns (address tradingAddr) {
         FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6), deadline, v, r, s);
         return create(BEAUTY_CONTEST, outcomes, timeEnding, documentation, feeRecipient);
+    }
+
+    function createWithAI(
+        FactoryOutcome[] calldata outcomes,
+        uint64 timeEnding,
+        bytes32 documentation,
+        address feeRecipient
+    ) public returns (address tradingAddr) {
+        // No extra fluff work is needed to support this.
+        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6));
+        return create(SARP_AI, outcomes, timeEnding, documentation, feeRecipient);
+    }
+
+    function createWithAIPermit(
+        FactoryOutcome[] calldata outcomes,
+        uint64 timeEnding,
+        bytes32 documentation,
+        address feeRecipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (address tradingAddr) {
+        FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6), deadline, v, r, s);
+        return create(SARP_AI, outcomes, timeEnding, documentation, feeRecipient);
     }
 }

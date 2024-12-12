@@ -20,7 +20,7 @@ interface INineLivesTrading {
         uint256 timeEnding,
         address feeRecipient,
         address shareImpl,
-        address shouldBufferTime
+        bool shouldBufferTime
     ) external;
 
     /**

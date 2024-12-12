@@ -48,7 +48,8 @@ fn test_unit_1() {
             block_timestamp() + 1,
             block_timestamp() + 2,
             Address::ZERO,
-            Address::ZERO
+            Address::ZERO,
+            false
         )
         .unwrap();
         dbg!(c
@@ -78,7 +79,8 @@ proptest! {
                 Address::ZERO,
                 block_timestamp(),
                 block_timestamp() + 100, msg_sender(),
-                Address::ZERO
+                Address::ZERO,
+                false
             )
                 .unwrap();
             c

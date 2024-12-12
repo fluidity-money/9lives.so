@@ -9,4 +9,5 @@ forge create --json \
 	"$SPN_FACTORY_PROXY_ADDR" \
 	"$SPN_INFRA_MARKET_PROXY_ADDR" \
 	"$SPN_BEAUTY_CONTEST_IMPL_ADDR" \
+	"$SPN_SARP_AI" \
 		| jq -r .deployedTo
