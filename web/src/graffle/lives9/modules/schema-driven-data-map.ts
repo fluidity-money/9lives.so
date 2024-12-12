@@ -1,4 +1,4 @@
-import * as $$Scalar from "./scalar";
+import * as $$Scalar from "./scalar.js";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 //
 //
@@ -18,11 +18,11 @@ import type * as $$Utilities from "graffle/utilities-for-generated";
 
 const String = $$Scalar.String;
 
-const ID = $$Scalar.ID;
-
 const Int = $$Scalar.Int;
 
 const Boolean = $$Scalar.Boolean;
+
+const ID = $$Scalar.ID;
 
 //
 //
@@ -104,18 +104,6 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 //
-
-const Frontpage: $$Utilities.SchemaDrivenDataMap.OutputObject = {
-  f: {
-    id: {},
-    from: {},
-    until: {},
-    categories: {},
-    content: {
-      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
-    },
-  },
-};
 
 const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
@@ -235,14 +223,14 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
-    frontpage: {
+    campaignById: {
       a: {
-        category: {
+        id: {
           nt: String,
-          it: [0, [1]],
+          it: [1],
         },
       },
-      // nt: Frontpage, <-- Assigned later to avoid potential circular dependency.
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
     suggestedHeadlines: {},
     changelog: {
@@ -325,12 +313,11 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 //
 
-Frontpage.f[`content`]!.nt = Campaign;
 Campaign.f[`creator`]!.nt = Wallet;
 Campaign.f[`outcomes`]!.nt = Outcome;
 Outcome.f[`share`]!.nt = Share;
 Query.f[`campaigns`]!.nt = Campaign;
-Query.f[`frontpage`]!.nt = Frontpage;
+Query.f[`campaignById`]!.nt = Campaign;
 Query.f[`changelog`]!.nt = Changelog;
 
 //
@@ -357,12 +344,11 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
   directives: {},
   types: {
     String,
-    ID,
     Int,
     Boolean,
+    ID,
     Modification,
     OutcomeInput,
-    Frontpage,
     Campaign,
     Outcome,
     Wallet,

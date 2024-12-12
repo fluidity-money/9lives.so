@@ -1,5 +1,5 @@
-import * as $$Data from "./data";
-import * as $$Scalar from "./scalar";
+import * as $$Data from "./data.js";
+import * as $$Scalar from "./scalar.js";
 import type { Schema as $ } from "graffle/utilities-for-generated";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 
@@ -29,7 +29,7 @@ export namespace Schema {
     fields: {
       __typename: Query.__typename;
       campaigns: Query.campaigns;
-      frontpage: Query.frontpage;
+      campaignById: Query.campaignById;
       suggestedHeadlines: Query.suggestedHeadlines;
       changelog: Query.changelog;
     };
@@ -64,21 +64,20 @@ export namespace Schema {
     }
 
     /**
-     * Frontpage display. Should have a timeline as to when it should (from) and should
-     * not be displayed (until).
+     * Get a campaign by its ID. May or may not exist.
      */
-    export interface frontpage extends $.OutputField {
-      name: "frontpage";
+    export interface campaignById extends $.OutputField {
+      name: "campaignById";
       arguments: {
-        category: {
+        id: {
           kind: "InputField";
-          name: "category";
-          inlineType: [0, [1]];
+          name: "id";
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
       };
-      inlineType: [1, [1]];
-      namedType: $$NamedTypes.$$Frontpage;
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Campaign;
     }
 
     /**
@@ -261,87 +260,6 @@ export namespace Schema {
   //
   //
   //
-
-  //                                             Frontpage
-  // --------------------------------------------------------------------------------------------------
-  //
-
-  /**
-   * Frontpage that should be displayed for a time window.
-   */
-  export interface Frontpage extends $.OutputObject {
-    name: "Frontpage";
-    fields: {
-      __typename: Frontpage.__typename;
-      id: Frontpage.id;
-      from: Frontpage.from;
-      until: Frontpage.until;
-      categories: Frontpage.categories;
-      content: Frontpage.content;
-    };
-  }
-
-  export namespace Frontpage {
-    export interface __typename extends $.OutputField {
-      name: "__typename";
-      arguments: {};
-      inlineType: [1];
-      namedType: {
-        kind: "__typename";
-        value: "Frontpage";
-      };
-    }
-
-    /**
-     * ID that's used to cache this frontend data.
-     */
-    export interface id extends $.OutputField {
-      name: "id";
-      arguments: {};
-      inlineType: [1];
-      namedType: $$NamedTypes.$$ID;
-    }
-
-    /**
-     * From when this should be displayed (timestamp)!
-     */
-    export interface from extends $.OutputField {
-      name: "from";
-      arguments: {};
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Int;
-    }
-
-    /**
-     * Until when this should be displayed (timestamp)!
-     */
-    export interface until extends $.OutputField {
-      name: "until";
-      arguments: {};
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Int;
-    }
-
-    /**
-     * Categories that should be displayed on the frontend in the list.
-     */
-    export interface categories extends $.OutputField {
-      name: "categories";
-      arguments: {};
-      inlineType: [1, [1]];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    /**
-     * Campaign item which is assigned.
-     */
-    export interface content extends $.OutputField {
-      name: "content";
-      arguments: {};
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Campaign;
-    }
-  }
 
   //                                              Campaign
   // --------------------------------------------------------------------------------------------------
@@ -923,12 +841,6 @@ export namespace Schema {
 
   export type String = $.StandardTypes.String;
 
-  //                                                 ID
-  // --------------------------------------------------------------------------------------------------
-  //
-
-  export type ID = $.StandardTypes.ID;
-
   //                                                Int
   // --------------------------------------------------------------------------------------------------
   //
@@ -940,6 +852,12 @@ export namespace Schema {
   //
 
   export type Boolean = $.StandardTypes.Boolean;
+
+  //                                                 ID
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export type ID = $.StandardTypes.ID;
 
   //
   //
@@ -968,7 +886,6 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
-    export type $$Frontpage = Frontpage;
     export type $$Campaign = Campaign;
     export type $$Outcome = Outcome;
     export type $$Wallet = Wallet;
@@ -977,9 +894,9 @@ export namespace Schema {
     export type $$OutcomeInput = OutcomeInput;
     export type $$Modification = Modification;
     export type $$String = String;
-    export type $$ID = ID;
     export type $$Int = Int;
     export type $$Boolean = Boolean;
+    export type $$ID = ID;
   }
 }
 
@@ -1014,7 +931,6 @@ export interface Schema<
     Query: Schema.Query;
     Mutation: Schema.Mutation;
     Modification: Schema.Modification;
-    Frontpage: Schema.Frontpage;
     Campaign: Schema.Campaign;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;
@@ -1022,7 +938,6 @@ export interface Schema<
     Changelog: Schema.Changelog;
   };
   objects: {
-    Frontpage: Schema.Frontpage;
     Campaign: Schema.Campaign;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;
@@ -1031,12 +946,12 @@ export interface Schema<
   };
   unions: {};
   interfaces: {};
-  scalarNamesUnion: "String" | "ID" | "Int" | "Boolean";
+  scalarNamesUnion: "String" | "Int" | "Boolean" | "ID";
   scalars: {
     String: Schema.String;
-    ID: Schema.ID;
     Int: Schema.Int;
     Boolean: Schema.Boolean;
+    ID: Schema.ID;
   };
   scalarRegistry: $Scalars;
   extensions: $$Utilities.GlobalRegistry.TypeExtensions;

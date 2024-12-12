@@ -1,4 +1,4 @@
-import * as $$SelectionSets from "./selection-sets";
+import * as $$SelectionSets from "./selection-sets.js";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 
 //
@@ -20,7 +20,6 @@ import type * as $$Utilities from "graffle/utilities-for-generated";
 export interface $MethodsSelect {
   Query: Query;
   Mutation: Mutation;
-  Frontpage: Frontpage;
   Campaign: Campaign;
   Outcome: Outcome;
   Wallet: Wallet;
@@ -71,12 +70,6 @@ export interface Mutation {
 //
 //
 //
-
-export interface Frontpage {
-  <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Frontpage>,
-  ): $SelectionSet;
-}
 
 export interface Campaign {
   <$SelectionSet>(

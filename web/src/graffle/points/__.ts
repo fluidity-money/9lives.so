@@ -1,2 +1,2 @@
-export * as Points from "./_";
-export { schemaDrivenDataMap as schemaMap } from "./modules/schema-driven-data-map";
+export * as Points from "./_.js";
+export { schemaDrivenDataMap as schemaMap } from "./modules/schema-driven-data-map.js";

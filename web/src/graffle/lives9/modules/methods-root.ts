@@ -1,5 +1,5 @@
-import * as $$SelectionSets from "./selection-sets";
-import * as $$Schema from "./schema";
+import * as $$SelectionSets from "./selection-sets.js";
+import * as $$Schema from "./schema.js";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 import type { InferResult } from "graffle/schema";
 
@@ -47,23 +47,22 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >
   >;
   /**
-   * Frontpage display. Should have a timeline as to when it should (from) and should
-   * not be displayed (until).
+   * Get a campaign by its ID. May or may not exist.
    */
-  frontpage: <$SelectionSet>(
+  campaignById: <$SelectionSet>(
     selectionSet: $$Utilities.Exact<
       $SelectionSet,
-      $$SelectionSets.Query.frontpage<$Context["scalars"]>
+      $$SelectionSets.Query.campaignById<$Context["scalars"]>
     >,
   ) => Promise<
     (null | {}) &
       $$Utilities.HandleOutputGraffleRootField<
         $Context,
         InferResult.OperationQuery<
-          { frontpage: $SelectionSet },
+          { campaignById: $SelectionSet },
           $$Schema.Schema<$Context["scalars"]>
         >,
-        "frontpage"
+        "campaignById"
       >
   >;
   /**

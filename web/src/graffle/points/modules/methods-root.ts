@@ -1,5 +1,5 @@
-import * as $$SelectionSets from "./selection-sets";
-import * as $$Schema from "./schema";
+import * as $$SelectionSets from "./selection-sets.js";
+import * as $$Schema from "./schema.js";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 import type { InferResult } from "graffle/schema";
 

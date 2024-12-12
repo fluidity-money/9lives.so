@@ -61,12 +61,12 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.campaigns<_$Scalars>>;
   /**
    *
-   * Select the `frontpage` field on the `Query` object. Its type is `Frontpage` (a `OutputObject` kind of type).
+   * Select the `campaignById` field on the `Query` object. Its type is `Campaign` (a `OutputObject` kind of type).
    *
    */
-  frontpage?:
-    | Query.frontpage$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Query.frontpage<_$Scalars>>;
+  campaignById?:
+    | Query.campaignById<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.campaignById<_$Scalars>>;
   /**
    *
    * Select the `suggestedHeadlines` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -156,42 +156,42 @@ export namespace Query {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type frontpage<
+  export type campaignById<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = frontpage$SelectionSet<_$Scalars>;
+  > = campaignById$SelectionSet<_$Scalars>;
 
-  export interface frontpage$SelectionSet<
+  export interface campaignById$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base,
-      $NamedTypes.$Frontpage<_$Scalars> {
+      $NamedTypes.$Campaign<_$Scalars> {
     /**
-     * Arguments for `frontpage` field. No arguments are required so you may omit this.
+     * Arguments for `campaignById` field. All arguments are required so you must include this.
      */
-    $?: frontpage$Arguments<_$Scalars>;
+    $: campaignById$Arguments<_$Scalars>;
   }
 
-  export interface frontpage$Arguments<
+  export interface campaignById$Arguments<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
-    category?: Array<string | undefined | null> | undefined | null;
+    id: string;
   }
 
   // --- expanded ---
 
   /**
    *
-   * This is the "expanded" version of the `frontpage` type. It is identical except for the fact
+   * This is the "expanded" version of the `campaignById` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type frontpage$Expanded<
+  export type campaignById$Expanded<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<frontpage$SelectionSet<_$Scalars>>;
+  > = $$Utilities.Simplify<campaignById$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
@@ -473,233 +473,6 @@ export interface OutcomeInput<
 //
 //
 //
-
-//                                             Frontpage
-// --------------------------------------------------------------------------------------------------
-//
-
-// ----------------------------------------| Entrypoint Interface |
-
-/**
- * Frontpage that should be displayed for a time window.
- */
-export interface Frontpage<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $Select.Bases.ObjectLike {
-  /**
-   *
-   * Select the `id` field on the `Frontpage` object. Its type is `ID` (a `ScalarStandard` kind of type).
-   *
-   */
-  id?:
-    | Frontpage.id$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Frontpage.id<_$Scalars>>;
-  /**
-   *
-   * Select the `from` field on the `Frontpage` object. Its type is `Int` (a `ScalarStandard` kind of type).
-   *
-   */
-  from?:
-    | Frontpage.from$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Frontpage.from<_$Scalars>>;
-  /**
-   *
-   * Select the `until` field on the `Frontpage` object. Its type is `Int` (a `ScalarStandard` kind of type).
-   *
-   */
-  until?:
-    | Frontpage.until$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Frontpage.until<_$Scalars>>;
-  /**
-   *
-   * Select the `categories` field on the `Frontpage` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  categories?:
-    | Frontpage.categories$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Frontpage.categories<_$Scalars>>;
-  /**
-   *
-   * Select the `content` field on the `Frontpage` object. Its type is `Campaign` (a `OutputObject` kind of type).
-   *
-   */
-  content?:
-    | Frontpage.content$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Frontpage.content<_$Scalars>>;
-
-  /**
-   *
-   * Inline fragments for field groups.
-   *
-   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
-   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
-   *
-   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
-   *
-   */
-  ___?:
-    | Frontpage$FragmentInline<_$Scalars>
-    | Frontpage$FragmentInline<_$Scalars>[];
-
-  /**
-   *
-   * A meta field. Is the name of the type being selected.
-   *
-   * @see https://graphql.org/learn/queries/#meta-fields
-   *
-   */
-  __typename?:
-    | $Select.Indicator.NoArgsIndicator$Expanded
-    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
-}
-
-export interface Frontpage$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends Frontpage<_$Scalars>,
-    $Select.Directive.$Groups.InlineFragment.Fields {}
-
-// ----------------------------------------| Fields |
-
-export namespace Frontpage {
-  export type id<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
-
-  export interface id$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `id` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type id$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type from<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | from$SelectionSet<_$Scalars>;
-
-  export interface from$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `from` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type from$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | from$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type until<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | until$SelectionSet<_$Scalars>;
-
-  export interface until$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `until` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type until$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | until$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type categories<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | categories$SelectionSet<_$Scalars>;
-
-  export interface categories$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `categories` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type categories$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | categories$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type content<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = content$SelectionSet<_$Scalars>;
-
-  export interface content$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$Campaign<_$Scalars> {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `content` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type content$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<content$SelectionSet<_$Scalars>>;
-}
 
 //                                              Campaign
 // --------------------------------------------------------------------------------------------------
@@ -1826,10 +1599,6 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = OutcomeInput<_$Scalars>;
-  export type $Frontpage<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = Frontpage<_$Scalars>;
   export type $Campaign<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,

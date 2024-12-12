@@ -1,6 +1,6 @@
-import * as $$Data from "./data";
-import * as $$Schema from "./schema";
-import * as $$SelectionSets from "./selection-sets";
+import * as $$Data from "./data.js";
+import * as $$Schema from "./schema.js";
+import * as $$SelectionSets from "./selection-sets.js";
 import type { OperationTypeNode } from "graphql";
 import type { InferResult } from "graffle/schema";
 
@@ -57,12 +57,6 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
-  export type Frontpage<$SelectionSet extends $$SelectionSets.Frontpage> =
-    InferResult.OutputObjectLike<
-      $SelectionSet,
-      $$Schema.Schema,
-      $$Schema.Schema["allTypes"]["Frontpage"]
-    >;
   export type Campaign<$SelectionSet extends $$SelectionSets.Campaign> =
     InferResult.OutputObjectLike<
       $SelectionSet,
