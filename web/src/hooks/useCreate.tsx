@@ -47,10 +47,10 @@ const useCreate = () => {
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
               name: o.name,
             }));
-            let hashedOracleDesc: `0x${string}` = "0x";
+            let hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
             if (input.settlementType === "oracle" && input.oracleDescription) {
               const descBytes = toUtf8Bytes(input.oracleDescription);
-              hashedOracleDesc = keccak256(descBytes) as `0x${string}`;
+              hashedDocumentation = keccak256(descBytes) as `0x${string}`;
             }
             const createTx = prepareContractCall({
               contract: config.contracts.helper,
@@ -58,7 +58,7 @@ const useCreate = () => {
               params: [
                 creationList, // outcomes
                 BigInt(new Date(input.ending).getTime() * 1000), // time ending in seconds timestamp
-                hashedOracleDesc, // documentation (oracle description)
+                hashedDocumentation, // documentation (settlement description)
                 account.address, // fee recipient
               ],
             });
@@ -91,7 +91,6 @@ const useCreate = () => {
             ending: new Date(input.ending).getTime(),
             creator: account.address,
           });
-          toast.loading("Redirecting to your campaign...");
           await queryClient.invalidateQueries({
             queryKey: ["campaigns"],
           });
