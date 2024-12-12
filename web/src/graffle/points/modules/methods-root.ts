@@ -124,6 +124,45 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         "getPointsComponent"
       >
   >;
+  /**
+   * Get a user's address using their wallet address.
+   */
+  getAddressByDiscord: <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.Query.getAddressByDiscord<$Context["scalars"]>
+    >,
+  ) => Promise<
+    (null | {}) &
+      $$Utilities.HandleOutputGraffleRootField<
+        $Context,
+        InferResult.OperationQuery<
+          { getAddressByDiscord: $SelectionSet },
+          $$Schema.Schema<$Context["scalars"]>
+        >,
+        "getAddressByDiscord"
+      >
+  >;
+  /**
+   * Return the address associated with a Discord handle.
+   * Authenticated user only.
+   */
+  getDiscordName: <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.Query.getDiscordName<$Context["scalars"]>
+    >,
+  ) => Promise<
+    (null | {}) &
+      $$Utilities.HandleOutputGraffleRootField<
+        $Context,
+        InferResult.OperationQuery<
+          { getDiscordName: $SelectionSet },
+          $$Schema.Schema<$Context["scalars"]>
+        >,
+        "getDiscordName"
+      >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {

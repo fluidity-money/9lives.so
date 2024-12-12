@@ -237,6 +237,22 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    getAddressByDiscord: {
+      a: {
+        addr: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
+    getDiscordName: {
+      a: {
+        handle: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 

@@ -91,6 +91,22 @@ export interface Query<
   getPointsComponent?:
     | Query.getPointsComponent$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.getPointsComponent<_$Scalars>>;
+  /**
+   *
+   * Select the `getAddressByDiscord` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  getAddressByDiscord?:
+    | Query.getAddressByDiscord<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.getAddressByDiscord<_$Scalars>>;
+  /**
+   *
+   * Select the `getDiscordName` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  getDiscordName?:
+    | Query.getDiscordName<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.getDiscordName<_$Scalars>>;
 
   /**
    *
@@ -321,6 +337,82 @@ export namespace Query {
     | $Select.Indicator.NoArgsIndicator
     | getPointsComponent$SelectionSet<_$Scalars>
   >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type getAddressByDiscord<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = getAddressByDiscord$SelectionSet<_$Scalars>;
+
+  export interface getAddressByDiscord$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `getAddressByDiscord` field. All arguments are required so you must include this.
+     */
+    $: getAddressByDiscord$Arguments<_$Scalars>;
+  }
+
+  export interface getAddressByDiscord$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    addr: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `getAddressByDiscord` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type getAddressByDiscord$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<getAddressByDiscord$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type getDiscordName<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = getDiscordName$SelectionSet<_$Scalars>;
+
+  export interface getDiscordName$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `getDiscordName` field. All arguments are required so you must include this.
+     */
+    $: getDiscordName$Arguments<_$Scalars>;
+  }
+
+  export interface getDiscordName$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    handle: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `getDiscordName` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type getDiscordName$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<getDiscordName$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

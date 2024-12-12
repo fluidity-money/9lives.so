@@ -33,6 +33,8 @@ export namespace Schema {
       leaderboards: Query.leaderboards;
       productUserCount: Query.productUserCount;
       getPointsComponent: Query.getPointsComponent;
+      getAddressByDiscord: Query.getAddressByDiscord;
+      getDiscordName: Query.getDiscordName;
     };
   }
 
@@ -133,6 +135,41 @@ export namespace Schema {
           kind: "InputField";
           name: "wallet";
           inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Get a user's address using their wallet address.
+     */
+    export interface getAddressByDiscord extends $.OutputField {
+      name: "getAddressByDiscord";
+      arguments: {
+        addr: {
+          kind: "InputField";
+          name: "addr";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Return the address associated with a Discord handle.
+     * Authenticated user only.
+     */
+    export interface getDiscordName extends $.OutputField {
+      name: "getDiscordName";
+      arguments: {
+        handle: {
+          kind: "InputField";
+          name: "handle";
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
       };
