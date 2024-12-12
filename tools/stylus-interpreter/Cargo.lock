@@ -3267,9 +3267,11 @@ name = "stylus-interpreter"
 version = "0.1.0"
 dependencies = [
  "alloy-eips",
+ "alloy-network",
  "alloy-network-primitives",
  "alloy-primitives",
  "alloy-provider",
+ "alloy-rpc-types-eth",
  "alloy-transport-http",
  "const-hex",
  "futures",

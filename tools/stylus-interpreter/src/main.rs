@@ -2,9 +2,12 @@ use std::{collections::HashMap, env, future::Future, process, str::FromStr, sync
 
 use keccak_const::Keccak256;
 
+use alloy_eips::{BlockId, BlockNumberOrTag};
+use alloy_json_rpc::{ErrorPayload, RpcError};
 use alloy_network_primitives::BlockTransactionsKind;
-use alloy_primitives::{Address, U256};
+use alloy_primitives::{Address, Bytes, TxKind, U256};
 use alloy_provider::{Provider, RootProvider};
+use alloy_rpc_types_eth::{TransactionInput, TransactionRequest};
 
 use url::Url;
 
@@ -23,7 +26,9 @@ async fn main() -> Result<(), Error> {
     SENDER.set(Address::from_str(&sender_str).unwrap()).unwrap();
     static BLOCK: OnceLock<u64> = OnceLock::new();
     BLOCK.set(u64::from_str(&block).unwrap()).unwrap();
-    let addr = Address::from_str(&addr).unwrap();
+    static ADDR: OnceLock<Address> = OnceLock::new();
+    ADDR.set(Address::from_str(&addr).unwrap()).unwrap();
+
     let module = Module::from_file(&engine, file.clone()).unwrap();
 
     eprintln!("stylus-interpreter {sender_str} {block} {addr} {file} {calldata}",);
@@ -46,6 +51,9 @@ async fn main() -> Result<(), Error> {
     // storage used by other contracts. The 0 word is used by our contract.
     static STORAGE_WRITTEN: OnceLock<Mutex<HashMap<Word, Word>>> = OnceLock::new();
     STORAGE_WRITTEN.set(Mutex::new(HashMap::new())).unwrap();
+
+    static LAST_CALL_CALLDATA: OnceLock<Mutex<Option<Bytes>>> = OnceLock::new();
+    LAST_CALL_CALLDATA.set(Mutex::new(None)).unwrap();
 
     linker.func_wrap(
         "vm_hooks",
@@ -168,7 +176,7 @@ async fn main() -> Result<(), Error> {
                         .unwrap()
                         .lock()
                         .await
-                        .get_storage_at(addr, U256::from_be_bytes(word))
+                        .get_storage_at(*ADDR.get().unwrap(), U256::from_be_bytes(word))
                         .number(*BLOCK.get().unwrap())
                         .await
                         .unwrap()
@@ -192,15 +200,118 @@ async fn main() -> Result<(), Error> {
         },
     )?;
     linker.func_wrap("vm_hooks", "msg_value", |_: Caller<_>, _: i32| {})?;
-    linker.func_wrap(
+    linker.func_wrap_async(
         "vm_hooks",
         "call_contract",
-        |_: Caller<_>, _: i32, _: i32, _: i32, _: i32, _: i64, _: i32| -> i32 {
-            // Use the eth_debugcall function with the rpc to simulate the experience of
-            // calling a contract that's presumably deployed there. Look at the storage slots
-            // that were used in the operation, and write every SSTORE and result of
-            // SLOAD that's used to our storage hashmap for the contract's address.
-            0
+        move |mut caller: Caller<_>,
+              (contract_ptr, calldata_ptr, calldata_len, value_ptr, gas, return_data_len_ptr): (
+            i32,
+            i32,
+            i32,
+            i32,
+            i64,
+            i32,
+        )|
+              -> Box<dyn Future<Output = i32> + Send> {
+            Box::new(async move {
+                // Use the eth_debugcall function with the rpc to simulate the experience of
+                // calling a contract that's presumably deployed there. Look at the storage slots
+                // that were used in the operation, and write every SSTORE and result of
+                // SLOAD that's used to our storage hashmap for the contract's address.
+                // (TODO). Currently we simply make a request.
+                let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+                let mut contract = [0_u8; 20];
+                let mut calldata = Vec::with_capacity(calldata_len as usize);
+                let mut value = [0_u8; 32];
+                unsafe {
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(contract_ptr as isize),
+                        contract.as_mut_ptr(),
+                        contract.len(),
+                    );
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(calldata_ptr as isize),
+                        calldata.as_mut_ptr(),
+                        calldata_len as usize,
+                    );
+                    calldata.set_len(calldata_len as usize);
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(value_ptr as isize),
+                        value.as_mut_ptr(),
+                        value.len(),
+                    );
+                }
+                let contract = Address::from(contract);
+                eprintln!(
+                    "calling {} calldata {}",
+                    contract,
+                    const_hex::encode(&calldata)
+                );
+                let (status, d) = match PROVIDER
+                    .get()
+                    .unwrap()
+                    .lock()
+                    .await
+                    .call(&TransactionRequest {
+                        from: Some(*ADDR.get().unwrap()),
+                        to: Some(TxKind::Call(contract)),
+                        input: TransactionInput {
+                            input: Some(Bytes::copy_from_slice(&calldata)),
+                            data: None,
+                        },
+                        gas_price: None,
+                        max_fee_per_gas: None,
+                        max_priority_fee_per_gas: None,
+                        max_fee_per_blob_gas: None,
+                        gas: if gas > 0 {
+                            Some(gas.try_into().unwrap())
+                        } else {
+                            None
+                        },
+                        value: Some(U256::from_be_bytes(value)),
+                        nonce: None,
+                        chain_id: None,
+                        access_list: None,
+                        transaction_type: None,
+                        blob_versioned_hashes: None,
+                        sidecar: None,
+                        authorization_list: None,
+                    })
+                    .block(BlockId::Number(BlockNumberOrTag::Number(
+                        *BLOCK.get().unwrap(),
+                    )))
+                    .await
+                {
+                    Ok(d) => {
+                        unsafe {
+                            std::ptr::copy(
+                                d.len().to_le_bytes().as_ptr(),
+                                mem.data_ptr(&mut caller)
+                                    .offset(return_data_len_ptr as isize),
+                                std::mem::size_of::<u64>(),
+                            )
+                        }
+                        (0, Some(d))
+                    }
+                    Err(RpcError::ErrorResp(ErrorPayload {
+                        code: 1,
+                        data: Some(d),
+                        ..
+                    })) => {
+                        let d = const_hex::decode(d.get()).unwrap();
+                        (1, Some(Bytes::copy_from_slice(&d)))
+                    }
+                    err => {
+                        // If the RPC hasn't given us much info, let's
+                        // just blow up. Maybe a networking situation is
+                        // taking place.
+                        err.unwrap();
+                        unreachable!()
+                    }
+                };
+                *LAST_CALL_CALLDATA.get().unwrap().lock().await = d;
+                status
+            })
         },
     )?;
     linker.func_wrap_async(
@@ -216,8 +327,8 @@ async fn main() -> Result<(), Error> {
                         .lock()
                         .await
                         .get_block_by_number(
-                            alloy_eips::eip1898::BlockNumberOrTag::Number(*block),
-                            BlockTransactionsKind::Full,
+                            BlockNumberOrTag::Number(*block),
+                            BlockTransactionsKind::Hashes,
                         )
                         .await
                         .unwrap()
@@ -252,10 +363,30 @@ async fn main() -> Result<(), Error> {
         },
     )?;
     linker.func_wrap("vm_hooks", "return_data_size", |_: Caller<_>| -> i32 { 0 })?;
-    linker.func_wrap(
+    linker.func_wrap_async(
         "vm_hooks",
         "read_return_data",
-        |_: Caller<_>, _dest: i32, _offset: i32, _size: i32| -> i32 { 0 },
+        |mut caller: Caller<_>,
+         (dest_ptr, copy_offset, len): (i32, i32, i32)|
+         -> Box<dyn Future<Output = i32> + Send> {
+            Box::new(async move {
+                let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+                match LAST_CALL_CALLDATA.get().unwrap().lock().await.as_deref() {
+                    Some(b) => {
+                        let b = &b[copy_offset as usize..len as usize];
+                        unsafe {
+                            std::ptr::copy(
+                                b.as_ptr(),
+                                mem.data_ptr(&mut caller).offset(dest_ptr as isize),
+                                len as usize,
+                            );
+                        };
+                        len
+                    }
+                    None => 0,
+                }
+            })
+        },
     )?;
     linker.func_wrap_async("vm_hooks", "storage_cache_bytes32", {
         move |mut caller: Caller<_>,
