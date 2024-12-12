@@ -33,6 +33,11 @@ const tradingAbi = [
         type: "address",
         internalType: "address",
       },
+      {
+        name: "shouldBufferTime",
+        type: "bool",
+        internalType: "bool",
+      },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -80,6 +85,19 @@ const tradingAbi = [
         name: "winner",
         type: "bytes8",
         internalType: "bytes8",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "globalShares",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
@@ -254,7 +272,13 @@ const tradingAbi = [
     type: "function",
     name: "shutdown",
     inputs: [],
-    outputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
   },
 ] as const;
