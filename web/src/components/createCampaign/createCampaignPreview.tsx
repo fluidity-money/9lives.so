@@ -1,18 +1,40 @@
 "use client";
+import AIActiveIcon from "#/icons/ai.svg";
+import GlobeInactiveIcon from "#/icons/globe-black.svg";
+import GlobeActiveIcon from "#/icons/globe.svg";
+import TelegramIcon from "#/icons/telegram.svg";
+import XIcon from "#/icons/x-twitter.svg";
+// import ContractIcon from "#/images/contract.svg";
+import LipsActiveIcon from "#/images/lips.svg";
 import RetroCard from "@/components/cardRetro";
 import { useFormStore } from "@/stores/formStore";
+import { SettlementType } from "@/types";
 import Image from "next/image";
 import { useActiveAccount } from "thirdweb/react";
-import XIcon from "#/icons/x-twitter.svg";
-import GlobeInactiveIcon from "#/icons/globe-black.svg";
-import TelegramIcon from "#/icons/telegram.svg";
 import Button from "../themed/button";
-import LipsActiveIcon from "#/images/lips.svg";
-import GlobeActiveIcon from "#/icons/globe.svg";
 
 export default function CreateCampaignPreview() {
   const preview = useFormStore((s) => s.form);
   const account = useActiveAccount();
+
+  const settlementMap: Record<SettlementType, { img: any; title: string }> = {
+    poll: {
+      img: LipsActiveIcon,
+      title: "Opinion Poll",
+    },
+    oracle: {
+      img: GlobeActiveIcon,
+      title: "Oracle Description",
+    },
+    // contract: {
+    //   img: ContractIcon,
+    //   title: "Contract State",
+    // },
+    ai: {
+      img: AIActiveIcon,
+      title: "A.I Resolver",
+    },
+  };
 
   return (
     <RetroCard
@@ -116,19 +138,13 @@ export default function CreateCampaignPreview() {
         <span className="text-sm font-bold">Settlement Source: </span>
         <div className="flex min-h-10 flex-1 items-center gap-2 border border-9black p-2.5 shadow-9btnPrimaryIdle">
           <Image
-            src={
-              preview?.settlementType === "beauty"
-                ? LipsActiveIcon
-                : GlobeActiveIcon
-            }
+            src={settlementMap[preview?.settlementType ?? "oracle"].img}
             width={30}
             alt=""
             className=""
           />
           <span className="font-chicago text-xs">
-            {preview?.settlementType === "beauty"
-              ? "Opinion Poll"
-              : "Oracle Description"}
+            {settlementMap[preview?.settlementType ?? "oracle"].title}
           </span>
         </div>
         {preview?.telegram || preview?.x || preview?.web ? (

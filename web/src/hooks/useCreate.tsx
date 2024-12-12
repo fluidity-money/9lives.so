@@ -8,13 +8,13 @@ import { keccak256, toUtf8Bytes } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { CampaignInput } from "@/types";
+import { CampaignInput, SettlementType } from "@/types";
 import { useRouter } from "next/navigation";
 import { requestCreateCampaign } from "@/providers/graphqlClient";
 import { useCampaignStore } from "@/stores/campaignStore";
 import clientEnv from "../config/clientEnv";
 import { generateId } from "@/utils/generateId";
-
+import helperAbi from "@/config/abi/helper";
 // HelperApprovalAmount taken by the contract for every deployment (in the current
 // two outcome DPM mode).
 const HelperApprovalAmount = BigInt(5000000);
@@ -23,6 +23,13 @@ const approveHelperTx = prepareContractCall({
   method: "approve",
   params: [clientEnv.NEXT_PUBLIC_HELPER_ADDR, HelperApprovalAmount],
 });
+type ExtractNames<T> = T extends { name: infer N } ? N : never;
+type FunctionNames = ExtractNames<(typeof helperAbi)[number]>;
+const settlementFunctionMap: Record<SettlementType, FunctionNames> = {
+  oracle: "createWithInfraMarket",
+  ai: "createWithAI",
+  poll: "createWithBeautyContest",
+};
 const useCreate = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -40,11 +47,14 @@ const useCreate = () => {
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
               name: o.name,
             }));
-            const descBytes = toUtf8Bytes(input.oracleDescription);
-            const hashedOracleDesc = keccak256(descBytes) as `0x${string}`;
+            let hashedOracleDesc: `0x${string}` = "0x";
+            if (input.settlementType === "oracle" && input.oracleDescription) {
+              const descBytes = toUtf8Bytes(input.oracleDescription);
+              hashedOracleDesc = keccak256(descBytes) as `0x${string}`;
+            }
             const createTx = prepareContractCall({
               contract: config.contracts.helper,
-              method: "createWithInfraMarket",
+              method: settlementFunctionMap[input.settlementType],
               params: [
                 creationList, // outcomes
                 BigInt(new Date(input.ending).getTime() * 1000), // time ending in seconds timestamp
@@ -81,6 +91,7 @@ const useCreate = () => {
             ending: new Date(input.ending).getTime(),
             creator: account.address,
           });
+          toast.loading("Redirecting to your campaign...");
           await queryClient.invalidateQueries({
             queryKey: ["campaigns"],
           });

@@ -18,6 +18,7 @@ import useCreate from "@/hooks/useCreate";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { randomValue4Uint8 } from "@/utils/generateId";
+import toast from "react-hot-toast";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -42,7 +43,8 @@ export default function CreateCampaignForm() {
   const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
     (string | undefined)[]
   >([]);
-  const [settlementType, setSettlementType] = useState<SettlementType>("url");
+  const [settlementType, setSettlementType] =
+    useState<SettlementType>("oracle");
   const outcomeschema = z.object({
     picture: z
       .instanceof(File, {
@@ -85,12 +87,12 @@ export default function CreateCampaignForm() {
                   seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
                 }),
               ),
-        oracleDescription: z.string().min(10), // Oracle description is required in this version. Toggle below line to change this behaviour.
-        // settlementType === "url" ? z.string().url() : z.undefined(),
-        contractAddress:
-          settlementType === "contract"
-            ? z.string().startsWith("0x").min(42)
-            : z.undefined(),
+        oracleDescription:
+          settlementType === "oracle" ? z.string().min(10) : z.undefined(),
+        // contractAddress:
+        //   settlementType === "contract"
+        //     ? z.string().startsWith("0x").min(42)
+        //     : z.undefined(),
       }),
     [outcomeType, outcomeschema, settlementType],
   );
@@ -145,6 +147,7 @@ export default function CreateCampaignForm() {
     const preparedInput = {
       ...input,
       picture: pictureBlob!,
+      settlementType,
       outcomes,
     };
     create(preparedInput, account);

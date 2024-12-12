@@ -36,7 +36,7 @@ export type Detail = {
   }[];
 };
 export type OutcomeType = "custom" | "default";
-export type SettlementType = "url" | "beauty" | "contract" | "ai";
+export type SettlementType = "oracle" | "poll" | "ai"; // exclude "contract" for now
 export type CampaignInput = {
   name: string;
   desc: string;
@@ -49,8 +49,8 @@ export type CampaignInput = {
   telegram?: string;
   web?: string;
   outcomeType?: OutcomeType;
-  settlementType?: SettlementType;
-  oracleDescription: string;
+  settlementType: SettlementType;
+  oracleDescription?: string;
 };
 export type OutcomeInput = {
   picture: string;
