@@ -25,7 +25,7 @@ import {
   createRef,
   Dispatch,
   Fragment,
-  MutableRefObject,
+  RefObject,
   SetStateAction,
   useRef,
 } from "react";
@@ -59,7 +59,7 @@ export default function CreateCampaignFormOutcomes({
   setValue: UseFormSetValue<CreateCampaignFormOutcomesFields & any>;
 }) {
   const customOutcomePicturesRef = useRef<
-    Array<MutableRefObject<HTMLInputElement | null>>
+    Array<RefObject<HTMLInputElement | null>>
   >(Array.from({ length: 2 }, () => createRef<HTMLInputElement>()));
 
   const {

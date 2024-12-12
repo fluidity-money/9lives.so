@@ -38,7 +38,7 @@ export default function CreateCampaignForm() {
   const { create } = useCreate();
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
-  const [outcomeType, setOutcomeType] = useState<OutcomeType>("default");
+  const [outcomeType, setOutcomeType] = useState<OutcomeType>("custom");
   const [pictureBlob, setPictureBlob] = useState<string>();
   const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
     (string | undefined)[]
