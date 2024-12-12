@@ -45,7 +45,7 @@ const useCreate = () => {
             const creationList = input.outcomes.map((o) => ({
               identifier: generateId(o.name, o.description, o.seed),
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
-              name: o.name,
+              name: input.name.slice(0, 8) + o.name,
             }));
             let hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
             if (input.settlementType === "oracle" && input.oracleDescription) {
