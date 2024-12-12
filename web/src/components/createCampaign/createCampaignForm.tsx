@@ -88,7 +88,9 @@ export default function CreateCampaignForm() {
                 }),
               ),
         oracleDescription:
-          settlementType === "oracle" ? z.string().min(10) : z.undefined(),
+          settlementType === "oracle"
+            ? z.string().min(10)
+            : z.string().optional(),
         // contractAddress:
         //   settlementType === "contract"
         //     ? z.string().startsWith("0x").min(42)
