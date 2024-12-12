@@ -34,7 +34,7 @@ const clientEnvSchema = z.object({
    */
   NEXT_PUBLIC_LENS_ADDR: z.string().length(42),
   /**
-   * Helper contract address for create campaign with infra market
+   * Helper contract address for create campaigns with various settlements
    */
   NEXT_PUBLIC_HELPER_ADDR: z.string().length(42),
   /**
