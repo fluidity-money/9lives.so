@@ -11,12 +11,6 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_GIT_HASH: gitHash,
   },
-  logging: {
-    fetches: {
-      fullUrl: true,
-    },
-  },
-
   webpack(config) {
     if (process.env.NODE_V8_COVERAGE) {
       Object.defineProperty(config, "devtool", {
