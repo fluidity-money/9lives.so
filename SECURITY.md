@@ -31,7 +31,7 @@ Alex or Ivan via either of these methods:
 
 ## Files of note
 
-The following files may be interesting to any would-be security researcher:
+The following files may be of interest to any would-be security researcher:
 
 ```
 src/utils.rs
