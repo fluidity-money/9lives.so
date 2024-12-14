@@ -3,6 +3,7 @@ package main
 //go:generate go run github.com/99designs/gqlgen generate
 
 import (
+	"context"
 	"net/http"
 	"os"
 
@@ -25,6 +26,18 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
+
+	awsConfig "github.com/aws/aws-sdk-go-v2/config"
+	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+)
+
+const (
+	// UploadTradingPicsUrl is the basis for file upload for the webapp.
+	UploadTradingPicsUrl = "https://pictures.9lives.so"
+
+	// S3UploadBucketName to use for uploads to AWS S3.
+	S3UploadBucketName = "pictures.9lives.so"
 )
 
 const (
@@ -63,14 +76,24 @@ func main() {
 		setup.Exitf("geth open: %v", err)
 	}
 	defer geth.Close()
+	awsConf, err := awsConfig.LoadDefaultConfig(context.Background())
+	if err != nil {
+		setup.Exitf("aws config: %v", err)
+	}
+	s3Client := s3.NewFromConfig(awsConf)
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB:             db,
-			F:              features.Get(),
-			Geth:           geth,
-			C:              config,
-			FactoryAddr:    ethCommon.HexToAddress(config.FactoryAddress),
-			ChangelogItems: Changelog[:min(ChangelogLen, len(Changelog))],
+			DB:                 db,
+			F:                  features.Get(),
+			Geth:               geth,
+			C:                  config,
+			FactoryAddr:        ethCommon.HexToAddress(config.FactoryAddress),
+			ChangelogItems:     Changelog[:min(ChangelogLen, len(Changelog))],
+			S3UploadBucketName: S3UploadBucketName,
+			S3UploadManager: s3manager.NewUploader(s3Client, func(u *s3manager.Uploader) {
+				u.PartSize = 10 * 1024 * 1024
+			}),
+			PicturesUriBase: UploadTradingPicsUrl,
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})

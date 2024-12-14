@@ -7,6 +7,8 @@ package graph
 import (
 	"context"
 	"encoding/hex"
+	"net/url"
+	"encoding/base64"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -16,6 +18,9 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
+
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
 // Name is the resolver for the name field.
@@ -170,6 +175,9 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		)
 		return nil, fmt.Errorf("error checking if trading contract is deployed")
 	}
+	// Create the campaign object
+	campaignId, _ := crypto.GetOutcomeId(name, description, uint64(seed))
+	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
 	contractOwner_, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
@@ -181,7 +189,28 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		return nil, fmt.Errorf("error checking if trading contract is deployed")
 	}
 	creator = strings.ToLower(creator)
-	contractOwner := strings.ToLower(contractOwner_.Hex())
+	var (
+		tradingAddrStr = strings.ToLower(tradingAddr.Hex())
+		contractOwner = strings.ToLower(contractOwner_.Hex())
+	)
+	// Quick check to see if the entry already exists in the database.
+	var campaignIdCount int64
+	err = r.DB.Table("ninelives_campaigns_1").
+		Where("id = ?", hexCampaignId).
+		Count(&campaignIdCount).
+		Error
+	if err != nil {
+		slog.Error("Error checking the existence of this trading addr",
+			"trading contract", tradingAddr,
+			"factory address", r.FactoryAddr,
+			"market id", marketId,
+			"error", err,
+		)
+		return nil, fmt.Errorf("error finding trading addr existence")
+	}
+	if campaignIdCount > 0 {
+		return nil, fmt.Errorf("trading addr already exists")
+	}
 	if contractOwner != creator {
 		slog.Error("Staged creator is not the contract owner",
 			"trading contract", tradingAddr,
@@ -204,33 +233,90 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			uint64(outcome.Seed),
 		)
 		hexOutcomeId := "0x" + hex.EncodeToString(outcomeId)
-		shareAddress, _ := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
+		shareAddr, _ := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
+		shareAddrStr := strings.ToLower(shareAddr.Hex())
+		var outcomePicUrl string
+		if pic := outcome.Picture; pic != "" {
+			outcomePicBody := base64.NewDecoder(base64.StdEncoding, strings.NewReader(picture))
+			picKey := fmt.Sprintf("%v-%v", tradingAddr, shareAddr)
+			_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
+				Bucket: aws.String(r.S3UploadBucketName),
+				Key:    aws.String(picKey),
+				Body:   outcomePicBody,
+			})
+			if err != nil {
+				slog.Error("Failed to upload a outcome image",
+					"picture", picture,
+					"trading addr", tradingAddr,
+					"outcome key", picKey,
+					"err", err,
+				)
+				return nil, fmt.Errorf("error uploading image")
+			}
+			// Track the URL that's associated with this share's picture.
+			outcomePicUrl, err = url.JoinPath(r.PicturesUriBase, picKey)
+			if err != nil {
+				slog.Error("Failed to create a URL for a share picture",
+					"picture", picture,
+					"trading addr", tradingAddr,
+					"outcome key", picKey,
+					"err", err,
+				)
+				return nil, fmt.Errorf("error uploading image")
+			}
+		}
 		campaignOutcomes[i] = types.Outcome{
 			Name:        outcome.Name,
 			Description: outcome.Description,
-			Picture:     outcome.Picture,
+			Picture:     outcomePicUrl,
 			Seed:        outcome.Seed,
 			Identifier:  hexOutcomeId,
 			Share: &types.Share{
-				Address: shareAddress.String(),
+				Address: shareAddrStr,
 			},
 		}
 	}
-	// Create the campaign object
-	campaignId, _ := crypto.GetOutcomeId(name, description, uint64(seed))
-	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
+	// Upload the image for the base to S3, so we can serve it later,
+	// start by unpacking the base64. This should also blow up if this
+	// is bad base64.
+	tradingPicKey := tradingAddrStr + "-base"
+	tradingPicBody := base64.NewDecoder(base64.StdEncoding, strings.NewReader(picture))
+	_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
+		Bucket: aws.String(r.S3UploadBucketName),
+		Key:    aws.String(tradingPicKey),
+		Body:   tradingPicBody,
+	})
+	if err != nil {
+		slog.Error("Failed to upload a trading image",
+			"picture", picture,
+			"trading addr", tradingAddr,
+			"trading pic key", tradingPicKey,
+			"err", err,
+		)
+		return nil, fmt.Errorf("error uploading image")
+	}
+	tradingPicUrl, err := url.JoinPath(r.PicturesUriBase, tradingPicKey)
+	if err != nil {
+		slog.Error("Failed to join a trading image path",
+			"picture", picture,
+			"trading addr", tradingAddr,
+			"trading pic key", tradingPicKey,
+			"err", err,
+		)
+		return nil, fmt.Errorf("error uploading image")
+	}
 	campaign := types.Campaign{
 		ID: hexCampaignId,
 		Content: types.CampaignContent{
 			Name:        name,
 			Description: description,
-			Picture:     picture,
+			Picture:     tradingPicUrl,
 			Seed:        seed,
 			Creator: &types.Wallet{
 				Address: creator,
 			},
 			Oracle:      "n/a",
-			PoolAddress: tradingAddr.Hex(),
+			PoolAddress: tradingAddrStr,
 			Outcomes:    campaignOutcomes,
 			Ending:      ending,
 			Starting:    starting,

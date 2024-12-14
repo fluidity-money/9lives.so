@@ -31,6 +31,15 @@ const nextConfig = {
 
     return config;
   },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'pictures.9lives.so',
+      },
+    ],
+  },
 };
 
 export default withSentryConfig(nextConfig, {
