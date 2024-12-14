@@ -19,6 +19,7 @@ import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { randomValue4Uint8 } from "@/utils/generateId";
 import toast from "react-hot-toast";
+import { track, EVENTS } from "@/utils/analytics";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -152,6 +153,12 @@ export default function CreateCampaignForm() {
       settlementType,
       outcomes,
     };
+    track(EVENTS.CAMPAIGN_CREATE, {
+      wallet: account.address,
+      name: input.name,
+      outcomeCount: outcomes.length,
+      settlementType
+    });
     create(preparedInput, account);
   };
   useEffect(() => {

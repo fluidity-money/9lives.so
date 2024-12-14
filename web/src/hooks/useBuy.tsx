@@ -13,6 +13,7 @@ import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
+import { track, EVENTS } from "@/utils/analytics";
 
 const EmptyBytes32 =
   "0x0000000000000000000000000000000000000000000000000000000000000000";
@@ -162,6 +163,13 @@ const useBuy = ({
           });
           queryClient.invalidateQueries({
             queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
+          });
+          track(EVENTS.MINT, {
+            wallet: account.address,
+            amount: fusdc,
+            outcomeId,
+            shareAddr,
+            tradingAddr
           });
           res(null);
         } catch (e) {
