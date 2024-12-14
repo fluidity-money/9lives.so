@@ -2,6 +2,7 @@ name: Deploy webapp
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   deploy:
