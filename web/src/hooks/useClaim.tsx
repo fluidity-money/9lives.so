@@ -71,7 +71,7 @@ const useClaim = ({
             amount: accountShare,
             outcomeId,
             shareAddr,
-            tradingAddr
+            tradingAddr,
           });
           res(null);
         } catch (e) {

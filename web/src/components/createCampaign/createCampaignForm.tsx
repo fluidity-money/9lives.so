@@ -157,7 +157,7 @@ export default function CreateCampaignForm() {
       wallet: account.address,
       name: input.name,
       outcomeCount: outcomes.length,
-      settlementType
+      settlementType,
     });
     create(preparedInput, account);
   };
