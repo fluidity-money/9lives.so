@@ -70,7 +70,7 @@ export default function SelectedOutcome({
             campaignId,
             outcomeName: data.name,
             outcomeId: data.identifier,
-            amount: deposit
+            amount: deposit,
           });
           window.alert("You clicked the button!");
         }}
