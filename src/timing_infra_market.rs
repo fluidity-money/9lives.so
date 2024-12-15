@@ -3,14 +3,14 @@ use stylus_sdk::alloy_primitives::U64;
 use crate::error::Error;
 
 /*
-+--------------+--------------+---------------+----------------+------------------+
-| Whinging     | Predicting   | Sweeping      | Anything       | Claiming         |
-| Period (2d)  | Period (2d)  | Period (4d)   | Goes (2d) +    | Ends             |
-|              |              |               | Sweeping       |                  |
-|              |              |               | Period         |                  |
-+--------------+--------------+---------------+----------------+------------------+
-| Day 1-2      | Day 3-4      | Day 5-6     ␣ | Day 7-11       | Day 9-10         |
-+--------------+--------------+---------------+----------------+------------------+
++--------------+--------------+-------------------+----------------+------------------+
+| Whinging     | Predicting   | Commitment reveal | Sweeping       | Anything         |
+| Period (2d)  | Period (2d)  | Period (2d)       | Period (2d)    | Goes (2d) +      |
+|              |              |                   |                | Sweeping         |
+|              |              |                   |                | Period           |
++--------------+--------------+-------------------+----------------+------------------+
+| Day 1-2      | Day 3-4      | Day 5-6     ␣     | Day 7-11       | Day 9-10         |
++--------------+--------------+-------------------+----------------+------------------+
 */
 
 macro_rules! define_period_checker {
@@ -43,19 +43,26 @@ define_period_checker!(
     WhingedTimeUnset,
     2
 );
-// We're simultaneously in the sweeping and anything goes period at one
-// point.
+define_period_checker!(
+    are_we_in_commitment_reveal_period,
+    when_whinged,
+    2,
+    WhingedTimeUnset,
+    2
+);
+
+// We're simultaneously in the sweeping and anything goes period.
 define_period_checker!(
     are_we_in_sweeping_period,
     when_whinged,
-    2,
+    4,
     WhingedTimeUnset,
     4
 );
 define_period_checker!(
     are_we_in_anything_goes_period,
     when_whinged,
-    4,
+    6,
     WhingedTimeUnset,
     2
 );

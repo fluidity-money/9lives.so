@@ -1,5 +1,3 @@
-use stylus_sdk::alloy_primitives::U256;
-
 use rust_decimal::{Decimal, MathematicalOps};
 
 use crate::error::Error;
@@ -78,18 +76,6 @@ pub fn dpm_shares(
 #[allow(non_snake_case)]
 pub fn dpm_payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error> {
     Ok(mul!(div!(n, N_1), M))
-}
-
-/// Locked ARB to give the user based on their lockup time and amount.
-pub fn locked_arb_amt(initial_amt: U256) -> Result<U256, Error> {
-    Ok(initial_amt)
-}
-
-/// Infra voting amount based on how many seconds have passed since the
-/// infra market became available.
-pub fn infra_voting_power(_amt: U256, _secs_passed: u64) -> Result<U256, Error> {
-    // TODO: have this do stuff.
-    Ok(_amt)
 }
 
 #[test]

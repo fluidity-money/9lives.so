@@ -18,23 +18,9 @@ pub struct StorageLockup {
     /// Global amount of liquidity locked up by everyone.
     pub liquidity: StorageU256,
 
-    /// Debt id counter for returning funds.
-    pub debt_id_counter: StorageU256,
-
-    /// Amounts locked up by users.
-    pub locked_initial: StorageMap<U256, StorageU256>,
-
-    /// Amount of locked voting power that must be paid in full to get amounts back.
-    // id => voting power
-    pub locked_voting_power: StorageMap<U256, StorageU256>,
-
     /// Amount of locked ARB supplied by this address.
     // address => arb
     pub locked_arb_user: StorageMap<Address, StorageU256>,
-
-    /// Locked positions held by the user. This is used to slash a user's entire position
-    /// on request.
-    pub locked_debt_ids: StorageMap<Address, StorageVec<StorageU256>>,
 
     /// The timestamp that the block timestamp must pass for a locker to withdraw
     /// their funds.

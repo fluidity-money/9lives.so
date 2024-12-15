@@ -4,12 +4,12 @@
 
 (**
  * Lockup had an amount locked up and is able to be spent.
- *)
+*)
 type s_l_unspent
 
 (**
  * Lockup is in a spent stage and can't be spent again after it's vested.
- *)
+*)
 type s_l_spent
 
 type 's l =
@@ -27,7 +27,7 @@ type s_o_waiting
  *  The Oracle is in a state of someone needing to declare that the
  *  outcome has taken place. This could be re-entered if someone
  * were to supply the zero bytes8 as the winner.
- *)
+*)
 type s_o_calling
 
 (**
@@ -35,37 +35,37 @@ type s_o_calling
  * incorrect, and this contestor has submitted a bond while stating so. A
  * period of people needing to bet on what they expect the outcome to be
  * has begun.
- *)
+*)
 type s_o_whinged
 
 (**
  * The Oracle has seen a prediction from someone to an outcome that was
  * given.
- *)
+*)
 type s_o_predicting
 
 (**
- * The Oracle two day period has completed. Trading can benefit from the
+ * The Oracle two day period predicting period has completed. Trading can benefit from the
  * outcome now.
- *)
+*)
 type s_o_completed
 
 (**
  * The Oracle is now in a state where slashing is possible of bad
  * predictors.
- *)
+*)
 type s_o_slashing
 
 (**
  * The Oracle is in a state of Anything Goes, where anyone could slash
  * anyone.
- *)
+*)
 type s_o_anything_goes
 
 (**
  * The Oracle has completed the Anything Goes period. This state could be used
  * to re-enter the calling period if the winning outcome is 0.
- *)
+*)
 type s_o_done_anything_goes
 
 (*
@@ -96,49 +96,34 @@ type 's o =
 
 (**
  * The Trading market is trading, and people are predicting outcomes.
- *)
+*)
 type s_m_trading
 
 (**
  * The Trading market is pending an answer from the oracle.
- *)
+*)
 type s_m_pending_oracle
 
 (**
  * The Trading market is in a state where people can claim from their prediction.
- *)
+*)
 type s_m_claiming
+
+(*
+ * The Escape Hatch has been used on this market, and it's in an
+ * indeterminate state. The DAO needs to intervene to rescue this
+ * contract. It's possible that this could be called in any state, but
+ * the frontend should always create the indeterminate state for the
+ * custom outcomes. This is really for the DPM.
+ *)
 
 type 's m =
   | Created : s_m_trading m
   | Traded : outcome * [`Fusdc of int] * [`Shares of int] * s_m_trading m -> s_m_trading m
   | Deadline_passed : s_m_trading m -> s_m_pending_oracle m
-  | Oracle_submission :  s_o_completed o * s_m_pending_oracle m -> s_m_claiming m
+  | Oracle_submission_pending_oracle :  s_o_completed o * s_m_pending_oracle m -> s_m_claiming m
+  | Oracle_submission_trading :  s_o_completed o * s_m_trading m -> s_m_claiming m
+  | Oracle_escape_hatch_trading : s_o_escape_hatch o * s_m_trading m -> s_m_escape_hatch m
   | Claim : outcome * int * s_m_claiming m -> s_m_claiming m
 
 (* Edit ,.-1>ai can you convert this gadt into a state mermaid diagram? *)
-
-(*
-stateDiagram
-    [*] --> Locked_up : Lock in Lockup
-    Locked_up --> Spent : Vest
-    [*] --> Waiting : Create Trading
-    Spent --> Predicting : Vested`
-    Waiting --> Calling : Declare
-    Calling --> Whinged : Contest
-    Whinged --> Predicting : Predict
-    Predicting --> Predicting_over : Time Passes
-    Calling --> Calling_over : Time Passes
-    Predicting_over --> Completed : End
-    Calling_over --> Completed : End
-    Completed --> Slashing_begun : Start Slashing
-    Completed --> Oracle_submission : Oracle submission
-    Slashing_begun --> Slashed : Slash
-    Slashed --> Slashing_two_days_over : End Period
-    Slashing_two_days_over --> Anything_goes_slash : Slash
-    Anything_goes_slash --> Anything_goes_slashing_over : End Period
-    Created --> Traded : Trade
-    Traded --> Deadline_passed : Deadline
-    Deadline_passed --> Oracle_submission : Submit Oracle
-    Oracle_submission --> Claim : Claim
-*)

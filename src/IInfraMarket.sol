@@ -30,18 +30,6 @@ interface IInfraMarket {
         address bondRecipient
     ) external;
 
-    /// @notice marketPowerVested to this trading and outcome
-    /// @param trading contract to check the results of
-    /// @param outcome to check
-    function marketPowerVested(
-        address trading,
-        bytes8 outcome
-    ) external returns (uint256);
-
-    function globalPowerVested(address trading) external returns (uint256);
-
-    function userPowerVested(address trading, address spender) external returns (uint256);
-
     function sweep(
         address trading,
         address victim,

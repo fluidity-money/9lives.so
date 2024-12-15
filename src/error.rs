@@ -437,6 +437,30 @@ pub enum Error {
     // 0x58
     /// We're not after the whinging period!
     NotAfterWhinging,
+
+    // 0x59
+    /// We're not in a commitment reveal period!
+    NotInCommitReveal,
+
+    // 0x5a
+    /// The commitment reveal wasn't the same!
+    CommitNotTheSame,
+
+    // 0x5b
+    /// The user already revealed!
+    AlreadyRevealed,
+
+    // 0x5c
+    /// Zero commits aren't allowed, as it should be something set.
+    NotAllowedZeroCommit,
+
+    // 0x5d
+    /// Zero balance of ARB is available.
+    ZeroBal,
+
+    // 0x5f
+    /// The user's recorded staked ARB balance right now is less than theirs at inception.
+    StakedArbUnusual,
 }
 
 pub type R<T> = Result<T, Error>;

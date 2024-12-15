@@ -10,7 +10,7 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-    amm_call, error::*, events, fusdc_call, immutables::*, opt_infra_market_call, proxy,
+    amm_call, error::*, events, fusdc_call, immutables::*, infra_market_call, proxy,
     share_call, trading_call,
     utils::msg_sender,
 };
@@ -132,7 +132,7 @@ impl StorageFactory {
         // careful regarding the circumstances of their oracle choice, and it should be
         // explained in the UI if this is the case or not.
         if oracle == self.infra_market.get() {
-            opt_infra_market_call::register(
+            infra_market_call::register(
                 self.infra_market.get(),
                 trading_addr,
                 msg_sender(),

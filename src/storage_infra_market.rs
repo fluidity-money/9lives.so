@@ -2,9 +2,7 @@ use stylus_sdk::{alloy_primitives::*, storage::*};
 
 #[cfg_attr(
     any(
-        feature = "contract-infra-market-predict",
-        feature = "contract-infra-market-sweep",
-        feature = "contract-infra-market-extras",
+        feature = "contract-infra-market",
         feature = "testing"
     ),
     stylus_sdk::prelude::storage
@@ -22,40 +20,22 @@ pub struct StorageEpochDetails {
     /// their bond if they're correct, plus the caller incentive amount.
     pub campaign_who_whinged: StorageAddress,
 
-    /// Voting power vested globally in the different outcomes cumulative
-    /// that's created with a decay function. Used to determine the winner
-    /// of this infrastructure campaign.
-    pub campaign_global_power_vested: StorageU256,
+    /// What the user's commitment is for this round.
+    pub commitments: StorageMap<Address, StorageFixedBytes<32>>,
 
-    /// Market power calculated by the decaying function vested into
-    /// these outcomes.
-    /// outcome => power
-    pub outcome_vested_power: StorageMap<FixedBytes<8>, StorageU256>,
+    /// Which outcome a user's commitment reveal turned out to be.
+    pub reveals: StorageMap<Address, StorageFixedBytes<8>>,
 
-    /// Vested market power that we tracked that users supplied across each
-    /// outcome. Once we've determined the winner, we can share of the share
-    /// of the winning power amount relative to the market power invested
-    /// globally to find the percent we must dilute user global power down by.
-    /// We use this information to allow victims to be slashed by predictors
-    /// who had a share of the winning outcome that exceeded the victim's.
-    pub user_global_vested_power: StorageMap<Address, StorageU256>,
-
-    /// Outcome specific user power voting. This is needed to
-    /// determine the share that the caller to the sweeping function had
-    /// in the winning pool relative to others, to determine if their
-    /// share is greater than the share that the user that is being
-    /// slashed invested globally. To protect users who bet partly
-    /// incorrectly but bet more in the correct outcome, we also use this
-    /// function to determine if the power they bet in the winning outcome
-    /// is more than half of their share.
-    //outcome => user => power
-    pub user_outcome_vested_power: StorageMap<FixedBytes<8>, StorageMap<Address, StorageU256>>,
-
-    /// ARB invested by a user into the infra market for a specific Trading contract.
-    pub user_global_vested_arb: StorageMap<Address, StorageU256>,
+    /// The amount of ARB vested globally in every outcome.
+    pub global_vested_arb: StorageU256,
 
     /// The amount of Staked ARB that was vested in this outcome by everyone.
     pub outcome_vested_arb: StorageMap<FixedBytes<8>, StorageU256>,
+
+    /// The amount a specific user vested in ARB to the outcome they want.
+    /// We use this to work with the slashing behaviour later to prevent
+    /// double slashing.
+    pub user_vested_arb: StorageMap<Address, StorageU256>,
 
     /// Was the campaign winner set?
     pub campaign_winner_set: StorageBool,
@@ -63,12 +43,12 @@ pub struct StorageEpochDetails {
     /// Was a winner determined?
     pub campaign_winner: StorageFixedBytes<8>,
 
-    /// What outcome did the original caller of this market declare as the winner?
-    pub campaign_what_called: StorageFixedBytes<8>,
-
     /// Addresses of users who "called" the campaign outcome, before the
-    /// 3 day contest window begins.
+    /// contest window begins.
     pub campaign_who_called: StorageAddress,
+
+    /// Which outcome was called by the caller.
+    pub campaign_what_called: StorageFixedBytes<8>,
 
     /// When someone "called" this contract, taking it out of the optimistic
     /// state period into the whinging stage.
@@ -76,23 +56,11 @@ pub struct StorageEpochDetails {
 }
 
 #[cfg_attr(
-    any(
-        feature = "contract-infra-market-predict",
-        feature = "contract-infra-market-sweep",
-        feature = "contract-infra-market-extras",
-        feature = "testing"
-    ),
+    any(feature = "contract-infra-market", feature = "testing"),
     stylus_sdk::prelude::storage
 )]
-#[cfg_attr(
-    any(
-        feature = "contract-infra-market-predict",
-        feature = "contract-infra-market-sweep",
-        feature = "contract-infra-market-extras"
-    ),
-    stylus_sdk::prelude::entrypoint
-)]
-pub struct StorageOptimisticInfraMarket {
+#[cfg_attr(feature = "contract-infra-market", stylus_sdk::prelude::entrypoint)]
+pub struct StorageInfraMarket {
     /// Was this contract created successfully?
     pub created: StorageBool,
 
@@ -155,7 +123,7 @@ pub struct StorageOptimisticInfraMarket {
 }
 
 #[cfg(feature = "testing")]
-impl crate::host::StorageNew for StorageOptimisticInfraMarket {
+impl crate::host::StorageNew for StorageInfraMarket {
     fn new(i: U256, v: u8) -> Self {
         unsafe { <Self as StorageType>::new(i, v) }
     }

@@ -81,6 +81,19 @@ interface IEvents {
         address indexed recipient
     );
 
+    event Committed(
+        address indexed trading,
+        address indexed predictor,
+        bytes32 indexed commitment
+    );
+
+    event CommitmentRevealed(
+        address indexed trading,
+        address indexed revealer,
+        bytes8 indexed outcome,
+        uint256 bal
+    );
+
      /// @notice CampaignEscaped, because a campaign is in an
      /// indeterminate state! The DAO may be needed to step in.
     event CampaignEscaped(address indexed tradingAddr);

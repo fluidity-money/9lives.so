@@ -126,20 +126,10 @@ contract-lockup.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-lockup${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-lockup.wasm
 
-contract-infra-market-predict.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f contract-infra-market-predict.wasm
-	@${CARGO_BUILD_STYLUS} contract-infra-market-predict${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-predict.wasm
-
-contract-infra-market-sweep.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f contract-infra-market-sweep.wasm
-	@${CARGO_BUILD_STYLUS} contract-infra-market-sweep${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-sweep.wasm
-
-contract-infra-market-extras.wasm: $(shell find src -type f -name '*.rs')
-	@rm -f contract-infra-market-extras.wasm
-	@${CARGO_BUILD_STYLUS} contract-infra-market-extras${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-extras.wasm
+contract-infra-market.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-infra-market.wasm
+	@${CARGO_BUILD_STYLUS} contract-infra-market${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market.wasm
 
 contract-beauty-contest.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-beauty-contest.wasm
@@ -151,9 +141,7 @@ clean:
 		contract-beauty-contest.wasm \
 		contract-factory-1.wasm \
 		contract-factory-2.wasm \
-		contract-infra-market-extras.wasm \
-		contract-infra-market-predict.wasm \
-		contract-infra-market-sweep.wasm \
+		contract-infra-market.wasm \
 		contract-lockup.wasm \
 		contract-trading-amm-extras.wasm \
 		contract-trading-amm-mint.wasm \

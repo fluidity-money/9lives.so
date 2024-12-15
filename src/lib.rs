@@ -17,7 +17,7 @@ pub mod events;
 pub mod fees;
 pub mod immutables;
 
-pub mod timing_opt_infra_market;
+pub mod timing_infra_market;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod host_proxy;
@@ -62,9 +62,9 @@ pub mod host_nineliveslockedarb_call;
 pub mod nineliveslockedarb_call;
 pub mod wasm_nineliveslockedarb_call;
 
-pub mod host_opt_infra_market_call;
-pub mod opt_infra_market_call;
-pub mod wasm_opt_infra_market_call;
+pub mod host_infra_market_call;
+pub mod infra_market_call;
+pub mod wasm_infra_market_call;
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub mod host;
@@ -85,10 +85,8 @@ pub mod contract_trading_quotes;
 pub mod storage_lockup;
 pub mod contract_lockup;
 
-pub mod contract_opt_infra_market_predict;
-pub mod contract_opt_infra_market_sweep;
-pub mod contract_opt_infra_market_extras;
-pub mod storage_opt_infra_market;
+pub mod contract_infra_market;
+pub mod storage_infra_market;
 
 pub mod storage_beauty_contest;
 pub mod contract_beauty_contest;
@@ -110,14 +108,8 @@ pub use contract_factory_2::user_entrypoint;
 #[cfg(feature = "contract-lockup")]
 pub use contract_lockup::user_entrypoint;
 
-#[cfg(feature = "contract-infra-market-predict")]
-pub use contract_opt_infra_market_predict::user_entrypoint;
-
-#[cfg(feature = "contract-infra-market-sweep")]
-pub use contract_opt_infra_market_sweep::user_entrypoint;
-
-#[cfg(feature = "contract-infra-market-extras")]
-pub use contract_opt_infra_market_extras::user_entrypoint;
+#[cfg(feature = "contract-infra-market")]
+pub use infra_market_predict::user_entrypoint;
 
 #[cfg(feature = "contract-beauty-contest")]
 pub use contract_beauty_contest::user_entrypoint;
@@ -132,9 +124,7 @@ pub use contract_beauty_contest::user_entrypoint;
         feature = "contract-trading-quotes",
         feature = "contract-trading-price",
         feature = "contract-lockup",
-        feature = "contract-infra-market-predict",
-        feature = "contract-infra-market-sweep",
-        feature = "contract-infra-market-extras",
+        feature = "contract-infra-market",
         feature = "contract-beauty-contest"
     ))
 ))]
