@@ -1,8 +1,9 @@
 use stylus_sdk::{alloy_primitives::*, contract, evm};
 
-use crate::{erc20_call, error::Error, fusdc_call, immutables::*, utils::msg_sender};
-
-pub use crate::{events, nineliveslockedarb_call, proxy, storage_lockup::*};
+use crate::{
+    erc20_call, error::Error, events, immutables::*, nineliveslockedarb_call, proxy,
+    storage_lockup::*, utils::msg_sender,
+};
 
 #[cfg_attr(feature = "contract-lockup", stylus_sdk::prelude::public)]
 impl StorageLockup {
@@ -24,27 +25,16 @@ impl StorageLockup {
 
     /// Lockup sends Locked ARB to the user after taking Staked ARB from
     /// them.
-    pub fn lockup(&mut self, amt: U256, recipient: Address, until: u64) -> Result<U256, Error> {
+    pub fn lockup(&mut self, amt: U256, recipient: Address) -> Result<U256, Error> {
         erc20_call::transfer_from(STAKED_ARB_ADDR, msg_sender(), contract::address(), amt)?;
         // Overflow isn't likely, since we're receiving Staked ARB. If
         // they overflow, we have a bigger problem.
-        let vested_arb = self.locked_arb_user.get(recipient);
-        self.locked_arb_user.setter(recipient).set(vested_arb + amt);
         nineliveslockedarb_call::mint(self.token_addr.get(), recipient, amt)?;
-        let existing_deadline = self.deadlines.get(msg_sender());
-        self.deadlines.setter(msg_sender()).set({
-            let until = U64::from(until);
-            if existing_deadline > until {
-                existing_deadline
-            } else {
-                until
-            }
-        });
         Ok(amt)
     }
 
     pub fn staked_arb_bal(&self, addr: Address) -> Result<U256, Error> {
-        Ok(self.locked_arb_user.get(addr))
+        nineliveslockedarb_call::balance_of(self.token_addr.get(), addr)
     }
 
     pub fn slash(&mut self, addr: Address) -> Result<(), Error> {
@@ -52,8 +42,6 @@ impl StorageLockup {
             msg_sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
-        nineliveslockedarb_call::burn(self.token_addr.get(), addr, self.locked_arb_user.get(addr))?;
-        self.locked_arb_user.setter(addr).set(U256::ZERO);
         Ok(())
     }
 
@@ -62,9 +50,7 @@ impl StorageLockup {
             msg_sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
-        let amt = self.locked_arb_user.get(victim);
-        self.locked_arb_user.setter(victim).set(U256::ZERO);
-        fusdc_call::transfer(recipient, amt)?;
+        erc20_call::transfer(STAKED_ARB_ADDR, recipient, erc20_call::balance_of(victim)?)?;
         Ok(amt)
     }
 

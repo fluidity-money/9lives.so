@@ -15,10 +15,6 @@ pub struct StorageLockup {
     /// 9lives Locked ARB token that we're controlling.
     pub(crate) token_addr: StorageAddress,
 
-    /// Amount of locked ARB supplied by this address.
-    // address => arb
-    pub(crate) locked_arb_user: StorageMap<Address, StorageU256>,
-
     /// The timestamp that the block timestamp must pass for a locker to withdraw
     /// their funds.
     pub(crate) deadlines: StorageMap<Address, StorageU64>

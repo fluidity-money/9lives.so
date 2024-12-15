@@ -17,8 +17,8 @@ fn test_infra_market_call_close_only_happy_path() {
     // Simple situation, someone creates a infra market, and during its
     // optimistic stage someone calls it. It's not whinged at, and it calls
     // predict without issue. The caller gets their small amount.
-    use lib9lives::storage_opt_infra_market::StorageOptimisticInfraMarket;
-    with_contract::<_, StorageOptimisticInfraMarket, _>(|c| {
+    use lib9lives::storage_infra_market::StorageInfraMarket;
+    with_contract::<_, StorageInfraMarket, _>(|c| {
         c.enabled.set(true);
         set_msg_sender(Address::from([9u8; 20]));
         c.factory_addr.set(msg_sender());
@@ -79,8 +79,8 @@ fn test_unhappy_call_whinge_claim_no_bettors_path() {
     // someone whinges about it. During the 7 day period that follows, NO-ONE
     // calls the contract (strangely enough). Let's test here what happens if
     // that's the case.
-    use lib9lives::storage_opt_infra_market::StorageOptimisticInfraMarket;
-    with_contract::<_, StorageOptimisticInfraMarket, _>(|c| {})
+    use lib9lives::storage_infra_market::StorageInfraMarket;
+    with_contract::<_, StorageInfraMarket, _>(|c| {})
 }
 
 proptest! {

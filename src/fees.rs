@@ -22,7 +22,8 @@ Base Amount:      100% (3 FUSDC)
     - Sweep:      50%  (0.3 FUSDC)
 */
 
-// Incentive amount to take from users who create markets. $10 FUSDC.
+// Incentive amount to take from users who create markets (for the infra
+// market). $3 fUSDC.
 pub const INCENTIVE_AMT_BASE: U256 = U256::from_limbs([3000000, 0, 0, 0]);
 
 // Share of the incentive amount that we take for Fluidity Labs

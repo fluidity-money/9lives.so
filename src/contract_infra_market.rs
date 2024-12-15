@@ -1,6 +1,7 @@
 use stylus_sdk::{alloy_primitives::*, contract, evm};
 
 use crate::{
+    erc20_call,
     error::*,
     events,
     fees::*,
@@ -10,7 +11,6 @@ use crate::{
     timing_infra_market::*,
     trading_call,
     utils::{block_timestamp, msg_sender},
-    erc20_call,
 };
 
 pub use crate::storage_infra_market::*;
@@ -100,7 +100,7 @@ impl StorageInfraMarket {
     // point, as they'd simply forfeit their bond for no reason (as everyone,
     // if the oracle functions correctly conceptually, could crush them).
     // The contract could revert to this state if the preferred outcome in the
-    // betting market is 0. It can be called if the winning outcome is 0, and
+    // betting market is 0. It can be called again if the winning outcome is 0, and
     // the deadline for the slashing period has passed.
     pub fn call(
         &mut self,
@@ -108,6 +108,10 @@ impl StorageInfraMarket {
         winner: FixedBytes<8>,
         incentive_recipient: Address,
     ) -> R<()> {
+        assert_or!(
+            self.campaign_call_begins.get(trading_addr) < U64::from(block_timestamp()),
+            Error::NotInsideCallingPeriod
+        );
         assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
@@ -147,10 +151,6 @@ impl StorageInfraMarket {
                 epochs.setter(cur_epoch)
             }
         };
-        assert_or!(
-            self.campaign_call_begins.get(trading_addr) < U64::from(block_timestamp()),
-            Error::NotInsideCallingPeriod
-        );
         assert_or!(
             e.campaign_who_called.get().is_zero(),
             Error::CampaignAlreadyCalled
@@ -363,9 +363,6 @@ impl StorageInfraMarket {
         assert_or!(bal > U256::ZERO, Error::ZeroBal);
         // Overflows aren't likely, since we're taking ARB as the token.
         let global_vested_arb = e.global_vested_arb.get();
-        e.global_vested_arb
-            .set(global_vested_arb + bal);
-            let global_vested_arb = e.global_vested_arb.get();
         e.global_vested_arb.set(global_vested_arb + bal);
         let outcome_vested_arb = e.outcome_vested_arb.get(outcome);
         e.outcome_vested_arb
@@ -472,13 +469,7 @@ impl StorageInfraMarket {
                 }
                 // We need to check if the arb staked is 0, and if it is, then we need to reset
                 // to the beginning after the sweep period has passed.
-                if !voting_power_winner.is_zero() {
-                    // At this point we call the campaign that this is
-                    // connected to let them know that there was a winner. Hopefully
-                    // someone called shutdown on the contract in the past to prevent
-                    // users from calling Longtail constantly.
-                    trading_call::decide(trading_addr, voting_power_winner)?;
-                } else {
+                if voting_power_winner.is_zero() {
                     // Since the outcome is in an indeterminate state, we need to give up the
                     // notion that someone set the who called argument. We need to activate
                     // the next epoch, so that that we must begin the next calling period
@@ -486,6 +477,12 @@ impl StorageInfraMarket {
                     // check that that's needing to be the case by checking if the set winner is
                     // 0.
                     e.campaign_who_called.set(Address::ZERO);
+                } else {
+                    // At this point we call the campaign that this is
+                    // connected to let them know that there was a winner. Hopefully
+                    // someone called shutdown on the contract in the past to prevent
+                    // users from calling Longtail constantly.
+                    trading_call::decide(trading_addr, voting_power_winner)?;
                 }
             }
         }
@@ -512,57 +509,42 @@ impl StorageInfraMarket {
         // We check the victim's vested arb in the lockup contract, and
         // if it's not greater than or equal to what was tracked at the
         // time of minting, then we don't drain down their funds, we return!
-        // The setting of their Staked ARB to 0 should hopefully be enough to prevent
-        // double claiming later.
-        let victim_vested_arb_amt = e.user_vested_arb.get(victim_addr);
-        let victim_staked_arb_amt =
-            lockup_call::staked_arb_bal(self.lockup_addr.get(), victim_addr)?;
-        if victim_vested_arb_amt > victim_staked_arb_amt {
+        // The setting of their Staked ARB to 0 should hopefully be enough to
+        // prevent double claiming later.
+        if e.user_vested_arb.get(victim_addr)
+            > lockup_call::staked_arb_bal(self.lockup_addr.get(), victim_addr)?
+        {
             return Ok((caller_yield_taken, on_behalf_of_yield_taken));
         }
         // We need to now take the amount that the victim bet in the
         // incorrect outcome, and we need to dilute their arb down by
         // the amount of the global arb relative to the winning arb.
-        // So if 51% of the arb invested was in the correct outcome,
-        // then we need to take 49% arb away from the victim, then do
-        // our comparison to see if it's valid for the claimer to take
-        // money from the victim.
-        //campaign vested arb / global vested arb
-        let pct_of_global_arb_is_winner = e
-            .outcome_vested_arb
-            .get(campaign_winner)
-            .checked_mul(SCALING_FACTOR)
-            .ok_or(Error::CheckedMulOverflow)?
-            .checked_div(e.global_vested_arb.get())
-            .ok_or(Error::CheckedDivOverflow)?;
-        //victim arb * (1 - global arb percent)
-        let diluted_victim_arb = e
-            .user_vested_arb
-            .get(victim_addr)
-            .checked_mul(SCALING_FACTOR)
-            .ok_or(Error::CheckedMulOverflow)?
-            .checked_mul(SCALING_FACTOR - pct_of_global_arb_is_winner)
-            .ok_or(Error::CheckedDivOverflow)?
-            .checked_div(SCALING_FACTOR)
-            .ok_or(Error::CheckedDivOverflow)?;
-        // Now that we know the amounts allocated, let's test if the
-        // recipient can claim this amount by looking at their arb.
-        let caller_winning_arb = e.user_vested_arb.get(on_behalf_of_addr);
-        // If the amount of time that's exceeded is 5 days, then we're
-        // inside a "ANYTHING GOES" period where someone could claim the
-        // victim's entire position without beating them on the
-        // percentage of the share that's held.
+        // The winner gets the losing outcome on a pro-rata basis, and
+        // we dilute down their share of the winning.
+        // If Alex has 30% of the winning ARB invested...
+        let pct_of_winning_amt_caller =
+            (e.user_vested_arb.get(caller) * SCALING_FACTOR) / e.outcome_vested_arb(winner_outcome);
+        // If Erik has 20% of the winning ARB invested...
+        let pct_of_losing_amt_victim = (e.user_vested_arb.get(caller) * SCALING_FACTOR)
+            / (e.global_vested_arb.get() - e.outcome_vested_arb(winner_outcome));
+        // If we're inside a "ANYTHING GOES" period where someone could claim the
+        // victim's entire position without beating them on the percentage of the share
+        // that's held.
         let are_we_anything_goes_period =
             are_we_in_anything_goes_period(e.campaign_when_whinged.get(), block_timestamp())?;
         let can_winner_claim_victim =
-            are_we_anything_goes_period || caller_winning_arb > diluted_victim_arb;
+            are_we_anything_goes_period || pct_of_winning_amt_caller >= pct_of_losing_amt_victim;
+        let remaining_winner_pct = pct_of_winning_amt_caller - pct_of_losing_amt_victim;
         assert_or!(can_winner_claim_victim, Error::VictimCannotClaim);
         // Prevent the victim from being drained again, and dilute the caller's voting
         // arb down in line with the amount the victim had.
         e.user_vested_arb.setter(victim_addr).set(U256::ZERO);
-        e.user_vested_arb
-            .setter(on_behalf_of_addr)
-            .set(caller_winning_arb - diluted_victim_arb);
+        if pct_of_winning_amt_caller >= pct_of_losing_amt_victim {
+            e.user_vested_arb.setter(on_behalf_of_addr).set(
+                caller_winning_arb
+                    .checked_sub((caller_winning_arb * remaining_winner_pct) / SCALING_FACTOR),
+            );
+        }
         // Transfer the victim's entire staked ARB position to the
         // caller. Make sure noone can drain from this user in this
         // contract again! We shouldn't need to worry about overflow here due
