@@ -382,51 +382,6 @@ impl StorageInfraMarket {
         Ok(())
     }
 
-    /// Checks if the time is over the time for this infra campaign to expire
-    /// (the claiming stage). If so, then we tally up the amounts invested,
-    /// and we determine who the winner was, if we haven't already. We either
-    /// return or slash the bond of the user who called the call function. We
-    /// check a flag to know if this already took place. Following that, we
-    /// target a specific user that we want to collect funds from. The caller
-    /// of this function, if they're the first user to call this, receives a
-    /// small amount allocated by the creator of the prediction campaign. The
-    /// caller to sweep provides the outcome identifiers, which are used to
-    /// reconstruct the amounts that were invested in each outcome. If the
-    /// user passes these incorrectly, this code reverts. If they don't pass
-    /// an address of a victim to take funds from, this code assumes they're
-    /// not scalping funds from users, and just sends them the incentive money
-    /// that the creator supplied. There are three stages to this interaction:
-    /// the first stage where the campaign has expired (after 3 days), and
-    /// normal sweeping behaviour is possible. During this stage, it's
-    /// possible to claim funds from the bad bettors in this campaign if your
-    /// share of the winning outcome is greater than their share diluted down
-    /// by the outcome amounts. After 5 days, the "anything goes" period begins, where it's
-    /// possible for anyone to claim the entire amounts that a bad bettor made
-    /// regardless if you beat them on the share held by them relative to
-    /// yours, provided that you participated in this campaign. There is a check
-    /// inside this code that prevents a user's position from being taken from
-    /// them if their recorded share in this pool is either 0, or that their
-    /// recorded ARB allocated to this outcome is more than their reported
-    /// current amount of ARB in the rest of the lockup contract. Once they
-    /// take the amount from a victim, their global voting power is reduced by
-    /// the amount that the victim had. This way, they can continue to slash
-    /// users, and presumably, the recipient was identified as having correctly
-    /// bet already, so it's safe for the check that their position bet on the
-    /// correct outcome to start to become odd. This way, the system should be
-    /// tolerable of bad behaviour and unusal interaction, say, if a user gets
-    /// slashed across multiple pools at once. A bad edge case scenario in
-    /// this slashing situation is funds are stuck in the other contract, as a
-    /// victim's tracked vested ARB is less than what's locked in the pool.
-    /// That situation is tolerable, as that amount would go to governance
-    /// potentially, after being taken by another user. Since it's a good idea
-    /// for users to call this on behalf of other users based on their financial
-    /// position, then we reward msg_sender with a small fee of what the
-    /// fee recipient would receive in the form of a fee. There's a unusual
-    /// situation where, during the predicting period after a whinge where
-    /// the preferred outcome is bytes8(0). If that's the case, then we need
-    /// to reset the contract to the waiting stage by resetting some variables.
-    /// Returns the caller's yield taken (for acting as an agent for another user,
-    /// and for calling sweep), and the amount the fee recipient would get.
     pub fn sweep(
         &mut self,
         trading_addr: Address,
