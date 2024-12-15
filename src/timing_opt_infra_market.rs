@@ -3,14 +3,14 @@ use stylus_sdk::alloy_primitives::U64;
 use crate::error::Error;
 
 /*
-+--------------+--------------+--------------+---------------+----------------+------------------+
-| Calling      | Whinging     | Predicting   | Sweeping      | Anything       | Claiming         |
-| Period (2d)  | Period (2d)  | Period (2d)  | Period (4d)   | Goes (2d) +    | Ends             |
-|              |              |              |               | Sweeping       |                  |
-|              |              |              |               | Period         |                  |
-+--------------+--------------+--------------+---------------+----------------+------------------+
-Day 1-2        Day 3-4        Day 5-6        Day 7-11        Day 9-10         Day 11             |
-+--------------+--------------+--------------+---------------+----------------+------------------+
++--------------+--------------+---------------+----------------+------------------+
+| Whinging     | Predicting   | Sweeping      | Anything       | Claiming         |
+| Period (2d)  | Period (2d)  | Period (4d)   | Goes (2d) +    | Ends             |
+|              |              |               | Sweeping       |                  |
+|              |              |               | Period         |                  |
++--------------+--------------+---------------+----------------+------------------+
+| Day 1-2      | Day 3-4      | Day 5-6     ␣ | Day 7-11       | Day 9-10         |
++--------------+--------------+---------------+----------------+------------------+
 */
 
 macro_rules! define_period_checker {
@@ -29,13 +29,6 @@ macro_rules! define_period_checker {
 // A week, the time that we should freeze funds for in the lockup functionality.
 pub const A_WEEK_SECS: u64 = 7 * 24 * 60 * 60;
 
-define_period_checker!(
-    are_we_in_calling_period,
-    calling_period_start,
-    0,
-    CalledTimeUnset,
-    2
-);
 define_period_checker!(
     are_we_in_whinging_period,
     when_called,
@@ -67,10 +60,19 @@ define_period_checker!(
     2
 );
 
+pub const SIX_DAYS: u64 = 518400;
+
+pub fn are_we_after_anything_goes(whinged_ts: U64, ts: u64) -> Result<bool, Error> {
+    if whinged_ts.is_zero() {
+        return Err(Error::WhingedTimeUnset);
+    }
+    Ok(ts > u64::from_be_bytes(whinged_ts.to_be_bytes()) + SIX_DAYS)
+}
+
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod test {
-    use proptest::prelude::*;
     use super::*;
+    use proptest::prelude::*;
 
     proptest! {
         #[test]
@@ -79,7 +81,7 @@ mod test {
             let two_weeks = U64::from(1209600);
             let secs_ = U64::from(secs);
             let should_pass = secs_ > start && two_weeks > secs_ - start;
-            let calling_period = are_we_in_calling_period(start, secs).unwrap();
+            let calling_period = are_we_in_whinging_period(start, secs).unwrap();
             assert!(
                 if should_pass { calling_period } else { !calling_period },
                 "start: {start}, secs: {secs_}, err: {calling_period:?}"

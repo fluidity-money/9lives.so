@@ -91,6 +91,10 @@ impl StorageTrading {
             identifier: outcome,
             oracle: oracle_addr,
         });
+        // We call shutdown in the event this wasn't called in the past.
+        if !self.is_shutdown.get() {
+            self.is_shutdown.set(true);
+        }
         Ok(U256::ZERO)
     }
 

@@ -18,32 +18,28 @@ impl StorageOptimisticInfraMarket {
     /// in a list of people who've chosen to participate in the vested
     /// amount. We decay the amount that we add for the user based on
     /// the amount of seconds that have gone by so far until the end.
+    /// It's possible to vote for the zero outcome, which is considered
+    /// a statement that an outcome is inconclusive. If later, the contract resolves
+    /// this way, then the prediction market will revert to its waiting to be called state.
     pub fn predict(&mut self, trading_addr: Address, winner: FixedBytes<8>, amt: U256) -> R<()> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
-            !self.campaign_call_begins.get(trading_addr).is_zero(),
+            !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
         );
-        assert_or!(!winner.is_zero(), Error::MustContainOutcomes);
+        let mut epochs = self.epochs.setter(trading_addr);
+        let mut e = epochs.setter(self.cur_epochs.get(trading_addr));
         // We need the seconds since the whinge was recorded so we can
         // determine voting power.
         let secs_since_whinge = block_timestamp()
-            .checked_sub(u64::from_be_bytes(
-                self.campaign_when_whinged
-                    .getter(trading_addr)
-                    .to_be_bytes(),
-            ))
+            .checked_sub(u64::from_be_bytes(e.campaign_when_whinged.to_be_bytes()))
             .ok_or(Error::CheckedSubOverflow)?;
         assert_or!(
-            are_we_in_predicting_period(
-                self.campaign_when_whinged.get(trading_addr),
-                block_timestamp()
-            )?,
+            are_we_in_predicting_period(e.campaign_when_whinged.get(), block_timestamp())?,
             Error::PredictingNotStarted
         );
         let cur_user_arb_amt = lockup_call::staked_arb_bal(self.lockup_addr.get(), msg_sender())?;
-        self.user_global_vested_arb
-            .setter(trading_addr)
+        e.user_global_vested_arb
             .setter(msg_sender())
             .set(cur_user_arb_amt);
         let caller_past_votes = nineliveslockedarb_call::get_past_votes(
@@ -55,10 +51,7 @@ impl StorageOptimisticInfraMarket {
         // We need to check if the user's vested voting power in campaign
         // + the amount that they want to allocate does not exceed the
         // amount that they have available to them.
-        let user_vested_power = self
-            .user_global_vested_power
-            .getter(trading_addr)
-            .get(msg_sender());
+        let user_vested_power = e.user_global_vested_power.get(msg_sender());
         let extra_user_vested_power = user_vested_power
             .checked_add(voting_power)
             .ok_or(Error::CheckedAddOverflow)?;
@@ -67,39 +60,30 @@ impl StorageOptimisticInfraMarket {
                 < maths::infra_voting_power(caller_past_votes, secs_since_whinge)?,
             Error::NoVestedPower
         );
-        self.user_global_vested_power
-            .setter(trading_addr)
+        e.user_global_vested_power
             .setter(msg_sender())
             .set(extra_user_vested_power);
         // Update the campaign's vested power to include the amount the
         // user just vested + what's there already.
-        let new_campaign_vested_power = self
-            .campaign_vested_power
-            .getter(trading_addr)
+        let new_outcome_vested_power = e
+            .outcome_vested_power
             .get(winner)
             .checked_add(voting_power)
             .ok_or(Error::CheckedAddOverflow)?;
-        self.campaign_vested_power
-            .setter(trading_addr)
+        e.outcome_vested_power
             .setter(winner)
-            .set(new_campaign_vested_power);
-        let user_campaign_vested_power = self
-            .user_campaign_vested_power
-            .getter(trading_addr)
-            .getter(winner)
-            .get(msg_sender());
-        self.user_campaign_vested_power
-            .setter(trading_addr)
+            .set(new_outcome_vested_power);
+        let user_outcome_vested_power =
+            e.user_outcome_vested_power.getter(winner).get(msg_sender());
+        e.user_outcome_vested_power
             .setter(winner)
             .setter(msg_sender())
-            .set(user_campaign_vested_power + voting_power);
-        let existing_global_power_vested = self
+            .set(user_outcome_vested_power + voting_power);
+        let existing_global_power_vested = e
             .campaign_global_power_vested
-            .getter(trading_addr)
             .checked_add(voting_power)
             .ok_or(Error::CheckedAddOverflow)?;
-        self.campaign_global_power_vested
-            .setter(trading_addr)
+        e.campaign_global_power_vested
             .set(existing_global_power_vested);
         // Indicate to the Lockup contract that the user is unable to withdraw their funds
         // for the time of this interaction + a week.

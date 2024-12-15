@@ -57,6 +57,12 @@ interface IEvents {
         bytes8 indexed defaultWinner
     );
 
+    event CallMade(
+        address indexed tradingAddr,
+        bytes8 indexed winner,
+        address indexed incentiveRecipient
+    );
+
     event UserPredicted(
         address indexed trading,
         address indexed predictor,
@@ -69,5 +75,18 @@ interface IEvents {
         address indexed incentiveRecipient,
         address indexed tradingAddr,
         bytes8 indexed winner
+    );
+
+    event DAOMoneyDistributed(
+        uint256 indexed amount,
+        address indexed recipient
+    );
+
+    /// @notice PredictingInIndeterminateState should set off alarm
+    /// bells if this is picked up. Perhaps it's better to use the AMM
+    /// if the prediction could end up in a circumstance where the
+    /// outcome is indeterminate (so there can be a third option).
+    event PredictingInIndeterminateState(
+        address indexed tradingAddr
     );
 }

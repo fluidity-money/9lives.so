@@ -24,8 +24,9 @@ type whinger = string
 type s_o_waiting
 
 (**
- *  The Oracle is in a state of someone needing to declare * that the
- *  outcome has taken place.
+ *  The Oracle is in a state of someone needing to declare that the
+ *  outcome has taken place. This could be re-entered if someone
+ * were to supply the zero bytes8 as the winner.
  *)
 type s_o_calling
 
@@ -62,9 +63,21 @@ type s_o_slashing
 type s_o_anything_goes
 
 (**
- * The Oracle has completed the Anything Goes period.
+ * The Oracle has completed the Anything Goes period. This state could be used
+ * to re-enter the calling period if the winning outcome is 0.
  *)
 type s_o_done_anything_goes
+
+(*
+ * This is a very bad situation. The Escape Hatch functionality is
+ * needed, as the contract has been in a waiting stage past the deadline.
+ * In this circumstance, the infra market must notify Trading that the
+ * situation is unusual, and that DAO intervention is potentially needed.
+ * Really, this outcome is only needed in the DPM, as the AMM should
+ * include a indeterminate state to skip this behaviour, and to track correct
+ * betting (since the current iteration of the DPM is only two outcomes).
+ *)
+type s_o_escape_hatch
 
 type 's o =
   | Waiting : s_o_waiting o
@@ -78,6 +91,8 @@ type 's o =
   | Slashing_two_days_over : s_o_slashing o -> s_o_anything_goes o
   | Anything_goes_slash : whinger * s_o_anything_goes o -> s_o_anything_goes o
   | Anything_goes_slashing_over : s_o_anything_goes o -> s_o_done_anything_goes o
+  | Reset_winner_is_zero : s_o_done_anything_goes o -> s_o_waiting o
+  | Escape_hatch_is_needed: s_o_waiting o -> s_o_escape_hatch o
 
 (**
  * The Trading market is trading, and people are predicting outcomes.

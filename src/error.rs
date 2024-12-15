@@ -413,6 +413,22 @@ pub enum Error {
     // 0x52
     /// We're below the three hour buyin for someone to enter the Trading contract!
     BelowThreeHourBuyin,
+
+    // 0x53
+    /// There is no DAO money to distribute! Perhaps, this was called in error.
+    NoDAOMoney,
+
+    // 0x54
+    /// The call deadline was unset.
+    ZeroCallDeadline,
+
+    // 0x55
+    /// The zero outcome was set, and we can't have that during the call stage.
+    InconclusiveAnswerToCall,
+
+    // 0x56
+    /// We're past the calling period. The escape hatch should be used soon.
+    PastCallingDeadline,
 }
 
 pub type R<T> = Result<T, Error>;
