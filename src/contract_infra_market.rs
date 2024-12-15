@@ -15,6 +15,9 @@ use crate::{
 
 pub use crate::storage_infra_market::*;
 
+#[cfg(target_arch = "wasm32")]
+use alloc::vec::Vec;
+
 #[cfg_attr(feature = "contract-infra-market", stylus_sdk::prelude::public)]
 impl StorageInfraMarket {
     pub fn ctor(
@@ -522,11 +525,11 @@ impl StorageInfraMarket {
         // The winner gets the losing outcome on a pro-rata basis, and
         // we dilute down their share of the winning.
         // If Alex has 30% of the winning ARB invested...
-        let pct_of_winning_amt_caller =
-            (e.user_vested_arb.get(caller) * SCALING_FACTOR) / e.outcome_vested_arb(winner_outcome);
+        let pct_of_winning_amt_caller = (e.user_vested_arb.get(on_behalf_of_addr) * SCALING_FACTOR)
+            / e.outcome_vested_arb.get(campaign_winner);
         // If Erik has 20% of the winning ARB invested...
-        let pct_of_losing_amt_victim = (e.user_vested_arb.get(caller) * SCALING_FACTOR)
-            / (e.global_vested_arb.get() - e.outcome_vested_arb(winner_outcome));
+        let pct_of_losing_amt_victim = (e.user_vested_arb.get(victim_addr) * SCALING_FACTOR)
+            / (e.global_vested_arb.get() - e.outcome_vested_arb.get(campaign_winner));
         // If we're inside a "ANYTHING GOES" period where someone could claim the
         // victim's entire position without beating them on the percentage of the share
         // that's held.
@@ -540,9 +543,11 @@ impl StorageInfraMarket {
         // arb down in line with the amount the victim had.
         e.user_vested_arb.setter(victim_addr).set(U256::ZERO);
         if pct_of_winning_amt_caller >= pct_of_losing_amt_victim {
+            let winner_arb = e.user_vested_arb.get(on_behalf_of_addr);
             e.user_vested_arb.setter(on_behalf_of_addr).set(
-                caller_winning_arb
-                    .checked_sub((caller_winning_arb * remaining_winner_pct) / SCALING_FACTOR),
+                winner_arb
+                    .checked_sub((winner_arb * remaining_winner_pct) / SCALING_FACTOR)
+                    .ok_or(Error::CheckedSubOverflow)?,
             );
         }
         // Transfer the victim's entire staked ARB position to the

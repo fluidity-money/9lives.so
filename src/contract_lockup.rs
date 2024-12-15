@@ -34,7 +34,7 @@ impl StorageLockup {
     }
 
     pub fn staked_arb_bal(&self, addr: Address) -> Result<U256, Error> {
-        nineliveslockedarb_call::balance_of(self.token_addr.get(), addr)
+        erc20_call::balance_of(self.token_addr.get(), addr)
     }
 
     pub fn slash(&mut self, addr: Address) -> Result<(), Error> {
@@ -42,6 +42,9 @@ impl StorageLockup {
             msg_sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
+        self.slashed_amt
+            .setter(addr)
+            .set(erc20_call::balance_of(self.token_addr.get(), addr)?);
         Ok(())
     }
 
@@ -50,7 +53,10 @@ impl StorageLockup {
             msg_sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
-        erc20_call::transfer(STAKED_ARB_ADDR, recipient, erc20_call::balance_of(victim)?)?;
+        let amt = erc20_call::balance_of(self.token_addr.get(), victim)?;
+        erc20_call::transfer(STAKED_ARB_ADDR, recipient, amt)?;
+        // Reset their amount since they had their funds confiscated.
+        self.slashed_amt.setter(victim).set(U256::ZERO);
         Ok(amt)
     }
 

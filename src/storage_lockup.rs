@@ -4,18 +4,21 @@ use stylus_sdk::{alloy_primitives::*, storage::*, prelude::*};
 #[cfg_attr(feature = "contract-lockup", entrypoint)]
 pub struct StorageLockup {
     /// Was this contract created successfully?
-    pub(crate) created: StorageBool,
+    pub created: StorageBool,
 
     /// Is the contract enabled? Did an emergency take place?
-    pub(crate) enabled: StorageBool,
+    pub enabled: StorageBool,
 
     /// Deployed infrastructure market address.
-    pub(crate) infra_market_addr: StorageAddress,
+    pub infra_market_addr: StorageAddress,
 
     /// 9lives Locked ARB token that we're controlling.
-    pub(crate) token_addr: StorageAddress,
+    pub token_addr: StorageAddress,
+
+    /// A user's slashed debt. Should be set to 0 on confiscate.
+    pub slashed_amt: StorageMap<Address, StorageU256>,
 
     /// The timestamp that the block timestamp must pass for a locker to withdraw
     /// their funds.
-    pub(crate) deadlines: StorageMap<Address, StorageU64>
+    pub deadlines: StorageMap<Address, StorageU64>
 }
