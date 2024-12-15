@@ -429,6 +429,14 @@ pub enum Error {
     // 0x56
     /// We're past the calling period. The escape hatch should be used soon.
     PastCallingDeadline,
+
+    // 0x57
+    /// We cannot use the escape functionality!
+    CannotEscape,
+
+    // 0x58
+    /// We're not after the whinging period!
+    NotAfterWhinging,
 }
 
 pub type R<T> = Result<T, Error>;

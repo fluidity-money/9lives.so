@@ -53,8 +53,7 @@ interface IEvents {
 
     event MarketCreated2(
         address indexed incentiveSender,
-        address indexed tradingAddr,
-        bytes8 indexed defaultWinner
+        address indexed tradingAddr
     );
 
     event CallMade(
@@ -82,11 +81,7 @@ interface IEvents {
         address indexed recipient
     );
 
-    /// @notice PredictingInIndeterminateState should set off alarm
-    /// bells if this is picked up. Perhaps it's better to use the AMM
-    /// if the prediction could end up in a circumstance where the
-    /// outcome is indeterminate (so there can be a third option).
-    event PredictingInIndeterminateState(
-        address indexed tradingAddr
-    );
+     /// @notice CampaignEscaped, because a campaign is in an
+     /// indeterminate state! The DAO may be needed to step in.
+    event CampaignEscaped(address indexed tradingAddr);
 }

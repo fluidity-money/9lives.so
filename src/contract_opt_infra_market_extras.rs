@@ -44,7 +44,6 @@ impl StorageOptimisticInfraMarket {
         incentive_sender: Address,
         desc: FixedBytes<32>,
         launch_ts: u64,
-        default_winner: FixedBytes<8>,
         call_deadline_ts: u64,
     ) -> R<U256> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
@@ -67,9 +66,6 @@ impl StorageOptimisticInfraMarket {
             .setter(trading_addr)
             .set(U64::from(launch_ts));
         self.campaign_desc.setter(trading_addr).set(desc);
-        self.campaign_default_winner
-            .setter(trading_addr)
-            .set(default_winner);
         // We set this call deadline so that the escape hatch functionality is
         // possible to be used.
         self.campaign_call_deadline
@@ -85,7 +81,6 @@ impl StorageOptimisticInfraMarket {
         evm::log(events::MarketCreated2 {
             incentiveSender: incentive_sender,
             tradingAddr: trading_addr,
-            defaultWinner: default_winner,
         });
         Ok(INCENTIVE_AMT_BASE)
     }
@@ -217,20 +212,20 @@ impl StorageOptimisticInfraMarket {
             Error::NotRegistered
         );
         assert_or!(
-            e.campaign_when_whinged.get().is_zero(),
+            e.campaign_who_whinged.get().is_zero(),
             Error::SomeoneWhinged
         );
-        // This should be enough to see if someone already used this.
         assert_or!(
-            e.campaign_winner.get().is_zero(),
-            Error::WinnerAlreadyDeclared
+            are_we_after_whinging_period(e.campaign_when_whinged.get(), block_timestamp())?,
+            Error::NotAfterWhinging
         );
+        assert_or!(!e.campaign_winner_set.get(), Error::WinnerAlreadyDeclared);
         let fee_recipient = if fee_recipient.is_zero() {
             msg_sender()
         } else {
             fee_recipient
         };
-        // Send the caller of this function their incentive for doing so.
+        // Send the caller of this function their incentive.
         // We need to prevent people from calling this unless they're at epoch
         // 0 so we don't see abuse somehow.
         if self.dao_money.get() >= INCENTIVE_AMT_CLOSE
@@ -268,28 +263,16 @@ impl StorageOptimisticInfraMarket {
                 INCENTIVE_AMT_CALL,
             )?;
         }
-        // There may be an extreme situation where no-one declares the
-        // winner. If that's the case, then we fall back on the "default"
-        // outcome.
         let campaign_what_called = e.campaign_what_called.get();
-        // We set the winner, and if for some reason, the winner wasn't
-        // set by anyone during the call stage, then we set it to the
-        // default winner that was provided by the user who did the
-        // setup.
-        let campaign_winner = if campaign_what_called.is_zero() {
-            self.campaign_default_winner.get(trading_addr)
-        } else {
-            campaign_what_called
-        };
-        e.campaign_winner.set(campaign_winner);
+        e.campaign_winner.set(campaign_what_called);
         evm::log(events::InfraMarketClosed {
             incentiveRecipient: fee_recipient,
             tradingAddr: trading_addr,
-            winner: campaign_winner,
+            winner: campaign_what_called,
         });
         // It should be okay to just call this contract since the factory
         // will guarantee that there's an associated contract here.
-        trading_call::decide(trading_addr, campaign_winner)?;
+        trading_call::decide(trading_addr, campaign_what_called)?;
         Ok(fees_earned)
     }
 
@@ -322,6 +305,40 @@ impl StorageOptimisticInfraMarket {
         fusdc_call::take_from_sender(BOND_FOR_WHINGE)?;
         e.campaign_who_whinged.set(bond_recipient);
         e.campaign_whinger_preferred_winner.set(preferred_outcome);
+        Ok(())
+    }
+
+    /// If this is being called, we're in a really bad situation where the
+    /// calling deadline has been passed, and no-one has called the function.
+    /// In this possibility, it's time to indicate to the Trading contract
+    /// that we're in this indeterminate position, which should defer to the
+    /// DAO that this is the case.
+    pub fn escape(&mut self, trading_addr: Address) -> R<()> {
+        // This is only possible to be used if we're in the calling stage (either
+        // the winner hasn't been set, or the winner has been set and it's 0, and
+        // the calling deadline has passed). We don't reward people for calling
+        // this, as the funds associated with the interaction with this market
+        // are presumably spendable, and the amounts are liquid that were
+        // invested through the Lockup contract. This would only benefit anyone
+        // that these funds are associated with, or operational costs. Funds for
+        // this should be set aside in this situation by the beneficiary of this
+        // contract, but since the cost of calling is likely quite slim, it's
+        // low.
+        let epochs = self.epochs.getter(trading_addr);
+        let e = epochs.getter(self.cur_epochs.get(trading_addr));
+        let indeterminate_winner = e.campaign_winner_set.get() && e.campaign_winner.get().is_zero();
+        let is_calling_period = e.campaign_what_called.get().is_zero();
+        assert_or!(
+            self.campaign_call_deadline.get(trading_addr) > U64::from(block_timestamp())
+                && !self.campaign_has_escaped.get(trading_addr)
+                && (indeterminate_winner || is_calling_period),
+            Error::CannotEscape
+        );
+        trading_call::escape(trading_addr)?;
+        self.campaign_has_escaped.setter(trading_addr).set(true);
+        evm::log(events::CampaignEscaped {
+            tradingAddr: trading_addr,
+        });
         Ok(())
     }
 }

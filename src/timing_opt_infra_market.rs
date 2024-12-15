@@ -60,7 +60,15 @@ define_period_checker!(
     2
 );
 
+pub const TWO_DAYS: u64 = 172800;
 pub const SIX_DAYS: u64 = 518400;
+
+pub fn are_we_after_whinging_period(whinged_ts: U64, ts: u64) -> Result<bool, Error> {
+    if whinged_ts.is_zero() {
+        return Err(Error::WhingedTimeUnset);
+    }
+    Ok(ts > u64::from_be_bytes(whinged_ts.to_be_bytes()) + TWO_DAYS)
+}
 
 pub fn are_we_after_anything_goes(whinged_ts: U64, ts: u64) -> Result<bool, Error> {
     if whinged_ts.is_zero() {

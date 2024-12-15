@@ -23,14 +23,11 @@ sol! {
         address shareImpl,
         bool shouldBufferTime
     );
-
     function decide(bytes8 winner);
-
     function globalShares();
-
     function details(bytes8 outcome);
-
     function shutdown();
+    function escape();
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -42,7 +39,7 @@ pub fn ctor(
     time_ending: u64,
     fee_recipient: Address,
     share_impl: Address,
-    should_buffer_time: bool
+    should_buffer_time: bool,
 ) -> Result<(), Error> {
     let a = ctorCall {
         outcomes,
@@ -51,7 +48,7 @@ pub fn ctor(
         timeEnding: time_ending,
         feeRecipient: fee_recipient,
         shareImpl: share_impl,
-        shouldBufferTime: should_buffer_time
+        shouldBufferTime: should_buffer_time,
     }
     .abi_encode();
     RawCall::new().call(addr, &a).map_err(Error::TradingError)?;
@@ -94,8 +91,15 @@ pub fn details(
 pub fn shutdown(addr: Address) -> Result<U256, Error> {
     unpack_u256(
         &RawCall::new()
-            .call(addr, &[])
+            .call(addr, &shutdownCall {}.abi_encode())
             .map_err(Error::TradingError)?,
     )
     .ok_or(Error::TradingUnableToUnpack)
+}
+
+pub fn escape(addr: Address) -> Result<(), Error> {
+    RawCall::new()
+        .call(addr, &escapeCall{}.abi_encode())
+        .map_err(Error::TradingError)?;
+    Ok(())
 }

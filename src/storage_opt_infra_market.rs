@@ -141,9 +141,9 @@ pub struct StorageOptimisticInfraMarket {
     /// to resolve, and funds need to be rescued.
     pub campaign_call_deadline: StorageMap<Address, StorageU64>,
 
-    /// If we have a situation where there's no liquidity that declares a winner (or
-    /// it's the kind of contract where things can just expire), who do we pick?
-    pub campaign_default_winner: StorageMap<Address, StorageFixedBytes<8>>,
+    /// The campaign is in an indeterminate state, and the associated Trading contract
+    /// has been called.
+    pub campaign_has_escaped: StorageMap<Address, StorageBool>,
 
     /// The current nonce of this market. This is set to 0 at the beginning of the
     /// contract's life. This is used in the event that a reset has taken place with

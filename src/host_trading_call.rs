@@ -38,3 +38,7 @@ pub fn details(
 pub fn shutdown(_addr: Address) -> Result<U256, Error> {
     Ok(U256::ZERO)
 }
+
+pub fn escape(_addr: Address) -> Result<(), Error> {
+    Ok(())
+}

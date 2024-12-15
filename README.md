@@ -32,16 +32,19 @@ days, anyone can "whinge" about the outcome, supplying collateral that is slashe
 are incorrect. This begins a stage of betting on the outcome. A voting ERC20 from
 OpenZeppellin is used as the wrapped asset. Lockup does the conversion. The outcome voting
 power is a linear curve that decays until the end of the voting period. Optimistic Infra
-Markets in progress are markets that are created which resolve after a period of 3 days.
-These markets are designed to be risk free positions that infrastructure providers can
-take to "call" an outcome based on the results of a text field. These text fields can be
-empty or purely textual (as is the case with a string), or a description of a oracle's
-requirement for voting. Losers that bet incorrectly in the Optimistic Infra Market have
-their funds slashed. After 3 days, a 2 day period begins where correct bettors can slash
-loser Infra Market predictions and receive the funds themselves. After this 2 day window
-(5 days has elapsed in total), a "ANYTHING GOES" period begins, where users can slash any
-bad bettors prediction without regard for their token position (as long as they bet
-correctly).
+Markets in progress are markets that are created which resolve after a period of 3 days of
+calling. They can be called at any point after the calling deadline is set. They have
+support for an indeterminate state, which rolls the outcome back to the beginning. These
+markets are designed to be risk free positions that infrastructure providers can take to
+"call" an outcome based on the results of a text field. These text fields can be empty or
+purely textual (as is the case with a string), or a description of a oracle's requirement
+for voting. Losers that bet incorrectly in the Optimistic Infra Market have their funds
+slashed. After 3 days, a 2 day period begins where correct bettors can slash loser Infra
+Market predictions and receive the funds themselves. After this 2 day window (5 days has
+elapsed in total), a "ANYTHING GOES" period begins, where users can slash any bad bettors
+prediction without regard for their token position (as long as they bet correctly). If the
+contract passes a deadline that's set by the caller for calling, then emergency
+functionality must be called.
 
 ```mermaid
 stateDiagram

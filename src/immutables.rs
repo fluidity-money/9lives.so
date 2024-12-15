@@ -44,9 +44,6 @@ env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR");
 // Staked ARB address to use for taking amounts for Infrastructure Markets.
 env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR");
 
-// Three days in seconds, for the infra market. This is when the market expires.
-pub const THREE_DAYS_SECS: u64 = 259200;
-
 // Scaled amount to use for drawing down funds on request based on a
 // percentage.
 pub const SCALING_FACTOR: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
