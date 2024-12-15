@@ -2,7 +2,6 @@
 pragma solidity 0.8.20;
 
 import {UpgradeableTwoProxy} from "./UpgradeableTwoProxy.sol";
-import {UpgradeableInfraMarketProxy} from "./UpgradeableInfraMarketProxy.sol";
 
 import {
     TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
