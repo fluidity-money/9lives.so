@@ -6,21 +6,20 @@ package graph
 
 import (
 	"context"
-	"encoding/hex"
-	"net/url"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
-
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
 // Name is the resolver for the name field.
@@ -55,12 +54,20 @@ func (r *campaignResolver) Creator(ctx context.Context, obj *types.Campaign) (*t
 	return obj.Content.Creator, nil
 }
 
-// Oracle is the resolver for the oracle field.
-func (r *campaignResolver) Oracle(ctx context.Context, obj *types.Campaign) (string, error) {
+// Settlement is the resolver for the settlement field.
+func (r *campaignResolver) Settlement(ctx context.Context, obj *types.Campaign) (model.SettlementType, error) {
 	if obj == nil {
 		return "", fmt.Errorf("campaign is nil")
 	}
-	return obj.Content.Oracle, nil
+	return model.SettlementType(obj.Content.Settlement), nil
+}
+
+// OracleDescription is the resolver for the oracleDescription field.
+func (r *campaignResolver) OracleDescription(ctx context.Context, obj *types.Campaign) (*string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.OracleDescription, nil
 }
 
 // Identifier is the resolver for the identifier field.
@@ -152,7 +159,7 @@ func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) 
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, settlement model.SettlementType, oracleDescription *string, x *string, telegram *string, web *string) (*bool, error) {
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
 		return nil, fmt.Errorf("negative seed")
@@ -191,7 +198,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	creator = strings.ToLower(creator)
 	var (
 		tradingAddrStr = strings.ToLower(tradingAddr.Hex())
-		contractOwner = strings.ToLower(contractOwner_.Hex())
+		contractOwner  = strings.ToLower(contractOwner_.Hex())
 	)
 	// Quick check to see if the entry already exists in the database.
 	var campaignIdCount int64
@@ -315,14 +322,15 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			Creator: &types.Wallet{
 				Address: creator,
 			},
-			Oracle:      "n/a",
-			PoolAddress: tradingAddrStr,
-			Outcomes:    campaignOutcomes,
-			Ending:      ending,
-			Starting:    starting,
-			X:           x,
-			Telegram:    telegram,
-			Web:         web,
+			Settlement:        string(settlement),
+			OracleDescription: oracleDescription,
+			PoolAddress:       tradingAddrStr,
+			Outcomes:          campaignOutcomes,
+			Ending:            ending,
+			Starting:          starting,
+			X:                 x,
+			Telegram:          telegram,
+			Web:               web,
 		},
 	}
 	result := r.DB.Table("ninelives_campaigns_1").Create(&campaign)

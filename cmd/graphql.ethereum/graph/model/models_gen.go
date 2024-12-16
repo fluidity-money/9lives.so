@@ -70,3 +70,53 @@ func (e *Modification) UnmarshalGQL(v interface{}) error {
 func (e Modification) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
+
+// Defines the method used to determine the winner of a campaign.
+type SettlementType string
+
+const (
+	// Infrastructure market.
+	SettlementTypeOracle SettlementType = "ORACLE"
+	// Opinion Poll.
+	SettlementTypePoll SettlementType = "POLL"
+	// A.I Resolver.
+	SettlementTypeAi SettlementType = "AI"
+	// Contract State.
+	SettlementTypeContract SettlementType = "CONTRACT"
+)
+
+var AllSettlementType = []SettlementType{
+	SettlementTypeOracle,
+	SettlementTypePoll,
+	SettlementTypeAi,
+	SettlementTypeContract,
+}
+
+func (e SettlementType) IsValid() bool {
+	switch e {
+	case SettlementTypeOracle, SettlementTypePoll, SettlementTypeAi, SettlementTypeContract:
+		return true
+	}
+	return false
+}
+
+func (e SettlementType) String() string {
+	return string(e)
+}
+
+func (e *SettlementType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SettlementType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SettlementType", str)
+	}
+	return nil
+}
+
+func (e SettlementType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}

@@ -98,6 +98,16 @@ type Mutation {
     creator: String!
 
     """
+    Defines the method used to determine the winner of a campaign.
+    """
+    settlement: SettlementType!
+
+    """
+    Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
+    """
+    oracleDescription: String
+
+    """
     X/Twitter username
     """
     x: String
@@ -140,9 +150,14 @@ type Campaign {
   creator: Wallet!
 
   """
-  Oracle that can decide if a winner happened.
+  Defines the method used to determine the winner of a campaign.
   """
-  oracle: String!
+  settlement: SettlementType!
+
+  """
+  Oracle description defines under which conditions campaigns conclude
+  """
+  oracleDescription: String
 
   """
   Identifier that's used to do offline derivation of the campaign pool,
@@ -284,4 +299,29 @@ type Changelog {
     HTML rendered from the Markdown CHANGELOG.md file.
     """
     html: String!
+}
+
+"""
+Defines the method used to determine the winner of a campaign.
+"""
+enum SettlementType {
+  """
+  Infrastructure market.
+  """
+  ORACLE,
+
+  """
+  Opinion Poll.
+  """
+  POLL
+
+  """
+  A.I Resolver.
+  """
+  AI
+
+  """
+  Contract State.
+  """
+  CONTRACT
 }

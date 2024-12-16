@@ -19,7 +19,6 @@ The 2024 United States presidential election will be the 60th quadrennial presid
 				Address: "0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5",
 			},
 			Seed:        123,
-			Oracle:      "0x6221a9c005f6e47eb398fd867784cacfdcfff4e7",
 			PoolAddress: "0x0000000000000000000000000000000000000000",
 			Outcomes: []types.Outcome{
 				{Name: "Kamala Harris", Description: "s", Seed: 12, Identifier: "0x59303e9e", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},

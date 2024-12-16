@@ -54,8 +54,11 @@ type (
 		// Creator of the campaign.
 		Creator *Wallet `json:"creator"`
 
-		// Oracle that can decide if a winner happened.
-		Oracle string `json:"oracle"`
+		// Defines the method used to determine the winner of a campaign.
+		Settlement string `json:"settlement"`
+
+		// Oracle description defines under which conditions campaigns conclude
+		OracleDescription *string `json:"oracleDescription"`
 
 		// Pool address to purchase shares, and to receive the cost function.
 		PoolAddress string `json:"poolAddress"`

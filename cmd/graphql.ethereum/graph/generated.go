@@ -52,19 +52,20 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Campaign struct {
-		Creator     func(childComplexity int) int
-		Description func(childComplexity int) int
-		Ending      func(childComplexity int) int
-		Identifier  func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Oracle      func(childComplexity int) int
-		Outcomes    func(childComplexity int) int
-		Picture     func(childComplexity int) int
-		PoolAddress func(childComplexity int) int
-		Starting    func(childComplexity int) int
-		Telegram    func(childComplexity int) int
-		Web         func(childComplexity int) int
-		X           func(childComplexity int) int
+		Creator           func(childComplexity int) int
+		Description       func(childComplexity int) int
+		Ending            func(childComplexity int) int
+		Identifier        func(childComplexity int) int
+		Name              func(childComplexity int) int
+		OracleDescription func(childComplexity int) int
+		Outcomes          func(childComplexity int) int
+		Picture           func(childComplexity int) int
+		PoolAddress       func(childComplexity int) int
+		Settlement        func(childComplexity int) int
+		Starting          func(childComplexity int) int
+		Telegram          func(childComplexity int) int
+		Web               func(childComplexity int) int
+		X                 func(childComplexity int) int
 	}
 
 	Changelog struct {
@@ -75,7 +76,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) int
+		ExplainCampaign func(childComplexity int, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, settlement model.SettlementType, oracleDescription *string, x *string, telegram *string, web *string) int
 	}
 
 	Outcome struct {
@@ -107,7 +108,8 @@ type CampaignResolver interface {
 	Description(ctx context.Context, obj *types.Campaign) (string, error)
 	Picture(ctx context.Context, obj *types.Campaign) (string, error)
 	Creator(ctx context.Context, obj *types.Campaign) (*types.Wallet, error)
-	Oracle(ctx context.Context, obj *types.Campaign) (string, error)
+	Settlement(ctx context.Context, obj *types.Campaign) (model.SettlementType, error)
+	OracleDescription(ctx context.Context, obj *types.Campaign) (*string, error)
 	Identifier(ctx context.Context, obj *types.Campaign) (string, error)
 	PoolAddress(ctx context.Context, obj *types.Campaign) (string, error)
 	Outcomes(ctx context.Context, obj *types.Campaign) ([]types.Outcome, error)
@@ -124,7 +126,7 @@ type ChangelogResolver interface {
 	HTML(ctx context.Context, obj *changelog.Changelog) (string, error)
 }
 type MutationResolver interface {
-	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, x *string, telegram *string, web *string) (*bool, error)
+	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, settlement model.SettlementType, oracleDescription *string, x *string, telegram *string, web *string) (*bool, error)
 }
 type QueryResolver interface {
 	Campaigns(ctx context.Context, category []string) ([]types.Campaign, error)
@@ -187,12 +189,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Campaign.Name(childComplexity), true
 
-	case "Campaign.oracle":
-		if e.complexity.Campaign.Oracle == nil {
+	case "Campaign.oracleDescription":
+		if e.complexity.Campaign.OracleDescription == nil {
 			break
 		}
 
-		return e.complexity.Campaign.Oracle(childComplexity), true
+		return e.complexity.Campaign.OracleDescription(childComplexity), true
 
 	case "Campaign.outcomes":
 		if e.complexity.Campaign.Outcomes == nil {
@@ -214,6 +216,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.PoolAddress(childComplexity), true
+
+	case "Campaign.settlement":
+		if e.complexity.Campaign.Settlement == nil {
+			break
+		}
+
+		return e.complexity.Campaign.Settlement(childComplexity), true
 
 	case "Campaign.starting":
 		if e.complexity.Campaign.Starting == nil {
@@ -281,7 +290,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string)), true
+		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["settlement"].(model.SettlementType), args["oracleDescription"].(*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string)), true
 
 	case "Outcome.description":
 		if e.complexity.Outcome.Description == nil {
@@ -579,33 +588,51 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 		}
 	}
 	args["creator"] = arg8
-	var arg9 *string
-	if tmp, ok := rawArgs["x"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("x"))
-		arg9, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+	var arg9 model.SettlementType
+	if tmp, ok := rawArgs["settlement"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("settlement"))
+		arg9, err = ec.unmarshalNSettlementType2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐSettlementType(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["x"] = arg9
+	args["settlement"] = arg9
 	var arg10 *string
-	if tmp, ok := rawArgs["telegram"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telegram"))
+	if tmp, ok := rawArgs["oracleDescription"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("oracleDescription"))
 		arg10, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["telegram"] = arg10
+	args["oracleDescription"] = arg10
 	var arg11 *string
-	if tmp, ok := rawArgs["web"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("web"))
+	if tmp, ok := rawArgs["x"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("x"))
 		arg11, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["web"] = arg11
+	args["x"] = arg11
+	var arg12 *string
+	if tmp, ok := rawArgs["telegram"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telegram"))
+		arg12, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["telegram"] = arg12
+	var arg13 *string
+	if tmp, ok := rawArgs["web"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("web"))
+		arg13, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["web"] = arg13
 	return args, nil
 }
 
@@ -872,8 +899,8 @@ func (ec *executionContext) fieldContext_Campaign_creator(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Campaign_oracle(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Campaign_oracle(ctx, field)
+func (ec *executionContext) _Campaign_settlement(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_settlement(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -886,7 +913,7 @@ func (ec *executionContext) _Campaign_oracle(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Campaign().Oracle(rctx, obj)
+		return ec.resolvers.Campaign().Settlement(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -898,12 +925,53 @@ func (ec *executionContext) _Campaign_oracle(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(model.SettlementType)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNSettlementType2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐSettlementType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Campaign_oracle(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Campaign_settlement(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type SettlementType does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Campaign_oracleDescription(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_oracleDescription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().OracleDescription(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_oracleDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Campaign",
 		Field:      field,
@@ -1461,7 +1529,7 @@ func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string))
+		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["settlement"].(model.SettlementType), fc.Args["oracleDescription"].(*string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1770,8 +1838,10 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_picture(ctx, field)
 			case "creator":
 				return ec.fieldContext_Campaign_creator(ctx, field)
-			case "oracle":
-				return ec.fieldContext_Campaign_oracle(ctx, field)
+			case "settlement":
+				return ec.fieldContext_Campaign_settlement(ctx, field)
+			case "oracleDescription":
+				return ec.fieldContext_Campaign_oracleDescription(ctx, field)
 			case "identifier":
 				return ec.fieldContext_Campaign_identifier(ctx, field)
 			case "poolAddress":
@@ -1850,8 +1920,10 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_picture(ctx, field)
 			case "creator":
 				return ec.fieldContext_Campaign_creator(ctx, field)
-			case "oracle":
-				return ec.fieldContext_Campaign_oracle(ctx, field)
+			case "settlement":
+				return ec.fieldContext_Campaign_settlement(ctx, field)
+			case "oracleDescription":
+				return ec.fieldContext_Campaign_oracleDescription(ctx, field)
 			case "identifier":
 				return ec.fieldContext_Campaign_identifier(ctx, field)
 			case "poolAddress":
@@ -4185,7 +4257,7 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "oracle":
+		case "settlement":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -4194,10 +4266,43 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Campaign_oracle(ctx, field, obj)
+				res = ec._Campaign_settlement(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "oracleDescription":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_oracleDescription(ctx, field, obj)
 				return res
 			}
 
@@ -5523,6 +5628,16 @@ func (ec *executionContext) unmarshalNOutcomeInput2ᚕgithubᚗcomᚋfluidityᚑ
 		}
 	}
 	return res, nil
+}
+
+func (ec *executionContext) unmarshalNSettlementType2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐSettlementType(ctx context.Context, v interface{}) (model.SettlementType, error) {
+	var res model.SettlementType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSettlementType2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐSettlementType(ctx context.Context, sel ast.SelectionSet, v model.SettlementType) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐShare(ctx context.Context, sel ast.SelectionSet, v *types.Share) graphql.Marshaler {
