@@ -1,4 +1,4 @@
-#![coverage(off)]
+
 
 #[cfg_attr(
     any(feature = "contract-beauty-contest", feature = "testing"),

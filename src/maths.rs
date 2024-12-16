@@ -5,22 +5,22 @@ use crate::error::Error;
 macro_rules! add {
     ($x:expr, $y:expr) => {
         c!($x.checked_add($y).ok_or(Error::CheckedAddOverflow))
-    }
+    };
 }
 macro_rules! mul {
     ($x:expr, $y:expr) => {
         c!($x.checked_mul($y).ok_or(Error::CheckedMulOverflow))
-    }
+    };
 }
 macro_rules! sub {
     ($x:expr, $y:expr) => {
         c!($x.checked_sub($y).ok_or(Error::CheckedSubOverflow))
-    }
+    };
 }
 macro_rules! div {
     ($x:expr, $y:expr) => {
         c!($x.checked_div($y).ok_or(Error::CheckedDivOverflow))
-    }
+    };
 }
 
 #[allow(non_snake_case)]

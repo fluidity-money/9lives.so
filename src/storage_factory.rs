@@ -1,5 +1,3 @@
-#![coverage(off)]
-
 use stylus_sdk::{alloy_primitives::*, storage::*};
 
 #[cfg(feature = "testing")]

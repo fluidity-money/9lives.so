@@ -31,29 +31,28 @@ impl StorageBeautyContest {
         outcome_ids.sort();
         outcome_ids.dedup();
         let outcome_fst = outcome_ids[0];
-        let (count_shares, _, min_shares, winning_outcome) =
-            outcome_ids.into_iter().try_fold(
-                (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
-                |(count_shares, max_shares, min_shares, winning_outcome), outcome_id| {
-                    let (shares, _, _, winner) = trading_call::details(trading_addr, outcome_id)?;
-                    assert_or!(!winner.is_zero(), Error::WinnerAlreadyDeclared);
-                    let is_greater = shares > max_shares;
-                    Ok((
-                        count_shares + shares,
-                        if is_greater { shares } else { max_shares },
-                        if shares < min_shares {
-                            shares
-                        } else {
-                            min_shares
-                        },
-                        if is_greater {
-                            outcome_id
-                        } else {
-                            winning_outcome
-                        },
-                    ))
-                },
-            )?;
+        let (count_shares, _, min_shares, winning_outcome) = outcome_ids.into_iter().try_fold(
+            (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
+            |(count_shares, max_shares, min_shares, winning_outcome), outcome_id| {
+                let (shares, _, _, winner) = trading_call::details(trading_addr, outcome_id)?;
+                assert_or!(!winner.is_zero(), Error::WinnerAlreadyDeclared);
+                let is_greater = shares > max_shares;
+                Ok((
+                    count_shares + shares,
+                    if is_greater { shares } else { max_shares },
+                    if shares < min_shares {
+                        shares
+                    } else {
+                        min_shares
+                    },
+                    if is_greater {
+                        outcome_id
+                    } else {
+                        winning_outcome
+                    },
+                ))
+            },
+        )?;
         // We need to check that the global shares remaining is less than
         // the minimum that we have. If that's not the case, then they
         // supplied the calldata incorrectly, and we need to revert.

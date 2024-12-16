@@ -151,13 +151,11 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> R<U256> {
-        // The old time ending, is not updated to reflect a new deadline.
-        let old_time_ending = u64::from_le_bytes(self.time_ending.get().to_le_bytes());
         // Ensure that we're not complete, and that the time hasn't expired.
         assert_or!(
             self.when_decided.get().is_zero()
                 || self.is_shutdown.get()
-                || old_time_ending > block_timestamp(),
+                || self.time_ending.get() > U64::from(block_timestamp()),
             Error::DoneVoting
         );
         assert_or!(value > U256::ZERO, Error::ZeroAmount);
@@ -172,19 +170,17 @@ impl StorageTrading {
             Error::NonexistentOutcome
         );
         // If we're within 3 hours left on the trading of this contract,
-        // then we want to enforce that they're above the limit, then
-        // delay the contract finalisation by 3 hours.
-        if block_timestamp() - old_time_ending < THREE_HOURS_SECS {
-            assert_or!(
-                value > THREE_HOUR_WINDOW_MIN_BUYIN,
-                Error::BelowThreeHourBuyin
-            );
-            let new_time_ending = old_time_ending + THREE_HOURS_SECS;
-            self.time_ending.set(U64::from(new_time_ending));
-            evm::log(events::DeadlineExtension {
-                timeBefore: old_time_ending,
-                timeAfter: new_time_ending,
-            });
+        // we want to delay the finale by 3 hours.
+        {
+            let old_time_ending = self.time_ending.get();
+            if old_time_ending - U64::from(block_timestamp()) < THREE_HOURS_SECS {
+                let new_time_ending = old_time_ending + THREE_HOURS_SECS;
+                self.time_ending.set(U64::from(new_time_ending));
+                evm::log(events::DeadlineExtension {
+                    timeBefore: u64::from_le_bytes(old_time_ending.to_le_bytes()),
+                    timeAfter: u64::from_le_bytes(new_time_ending.to_le_bytes()),
+                });
+            }
         }
         // Here we do some fee adjustment to send the fee recipient their money.
         let fee_for_creator = (value * FEE_CREATOR_MINT_PCT) / FEE_SCALING;

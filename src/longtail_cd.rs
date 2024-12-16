@@ -8,11 +8,7 @@ const CREATE_POOL_SELECTOR: [u8; 4] = [0x00, 0x00, 0x03, 0xa3];
 //enablePool579DA658(address,bool)
 const PAUSE_POOL_SELECTOR: [u8; 4] = [0x00, 0x00, 0x03, 0xf4];
 
-pub fn pack_create_pool(
-    erc20: Address,
-    price: U256,
-    fee: u32,
-) -> [u8; 4 + 32 * 3] {
+pub fn pack_create_pool(erc20: Address, price: U256, fee: u32) -> [u8; 4 + 32 * 3] {
     let mut b = [0_u8; 4 + 32 * 3];
     write_selector(&mut b, &CREATE_POOL_SELECTOR);
     write_address(&mut b, 0, erc20);

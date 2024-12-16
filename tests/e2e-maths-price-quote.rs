@@ -8056,7 +8056,10 @@ fn end_to_end_maths() {
         if let Err(err) = test_maths_row(*r) {
             let (cost, m1, m2, n1, n2, _, _, _, _, _, _, _, _, _) = r;
             let i = i + 1;
-            eprintln!("line,error,cost,m1,m2,n1,n2\n{i},{:?},{cost},{m1},{m2},{n1},{n2}", err);
+            eprintln!(
+                "line,error,cost,m1,m2,n1,n2\n{i},{:?},{cost},{m1},{m2},{n1},{n2}",
+                err
+            );
         }
     }
 }

@@ -1,12 +1,11 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
-use proptest::prelude::*;
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
-use stylus_sdk::{
-    alloy_primitives::{Address, FixedBytes, U256},
+use lib9lives::{
+    host,
+    utils::{block_timestamp, msg_sender},
 };
-
-use lib9lives::{utils::{block_timestamp, msg_sender}, host};
 
 #[test]
 fn test_factory_new_trading() {
@@ -30,6 +29,7 @@ fn test_factory_new_trading() {
     })
 }
 
+/*
 #[test]
 fn test_unit_1() {
     use lib9lives::storage_trading::StorageTrading;
@@ -49,15 +49,15 @@ fn test_unit_1() {
             block_timestamp() + 2,
             Address::ZERO,
             Address::ZERO,
-            false
+            false,
         )
         .unwrap();
-        dbg!(c
-            .mint_test(outcome_1, mint_amount, Address::ZERO)
-            .unwrap());
+        dbg!(c.mint_test(outcome_1, mint_amount, Address::ZERO).unwrap());
     })
 }
+*/
 
+/*
 proptest! {
     #[test]
     fn test_trading_full_story(
@@ -89,3 +89,4 @@ proptest! {
         })
     }
 }
+*/

@@ -1,9 +1,9 @@
-#![coverage(off)]
+
 
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes},
+    alloy_sol_types::{sol, SolCall},
     call::RawCall,
-    alloy_sol_types::{SolCall, sol}
 };
 
 use crate::error::Error;

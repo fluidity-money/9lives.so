@@ -1,6 +1,4 @@
 #![cfg_attr(target_arch = "wasm32", no_main, no_std)]
-#![allow(internal_features)]
-#![feature(core_intrinsics)]
 
 #[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
 use lib9lives::alloc::format;
@@ -12,6 +10,7 @@ pub use lib9lives::user_entrypoint;
 #[link(wasm_import_module = "stylus_interpreter")]
 extern "C" {
     #[allow(dead_code)]
+    // It's easier to do this than to go through the work of a custom panic handler.
     fn die(ptr: *const u8, len: usize, rc: i32);
 }
 
@@ -23,12 +22,23 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
     loop {}
 }
 
+#[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
+#[link(wasm_import_module = "stylus_interpreter")]
+extern "C" {
+    #[allow(dead_code)]
+    // It's easier to do this than to go through the work of a custom panic handler.
+    fn die(ptr: *const u8, len: usize, rc: i32);
+}
+
 #[cfg(all(not(feature = "harness-stylus-interpreter"), target_arch = "wasm32"))]
 #[panic_handler]
 fn panic(_: &core::panic::PanicInfo) -> ! {
-    // I haven't found a way to do the aborting here without using
-    // the std.
-    core::intrinsics::abort();
+    // In lieu of using compiler features (we want to run this on stable
+    // Rust), we need to cause unreachable!
+    #[allow(unconditional_panic)]
+    let _ = 1 / 0;
+    // If somehow, the above is optimised out, this will run out of gas anyway.
+    loop {}
 }
 
 #[cfg(not(target_arch = "wasm32"))]

@@ -36,9 +36,7 @@ build: \
 	contract-trading-amm-quotes \
 	contract-trading-amm-price \
 	contract-lockup \
-	contract-infra-market-extras \
-	contract-infra-market-predict \
-	contract-infra-market-sweep \
+	contract-infra-market \
 	contract-beauty-contest
 
 solidity: ${OUT_SHARE}
@@ -65,9 +63,7 @@ contract-trading-amm-price: contract-trading-amm-price.wasm
 
 contract-lockup: contract-lockup.wasm
 
-contract-infra-market-predict: contract-infra-market-predict.wasm
-contract-infra-market-sweep: contract-infra-market-sweep.wasm
-contract-infra-market-extras: contract-infra-market-extras.wasm
+contract-infra-market: contract-infra-market.wasm
 
 contract-beauty-contest: contract-beauty-contest.wasm
 

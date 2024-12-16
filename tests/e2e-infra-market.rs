@@ -2,14 +2,14 @@
 
 use proptest::prelude::*;
 
-use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes};
 
 use lib9lives::{
     error::{panic_guard, Error},
+    fees,
     fees::INCENTIVE_AMT_BASE,
     host::{set_msg_sender, ts_add_time, with_contract},
     utils::{block_timestamp, msg_sender},
-    fees,
 };
 
 #[test]
@@ -30,7 +30,7 @@ fn test_infra_market_call_close_only_happy_path() {
                 msg_sender(),
                 FixedBytes::<32>::from([1u8; 32]),
                 block_timestamp() + 100,
-                fixed_bytes!("9999999999999999")
+                u64::MAX
             )
             .unwrap(),
             INCENTIVE_AMT_BASE,
@@ -49,7 +49,7 @@ fn test_infra_market_call_close_only_happy_path() {
             );
             // We should not be able to call predict yet:
             assert_eq!(
-                c.predict(trading, winner, U256::from(100)).unwrap_err(),
+                c.predict(trading, FixedBytes::<32>::ZERO).unwrap_err(),
                 Error::WhingedTimeUnset
             );
             // We should not be able to call sweep yet:
@@ -61,15 +61,18 @@ fn test_infra_market_call_close_only_happy_path() {
             // We should not be able to call close yet:
             assert_eq!(
                 c.close(trading, msg_sender()).unwrap_err(),
-                Error::InCallingPeriod
+                Error::WhingedTimeUnset
             );
         });
         let two_days = 172800;
         ts_add_time(two_days + 10);
         // No-one called claim! It's time for us to call close.
-        assert_eq!(c.close(trading, msg_sender()).unwrap(), fees::INCENTIVE_AMT_CLOSE);
+        assert_eq!(
+            c.close(trading, msg_sender()).unwrap(),
+            fees::INCENTIVE_AMT_CLOSE
+        );
         // Let's confirm that the winner was set correctly.
-        assert_eq!(c.campaign_winner.get(trading), winner);
+        assert_eq!(c.winner(trading).unwrap(), winner);
     })
 }
 

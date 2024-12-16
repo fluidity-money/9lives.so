@@ -1,4 +1,4 @@
-#![coverage(off)]
+
 
 use stylus_sdk::alloy_primitives::{Address, FixedBytes};
 
@@ -10,7 +10,7 @@ pub fn register(
     _incentive_sender: Address,
     _desc: FixedBytes<32>,
     _launch_ts: u64,
-    _default_winner: FixedBytes<8>
+    _deadline_ts: u64
 ) -> Result<(), Error> {
     Ok(())
 }

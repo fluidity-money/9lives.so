@@ -1,11 +1,9 @@
-#![coverage(off)]
-
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes},
     call::RawCall,
 };
 
-use stylus_sdk::alloy_sol_types::{SolCall, sol};
+use stylus_sdk::alloy_sol_types::{sol, SolCall};
 
 use crate::error::Error;
 
@@ -15,7 +13,7 @@ sol! {
         address incentiveSender,
         bytes32 desc,
         uint64 launchTs,
-        bytes8 defaultWinner
+        uint64 deadlineTs
     ) external;
 
 }
@@ -27,7 +25,7 @@ pub fn register(
     incentive_sender: Address,
     desc: FixedBytes<32>,
     launch_ts: u64,
-    default_winner: FixedBytes<8>
+    deadline_ts: u64
 ) -> Result<(), Error> {
     RawCall::new()
         .call(
@@ -37,7 +35,7 @@ pub fn register(
                 incentiveSender: incentive_sender,
                 desc,
                 launchTs: launch_ts,
-                defaultWinner: default_winner
+                deadlineTs: deadline_ts,
             }
             .abi_encode(),
         )

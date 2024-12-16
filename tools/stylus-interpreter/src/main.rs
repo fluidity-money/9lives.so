@@ -19,6 +19,10 @@ type Word = [u8; 32];
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    if env::args().len() == 1 {
+        eprintln!("stylus-interpreter <sender> <block> <addr> <file> <calldata>");
+        std::process::exit(1);
+    }
     let engine = Engine::new(Config::new().wasm_backtrace(true).async_support(true)).unwrap();
     let [_, sender_str, block, addr, file, calldata]: [String; 6] =
         env::args().take(6).collect::<Vec<_>>().try_into().unwrap();

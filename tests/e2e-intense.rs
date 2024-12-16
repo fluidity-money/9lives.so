@@ -65,7 +65,9 @@ proptest! {
         outcome_winner in prop_oneof![Just(Outcome::Outcome1), Just(Outcome::Outcome2)],
         purchase_int_1 in strat_action_amount_purchasing(1000)
     ) {
-        prop_assume!(outcome_1_id != outcome_2_id);
+        if outcome_1_id == outcome_2_id {
+            return Err(TestCaseError::reject("outcome ids duplicated"));
+        }
         use lib9lives::storage_trading::StorageTrading;
         // This follows a classic interaction, with a user minting a random
         // amount of shares several thousand times on both sides, reporting when
@@ -110,7 +112,9 @@ proptest! {
                     (fusdc_amt, outcome, s)
                 })
                     .collect::<Vec<_>>();
-            prop_assume!(fusdc_spent_1 > U256::ZERO && fusdc_spent_2 > U256::ZERO);
+            if fusdc_spent_1 <= U256::ZERO && fusdc_spent_2 > U256::ZERO {
+                return Err(TestCaseError::reject("fusdc amount weird"));
+            }
             let (outcome_winner, winning_amt) = if outcome_winner == Outcome::Outcome1 {
                 (outcome_1_id, share_1_received)
             } else {

@@ -1,4 +1,4 @@
-#![coverage(off)]
+
 
 use crate::{calldata::unpack_u256, error::Error};
 

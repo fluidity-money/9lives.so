@@ -1,4 +1,4 @@
-#![coverage(off)]
+
 
 use crate::error::Error;
 

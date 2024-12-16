@@ -8,19 +8,14 @@ use std::process::{Command, Output};
 
 use lib9lives::maths;
 
+#[allow(non_snake_case)]
 #[derive(serde::Deserialize, Debug)]
 struct PythonRes {
-    outcome: String,
-    cost: f64,
     shares_purchased: f64,
     price_before_A: f64,
     price_before_B: f64,
-    price_after_A: f64,
-    price_after_B: f64,
     new_M1: f64,
     new_M2: f64,
-    new_N1: f64,
-    new_N2: f64,
 }
 
 fn is_similar(a: Decimal, b: Decimal) -> bool {
@@ -30,6 +25,7 @@ fn is_similar(a: Decimal, b: Decimal) -> bool {
 proptest! {
     #[test]
     #[ignore]
+    #[allow(non_snake_case)]
     fn test_against_python(
         M1 in 1..u64::MAX,
         M2 in 1..u64::MAX,

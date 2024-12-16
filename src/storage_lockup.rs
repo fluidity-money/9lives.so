@@ -1,4 +1,4 @@
-use stylus_sdk::{alloy_primitives::*, storage::*, prelude::*};
+use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
 #[storage]
 #[cfg_attr(feature = "contract-lockup", entrypoint)]
@@ -20,5 +20,5 @@ pub struct StorageLockup {
 
     /// The timestamp that the block timestamp must pass for a locker to withdraw
     /// their funds.
-    pub deadlines: StorageMap<Address, StorageU64>
+    pub deadlines: StorageMap<Address, StorageU64>,
 }

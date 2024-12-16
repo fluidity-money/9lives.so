@@ -19,6 +19,7 @@ fn test_e2e_mint() {
             block_timestamp() + 2,
             msg_sender(),
             Address::ZERO,
+            false,
         )
         .unwrap();
 

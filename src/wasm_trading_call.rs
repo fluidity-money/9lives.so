@@ -1,4 +1,4 @@
-#![coverage(off)]
+
 
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes, U256},
@@ -99,7 +99,7 @@ pub fn shutdown(addr: Address) -> Result<U256, Error> {
 
 pub fn escape(addr: Address) -> Result<(), Error> {
     RawCall::new()
-        .call(addr, &escapeCall{}.abi_encode())
+        .call(addr, &escapeCall {}.abi_encode())
         .map_err(Error::TradingError)?;
     Ok(())
 }

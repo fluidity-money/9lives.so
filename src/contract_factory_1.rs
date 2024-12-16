@@ -10,9 +10,8 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-    amm_call, error::*, events, fusdc_call, immutables::*, infra_market_call, proxy,
-    share_call, trading_call,
-    utils::msg_sender,
+    amm_call, error::*, events, fusdc_call, immutables::*, infra_market_call, proxy, share_call,
+    trading_call, utils::msg_sender,
 };
 
 pub use crate::storage_factory::*;
@@ -87,10 +86,6 @@ impl StorageFactory {
         let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
         fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
 
-        // Used for the price function for seeding Longtail.
-
-        let default_winner = outcome_ids[0];
-
         for (outcome_identifier, sqrt_price, outcome_name) in outcomes.iter() {
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
@@ -132,13 +127,20 @@ impl StorageFactory {
         // careful regarding the circumstances of their oracle choice, and it should be
         // explained in the UI if this is the case or not.
         if oracle == self.infra_market.get() {
+            let deadline_add_two_weeks = if time_ending < u64::MAX {
+                time_ending
+                    .checked_add(1209600)
+                    .ok_or(Error::CheckedAddOverflow)?
+            } else {
+                time_ending
+            };
             infra_market_call::register(
                 self.infra_market.get(),
                 trading_addr,
                 msg_sender(),
                 documentation,
-                time_ending,
-                default_winner,
+                time_start,
+                deadline_add_two_weeks,
             )?;
         }
 
