@@ -16,7 +16,10 @@ import { formatUnits } from "ethers";
 import ShadowCard from "../cardShadow";
 import ErrorInfo from "../themed/errorInfo";
 import usePotentialReturn from "@/hooks/usePotentialReturn";
+import YesOutcomeImg from "#/images/yes-outcome.svg";
+import NoOutcomeImg from "#/images/no-outcome.svg";
 export default function DetailCall2Action({
+  shouldStopAction,
   tradingAddr,
   initalData,
   selectedOutcome,
@@ -24,6 +27,7 @@ export default function DetailCall2Action({
   price,
   isYesNo,
 }: {
+  shouldStopAction: boolean;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   tradingAddr: `0x${string}`;
@@ -53,6 +57,7 @@ export default function DetailCall2Action({
     clearErrors,
     formState: { errors },
   } = useForm<FormData>({
+    disabled: shouldStopAction,
     resolver: zodResolver(formSchema),
     defaultValues: {
       share: 0,
@@ -127,33 +132,28 @@ export default function DetailCall2Action({
   return (
     <ShadowCard className="sticky top-0 z-10 flex flex-col gap-4 p-4">
       <div className="flex items-center gap-4">
-        <div className="size-10 overflow-hidden rounded-full">
-          {isYesNo ? (
-            <div className="flex size-10 items-center justify-center">
-              <span
-                className={combineClass(
-                  outcome.name === "Yes" ? "text-green-500" : "text-red-500",
-                  "font-geneva text-xl uppercase",
-                )}
-              >
-                {outcome.name}
-              </span>
-            </div>
-          ) : (
-            <Image
-              width={40}
-              height={40}
-              alt={outcome.name}
-              src={outcome.picture}
-              className="size-full object-cover"
-            />
+        <div
+          className={combineClass(
+            !isYesNo && "size-10 overflow-hidden rounded-full",
           )}
+        >
+          <Image
+            width={40}
+            height={40}
+            alt={outcome.name}
+            src={
+              isYesNo
+                ? outcome.name === "Yes"
+                  ? YesOutcomeImg
+                  : NoOutcomeImg
+                : outcome.picture
+            }
+            className="size-full object-cover"
+          />
         </div>
-        {isYesNo ? null : (
-          <h3 className="font-chicago text-base font-normal text-9black">
-            {outcome.name}
-          </h3>
-        )}
+        <h3 className="font-chicago text-base font-normal text-9black">
+          {outcome.name}
+        </h3>
       </div>
       <div>
         <span className="font-chicago text-xs font-normal text-9black">
@@ -201,6 +201,7 @@ export default function DetailCall2Action({
           </span>
           {account ? (
             <Button
+              disabled={shouldStopAction}
               onClick={setToMaxShare}
               intent={"default"}
               size={"small"}
@@ -283,9 +284,8 @@ export default function DetailCall2Action({
           ))}
         </ul>
       </div>
-
       <Button
-        disabled={isMinting || isConnecting}
+        disabled={isMinting || isConnecting || shouldStopAction}
         title={isMinting ? "Loading.." : ctaTitle}
         className={"uppercase"}
         size={"xlarge"}

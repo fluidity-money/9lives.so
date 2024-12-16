@@ -7,6 +7,8 @@ import config from "@/config";
 import CrownImg from "#/images/crown.svg";
 import Button from "../themed/button";
 import Link from "next/link";
+import YesOutcomeImg from "#/images/yes-outcome.svg";
+import NoOutcomeImg from "#/images/no-outcome.svg";
 export default function DetailOutcomeRow({
   data,
   price,
@@ -63,31 +65,21 @@ export default function DetailOutcomeRow({
                 src={CrownImg}
               />
             )}
-            {isYesNo ? (
-              <div className="flex size-10 items-center justify-center">
-                <span
-                  className={combineClass(
-                    data.name === "Yes" ? "text-green-500" : "text-red-500",
-                    "font-geneva text-base uppercase",
-                  )}
-                >
-                  {data.name}
-                </span>
-              </div>
-            ) : (
-              <Image
-                width={40}
-                height={40}
-                alt={data.name}
-                src={data.picture}
-                className="border border-9black"
-              />
-            )}
+            <Image
+              width={40}
+              height={40}
+              alt={data.name}
+              src={
+                isYesNo
+                  ? data.name === "Yes"
+                    ? YesOutcomeImg
+                    : NoOutcomeImg
+                  : data.picture
+              }
+              className={combineClass(!isYesNo && "border border-9black")}
+            />
           </div>
-
-          {isYesNo ? null : (
-            <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
-          )}
+          <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
         </div>
       </td>
       <td

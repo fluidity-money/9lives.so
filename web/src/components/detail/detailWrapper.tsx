@@ -32,7 +32,7 @@ export default function DetailWrapper({
     outcomeIds,
   });
   const isEnded = initialData.ending < Date.now();
-  const isConcluded = Boolean(details?.winner) || isEnded;
+  const isConcluded = Boolean(details?.winner);
   const { data: sharePrices } = useSharePrices({
     tradingAddr: initialData.poolAddress as `0x${string}`,
     outcomeIds,
@@ -40,7 +40,11 @@ export default function DetailWrapper({
   return (
     <>
       <div className="flex flex-[2] flex-col gap-8">
-        <DetailHeader data={initialData} isConcluded={isConcluded} />
+        <DetailHeader
+          data={initialData}
+          isEnded={isEnded}
+          isConcluded={isConcluded}
+        />
         <DetailOutcomeTable
           isYesNo={initialData.isYesNo}
           sharePrices={sharePrices}
@@ -54,7 +58,7 @@ export default function DetailWrapper({
         <DetailInfo data={initialData.description} />
       </div>
       <div className="flex flex-1 flex-col gap-8">
-        {isConcluded ? (
+        {isEnded && isConcluded ? (
           <DetailResults
             results={details}
             initialData={initialData.outcomes}
@@ -62,6 +66,7 @@ export default function DetailWrapper({
           />
         ) : (
           <DetailCall2Action
+            shouldStopAction={isEnded || isConcluded}
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
             initalData={initialData.outcomes}
