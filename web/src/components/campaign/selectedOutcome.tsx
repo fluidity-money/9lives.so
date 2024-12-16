@@ -8,6 +8,7 @@ import { useState } from "react";
 import Link from "next/link";
 import CloseButton from "../closeButton";
 import { Outcome, SelectedOutcome as SelectedOutcomeType } from "@/types";
+import { track, EVENTS } from "@/utils/analytics";
 
 export default function SelectedOutcome({
   campaignId,
@@ -64,7 +65,15 @@ export default function SelectedOutcome({
         intent={"cta"}
         size={"large"}
         title="Deposit"
-        onClick={() => window.alert("You clicked the button!")}
+        onClick={() => {
+          track(EVENTS.OUTCOME_SELECT, {
+            campaignId,
+            outcomeName: data.name,
+            outcomeId: data.identifier,
+            amount: deposit,
+          });
+          window.alert("You clicked the button!");
+        }}
       />
     </div>
   );

@@ -18,7 +18,7 @@ export default function NavigationMenu() {
     {
       title: "Staking",
       page: "/staking",
-      disabled: true
+      disabled: true,
     },
   ];
 

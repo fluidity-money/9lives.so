@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import ERC20Abi from "@/config/abi/erc20";
+import { track, EVENTS } from "@/utils/analytics";
 
 const useClaim = ({
   shareAddr,
@@ -64,6 +65,13 @@ const useClaim = ({
           });
           queryClient.invalidateQueries({
             queryKey: ["positions", tradingAddr, outcomes, account],
+          });
+          track(EVENTS.CLAIM_REWARD, {
+            wallet: account.address,
+            amount: accountShare,
+            outcomeId,
+            shareAddr,
+            tradingAddr,
           });
           res(null);
         } catch (e) {
