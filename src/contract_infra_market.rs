@@ -189,7 +189,7 @@ impl StorageInfraMarket {
             Error::SomeoneWhinged
         );
         assert_or!(
-            are_we_after_whinging_period(e.campaign_when_whinged.get(), block_timestamp())?,
+            are_we_after_whinging_period(e.campaign_when_called.get(), block_timestamp())?,
             Error::NotAfterWhinging
         );
         assert_or!(!e.campaign_winner_set.get(), Error::WinnerAlreadyDeclared);
@@ -258,11 +258,16 @@ impl StorageInfraMarket {
         trading_addr: Address,
         preferred_outcome: FixedBytes<8>,
         bond_recipient: Address,
-    ) -> R<()> {
+    ) -> R<U256> {
         assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
         );
+        let bond_recipient = if bond_recipient.is_zero() {
+            msg_sender()
+        } else {
+            bond_recipient
+        };
         let mut epochs = self.epochs.setter(trading_addr);
         let mut e = epochs.setter(self.cur_epochs.get(trading_addr));
         assert_or!(
@@ -272,13 +277,14 @@ impl StorageInfraMarket {
         // We only allow the inconclusive statement to be made in the predict path.
         assert_or!(!preferred_outcome.is_zero(), Error::PreferredOutcomeIsZero);
         assert_or!(
-            e.campaign_when_whinged.get().is_zero(),
+            e.campaign_who_whinged.get().is_zero(),
             Error::AlreadyWhinged
         );
         fusdc_call::take_from_sender(BOND_FOR_WHINGE)?;
         e.campaign_who_whinged.set(bond_recipient);
+        e.campaign_when_whinged.set(U64::from(block_timestamp()));
         e.campaign_whinger_preferred_winner.set(preferred_outcome);
-        Ok(())
+        Ok(BOND_FOR_WHINGE)
     }
 
     pub fn winner(&self, trading: Address) -> R<FixedBytes<8>> {
@@ -335,7 +341,13 @@ impl StorageInfraMarket {
         Ok(())
     }
 
-    pub fn reveal(&mut self, committer_addr: Address, trading_addr: Address, outcome: FixedBytes<8>, seed: U256) -> R<()> {
+    pub fn reveal(
+        &mut self,
+        committer_addr: Address,
+        trading_addr: Address,
+        outcome: FixedBytes<8>,
+        seed: U256,
+    ) -> R<()> {
         assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
@@ -424,70 +436,69 @@ impl StorageInfraMarket {
                     current_winner_amt = arb;
                     current_winner_id = Some(winner);
                 }
-                // If the amount that we tracked as ARB is greater than what we
-                // tracked so far, then we know that the user specified the correct
-                // amount.
-                assert_or!(
-                    arb_global >= e.global_vested_arb.get(),
-                    Error::IncorrectSweepInvocation
-                );
-                // At this point, if we're not Some with the winner choice here,
-                // then we need to default to what the caller provided during the calling
-                // stage. This could happen if the liquidity is even across every outcome.
-                // If that's the case, we're still going to slash people who bet poorly later.
-                // The assumption is that the whinging bond is the differentiating amount
-                // in this extreme scenario.
-                let voting_power_winner = match current_winner_id {
-                    Some(v) => v,
-                    None => {
-                        let campaign_called = e.campaign_what_called.get();
-                        // In a REALLY extreme scenario, what could happen is that
-                        // there was a challenge to the default outcome but no-one called it
-                        // so there was no period of whinging. In this extreme circumstance,
-                        // we default to the whinger's preferred outcome, since they posted
-                        // a bond that would presumably tip the scales in their favour.
-                        if campaign_called.is_zero() {
-                            e.campaign_whinger_preferred_winner.get()
-                        } else {
-                            campaign_called
-                        }
-                    }
-                };
-                e.campaign_winner.set(voting_power_winner);
-                e.campaign_winner_set.set(true);
-                // If the whinger was correct, we owe them their bond.
-                if voting_power_winner == e.campaign_whinger_preferred_winner.get() {
-                    fusdc_call::transfer(e.campaign_who_whinged.get(), BOND_FOR_WHINGE)?;
+            }
+            // If the amount that we tracked as ARB is greater than what we
+            // tracked so far, then we know that the user specified the correct
+            // amount.
+            assert_or!(
+                arb_global >= e.global_vested_arb.get(),
+                Error::IncorrectSweepInvocation
+            );
+            // At this point, if we're not Some with the winner choice here,
+            // then we need to default to what the caller provided during the calling
+            // stage. This could happen if the liquidity is even across every outcome.
+            // If that's the case, we're still going to slash people who bet poorly later.
+            // The assumption is that the whinging bond is the differentiating amount
+            // in this extreme scenario.
+            let voting_power_winner = match current_winner_id {
+                Some(v) => v,
+                None => {
+                    // In a REALLY extreme scenario, what could happen is that
+                    // there was a challenge to the default outcome but no-one called it
+                    // so there was no period of whinging. In this extreme circumstance,
+                    // we default to the whinger's preferred outcome, since they posted
+                    // a bond that would presumably tip the scales in their favour.
+                    e.campaign_whinger_preferred_winner.get()
                 }
-                // Looks like we owe the fee recipient some money. This should only be the
-                // case in the happy path (we're on nonce 0). This is susceptible to griefing
-                // if someone were to intentionally trigger this behaviour, but the risk for them
-                // is the interaction with activating the bond and the costs associated.
-                if self.dao_money.get() >= INCENTIVE_AMT_SWEEP
-                    && self.cur_epochs.get(trading_addr).is_zero()
-                {
-                    self.dao_money
-                        .set(self.dao_money.get() - INCENTIVE_AMT_SWEEP);
-                    fusdc_call::transfer(fee_recipient_addr, INCENTIVE_AMT_SWEEP)?;
-                    caller_yield_taken += INCENTIVE_AMT_SWEEP;
-                }
-                // We need to check if the arb staked is 0, and if it is, then we need to reset
-                // to the beginning after the sweep period has passed.
-                if voting_power_winner.is_zero() {
-                    // Since the outcome is in an indeterminate state, we need to give up the
-                    // notion that someone set the who called argument. We need to activate
-                    // the next epoch, so that that we must begin the next calling period
-                    // once the anything goes period has concluded. The call function should
-                    // check that that's needing to be the case by checking if the set winner is
-                    // 0.
-                    e.campaign_who_called.set(Address::ZERO);
-                } else {
-                    // At this point we call the campaign that this is
-                    // connected to let them know that there was a winner. Hopefully
-                    // someone called shutdown on the contract in the past to prevent
-                    // users from calling Longtail constantly.
-                    trading_call::decide(trading_addr, voting_power_winner)?;
-                }
+            };
+            e.campaign_winner.set(voting_power_winner);
+            e.campaign_winner_set.set(true);
+            assert_eq!(
+                voting_power_winner,
+                e.campaign_whinger_preferred_winner.get()
+            );
+            // If the whinger was correct, we owe them their bond.
+            if voting_power_winner == e.campaign_whinger_preferred_winner.get() {
+                fusdc_call::transfer(e.campaign_who_whinged.get(), BOND_FOR_WHINGE)?;
+            }
+            // Looks like we owe the fee recipient some money. This should only be the
+            // case in the happy path (we're on nonce 0). This is susceptible to griefing
+            // if someone were to intentionally trigger this behaviour, but the risk for them
+            // is the interaction with activating the bond and the costs associated.
+            if self.dao_money.get() >= INCENTIVE_AMT_SWEEP
+                && self.cur_epochs.get(trading_addr).is_zero()
+            {
+                self.dao_money
+                    .set(self.dao_money.get() - INCENTIVE_AMT_SWEEP);
+                fusdc_call::transfer(fee_recipient_addr, INCENTIVE_AMT_SWEEP)?;
+                caller_yield_taken += INCENTIVE_AMT_SWEEP;
+            }
+            // We need to check if the arb staked is 0, and if it is, then we need to reset
+            // to the beginning after the sweep period has passed.
+            if voting_power_winner.is_zero() {
+                // Since the outcome is in an indeterminate state, we need to give up the
+                // notion that someone set the who called argument. We need to activate
+                // the next epoch, so that that we must begin the next calling period
+                // once the anything goes period has concluded. The call function should
+                // check that that's needing to be the case by checking if the set winner is
+                // 0.
+                e.campaign_who_called.set(Address::ZERO);
+            } else {
+                // At this point we call the campaign that this is
+                // connected to let them know that there was a winner. Hopefully
+                // someone called shutdown on the contract in the past to prevent
+                // users from calling Longtail constantly.
+                trading_call::decide(trading_addr, voting_power_winner)?;
             }
         }
         // The winning outcome in this campaign.

@@ -11,7 +11,7 @@ pub type Word = [u8; WORD_BYTES];
 thread_local! {
     static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
     static CUR_TIME: RefCell<u64> = const { RefCell::new(0) };
-    static MSG_SENDER: RefCell<Address> = const { RefCell::new(Address::ZERO) };
+    static MSG_SENDER: RefCell<Address> = RefCell::new(Address::from([1u8; 20]));
 }
 
 unsafe fn read_word(key: *const u8) -> Word {
