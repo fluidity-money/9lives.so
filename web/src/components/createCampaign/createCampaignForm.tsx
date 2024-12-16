@@ -18,7 +18,6 @@ import useCreate from "@/hooks/useCreate";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { randomValue4Uint8 } from "@/utils/generateId";
-import toast from "react-hot-toast";
 import { track, EVENTS } from "@/utils/analytics";
 
 export const fieldClass = "flex flex-col gap-2.5";
@@ -64,8 +63,8 @@ export default function CreateCampaignForm() {
   const formSchema = useMemo(
     () =>
       z.object({
-        name: z.string().min(3),
-        desc: z.string().min(5),
+        name: z.string().min(3).max(300),
+        desc: z.string().min(5).max(1000),
         seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
         picture: z
           .instanceof(File, { message: "You have to upload a picture" })
@@ -74,23 +73,23 @@ export default function CreateCampaignForm() {
           }),
         starting: z.string().date(),
         ending: z.string().date(),
-        telegram: z.string().min(2).optional().or(z.literal("")),
-        x: z.string().min(2).optional().or(z.literal("")),
-        web: z.string().url().optional().or(z.literal("")),
+        telegram: z.string().min(2).max(100).optional().or(z.literal("")),
+        x: z.string().min(2).max(100).optional().or(z.literal("")),
+        web: z.string().url().max(200).optional().or(z.literal("")),
         outcomes:
           outcomeType === "custom"
             ? z.array(outcomeschema)
             : z.array(
                 z.object({
                   picture: z.instanceof(File),
-                  name: z.string(),
-                  description: z.string(),
+                  name: z.string().max(300),
+                  description: z.string().max(1000),
                   seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
                 }),
               ),
         oracleDescription:
           settlementType === "ORACLE"
-            ? z.string().min(10)
+            ? z.string().min(10).max(1000)
             : z.string().optional(),
         // contractAddress:
         //   settlementType === "contract"
