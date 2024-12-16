@@ -316,7 +316,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `explainCampaign` field. Some (9/12) arguments are required so you must include this.
+     * Arguments for `explainCampaign` field. Some (10/14) arguments are required so you must include this.
      */
     $: explainCampaign$Arguments<_$Scalars>;
   }
@@ -362,6 +362,14 @@ export namespace Mutation {
      * Creator address. Hex encoded. Verified to be the creator later.
      */
     creator: string;
+    /**
+     * Defines the method used to determine the winner of a campaign.
+     */
+    $settlement: $NamedTypes.$SettlementType;
+    /**
+     * Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
+     */
+    oracleDescription?: string | undefined | null;
     /**
      * X/Twitter username
      */
@@ -416,6 +424,17 @@ export namespace Mutation {
  * "PUT" - Create this modification.
  */
 export type Modification = "DELETE" | "PUT";
+
+/**
+ * Defines the method used to determine the winner of a campaign.
+ *
+ * Members
+ * "ORACLE" - Infrastructure market.
+ * "POLL" - Opinion Poll.
+ * "AI" - A.I Resolver.
+ * "CONTRACT" - Contract State.
+ */
+export type SettlementType = "ORACLE" | "POLL" | "AI" | "CONTRACT";
 
 //
 //
@@ -521,12 +540,20 @@ export interface Campaign<
     | $Select.SelectAlias.SelectAlias<Campaign.creator<_$Scalars>>;
   /**
    *
-   * Select the `oracle` field on the `Campaign` object. Its type is `String` (a `ScalarStandard` kind of type).
+   * Select the `settlement` field on the `Campaign` object. Its type is `SettlementType` (a `Enum` kind of type).
    *
    */
-  oracle?:
-    | Campaign.oracle$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Campaign.oracle<_$Scalars>>;
+  settlement?:
+    | Campaign.settlement$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.settlement<_$Scalars>>;
+  /**
+   *
+   * Select the `oracleDescription` field on the `Campaign` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  oracleDescription?:
+    | Campaign.oracleDescription$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.oracleDescription<_$Scalars>>;
   /**
    *
    * Select the `identifier` field on the `Campaign` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -738,12 +765,12 @@ export namespace Campaign {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type oracle<
+  export type settlement<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | oracle$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | settlement$SelectionSet<_$Scalars>;
 
-  export interface oracle$SelectionSet<
+  export interface settlement$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {}
@@ -752,16 +779,47 @@ export namespace Campaign {
 
   /**
    *
-   * This is the "expanded" version of the `oracle` type. It is identical except for the fact
+   * This is the "expanded" version of the `settlement` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type oracle$Expanded<
+  export type settlement$Expanded<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | oracle$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | settlement$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type oracleDescription<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | oracleDescription$SelectionSet<_$Scalars>;
+
+  export interface oracleDescription$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `oracleDescription` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type oracleDescription$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    | $Select.Indicator.NoArgsIndicator
+    | oracleDescription$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1595,6 +1653,7 @@ export namespace $NamedTypes {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = Mutation<_$Scalars>;
   export type $Modification = Modification;
+  export type $SettlementType = SettlementType;
   export type $OutcomeInput<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,

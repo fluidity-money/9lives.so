@@ -63,6 +63,11 @@ const Modification: $$Utilities.SchemaDrivenDataMap.Enum = {
   n: "Modification",
 };
 
+const SettlementType: $$Utilities.SchemaDrivenDataMap.Enum = {
+  k: "enum",
+  n: "SettlementType",
+};
+
 //
 //
 //
@@ -113,7 +118,8 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     creator: {
       // nt: Wallet, <-- Assigned later to avoid potential circular dependency.
     },
-    oracle: {},
+    settlement: {},
+    oracleDescription: {},
     identifier: {},
     poolAddress: {},
     outcomes: {
@@ -279,6 +285,14 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
+        settlement: {
+          nt: SettlementType,
+          it: [1],
+        },
+        oracleDescription: {
+          nt: String,
+          it: [0],
+        },
         x: {
           nt: String,
           it: [0],
@@ -348,6 +362,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Boolean,
     ID,
     Modification,
+    SettlementType,
     OutcomeInput,
     Campaign,
     Outcome,

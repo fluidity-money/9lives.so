@@ -213,6 +213,24 @@ export namespace Schema {
           namedType: $$NamedTypes.$$String;
         };
         /**
+         * Defines the method used to determine the winner of a campaign.
+         */
+        settlement: {
+          kind: "InputField";
+          name: "settlement";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$SettlementType;
+        };
+        /**
+         * Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
+         */
+        oracleDescription: {
+          kind: "InputField";
+          name: "oracleDescription";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
          * X/Twitter username
          */
         x: {
@@ -276,7 +294,8 @@ export namespace Schema {
       description: Campaign.description;
       picture: Campaign.picture;
       creator: Campaign.creator;
-      oracle: Campaign.oracle;
+      settlement: Campaign.settlement;
+      oracleDescription: Campaign.oracleDescription;
       identifier: Campaign.identifier;
       poolAddress: Campaign.poolAddress;
       outcomes: Campaign.outcomes;
@@ -341,12 +360,22 @@ export namespace Schema {
     }
 
     /**
-     * Oracle that can decide if a winner happened.
+     * Defines the method used to determine the winner of a campaign.
      */
-    export interface oracle extends $.OutputField {
-      name: "oracle";
+    export interface settlement extends $.OutputField {
+      name: "settlement";
       arguments: {};
       inlineType: [1];
+      namedType: $$NamedTypes.$$SettlementType;
+    }
+
+    /**
+     * Oracle description defines under which conditions campaigns conclude
+     */
+    export interface oracleDescription extends $.OutputField {
+      name: "oracleDescription";
+      arguments: {};
+      inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
 
@@ -803,6 +832,25 @@ export namespace Schema {
     membersUnion: "DELETE" | "PUT";
   }
 
+  //                                           SettlementType
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Defines the method used to determine the winner of a campaign.
+   *
+   * Members
+   * "ORACLE" - Infrastructure market.
+   * "POLL" - Opinion Poll.
+   * "AI" - A.I Resolver.
+   * "CONTRACT" - Contract State.
+   */
+  export interface SettlementType extends $.Enum {
+    name: "SettlementType";
+    members: ["ORACLE", "POLL", "AI", "CONTRACT"];
+    membersUnion: "ORACLE" | "POLL" | "AI" | "CONTRACT";
+  }
+
   //
   //
   //
@@ -893,6 +941,7 @@ export namespace Schema {
     export type $$Changelog = Changelog;
     export type $$OutcomeInput = OutcomeInput;
     export type $$Modification = Modification;
+    export type $$SettlementType = SettlementType;
     export type $$String = String;
     export type $$Int = Int;
     export type $$Boolean = Boolean;
@@ -931,6 +980,7 @@ export interface Schema<
     Query: Schema.Query;
     Mutation: Schema.Mutation;
     Modification: Schema.Modification;
+    SettlementType: Schema.SettlementType;
     Campaign: Schema.Campaign;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;
