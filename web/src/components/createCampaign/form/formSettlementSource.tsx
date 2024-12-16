@@ -55,16 +55,16 @@ export default function CreateCampaignFormSettlmentSource({
         onChange={(idx) => {
           switch (idx) {
             case 0:
-              setSettlementType("poll");
+              setSettlementType("POLL");
               break;
             case 1:
-              setSettlementType("oracle");
+              setSettlementType("ORACLE");
               break;
             case 2:
               // setSettlementType("contract");
               break;
             case 3:
-              setSettlementType("ai");
+              setSettlementType("AI");
               break;
             default:
               return;

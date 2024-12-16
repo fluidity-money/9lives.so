@@ -432,9 +432,8 @@ export type Modification = "DELETE" | "PUT";
  * "ORACLE" - Infrastructure market.
  * "POLL" - Opinion Poll.
  * "AI" - A.I Resolver.
- * "CONTRACT" - Contract State.
  */
-export type SettlementType = "ORACLE" | "POLL" | "AI" | "CONTRACT";
+export type SettlementType = "ORACLE" | "POLL" | "AI";
 
 //
 //

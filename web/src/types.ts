@@ -36,7 +36,7 @@ export type Detail = {
   }[];
 };
 export type OutcomeType = "custom" | "default";
-export type SettlementType = "oracle" | "poll" | "ai"; // exclude "contract" for now
+export type SettlementType = "ORACLE" | "POLL" | "AI"; // exclude "CONTRACT" for now
 export type CampaignInput = {
   name: string;
   desc: string;

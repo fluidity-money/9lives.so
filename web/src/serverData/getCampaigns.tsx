@@ -9,7 +9,8 @@ const query = `
         identifier
         description
         picture
-        oracle
+        settlement
+        oracleDescription
         poolAddress
         creator {
           address

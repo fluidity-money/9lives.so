@@ -320,8 +320,8 @@ enum SettlementType {
   """
   AI
 
-  """
-  Contract State.
-  """
-  CONTRACT
+  # """
+  # Contract State.
+  # """
+  # CONTRACT
 }

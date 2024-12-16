@@ -45,7 +45,7 @@ export default function CreateCampaignForm() {
     (string | undefined)[]
   >([]);
   const [settlementType, setSettlementType] =
-    useState<SettlementType>("oracle");
+    useState<SettlementType>("ORACLE");
   const outcomeschema = z.object({
     picture: z
       .instanceof(File, {
@@ -89,7 +89,7 @@ export default function CreateCampaignForm() {
                 }),
               ),
         oracleDescription:
-          settlementType === "oracle"
+          settlementType === "ORACLE"
             ? z.string().min(10)
             : z.string().optional(),
         // contractAddress:

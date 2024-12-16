@@ -26,9 +26,9 @@ const approveHelperTx = prepareContractCall({
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type FunctionNames = ExtractNames<(typeof helperAbi)[number]>;
 const settlementFunctionMap: Record<SettlementType, FunctionNames> = {
-  oracle: "createWithInfraMarket",
-  ai: "createWithAI",
-  poll: "createWithBeautyContest",
+  ORACLE: "createWithInfraMarket",
+  AI: "createWithAI",
+  POLL: "createWithBeautyContest",
 };
 const useCreate = () => {
   const queryClient = useQueryClient();
@@ -48,7 +48,7 @@ const useCreate = () => {
               name: input.name.slice(0, 8) + o.name,
             }));
             let hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
-            if (input.settlementType === "oracle" && input.oracleDescription) {
+            if (input.settlementType === "ORACLE" && input.oracleDescription) {
               const descBytes = toUtf8Bytes(input.oracleDescription);
               hashedDocumentation = keccak256(descBytes) as `0x${string}`;
             }

@@ -55,7 +55,12 @@ export default function DetailWrapper({
           details={details}
           isConcluded={isConcluded}
         />
-        <DetailInfo data={initialData.description} />
+        <DetailInfo
+          desc={initialData.description}
+          settlement={initialData.settlement}
+          creator={initialData.creator.address}
+          oracleDescription={initialData.oracleDescription}
+        />
       </div>
       <div className="flex flex-1 flex-col gap-8">
         {isEnded && isConcluded ? (

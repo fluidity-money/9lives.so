@@ -1,7 +1,7 @@
 import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Points } from "@/graffle/points/__";
-import { OutcomeInput } from "@/types";
+import { OutcomeInput, SettlementType } from "@/types";
 
 const graph9Lives = Lives9.create().transport({
   url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
@@ -14,7 +14,8 @@ export const requestCampaignList = graph9Lives.query.campaigns({
   identifier: true,
   description: true,
   picture: true,
-  oracle: true,
+  oracleDescription: true,
+  settlement: true,
   poolAddress: true,
   creator: {
     address: true,
@@ -59,6 +60,8 @@ export const requestCreateCampaign = (params: {
   desc: string;
   picture: string;
   outcomes: OutcomeInput[];
+  settlementType: SettlementType;
+  oracleDescription?: string | null;
   seed: number;
   creator: string;
   ending: number;
@@ -78,6 +81,8 @@ export const requestCreateCampaign = (params: {
       creator: params.creator,
       ending: params.ending,
       starting: params.starting,
+      $settlement: params.settlementType,
+      oracleDescription: params.oracleDescription,
       x: params.x,
       telegram: params.telegram,
       web: params.web,

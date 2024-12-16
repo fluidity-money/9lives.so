@@ -18,11 +18,11 @@ export default function CreateCampaignPreview() {
   const account = useActiveAccount();
 
   const settlementMap: Record<SettlementType, { img: any; title: string }> = {
-    poll: {
+    POLL: {
       img: LipsActiveIcon,
       title: "Opinion Poll",
     },
-    oracle: {
+    ORACLE: {
       img: GlobeActiveIcon,
       title: "Oracle Description",
     },
@@ -30,7 +30,7 @@ export default function CreateCampaignPreview() {
     //   img: ContractIcon,
     //   title: "Contract State",
     // },
-    ai: {
+    AI: {
       img: AIActiveIcon,
       title: "A.I Resolver",
     },
@@ -138,13 +138,13 @@ export default function CreateCampaignPreview() {
         <span className="text-sm font-bold">Settlement Source: </span>
         <div className="flex min-h-10 flex-1 items-center gap-2 border border-9black p-2.5 shadow-9btnPrimaryIdle">
           <Image
-            src={settlementMap[preview?.settlementType ?? "oracle"].img}
+            src={settlementMap[preview?.settlementType ?? "ORACLE"].img}
             width={30}
             alt=""
             className=""
           />
           <span className="font-chicago text-xs">
-            {settlementMap[preview?.settlementType ?? "oracle"].title}
+            {settlementMap[preview?.settlementType ?? "ORACLE"].title}
           </span>
         </div>
         {preview?.telegram || preview?.x || preview?.web ? (

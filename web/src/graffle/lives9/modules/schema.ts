@@ -843,12 +843,11 @@ export namespace Schema {
    * "ORACLE" - Infrastructure market.
    * "POLL" - Opinion Poll.
    * "AI" - A.I Resolver.
-   * "CONTRACT" - Contract State.
    */
   export interface SettlementType extends $.Enum {
     name: "SettlementType";
-    members: ["ORACLE", "POLL", "AI", "CONTRACT"];
-    membersUnion: "ORACLE" | "POLL" | "AI" | "CONTRACT";
+    members: ["ORACLE", "POLL", "AI"];
+    membersUnion: "ORACLE" | "POLL" | "AI";
   }
 
   //
