@@ -26,6 +26,7 @@ import RightCaretIcon from "#/icons/right-caret.svg";
 import { fieldClass } from "../createCampaignForm";
 import { SettlementType } from "@/types";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
+import Textarea from "@/components/themed/textarea";
 
 function SourceWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -136,13 +137,12 @@ export default function CreateCampaignFormSettlmentSource({
           </TabPanel>
           <TabPanel>
             <SourceWrapper>
-              <Input
+              <Textarea
                 placeholder="Enter Oracle Description"
                 className={combineClass(
                   "text-left",
                   errors.oracleDescription && "border-2 border-red-500",
                 )}
-                type="text"
                 {...register("oracleDescription")}
               />
               {errors.oracleDescription && (
