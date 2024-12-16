@@ -85,12 +85,18 @@ const useCreate = () => {
             // so backend creation can be retried again
             upsertCampaign(input);
           }
-          await requestCreateCampaign({
-            ...input,
-            starting: new Date(input.starting).getTime(),
-            ending: new Date(input.ending).getTime(),
-            creator: account.address,
-          });
+          try {
+            await requestCreateCampaign({
+              ...input,
+              starting: new Date(input.starting).getTime(),
+              ending: new Date(input.ending).getTime(),
+              creator: account.address,
+            });
+          } catch (e) {
+            console.log("Error object: ", (e as any).errors);
+            throw new Error("Failed to create campaign on backend.");
+          }
+
           await queryClient.invalidateQueries({
             queryKey: ["campaigns"],
           });
