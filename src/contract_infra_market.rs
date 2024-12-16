@@ -335,7 +335,7 @@ impl StorageInfraMarket {
         Ok(())
     }
 
-    pub fn reveal(&mut self, trading_addr: Address, outcome: FixedBytes<8>, seed: U256) -> R<()> {
+    pub fn reveal(&mut self, committer_addr: Address, trading_addr: Address, outcome: FixedBytes<8>, seed: U256) -> R<()> {
         assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
@@ -347,13 +347,13 @@ impl StorageInfraMarket {
             Error::NotInCommitReveal
         );
         assert_or!(
-            e.reveals.get(msg_sender()).is_zero(),
+            e.reveals.get(committer_addr).is_zero(),
             Error::AlreadyRevealed
         );
         let commit = e.commitments.get(trading_addr);
         // We can create the random numb/er the same way that we do it for proxies.
         let hash = proxy::create_identifier(&[
-            msg_sender().as_slice(),
+            committer_addr.as_slice(),
             outcome.as_slice(),
             &seed.to_le_bytes::<32>(),
         ]);
@@ -375,7 +375,8 @@ impl StorageInfraMarket {
         e.reveals.setter(msg_sender()).set(outcome);
         evm::log(events::CommitmentRevealed {
             trading: trading_addr,
-            revealer: msg_sender(),
+            revealer: committer_addr,
+            caller: msg_sender(),
             outcome,
             bal,
         });

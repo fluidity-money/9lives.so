@@ -461,6 +461,10 @@ pub enum Error {
     // 0x5f
     /// The user's recorded staked ARB balance right now is less than theirs at inception.
     StakedArbUnusual,
+
+    // 0x60
+    /// It's too early to withdraw from the Lockup contract!
+    TooEarlyToWithdraw,
 }
 
 pub type R<T> = Result<T, Error>;

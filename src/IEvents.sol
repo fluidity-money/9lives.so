@@ -91,6 +91,7 @@ interface IEvents {
         address indexed trading,
         address indexed revealer,
         bytes8 indexed outcome,
+        address caller,
         uint256 bal
     );
 

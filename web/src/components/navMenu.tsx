@@ -15,6 +15,11 @@ export default function NavigationMenu() {
       title: "Leaderboard",
       page: "/leaderboard",
     },
+    {
+      title: "Staking",
+      page: "/staking",
+      disabled: true
+    },
   ];
 
   return (
