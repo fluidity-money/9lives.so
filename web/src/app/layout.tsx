@@ -8,7 +8,7 @@ import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
 import CustomToaster from "@/components/customToaster";
-import { getCachedCampaigns, getCampaigns } from "@/serverData/getCampaigns";
+import { getCachedCampaigns } from "@/serverData/getCampaigns";
 import { getCachedTotalUserCount } from "@/serverData/getTotalUserCount";
 import CookieBanner from "@/components/cookieBanner";
 
@@ -43,7 +43,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const campaigns = await getCampaigns();
+  const campaigns = await getCachedCampaigns();
   const totalUserCount = await getCachedTotalUserCount();
   return (
     <html

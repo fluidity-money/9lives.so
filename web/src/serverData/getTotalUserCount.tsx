@@ -9,7 +9,7 @@ export const getCachedTotalUserCount = unstable_cache(
   getTotalUserCount,
   ["totalUserCount"],
   {
-    revalidate: 60,
+    revalidate: 86400,
     tags: ["totalUserCount"],
   },
 );

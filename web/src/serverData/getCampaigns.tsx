@@ -49,6 +49,6 @@ export async function getCampaigns() {
 }
 
 export const getCachedCampaigns = unstable_cache(getCampaigns, ["campaigns"], {
-  revalidate: 60,
+  revalidate: 3600,
   tags: ["campaigns"],
 });
