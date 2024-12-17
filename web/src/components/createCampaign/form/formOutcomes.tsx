@@ -130,6 +130,7 @@ export default function CreateCampaignFormOutcomes({
                 <div className="flex gap-2.5">
                   <input
                     type="file"
+                    accept="image/gif, image/jpeg, image/jpg, image/png"
                     hidden
                     {...register(`outcomes.${idx}.picture`, {
                       onChange: (e) => handleOutcomePicChange(e, idx),

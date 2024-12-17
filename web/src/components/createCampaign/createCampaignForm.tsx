@@ -55,7 +55,17 @@ export default function CreateCampaignForm() {
       })
       .refine((file) => file.size > 0, {
         message: "You have to upload a picture",
-      }),
+      })
+      .refine(
+        (file) => {
+          const validExtensions = ["png", "jpg", "jpeg", "gif"];
+          const fileExtension = file.name.split(".").pop()?.toLowerCase();
+          return fileExtension && validExtensions.includes(fileExtension);
+        },
+        {
+          message: "File must be a PNG, JPG, JPEG, or GIF image.",
+        },
+      ),
     name: z.string().min(3),
     description: z.string().min(5),
     seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),

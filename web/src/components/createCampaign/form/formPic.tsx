@@ -38,6 +38,7 @@ export default function CreateCampaignFormPicture({
       <Label text="Campaign Picture" required />
       <Input
         type="file"
+        accept="image/gif, image/jpeg, image/jpg, image/png"
         {...register("picture", {
           onChange: handlePicChange,
         })}

@@ -13,7 +13,7 @@ func replacePicStrPrelude(p string) string {
 
 func isBadImage(x string) bool {
 	switch x {
-	case "jpeg", "png", "gif":
+	case "jpeg", "jpg", "png", "gif":
 		return false
 	default:
 		return true
