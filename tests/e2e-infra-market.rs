@@ -7,6 +7,7 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
 use arrayvec::ArrayVec;
 
 use lib9lives::{
+    erc20_call::max_bals_guard,
     error::{panic_guard, Error},
     fees::*,
     host::{set_msg_sender, ts_add_time, with_contract},
@@ -184,11 +185,12 @@ proptest! {
         // disagrees, the predictors agree in line with the caller.
         with_contract::<_, StorageInfraMarket, _>(|c| {
             c.enabled.set(true);
-            set_msg_sender(Address::from([9u8; 20]));
             c.factory_addr.set(msg_sender());
             let trading = Address::from([1u8; 20]);
             let winner = fixed_bytes!("0541d76af67ad076");
-            assert_eq!(
+            should_spend!(
+                FUSDC_ADDR,
+                {msg_sender() => INCENTIVE_AMT_BASE},
                 c.register(
                     trading,
                     msg_sender(),
@@ -196,22 +198,23 @@ proptest! {
                     block_timestamp() + 100,
                     u64::MAX
                 )
-                .unwrap(),
-                INCENTIVE_AMT_BASE,
             );
             ts_add_time(150);
             c.call(trading, winner, msg_sender()).unwrap();
             // We're currently in day 1, the WHINGING PERIOD. This should
             // last for 2 days.
             let preferred_outcome_whinger = fixed_bytes!("7777777777777777");
-            assert_eq!(
+            should_spend!(
+                FUSDC_ADDR,
+                {msg_sender() => BOND_FOR_WHINGE},
                 c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
-                    .unwrap(),
-                BOND_FOR_WHINGE
             );
             panic_guard(|| {
                 assert_eq!(
-                    c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
+                    max_bals_guard(
+                        msg_sender(),
+                        || c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
+                    )
                         .unwrap_err(),
                     Error::AlreadyWhinged
                 );

@@ -5,14 +5,16 @@ use std::{cell::RefCell, collections::HashMap, ptr};
 
 use stylus_sdk::alloy_primitives::{Address, U256};
 
+use crate::testing_addrs;
+
 const WORD_BYTES: usize = 32;
 pub type Word = [u8; WORD_BYTES];
 
 thread_local! {
     static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
     static CUR_TIME: RefCell<u64> = const { RefCell::new(0) };
-    static MSG_SENDER: RefCell<Address> = RefCell::new(Address::from([1u8; 20]));
-    static CONTRACT_ADDRESS: RefCell<Address> = RefCell::new(Address::from([2u8; 20]));
+    static MSG_SENDER: RefCell<Address> = RefCell::new(Address::from(testing_addrs::MSG_SENDER));
+    static CONTRACT_ADDRESS: RefCell<Address> = RefCell::new(Address::from(testing_addrs::CONTRACT));
 }
 
 unsafe fn read_word(key: *const u8) -> Word {

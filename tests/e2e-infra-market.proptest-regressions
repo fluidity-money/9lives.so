@@ -5,3 +5,4 @@
 # It is recommended to check this file in to source control so that
 # everyone who runs the test benefits from these saved cases.
 cc 3600b715ace2e4c10949240b6759ab04c07c92f08422a0200d7e030a367f995b # shrinks to predictions = []
+cc bed08ef924f02baf25fcf167825ba6ce2ce4c285b665fa4e39496c066a21badd # shrinks to predictions = []

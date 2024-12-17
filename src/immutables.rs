@@ -8,8 +8,10 @@ use array_concat::{concat_arrays, concat_arrays_size};
 
 use keccak_const::Keccak256;
 
+use crate::testing_addrs;
+
 macro_rules! env_addr {
-    ($name:ident, $input:literal, $default:expr) => {
+    ($name:ident, $input:literal, $default:ident) => {
         #[cfg(not(feature = "testing"))]
         paste::paste! {
             const [<$name _BYTES>]: [u8; 20] = match const_hex::const_decode_to_array::<20>(env!($input).as_bytes()) {
@@ -19,18 +21,25 @@ macro_rules! env_addr {
             pub const $name: Address = Address::new([<$name _BYTES>]);
         }
         #[cfg(feature = "testing")]
-        pub const $name: Address = Address::new($default);
+        pub const $name: Address = Address::new(testing_addrs::$default);
     };
 }
 
 // fUSDC address to use as the base asset for everything.
-env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR", [7u8; 20]);
+env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR", FUSDC);
 
 // Longtail's address as deployed.
-env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR", [8u8; 20]);
+env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR", LONGTAIL);
 
 // Staked ARB address to use for taking amounts for Infrastructure Markets.
-env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", [9u8; 20]);
+env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
+
+// Testing address for knowing where the DAO would live.
+#[cfg(feature = "testing")]
+pub const TESTING_DAO_ADDR: Address = Address::new(testing_addrs::TESTING_DAO);
+
+#[cfg(feature = "testing")]
+pub const TESTING_SHARE_ADDR: Address = Address::new(testing_addrs::SHARE);
 
 // Scaled amount to use for drawing down funds on request based on a
 // percentage.
@@ -143,6 +152,12 @@ pub const SHARE_DECIMALS: u8 = 6;
 
 // Share decimals (1e6) that are in an exp-able form.
 pub const SHARE_DECIMALS_EXP: U256 = U256::from_limbs([1000000, 0, 0, 0]);
+
+// Staked ARB decimals for convinient use.
+pub const STAKED_ARB_DECIMALS: u8 = 18;
+
+// 1e18
+pub const STAKED_ARB_DECIMALS_EXP: U256 = U256::from_limbs([1000000000000000000, 0, 0, 0]);
 
 pub const LONGTAIL_FEE: u32 = 3000;
 

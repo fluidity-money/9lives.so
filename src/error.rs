@@ -7,6 +7,9 @@
 #[cfg(target_arch = "wasm32")]
 use alloc::{vec, vec::Vec};
 
+#[cfg(not(target_arch = "wasm32"))]
+use crate::{immutables, utils::msg_sender};
+
 use stylus_sdk::alloy_primitives::{Address, U256};
 
 macro_rules! err_pre {
@@ -474,8 +477,22 @@ impl std::fmt::Debug for Error {
             f,
             "{n}: {}",
             match self {
-                Error::ERC20ErrorTransfer(addr, msg) =>
-                    format!("{addr}: {:?}", String::from_utf8(msg.clone())),
+                Error::ERC20ErrorTransfer(addr, msg) => format!(
+                    "{}: {:?}",
+                    match *addr {
+                        immutables::FUSDC_ADDR => "fusdc contract".to_string(),
+                        immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
+                        immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
+                        immutables::TESTING_DAO_ADDR => "testing dao".to_string(),
+                        _ =>
+                            if *addr == msg_sender() {
+                                "msg sender".to_string()
+                            } else {
+                                addr.to_string()
+                            },
+                    },
+                    String::from_utf8(msg.clone())
+                ),
                 _ => "".to_owned(),
             }
         )

@@ -5,9 +5,10 @@ use std::{cell::RefCell, collections::HashMap};
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use crate::{
+    decimal::u256_to_decimal,
     error::Error,
+    immutables,
     utils::{contract_address, msg_sender},
-    immutables::*
 };
 
 thread_local! {
@@ -43,8 +44,67 @@ fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
             None => U256::ZERO,
             Some(v) => *v,
         };
-        b.insert(recipient, amt + existing_bal);
+        b.insert(recipient, amt.wrapping_add(existing_bal));
     });
+}
+
+fn test_reset_bal(addr: Address, recipient: Address) {
+    BALANCES.with(|b| -> Option<()> {
+        let mut b = b.borrow_mut();
+        b.get_mut(&addr)?.insert(recipient, U256::ZERO);
+        Some(())
+    });
+}
+
+/// Go through each token that we have as defaults, and set their balances to max, then at
+/// the end, go through them again, and set them to 0. This is only useful for situations
+/// where you might want to induce an error.
+pub fn max_bals_guard<T>(spender: Address, f: impl FnOnce() -> T) -> T {
+    use immutables::*;
+    let tokens = [FUSDC_ADDR, STAKED_ARB_ADDR, TESTING_SHARE_ADDR];
+    for t in tokens {
+        test_give_tokens(t, spender, U256::MAX);
+    }
+    let x = f();
+    for t in tokens {
+        test_reset_bal(t, spender);
+    }
+    x
+}
+
+fn rename_addr(v: Address) -> String {
+    match v {
+        immutables::FUSDC_ADDR => "fusdc contract".to_string(),
+        immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
+        immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
+        immutables::TESTING_DAO_ADDR => "testing dao".to_string(),
+        _ => {
+            if v == msg_sender() {
+                "msg sender".to_string()
+            } else if v == contract_address() {
+                "9lives contract".to_string()
+            } else {
+                v.to_string()
+            }
+        }
+    }
+}
+
+fn safe_print(x: U256, d: u8) -> String {
+    match x {
+        U256::MAX => "max".to_string(),
+        _ => u256_to_decimal(x, d).unwrap().to_string(),
+    }
+}
+
+fn rename_amt(a: Address, v: U256) -> String {
+    use crate::immutables::*;
+    match a {
+        FUSDC_ADDR => format!("$fusdc {}", safe_print(v, FUSDC_DECIMALS)),
+        TESTING_SHARE_ADDR => format!("$share {}", safe_print(v, SHARE_DECIMALS)),
+        STAKED_ARB_ADDR => format!("ARB{}", safe_print(v, STAKED_ARB_DECIMALS)),
+        _ => format!("unknown token amt {}", v),
+    }
 }
 
 // Test that each of theses addresses should spend the amounts given,
@@ -63,24 +123,16 @@ pub fn should_spend<T>(
     if x.is_err() {
         return x;
     }
-    for (k, _) in spenders {
+    for (k, v) in spenders {
         let b = balance_of(addr, k).unwrap();
         if !b.is_zero() {
             return Err(Error::ERC20ErrorTransfer(
                 addr,
                 format!(
-                    "{} has leftover bal {b}",
-                    match k {
-                        FUSDC_ADDR => "fusdc contract".to_owned(),
-                        LONGTAIL_ADDR => "longtail contract".to_owned(),
-                        STAKED_ARB_ADDR => "staked arb contract".to_owned(),
-                        x =>
-                            if x == msg_sender() {
-                                "msg sender".to_owned()
-                            } else {
-                                format!("{:?}", x)
-                            }
-                    }
+                    "{} has leftover bal {}, they started with ${}",
+                    rename_addr(addr),
+                    rename_amt(addr, v),
+                    rename_amt(addr, b),
                 )
                 .into(),
             ));
@@ -109,7 +161,13 @@ pub fn transfer_from(
         })
         .ok_or(Error::ERC20ErrorTransfer(
             addr,
-            format!("{spender} =[{amount}]> {recipient} no bal").into(),
+            format!(
+                "{} sending ${} to {}: no bal",
+                rename_addr(spender),
+                rename_amt(addr, amount),
+                rename_addr(recipient),
+            )
+            .into(),
         ))?;
     test_give_tokens(addr, recipient, amount);
     Ok(())
