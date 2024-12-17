@@ -25,8 +25,15 @@ import Link from "next/link";
 import RightCaretIcon from "#/icons/right-caret.svg";
 import { fieldClass } from "../createCampaignForm";
 import { SettlementType } from "@/types";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import {
+  Control,
+  FieldErrors,
+  useFieldArray,
+  UseFormRegister,
+  UseFormTrigger,
+} from "react-hook-form";
 import Textarea from "@/components/themed/textarea";
+import Button from "@/components/themed/button";
 
 function SourceWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -38,16 +45,33 @@ function SourceWrapper({ children }: { children: React.ReactNode }) {
 type CreateCampaignFormSettlmentSourceFields = {
   oracleDescription: string;
   contractAddress: string;
+  oracleUrls: string[];
 };
 export default function CreateCampaignFormSettlmentSource({
   setSettlementType,
   register,
+  trigger,
   errors,
+  control,
 }: {
   errors: FieldErrors<CreateCampaignFormSettlmentSourceFields>;
+  trigger: UseFormTrigger<CreateCampaignFormSettlmentSourceFields & any>;
   register: UseFormRegister<CreateCampaignFormSettlmentSourceFields & any>;
   setSettlementType: React.Dispatch<React.SetStateAction<SettlementType>>;
+  control: Control<CreateCampaignFormSettlmentSourceFields & any>;
 }) {
+  const {
+    fields: urls,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "oracleUrls",
+    rules: {
+      required: false,
+      maxLength: 3,
+    },
+  });
   return (
     <Field className={fieldClass}>
       <Label text="Select Settlement Source" required />
@@ -62,7 +86,7 @@ export default function CreateCampaignFormSettlmentSource({
               setSettlementType("ORACLE");
               break;
             case 2:
-              // setSettlementType("contract");
+              setSettlementType("CONTRACT");
               break;
             case 3:
               setSettlementType("AI");
@@ -137,17 +161,23 @@ export default function CreateCampaignFormSettlmentSource({
           </TabPanel>
           <TabPanel>
             <SourceWrapper>
-              <Textarea
-                placeholder="Enter Oracle Description"
-                className={combineClass(
-                  "text-left",
-                  errors.oracleDescription && "border-2 border-red-500",
+              <p className="text-xs">
+                Winner is determined with an infra market!
+              </p>
+              <Field className={"flex flex-col gap-2.5"}>
+                <Label text={"Oracle"} required={true} />
+                <Textarea
+                  placeholder="Enter Oracle Description"
+                  className={combineClass(
+                    "text-left",
+                    errors.oracleDescription && "border-2 border-red-500",
+                  )}
+                  {...register("oracleDescription")}
+                />
+                {errors.oracleDescription && (
+                  <ErrorInfo text={errors.oracleDescription.message} />
                 )}
-                {...register("oracleDescription")}
-              />
-              {errors.oracleDescription && (
-                <ErrorInfo text={errors.oracleDescription.message} />
-              )}
+              </Field>
               {errors.oracleDescription && (
                 <>
                   {" "}
@@ -169,7 +199,39 @@ export default function CreateCampaignFormSettlmentSource({
                   </ul>
                 </>
               )}
-
+              {urls.map((field, idx) => (
+                <Field className={"flex flex-col gap-2.5"} key={field.id}>
+                  <Label text={`Oracle Url ${idx + 1}`} />
+                  <div className="flex gap-2.5">
+                    <Input
+                      {...register(`oracleUrls.${idx}`)}
+                      placeholder="Enter a url as a settlement source"
+                      className={combineClass(
+                        "flex-1",
+                        errors.oracleUrls?.[idx] && "border-2 border-red-500",
+                      )}
+                    />{" "}
+                    <Button
+                      title="Del"
+                      onClick={() => remove(idx)}
+                      size={"small"}
+                      intent={"no"}
+                    />
+                  </div>
+                  {errors.oracleUrls?.[idx] ? (
+                    <ErrorInfo text={errors.oracleUrls?.[idx].message} />
+                  ) : null}
+                </Field>
+              ))}
+              <Button
+                disabled={urls.length >= 3}
+                onClick={async () => {
+                  if (await trigger("oracleUrls")) append("");
+                }}
+                intent={"default"}
+                size={"large"}
+                title="Add Oracle Url +"
+              />
               <Link
                 className="flex gap-2 font-chicago text-xs underline"
                 href={"#"}

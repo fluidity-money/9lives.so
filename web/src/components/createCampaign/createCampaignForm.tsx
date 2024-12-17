@@ -91,6 +91,10 @@ export default function CreateCampaignForm() {
           settlementType === "ORACLE"
             ? z.string().min(10).max(1000)
             : z.string().optional(),
+        oracleUrls:
+          settlementType === "ORACLE"
+            ? z.array(z.string().url().max(200)).max(3)
+            : z.array(z.string()).optional(),
         // contractAddress:
         //   settlementType === "contract"
         //     ? z.string().startsWith("0x").min(42)
@@ -105,6 +109,7 @@ export default function CreateCampaignForm() {
     handleSubmit,
     setValue,
     watch,
+    trigger,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -152,6 +157,9 @@ export default function CreateCampaignForm() {
       settlementType,
       outcomes,
     };
+    if (!Boolean(preparedInput.oracleUrls?.length)) {
+      delete preparedInput.oracleUrls;
+    }
     track(EVENTS.CAMPAIGN_CREATE, {
       wallet: account.address,
       name: input.name,
@@ -216,6 +224,8 @@ export default function CreateCampaignForm() {
       />
       <CreateCampaignFormEndDate register={register} error={errors.ending} />
       <CreateCampaignFormSettlmentSource
+        control={control}
+        trigger={trigger}
         register={register}
         errors={errors}
         setSettlementType={setSettlementType}
