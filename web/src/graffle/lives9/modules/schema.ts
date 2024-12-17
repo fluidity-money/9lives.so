@@ -222,6 +222,15 @@ export namespace Schema {
           namedType: $$NamedTypes.$$String;
         };
         /**
+         * Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+         */
+        oracleUrls: {
+          kind: "InputField";
+          name: "oracleUrls";
+          inlineType: [0, [0]];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
          * X/Twitter username
          */
         x: {
@@ -287,6 +296,7 @@ export namespace Schema {
       creator: Campaign.creator;
       settlement: Campaign.settlement;
       oracleDescription: Campaign.oracleDescription;
+      oracleUrls: Campaign.oracleUrls;
       identifier: Campaign.identifier;
       poolAddress: Campaign.poolAddress;
       outcomes: Campaign.outcomes;
@@ -367,6 +377,16 @@ export namespace Schema {
       name: "oracleDescription";
       arguments: {};
       inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+     */
+    export interface oracleUrls extends $.OutputField {
+      name: "oracleUrls";
+      arguments: {};
+      inlineType: [0, [0]];
       namedType: $$NamedTypes.$$String;
     }
 
@@ -834,6 +854,7 @@ export namespace Schema {
    * "ORACLE" - Infrastructure market.
    * "POLL" - Opinion Poll.
    * "AI" - A.I Resolver.
+   * "CONTRACT" - Contract State.
    */
   export interface SettlementType extends $.Enum {
     name: "SettlementType";

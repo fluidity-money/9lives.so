@@ -316,7 +316,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `explainCampaign` field. Some (9/13) arguments are required so you must include this.
+     * Arguments for `explainCampaign` field. Some (9/14) arguments are required so you must include this.
      */
     $: explainCampaign$Arguments<_$Scalars>;
   }
@@ -366,6 +366,10 @@ export namespace Mutation {
      * Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
      */
     oracleDescription?: string | undefined | null;
+    /**
+     * Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+     */
+    oracleUrls?: Array<string | undefined | null> | undefined | null;
     /**
      * X/Twitter username
      */
@@ -428,6 +432,7 @@ export type Modification = "DELETE" | "PUT";
  * "ORACLE" - Infrastructure market.
  * "POLL" - Opinion Poll.
  * "AI" - A.I Resolver.
+ * "CONTRACT" - Contract State.
  */
 export type SettlementType = "ORACLE" | "POLL" | "AI" | "CONTRACT";
 
@@ -549,6 +554,14 @@ export interface Campaign<
   oracleDescription?:
     | Campaign.oracleDescription$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Campaign.oracleDescription<_$Scalars>>;
+  /**
+   *
+   * Select the `oracleUrls` field on the `Campaign` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  oracleUrls?:
+    | Campaign.oracleUrls$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.oracleUrls<_$Scalars>>;
   /**
    *
    * Select the `identifier` field on the `Campaign` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -815,6 +828,34 @@ export namespace Campaign {
   > = $$Utilities.Simplify<
     | $Select.Indicator.NoArgsIndicator
     | oracleDescription$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type oracleUrls<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | oracleUrls$SelectionSet<_$Scalars>;
+
+  export interface oracleUrls$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `oracleUrls` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type oracleUrls$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | oracleUrls$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------

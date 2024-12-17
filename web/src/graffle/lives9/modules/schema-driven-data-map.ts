@@ -120,6 +120,7 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     },
     settlement: {},
     oracleDescription: {},
+    oracleUrls: {},
     identifier: {},
     poolAddress: {},
     outcomes: {
@@ -288,6 +289,10 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         oracleDescription: {
           nt: String,
           it: [0],
+        },
+        oracleUrls: {
+          nt: String,
+          it: [0, [0]],
         },
         x: {
           nt: String,

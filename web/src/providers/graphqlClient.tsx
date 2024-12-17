@@ -60,7 +60,8 @@ export const requestCreateCampaign = (params: {
   desc: string;
   picture: string;
   outcomes: OutcomeInput[];
-  oracleDescription?: string | null;
+  oracleDescription?: string;
+  oracleUrls?: string[];
   seed: number;
   creator: string;
   ending: number;
@@ -78,6 +79,7 @@ export const requestCreateCampaign = (params: {
       outcomes: params.outcomes,
       seed: params.seed,
       creator: params.creator,
+      oracleUrls: params.oracleUrls,
       ending: params.ending,
       starting: params.starting,
       oracleDescription: params.oracleDescription,
