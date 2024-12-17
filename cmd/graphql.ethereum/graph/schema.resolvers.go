@@ -249,9 +249,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		shareAddrStr := strings.ToLower(shareAddr.Hex())
 		var outcomePicUrl string
 		if pic := outcome.Picture; pic != "" {
-			if len(outcome.Picture) > MaxImageSizeEncoded {
-				return nil, fmt.Errorf("outcome picture too large")
-			}
 			outcomePicBody := base64.NewDecoder(
 				base64.StdEncoding,
 				strings.NewReader(replacePicStrPrelude(outcome.Picture)),
@@ -259,6 +256,9 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			var buf bytes.Buffer
 			if _, err := buf.ReadFrom(outcomePicBody); err != nil {
 				return nil, fmt.Errorf("image too large")
+			}
+			if buf.Len() > MaxImageSizeEncoded {
+				return nil, fmt.Errorf("outcome picture too large")
 			}
 			buf2 := buf
 			_, imageType, err := image.DecodeConfig(&buf2)
@@ -319,6 +319,9 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	var buf bytes.Buffer
 	if _, err := buf.ReadFrom(tradingPicBody); err != nil {
 		return nil, fmt.Errorf("image too large")
+	}
+	if buf.Len() > MaxImageSizeEncoded {
+		return nil, fmt.Errorf("pool picture too large")
 	}
 	buf2 := buf
 	_, imageType, err := image.DecodeConfig(&buf2)
