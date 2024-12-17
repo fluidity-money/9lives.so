@@ -347,7 +347,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	tradingPicUrl, err := url.JoinPath(r.PicturesUriBase, tradingPicKey)
 	if err != nil {
 		slog.Error("Failed to join a trading image path",
-			"picture", picture,
 			"trading addr", tradingAddr,
 			"trading pic key", tradingPicKey,
 			"err", err,
