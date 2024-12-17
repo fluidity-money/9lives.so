@@ -88,13 +88,7 @@ pub mod storage_infra_market;
 pub mod contract_beauty_contest;
 pub mod storage_beauty_contest;
 
-#[cfg(any(
-    feature = "contract-trading-mint",
-    feature = "contract-trading-extras",
-    feature = "contract-trading-quotes",
-    feature = "contract-trading-price"
-))]
-pub use contract_trading::user_entrypoint;
+pub use storage_factory::StorageFactory;
 
 #[cfg(feature = "contract-factory-1")]
 pub use contract_factory_1::user_entrypoint;
@@ -102,14 +96,11 @@ pub use contract_factory_1::user_entrypoint;
 #[cfg(feature = "contract-factory-2")]
 pub use contract_factory_2::user_entrypoint;
 
-#[cfg(feature = "contract-lockup")]
-pub use contract_lockup::user_entrypoint;
-
-#[cfg(feature = "contract-infra-market")]
-pub use contract_infra_market::user_entrypoint;
-
-#[cfg(feature = "contract-beauty-contest")]
-pub use contract_beauty_contest::user_entrypoint;
+// The following imports should all bring in user_entrypoint if the flag is enabled:
+pub use contract_trading::*;
+pub use contract_lockup::*;
+pub use contract_infra_market::*;
+pub use contract_beauty_contest::*;
 
 #[cfg(all(
     target_arch = "wasm32",

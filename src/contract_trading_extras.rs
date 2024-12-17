@@ -1,11 +1,15 @@
-use stylus_sdk::{alloy_primitives::*, contract, evm};
+use stylus_sdk::{alloy_primitives::*, evm};
+
+use crate::{
+    error::*,
+    events, factory_call,
+    immutables::*,
+    proxy,
+    utils::{block_timestamp, contract_address, msg_sender},
+};
 
 #[cfg(target_arch = "wasm32")]
 use alloc::vec::Vec;
-
-use crate::{
-    error::*, events, factory_call, immutables::*, proxy, utils::block_timestamp, utils::msg_sender,
-};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
@@ -133,7 +137,7 @@ impl StorageTrading {
     pub fn share_addr(&self, outcome: FixedBytes<8>) -> R<Address> {
         Ok(proxy::get_share_addr(
             self.factory_addr.get(),
-            contract::address(),
+            contract_address(),
             self.share_impl.get(),
             outcome,
         ))

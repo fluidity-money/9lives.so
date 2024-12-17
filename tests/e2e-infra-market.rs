@@ -4,11 +4,14 @@ use proptest::prelude::*;
 
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
 
+use arrayvec::ArrayVec;
+
 use lib9lives::{
     error::{panic_guard, Error},
     fees::*,
     host::{set_msg_sender, ts_add_time, with_contract},
     utils::{block_timestamp, msg_sender},
+    StorageInfraMarket,
 };
 
 #[test]
@@ -129,7 +132,8 @@ fn test_unhappy_call_whinge_claim_no_bettors_path() {
                 Address::ZERO,
                 Address::ZERO,
             )
-            .unwrap().0,
+            .unwrap()
+            .0,
             INCENTIVE_AMT_SWEEP
         );
         // We can't call this twice and get anything unless we're liquidating someone!
@@ -141,14 +145,94 @@ fn test_unhappy_call_whinge_claim_no_bettors_path() {
                 Address::ZERO,
                 Address::ZERO,
             )
-            .unwrap().0,
+            .unwrap()
+            .0,
             U256::ZERO
         );
         assert_eq!(preferred_outcome_whinger, c.winner(trading).unwrap());
     })
 }
 
+fn strat_u256() -> impl Strategy<Value = U256> {
+    (0..32).prop_perturb(move |steps, mut rng| {
+        U256::from_be_slice(
+            (0..=steps)
+                .map(|_| rng.gen())
+                .collect::<ArrayVec<u8, 256>>()
+                .as_slice(),
+        )
+    })
+}
+
 proptest! {
     #[test]
-    fn test_timing_accurate(campaign_call_start in any::<u64>()) {}
+    fn test_unhappy_call_whinge_claim_different_from_caller(
+        predictions in proptest::collection::vec((any::<u64>(), strat_u256()), 0..1000)
+    ) {
+        // Someone creates a market, it's called by someone, the whinger
+        // disagrees, the predictors agree in line with the caller.
+        with_contract::<_, StorageInfraMarket, _>(|c| {
+            c.enabled.set(true);
+            set_msg_sender(Address::from([9u8; 20]));
+            c.factory_addr.set(msg_sender());
+            let trading = Address::from([1u8; 20]);
+            let winner = fixed_bytes!("0541d76af67ad076");
+            assert_eq!(
+                c.register(
+                    trading,
+                    msg_sender(),
+                    FixedBytes::<32>::from([1u8; 32]),
+                    block_timestamp() + 100,
+                    u64::MAX
+                )
+                .unwrap(),
+                INCENTIVE_AMT_BASE,
+            );
+            ts_add_time(150);
+            c.call(trading, winner, msg_sender()).unwrap();
+            // We're currently in day 1, the WHINGING PERIOD. This should
+            // last for 2 days.
+            let preferred_outcome_whinger = fixed_bytes!("7777777777777777");
+            assert_eq!(
+                c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
+                    .unwrap(),
+                BOND_FOR_WHINGE
+            );
+            panic_guard(|| {
+                assert_eq!(
+                    c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
+                        .unwrap_err(),
+                    Error::AlreadyWhinged
+                );
+            });
+            // We are now 5 days in. The SWEEPING PERIOD.
+            let five_days = 432000;
+            ts_add_time(five_days);
+            // Since no-one predicted, it must be the whinger that was correct!
+            assert_eq!(
+                c.sweep(
+                    trading,
+                    Address::ZERO,
+                    vec![winner, preferred_outcome_whinger],
+                    Address::ZERO,
+                    Address::ZERO,
+                )
+                .unwrap().0,
+                INCENTIVE_AMT_SWEEP
+            );
+            // We can't call this twice and get anything unless we're liquidating someone!
+            assert_eq!(
+                c.sweep(
+                    trading,
+                    Address::ZERO,
+                    vec![winner, preferred_outcome_whinger],
+                    Address::ZERO,
+                    Address::ZERO,
+                )
+                .unwrap().0,
+                U256::ZERO
+            );
+            assert_eq!(preferred_outcome_whinger, c.winner(trading).unwrap());
+        })
+    }
 }

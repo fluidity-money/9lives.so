@@ -1,4 +1,4 @@
-use stylus_sdk::{alloy_primitives::*, contract, evm};
+use stylus_sdk::{alloy_primitives::*, evm};
 
 use crate::{
     erc20_call,
@@ -6,7 +6,7 @@ use crate::{
     events,
     immutables::*,
     nineliveslockedarb_call, proxy,
-    utils::{block_timestamp, msg_sender},
+    utils::{contract_address, block_timestamp, msg_sender},
 };
 
 pub use crate::storage_lockup::*;
@@ -17,7 +17,7 @@ impl StorageLockup {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         let token =
             proxy::deploy_proxy(token_impl).map_err(|_| Error::NinelivesLockedArbCreateError)?;
-        nineliveslockedarb_call::ctor(token, contract::address())?;
+        nineliveslockedarb_call::ctor(token, contract_address())?;
         evm::log(events::LockupTokenProxyDeployed { token });
         self.token_addr.set(token);
         self.infra_market_addr.set(infra_market);
@@ -32,7 +32,7 @@ impl StorageLockup {
     /// Lockup sends Locked ARB to the user after taking Staked ARB from
     /// them.
     pub fn lockup(&mut self, amt: U256, recipient: Address) -> Result<U256, Error> {
-        erc20_call::transfer_from(STAKED_ARB_ADDR, msg_sender(), contract::address(), amt)?;
+        erc20_call::transfer_from(STAKED_ARB_ADDR, msg_sender(), contract_address(), amt)?;
         // Overflow isn't likely, since we're receiving Staked ARB. If
         // they overflow, we have a bigger problem.
         nineliveslockedarb_call::mint(self.token_addr.get(), recipient, amt)?;

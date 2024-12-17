@@ -16,3 +16,10 @@ pub fn msg_sender() -> Address {
     #[allow(unreachable_code)]
     stylus_sdk::msg::sender()
 }
+
+pub fn contract_address() -> Address {
+    #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+    return crate::host::get_contract_address();
+    #[allow(unreachable_code)]
+    stylus_sdk::contract::address()
+}

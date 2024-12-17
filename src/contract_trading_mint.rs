@@ -1,6 +1,6 @@
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
-    contract, evm,
+     evm,
 };
 
 use crate::{
@@ -11,7 +11,7 @@ use crate::{
     fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    utils::{block_timestamp, msg_sender},
+    utils::{contract_address, block_timestamp, msg_sender},
 };
 
 #[cfg(feature = "trading-backend-dpm")]
@@ -55,7 +55,7 @@ impl StorageTrading {
         // Get the user's balance of the share they own for this outcome.
         let share_addr = proxy::get_share_addr(
             self.factory_addr.get(),
-            contract::address(), // Address of this contract, the Trading contract.
+            contract_address(), // Address of this contract, the Trading contract.
             self.share_impl.get(),
             outcome_id,
         );
@@ -230,7 +230,7 @@ impl StorageTrading {
         // shares we made to the user's address!
         let share_addr = proxy::get_share_addr(
             self.factory_addr.get(),
-            contract::address(),
+            contract_address(),
             self.share_impl.get(),
             outcome_id,
         );

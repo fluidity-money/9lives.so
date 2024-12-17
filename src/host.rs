@@ -12,6 +12,7 @@ thread_local! {
     static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
     static CUR_TIME: RefCell<u64> = const { RefCell::new(0) };
     static MSG_SENDER: RefCell<Address> = RefCell::new(Address::from([1u8; 20]));
+    static CONTRACT_ADDRESS: RefCell<Address> = RefCell::new(Address::from([2u8; 20]));
 }
 
 unsafe fn read_word(key: *const u8) -> Word {
@@ -104,6 +105,14 @@ pub fn set_msg_sender(a: Address) {
 
 #[no_mangle]
 pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}
+
+pub fn get_contract_address() -> Address {
+    CONTRACT_ADDRESS.with(|v| v.clone().into_inner())
+}
+
+pub fn set_contract_address(a: Address) {
+    CONTRACT_ADDRESS.with(|v| *v.borrow_mut() = a)
+}
 
 #[allow(dead_code)]
 pub fn with_contract<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {

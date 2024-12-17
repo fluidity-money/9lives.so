@@ -1,10 +1,16 @@
-use stylus_sdk::{alloy_primitives::*, contract};
+use stylus_sdk::{alloy_primitives::*};
 
 use alloc::vec::Vec;
 
-use crate::{amm_call, error::*, immutables::*, proxy};
+use crate::{
+    amm_call,
+    error::*,
+    immutables::*,
+    proxy,
+    utils::{contract_address, msg_sender},
+};
 
-pub use crate::{storage_factory::*, utils::msg_sender};
+pub use crate::storage_factory::*;
 
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {
@@ -152,7 +158,7 @@ impl StorageFactory {
         // It should be safe to do this as we rederive the share address every time.
         for outcome_id in outcomes {
             c!(amm_call::pause_pool(proxy::get_share_addr(
-                contract::address(),   // Factory address.
+                contract_address(),    // Factory address.
                 msg_sender(),          // Trading address (this is the caller).
                 self.share_impl.get(), // The share address.
                 outcome_id,            // The outcome that should be banned from continuing.

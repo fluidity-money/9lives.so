@@ -25,3 +25,5 @@ pub use crate::contract_trading_quotes::user_entrypoint;
 
 #[cfg(feature = "contract-trading-price")]
 pub use crate::contract_trading_price::user_entrypoint;
+
+pub use crate::storage_trading::StorageTrading;

@@ -6,43 +6,31 @@ use stylus_sdk::alloy_primitives::{Address, U256, U64};
 
 use array_concat::{concat_arrays, concat_arrays_size};
 
-use paste::paste;
-
 use keccak_const::Keccak256;
 
-#[cfg(not(feature = "testing"))]
 macro_rules! env_addr {
-    ($name:ident, $input:literal) => {
-        paste! {
+    ($name:ident, $input:literal, $default:expr) => {
+        #[cfg(not(feature = "testing"))]
+        paste::paste! {
             const [<$name _BYTES>]: [u8; 20] = match const_hex::const_decode_to_array::<20>(env!($input).as_bytes()) {
                 Ok(res) => res,
                 Err(_) => panic!(),
             };
             pub const $name: Address = Address::new([<$name _BYTES>]);
         }
-    };
-}
-
-#[cfg(feature = "testing")]
-macro_rules! env_addr {
-    ($name:ident, $input:literal) => {
-        paste! {
-            #[allow(unused)]
-            const [<$name _BYTES>]: [u8; 20] = [1_u8; 20];
-            #[allow(unused)]
-            pub const $name: Address = Address::ZERO;
-        }
+        #[cfg(feature = "testing")]
+        pub const $name: Address = Address::new($default);
     };
 }
 
 // fUSDC address to use as the base asset for everything.
-env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR");
+env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR", [7u8; 20]);
 
 // Longtail's address as deployed.
-env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR");
+env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR", [8u8; 20]);
 
 // Staked ARB address to use for taking amounts for Infrastructure Markets.
-env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR");
+env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", [9u8; 20]);
 
 // Scaled amount to use for drawing down funds on request based on a
 // percentage.

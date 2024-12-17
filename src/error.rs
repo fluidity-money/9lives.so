@@ -1,5 +1,3 @@
-
-
 // This code has some weird behaviour to make tracing backtraces easier.
 // This in the form of the SHOULD_PANIC code. The user can elect to
 // use should_backtrace to set whether unswap should happen instead of
@@ -81,8 +79,9 @@ macro_rules! assert_or {
     };
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq)]
 #[repr(u8)]
+#[cfg_attr(not(target_arch = "wasm32"), derive(strum::IntoStaticStr))]
 pub enum Error {
     // 0x01
     /// Proxy already created.
@@ -465,6 +464,22 @@ pub enum Error {
     // 0x60
     /// It's too early to withdraw from the Lockup contract!
     TooEarlyToWithdraw,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl std::fmt::Debug for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let n: &str = self.into();
+        write!(
+            f,
+            "{n}: {}",
+            match self {
+                Error::ERC20ErrorTransfer(addr, msg) =>
+                    format!("{addr}: {:?}", String::from_utf8(msg.clone())),
+                _ => "".to_owned(),
+            }
+        )
+    }
 }
 
 pub type R<T> = Result<T, Error>;

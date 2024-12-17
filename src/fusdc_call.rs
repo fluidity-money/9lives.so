@@ -1,15 +1,13 @@
 
-
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes, U256},
-    contract,
 };
 
 use crate::{
     erc20_call::{self, permit, transfer_from},
     error::Error,
     immutables::FUSDC_ADDR,
-    utils::msg_sender,
+    utils::{msg_sender, contract_address},
 };
 
 pub fn take_from_funder_to(funder: Address, recipient: Address, amount: U256) -> Result<(), Error> {
@@ -21,7 +19,7 @@ pub fn take_from_sender_to(recipient: Address, amount: U256) -> Result<(), Error
 }
 
 pub fn take_from_sender(amount: U256) -> Result<(), Error> {
-    take_from_funder_to(msg_sender(), contract::address(), amount)
+    take_from_funder_to(msg_sender(), contract_address(), amount)
 }
 
 pub fn take_from_sender_permit(
@@ -33,7 +31,7 @@ pub fn take_from_sender_permit(
 ) -> Result<(), Error> {
     permit(
         FUSDC_ADDR,
-        contract::address(),
+        contract_address(),
         msg_sender(),
         value,
         deadline,

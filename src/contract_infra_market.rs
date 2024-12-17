@@ -1,4 +1,4 @@
-use stylus_sdk::{alloy_primitives::*, contract, evm};
+use stylus_sdk::{alloy_primitives::*, evm};
 
 use crate::{
     erc20_call,
@@ -10,7 +10,7 @@ use crate::{
     lockup_call, nineliveslockedarb_call, proxy,
     timing_infra_market::*,
     trading_call,
-    utils::{block_timestamp, msg_sender},
+    utils::{block_timestamp, msg_sender, contract_address},
 };
 
 pub use crate::storage_infra_market::*;
@@ -82,7 +82,7 @@ impl StorageInfraMarket {
             .set(U64::from(call_deadline_ts));
         // Take the incentive amount base amount to give to the user who
         // calls sweep for the first time with the correct calldata.
-        fusdc_call::take_from_funder_to(incentive_sender, contract::address(), INCENTIVE_AMT_BASE)?;
+        fusdc_call::take_from_funder_to(incentive_sender, contract_address(), INCENTIVE_AMT_BASE)?;
         // If we experience an overflow, that's not a big deal (we should've been collecting revenue more
         // frequently).
         self.dao_money
@@ -567,7 +567,7 @@ impl StorageInfraMarket {
         // contract again! We shouldn't need to worry about overflow here due
         // to the amount being sent being quite low and passing other checks.
         let confiscated =
-            lockup_call::confiscate(self.lockup_addr.get(), victim_addr, contract::address())?;
+            lockup_call::confiscate(self.lockup_addr.get(), victim_addr, contract_address())?;
         if confiscated.is_zero() {
             return Ok((caller_yield_taken, on_behalf_of_yield_taken));
         }
