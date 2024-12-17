@@ -213,15 +213,6 @@ export namespace Schema {
           namedType: $$NamedTypes.$$String;
         };
         /**
-         * Defines the method used to determine the winner of a campaign.
-         */
-        settlement: {
-          kind: "InputField";
-          name: "settlement";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$SettlementType;
-        };
-        /**
          * Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
          */
         oracleDescription: {
@@ -846,8 +837,8 @@ export namespace Schema {
    */
   export interface SettlementType extends $.Enum {
     name: "SettlementType";
-    members: ["ORACLE", "POLL", "AI"];
-    membersUnion: "ORACLE" | "POLL" | "AI";
+    members: ["ORACLE", "POLL", "AI", "CONTRACT"];
+    membersUnion: "ORACLE" | "POLL" | "AI" | "CONTRACT";
   }
 
   //

@@ -1,7 +1,6 @@
 import z from "zod";
 import { getContract } from "thirdweb";
 import thirdweb from "@/config/thirdweb";
-import factoryAbi from "./abi/factory";
 import ERC20Abi from "./abi/erc20";
 import ammAbi from "./abi/amm";
 import helperAbi from "./abi/helper";

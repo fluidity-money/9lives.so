@@ -316,7 +316,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `explainCampaign` field. Some (10/14) arguments are required so you must include this.
+     * Arguments for `explainCampaign` field. Some (9/13) arguments are required so you must include this.
      */
     $: explainCampaign$Arguments<_$Scalars>;
   }
@@ -362,10 +362,6 @@ export namespace Mutation {
      * Creator address. Hex encoded. Verified to be the creator later.
      */
     creator: string;
-    /**
-     * Defines the method used to determine the winner of a campaign.
-     */
-    $settlement: $NamedTypes.$SettlementType;
     /**
      * Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
      */
@@ -433,7 +429,7 @@ export type Modification = "DELETE" | "PUT";
  * "POLL" - Opinion Poll.
  * "AI" - A.I Resolver.
  */
-export type SettlementType = "ORACLE" | "POLL" | "AI";
+export type SettlementType = "ORACLE" | "POLL" | "AI" | "CONTRACT";
 
 //
 //

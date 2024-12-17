@@ -4,7 +4,7 @@ import GlobeInactiveIcon from "#/icons/globe-black.svg";
 import GlobeActiveIcon from "#/icons/globe.svg";
 import TelegramIcon from "#/icons/telegram.svg";
 import XIcon from "#/icons/x-twitter.svg";
-// import ContractIcon from "#/images/contract.svg";
+import ContractIcon from "#/images/contract.svg";
 import LipsActiveIcon from "#/images/lips.svg";
 import RetroCard from "@/components/cardRetro";
 import { useFormStore } from "@/stores/formStore";
@@ -26,10 +26,10 @@ export default function CreateCampaignPreview() {
       img: GlobeActiveIcon,
       title: "Oracle Description",
     },
-    // contract: {
-    //   img: ContractIcon,
-    //   title: "Contract State",
-    // },
+    CONTRACT: {
+      img: ContractIcon,
+      title: "Contract State",
+    },
     AI: {
       img: AIActiveIcon,
       title: "A.I Resolver",

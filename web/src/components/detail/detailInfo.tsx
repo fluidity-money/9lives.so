@@ -18,11 +18,13 @@ export default function DetailInfo({
     ORACLE: "a 9lives Infrastructure Market",
     POLL: "an Opinion poll",
     AI: "an A.I Resolver",
+    CONTRACT: "a Contract State",
   };
   const settlementContractMap: Record<SettlementType, string> = {
     ORACLE: config.NEXT_PUBLIC_INFRA_ADDR,
     POLL: config.NEXT_PUBLIC_BEAUTY_ADDR,
     AI: config.NEXT_PUBLIC_AI_ADDR,
+    CONTRACT: "0x", // not ready yet
   };
   return (
     <>

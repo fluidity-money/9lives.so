@@ -60,7 +60,6 @@ export const requestCreateCampaign = (params: {
   desc: string;
   picture: string;
   outcomes: OutcomeInput[];
-  settlementType: SettlementType;
   oracleDescription?: string | null;
   seed: number;
   creator: string;
@@ -81,7 +80,6 @@ export const requestCreateCampaign = (params: {
       creator: params.creator,
       ending: params.ending,
       starting: params.starting,
-      $settlement: params.settlementType,
       oracleDescription: params.oracleDescription,
       x: params.x,
       telegram: params.telegram,

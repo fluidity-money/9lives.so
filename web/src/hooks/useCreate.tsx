@@ -25,7 +25,10 @@ const approveHelperTx = prepareContractCall({
 });
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type FunctionNames = ExtractNames<(typeof helperAbi)[number]>;
-const settlementFunctionMap: Record<SettlementType, FunctionNames> = {
+const settlementFunctionMap: Record<
+  Exclude<SettlementType, "CONTRACT">,
+  FunctionNames
+> = {
   ORACLE: "createWithInfraMarket",
   AI: "createWithAI",
   POLL: "createWithBeautyContest",
@@ -48,6 +51,8 @@ const useCreate = () => {
               name: input.name.slice(0, 8) + o.name,
             }));
             let hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
+            if (input.settlementType === "CONTRACT")
+              throw new Error("Contract settlement is not supported yet");
             if (input.settlementType === "ORACLE" && input.oracleDescription) {
               const descBytes = toUtf8Bytes(input.oracleDescription);
               hashedDocumentation = keccak256(descBytes) as `0x${string}`;

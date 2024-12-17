@@ -285,10 +285,6 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
-        settlement: {
-          nt: SettlementType,
-          it: [1],
-        },
         oracleDescription: {
           nt: String,
           it: [0],
