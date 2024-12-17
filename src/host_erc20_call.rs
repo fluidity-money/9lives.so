@@ -148,7 +148,7 @@ pub fn transfer_from(
         .ok_or(Error::ERC20ErrorTransfer(
             addr,
             format!(
-                "{} sending ${} to {}: no bal",
+                "{} sending {} to {}: no bal",
                 rename_addr(spender),
                 rename_amt(addr, amount),
                 rename_addr(recipient),
