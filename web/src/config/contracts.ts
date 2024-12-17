@@ -25,7 +25,6 @@ const allContractSchema = z.object({
     shares: z.number().default(6),
   }),
   fusdc: contractSchema,
-  factory: contractSchema,
   amm: contractSchema,
   lens: contractSchema,
   helper: contractSchema,
@@ -34,12 +33,6 @@ const allContractSchema = z.object({
 const fusdc = getContract({
   abi: ERC20Abi,
   address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
-  chain: currentChain,
-  client: thirdweb.client,
-});
-const factory = getContract({
-  abi: factoryAbi,
-  address: clientEnv.NEXT_PUBLIC_FACTORY_ADDR,
   chain: currentChain,
   client: thirdweb.client,
 });
@@ -67,7 +60,6 @@ const contractValidation = allContractSchema.safeParse({
     shares: 6,
   },
   fusdc,
-  factory,
   amm,
   lens,
   helper,
@@ -83,7 +75,6 @@ if (!contractValidation.success) {
 export default contractValidation.data as {
   decimals: ContractsType["decimals"];
   fusdc: typeof fusdc;
-  factory: typeof factory;
   amm: typeof amm;
   lens: typeof lens;
   helper: typeof helper;
