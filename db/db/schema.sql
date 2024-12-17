@@ -45,6 +45,20 @@ CREATE DOMAIN public.address AS character(42);
 
 
 --
+-- Name: bytes32; Type: DOMAIN; Schema: public; Owner: -
+--
+
+CREATE DOMAIN public.bytes32 AS character(64);
+
+
+--
+-- Name: bytes8; Type: DOMAIN; Schema: public; Owner: -
+--
+
+CREATE DOMAIN public.bytes8 AS character(16);
+
+
+--
 -- Name: hash; Type: DOMAIN; Schema: public; Owner: -
 --
 
@@ -85,6 +99,22 @@ BEGIN
 	REFRESH MATERIALIZED VIEW seawater_pool_swap_volume_hourly_1;
 	REFRESH MATERIALIZED VIEW seawater_pool_swap_volume_daily_1;
 	REFRESH MATERIALIZED VIEW seawater_pool_swap_volume_monthly_1;
+END $$;
+
+
+--
+-- Name: refresh_swap_price_volume_views_2(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.refresh_swap_price_volume_views_2() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+	REFRESH MATERIALIZED VIEW seawater_pool_swap2_price_hourly_2;
+	REFRESH MATERIALIZED VIEW seawater_swaps_average_price_hourly_2;
+	REFRESH MATERIALIZED VIEW seawater_pool_swap_volume_hourly_2;
+	REFRESH MATERIALIZED VIEW seawater_pool_swap_volume_daily_2;
+	REFRESH MATERIALIZED VIEW seawater_pool_swap_volume_monthly_2;
 END $$;
 
 
@@ -798,6 +828,24 @@ END $$;
 
 
 --
+-- Name: snapshot_seawater_active_positions_2(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.snapshot_seawater_active_positions_2() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+	DELETE FROM seawater_active_positions_6;
+	INSERT INTO seawater_active_positions_6
+	SELECT *
+	FROM seawater_positions_5
+	WHERE pos_id NOT IN (
+		SELECT pos_id FROM events_seawater_burnPosition
+	);
+END $$;
+
+
+--
 -- Name: swaps_decimals_group_1_return; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -950,6 +998,20 @@ CREATE VIEW _timescaledb_internal._direct_view_37 AS
 
 
 --
+-- Name: _direct_view_38; Type: VIEW; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE VIEW _timescaledb_internal._direct_view_38 AS
+ SELECT public.time_bucket('01:00:00'::interval, events_seawater_swap1.created_by) AS hourly_interval,
+    events_seawater_swap1.pool,
+    (((1.0001 ^ avg(events_seawater_swap1.final_tick)) / (1000000)::numeric) * ((10)::numeric ^ (events_seawater_newpool.decimals)::numeric)) AS price,
+    events_seawater_newpool.decimals
+   FROM (public.events_seawater_swap1
+     JOIN public.events_seawater_newpool ON (((events_seawater_newpool.token)::bpchar = (events_seawater_swap1.pool)::bpchar)))
+  GROUP BY events_seawater_swap1.pool, (public.time_bucket('01:00:00'::interval, events_seawater_swap1.created_by)), events_seawater_newpool.decimals;
+
+
+--
 -- Name: events_seawater_swap2; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -969,6 +1031,26 @@ CREATE TABLE public.events_seawater_swap2 (
     final_tick0 bigint NOT NULL,
     final_tick1 bigint NOT NULL
 );
+
+
+--
+-- Name: _hyper_34_100_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_100_chunk (
+    CONSTRAINT constraint_100 CHECK (((created_by >= '2024-12-05 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-12-12 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_34_102_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_102_chunk (
+    CONSTRAINT constraint_102 CHECK (((created_by >= '2024-12-12 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-12-19 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
 
 
 --
@@ -1069,6 +1151,86 @@ CREATE TABLE _timescaledb_internal._hyper_34_81_chunk (
     CONSTRAINT constraint_81 CHECK (((created_by >= '2024-10-10 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-10-17 00:00:00+00'::timestamp with time zone)))
 )
 INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_34_83_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_83_chunk (
+    CONSTRAINT constraint_83 CHECK (((created_by >= '2024-10-17 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-10-24 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_34_85_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_85_chunk (
+    CONSTRAINT constraint_85 CHECK (((created_by >= '2024-10-24 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-10-31 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_34_88_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_88_chunk (
+    CONSTRAINT constraint_88 CHECK (((created_by >= '2024-10-31 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-11-07 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_34_90_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_90_chunk (
+    CONSTRAINT constraint_90 CHECK (((created_by >= '2024-11-07 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-11-14 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_34_94_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_94_chunk (
+    CONSTRAINT constraint_94 CHECK (((created_by >= '2024-11-14 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-11-21 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_34_96_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_96_chunk (
+    CONSTRAINT constraint_96 CHECK (((created_by >= '2024-11-21 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-11-28 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_34_98_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_34_98_chunk (
+    CONSTRAINT constraint_98 CHECK (((created_by >= '2024-11-28 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-12-05 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap2);
+
+
+--
+-- Name: _hyper_35_101_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_101_chunk (
+    CONSTRAINT constraint_101 CHECK (((created_by >= '2024-12-12 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-12-19 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
 
 
 --
@@ -1192,6 +1354,86 @@ INHERITS (public.events_seawater_swap1);
 
 
 --
+-- Name: _hyper_35_82_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_82_chunk (
+    CONSTRAINT constraint_82 CHECK (((created_by >= '2024-10-17 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-10-24 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
+
+
+--
+-- Name: _hyper_35_84_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_84_chunk (
+    CONSTRAINT constraint_84 CHECK (((created_by >= '2024-10-24 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-10-31 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
+
+
+--
+-- Name: _hyper_35_87_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_87_chunk (
+    CONSTRAINT constraint_87 CHECK (((created_by >= '2024-10-31 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-11-07 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
+
+
+--
+-- Name: _hyper_35_89_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_89_chunk (
+    CONSTRAINT constraint_89 CHECK (((created_by >= '2024-11-07 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-11-14 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
+
+
+--
+-- Name: _hyper_35_93_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_93_chunk (
+    CONSTRAINT constraint_93 CHECK (((created_by >= '2024-11-14 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-11-21 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
+
+
+--
+-- Name: _hyper_35_95_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_95_chunk (
+    CONSTRAINT constraint_95 CHECK (((created_by >= '2024-11-21 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-11-28 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
+
+
+--
+-- Name: _hyper_35_97_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_97_chunk (
+    CONSTRAINT constraint_97 CHECK (((created_by >= '2024-11-28 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-12-05 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
+
+
+--
+-- Name: _hyper_35_99_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_35_99_chunk (
+    CONSTRAINT constraint_99 CHECK (((created_by >= '2024-12-05 00:00:00+00'::timestamp with time zone) AND (created_by < '2024-12-12 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (public.events_seawater_swap1);
+
+
+--
 -- Name: _materialized_hypertable_37; Type: TABLE; Schema: _timescaledb_internal; Owner: -
 --
 
@@ -1224,6 +1466,48 @@ INHERITS (_timescaledb_internal._materialized_hypertable_37);
 
 
 --
+-- Name: _hyper_37_86_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_37_86_chunk (
+    CONSTRAINT constraint_86 CHECK (((hourly_interval >= '2024-10-24 00:00:00+00'::timestamp with time zone) AND (hourly_interval < '2025-01-02 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (_timescaledb_internal._materialized_hypertable_37);
+
+
+--
+-- Name: _materialized_hypertable_38; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._materialized_hypertable_38 (
+    hourly_interval timestamp with time zone NOT NULL,
+    pool public.address,
+    price numeric,
+    decimals public.hugeint
+);
+
+
+--
+-- Name: _hyper_38_91_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_38_91_chunk (
+    CONSTRAINT constraint_91 CHECK (((hourly_interval >= '2024-08-15 00:00:00+00'::timestamp with time zone) AND (hourly_interval < '2024-10-24 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (_timescaledb_internal._materialized_hypertable_38);
+
+
+--
+-- Name: _hyper_38_92_chunk; Type: TABLE; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TABLE _timescaledb_internal._hyper_38_92_chunk (
+    CONSTRAINT constraint_92 CHECK (((hourly_interval >= '2024-10-24 00:00:00+00'::timestamp with time zone) AND (hourly_interval < '2025-01-02 00:00:00+00'::timestamp with time zone)))
+)
+INHERITS (_timescaledb_internal._materialized_hypertable_38);
+
+
+--
 -- Name: _partial_view_37; Type: VIEW; Schema: _timescaledb_internal; Owner: -
 --
 
@@ -1231,6 +1515,20 @@ CREATE VIEW _timescaledb_internal._partial_view_37 AS
  SELECT public.time_bucket('01:00:00'::interval, events_seawater_swap1.created_by) AS hourly_interval,
     events_seawater_swap1.pool,
     (((1.0001 ^ avg(events_seawater_swap1.final_tick)) * (1000000)::numeric) / ((10)::numeric ^ (events_seawater_newpool.decimals)::numeric)) AS price,
+    events_seawater_newpool.decimals
+   FROM (public.events_seawater_swap1
+     JOIN public.events_seawater_newpool ON (((events_seawater_newpool.token)::bpchar = (events_seawater_swap1.pool)::bpchar)))
+  GROUP BY events_seawater_swap1.pool, (public.time_bucket('01:00:00'::interval, events_seawater_swap1.created_by)), events_seawater_newpool.decimals;
+
+
+--
+-- Name: _partial_view_38; Type: VIEW; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE VIEW _timescaledb_internal._partial_view_38 AS
+ SELECT public.time_bucket('01:00:00'::interval, events_seawater_swap1.created_by) AS hourly_interval,
+    events_seawater_swap1.pool,
+    (((1.0001 ^ avg(events_seawater_swap1.final_tick)) / (1000000)::numeric) * ((10)::numeric ^ (events_seawater_newpool.decimals)::numeric)) AS price,
     events_seawater_newpool.decimals
    FROM (public.events_seawater_swap1
      JOIN public.events_seawater_newpool ON (((events_seawater_newpool.token)::bpchar = (events_seawater_swap1.pool)::bpchar)))
@@ -1444,6 +1742,42 @@ CREATE TABLE public.events_leo_positiondivested (
 
 
 --
+-- Name: events_leo_positiondivested2; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.events_leo_positiondivested2 (
+    id integer NOT NULL,
+    created_by timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    block_number integer NOT NULL,
+    emitter_addr public.address NOT NULL,
+    position_id public.hugeint NOT NULL,
+    recipient public.address NOT NULL
+);
+
+
+--
+-- Name: events_leo_positiondivested2_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.events_leo_positiondivested2_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: events_leo_positiondivested2_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.events_leo_positiondivested2_id_seq OWNED BY public.events_leo_positiondivested2.id;
+
+
+--
 -- Name: events_leo_positiondivested_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1476,6 +1810,42 @@ CREATE TABLE public.events_leo_positionvested (
     emitter_addr public.address NOT NULL,
     position_id public.hugeint NOT NULL
 );
+
+
+--
+-- Name: events_leo_positionvested2; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.events_leo_positionvested2 (
+    id integer NOT NULL,
+    created_by timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    block_number integer NOT NULL,
+    emitter_addr public.address NOT NULL,
+    position_id public.hugeint NOT NULL,
+    owner public.address NOT NULL
+);
+
+
+--
+-- Name: events_leo_positionvested2_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.events_leo_positionvested2_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: events_leo_positionvested2_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.events_leo_positionvested2_id_seq OWNED BY public.events_leo_positionvested2.id;
 
 
 --
@@ -1967,6 +2337,194 @@ CREATE TABLE public.ninelives_campaigns_1 (
 
 
 --
+-- Name: ninelives_events_new_trading; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ninelives_events_new_trading (
+    id integer NOT NULL,
+    created_by timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    block_number integer NOT NULL,
+    emitter_addr public.address NOT NULL,
+    identifier public.bytes32 NOT NULL,
+    address public.address NOT NULL,
+    oracle public.address NOT NULL
+);
+
+
+--
+-- Name: ninelives_events_new_trading_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ninelives_events_new_trading_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ninelives_events_new_trading_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ninelives_events_new_trading_id_seq OWNED BY public.ninelives_events_new_trading.id;
+
+
+--
+-- Name: ninelives_events_outcome_created; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ninelives_events_outcome_created (
+    id integer NOT NULL,
+    created_by timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    block_number integer NOT NULL,
+    emitter_addr public.address NOT NULL,
+    trading_identifier public.bytes32 NOT NULL,
+    erc20_identifier public.bytes32 NOT NULL,
+    erc20_addr public.bytes32 NOT NULL
+);
+
+
+--
+-- Name: ninelives_events_outcome_created_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ninelives_events_outcome_created_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ninelives_events_outcome_created_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ninelives_events_outcome_created_id_seq OWNED BY public.ninelives_events_outcome_created.id;
+
+
+--
+-- Name: ninelives_events_outcome_decided; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ninelives_events_outcome_decided (
+    id integer NOT NULL,
+    created_by timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    block_number integer NOT NULL,
+    emitter_addr public.address NOT NULL,
+    identifier public.bytes32 NOT NULL,
+    oracle public.address NOT NULL
+);
+
+
+--
+-- Name: ninelives_events_outcome_decided_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ninelives_events_outcome_decided_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ninelives_events_outcome_decided_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ninelives_events_outcome_decided_id_seq OWNED BY public.ninelives_events_outcome_decided.id;
+
+
+--
+-- Name: ninelives_events_payoff_activated; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ninelives_events_payoff_activated (
+    id integer NOT NULL,
+    created_by timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    block_number integer NOT NULL,
+    emitter_addr public.address NOT NULL,
+    identifier public.bytes32 NOT NULL,
+    shares_spent public.hugeint NOT NULL,
+    spender public.address NOT NULL,
+    recipient public.address NOT NULL,
+    fusdc_received public.hugeint NOT NULL
+);
+
+
+--
+-- Name: ninelives_events_payoff_activated_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ninelives_events_payoff_activated_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ninelives_events_payoff_activated_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ninelives_events_payoff_activated_id_seq OWNED BY public.ninelives_events_payoff_activated.id;
+
+
+--
+-- Name: ninelives_events_shares_minted; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ninelives_events_shares_minted (
+    id integer NOT NULL,
+    created_by timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    block_number integer NOT NULL,
+    emitter_addr public.address NOT NULL,
+    identifier public.bytes32 NOT NULL,
+    share_amount public.hugeint NOT NULL,
+    spender public.address NOT NULL,
+    recipient public.address NOT NULL,
+    fusdc_spent public.hugeint NOT NULL
+);
+
+
+--
+-- Name: ninelives_events_shares_minted_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ninelives_events_shares_minted_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ninelives_events_shares_minted_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ninelives_events_shares_minted_id_seq OWNED BY public.ninelives_events_shares_minted.id;
+
+
+--
 -- Name: ninelives_frontpage_1; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2000,12 +2558,117 @@ ALTER SEQUENCE public.ninelives_frontpage_1_id_seq OWNED BY public.ninelives_fro
 
 
 --
+-- Name: ninelives_ingestor_checkpointing_1; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ninelives_ingestor_checkpointing_1 (
+    id integer NOT NULL,
+    last_updated timestamp without time zone NOT NULL,
+    block_number integer NOT NULL
+);
+
+
+--
+-- Name: ninelives_ingestor_checkpointing_1_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ninelives_ingestor_checkpointing_1_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ninelives_ingestor_checkpointing_1_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ninelives_ingestor_checkpointing_1_id_seq OWNED BY public.ninelives_ingestor_checkpointing_1.id;
+
+
+--
 -- Name: ninelives_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.ninelives_migrations (
     version character varying(255) NOT NULL
 );
+
+
+--
+-- Name: ninelives_newsfeed_1; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ninelives_newsfeed_1 (
+    id integer NOT NULL,
+    headline character varying NOT NULL,
+    date timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: ninelives_newsfeed_1_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ninelives_newsfeed_1_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ninelives_newsfeed_1_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ninelives_newsfeed_1_id_seq OWNED BY public.ninelives_newsfeed_1.id;
+
+
+--
+-- Name: ninelives_newsfeed_for_today_1; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.ninelives_newsfeed_for_today_1 AS
+ SELECT DISTINCT ninelives_newsfeed_1.headline
+   FROM public.ninelives_newsfeed_1
+  WHERE (date(ninelives_newsfeed_1.date) = CURRENT_DATE);
+
+
+--
+-- Name: ninelives_tracked_trading_contracts_1; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ninelives_tracked_trading_contracts_1 (
+    id integer NOT NULL,
+    created_by timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    trading_addr public.address NOT NULL
+);
+
+
+--
+-- Name: ninelives_tracked_trading_contracts_1_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ninelives_tracked_trading_contracts_1_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ninelives_tracked_trading_contracts_1_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ninelives_tracked_trading_contracts_1_id_seq OWNED BY public.ninelives_tracked_trading_contracts_1.id;
 
 
 --
@@ -2159,6 +2822,86 @@ CREATE VIEW public.seawater_active_positions_3 AS
     COALESCE(seawater_positions_vested.is_vested, false) AS is_vested
    FROM (public.seawater_active_positions_2
      LEFT JOIN public.seawater_positions_vested ON (((seawater_active_positions_2.pos_id)::numeric = (seawater_positions_vested.position_id)::numeric)));
+
+
+--
+-- Name: seawater_active_positions_4; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_active_positions_4 AS
+ SELECT seawater_active_positions_3.created_by,
+    seawater_active_positions_3.block_hash,
+    seawater_active_positions_3.transaction_hash,
+    seawater_active_positions_3.created_block_number,
+    seawater_active_positions_3.pos_id,
+    COALESCE(vested2.owner, seawater_active_positions_3.owner) AS owner,
+    seawater_active_positions_3.pool,
+    seawater_active_positions_3.lower,
+    seawater_active_positions_3.upper,
+    COALESCE(seawater_positions_vested.is_vested, false) AS is_vested
+   FROM ((public.seawater_active_positions_3
+     LEFT JOIN public.seawater_positions_vested ON (((seawater_active_positions_3.pos_id)::numeric = (seawater_positions_vested.position_id)::numeric)))
+     LEFT JOIN public.events_leo_positionvested2 vested2 ON (((seawater_active_positions_3.pos_id)::numeric = (vested2.position_id)::numeric)));
+
+
+--
+-- Name: seawater_positions_vested_2; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_positions_vested_2 AS
+ SELECT DISTINCT ON (a.position_id) a.is_vested,
+    a.position_id,
+    a.owner,
+    a.created_by
+   FROM ( SELECT true AS is_vested,
+            events_leo_positionvested2.position_id,
+            events_leo_positionvested2.created_by,
+            events_leo_positionvested2.owner
+           FROM public.events_leo_positionvested2
+        UNION
+         SELECT false AS is_vested,
+            events_leo_positiondivested2.position_id,
+            events_leo_positiondivested2.created_by,
+            events_leo_positiondivested2.recipient AS owner
+           FROM public.events_leo_positiondivested2
+  ORDER BY 3 DESC) a;
+
+
+--
+-- Name: seawater_active_positions_5; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_active_positions_5 AS
+ SELECT seawater_active_positions_4.created_by,
+    seawater_active_positions_4.block_hash,
+    seawater_active_positions_4.transaction_hash,
+    seawater_active_positions_4.created_block_number,
+    seawater_active_positions_4.pos_id,
+    COALESCE(vested.owner, seawater_active_positions_4.owner) AS owner,
+    seawater_active_positions_4.pool,
+    seawater_active_positions_4.lower,
+    seawater_active_positions_4.upper,
+    COALESCE(vested.is_vested, false) AS is_vested
+   FROM (public.seawater_active_positions_4
+     LEFT JOIN public.seawater_positions_vested_2 vested ON (((vested.position_id)::numeric = (seawater_active_positions_4.pos_id)::numeric)));
+
+
+--
+-- Name: seawater_active_positions_6; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.seawater_active_positions_6 (
+    created_by timestamp without time zone NOT NULL,
+    block_hash public.hash NOT NULL,
+    transaction_hash public.hash NOT NULL,
+    created_block_number integer NOT NULL,
+    pos_id public.hugeint NOT NULL,
+    owner public.address NOT NULL,
+    pool public.address NOT NULL,
+    lower bigint NOT NULL,
+    upper bigint NOT NULL,
+    is_vested boolean NOT NULL
+);
 
 
 --
@@ -2414,6 +3157,90 @@ CREATE TABLE public.seawater_liquidity_groups_2 (
 
 
 --
+-- Name: seawater_pool_swap1_price_hourly_2; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_pool_swap1_price_hourly_2 AS
+ SELECT _materialized_hypertable_38.hourly_interval,
+    _materialized_hypertable_38.pool,
+    _materialized_hypertable_38.price,
+    _materialized_hypertable_38.decimals
+   FROM _timescaledb_internal._materialized_hypertable_38 _materialized_hypertable_38
+  WHERE (_materialized_hypertable_38.hourly_interval < COALESCE(_timescaledb_functions.to_timestamp(_timescaledb_functions.cagg_watermark(38)), '-infinity'::timestamp with time zone))
+UNION ALL
+ SELECT public.time_bucket('01:00:00'::interval, events_seawater_swap1.created_by) AS hourly_interval,
+    events_seawater_swap1.pool,
+    (((1.0001 ^ avg(events_seawater_swap1.final_tick)) / (1000000)::numeric) * ((10)::numeric ^ (events_seawater_newpool.decimals)::numeric)) AS price,
+    events_seawater_newpool.decimals
+   FROM (public.events_seawater_swap1
+     JOIN public.events_seawater_newpool ON (((events_seawater_newpool.token)::bpchar = (events_seawater_swap1.pool)::bpchar)))
+  WHERE (events_seawater_swap1.created_by >= COALESCE(_timescaledb_functions.to_timestamp(_timescaledb_functions.cagg_watermark(38)), '-infinity'::timestamp with time zone))
+  GROUP BY events_seawater_swap1.pool, (public.time_bucket('01:00:00'::interval, events_seawater_swap1.created_by)), events_seawater_newpool.decimals;
+
+
+--
+-- Name: seawater_pool_swap2_price_hourly_2; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.seawater_pool_swap2_price_hourly_2 AS
+ SELECT combined.pool,
+    date_trunc('hour'::text, combined.created_by) AS hourly_interval,
+    (((1.0001 ^ avg(combined.final_tick)) / (1000000)::numeric) * ((10)::numeric ^ (events_seawater_newpool.decimals)::numeric)) AS price,
+    events_seawater_newpool.decimals
+   FROM (( SELECT events_seawater_swap2.from_ AS pool,
+            events_seawater_swap2.final_tick0 AS final_tick,
+            events_seawater_swap2.created_by
+           FROM public.events_seawater_swap2
+        UNION ALL
+         SELECT events_seawater_swap2.to_ AS pool,
+            events_seawater_swap2.final_tick1 AS final_tick,
+            events_seawater_swap2.created_by
+           FROM public.events_seawater_swap2) combined
+     LEFT JOIN public.events_seawater_newpool ON (((events_seawater_newpool.token)::bpchar = (combined.pool)::bpchar)))
+  GROUP BY combined.pool, (date_trunc('hour'::text, combined.created_by)), events_seawater_newpool.decimals
+  WITH NO DATA;
+
+
+--
+-- Name: seawater_swaps_average_price_hourly_2; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.seawater_swaps_average_price_hourly_2 AS
+ SELECT combined.pool,
+    combined.hourly_interval,
+    sum(combined.price) AS price,
+    combined.decimals
+   FROM ( SELECT seawater_pool_swap1_price_hourly_2.pool,
+            seawater_pool_swap1_price_hourly_2.hourly_interval,
+            seawater_pool_swap1_price_hourly_2.price,
+            seawater_pool_swap1_price_hourly_2.decimals
+           FROM public.seawater_pool_swap1_price_hourly_2
+        UNION ALL
+         SELECT seawater_pool_swap2_price_hourly_2.pool,
+            seawater_pool_swap2_price_hourly_2.hourly_interval,
+            seawater_pool_swap2_price_hourly_2.price,
+            seawater_pool_swap2_price_hourly_2.decimals
+           FROM public.seawater_pool_swap2_price_hourly_2) combined
+  GROUP BY combined.pool, combined.hourly_interval, combined.decimals
+  WITH NO DATA;
+
+
+--
+-- Name: seawater_pool_fees_total_1; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_pool_fees_total_1 AS
+ SELECT cf.pool,
+    sum((((cf.amount0)::numeric * sp.price) / ((10)::numeric ^ (sp.decimals)::numeric))) AS amount0,
+    sum(((cf.amount1)::numeric / '1000000'::numeric)) AS amount1,
+    sum(((((cf.amount0)::numeric * sp.price) / ((10)::numeric ^ (sp.decimals)::numeric)) + ((cf.amount1)::numeric / '1000000'::numeric))) AS total
+   FROM (public.events_seawater_collectfees cf
+     JOIN public.seawater_swaps_average_price_hourly_2 sp ON ((((cf.pool)::bpchar = (sp.pool)::bpchar) AND (date_trunc('hour'::text, cf.created_by) = sp.hourly_interval))))
+  WHERE (((cf.amount0)::numeric > (0)::numeric) OR ((cf.amount1)::numeric > (0)::numeric))
+  GROUP BY cf.pool;
+
+
+--
 -- Name: seawater_pool_swap1_price_hourly_1; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -2440,6 +3267,19 @@ UNION ALL
 --
 
 CREATE VIEW public.seawater_pool_swap1_volume_hourly_1 AS
+ SELECT events_seawater_swap1.pool,
+    date_trunc('hour'::text, events_seawater_swap1.created_by) AS hourly_interval,
+    (sum((events_seawater_swap1.amount1)::numeric))::public.hugeint AS fusdc_volume,
+    (sum((events_seawater_swap1.amount0)::numeric))::public.hugeint AS tokena_volume
+   FROM public.events_seawater_swap1
+  GROUP BY events_seawater_swap1.pool, (date_trunc('hour'::text, events_seawater_swap1.created_by)), events_seawater_swap1.created_by;
+
+
+--
+-- Name: seawater_pool_swap1_volume_hourly_2; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_pool_swap1_volume_hourly_2 AS
  SELECT events_seawater_swap1.pool,
     date_trunc('hour'::text, events_seawater_swap1.created_by) AS hourly_interval,
     (sum((events_seawater_swap1.amount1)::numeric))::public.hugeint AS fusdc_volume,
@@ -2476,6 +3316,29 @@ CREATE MATERIALIZED VIEW public.seawater_pool_swap2_price_hourly_1 AS
 --
 
 CREATE VIEW public.seawater_pool_swap2_volume_hourly_1 AS
+ SELECT combined.pool,
+    date_trunc('hour'::text, combined.created_by) AS hourly_interval,
+    (sum((combined.total_fluid_volume)::numeric))::public.hugeint AS fusdc_volume,
+    (sum((combined.tokena_volume)::numeric))::public.hugeint AS tokena_volume
+   FROM ( SELECT events_seawater_swap2.from_ AS pool,
+            events_seawater_swap2.amount_in AS tokena_volume,
+            events_seawater_swap2.fluid_volume AS total_fluid_volume,
+            events_seawater_swap2.created_by
+           FROM public.events_seawater_swap2
+        UNION ALL
+         SELECT events_seawater_swap2.to_ AS pool,
+            events_seawater_swap2.amount_out AS tokena_volume,
+            events_seawater_swap2.fluid_volume AS total_fluid_volume,
+            events_seawater_swap2.created_by
+           FROM public.events_seawater_swap2) combined
+  GROUP BY combined.pool, (date_trunc('hour'::text, combined.created_by));
+
+
+--
+-- Name: seawater_pool_swap2_volume_hourly_2; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_pool_swap2_volume_hourly_2 AS
  SELECT combined.pool,
     date_trunc('hour'::text, combined.created_by) AS hourly_interval,
     (sum((combined.total_fluid_volume)::numeric))::public.hugeint AS fusdc_volume,
@@ -2567,6 +3430,54 @@ CREATE MATERIALIZED VIEW public.seawater_pool_swap_volume_daily_1 AS
 
 
 --
+-- Name: seawater_pool_swap_volume_hourly_2; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.seawater_pool_swap_volume_hourly_2 AS
+ SELECT combined.pool,
+    combined.hourly_interval,
+    new_pool.decimals,
+    (sum((combined.fusdc_volume)::numeric))::public.hugeint AS fusdc_volume_unscaled,
+    sum(((combined.fusdc_volume)::double precision / ((10)::double precision ^ (6)::double precision))) AS fusdc_volume_scaled,
+    sum((combined.tokena_volume)::numeric) AS tokena_volume_unscaled,
+    (sum((combined.tokena_volume)::numeric) / ((10)::numeric ^ (new_pool.decimals)::numeric)) AS tokena_volume_scaled,
+    sum((((combined.tokena_volume)::numeric / ((10)::numeric ^ (new_pool.decimals)::numeric)) * checkpoint.price)) AS sum
+   FROM ((( SELECT seawater_pool_swap2_volume_hourly_2.pool,
+            seawater_pool_swap2_volume_hourly_2.hourly_interval,
+            seawater_pool_swap2_volume_hourly_2.fusdc_volume,
+            seawater_pool_swap2_volume_hourly_2.tokena_volume
+           FROM public.seawater_pool_swap2_volume_hourly_2
+        UNION ALL
+         SELECT seawater_pool_swap1_volume_hourly_2.pool,
+            seawater_pool_swap1_volume_hourly_2.hourly_interval,
+            seawater_pool_swap1_volume_hourly_2.fusdc_volume,
+            seawater_pool_swap1_volume_hourly_2.tokena_volume
+           FROM public.seawater_pool_swap1_volume_hourly_2) combined
+     LEFT JOIN public.events_seawater_newpool new_pool ON (((new_pool.token)::bpchar = (combined.pool)::bpchar)))
+     LEFT JOIN public.seawater_swaps_average_price_hourly_2 checkpoint ON ((combined.hourly_interval = checkpoint.hourly_interval)))
+  GROUP BY combined.pool, combined.hourly_interval, new_pool.decimals
+  ORDER BY combined.hourly_interval
+  WITH NO DATA;
+
+
+--
+-- Name: seawater_pool_swap_volume_daily_2; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.seawater_pool_swap_volume_daily_2 AS
+ SELECT floor(EXTRACT(epoch FROM now())) AS "timestamp",
+    seawater_pool_swap_volume_hourly_2.pool AS token1_token,
+    sum((seawater_pool_swap_volume_hourly_2.fusdc_volume_unscaled)::numeric) AS fusdc_value_unscaled,
+    sum(seawater_pool_swap_volume_hourly_2.tokena_volume_unscaled) AS token1_value_unscaled,
+    seawater_pool_swap_volume_hourly_2.decimals AS token1_decimals,
+    public.time_bucket('1 day'::interval, seawater_pool_swap_volume_hourly_2.hourly_interval) AS interval_timestamp
+   FROM public.seawater_pool_swap_volume_hourly_2
+  GROUP BY (public.time_bucket('1 day'::interval, seawater_pool_swap_volume_hourly_2.hourly_interval)), seawater_pool_swap_volume_hourly_2.pool, seawater_pool_swap_volume_hourly_2.decimals
+  ORDER BY (public.time_bucket('1 day'::interval, seawater_pool_swap_volume_hourly_2.hourly_interval)) DESC
+  WITH NO DATA;
+
+
+--
 -- Name: seawater_pool_swap_volume_monthly_1; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -2580,6 +3491,23 @@ CREATE MATERIALIZED VIEW public.seawater_pool_swap_volume_monthly_1 AS
    FROM public.seawater_pool_swap_volume_hourly_1
   GROUP BY (public.time_bucket('1 mon'::interval, seawater_pool_swap_volume_hourly_1.hourly_interval)), seawater_pool_swap_volume_hourly_1.pool, seawater_pool_swap_volume_hourly_1.decimals
   ORDER BY (public.time_bucket('1 mon'::interval, seawater_pool_swap_volume_hourly_1.hourly_interval)) DESC
+  WITH NO DATA;
+
+
+--
+-- Name: seawater_pool_swap_volume_monthly_2; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.seawater_pool_swap_volume_monthly_2 AS
+ SELECT floor(EXTRACT(epoch FROM now())) AS "timestamp",
+    seawater_pool_swap_volume_hourly_2.pool AS token1_token,
+    sum((seawater_pool_swap_volume_hourly_2.fusdc_volume_unscaled)::numeric) AS fusdc_value_unscaled,
+    sum(seawater_pool_swap_volume_hourly_2.tokena_volume_unscaled) AS token1_value_unscaled,
+    seawater_pool_swap_volume_hourly_2.decimals AS token1_decimals,
+    public.time_bucket('1 mon'::interval, seawater_pool_swap_volume_hourly_2.hourly_interval) AS interval_timestamp
+   FROM public.seawater_pool_swap_volume_hourly_2
+  GROUP BY (public.time_bucket('1 mon'::interval, seawater_pool_swap_volume_hourly_2.hourly_interval)), seawater_pool_swap_volume_hourly_2.pool, seawater_pool_swap_volume_hourly_2.decimals
+  ORDER BY (public.time_bucket('1 mon'::interval, seawater_pool_swap_volume_hourly_2.hourly_interval)) DESC
   WITH NO DATA;
 
 
@@ -2601,6 +3529,70 @@ CREATE VIEW public.seawater_positions_2 AS
    FROM ((public.events_seawater_mintposition
      LEFT JOIN public.events_seawater_transferposition transfers ON (((transfers.pos_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)))
      LEFT JOIN public.seawater_positions_vested vested ON (((vested.position_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)));
+
+
+--
+-- Name: seawater_positions_3; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_positions_3 AS
+ SELECT events_seawater_mintposition.created_by,
+    events_seawater_mintposition.block_hash,
+    events_seawater_mintposition.transaction_hash,
+    events_seawater_mintposition.block_number AS created_block_number,
+    events_seawater_mintposition.pos_id,
+    COALESCE(vested2.owner, transfers.to_, events_seawater_mintposition.owner) AS owner,
+    events_seawater_mintposition.pool,
+    events_seawater_mintposition.lower,
+    events_seawater_mintposition.upper,
+    vested.is_vested
+   FROM (((public.events_seawater_mintposition
+     LEFT JOIN public.events_seawater_transferposition transfers ON (((transfers.pos_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)))
+     LEFT JOIN public.seawater_positions_vested vested ON (((vested.position_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)))
+     LEFT JOIN public.events_leo_positionvested2 vested2 ON (((vested2.position_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)));
+
+
+--
+-- Name: seawater_positions_4; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_positions_4 AS
+ SELECT events_seawater_mintposition.created_by,
+    events_seawater_mintposition.block_hash,
+    events_seawater_mintposition.transaction_hash,
+    events_seawater_mintposition.block_number AS created_block_number,
+    events_seawater_mintposition.pos_id,
+    COALESCE(vested.owner, transfers.to_, events_seawater_mintposition.owner) AS owner,
+    events_seawater_mintposition.pool,
+    events_seawater_mintposition.lower,
+    events_seawater_mintposition.upper,
+    vested.is_vested
+   FROM ((public.events_seawater_mintposition
+     LEFT JOIN public.events_seawater_transferposition transfers ON (((transfers.pos_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)))
+     LEFT JOIN public.seawater_positions_vested_2 vested ON (((vested.position_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)));
+
+
+--
+-- Name: seawater_positions_5; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.seawater_positions_5 AS
+ SELECT events_seawater_mintposition.created_by,
+    events_seawater_mintposition.block_hash,
+    events_seawater_mintposition.transaction_hash,
+    events_seawater_mintposition.block_number AS created_block_number,
+    events_seawater_mintposition.pos_id,
+    COALESCE(vested.owner, transfers.to_, events_seawater_mintposition.owner) AS owner,
+    events_seawater_mintposition.pool,
+    events_seawater_mintposition.lower,
+    events_seawater_mintposition.upper,
+    COALESCE(vested.is_vested, false) AS "coalesce"
+   FROM ((public.events_seawater_mintposition
+     LEFT JOIN ( SELECT DISTINCT ON (events_seawater_transferposition.pos_id) events_seawater_transferposition.pos_id,
+            events_seawater_transferposition.to_
+           FROM public.events_seawater_transferposition
+          ORDER BY events_seawater_transferposition.pos_id DESC, events_seawater_transferposition.created_by DESC, events_seawater_transferposition.id DESC) transfers ON (((transfers.pos_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)))
+     LEFT JOIN public.seawater_positions_vested_2 vested ON (((vested.position_id)::numeric = (events_seawater_mintposition.pos_id)::numeric)));
 
 
 --
@@ -2690,6 +3682,43 @@ CREATE SEQUENCE public.snapshot_positions_log_1_id_seq
 --
 
 ALTER SEQUENCE public.snapshot_positions_log_1_id_seq OWNED BY public.snapshot_positions_log_1.id;
+
+
+--
+-- Name: tmp_erik_20; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tmp_erik_20 (
+    address public.address
+);
+
+
+--
+-- Name: _hyper_34_100_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_100_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_100_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_100_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_34_102_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_102_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_102_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_102_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
 
 
 --
@@ -2830,6 +3859,118 @@ ALTER TABLE ONLY _timescaledb_internal._hyper_34_81_chunk ALTER COLUMN id SET DE
 --
 
 ALTER TABLE ONLY _timescaledb_internal._hyper_34_81_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_34_83_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_83_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_83_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_83_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_34_85_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_85_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_85_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_85_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_34_88_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_88_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_88_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_88_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_34_90_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_90_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_90_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_90_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_34_94_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_94_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_94_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_94_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_34_96_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_96_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_96_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_96_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_34_98_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_98_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap2_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_98_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_98_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_35_101_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_101_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_101_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_101_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
 
 
 --
@@ -3001,6 +4142,118 @@ ALTER TABLE ONLY _timescaledb_internal._hyper_35_80_chunk ALTER COLUMN created_b
 
 
 --
+-- Name: _hyper_35_82_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_82_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_82_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_82_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_35_84_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_84_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_84_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_84_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_35_87_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_87_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_87_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_87_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_35_89_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_89_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_89_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_89_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_35_93_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_93_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_93_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_93_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_35_95_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_95_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_95_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_95_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_35_97_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_97_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_97_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_97_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
+-- Name: _hyper_35_99_chunk id; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_99_chunk ALTER COLUMN id SET DEFAULT nextval('public.events_seawater_swap1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_35_99_chunk created_by; Type: DEFAULT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_99_chunk ALTER COLUMN created_by SET DEFAULT CURRENT_TIMESTAMP;
+
+
+--
 -- Name: erc20_cache_1 id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3043,10 +4296,24 @@ ALTER TABLE ONLY public.events_leo_positiondivested ALTER COLUMN id SET DEFAULT 
 
 
 --
+-- Name: events_leo_positiondivested2 id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events_leo_positiondivested2 ALTER COLUMN id SET DEFAULT nextval('public.events_leo_positiondivested2_id_seq'::regclass);
+
+
+--
 -- Name: events_leo_positionvested id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.events_leo_positionvested ALTER COLUMN id SET DEFAULT nextval('public.events_leo_positionvested_id_seq'::regclass);
+
+
+--
+-- Name: events_leo_positionvested2 id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events_leo_positionvested2 ALTER COLUMN id SET DEFAULT nextval('public.events_leo_positionvested2_id_seq'::regclass);
 
 
 --
@@ -3134,10 +4401,66 @@ ALTER TABLE ONLY public.ingestor_checkpointing_1 ALTER COLUMN id SET DEFAULT nex
 
 
 --
+-- Name: ninelives_events_new_trading id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_new_trading ALTER COLUMN id SET DEFAULT nextval('public.ninelives_events_new_trading_id_seq'::regclass);
+
+
+--
+-- Name: ninelives_events_outcome_created id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_outcome_created ALTER COLUMN id SET DEFAULT nextval('public.ninelives_events_outcome_created_id_seq'::regclass);
+
+
+--
+-- Name: ninelives_events_outcome_decided id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_outcome_decided ALTER COLUMN id SET DEFAULT nextval('public.ninelives_events_outcome_decided_id_seq'::regclass);
+
+
+--
+-- Name: ninelives_events_payoff_activated id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_payoff_activated ALTER COLUMN id SET DEFAULT nextval('public.ninelives_events_payoff_activated_id_seq'::regclass);
+
+
+--
+-- Name: ninelives_events_shares_minted id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_shares_minted ALTER COLUMN id SET DEFAULT nextval('public.ninelives_events_shares_minted_id_seq'::regclass);
+
+
+--
 -- Name: ninelives_frontpage_1 id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ninelives_frontpage_1 ALTER COLUMN id SET DEFAULT nextval('public.ninelives_frontpage_1_id_seq'::regclass);
+
+
+--
+-- Name: ninelives_ingestor_checkpointing_1 id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_ingestor_checkpointing_1 ALTER COLUMN id SET DEFAULT nextval('public.ninelives_ingestor_checkpointing_1_id_seq'::regclass);
+
+
+--
+-- Name: ninelives_newsfeed_1 id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_newsfeed_1 ALTER COLUMN id SET DEFAULT nextval('public.ninelives_newsfeed_1_id_seq'::regclass);
+
+
+--
+-- Name: ninelives_tracked_trading_contracts_1 id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_tracked_trading_contracts_1 ALTER COLUMN id SET DEFAULT nextval('public.ninelives_tracked_trading_contracts_1_id_seq'::regclass);
 
 
 --
@@ -3159,6 +4482,30 @@ ALTER TABLE ONLY public.snapshot_positions_latest_1 ALTER COLUMN id SET DEFAULT 
 --
 
 ALTER TABLE ONLY public.snapshot_positions_log_1 ALTER COLUMN id SET DEFAULT nextval('public.snapshot_positions_log_1_id_seq'::regclass);
+
+
+--
+-- Name: _hyper_34_100_chunk 100_54_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_100_chunk
+    ADD CONSTRAINT "100_54_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_35_101_chunk 101_55_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_101_chunk
+    ADD CONSTRAINT "101_55_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_34_102_chunk 102_56_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_102_chunk
+    ADD CONSTRAINT "102_56_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
 
 
 --
@@ -3338,6 +4685,126 @@ ALTER TABLE ONLY _timescaledb_internal._hyper_34_81_chunk
 
 
 --
+-- Name: _hyper_35_82_chunk 82_39_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_82_chunk
+    ADD CONSTRAINT "82_39_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_34_83_chunk 83_40_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_83_chunk
+    ADD CONSTRAINT "83_40_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_35_84_chunk 84_41_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_84_chunk
+    ADD CONSTRAINT "84_41_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_34_85_chunk 85_42_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_85_chunk
+    ADD CONSTRAINT "85_42_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_35_87_chunk 87_43_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_87_chunk
+    ADD CONSTRAINT "87_43_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_34_88_chunk 88_44_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_88_chunk
+    ADD CONSTRAINT "88_44_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_35_89_chunk 89_45_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_89_chunk
+    ADD CONSTRAINT "89_45_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_34_90_chunk 90_46_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_90_chunk
+    ADD CONSTRAINT "90_46_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_35_93_chunk 93_47_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_93_chunk
+    ADD CONSTRAINT "93_47_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_34_94_chunk 94_48_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_94_chunk
+    ADD CONSTRAINT "94_48_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_35_95_chunk 95_49_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_95_chunk
+    ADD CONSTRAINT "95_49_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_34_96_chunk 96_50_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_96_chunk
+    ADD CONSTRAINT "96_50_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_35_97_chunk 97_51_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_97_chunk
+    ADD CONSTRAINT "97_51_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_34_98_chunk 98_52_events_seawater_swap2_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_34_98_chunk
+    ADD CONSTRAINT "98_52_events_seawater_swap2_pkey" PRIMARY KEY (id, created_by);
+
+
+--
+-- Name: _hyper_35_99_chunk 99_53_events_seawater_swap1_pkey; Type: CONSTRAINT; Schema: _timescaledb_internal; Owner: -
+--
+
+ALTER TABLE ONLY _timescaledb_internal._hyper_35_99_chunk
+    ADD CONSTRAINT "99_53_events_seawater_swap1_pkey" PRIMARY KEY (id, created_by);
+
+
+--
 -- Name: erc20_cache_1 erc20_cache_1_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3378,11 +4845,27 @@ ALTER TABLE ONLY public.events_leo_campaignupdated
 
 
 --
+-- Name: events_leo_positiondivested2 events_leo_positiondivested2_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events_leo_positiondivested2
+    ADD CONSTRAINT events_leo_positiondivested2_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: events_leo_positiondivested events_leo_positiondivested_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.events_leo_positiondivested
     ADD CONSTRAINT events_leo_positiondivested_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: events_leo_positionvested2 events_leo_positionvested2_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events_leo_positionvested2
+    ADD CONSTRAINT events_leo_positionvested2_pkey PRIMARY KEY (id);
 
 
 --
@@ -3498,6 +4981,86 @@ ALTER TABLE ONLY public.ninelives_campaigns_1
 
 
 --
+-- Name: ninelives_events_new_trading ninelives_events_new_trading_address_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_new_trading
+    ADD CONSTRAINT ninelives_events_new_trading_address_key UNIQUE (address);
+
+
+--
+-- Name: ninelives_events_new_trading ninelives_events_new_trading_identifier_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_new_trading
+    ADD CONSTRAINT ninelives_events_new_trading_identifier_key UNIQUE (identifier);
+
+
+--
+-- Name: ninelives_events_new_trading ninelives_events_new_trading_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_new_trading
+    ADD CONSTRAINT ninelives_events_new_trading_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ninelives_events_outcome_created ninelives_events_outcome_created_erc20_addr_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_outcome_created
+    ADD CONSTRAINT ninelives_events_outcome_created_erc20_addr_key UNIQUE (erc20_addr);
+
+
+--
+-- Name: ninelives_events_outcome_created ninelives_events_outcome_created_erc20_identifier_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_outcome_created
+    ADD CONSTRAINT ninelives_events_outcome_created_erc20_identifier_key UNIQUE (erc20_identifier);
+
+
+--
+-- Name: ninelives_events_outcome_created ninelives_events_outcome_created_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_outcome_created
+    ADD CONSTRAINT ninelives_events_outcome_created_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ninelives_events_outcome_decided ninelives_events_outcome_decided_emitter_addr_identifier_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_outcome_decided
+    ADD CONSTRAINT ninelives_events_outcome_decided_emitter_addr_identifier_key UNIQUE (emitter_addr, identifier);
+
+
+--
+-- Name: ninelives_events_outcome_decided ninelives_events_outcome_decided_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_outcome_decided
+    ADD CONSTRAINT ninelives_events_outcome_decided_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ninelives_events_payoff_activated ninelives_events_payoff_activated_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_payoff_activated
+    ADD CONSTRAINT ninelives_events_payoff_activated_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ninelives_events_shares_minted ninelives_events_shares_minted_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_events_shares_minted
+    ADD CONSTRAINT ninelives_events_shares_minted_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: ninelives_frontpage_1 ninelives_frontpage_1_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3506,11 +5069,43 @@ ALTER TABLE ONLY public.ninelives_frontpage_1
 
 
 --
+-- Name: ninelives_ingestor_checkpointing_1 ninelives_ingestor_checkpointing_1_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_ingestor_checkpointing_1
+    ADD CONSTRAINT ninelives_ingestor_checkpointing_1_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: ninelives_migrations ninelives_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ninelives_migrations
     ADD CONSTRAINT ninelives_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: ninelives_newsfeed_1 ninelives_newsfeed_1_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_newsfeed_1
+    ADD CONSTRAINT ninelives_newsfeed_1_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ninelives_tracked_trading_contracts_1 ninelives_tracked_trading_contracts_1_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_tracked_trading_contracts_1
+    ADD CONSTRAINT ninelives_tracked_trading_contracts_1_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ninelives_tracked_trading_contracts_1 ninelives_tracked_trading_contracts_1_trading_addr_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ninelives_tracked_trading_contracts_1
+    ADD CONSTRAINT ninelives_tracked_trading_contracts_1_trading_addr_key UNIQUE (trading_addr);
 
 
 --
@@ -3543,6 +5138,146 @@ ALTER TABLE ONLY public.snapshot_positions_latest_1
 
 ALTER TABLE ONLY public.snapshot_positions_log_1
     ADD CONSTRAINT snapshot_positions_log_1_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_100_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_100_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_100_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_100_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_100_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_100_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_100_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_100_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_100_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_100_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_100_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_100_chunk USING btree (user_, to_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_102_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_102_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_102_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_102_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_102_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_102_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_102_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_102_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_102_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_102_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_102_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_102_chunk USING btree (user_, to_);
 
 
 --
@@ -4246,6 +5981,531 @@ CREATE INDEX _hyper_34_81_chunk_events_seawater_swap2_user__to__idx ON _timescal
 
 
 --
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_83_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_83_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_83_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_83_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_83_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_83_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_83_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_83_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_83_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_83_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_83_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_83_chunk USING btree (user_, to_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_85_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_85_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_85_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_85_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_85_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_85_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_85_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_85_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_85_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_85_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_85_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_85_chunk USING btree (user_, to_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_88_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_88_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_88_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_88_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_88_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_88_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_88_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_88_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_88_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_88_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_88_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_88_chunk USING btree (user_, to_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_90_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_90_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_90_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_90_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_90_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_90_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_90_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_90_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_90_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_90_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_90_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_90_chunk USING btree (user_, to_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_94_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_94_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_94_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_94_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_94_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_94_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_94_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_94_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_94_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_94_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_94_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_94_chunk USING btree (user_, to_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_96_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_96_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_96_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_96_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_96_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_96_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_96_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_96_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_96_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_96_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_96_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_96_chunk USING btree (user_, to_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_created_by_idx ON _timescaledb_internal._hyper_34_98_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_from__idx ON _timescaledb_internal._hyper_34_98_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_from__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_from__idx1 ON _timescaledb_internal._hyper_34_98_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_from__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_from__idx2 ON _timescaledb_internal._hyper_34_98_chunk USING btree (from_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_to__idx ON _timescaledb_internal._hyper_34_98_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_to__idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_to__idx1 ON _timescaledb_internal._hyper_34_98_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_to__idx2; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_to__idx2 ON _timescaledb_internal._hyper_34_98_chunk USING btree (to_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_user__from__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_user__from__idx ON _timescaledb_internal._hyper_34_98_chunk USING btree (user_, from_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_user__idx ON _timescaledb_internal._hyper_34_98_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_34_98_chunk_events_seawater_swap2_user__to__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_34_98_chunk_events_seawater_swap2_user__to__idx ON _timescaledb_internal._hyper_34_98_chunk USING btree (user_, to_);
+
+
+--
+-- Name: _hyper_35_101_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_101_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_101_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_101_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_101_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_101_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_101_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_101_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_101_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_101_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_101_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_101_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_101_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_101_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_101_chunk USING btree (user_, pool);
+
+
+--
 -- Name: _hyper_35_26_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
 --
 
@@ -4666,6 +6926,286 @@ CREATE INDEX _hyper_35_80_chunk_events_seawater_swap1_user__pool_idx ON _timesca
 
 
 --
+-- Name: _hyper_35_82_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_82_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_82_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_82_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_82_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_82_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_82_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_82_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_82_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_82_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_82_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_82_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_82_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_82_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_82_chunk USING btree (user_, pool);
+
+
+--
+-- Name: _hyper_35_84_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_84_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_84_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_84_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_84_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_84_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_84_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_84_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_84_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_84_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_84_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_84_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_84_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_84_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_84_chunk USING btree (user_, pool);
+
+
+--
+-- Name: _hyper_35_87_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_87_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_87_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_87_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_87_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_87_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_87_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_87_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_87_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_87_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_87_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_87_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_87_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_87_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_87_chunk USING btree (user_, pool);
+
+
+--
+-- Name: _hyper_35_89_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_89_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_89_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_89_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_89_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_89_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_89_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_89_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_89_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_89_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_89_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_89_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_89_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_89_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_89_chunk USING btree (user_, pool);
+
+
+--
+-- Name: _hyper_35_93_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_93_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_93_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_93_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_93_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_93_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_93_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_93_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_93_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_93_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_93_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_93_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_93_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_93_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_93_chunk USING btree (user_, pool);
+
+
+--
+-- Name: _hyper_35_95_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_95_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_95_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_95_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_95_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_95_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_95_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_95_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_95_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_95_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_95_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_95_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_95_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_95_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_95_chunk USING btree (user_, pool);
+
+
+--
+-- Name: _hyper_35_97_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_97_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_97_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_97_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_97_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_97_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_97_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_97_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_97_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_97_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_97_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_97_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_97_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_97_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_97_chunk USING btree (user_, pool);
+
+
+--
+-- Name: _hyper_35_99_chunk_events_seawater_swap1_created_by_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_99_chunk_events_seawater_swap1_created_by_idx ON _timescaledb_internal._hyper_35_99_chunk USING btree (created_by DESC);
+
+
+--
+-- Name: _hyper_35_99_chunk_events_seawater_swap1_pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_99_chunk_events_seawater_swap1_pool_idx ON _timescaledb_internal._hyper_35_99_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_99_chunk_events_seawater_swap1_pool_idx1; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_99_chunk_events_seawater_swap1_pool_idx1 ON _timescaledb_internal._hyper_35_99_chunk USING btree (pool);
+
+
+--
+-- Name: _hyper_35_99_chunk_events_seawater_swap1_user__idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_99_chunk_events_seawater_swap1_user__idx ON _timescaledb_internal._hyper_35_99_chunk USING btree (user_);
+
+
+--
+-- Name: _hyper_35_99_chunk_events_seawater_swap1_user__pool_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_35_99_chunk_events_seawater_swap1_user__pool_idx ON _timescaledb_internal._hyper_35_99_chunk USING btree (user_, pool);
+
+
+--
 -- Name: _hyper_37_27_chunk__materialized_hypertable_37_decimals_hourly_; Type: INDEX; Schema: _timescaledb_internal; Owner: -
 --
 
@@ -4708,6 +7248,69 @@ CREATE INDEX _hyper_37_33_chunk__materialized_hypertable_37_pool_hourly_inte ON 
 
 
 --
+-- Name: _hyper_37_86_chunk__materialized_hypertable_37_decimals_hourly_; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_37_86_chunk__materialized_hypertable_37_decimals_hourly_ ON _timescaledb_internal._hyper_37_86_chunk USING btree (decimals, hourly_interval DESC);
+
+
+--
+-- Name: _hyper_37_86_chunk__materialized_hypertable_37_hourly_interval_; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_37_86_chunk__materialized_hypertable_37_hourly_interval_ ON _timescaledb_internal._hyper_37_86_chunk USING btree (hourly_interval DESC);
+
+
+--
+-- Name: _hyper_37_86_chunk__materialized_hypertable_37_pool_hourly_inte; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_37_86_chunk__materialized_hypertable_37_pool_hourly_inte ON _timescaledb_internal._hyper_37_86_chunk USING btree (pool, hourly_interval DESC);
+
+
+--
+-- Name: _hyper_38_91_chunk__materialized_hypertable_38_decimals_hourly_; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_38_91_chunk__materialized_hypertable_38_decimals_hourly_ ON _timescaledb_internal._hyper_38_91_chunk USING btree (decimals, hourly_interval DESC);
+
+
+--
+-- Name: _hyper_38_91_chunk__materialized_hypertable_38_hourly_interval_; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_38_91_chunk__materialized_hypertable_38_hourly_interval_ ON _timescaledb_internal._hyper_38_91_chunk USING btree (hourly_interval DESC);
+
+
+--
+-- Name: _hyper_38_91_chunk__materialized_hypertable_38_pool_hourly_inte; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_38_91_chunk__materialized_hypertable_38_pool_hourly_inte ON _timescaledb_internal._hyper_38_91_chunk USING btree (pool, hourly_interval DESC);
+
+
+--
+-- Name: _hyper_38_92_chunk__materialized_hypertable_38_decimals_hourly_; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_38_92_chunk__materialized_hypertable_38_decimals_hourly_ ON _timescaledb_internal._hyper_38_92_chunk USING btree (decimals, hourly_interval DESC);
+
+
+--
+-- Name: _hyper_38_92_chunk__materialized_hypertable_38_hourly_interval_; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_38_92_chunk__materialized_hypertable_38_hourly_interval_ ON _timescaledb_internal._hyper_38_92_chunk USING btree (hourly_interval DESC);
+
+
+--
+-- Name: _hyper_38_92_chunk__materialized_hypertable_38_pool_hourly_inte; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _hyper_38_92_chunk__materialized_hypertable_38_pool_hourly_inte ON _timescaledb_internal._hyper_38_92_chunk USING btree (pool, hourly_interval DESC);
+
+
+--
 -- Name: _materialized_hypertable_37_decimals_hourly_interval_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
 --
 
@@ -4729,6 +7332,27 @@ CREATE INDEX _materialized_hypertable_37_pool_hourly_interval_idx ON _timescaled
 
 
 --
+-- Name: _materialized_hypertable_38_decimals_hourly_interval_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _materialized_hypertable_38_decimals_hourly_interval_idx ON _timescaledb_internal._materialized_hypertable_38 USING btree (decimals, hourly_interval DESC);
+
+
+--
+-- Name: _materialized_hypertable_38_hourly_interval_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _materialized_hypertable_38_hourly_interval_idx ON _timescaledb_internal._materialized_hypertable_38 USING btree (hourly_interval DESC);
+
+
+--
+-- Name: _materialized_hypertable_38_pool_hourly_interval_idx; Type: INDEX; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE INDEX _materialized_hypertable_38_pool_hourly_interval_idx ON _timescaledb_internal._materialized_hypertable_38 USING btree (pool, hourly_interval DESC);
+
+
+--
 -- Name: erc20_cache_1_address_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4743,10 +7367,59 @@ CREATE UNIQUE INDEX erc20_cache_1_address_idx1 ON public.erc20_cache_1 USING btr
 
 
 --
+-- Name: events_erc20_transfer_created_by_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX events_erc20_transfer_created_by_idx ON public.events_erc20_transfer USING btree (created_by);
+
+
+--
+-- Name: events_erc20_transfer_recipient_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX events_erc20_transfer_recipient_idx ON public.events_erc20_transfer USING btree (recipient);
+
+
+--
+-- Name: events_erc20_transfer_sender_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX events_erc20_transfer_sender_idx ON public.events_erc20_transfer USING btree (sender);
+
+
+--
 -- Name: events_leo_campaigncreated_identifier_pool_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX events_leo_campaigncreated_identifier_pool_idx ON public.events_leo_campaigncreated USING btree (identifier, pool);
+
+
+--
+-- Name: events_leo_positiondivested2_position_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX events_leo_positiondivested2_position_id_idx ON public.events_leo_positiondivested2 USING btree (position_id);
+
+
+--
+-- Name: events_leo_positiondivested2_recipient_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX events_leo_positiondivested2_recipient_idx ON public.events_leo_positiondivested2 USING btree (recipient);
+
+
+--
+-- Name: events_leo_positionvested2_owner_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX events_leo_positionvested2_owner_idx ON public.events_leo_positionvested2 USING btree (owner);
+
+
+--
+-- Name: events_leo_positionvested2_position_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX events_leo_positionvested2_position_id_idx ON public.events_leo_positionvested2 USING btree (position_id);
 
 
 --
@@ -4988,6 +7661,20 @@ CREATE UNIQUE INDEX faucet_requests_ip_addr_was_sent_idx1 ON public.faucet_reque
 
 
 --
+-- Name: ninelives_campaigns_1_created_at_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ninelives_campaigns_1_created_at_idx ON public.ninelives_campaigns_1 USING btree (created_at);
+
+
+--
+-- Name: ninelives_campaigns_1_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ninelives_campaigns_1_updated_at_idx ON public.ninelives_campaigns_1 USING btree (updated_at);
+
+
+--
 -- Name: ninelives_frontpage_1_created_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4999,6 +7686,13 @@ CREATE INDEX ninelives_frontpage_1_created_at_idx ON public.ninelives_frontpage_
 --
 
 CREATE INDEX ninelives_frontpage_1_until_idx ON public.ninelives_frontpage_1 USING btree (until);
+
+
+--
+-- Name: ninelives_newsfeed_1_date_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ninelives_newsfeed_1_date_idx ON public.ninelives_newsfeed_1 USING btree (date);
 
 
 --
@@ -5030,6 +7724,20 @@ CREATE INDEX seawater_active_positions_2_pool_created_by_idx1 ON public.seawater
 
 
 --
+-- Name: seawater_active_positions_6_owner_created_by_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX seawater_active_positions_6_owner_created_by_idx ON public.seawater_active_positions_6 USING btree (owner, created_by DESC);
+
+
+--
+-- Name: seawater_active_positions_6_pool_created_by_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX seawater_active_positions_6_pool_created_by_idx ON public.seawater_active_positions_6 USING btree (pool, created_by DESC);
+
+
+--
 -- Name: snapshot_positions_latest_1_pos_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5041,6 +7749,13 @@ CREATE UNIQUE INDEX snapshot_positions_latest_1_pos_id_idx ON public.snapshot_po
 --
 
 CREATE UNIQUE INDEX snapshot_positions_latest_1_pos_id_idx1 ON public.snapshot_positions_latest_1 USING btree (pos_id);
+
+
+--
+-- Name: _hyper_35_101_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_101_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
 
 
 --
@@ -5128,10 +7843,73 @@ CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON 
 
 
 --
+-- Name: _hyper_35_82_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_82_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
+
+
+--
+-- Name: _hyper_35_84_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_84_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
+
+
+--
+-- Name: _hyper_35_87_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_87_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
+
+
+--
+-- Name: _hyper_35_89_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_89_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
+
+
+--
+-- Name: _hyper_35_93_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_93_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
+
+
+--
+-- Name: _hyper_35_95_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_95_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
+
+
+--
+-- Name: _hyper_35_97_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_97_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
+
+
+--
+-- Name: _hyper_35_99_chunk ts_cagg_invalidation_trigger; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_cagg_invalidation_trigger AFTER INSERT OR DELETE OR UPDATE ON _timescaledb_internal._hyper_35_99_chunk FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.continuous_agg_invalidation_trigger('35');
+
+
+--
 -- Name: _materialized_hypertable_37 ts_insert_blocker; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
 --
 
 CREATE TRIGGER ts_insert_blocker BEFORE INSERT ON _timescaledb_internal._materialized_hypertable_37 FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.insert_blocker();
+
+
+--
+-- Name: _materialized_hypertable_38 ts_insert_blocker; Type: TRIGGER; Schema: _timescaledb_internal; Owner: -
+--
+
+CREATE TRIGGER ts_insert_blocker BEFORE INSERT ON _timescaledb_internal._materialized_hypertable_38 FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.insert_blocker();
 
 
 --
@@ -5173,4 +7951,8 @@ ALTER TABLE ONLY public.ninelives_frontpage_1
 --
 
 INSERT INTO public.ninelives_migrations (version) VALUES
-    ('1726296116');
+    ('1726296116'),
+    ('1730430337'),
+    ('1732386051'),
+    ('1732387259'),
+    ('1734425645');

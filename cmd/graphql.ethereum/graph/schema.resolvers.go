@@ -422,7 +422,10 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]typ
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
-	err := r.DB.Table("ninelives_campaigns_1").Find(&campaigns).Error
+	err := r.DB.Table("ninelives_campaigns_1").
+		Find(&campaigns).
+		Order("created_at desc").
+		Error
 	if err != nil {
 		slog.Error("Error getting campaigns from database",
 			"error", err,
