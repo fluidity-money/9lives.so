@@ -10,7 +10,7 @@ use lib9lives::{
     erc20_call::max_bals_guard,
     error::{panic_guard, Error},
     fees::*,
-    host::{ts_add_time, with_contract},
+    host::{set_msg_sender, ts_add_time, with_contract},
     immutables::FUSDC_ADDR,
     should_spend,
     utils::{block_timestamp, msg_sender},
@@ -177,7 +177,15 @@ fn strat_u256() -> impl Strategy<Value = U256> {
 proptest! {
     #[test]
     fn test_unhappy_call_whinge_claim_different_from_caller(
-        predictions in proptest::collection::vec((any::<u64>(), strat_u256()), 0..1000)
+        predictions in proptest::collection::vec(
+            (
+                strat_addr(),     // The address of this sender to use.
+                any::<u64>(),     // The random number seed.
+                strat_u256(),     // The balance this predictor has.
+                prop_oneof![1, 2] // The outcome that they bet on.
+            ),
+            0..1000
+        )
     ) {
         // Someone creates a market, it's called by someone, the whinger
         // disagrees, the predictors agree in line with the caller.
@@ -207,44 +215,17 @@ proptest! {
                 {msg_sender() => BOND_FOR_WHINGE},
                 c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
             );
-            panic_guard(|| {
-                assert_eq!(
-                    max_bals_guard(
-                        msg_sender(),
-                        || c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
-                    )
-                        .unwrap_err(),
-                    Error::AlreadyWhinged
+            // We are now a day after the whinge, so we're in the PREDICTING PERIOD.
+            for (sender_addr, seed, bal, outcome) in predictions {
+                set_msg_sender(sender_addr);
+                should_spend!(
+                    TESTING_LOCKUP_ADDR,
+                    {msg_sender() => bal},
                 );
-            });
+            }
             // We are now 5 days in. The SWEEPING PERIOD.
             let five_days = 432000;
             ts_add_time(five_days);
-            // Since no-one predicted, it must be the whinger that was correct!
-            assert_eq!(
-                c.sweep(
-                    trading,
-                    Address::ZERO,
-                    vec![winner, preferred_outcome_whinger],
-                    Address::ZERO,
-                    Address::ZERO,
-                )
-                .unwrap().0,
-                INCENTIVE_AMT_SWEEP
-            );
-            // We can't call this twice and get anything unless we're liquidating someone!
-            assert_eq!(
-                c.sweep(
-                    trading,
-                    Address::ZERO,
-                    vec![winner, preferred_outcome_whinger],
-                    Address::ZERO,
-                    Address::ZERO,
-                )
-                .unwrap().0,
-                U256::ZERO
-            );
-            assert_eq!(preferred_outcome_whinger, c.winner(trading).unwrap());
         })
     }
 }

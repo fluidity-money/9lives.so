@@ -95,6 +95,8 @@ pub unsafe extern "C" fn storage_load_bytes32(key: *const u8, out: *mut u8) {
     unsafe { write_word(out, value) };
 }
 
+// We avoid setting this and contract_address so that we use our internal
+// function, since Stylus does some caching.
 #[no_mangle]
 pub unsafe extern "C" fn msg_sender(_ptr: *mut u8) {}
 
@@ -103,14 +105,15 @@ pub fn get_msg_sender() -> Address {
 }
 
 pub fn set_msg_sender(a: Address) {
-    MSG_SENDER.with(|v| *v.borrow_mut() = a)
+    MSG_SENDER.with(|v| *v.borrow_mut() = Address::from(testing_addrs::MSG_SENDER))
+}
+
+pub fn reset_msg_sender() {
+    set_msg_sender(MSG_SENDER)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn contract_address(addr: *mut u8) {
-    // Copy literally out the testing address to the pointer.
-    std::ptr::copy(testing_addrs::CONTRACT.as_ptr(), addr, 20);
-}
+pub unsafe extern "C" fn contract_address(addr: *mut u8) {}
 
 pub fn get_contract_address() -> Address {
     CONTRACT_ADDRESS

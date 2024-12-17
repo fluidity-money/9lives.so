@@ -20,5 +20,11 @@ defaults! {
     LONGTAIL,
     STAKED_ARB,
     TESTING_DAO,
-    SHARE
+    SHARE,
+    LOCKUP_CONTRACT,
+    LOCKUP_TOKEN,
+
+    ALICE,
+    BOB,
+    CHARLIE
 }

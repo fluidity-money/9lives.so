@@ -41,6 +41,12 @@ pub const TESTING_DAO_ADDR: Address = Address::new(testing_addrs::TESTING_DAO);
 #[cfg(feature = "testing")]
 pub const TESTING_SHARE_ADDR: Address = Address::new(testing_addrs::SHARE);
 
+#[cfg(feature = "testing")]
+pub const TESTING_LOCKUP_CONTRACT_ADDR: U256 = Address::new(testing_addrs::LOCKUP_CONTRACT);
+
+#[cfg(feature = "testing")]
+pub const TESTING_LOCKUP_TOKEN_ADDR: U256 = Address::new(testing_addrs::LOCKUP_TOKEN);
+
 // Scaled amount to use for drawing down funds on request based on a
 // percentage.
 pub const SCALING_FACTOR: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
