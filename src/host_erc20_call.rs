@@ -4,14 +4,32 @@ use std::{cell::RefCell, collections::HashMap};
 
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
-use crate::{error::Error, utils::contract_address};
+use crate::{
+    error::Error,
+    utils::{contract_address, msg_sender},
+    immutables::*
+};
 
 thread_local! {
     static BALANCES: RefCell<HashMap<Address, HashMap<Address, U256>>> = RefCell::new(HashMap::new());
 }
 
-#[doc(hidden)]
-pub fn testing_give_tokens(addr: Address, recipient: Address, amt: U256) {
+#[macro_export]
+macro_rules! should_spend {
+    (
+        $addr:expr,
+        { $( $key:expr => $value:expr ),* $(,)? },
+        $func:expr
+    ) => {
+        $crate::host_erc20_call::should_spend(
+            $addr,
+            map_macro::hash_map! { $( $key => $value ),* },
+            || { $func }
+        ).unwrap()
+    };
+}
+
+fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
     BALANCES.with(|b| {
         let mut b = b.borrow_mut();
         let b = match b.get_mut(&addr) {
@@ -25,8 +43,50 @@ pub fn testing_give_tokens(addr: Address, recipient: Address, amt: U256) {
             None => U256::ZERO,
             Some(v) => *v,
         };
-        b.insert(recipient, amt + existing_bal)
+        b.insert(recipient, amt + existing_bal);
     });
+}
+
+// Test that each of theses addresses should spend the amounts given,
+// returning ERC20 Transfer Error if they fail to return to 0 balance at
+// the end of this function. Obviously does not cope well with poorly
+// managed side effects from earlier.
+pub fn should_spend<T>(
+    addr: Address,
+    spenders: HashMap<Address, U256>,
+    f: impl FnOnce() -> Result<T, Error>,
+) -> Result<T, Error> {
+    for (r, amt) in spenders.clone() {
+        test_give_tokens(addr, r, amt)
+    }
+    let x = f();
+    if x.is_err() {
+        return x;
+    }
+    for (k, _) in spenders {
+        let b = balance_of(addr, k).unwrap();
+        if !b.is_zero() {
+            return Err(Error::ERC20ErrorTransfer(
+                addr,
+                format!(
+                    "{} has leftover bal {b}",
+                    match k {
+                        FUSDC_ADDR => "fusdc contract".to_owned(),
+                        LONGTAIL_ADDR => "longtail contract".to_owned(),
+                        STAKED_ARB_ADDR => "staked arb contract".to_owned(),
+                        x =>
+                            if x == msg_sender() {
+                                "msg sender".to_owned()
+                            } else {
+                                format!("{:?}", x)
+                            }
+                    }
+                )
+                .into(),
+            ));
+        }
+    }
+    x
 }
 
 pub fn transfer_from(
@@ -47,8 +107,11 @@ pub fn transfer_from(
             }?;
             Some(())
         })
-        .ok_or(Error::ERC20ErrorTransfer(addr, format!("{spender} => {recipient} no bal").into()))?;
-    testing_give_tokens(addr, recipient, amount);
+        .ok_or(Error::ERC20ErrorTransfer(
+            addr,
+            format!("{spender} =[{amount}]> {recipient} no bal").into(),
+        ))?;
+    test_give_tokens(addr, recipient, amount);
     Ok(())
 }
 

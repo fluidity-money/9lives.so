@@ -10,6 +10,8 @@ use lib9lives::{
     error::{panic_guard, Error},
     fees::*,
     host::{set_msg_sender, ts_add_time, with_contract},
+    immutables::FUSDC_ADDR,
+    should_spend,
     utils::{block_timestamp, msg_sender},
     StorageInfraMarket,
 };
@@ -27,14 +29,17 @@ fn test_infra_market_call_close_only_happy_path() {
         let trading = Address::from([1u8; 20]);
         let winner = fixed_bytes!("0541d76af67ad076");
         assert_eq!(
-            c.register(
-                trading,
-                msg_sender(),
-                FixedBytes::<32>::from([1u8; 32]),
-                block_timestamp() + 100,
-                u64::MAX
-            )
-            .unwrap(),
+            should_spend!(
+                FUSDC_ADDR,
+                {msg_sender() => INCENTIVE_AMT_BASE},
+                c.register(
+                    trading,
+                    msg_sender(),
+                    FixedBytes::<32>::from([1u8; 32]),
+                    block_timestamp() + 100,
+                    u64::MAX
+                )
+            ),
             INCENTIVE_AMT_BASE,
         );
         ts_add_time(150);
@@ -93,14 +98,17 @@ fn test_unhappy_call_whinge_claim_no_bettors_path() {
         let trading = Address::from([1u8; 20]);
         let winner = fixed_bytes!("0541d76af67ad076");
         assert_eq!(
-            c.register(
-                trading,
-                msg_sender(),
-                FixedBytes::<32>::from([1u8; 32]),
-                block_timestamp() + 100,
-                u64::MAX
-            )
-            .unwrap(),
+            should_spend!(
+                FUSDC_ADDR,
+                {msg_sender() => INCENTIVE_AMT_BASE},
+                c.register(
+                    trading,
+                    msg_sender(),
+                    FixedBytes::<32>::from([1u8; 32]),
+                    block_timestamp() + 100,
+                    u64::MAX
+                )
+            ),
             INCENTIVE_AMT_BASE,
         );
         ts_add_time(150);
@@ -109,8 +117,11 @@ fn test_unhappy_call_whinge_claim_no_bettors_path() {
         // last for 2 days.
         let preferred_outcome_whinger = fixed_bytes!("7777777777777777");
         assert_eq!(
-            c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
-                .unwrap(),
+            should_spend!(
+                FUSDC_ADDR,
+                { msg_sender() => BOND_FOR_WHINGE },
+                c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
+            ),
             BOND_FOR_WHINGE
         );
         panic_guard(|| {

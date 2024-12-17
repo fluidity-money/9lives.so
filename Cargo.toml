@@ -51,6 +51,7 @@ rust_decimal_macros = "1.36.0"
 serde_json = "1.0.133"
 serde = { version = "1.0.215", features = ["derive"] }
 arrayvec = "0.7.6"
+map-macro = "0.3.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 alloy-primitives = { version = "0.7.6", features = ["getrandom"] }

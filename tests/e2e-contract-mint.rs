@@ -4,10 +4,13 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
 
 use lib9lives::{
     erc20_call,
+    should_spend,
     host::with_contract,
     immutables::FUSDC_ADDR,
     utils::{block_timestamp, contract_address, msg_sender},
 };
+
+use map_macro::hash_map;
 
 #[test]
 #[cfg(feature = "trading-backend-dpm")]
@@ -31,10 +34,10 @@ fn test_e2e_mint() {
         assert_eq!(c.outcome_shares.get(outcome_2), U256::from(1e6));
         // To the contract after fee taking, this will be 5.7.
         let value = U256::from(1e6) * U256::from(6);
-        erc20_call::testing_give_tokens(FUSDC_ADDR, msg_sender(), value);
-        dbg!(erc20_call::balance_of(FUSDC_ADDR, msg_sender()).unwrap());
         assert_eq!(
-            c.mint_test(outcome_1, value, msg_sender()).unwrap(),
+            should_spend!(FUSDC_ADDR, {msg_sender() => value},
+                c.mint_test(outcome_1, value, msg_sender())
+            ),
             U256::from(821821)
         );
         dbg!(erc20_call::balance_of(FUSDC_ADDR, contract_address()).unwrap());
