@@ -11,6 +11,7 @@ import {ILockup} from "./ILockup.sol";
 
 interface InfraMarket {
     function ctor(
+        address admin,
         address emergency,
         ILockup lockup,
         address lockedArbToken,
@@ -91,6 +92,7 @@ contract DeployHelper {
         emit LockupDeployed(address(lockup));
         // Then, we do some setup on the infra market proxy.
         infraMarket.ctor(
+            _a.admin,
             _a.emergencyCouncil,
             lockup,
             lockup.tokenAddr(),
