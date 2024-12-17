@@ -12,4 +12,4 @@ cat >"$name" <<EOF
 -- migrate:down
 EOF
 
-$EDITOR "$name"
+$EDITOR "$name" &
