@@ -1,4 +1,3 @@
-
 #![doc(hidden)]
 
 use std::{cell::RefCell, collections::HashMap, ptr};
@@ -14,8 +13,10 @@ thread_local! {
     static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
     static CUR_TIME: RefCell<u64> = const { RefCell::new(0) };
     static MSG_SENDER: RefCell<Address> = RefCell::new(Address::from(testing_addrs::MSG_SENDER));
-    static CONTRACT_ADDRESS: RefCell<Address> = RefCell::new(Address::from(testing_addrs::CONTRACT));
 }
+
+// Helpful memory of the contract address of the currently executing contract.
+pub const CONTRACT_ADDRESS: Address = Address::new(testing_addrs::CONTRACT);
 
 unsafe fn read_word(key: *const u8) -> Word {
     let mut res = Word::default();
@@ -106,20 +107,19 @@ pub fn set_msg_sender(a: Address) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}
-
-pub fn get_contract_address() -> Address {
-    CONTRACT_ADDRESS.with(|v| v.clone().into_inner())
+pub unsafe extern "C" fn contract_address(addr: *mut u8) {
+    // Copy literally out the testing address to the pointer.
+    std::ptr::copy(testing_addrs::CONTRACT.as_ptr(), addr, 20);
 }
 
-pub fn set_contract_address(a: Address) {
-    CONTRACT_ADDRESS.with(|v| *v.borrow_mut() = a)
+pub fn get_contract_address() -> Address {
+    CONTRACT_ADDRESS
 }
 
 #[allow(dead_code)]
 pub fn with_contract<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {
     STORAGE.with(|s| s.borrow_mut().clear());
-    set_msg_sender(Address::ZERO);
+    set_msg_sender(Address::from(testing_addrs::MSG_SENDER));
     set_block_timestamp(0);
     f(&mut P::new(U256::ZERO, 0))
 }

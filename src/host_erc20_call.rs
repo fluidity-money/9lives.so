@@ -6,9 +6,9 @@ use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use crate::{
     decimal::u256_to_decimal,
-    error::Error,
+    error::{rename_addr, Error},
     immutables,
-    utils::{contract_address, msg_sender},
+    utils::{contract_address},
 };
 
 thread_local! {
@@ -72,24 +72,6 @@ pub fn max_bals_guard<T>(spender: Address, f: impl FnOnce() -> T) -> T {
     x
 }
 
-fn rename_addr(v: Address) -> String {
-    match v {
-        immutables::FUSDC_ADDR => "fusdc contract".to_string(),
-        immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
-        immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
-        immutables::TESTING_DAO_ADDR => "testing dao".to_string(),
-        _ => {
-            if v == msg_sender() {
-                "msg sender".to_string()
-            } else if v == contract_address() {
-                "9lives contract".to_string()
-            } else {
-                v.to_string()
-            }
-        }
-    }
-}
-
 fn safe_print(x: U256, d: u8) -> String {
     match x {
         U256::MAX => "max".to_string(),
@@ -109,8 +91,8 @@ fn rename_amt(a: Address, v: U256) -> String {
 
 // Test that each of theses addresses should spend the amounts given,
 // returning ERC20 Transfer Error if they fail to return to 0 balance at
-// the end of this function. Obviously does not cope well with poorly
-// managed side effects from earlier.
+// the end of this function. It will hygienically (and perhaps, wastefully)
+// wipe the slate clean of balance for the address and token given.
 pub fn should_spend<T>(
     addr: Address,
     spenders: HashMap<Address, U256>,
@@ -120,6 +102,10 @@ pub fn should_spend<T>(
         test_give_tokens(addr, r, amt)
     }
     let x = f();
+    // Wipe their balances clean before returning (useful for proptest)
+    for k in spenders.keys() {
+        test_reset_bal(addr, *k);
+    }
     if x.is_err() {
         return x;
     }
@@ -129,7 +115,7 @@ pub fn should_spend<T>(
             return Err(Error::ERC20ErrorTransfer(
                 addr,
                 format!(
-                    "{} has leftover bal {}, they started with ${}",
+                    "{} has leftover bal {}, they started with {}",
                     rename_addr(addr),
                     rename_amt(addr, v),
                     rename_amt(addr, b),

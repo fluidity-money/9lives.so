@@ -4,7 +4,9 @@ use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use lib9lives::{
     host,
+    should_spend,
     utils::{block_timestamp, msg_sender},
+    immutables::FUSDC_ADDR
 };
 
 #[test]
@@ -14,18 +16,22 @@ fn test_factory_new_trading() {
         c.enabled.set(true);
         let id = FixedBytes::<8>::from_slice(&[0x1e, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
         let id2 = FixedBytes::<8>::from_slice(&[0x1f, 0x9e, 0x51, 0x83, 0x7f, 0x3e, 0xa6, 0xea]);
-        c.new_trading_09393_D_A_8(
-            vec![
-                (id, U256::from(1e6), String::new()),
-                (id2, U256::from(1e6), String::new()),
-            ],
-            msg_sender(), // This is needed to have the same as the infra market until our scaffolding is better.
-            block_timestamp(),
-            block_timestamp() + 100,
-            FixedBytes::ZERO,
-            Address::ZERO,
-        )
-        .unwrap();
+        let setup_cost = U256::from(1e6 as u64 * 5);
+        should_spend!(
+            FUSDC_ADDR,
+            {msg_sender() => setup_cost},
+            c.new_trading_09393_D_A_8(
+                vec![
+                    (id, U256::from(1e6), String::new()),
+                    (id2, U256::from(1e6), String::new()),
+                ],
+                msg_sender(), // This is needed to have the same as the infra market until our scaffolding is better.
+                block_timestamp(),
+                block_timestamp() + 100,
+                FixedBytes::ZERO,
+                Address::ZERO,
+            )
+        );
     })
 }
 

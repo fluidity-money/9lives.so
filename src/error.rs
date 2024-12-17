@@ -8,7 +8,7 @@
 use alloc::{vec, vec::Vec};
 
 #[cfg(not(target_arch = "wasm32"))]
-use crate::{immutables, utils::msg_sender};
+use crate::{immutables, utils::{contract_address, msg_sender}};
 
 use stylus_sdk::alloy_primitives::{Address, U256};
 
@@ -467,6 +467,25 @@ pub enum Error {
     // 0x60
     /// It's too early to withdraw from the Lockup contract!
     TooEarlyToWithdraw,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub(crate) fn rename_addr(v: Address) -> String {
+    match v {
+        immutables::FUSDC_ADDR => "fusdc contract".to_string(),
+        immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
+        immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
+        immutables::TESTING_DAO_ADDR => "testing dao".to_string(),
+        _ => {
+            if v == msg_sender() {
+                "msg sender".to_string()
+            } else if v == contract_address() {
+                "9lives contract".to_string()
+            } else {
+                v.to_string()
+            }
+        }
+    }
 }
 
 #[cfg(not(target_arch = "wasm32"))]

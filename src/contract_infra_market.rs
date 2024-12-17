@@ -280,6 +280,7 @@ impl StorageInfraMarket {
             e.campaign_who_whinged.get().is_zero(),
             Error::AlreadyWhinged
         );
+        dbg!(msg_sender(), "whinging", e.campaign_who_whinged.get());
         fusdc_call::take_from_sender(BOND_FOR_WHINGE)?;
         e.campaign_who_whinged.set(bond_recipient);
         e.campaign_when_whinged.set(U64::from(block_timestamp()));

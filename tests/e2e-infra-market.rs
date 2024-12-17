@@ -10,7 +10,7 @@ use lib9lives::{
     erc20_call::max_bals_guard,
     error::{panic_guard, Error},
     fees::*,
-    host::{set_msg_sender, ts_add_time, with_contract},
+    host::{ts_add_time, with_contract},
     immutables::FUSDC_ADDR,
     should_spend,
     utils::{block_timestamp, msg_sender},
@@ -25,7 +25,6 @@ fn test_infra_market_call_close_only_happy_path() {
     use lib9lives::storage_infra_market::StorageInfraMarket;
     with_contract::<_, StorageInfraMarket, _>(|c| {
         c.enabled.set(true);
-        set_msg_sender(Address::from([9u8; 20]));
         c.factory_addr.set(msg_sender());
         let trading = Address::from([1u8; 20]);
         let winner = fixed_bytes!("0541d76af67ad076");
@@ -94,7 +93,6 @@ fn test_unhappy_call_whinge_claim_no_bettors_path() {
     use lib9lives::storage_infra_market::StorageInfraMarket;
     with_contract::<_, StorageInfraMarket, _>(|c| {
         c.enabled.set(true);
-        set_msg_sender(Address::from([9u8; 20]));
         c.factory_addr.set(msg_sender());
         let trading = Address::from([1u8; 20]);
         let winner = fixed_bytes!("0541d76af67ad076");
