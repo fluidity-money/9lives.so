@@ -81,17 +81,20 @@ const (
 	SettlementTypePoll SettlementType = "POLL"
 	// A.I Resolver.
 	SettlementTypeAi SettlementType = "AI"
+	// Contract State.
+	SettlementTypeContract SettlementType = "CONTRACT"
 )
 
 var AllSettlementType = []SettlementType{
 	SettlementTypeOracle,
 	SettlementTypePoll,
 	SettlementTypeAi,
+	SettlementTypeContract,
 }
 
 func (e SettlementType) IsValid() bool {
 	switch e {
-	case SettlementTypeOracle, SettlementTypePoll, SettlementTypeAi:
+	case SettlementTypeOracle, SettlementTypePoll, SettlementTypeAi, SettlementTypeContract:
 		return true
 	}
 	return false

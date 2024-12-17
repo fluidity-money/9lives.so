@@ -57,8 +57,11 @@ type (
 		// Defines the method used to determine the winner of a campaign.
 		Settlement string `json:"settlement"`
 
-		// Oracle description defines under which conditions campaigns conclude
+		// Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
 		OracleDescription *string `json:"oracleDescription"`
+
+		// Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+		OracleUrls []*string `json:"oracleUrls"`
 
 		// Pool address to purchase shares, and to receive the cost function.
 		PoolAddress string `json:"poolAddress"`

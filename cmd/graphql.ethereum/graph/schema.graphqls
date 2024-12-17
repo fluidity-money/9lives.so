@@ -101,6 +101,11 @@ type Mutation {
     Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
     """
     oracleDescription: String
+    
+    """
+    Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+    """
+		oracleUrls: [String]
 
     """
     X/Twitter username
@@ -153,6 +158,11 @@ type Campaign {
   Oracle description defines under which conditions campaigns conclude
   """
   oracleDescription: String
+
+  """
+  Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+  """
+	oracleUrls: [String]
 
   """
   Identifier that's used to do offline derivation of the campaign pool,
@@ -315,8 +325,8 @@ enum SettlementType {
   """
   AI
 
-  # """
-  # Contract State.
-  # """
+  """
+  Contract State.
+  """
   CONTRACT
 }

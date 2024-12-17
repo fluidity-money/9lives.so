@@ -74,6 +74,11 @@ func (r *campaignResolver) OracleDescription(ctx context.Context, obj *types.Cam
 	return obj.Content.OracleDescription, nil
 }
 
+// OracleUrls is the resolver for the oracleUrls field.
+func (r *campaignResolver) OracleUrls(ctx context.Context, obj *types.Campaign) ([]*string, error) {
+	panic(fmt.Errorf("not implemented: OracleUrls - oracleUrls"))
+}
+
 // Identifier is the resolver for the identifier field.
 func (r *campaignResolver) Identifier(ctx context.Context, obj *types.Campaign) (string, error) {
 	if obj == nil {
@@ -163,7 +168,7 @@ func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) 
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, x *string, telegram *string, web *string) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) (*bool, error) {
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
 		return nil, fmt.Errorf("negative seed")
@@ -396,6 +401,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			},
 			Settlement:        string(settlement),
 			OracleDescription: oracleDescription,
+			OracleUrls:        oracleUrls,
 			PoolAddress:       tradingAddrStr,
 			Outcomes:          campaignOutcomes,
 			Ending:            ending,
