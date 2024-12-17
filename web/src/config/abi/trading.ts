@@ -179,6 +179,19 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "oracle",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "payoff91FA8C2E",
     inputs: [
       {
