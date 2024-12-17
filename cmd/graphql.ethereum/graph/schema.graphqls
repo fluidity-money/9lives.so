@@ -98,11 +98,6 @@ type Mutation {
     creator: String!
 
     """
-    Defines the method used to determine the winner of a campaign.
-    """
-    settlement: SettlementType!
-
-    """
     Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
     """
     oracleDescription: String
@@ -323,5 +318,5 @@ enum SettlementType {
   # """
   # Contract State.
   # """
-  # CONTRACT
+  CONTRACT
 }

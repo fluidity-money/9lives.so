@@ -8,6 +8,7 @@ use array_concat::{concat_arrays, concat_arrays_size};
 
 use keccak_const::Keccak256;
 
+#[cfg(not(target_arch = "wasm32"))]
 use crate::testing_addrs;
 
 macro_rules! env_addr {

@@ -51,6 +51,10 @@ contract MockTrading is INineLivesTrading {
         feeRecipient_ = _feeRecipient;
     }
 
+    function oracle() external view returns (address) {
+        return oracle_;
+    }
+
     function mintPermitE90275AB(
         bytes8 outcome,
         uint256 value,

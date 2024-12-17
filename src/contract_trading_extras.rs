@@ -64,6 +64,10 @@ impl StorageTrading {
         Ok(())
     }
 
+    pub fn oracle(&self) -> R<Address> {
+        Ok(self.oracle.get())
+    }
+
     pub fn shutdown(&mut self) -> R<U256> {
         // Notify Longtail to pause trading on every outcome pool.
         // TODO, send a "thank you" amount to the caller of this function

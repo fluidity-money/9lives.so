@@ -5,7 +5,7 @@ interface IProxy {
     function upgradeAndCall(address, address, bytes memory) external;
 }
 
-contract ProxyAdmin {
+contract TwoProxyAdmin {
     event TransferOwnership(address old, address new_);
 
     address public admin;
@@ -25,6 +25,9 @@ contract ProxyAdmin {
         bytes memory _data
     ) external {
         require(msg.sender == admin, "only admin");
+        require(_proxy.code.length > 0, "no proxy code");
+        // We don't have to check impls code, since the other proxy will
+        // do it for us.
         IProxy(_proxy).upgradeAndCall(_impl1, _impl2, _data);
     }
 }

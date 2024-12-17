@@ -46,6 +46,10 @@ impl StorageFactory {
         Ok(())
     }
 
+    pub fn operator(&self) -> R<Address> {
+        Ok(self.operator.get())
+    }
+
     pub fn dpm_trading_hash(&self) -> R<FixedBytes<32>> {
         Ok(FixedBytes::from_slice(&trading_proxy_hash(
             self.trading_dpm_extras_impl.get(),

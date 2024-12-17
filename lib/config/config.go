@@ -14,9 +14,9 @@ import (
 
 // C is configuration for each service, and globally.
 type C struct {
-	GethUrls        []string
-	TimescaleUrls  []string
-	FactoryAddress string
+	GethUrls                                                                []string
+	TimescaleUrls                                                           []string
+	FactoryAddress, InfraMarketAddress, BeautyContestAddress, SarpAiAddress string
 }
 
 // Get config by querying environment variables.
@@ -32,14 +32,29 @@ func Get() C {
 	}
 	gethUrls := strings.Split(gethUrl, ",")
 	timescaleUrls := strings.Split(timescaleUrl, ",")
-	factoryAddress := strings.ToLower(os.Getenv("SPN_FACTORY_ADDR"))
-	if factoryAddress == "" {
+	factoryAddr := strings.ToLower(os.Getenv("SPN_FACTORY_ADDR"))
+	if factoryAddr == "" {
 		setup.Exitf("SPN_FACTORY_ADDR not set")
 	}
+	infraMarketAddr := strings.ToLower(os.Getenv("SPN_INFRA_MARKET_ADDR"))
+	if infraMarketAddr == "" {
+		setup.Exitf("SPN_INFRA_MARKET_ADDR not set")
+	}
+	beautyContestAddr := strings.ToLower(os.Getenv("SPN_BEAUTY_CONTEST_ADDR"))
+	if beautyContestAddr == "" {
+		setup.Exitf("SPN_BEAUTY_CONTEST_ADDR not set")
+	}
+	sarpAiAddr := strings.ToLower(os.Getenv("SPN_SARP_AI_ADDR"))
+	if sarpAiAddr == "" {
+		setup.Exitf("SPN_SARP_AI_ADDR not set")
+	}
 	return C{
-		GethUrls:        gethUrls,
-		TimescaleUrls:  timescaleUrls,
-		FactoryAddress: factoryAddress,
+		GethUrls:             gethUrls,
+		TimescaleUrls:        timescaleUrls,
+		FactoryAddress:       factoryAddr,
+		InfraMarketAddress:   infraMarketAddr,
+		BeautyContestAddress: beautyContestAddr,
+		SarpAiAddress:        sarpAiAddr,
 	}
 }
 

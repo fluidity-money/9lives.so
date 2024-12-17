@@ -24,6 +24,11 @@ interface INineLivesTrading {
     ) external;
 
     /**
+     * @notice oracle that's in use in this trading contract.
+     */
+    function oracle() external view returns (address);
+
+    /**
      * @notice Mint some shares in exchange for fUSDC. Optionally branches to permit or a
      * classic approval based on the deadline argument (if set to 0, assumes approval)
      */

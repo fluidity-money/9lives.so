@@ -12,8 +12,6 @@ import (
 	"fmt"
 	"image"
 	_ "image/gif"
-	_ "image/jpeg"
-	_ "image/png"
 	"log/slog"
 	"net/url"
 	"strings"
@@ -164,7 +162,7 @@ func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) 
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, settlement model.SettlementType, oracleDescription *string, x *string, telegram *string, web *string) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, x *string, telegram *string, web *string) (*bool, error) {
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
 		return nil, fmt.Errorf("negative seed")
@@ -186,6 +184,22 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			"error", err,
 		)
 		return nil, fmt.Errorf("error checking if trading contract is deployed")
+	}
+	settlement, err := getSettlementTypeDesc(
+		r.Geth,
+		r.InfraMarketAddr,
+		r.BeautyContestAddr,
+		r.SarpAiAddr,
+		*tradingAddr,
+	)
+	if err != nil {
+		slog.Error("Failed to get the settlement type description",
+			"trading contract", tradingAddr,
+			"factory address", r.FactoryAddr,
+			"market id", marketId,
+			"error", err,
+		)
+		return nil, fmt.Errorf("error retrieving oracle type")
 	}
 	// Create the campaign object
 	campaignId, _ := crypto.GetOutcomeId(name, description, uint64(seed))
