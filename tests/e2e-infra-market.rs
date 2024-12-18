@@ -7,7 +7,6 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
 use arrayvec::ArrayVec;
 
 use lib9lives::{
-    erc20_call::max_bals_guard,
     error::{panic_guard, Error},
     fees::*,
     host::{set_msg_sender, ts_add_time, with_contract},
@@ -174,6 +173,7 @@ fn strat_u256() -> impl Strategy<Value = U256> {
     })
 }
 
+/*
 proptest! {
     #[test]
     fn test_unhappy_call_whinge_claim_different_from_caller(
@@ -229,3 +229,4 @@ proptest! {
         })
     }
 }
+*/

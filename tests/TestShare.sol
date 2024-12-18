@@ -23,10 +23,10 @@ contract TestShare is Test {
     }
 
     function testSymbol() public view {
-        assertEq(share.symbol(), "9#6201151562395654043");
+        assertEq(share.symbol(), "9#482975526718864155");
     }
 
     function testName() public view {
-        assertEq(share.name(), "Hello");
+        assertEq(share.name(), "9lives #246 Hello");
     }
 }

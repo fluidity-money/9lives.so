@@ -190,17 +190,6 @@ impl StorageTrading {
         let value = value - fee_for_creator - fee_for_team;
         // Set the global amounts that were invested.
         let outcome_invested_before = self.outcome_invested.get(outcome_id);
-        self.outcome_invested.setter(outcome_id).set(
-            outcome_invested_before
-                .checked_add(value)
-                .ok_or(Error::CheckedAddOverflow)?,
-        );
-        self.global_invested.set(
-            self.global_invested
-                .get()
-                .checked_add(value)
-                .ok_or(Error::CheckedAddOverflow)?,
-        );
         // We need to increase by the amount we allocate, the AMM should do that
         // internally. Some extra fields are needed for the DPM's calculations.
         #[cfg(feature = "trading-backend-dpm")]
@@ -233,6 +222,17 @@ impl StorageTrading {
             contract_address(),
             self.share_impl.get(),
             outcome_id,
+        );
+        self.outcome_invested.setter(outcome_id).set(
+            outcome_invested_before
+                .checked_add(value)
+                .ok_or(Error::CheckedAddOverflow)?,
+        );
+        self.global_invested.set(
+            self.global_invested
+                .get()
+                .checked_add(value)
+                .ok_or(Error::CheckedAddOverflow)?,
         );
         assert_or!(shares > U256::ZERO, Error::UnusualAmountCreated);
         share_call::mint(share_addr, recipient, shares)?;

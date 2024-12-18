@@ -37,7 +37,7 @@ fn test_e2e_mint() {
             should_spend!(FUSDC_ADDR, {msg_sender() => value},
                 c.mint_test(outcome_1, value, msg_sender())
             ),
-            U256::from(821821)
+            U256::from(4181648)
         );
         c.decide(outcome_1).unwrap();
         assert_eq!(

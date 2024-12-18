@@ -6,13 +6,9 @@ package graph
 //
 
 import (
-	"bytes"
 	"context"
-	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"image"
-	_ "image/gif"
 	"log/slog"
 	"net/url"
 	"strings"
@@ -270,41 +266,24 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		shareAddrStr := strings.ToLower(shareAddr.Hex())
 		var outcomePicUrl string
 		if pic := outcome.Picture; pic != "" {
-			outcomePicBody := base64.NewDecoder(
-				base64.StdEncoding,
-				strings.NewReader(replacePicStrPrelude(outcome.Picture)),
-			)
-			var buf bytes.Buffer
-			if _, err := buf.ReadFrom(outcomePicBody); err != nil {
-				slog.Error("Failed to read from a image uploaded base64",
-					"trading addr", tradingAddr,
+			buf, err := decodeAndCheckPictureValidity(outcome.Picture)
+			if err != nil {
+				slog.Error("Failed to decode outcome image",
+					"err", err,
 					"share addr", shareAddr,
 					"outcome id", outcomeId,
-					"creator", creator,
-				)
-				return nil, fmt.Errorf("bad image")
-			}
-			if buf.Len() > MaxImageSizeEncoded {
-				return nil, fmt.Errorf("outcome picture too large")
-			}
-			buf2 := buf
-			_, imageType, err := image.DecodeConfig(&buf2)
-			if err != nil || isBadImage(imageType) {
-				slog.Error("Unable to decode image config",
 					"trading addr", tradingAddr,
-					"err", err,
 				)
-				return nil, fmt.Errorf("bad image")
+				return nil, fmt.Errorf("bad outcome image")
 			}
 			picKey := fmt.Sprintf("%v-%v", tradingAddr, shareAddr)
 			_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
 				Bucket: aws.String(r.S3UploadBucketName),
 				Key:    aws.String(picKey),
-				Body:   &buf,
+				Body:   buf,
 			})
 			if err != nil {
 				slog.Error("Failed to upload a outcome image",
-					"picture", picture,
 					"trading addr", tradingAddr,
 					"outcome key", picKey,
 					"creator", creator,
@@ -339,37 +318,20 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	// Upload the image for the base to S3, so we can serve it later,
 	// start by unpacking the base64. This should also blow up if this
 	// is bad base64.
-	tradingPicKey := tradingAddrStr + "-base"
-	tradingPicBody := base64.NewDecoder(
-		base64.StdEncoding,
-		strings.NewReader(replacePicStrPrelude(picture)),
-	)
-	var buf bytes.Buffer
-	if _, err := buf.ReadFrom(tradingPicBody); err != nil {
-		slog.Error("Failed to read from a image uploaded base64",
-			"trading addr", tradingAddr,
-			"creator", creator,
-		)
-		return nil, fmt.Errorf("bad image")
-	}
-	if buf.Len() > MaxImageSizeEncoded {
-		return nil, fmt.Errorf("pool picture too large")
-	}
-	buf2 := buf
-	_, imageType, err := image.DecodeConfig(&buf2)
-	if err != nil || isBadImage(imageType) {
-		slog.Error("Unable to decode outcome image config",
-			"picture", picture,
+	buf, err := decodeAndCheckPictureValidity(picture)
+	if err != nil {
+		slog.Error("Failed to decode a image",
 			"trading addr", tradingAddr,
 			"creator", creator,
 			"err", err,
 		)
-		return nil, fmt.Errorf("bad image")
+		return nil, fmt.Errorf("error uploading image")
 	}
+	tradingPicKey := tradingAddrStr + "-base"
 	_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
 		Bucket: aws.String(r.S3UploadBucketName),
 		Key:    aws.String(tradingPicKey),
-		Body:   &buf,
+		Body:   buf,
 	})
 	if err != nil {
 		slog.Error("Failed to upload a trading image",

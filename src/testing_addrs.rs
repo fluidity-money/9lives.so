@@ -22,9 +22,5 @@ defaults! {
     TESTING_DAO,
     SHARE,
     LOCKUP_CONTRACT,
-    LOCKUP_TOKEN,
-
-    ALICE,
-    BOB,
-    CHARLIE
+    LOCKUP_TOKEN
 }

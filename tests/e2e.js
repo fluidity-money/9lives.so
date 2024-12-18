@@ -70,7 +70,8 @@ describe("End to end tests", async () => {
         "SPN_FUSDC_ADDR": fusdcAddress,
         "SPN_STAKED_ARB_ADDR": stakedArbAddress,
         "SPN_PROXY_ADMIN": defaultAccountAddr,
-        "SPN_EMERGENCY_COUNCIL": defaultAccountAddr
+        "SPN_EMERGENCY_COUNCIL": defaultAccountAddr,
+        "SPN_SARP_AI": "0x0000000000000000000000000000000000000000"
       },
       stdio: ["ignore", "pipe", "ignore"]
     },
@@ -103,7 +104,9 @@ describe("End to end tests", async () => {
   const helperFactoryDeploy = await helperFactoryFactory.deploy(
     fusdcAddress,
     factoryProxyAddr,
-    infraMarketProxyAddr
+    infraMarketProxyAddr,
+    "0x0000000000000000000000000000000000000000", // TODO (beauty contest)
+    "0x0000000000000000000000000000000000000000" // We don't test SARP AI here.
   );
 
   await helperFactoryDeploy.waitForDeployment();
@@ -184,13 +187,16 @@ describe("End to end tests", async () => {
       encodeBytes32String(""),
       encodeBytes32String("")
     )).wait();
-    const balAfter = await share1.balanceOf(defaultAccountAddr);
-    assert.equal(balAfter, "4476926");
-    return;
-    await (await trading.decide(outcome1)).wait();
-    const fusdcBalBefore = await fusdc.balanceOf(defaultAccountAddr);
-    await (await trading.payoff(outcome1, balAfter, defaultAccountAddr)).wait();
-    assert.equal(await share1.balanceOf(defaultAccountAddr), "0");
-    assert.ok(await fusdc.balanceOf(defaultAccountAddr) > fusdcBalBefore);
+    assert.equal(await share1.balanceOf(defaultAccountAddr), "4181648");
+    await (await trading.mintPermitE90275AB(
+      outcome1,
+      9 * 1e6,
+      defaultAccountAddr,
+      0,
+      0,
+      encodeBytes32String(""),
+      encodeBytes32String("")
+    )).wait();
+    assert.equal(await share1.balanceOf(defaultAccountAddr), 5841325 + 4181648);
   });
 });

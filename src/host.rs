@@ -105,15 +105,15 @@ pub fn get_msg_sender() -> Address {
 }
 
 pub fn set_msg_sender(a: Address) {
-    MSG_SENDER.with(|v| *v.borrow_mut() = Address::from(testing_addrs::MSG_SENDER))
+    MSG_SENDER.with(|v| *v.borrow_mut() = a)
 }
 
 pub fn reset_msg_sender() {
-    set_msg_sender(MSG_SENDER)
+    set_msg_sender(Address::from(testing_addrs::MSG_SENDER))
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn contract_address(addr: *mut u8) {}
+pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}
 
 pub fn get_contract_address() -> Address {
     CONTRACT_ADDRESS
