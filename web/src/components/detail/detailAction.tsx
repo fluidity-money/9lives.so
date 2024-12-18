@@ -87,6 +87,14 @@ export default function DetailCall2Action({
       value: `$${price}`,
     },
     {
+      title: "Creator Fee",
+      value: `-$${fusdc * 0.05} (-5%)`,
+    },
+    {
+      title: "Protocol Fee",
+      value: `-$${fusdc * 0.02} (-2%)`,
+    },
+    {
       title: "Shares",
       value: share,
     },
@@ -156,7 +164,7 @@ export default function DetailCall2Action({
           {outcome.name}
         </h3>
       </div>
-      <div>
+      {/* <div>
         <span className="font-chicago text-xs font-normal text-9black">
           Outcome
         </span>
@@ -167,7 +175,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               selectedOutcome?.state === "buy" &&
-                "bg-green-500 text-white hover:bg-green-500",
+              "bg-green-500 text-white hover:bg-green-500",
               "flex-1",
             )}
             onClick={() =>
@@ -180,7 +188,7 @@ export default function DetailCall2Action({
             size={"large"}
             className={combineClass(
               selectedOutcome?.state === "sell" &&
-                "bg-red-500 text-white hover:bg-red-500",
+              "bg-red-500 text-white hover:bg-red-500",
               "flex-1",
             )}
             onClick={
@@ -194,7 +202,7 @@ export default function DetailCall2Action({
             }
           />
         </div>
-      </div>
+      </div> */}
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
           <span className="font-chicago text-xs font-normal text-9black">
