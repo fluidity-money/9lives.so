@@ -28,6 +28,9 @@ impl StorageTrading {
 impl StorageTrading {
     #[allow(unused)]
     fn internal_dpm_price(&self, id: FixedBytes<8>) -> R<U256> {
+        if self.outcome_invested.get(id).is_zero(){
+            return Ok(U256::ZERO);
+        }
         let m_1 = c!(fusdc_u256_to_decimal(self.outcome_invested.get(id)));
         let n_1 = self.outcome_shares.get(id);
         let n_2 = c!(share_u256_to_decimal(c!(self

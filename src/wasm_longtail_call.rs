@@ -1,33 +1,37 @@
-
-
 use stylus_sdk::{
     alloy_primitives::{Address, U256},
+    alloy_sol_types::{sol, SolCall},
     call::RawCall,
 };
 
-use crate::{
-    error::Error,
-    immutables::LONGTAIL_ADDR,
-    longtail_cd::{pack_create_pool, pack_enable_pool},
-};
+use crate::{error::Error, immutables::LONGTAIL_ADDR};
 
-pub fn create_pool(erc20: Address, price: U256, fee: u32) -> Result<Address, Error> {
+sol!("src/ILongtail.sol");
+
+pub fn create_pool(pool: Address, price: U256, fee: u32) -> Result<Address, Error> {
     c!(RawCall::new()
-        .call(LONGTAIL_ADDR, &pack_create_pool(erc20, price, fee))
+        .call(
+            LONGTAIL_ADDR,
+            &ILongtail::createPool653F395ECall { pool, price, fee }.abi_encode()
+        )
         .map_err(Error::LongtailError));
-    Ok(erc20)
+    Ok(pool)
 }
 
-pub fn enable_pool(erc20: Address) -> Result<(), Error> {
+fn adjust_pool(pool: Address, enabled: bool) -> Result<(), Error> {
     c!(RawCall::new()
-        .call(LONGTAIL_ADDR, &pack_enable_pool(erc20, true))
+        .call(
+            LONGTAIL_ADDR,
+            &ILongtail::enablePool579DA658Call { pool, enabled }.abi_encode()
+        )
         .map_err(Error::LongtailError));
     Ok(())
 }
 
-pub fn pause_pool(erc20: Address) -> Result<(), Error> {
-    c!(RawCall::new()
-        .call(LONGTAIL_ADDR, &pack_enable_pool(erc20, false))
-        .map_err(Error::LongtailError));
-    Ok(())
+pub fn enable_pool(pool: Address) -> Result<(), Error> {
+    adjust_pool(pool, true)
+}
+
+pub fn pause_pool(pool: Address) -> Result<(), Error> {
+    adjust_pool(pool, false)
 }

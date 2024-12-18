@@ -26,7 +26,6 @@ mod testing_addrs;
 pub mod utils;
 
 pub mod erc20_cd;
-pub mod longtail_cd;
 
 pub mod host_trading_call;
 pub mod trading_call;
