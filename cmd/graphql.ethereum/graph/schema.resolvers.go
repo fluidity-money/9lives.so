@@ -72,7 +72,10 @@ func (r *campaignResolver) OracleDescription(ctx context.Context, obj *types.Cam
 
 // OracleUrls is the resolver for the oracleUrls field.
 func (r *campaignResolver) OracleUrls(ctx context.Context, obj *types.Campaign) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: OracleUrls - oracleUrls"))
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.OracleUrls, nil
 }
 
 // Identifier is the resolver for the identifier field.
