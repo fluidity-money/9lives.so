@@ -18,6 +18,7 @@ import ErrorInfo from "../themed/errorInfo";
 import usePotentialReturn from "@/hooks/usePotentialReturn";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
+import AssetSelector from "../assetSelector";
 export default function DetailCall2Action({
   shouldStopAction,
   tradingAddr,
@@ -194,45 +195,47 @@ export default function DetailCall2Action({
           />
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
           <span className="font-chicago text-xs font-normal text-9black">
-            fUSDC to spend
+            Asset to spend
           </span>
-          {account ? (
-            <Button
-              disabled={shouldStopAction}
-              onClick={setToMaxShare}
-              intent={"default"}
-              size={"small"}
-              title="Max"
-            />
-          ) : null}
+          <Button
+            disabled={shouldStopAction || !account}
+            onClick={setToMaxShare}
+            intent={"default"}
+            size={"small"}
+            title="Max"
+          />
         </div>
-        <Input
-          {...register("fusdc")}
-          type="number"
-          min={0}
-          max={Number.MAX_SAFE_INTEGER}
-          value={fusdc}
-          placeholder="0"
-          onChange={(e) => {
-            const fusdc =
-              Number(e.target.value) >= Number.MAX_SAFE_INTEGER
-                ? Number.MAX_SAFE_INTEGER
-                : Number(e.target.value);
-            const share = fusdc / Number(price);
-            setShare(share);
-            setValue("share", share);
-            setFusdc(fusdc);
-            setValue("fusdc", fusdc);
-            if (fusdc > 0) clearErrors();
-          }}
-          className={combineClass(
-            "mt-2 flex-1 text-center",
-            errors.fusdc && "border-2 border-red-500",
-          )}
-        />
+        <div className="flex gap-2.5">
+          <AssetSelector />
+          <Input
+            {...register("fusdc")}
+            type="number"
+            min={0}
+            max={Number.MAX_SAFE_INTEGER}
+            value={fusdc}
+            placeholder="0"
+            onChange={(e) => {
+              const fusdc =
+                Number(e.target.value) >= Number.MAX_SAFE_INTEGER
+                  ? Number.MAX_SAFE_INTEGER
+                  : Number(e.target.value);
+              const share = fusdc / Number(price);
+              setShare(share);
+              setValue("share", share);
+              setFusdc(fusdc);
+              setValue("fusdc", fusdc);
+              if (fusdc > 0) clearErrors();
+            }}
+            className={combineClass(
+              "flex-1 text-center",
+              errors.fusdc && "border-2 border-red-500",
+            )}
+          />
+        </div>
+
         {errors.fusdc && <ErrorInfo text={errors.fusdc.message} />}
       </div>
       <div className="flex flex-col">
