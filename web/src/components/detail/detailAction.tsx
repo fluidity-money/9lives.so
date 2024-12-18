@@ -19,6 +19,8 @@ import usePotentialReturn from "@/hooks/usePotentialReturn";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import AssetSelector from "../assetSelector";
+import Link from "next/link";
+import LinkIcon from "#/icons/link.svg";
 export default function DetailCall2Action({
   shouldStopAction,
   tradingAddr,
@@ -160,9 +162,49 @@ export default function DetailCall2Action({
             className="size-full object-cover"
           />
         </div>
-        <h3 className="font-chicago text-base font-normal text-9black">
-          {outcome.name}
-        </h3>
+        <div className="flex flex-col gap-1">
+          <h3 className="font-chicago text-base font-normal text-9black">
+            {outcome.name}
+          </h3>
+          <div className="flex items-center gap-1 font-geneva text-xs uppercase">
+            <span>Chance</span>
+            <span className="bg-9green px-1 py-0.5">50%</span>
+          </div>
+        </div>
+      </div>
+      <div className="flex gap-4">
+        <Link
+          href={`#`}
+          // target="_blank"
+          // rel="noopener,noreferrer"
+          className="contents"
+        >
+          <Button size={"medium"} className={"flex-1"}>
+            <div className="flex items-center justify-center gap-1">
+              <span className="font-chicago text-sm uppercase">
+                Trade Position
+              </span>
+              <Image src={LinkIcon} alt="" width={14} />
+            </div>
+          </Button>
+        </Link>
+        <Link
+          href={`https://long.so/stake/pool?id=${outcome.share.address}`}
+          target="_blank"
+          rel="noopener,noreferrer"
+          className="contents"
+        >
+          <Button
+            size={"medium"}
+            disabled={shouldStopAction}
+            className={"flex-1"}
+          >
+            <div className="flex items-center justify-center gap-1">
+              <span className="font-chicago text-sm uppercase">Provide LP</span>
+              <Image src={LinkIcon} alt="" width={14} />
+            </div>
+          </Button>
+        </Link>
       </div>
       {/* <div>
         <span className="font-chicago text-xs font-normal text-9black">

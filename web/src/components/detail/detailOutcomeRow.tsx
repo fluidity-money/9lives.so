@@ -9,6 +9,7 @@ import Button from "../themed/button";
 import Link from "next/link";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
+import LinkIcon from "#/icons/link.svg";
 export default function DetailOutcomeRow({
   data,
   price,
@@ -149,11 +150,28 @@ export default function DetailOutcomeRow({
         )}
       >
         <Link
+          href={"#"}
+          // target="_blank"
+          // rel="noopener,noreferrer"
+        >
+          <Button size={"medium"}>
+            <div className="flex items-center gap-1">
+              <span className="font-chicago text-xs">Trade</span>
+              <Image src={LinkIcon} alt="" width={14} />
+            </div>
+          </Button>
+        </Link>
+        <Link
           href={`https://long.so/stake/pool?id=${data.share.address}`}
           target="_blank"
           rel="noopener,noreferrer"
         >
-          <Button size={"medium"} title="LP" disabled={isConcluded} />
+          <Button size={"medium"} disabled={isConcluded}>
+            <div className="flex items-center gap-1">
+              <span className="font-chicago text-xs">LP</span>
+              <Image src={LinkIcon} alt="" width={14} />
+            </div>
+          </Button>
         </Link>
       </td>
     </tr>
