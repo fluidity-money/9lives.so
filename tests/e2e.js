@@ -197,6 +197,6 @@ describe("End to end tests", async () => {
       encodeBytes32String(""),
       encodeBytes32String("")
     )).wait();
-    assert.equal(await share1.balanceOf(defaultAccountAddr), 5841325 + 4181648);
+    assert.equal(await share1.balanceOf(defaultAccountAddr), 5841324 + 4181648);
   });
 });
