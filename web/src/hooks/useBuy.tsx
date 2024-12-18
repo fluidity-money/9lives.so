@@ -158,8 +158,9 @@ const useBuy = ({
               outcomes.map((o) => o.identifier),
             ],
           });
+          const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
-            queryKey: ["chances", tradingAddr, outcomes[0].identifier],
+            queryKey: ["details", tradingAddr, outcomeIds],
           });
           queryClient.invalidateQueries({
             queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
