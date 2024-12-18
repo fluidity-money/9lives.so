@@ -29,6 +29,7 @@ export default function DetailCall2Action({
   setSelectedOutcome,
   price,
   isYesNo,
+  chance,
 }: {
   shouldStopAction: boolean;
   selectedOutcome: SelectedOutcome;
@@ -37,6 +38,7 @@ export default function DetailCall2Action({
   initalData: Outcome[];
   price: string;
   isYesNo: boolean;
+  chance?: number;
 }) {
   const [share, setShare] = useState<number>(0);
   const [fusdc, setFusdc] = useState<number>(0);
@@ -168,7 +170,9 @@ export default function DetailCall2Action({
           </h3>
           <div className="flex items-center gap-1 font-geneva text-xs uppercase">
             <span>Chance</span>
-            <span className="bg-9green px-1 py-0.5">50%</span>
+            <span className="bg-9green px-1 py-0.5">
+              {chance?.toFixed(0) ?? "?"}%
+            </span>
           </div>
         </div>
       </div>

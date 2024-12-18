@@ -3,17 +3,17 @@ import DetailOutcomeRow from "@/components/detail/detailOutcomeRow";
 import { Detail, Outcome } from "@/types";
 import { SelectedOutcome } from "../../types";
 import React from "react";
-import useChances from "@/hooks/useChances";
 
 export default function DetailOutcomes({
   data,
   sharePrices,
   selectedOutcome,
-  tradingAddr,
   setSelectedOutcome,
   details,
   isConcluded,
   isYesNo,
+  chance,
+  amount,
 }: {
   data: Outcome[];
   sharePrices?: { id: string; price: string }[];
@@ -23,12 +23,11 @@ export default function DetailOutcomes({
   details?: Detail;
   isConcluded: boolean;
   isYesNo: boolean;
+  chance?: number;
+  amount: bigint;
 }) {
   const outcomeIds = data.map((o) => o.identifier);
-  const chances = useChances({
-    tradingAddr,
-    outcomeIds,
-  });
+
   const titles = ["Outcome", "Chance %", "Invested", "Current Price", ""];
   return (
     <table className="w-full border-separate border-spacing-0">
@@ -59,14 +58,8 @@ export default function DetailOutcomes({
                 : (sharePrices?.find((item) => item.id === outcome.identifier)
                     ?.price ?? "0")
             }
-            chance={
-              chances?.find((chance) => chance.id === outcome.identifier)!
-                .chance
-            }
-            amount={
-              chances?.find((chance) => chance.id === outcome.identifier)!
-                .investedAmount
-            }
+            chance={chance}
+            amount={amount}
             isWinner={outcome.identifier === details?.winner}
             key={outcome.identifier}
             data={outcome}

@@ -11,6 +11,7 @@ import { useSearchParams } from "next/navigation";
 import AssetScene from "../user/assetScene";
 import useDetails from "@/hooks/useDetails";
 import DetailResults from "./detailResults";
+import useChances from "@/hooks/useChances";
 
 export default function DetailWrapper({
   initialData,
@@ -37,6 +38,16 @@ export default function DetailWrapper({
     tradingAddr: initialData.poolAddress as `0x${string}`,
     outcomeIds,
   });
+  const chances = useChances({
+    tradingAddr: initialData.poolAddress,
+    outcomeIds,
+  });
+  const chance = chances?.find(
+    (chance) => chance.id === selectedOutcome.id,
+  )!.chance;
+  const amount = chances?.find(
+    (chance) => chance.id === selectedOutcome.id,
+  )!.investedAmount;
   return (
     <>
       <div className="flex flex-[2] flex-col gap-8">
@@ -53,6 +64,8 @@ export default function DetailWrapper({
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
           details={details}
+          amount={amount}
+          chance={chance}
           isConcluded={isConcluded}
         />
         <DetailInfo
@@ -74,6 +87,7 @@ export default function DetailWrapper({
           <DetailCall2Action
             shouldStopAction={isEnded || isConcluded}
             selectedOutcome={selectedOutcome}
+            chance={chance}
             setSelectedOutcome={setSelectedOutcome}
             initalData={initialData.outcomes}
             tradingAddr={initialData.poolAddress}

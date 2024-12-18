@@ -79,7 +79,7 @@ export default function DetailHeader({
             </div>
           )
         ) : (
-          <div className="flex flex-col items-end justify-center gap-2.5">
+          <div className="flex shrink-0 flex-col items-end justify-center gap-2.5">
             <span className="font-geneva text-xs uppercase text-[#808080]">
               Total Campaign Vol:
             </span>
