@@ -58,6 +58,10 @@ contract HelperFactory {
         );
     }
 
+    /**
+     * @notice Create with the Infra Market, transferring the amount needed for the
+     * oracle, as well as the Trading contract itself.
+     */
     function createWithInfraMarket(
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
@@ -90,7 +94,7 @@ contract HelperFactory {
         // We need to take some money from the sender for all the setup costs we're expecting.
         // This should be the (number of outcomes * 1e6) + 10e6
         FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6) + 3000000, deadline, v, r, s);
-        return create(INFRA_MARKET, outcomes, timeEnding, documentation, feeRecipient);
+        return createWithInfraMarket(outcomes, timeEnding, documentation, feeRecipient);
     }
 
     function createWithBeautyContest(
@@ -100,7 +104,7 @@ contract HelperFactory {
         address feeRecipient
     ) public returns (address tradingAddr) {
         // No extra fluff work is needed to support this.
-        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6));
+        FUSDC.transferFrom(msg.sender, address(this), outcomes.length * 1e6);
         return create(BEAUTY_CONTEST, outcomes, timeEnding, documentation, feeRecipient);
     }
 
@@ -114,8 +118,8 @@ contract HelperFactory {
         bytes32 r,
         bytes32 s
     ) external returns (address tradingAddr) {
-        FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6), deadline, v, r, s);
-        return create(BEAUTY_CONTEST, outcomes, timeEnding, documentation, feeRecipient);
+        FUSDC.permit(msg.sender, address(this), outcomes.length * 1e6, deadline, v, r, s);
+        return createWithBeautyContest(outcomes, timeEnding, documentation, feeRecipient);
     }
 
     function createWithAI(
@@ -125,7 +129,7 @@ contract HelperFactory {
         address feeRecipient
     ) public returns (address tradingAddr) {
         // No extra fluff work is needed to support this.
-        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6));
+        FUSDC.transferFrom(msg.sender, address(this), outcomes.length * 1e6);
         return create(SARP_AI, outcomes, timeEnding, documentation, feeRecipient);
     }
 
@@ -139,7 +143,37 @@ contract HelperFactory {
         bytes32 r,
         bytes32 s
     ) external returns (address tradingAddr) {
-        FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6), deadline, v, r, s);
-        return create(SARP_AI, outcomes, timeEnding, documentation, feeRecipient);
+        FUSDC.permit(msg.sender, address(this), outcomes.length * 1e6, deadline, v, r, s);
+        return createWithAI(outcomes, timeEnding, documentation, feeRecipient);
+    }
+
+    /// @dev It doesn't make sense to use this. It's better to do the
+    /// setup work yourself with the factory, this is left for convinience
+    /// reasons. It transfers some fUSDC to the contract for setup.
+    function createWithCustom(
+        address oracle,
+        FactoryOutcome[] calldata outcomes,
+        uint64 timeEnding,
+        bytes32 documentation,
+        address feeRecipient
+    ) public returns (address tradingAddr) {
+        FUSDC.transferFrom(msg.sender, address(this), outcomes.length * 1e6);
+        return create(oracle, outcomes, timeEnding, documentation, feeRecipient);
+    }
+
+    /// @dev Read the developer comment for createWithCustom.
+    function createWithCustomPermit(
+        address oracle,
+        FactoryOutcome[] calldata outcomes,
+        uint64 timeEnding,
+        bytes32 documentation,
+        address feeRecipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public returns (address tradingAddr) {
+        FUSDC.permit(msg.sender, address(this), outcomes.length * 1e6, deadline, v, r, s);
+        return createWithCustom(oracle, outcomes, timeEnding, documentation, feeRecipient);
     }
 }

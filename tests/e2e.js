@@ -156,17 +156,19 @@ describe("End to end tests", async () => {
   const documentationHash =
     "0x482762a5bf88a80830135ebdf2bb2abca30d3ebe991712570faf4b85e5e27f1d";
 
-  const tradingAddr = await helperFactory.createWithInfraMarket.staticCall(
+  const tradingAddr = await helperFactory.createWithCustom.staticCall(
+      defaultAccountAddr, // Custom oracle
       outcomes,
-      timestamp + 100,   // Time end
+      timestamp + 100, // Time end
       documentationHash,
-      defaultAccountAddr // Fee recipient
+      defaultAccountAddr, // Fee recipient
   );
-  await (await helperFactory.createWithInfraMarket(
+  await (await helperFactory.createWithCustom(
+      defaultAccountAddr, // Custom oracle
       outcomes,
-      timestamp + 100,   // Time end
+      timestamp + 100, // Time end
       documentationHash,
-      defaultAccountAddr // Fee recipient
+      defaultAccountAddr, // Fee recipient
   )).wait();
 
   const trading = new Contract(tradingAddr, Trading.abi, signer);
@@ -197,6 +199,12 @@ describe("End to end tests", async () => {
       encodeBytes32String(""),
       encodeBytes32String("")
     )).wait();
-    assert.equal(await share1.balanceOf(defaultAccountAddr), 5841324 + 4181648);
+    const balAfter = 5841324 + 4181648;
+    assert.equal(await share1.balanceOf(defaultAccountAddr), balAfter);
+    await (await trading.decide(outcome1)).wait();
+    const fusdcBalBefore = await fusdc.balanceOf(defaultAccountAddr);
+    await (await trading.payoff91FA8C2E(outcome1, balAfter, defaultAccountAddr)).wait();
+    assert.equal(await share1.balanceOf(defaultAccountAddr), "0");
+    assert.ok(await fusdc.balanceOf(defaultAccountAddr) > fusdcBalBefore);
   });
 });
