@@ -15,6 +15,7 @@ export const requestCampaignList = graph9Lives.query.campaigns({
   description: true,
   picture: true,
   oracleDescription: true,
+  oracleUrls: true,
   settlement: true,
   poolAddress: true,
   creator: {

@@ -11,6 +11,7 @@ const query = `
         picture
         settlement
         oracleDescription
+        oracleUrls
         poolAddress
         creator {
           address

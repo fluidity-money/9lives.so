@@ -60,6 +60,7 @@ export default function DetailWrapper({
           settlement={initialData.settlement}
           creator={initialData.creator.address}
           oracleDescription={initialData.oracleDescription}
+          oracleUrls={initialData.oracleUrls}
         />
       </div>
       <div className="flex flex-1 flex-col gap-8">
