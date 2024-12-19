@@ -12,8 +12,7 @@ export default function DetailOutcomes({
   details,
   isConcluded,
   isYesNo,
-  chance,
-  amount,
+  chances,
 }: {
   data: Outcome[];
   sharePrices?: { id: string; price: string }[];
@@ -23,11 +22,12 @@ export default function DetailOutcomes({
   details?: Detail;
   isConcluded: boolean;
   isYesNo: boolean;
-  chance?: number;
-  amount: bigint;
+  chances: {
+    id: `0x${string}`;
+    chance: number;
+    investedAmount: bigint;
+  }[];
 }) {
-  const outcomeIds = data.map((o) => o.identifier);
-
   const titles = ["Outcome", "Chance %", "Invested", "Current Price", ""];
   return (
     <table className="w-full border-separate border-spacing-0">
@@ -47,25 +47,33 @@ export default function DetailOutcomes({
         </tr>
       </thead>
       <tbody>
-        {data.map((outcome) => (
-          <DetailOutcomeRow
-            isYesNo={isYesNo}
-            selectedOutcome={selectedOutcome}
-            setSelectedOutcome={setSelectedOutcome}
-            price={
-              details?.winner && outcome.identifier !== details.winner
-                ? "0"
-                : (sharePrices?.find((item) => item.id === outcome.identifier)
-                    ?.price ?? "0")
-            }
-            chance={chance}
-            amount={amount}
-            isWinner={outcome.identifier === details?.winner}
-            key={outcome.identifier}
-            data={outcome}
-            isConcluded={isConcluded}
-          />
-        ))}
+        {data.map((outcome) => {
+          const chance = chances?.find(
+            (chance) => chance.id === outcome.identifier,
+          )!.chance;
+          const amount = chances?.find(
+            (chance) => chance.id === outcome.identifier,
+          )!.investedAmount;
+          return (
+            <DetailOutcomeRow
+              isYesNo={isYesNo}
+              selectedOutcome={selectedOutcome}
+              setSelectedOutcome={setSelectedOutcome}
+              price={
+                details?.winner && outcome.identifier !== details.winner
+                  ? "0"
+                  : (sharePrices?.find((item) => item.id === outcome.identifier)
+                      ?.price ?? "0")
+              }
+              chance={chance}
+              amount={amount}
+              isWinner={outcome.identifier === details?.winner}
+              key={outcome.identifier}
+              data={outcome}
+              isConcluded={isConcluded}
+            />
+          );
+        })}
       </tbody>
     </table>
   );

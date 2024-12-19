@@ -42,12 +42,9 @@ export default function DetailWrapper({
     tradingAddr: initialData.poolAddress,
     outcomeIds,
   });
-  const chance = chances?.find(
+  const chanceOfSelected = chances?.find(
     (chance) => chance.id === selectedOutcome.id,
   )!.chance;
-  const amount = chances?.find(
-    (chance) => chance.id === selectedOutcome.id,
-  )!.investedAmount;
   return (
     <>
       <div className="flex flex-[2] flex-col gap-8">
@@ -64,8 +61,7 @@ export default function DetailWrapper({
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
           details={details}
-          amount={amount}
-          chance={chance}
+          chances={chances}
           isConcluded={isConcluded}
         />
         <DetailInfo
@@ -87,7 +83,7 @@ export default function DetailWrapper({
           <DetailCall2Action
             shouldStopAction={isEnded || isConcluded}
             selectedOutcome={selectedOutcome}
-            chance={chance}
+            chance={chanceOfSelected}
             setSelectedOutcome={setSelectedOutcome}
             initalData={initialData.outcomes}
             tradingAddr={initialData.poolAddress}
