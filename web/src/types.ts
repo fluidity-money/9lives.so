@@ -23,7 +23,7 @@ export type Leader = Awaited<
 >[number]["items"][number];
 export type Achievement = Awaited<
   ReturnType<typeof requestAchievments>
->[number];
+>[number] & { isOwned: boolean };
 export type Detail = {
   totalInvestment: bigint;
   totalShares: bigint;

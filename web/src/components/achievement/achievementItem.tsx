@@ -3,18 +3,32 @@ import AchYellow from "#/icons/ach-y.svg";
 import Image from "next/image";
 import CatImage from "#/images/cat.png";
 import { Achievement } from "@/types";
+import { combineClass } from "@/utils/combineClass";
 export default function AchievementItem({
   data,
   totalUserCount,
+  displayUserOwned = false,
 }: {
   data: Achievement;
+  displayUserOwned?: boolean;
   totalUserCount?: number;
 }) {
+  const notOwned = displayUserOwned && !data.isOwned;
   return (
     <ShadowCard className="flex flex-col gap-4 p-5">
-      <div className="flex items-center justify-between gap-2">
+      <div
+        className={combineClass(
+          "flex items-center justify-between gap-2",
+          notOwned && "opacity-40",
+        )}
+      >
         <div className="flex gap-2.5">
-          <Image src={AchYellow} width={45} alt="Achievement" />
+          <Image
+            src={AchYellow}
+            width={45}
+            alt="Achievement"
+            className={combineClass(notOwned && "grayscale")}
+          />
           <div className="flex flex-col gap-1">
             <span className="font-chicago text-sm">{data.name}</span>
             <span className="text-xs">{data.description}</span>
@@ -26,14 +40,27 @@ export default function AchievementItem({
             width={24}
             height={24}
             alt=""
-            className="border border-9black"
+            className={combineClass(
+              notOwned && "grayscale",
+              "border border-9black",
+            )}
           />
-          <div className="flex size-6 items-center justify-center border border-9black bg-9blueDark font-chicago text-xs">
+          <div
+            className={combineClass(
+              notOwned ? "bg-9gray" : "bg-9blueDark",
+              "flex size-6 items-center justify-center border border-9black font-chicago text-xs",
+            )}
+          >
             5+
           </div>
         </div>
       </div>
-      <p className="text-center font-geneva text-[10px] uppercase text-[#808080]">
+      <p
+        className={combineClass(
+          "text-center font-geneva text-[10px] uppercase text-[#808080]",
+          notOwned && "opacity-40",
+        )}
+      >
         {!data.shouldCountMatter && totalUserCount
           ? `${((data.count / totalUserCount) * 100).toFixed(0)}`
           : "?"}

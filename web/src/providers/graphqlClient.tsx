@@ -1,7 +1,7 @@
 import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Points } from "@/graffle/points/__";
-import { OutcomeInput, SettlementType } from "@/types";
+import { OutcomeInput } from "@/types";
 
 const graph9Lives = Lives9.create().transport({
   url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
@@ -33,9 +33,9 @@ export const requestCampaignList = graph9Lives.query.campaigns({
   ending: true,
   starting: true,
 });
-export const requestAchievments = (wallet: string) =>
+export const requestAchievments = (wallet?: string) =>
   graphPoints.query.achievements({
-    $: { wallet: wallet },
+    $: { wallet },
     id: true,
     name: true,
     count: true,
@@ -47,7 +47,6 @@ export const requestLeaderboard = (season?: number) =>
   graphPoints.query.leaderboards({
     $: { product: "9lives", season },
     items: {
-      id: true,
       wallet: true,
       ranking: true,
       scoring: true,

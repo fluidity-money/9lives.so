@@ -24,7 +24,7 @@ export default function LeaderTable() {
         </tr>
       </thead>
       <tbody>
-        {data?.map((item) => <LeaderRow key={item.id} data={item} />)}
+        {data?.map((item) => <LeaderRow key={item.wallet} data={item} />)}
       </tbody>
     </table>
   );

@@ -11,11 +11,12 @@ export default function AchievementGrid() {
   return (
     <RetroCard title="All Achievements" padding="p-7">
       <div className="grid grid-cols-3 gap-7">
-        {data?.map((item, idx) => (
+        {data?.map((item) => (
           <AchievementItem
             data={item}
             key={item.id}
             totalUserCount={totalUserCount}
+            displayUserOwned={true}
           />
         ))}
       </div>
