@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Modal from "./modal";
+import Modal from "./themed/modal";
 import Image from "next/image";
 import InfoIcon from "#/icons/info.svg";
 import Disclaimer from "./disclaimer";

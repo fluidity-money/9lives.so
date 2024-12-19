@@ -4,7 +4,7 @@ import {
   Transition,
   DialogPanel,
 } from "@headlessui/react";
-import RetroCard from "./cardRetro";
+import RetroCard from "../cardRetro";
 interface ModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<boolean>;
