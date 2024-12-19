@@ -1,23 +1,12 @@
-import { SettlementType } from "@/types";
+import { Campaign, SettlementType } from "@/types";
 import RetroCard from "../cardRetro";
 import config from "@/config";
 import Link from "next/link";
 import Image from "next/image";
 import LinkIcon from "#/icons/link.svg";
+import ProposeOutcomeButton from "../proposeOutcomeButton";
 
-export default function DetailInfo({
-  oracleUrls,
-  desc,
-  settlement,
-  creator,
-  oracleDescription,
-}: {
-  oracleUrls: (string | null)[] | null;
-  desc: string;
-  settlement: SettlementType;
-  creator: string;
-  oracleDescription: string | null;
-}) {
+export default function DetailInfo({ data }: { data: Campaign }) {
   const settlementDescMap: Record<SettlementType, string> = {
     ORACLE: "a 9lives Infrastructure Market",
     POLL: "an Opinion poll",
@@ -39,20 +28,31 @@ export default function DetailInfo({
       >
         <div className="flex flex-col gap-2.5">
           <h5 className="font-chicago text-sm">Overview</h5>
-          <p className="ml-5 text-xs">{desc}</p>
+          <p className="ml-5 text-xs">{data.description}</p>
         </div>
         <div className="flex flex-col gap-2.5">
           <h5 className="font-chicago text-sm">Settlement</h5>
           <div className="ml-5 flex flex-col gap-2.5">
             <p className="text-xs">
               Settlement of this trade is completed with{" "}
-              {settlementDescMap[settlement] ?? settlementDescMap["ORACLE"]}.
+              {settlementDescMap[data.settlement] ??
+                settlementDescMap["ORACLE"]}
+              .
             </p>
-            {oracleDescription && settlement === "ORACLE" ? (
-              <p className="text-xs">{oracleDescription}</p>
+            {data.oracleDescription && data.settlement === "ORACLE" ? (
+              <p className="text-xs">{data.oracleDescription}</p>
             ) : null}
           </div>
-          <h5 className="font-chicago text-sm">Links & Resources</h5>
+          <div className="flex items-center gap-4">
+            <h5 className="font-chicago text-sm">Links & Resources</h5>{" "}
+            {data.settlement === "ORACLE" ? (
+              <ProposeOutcomeButton
+                title={data.name}
+                ending={data.ending}
+                outcomes={data.outcomes}
+              />
+            ) : null}
+          </div>
           <div className="ml-5 flex flex-col gap-2.5">
             <div className="flex items-center gap-1">
               <Image src={LinkIcon} alt="" width={16} />
@@ -61,14 +61,14 @@ export default function DetailInfo({
                 className="text-xs underline"
                 rel="noopener noreferrer"
                 target="_blank"
-                href={`https://testnet-explorer.superposition.so/address/${settlementContractMap[settlement] ?? settlementContractMap["ORACLE"]}`}
+                href={`https://testnet-explorer.superposition.so/address/${settlementContractMap[data.settlement] ?? settlementContractMap["ORACLE"]}`}
               >
-                {settlementContractMap[settlement] ??
+                {settlementContractMap[data.settlement] ??
                   settlementContractMap["ORACLE"]}
               </Link>
             </div>
             <ul className="flex flex-col gap-2.5">
-              {oracleUrls?.map((url) =>
+              {data.oracleUrls?.map((url) =>
                 url ? (
                   <li
                     key={url.slice(-8)}
@@ -98,9 +98,9 @@ export default function DetailInfo({
             rel="noopener noreferrer"
             target="_blank"
             className="text-xs underline"
-            href={`https://testnet-explorer.superposition.so/address/${creator}`}
+            href={`https://testnet-explorer.superposition.so/address/${data.creator?.address}`}
           >
-            {creator}
+            {data.creator?.address}
           </Link>
         </p>
       </RetroCard>
