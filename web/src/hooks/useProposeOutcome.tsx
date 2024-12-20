@@ -16,8 +16,11 @@ export default function useProposeOutcome({
             method: "call",
             params: [tradingAddr, outcomeId, account.address],
           });
-          await sendTransaction({ transaction: proposeTx, account });
-          res(true);
+          const receipt = await sendTransaction({
+            transaction: proposeTx,
+            account,
+          });
+          res(receipt.transactionHash);
         } catch (error) {
           rej(error);
         }

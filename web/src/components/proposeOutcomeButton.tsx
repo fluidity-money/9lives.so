@@ -8,10 +8,12 @@ export default function ProposeOutcomeButton({
   title,
   ending,
   outcomes,
+  tradingAddr,
 }: {
   title: string;
   ending: number;
   outcomes: Outcome[];
+  tradingAddr: `0x${string}`;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
@@ -27,7 +29,13 @@ export default function ProposeOutcomeButton({
         setIsOpen={setIsModalOpen}
         title="Choose a Proposed Outcome"
       >
-        <ProposeOutcome title={title} ending={ending} outcomes={outcomes} />
+        <ProposeOutcome
+          title={title}
+          ending={ending}
+          outcomes={outcomes}
+          tradingAddr={tradingAddr}
+          closeModal={() => setIsModalOpen(false)}
+        />
       </Modal>
     </>
   );

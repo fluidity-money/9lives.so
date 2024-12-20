@@ -50,6 +50,7 @@ export default function DetailInfo({ data }: { data: Campaign }) {
                 title={data.name}
                 ending={data.ending}
                 outcomes={data.outcomes}
+                tradingAddr={data.poolAddress}
               />
             ) : null}
           </div>
