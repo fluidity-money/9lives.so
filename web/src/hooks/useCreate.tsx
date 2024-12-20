@@ -96,7 +96,7 @@ const useCreate = () => {
             ending: new Date(input.ending).getTime(),
             creator: account.address,
           });
-          await queryClient.invalidateQueries({
+          queryClient.invalidateQueries({
             queryKey: ["campaigns"],
           });
           router.replace(`/campaign/${campaignId}`);
