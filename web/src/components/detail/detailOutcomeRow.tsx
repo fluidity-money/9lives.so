@@ -10,6 +10,7 @@ import Link from "next/link";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import LinkIcon from "#/icons/link.svg";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 export default function DetailOutcomeRow({
   data,
   price,
@@ -20,6 +21,7 @@ export default function DetailOutcomeRow({
   isYesNo,
   isWinner,
   isConcluded,
+  displayQuickActions,
 }: {
   data: Outcome;
   price: string;
@@ -30,10 +32,10 @@ export default function DetailOutcomeRow({
   isYesNo: boolean;
   isWinner: boolean;
   isConcluded: boolean;
+  displayQuickActions?: boolean;
 }) {
   const borderStyle = "border-b border-b-gray-200";
   const isSelected = selectedOutcome.id === data.identifier;
-
   return (
     <tr
       onClick={() =>
@@ -107,6 +109,9 @@ export default function DetailOutcomeRow({
         className={combineClass(
           borderStyle,
           isSelected && "border-y border-y-9black",
+          !displayQuickActions &&
+            isSelected &&
+            "rounded-r-sm border-r border-r-9black",
         )}
       >
         <p className="min-h-[50px] font-chicago text-xs font-normal leading-[50px]">
@@ -141,39 +146,41 @@ export default function DetailOutcomeRow({
           }}
         /> */}
       </td>
-      <td
-        className={combineClass(
-          borderStyle,
-          "flex items-end justify-end gap-2 p-4",
-          isSelected &&
-            "rounded-r-sm border-y border-r border-y-9black border-r-9black",
-        )}
-      >
-        <Link
-          href={"#"}
-          // target="_blank"
-          // rel="noopener,noreferrer"
+      {displayQuickActions ? (
+        <td
+          className={combineClass(
+            borderStyle,
+            "flex items-end justify-end gap-2 p-4",
+            isSelected &&
+              "rounded-r-sm border-y border-r border-y-9black border-r-9black",
+          )}
         >
-          <Button size={"medium"}>
-            <div className="flex items-center gap-1">
-              <span className="font-chicago text-xs">Trade</span>
-              <Image src={LinkIcon} alt="" width={14} />
-            </div>
-          </Button>
-        </Link>
-        <Link
-          href={`https://long.so/stake/pool?id=${data.share.address}`}
-          target="_blank"
-          rel="noopener,noreferrer"
-        >
-          <Button size={"medium"} disabled={isConcluded}>
-            <div className="flex items-center gap-1">
-              <span className="font-chicago text-xs">LP</span>
-              <Image src={LinkIcon} alt="" width={14} />
-            </div>
-          </Button>
-        </Link>
-      </td>
+          <Link
+            href={"#"}
+            // target="_blank"
+            // rel="noopener,noreferrer"
+          >
+            <Button size={"medium"}>
+              <div className="flex items-center gap-1">
+                <span className="font-chicago text-xs">Trade</span>
+                <Image src={LinkIcon} alt="" width={14} />
+              </div>
+            </Button>
+          </Link>
+          <Link
+            href={`https://long.so/stake/pool?id=${data.share.address}`}
+            target="_blank"
+            rel="noopener,noreferrer"
+          >
+            <Button size={"medium"} disabled={isConcluded}>
+              <div className="flex items-center gap-1">
+                <span className="font-chicago text-xs">LP</span>
+                <Image src={LinkIcon} alt="" width={14} />
+              </div>
+            </Button>
+          </Link>
+        </td>
+      ) : null}
     </tr>
   );
 }

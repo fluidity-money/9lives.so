@@ -3,6 +3,7 @@ import DetailOutcomeRow from "@/components/detail/detailOutcomeRow";
 import { Detail, Outcome } from "@/types";
 import { SelectedOutcome } from "../../types";
 import React from "react";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function DetailOutcomes({
   data,
@@ -29,21 +30,24 @@ export default function DetailOutcomes({
   }[];
 }) {
   const titles = ["Outcome", "Chance %", "Invested", "Current Price", ""];
+  const displayQuickActions = useFeatureFlag("display quick actions");
   return (
     <table className="w-full border-separate border-spacing-0">
       <thead>
         <tr>
-          {titles.map((title, index) => (
-            <th
-              key={index}
-              className={combineClass(
-                index === 0 && "py-3",
-                "border-y border-y-gray-200 text-left font-chicago text-xs font-normal uppercase text-gray-400",
-              )}
-            >
-              {title}
-            </th>
-          ))}
+          {titles.map((title, index) =>
+            !displayQuickActions && index === titles.length - 1 ? null : (
+              <th
+                key={index}
+                className={combineClass(
+                  index === 0 && "py-3",
+                  "border-y border-y-gray-200 text-left font-chicago text-xs font-normal uppercase text-gray-400",
+                )}
+              >
+                {title}
+              </th>
+            ),
+          )}
         </tr>
       </thead>
       <tbody>
@@ -70,6 +74,7 @@ export default function DetailOutcomes({
               isWinner={outcome.identifier === details?.winner}
               key={outcome.identifier}
               data={outcome}
+              displayQuickActions={displayQuickActions}
               isConcluded={isConcluded}
             />
           );
