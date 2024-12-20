@@ -1,10 +1,9 @@
-// import { useQuery } from "@tanstack/react-query";
-// import DegenModeListItem from "./degenModeListItem";
-// import { Action } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import DegenModeListItem from "./degenModeListItem";
+import { Action } from "@/types";
 
 export default function DegenModeList() {
-  // const { data, isLoading } = useQuery<Action[]>({ queryKey: ["actions"] });
-
+  const { data, isLoading } = useQuery<Action[]>({ queryKey: ["actions"] });
   return (
     <div className="flex flex-col gap-5 p-5">
       <div className="flex flex-col gap-2.5">
@@ -13,9 +12,8 @@ export default function DegenModeList() {
         </h5>
         <div className="h-px w-full bg-9black" />
       </div>
-      <p className="text-center font-chicago text-base">Coming Soon</p>
-      {/* {isLoading ? (
-        <div>Loading</div>
+      {isLoading ? (
+        <span className="block text-center">Loading...</span>
       ) : (
         <ul className="flex flex-col gap-5">
           {data?.map((item) => (
@@ -24,7 +22,7 @@ export default function DegenModeList() {
             </li>
           ))}
         </ul>
-      )} */}
+      )}
     </div>
   );
 }
