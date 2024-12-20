@@ -7,6 +7,7 @@ import helperAbi from "./abi/helper";
 import clientEnv from "./clientEnv";
 import lensAbi from "./abi/lens";
 import { currentChain } from "./chains";
+import infraAbi from "./abi/infra";
 const contractSchema = z.object({
   abi: z.array(z.any()).optional(),
   address: z.string(),
@@ -27,6 +28,7 @@ const allContractSchema = z.object({
   amm: contractSchema,
   lens: contractSchema,
   helper: contractSchema,
+  infra: contractSchema,
 });
 
 const fusdc = getContract({
@@ -53,6 +55,12 @@ const helper = getContract({
   chain: currentChain,
   client: thirdweb.client,
 });
+const infra = getContract({
+  abi: infraAbi,
+  address: clientEnv.NEXT_PUBLIC_INFRA_ADDR,
+  chain: currentChain,
+  client: thirdweb.client,
+});
 const contractValidation = allContractSchema.safeParse({
   decimals: {
     fusdc: 6,
@@ -62,6 +70,7 @@ const contractValidation = allContractSchema.safeParse({
   amm,
   lens,
   helper,
+  infra,
 });
 
 type ContractsType = z.infer<typeof allContractSchema>;
@@ -77,4 +86,5 @@ export default contractValidation.data as {
   amm: typeof amm;
   lens: typeof lens;
   helper: typeof helper;
+  infra: typeof infra;
 };
