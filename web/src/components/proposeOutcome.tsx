@@ -93,7 +93,7 @@ export default function ProposeOutcome({
       </div>
       <div className="w-full text-9black">
         <Field>
-          <Label className="text-sm/6 font-medium">
+          <Label className="font-bold text-9black">
             Your proposed outcome will be utilized in 9lives&apos; oracle.
           </Label>
           <Description className="text-sm/6 text-9black/50">
