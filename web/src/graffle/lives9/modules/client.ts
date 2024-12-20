@@ -1,6 +1,6 @@
-import * as $$SchemaDrivenDataMap from "./schema-driven-data-map.js";
-import * as $$Data from "./data.js";
-import * as $$Scalar from "./scalar.js";
+import * as $$SchemaDrivenDataMap from "./schema-driven-data-map";
+import * as $$Data from "./data";
+import * as $$Scalar from "./scalar";
 import * as $$Utilities from "graffle/utilities-for-generated";
 import { TransportHttp } from "graffle/extensions/transport-http";
 

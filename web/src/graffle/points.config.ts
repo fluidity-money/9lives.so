@@ -8,5 +8,6 @@ export default Generator.configure({
     url: new URL("https://points-graph.superposition.so/graphql"),
     options: {},
   },
+  importFormat: "noExtension",
   outputDirPath: "./points",
 });

@@ -7,5 +7,6 @@ export default Generator.configure({
     type: "sdlFile",
     dirOrFilePath: "../../../cmd/graphql.ethereum/graph/schema.graphqls",
   },
+  importFormat: "noExtension",
   outputDirPath: "./lives9",
 });

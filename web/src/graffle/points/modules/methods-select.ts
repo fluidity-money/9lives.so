@@ -1,4 +1,4 @@
-import * as $$SelectionSets from "./selection-sets.js";
+import * as $$SelectionSets from "./selection-sets";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 
 //

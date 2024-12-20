@@ -1,152 +1,179 @@
-import * as $$SelectionSets from "./selection-sets.js";
-import * as $$Schema from "./schema.js";
+import * as $$SelectionSets from "./selection-sets";
+import * as $$Schema from "./schema";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 import type { InferResult } from "graffle/schema";
 
 export interface QueryMethods<$Context extends $$Utilities.Context> {
-  $batch: <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.Query<$Context["scalars"]>
-    >,
-  ) => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutput<
-        $Context,
-        InferResult.OperationQuery<
-          $$Utilities.AssertExtendsObject<$SelectionSet>,
-          $$Schema.Schema<$Context["scalars"]>
+  $batch: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutput<
+          $Context,
+          InferResult.OperationQuery<
+            $$Utilities.AssertExtendsObject<$SelectionSet>,
+            $$Schema.Schema<$Context["scalars"]>
+          >
         >
-      >
+    >
   >;
-  __typename: () => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutputGraffleRootField<
-        $Context,
-        { __typename: "Query" },
-        "__typename"
-      >
+  __typename: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    () => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          { __typename: "Query" },
+          "__typename"
+        >
+    >
   >;
   /**
    * Campaign List that can be filtered according to categories
    */
-  campaigns: <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.Query.campaigns<$Context["scalars"]>
-    >,
-  ) => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutputGraffleRootField<
-        $Context,
-        InferResult.OperationQuery<
-          { campaigns: $SelectionSet },
-          $$Schema.Schema<$Context["scalars"]>
-        >,
-        "campaigns"
-      >
+  campaigns: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.campaigns<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { campaigns: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "campaigns"
+        >
+    >
   >;
   /**
    * Get a campaign by its ID. May or may not exist.
    */
-  campaignById: <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.Query.campaignById<$Context["scalars"]>
-    >,
-  ) => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutputGraffleRootField<
-        $Context,
-        InferResult.OperationQuery<
-          { campaignById: $SelectionSet },
-          $$Schema.Schema<$Context["scalars"]>
-        >,
-        "campaignById"
-      >
+  campaignById: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.campaignById<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { campaignById: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "campaignById"
+        >
+    >
   >;
   /**
    * Suggested headlines for the day based on AI input.
    */
-  suggestedHeadlines: <$SelectionSet>(
-    selectionSet?: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.Query.suggestedHeadlines<$Context["scalars"]>
-    >,
-  ) => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutputGraffleRootField<
-        $Context,
-        InferResult.OperationQuery<
-          { suggestedHeadlines: $SelectionSet },
-          $$Schema.Schema<$Context["scalars"]>
-        >,
-        "suggestedHeadlines"
-      >
+  suggestedHeadlines: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet?: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.suggestedHeadlines<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { suggestedHeadlines: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "suggestedHeadlines"
+        >
+    >
   >;
   /**
    * Any new changelog items that have come up recently.
    */
-  changelog: <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.Query.changelog<$Context["scalars"]>
-    >,
-  ) => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutputGraffleRootField<
-        $Context,
-        InferResult.OperationQuery<
-          { changelog: $SelectionSet },
-          $$Schema.Schema<$Context["scalars"]>
-        >,
-        "changelog"
-      >
+  changelog: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.changelog<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { changelog: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "changelog"
+        >
+    >
   >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
-  $batch: <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.Mutation<$Context["scalars"]>
-    >,
-  ) => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutput<
-        $Context,
-        InferResult.OperationMutation<
-          $$Utilities.AssertExtendsObject<$SelectionSet>,
-          $$Schema.Schema<$Context["scalars"]>
+  $batch: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutput<
+          $Context,
+          InferResult.OperationMutation<
+            $$Utilities.AssertExtendsObject<$SelectionSet>,
+            $$Schema.Schema<$Context["scalars"]>
+          >
         >
-      >
+    >
   >;
-  __typename: () => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutputGraffleRootField<
-        $Context,
-        { __typename: "Mutation" },
-        "__typename"
-      >
+  __typename: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    () => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          { __typename: "Mutation" },
+          "__typename"
+        >
+    >
   >;
   /**
    * "Explain" a campaign, so an on-chain campaign creation is listed in the frontend. Campaign is then spooled in a would-be frontend aggregation table.
    */
-  explainCampaign: <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.Mutation.explainCampaign<$Context["scalars"]>
-    >,
-  ) => Promise<
-    (null | {}) &
-      $$Utilities.HandleOutputGraffleRootField<
-        $Context,
-        InferResult.OperationMutation<
-          { explainCampaign: $SelectionSet },
-          $$Schema.Schema<$Context["scalars"]>
-        >,
-        "explainCampaign"
-      >
+  explainCampaign: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.explainCampaign<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { explainCampaign: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "explainCampaign"
+        >
+    >
   >;
 }
 

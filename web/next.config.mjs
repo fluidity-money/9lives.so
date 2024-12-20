@@ -17,18 +17,11 @@ const nextConfig = {
         get() {
           return "source-map";
         },
-        set() {},
+        set() { },
       });
     }
-
     // fixes wallet connect dependency issue https://docs.walletconnect.com/web3modal/nextjs/about#extra-configuration
     config.externals.push("pino-pretty", "lokijs", "encoding");
-    // for graffle node16 imports
-    config.resolve.extensionAlias = {
-      ".js": [".js", ".ts"],
-      ".jsx": [".jsx", ".tsx"],
-  };
-
     return config;
   },
 
