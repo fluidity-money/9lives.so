@@ -4,6 +4,7 @@ import Image from "next/image";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
 import Button from "./themed/button";
+import useCountdown from "@/hooks/useCountdown";
 export default function ProposeOutcome({
   title,
   ending,
@@ -13,6 +14,7 @@ export default function ProposeOutcome({
   ending: number;
   outcomes: Outcome[];
 }) {
+  const timeLeft = useCountdown(ending);
   return (
     <div className="flex flex-col gap-4">
       <h4 className="text-center font-chicago text-xl">{title}</h4>
@@ -29,7 +31,7 @@ export default function ProposeOutcome({
             "bg-9yellow px-1 py-0.5 font-geneva text-xs uppercase text-9black"
           }
         >
-          Time left to dispute: 1h 30 20s
+          Time left to dispute: {timeLeft}
         </span>
       </div>
       <div className="w-full text-9black">
@@ -44,7 +46,7 @@ export default function ProposeOutcome({
           <div className="relative">
             <Select
               className={combineClass(
-                "mt-3 block w-full appearance-none rounded-lg border-none bg-9black/5 px-3 py-1.5 text-sm/6 text-9black",
+                "mt-3 block w-full appearance-none border border-9black bg-9gray px-4 py-2 font-geneva text-sm text-9black shadow-9input",
                 "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
               )}
             >
