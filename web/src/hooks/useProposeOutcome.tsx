@@ -8,7 +8,7 @@ export default function useProposeOutcome({
   tradingAddr: `0x${string}`;
 }) {
   const propose = (outcomeId: `0x${string}`, account: Account) =>
-    toast.promise(
+    toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
           const proposeTx = prepareContractCall({
