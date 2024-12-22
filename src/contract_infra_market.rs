@@ -578,17 +578,12 @@ impl StorageInfraMarket {
         // caller. Make sure noone can drain from this user in this
         // contract again! We shouldn't need to worry about overflow here due
         // to the amount being sent being quite low and passing other checks.
-        let confiscated =
-            lockup_call::confiscate(self.lockup_addr.get(), victim_addr, contract_address())?;
-        if confiscated.is_zero() {
-            return Ok((caller_yield_taken, on_behalf_of_yield_taken));
-        }
-        // Now we send the confiscated amount and a small fee to the
-        // caller for being first.
         if on_behalf_of_addr == fee_recipient_addr {
             on_behalf_of_yield_taken +=
                 lockup_call::confiscate(self.lockup_addr.get(), victim_addr, on_behalf_of_addr)?;
         } else {
+            let confiscated =
+                lockup_call::confiscate(self.lockup_addr.get(), victim_addr, contract_address())?;
             let confiscate_fee = (confiscated * FEE_OTHER_CALLER_CONFISCATE_PCT) / FEE_SCALING;
             let confiscate_no_fee = confiscated - confiscate_fee;
             on_behalf_of_yield_taken += confiscate_no_fee;
