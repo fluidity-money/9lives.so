@@ -152,11 +152,11 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> R<U256> {
-        // Ensure that we're not complete, and that the time hasn't expired.
+        // Ensure that we're not complete, and that the time hasn't expired
         assert_or!(
             self.when_decided.get().is_zero()
-                || self.is_shutdown.get()
-                || self.time_ending.get() > U64::from(block_timestamp()),
+                && !self.is_shutdown.get()
+                && self.time_ending.get() < U64::from(block_timestamp()),
             Error::DoneVoting
         );
         assert_or!(value > U256::ZERO, Error::ZeroAmount);
