@@ -162,17 +162,6 @@ fn test_unhappy_call_whinge_claim_no_bettors_path() {
     })
 }
 
-fn strat_u256() -> impl Strategy<Value = U256> {
-    (0..32).prop_perturb(move |steps, mut rng| {
-        U256::from_be_slice(
-            (0..=steps)
-                .map(|_| rng.gen())
-                .collect::<ArrayVec<u8, 256>>()
-                .as_slice(),
-        )
-    })
-}
-
 /*
 proptest! {
     #[test]

@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 24af1fa45203986f91ec67465e42ad4289df4e191ab1a9dc624c3687d77a8885 # shrinks to mut c = StorageLockup { false, 0x0000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000, .. }, lockup_amt = 230, lockup_recipient = 0x0000000000000000000000000000000000000000

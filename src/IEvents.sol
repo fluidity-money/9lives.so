@@ -98,4 +98,34 @@ interface IEvents {
      /// @notice CampaignEscaped, because a campaign is in an
      /// indeterminate state! The DAO may be needed to step in.
     event CampaignEscaped(address indexed tradingAddr);
+
+    /* LOCKUP CONTRACT */
+
+    event LockupEnabled(bool indexed status);
+
+    event LockedUp(
+        uint256 indexed amount,
+        address indexed recipient
+    );
+
+    event Withdrew(
+        uint256 indexed amount,
+        address indexed recipient
+    );
+
+    event Slashed(
+        address indexed victim,
+        uint256 indexed slashedAmount
+    );
+
+    event Confiscated(
+        address indexed victim,
+        address indexed recipient,
+        uint256 indexed taken
+    );
+
+    event Frozen(
+        address indexed victim,
+        uint64 indexed until
+    );
 }

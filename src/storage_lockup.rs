@@ -1,5 +1,8 @@
 use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
+#[cfg(all(test, not(target_arch = "wasm32")))]
+use proptest::prelude::*;
+
 #[storage]
 #[cfg_attr(feature = "contract-lockup", entrypoint)]
 pub struct StorageLockup {
@@ -8,6 +11,9 @@ pub struct StorageLockup {
 
     /// Is the contract enabled? Did an emergency take place?
     pub enabled: StorageBool,
+
+    /// Operator with the ability to freeze this contract.
+    pub operator: StorageAddress,
 
     /// Deployed infrastructure market address.
     pub infra_market_addr: StorageAddress,
@@ -21,4 +27,41 @@ pub struct StorageLockup {
     /// The timestamp that the block timestamp must pass for a locker to withdraw
     /// their funds.
     pub deadlines: StorageMap<Address, StorageU64>,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl std::fmt::Debug for StorageLockup {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+        write!(
+            f,
+            "StorageLockup {{ {}, {}, {}, {}, .. }}",
+            self.enabled.get(),
+            self.operator.get(),
+            self.infra_market_addr.get(),
+            self.token_addr.get()
+        )
+    }
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+pub fn strat_storage_lockup() -> impl proptest::prelude::Strategy<Value = StorageLockup> {
+    // We hope that the random storage offset protects us in the
+    // test invocations so we don't need to do special setup
+    // work.
+    use crate::utils::{strat_address, strat_u256};
+    (
+        strat_u256(), // Offset
+        any::<bool>(),
+        any::<bool>(),
+        strat_address(),
+        strat_address(),
+    )
+        .prop_map(|(i, created, enabled, operator, token_addr)| {
+            let mut c = unsafe { StorageLockup::new(i, 0) };
+            c.created.set(created);
+            c.enabled.set(enabled);
+            c.operator.set(operator);
+            c.token_addr.set(token_addr);
+            c
+        })
 }

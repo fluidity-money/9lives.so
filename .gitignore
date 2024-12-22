@@ -7,3 +7,4 @@ node_modules
 cache
 broadcast
 .vercel
+mutants.out*

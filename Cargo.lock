@@ -796,6 +796,7 @@ dependencies = [
  "array-concat",
  "arrayvec",
  "const-hex",
+ "getrandom",
  "keccak-const",
  "map-macro",
  "num-traits",

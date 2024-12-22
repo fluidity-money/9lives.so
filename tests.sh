@@ -5,6 +5,8 @@ make solidity
 cargo test -q --features testing,trading-backend-dpm $@
 cargo test -q --features testing,trading-backend-amm $@
 
+cargo mutants --features testing,trading-backend-dpm
+
 forge test
 
 SPN_SUPERPOSITION_URL=${SPN_SUPERPOSITION_URL:-http://localhost:8547} \
