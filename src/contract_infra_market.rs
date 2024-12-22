@@ -325,7 +325,7 @@ impl StorageInfraMarket {
             Error::PredictingNotStarted
         );
         assert_or!(!commit.is_zero(), Error::NotAllowedZeroCommit);
-        e.commitments.setter(trading_addr).set(commit);
+        e.commitments.setter(msg_sender).set(commit);
         // Indicate to the Lockup contract that the user is unable to withdraw their funds
         // for the time of this interaction + a week.
         lockup_call::freeze(
