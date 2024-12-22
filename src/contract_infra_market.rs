@@ -646,6 +646,16 @@ mod test {
     use proptest::prelude::*;
     proptest! {
         #[test]
+        fn test_infra_cant_be_recreated(mut c in strat_storage_infra_market()) {
+            c.created.set(false);
+            let z = Address::ZERO;
+            c.ctor(z, z, z, z, z).unwrap();
+            panic_guard(|| {
+                assert_eq!(Error::AlreadyConstructed, c.ctor(z, z, z, z, z).unwrap_err());
+            });
+        }
+
+        #[test]
         fn test_infra_operator_pause_no_run(
             mut c in strat_storage_infra_market(),
             register_trading_addr in strat_address(),

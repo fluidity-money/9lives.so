@@ -21,6 +21,7 @@ impl StorageLockup {
         evm::log(events::LockupTokenProxyDeployed { token });
         self.token_addr.set(token);
         self.infra_market_addr.set(infra_market);
+        self.created.set(true);
         self.enabled.set(true);
         evm::log(events::LockupEnabled { status: true });
         Ok(())
@@ -134,6 +135,16 @@ mod test {
     use crate::{utils::{strat_address, strat_u256}, error::panic_guard};
     use proptest::prelude::*;
     proptest! {
+        #[test]
+        fn test_lockup_cant_be_recreated(mut c in strat_storage_lockup()) {
+            c.created.set(false);
+            let z = Address::ZERO;
+            c.ctor(z, z).unwrap();
+            panic_guard(|| {
+                assert_eq!(Error::AlreadyConstructed, c.ctor(z, z).unwrap_err());
+            });
+        }
+
         #[test]
         fn test_lockup_operator_pause_no_run(
             mut c in strat_storage_lockup(),
