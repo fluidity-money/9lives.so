@@ -31,11 +31,8 @@ impl std::fmt::Debug for StorageLockup {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         write!(
             f,
-            "StorageLockup {{ {}, {}, {}, {}, .. }}",
-            self.enabled.get(),
-            self.operator.get(),
-            self.infra_market_addr.get(),
-            self.token_addr.get()
+            "StorageLockup {{ {:?}, {:?}, {:?}, {:?}, .. }}",
+            self.enabled, self.operator, self.infra_market_addr, self.token_addr
         )
     }
 }
@@ -45,13 +42,13 @@ pub fn strat_storage_lockup() -> impl proptest::prelude::Strategy<Value = Storag
     // We hope that the random storage offset protects us in the
     // test invocations so we don't need to do special setup
     // work.
-    use proptest::prelude::*;
     use crate::{
         storage_set_fields,
-        utils::{strat_address, strat_u256},
+        utils::{strat_address, strat_large_u256},
     };
+    use proptest::prelude::*;
     (
-        strat_u256().no_shrink(), // Storage offset
+        strat_large_u256().no_shrink(), // Storage offset
         any::<bool>(),
         any::<bool>(),
         strat_address(),

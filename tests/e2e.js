@@ -71,7 +71,8 @@ describe("End to end tests", async () => {
         "SPN_STAKED_ARB_ADDR": stakedArbAddress,
         "SPN_PROXY_ADMIN": defaultAccountAddr,
         "SPN_EMERGENCY_COUNCIL": defaultAccountAddr,
-        "SPN_SARP_AI": "0x0000000000000000000000000000000000000000"
+        "SPN_SARP_AI": "0x0000000000000000000000000000000000000000",
+        "SPN_DAO_ADDR": defaultAccountAddr,
       },
       stdio: ["ignore", "pipe", "ignore"]
     },

@@ -5,7 +5,7 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
 use lib9lives::{
     erc20_call,
     host::with_contract,
-    immutables::{FUSDC_ADDR, TESTING_DAO_ADDR},
+    immutables::{FUSDC_ADDR, DAO_ADDR},
     should_spend,
     utils::{block_timestamp, msg_sender},
 };
@@ -22,7 +22,7 @@ fn test_e2e_mint() {
             msg_sender(), // Whoever can call the oracle.
             block_timestamp() + 1,
             block_timestamp() + 2,
-            TESTING_DAO_ADDR,
+            DAO_ADDR,
             Address::ZERO, // The fee recipient.
             false,
         )
@@ -41,7 +41,7 @@ fn test_e2e_mint() {
         );
         c.decide(outcome_1).unwrap();
         assert_eq!(
-            erc20_call::balance_of(FUSDC_ADDR, TESTING_DAO_ADDR).unwrap(),
+            erc20_call::balance_of(FUSDC_ADDR, DAO_ADDR).unwrap(),
             fee
         );
     })

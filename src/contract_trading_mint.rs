@@ -1,6 +1,6 @@
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
-     evm,
+    evm,
 };
 
 use crate::{
@@ -11,7 +11,7 @@ use crate::{
     fusdc_call,
     immutables::*,
     maths, proxy, share_call,
-    utils::{contract_address, block_timestamp, msg_sender},
+    utils::{block_timestamp, contract_address, msg_sender},
 };
 
 #[cfg(feature = "trading-backend-dpm")]
@@ -91,15 +91,16 @@ impl StorageTrading {
     fn internal_dpm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let n_1 = self.outcome_shares.get(outcome_id);
         let outcome_invested = self.outcome_invested.get(outcome_id);
-        let m = fusdc_u256_to_decimal(value)?;
+        let m = c!(fusdc_u256_to_decimal(value));
         // Prevent them from taking less than the minimum amount to LP with.
         assert_or!(m > Decimal::from(MINIMUM_MINT_AMT), Error::TooSmallNumber);
-        let m_1 = fusdc_u256_to_decimal(outcome_invested)?;
+        dbg!(outcome_invested);
+        let m_1 = c!(fusdc_u256_to_decimal(outcome_invested));
         let n_2 = self.global_shares.get() - n_1;
-        let n_1 = share_u256_to_decimal(n_1)?;
-        let m_2 = fusdc_u256_to_decimal(self.global_invested.get() - outcome_invested)?;
-        let n_2 = share_u256_to_decimal(n_2)?;
-        share_decimal_to_u256(maths::dpm_shares(m_1, m_2, n_1, n_2, m)?)
+        let n_1 = c!(share_u256_to_decimal(n_1));
+        let m_2 = c!(fusdc_u256_to_decimal(self.global_invested.get() - outcome_invested));
+        let n_2 = c!(share_u256_to_decimal(n_2));
+        share_decimal_to_u256(c!(maths::dpm_shares(m_1, m_2, n_1, n_2, m)))
     }
 
     /// Calculate the AMM amount of shares you would receive. Sets the
@@ -184,9 +185,13 @@ impl StorageTrading {
         }
         // Here we do some fee adjustment to send the fee recipient their money.
         let fee_for_creator = (value * FEE_CREATOR_MINT_PCT) / FEE_SCALING;
-        fusdc_call::transfer(self.fee_recipient.get(), fee_for_creator)?;
+        c!(fusdc_call::transfer(
+            self.fee_recipient.get(),
+            fee_for_creator
+        ));
         // Collect some fees for the team (for moderation reasons for screening).
         let fee_for_team = (value * FEE_SPN_MINT_PCT) / FEE_SCALING;
+        c!(fusdc_call::transfer(DAO_ADDR, fee_for_team));
         let value = value - fee_for_creator - fee_for_team;
         // Set the global amounts that were invested.
         let outcome_invested_before = self.outcome_invested.get(outcome_id);
@@ -195,18 +200,15 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         let shares = {
             let shares_before = self.outcome_shares.get(outcome_id);
-            let shares = self.internal_dpm_mint(outcome_id, value)?;
-            self.outcome_shares.setter(outcome_id).set(
-                shares_before
-                    .checked_add(shares)
-                    .ok_or(Error::CheckedAddOverflow)?,
-            );
-            self.global_shares.set(
-                self.global_shares
-                    .get()
-                    .checked_add(shares)
-                    .ok_or(Error::CheckedAddOverflow)?,
-            );
+            let shares = c!(self.internal_dpm_mint(outcome_id, value));
+            self.outcome_shares.setter(outcome_id).set(c!(shares_before
+                .checked_add(shares)
+                .ok_or(Error::CheckedAddOverflow)));
+            self.global_shares.set(c!(self
+                .global_shares
+                .get()
+                .checked_add(shares)
+                .ok_or(Error::CheckedAddOverflow)));
             shares
         };
         // This function is needing to be used this way, since it is side effect heavy.
@@ -214,7 +216,7 @@ impl StorageTrading {
         // We take the difference between the shares that already existed, and ours
         // now, to get the correct number.
         #[cfg(not(feature = "trading-backend-dpm"))]
-        let shares = self.internal_amm_mint(outcome_id, value)?;
+        let shares = c!(self.internal_amm_mint(outcome_id, value));
         // Get the address of the share, then mint some in line with the
         // shares we made to the user's address!
         let share_addr = proxy::get_share_addr(
@@ -223,19 +225,18 @@ impl StorageTrading {
             self.share_impl.get(),
             outcome_id,
         );
-        self.outcome_invested.setter(outcome_id).set(
-            outcome_invested_before
+        self.outcome_invested
+            .setter(outcome_id)
+            .set(c!(outcome_invested_before
                 .checked_add(value)
-                .ok_or(Error::CheckedAddOverflow)?,
-        );
-        self.global_invested.set(
-            self.global_invested
-                .get()
-                .checked_add(value)
-                .ok_or(Error::CheckedAddOverflow)?,
-        );
+                .ok_or(Error::CheckedAddOverflow)));
+        self.global_invested.set(c!(self
+            .global_invested
+            .get()
+            .checked_add(value)
+            .ok_or(Error::CheckedAddOverflow)));
         assert_or!(shares > U256::ZERO, Error::UnusualAmountCreated);
-        share_call::mint(share_addr, recipient, shares)?;
+        c!(share_call::mint(share_addr, recipient, shares));
 
         evm::log(events::SharesMinted {
             identifier: outcome_id,

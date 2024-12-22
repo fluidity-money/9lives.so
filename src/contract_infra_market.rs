@@ -641,7 +641,7 @@ mod test {
     use super::*;
     use crate::{
         error::panic_guard,
-        utils::{strat_address, strat_fixed_bytes, strat_u256},
+        utils::{strat_address, strat_fixed_bytes, strat_small_u256},
     };
     use proptest::prelude::*;
     proptest! {
@@ -676,7 +676,7 @@ mod test {
             reveal_committer_addr in strat_address(),
             reveal_trading_addr in strat_address(),
             reveal_outcome in strat_fixed_bytes::<8>(),
-            reveal_seed in strat_u256(),
+            reveal_seed in strat_small_u256(),
             sweep_trading_addr in strat_address(),
             sweep_victim_addr in strat_address(),
             sweep_outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 0..8),

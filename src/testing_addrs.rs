@@ -19,7 +19,7 @@ defaults! {
     FUSDC,
     LONGTAIL,
     STAKED_ARB,
-    TESTING_DAO,
+    DAO,
     SHARE,
     LOCKUP_CONTRACT,
     LOCKUP_TOKEN

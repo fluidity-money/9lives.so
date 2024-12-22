@@ -475,7 +475,7 @@ pub(crate) fn rename_addr(v: Address) -> String {
         immutables::FUSDC_ADDR => "fusdc contract".to_string(),
         immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
         immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
-        immutables::TESTING_DAO_ADDR => "testing dao".to_string(),
+        immutables::DAO_ADDR => "testing dao".to_string(),
         _ => {
             if v == msg_sender() {
                 "msg sender".to_string()
@@ -502,7 +502,7 @@ impl std::fmt::Debug for Error {
                         immutables::FUSDC_ADDR => "fusdc contract".to_string(),
                         immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
                         immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
-                        immutables::TESTING_DAO_ADDR => "testing dao".to_string(),
+                        immutables::DAO_ADDR => "testing dao".to_string(),
                         _ =>
                             if *addr == msg_sender() {
                                 "msg sender".to_string()

@@ -27,3 +27,6 @@ pub use crate::contract_trading_quotes::user_entrypoint;
 pub use crate::contract_trading_price::user_entrypoint;
 
 pub use crate::storage_trading::StorageTrading;
+
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub use crate::storage_trading::strat_storage_trading;

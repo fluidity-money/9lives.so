@@ -35,9 +35,9 @@ env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR", LONGTAIL);
 // Staked ARB address to use for taking amounts for Infrastructure Markets.
 env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
 
-// Testing address for knowing where the DAO would live.
-#[cfg(feature = "testing")]
-pub const TESTING_DAO_ADDR: Address = Address::new(testing_addrs::TESTING_DAO);
+// Address of the team fee recipient from the Trading contract (different
+// from the creator).
+env_addr!(DAO_ADDR, "SPN_DAO_ADDR", DAO);
 
 #[cfg(feature = "testing")]
 pub const TESTING_SHARE_ADDR: Address = Address::new(testing_addrs::SHARE);

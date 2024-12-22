@@ -128,14 +128,14 @@ impl std::fmt::Debug for StorageInfraMarket {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         write!(
             f,
-            "StorageInfraMarket {{ {}, {}, {}, {}, {}, {}, {}, .. }}",
-            self.created.get(),
-            self.enabled.get(),
-            self.operator.get(),
-            self.dao_money.get(),
-            self.emergency_council.get(),
-            self.lockup_addr.get(),
-            self.factory_addr.get(),
+            "StorageInfraMarket {{ {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, .. }}",
+            self.created,
+            self.enabled,
+            self.operator,
+            self.dao_money,
+            self.emergency_council,
+            self.lockup_addr,
+            self.factory_addr,
         )
     }
 }
@@ -145,15 +145,15 @@ pub fn strat_storage_infra_market() -> impl proptest::prelude::Strategy<Value = 
 {
     use crate::{
         storage_set_fields,
-        utils::{strat_address, strat_u256},
+        utils::{strat_address, strat_large_u256},
     };
     use proptest::prelude::*;
     (
-        strat_u256().no_shrink(), // Storage offset
+        strat_large_u256().no_shrink(), // Storage offset
         any::<bool>(),
         any::<bool>(),
         strat_address(),
-        strat_u256(),
+        strat_large_u256(),
         strat_address(),
         strat_address(),
         strat_address(),

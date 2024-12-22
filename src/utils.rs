@@ -6,7 +6,7 @@ use stylus_sdk::alloy_primitives::Address;
 #[allow(unused)]
 use stylus_sdk::alloy_primitives::{FixedBytes, U256};
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 use proptest::prelude::*;
 
 pub fn block_timestamp() -> u64 {
@@ -30,9 +30,17 @@ pub fn contract_address() -> Address {
     stylus_sdk::contract::address()
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
-pub fn strat_fixed_bytes<const N: usize>() -> impl proptest::prelude::Strategy<Value = FixedBytes<N>>
-{
+#[derive(PartialEq)]
+pub enum Uintsize {
+    Small,
+    Medium,
+    Large,
+}
+
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub fn strat_fixed_bytes_sizeable<const N: usize>(
+    u: Uintsize,
+) -> impl proptest::prelude::Strategy<Value = FixedBytes<N>> {
     // Create a slice of fixed bytes, with a preference for the lower side, a
     // la how I recall seeing Parity's Ethereum client do it. This has a 33%
     // chance of filling out a third of the lower bits, which, in our
@@ -42,29 +50,50 @@ pub fn strat_fixed_bytes<const N: usize>() -> impl proptest::prelude::Strategy<V
     (0..3).prop_perturb(move |s, mut rng| {
         let mut x: [u8; N] = [0u8; N];
         let q = N / 3;
-        if s == 2 {
+        if s == 2 && u == Uintsize::Large {
             for i in q * 2..N {
-                x[N-i-1] = rng.gen();
+                x[N - i - 1] = rng.gen();
             }
         }
-        if s >= 1 {
+        if s >= 1 && u != Uintsize::Small {
             for i in q..q * 2 {
-                x[N-i-1] = rng.gen();
+                x[N - i - 1] = rng.gen();
             }
         }
         for i in 0..q {
-            x[N-i-1] = rng.gen();
+            x[N - i - 1] = rng.gen();
         }
         FixedBytes::<N>::from(x)
     })
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
-pub fn strat_u256() -> impl proptest::prelude::Strategy<Value = U256> {
-    strat_fixed_bytes::<32>().prop_map(|x| U256::from_be_bytes(x.into()))
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub fn strat_u256(s: Uintsize) -> impl proptest::prelude::Strategy<Value = U256> {
+    strat_fixed_bytes_sizeable::<32>(s).prop_map(|x| U256::from_be_bytes(x.into()))
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub fn strat_small_u256() -> impl proptest::prelude::Strategy<Value = U256> {
+    strat_u256(Uintsize::Small)
+}
+
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub fn strat_medium_u256() -> impl proptest::prelude::Strategy<Value = U256> {
+    strat_u256(Uintsize::Medium)
+}
+
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub fn strat_large_u256() -> impl proptest::prelude::Strategy<Value = U256> {
+    strat_u256(Uintsize::Large)
+}
+
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub fn strat_fixed_bytes<const N: usize>(
+) -> impl proptest::prelude::Strategy<Value = FixedBytes<N>> {
+    strat_fixed_bytes_sizeable::<N>(Uintsize::Large)
+}
+
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub fn strat_address() -> impl proptest::prelude::Strategy<Value = Address> {
     proptest::arbitrary::any::<[u8; 20]>().prop_map(|x| Address::new(x))
 }

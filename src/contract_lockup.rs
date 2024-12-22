@@ -129,10 +129,10 @@ impl StorageLockup {
     }
 }
 
-#[cfg(all(test, feature = "testing", not(target_arch = "wasm32")))]
+#[cfg(all(test, not(target_arch = "wasm32")))]
 mod test {
     use super::*;
-    use crate::{utils::{strat_address, strat_u256}, error::panic_guard};
+    use crate::{utils::{strat_address, strat_small_u256}, error::panic_guard};
     use proptest::prelude::*;
     proptest! {
         #[test]
@@ -148,9 +148,9 @@ mod test {
         #[test]
         fn test_lockup_operator_pause_no_run(
             mut c in strat_storage_lockup(),
-            lockup_amt in strat_u256(),
+            lockup_amt in strat_small_u256(),
             lockup_recipient in strat_address(),
-            withdraw_amt in strat_u256(),
+            withdraw_amt in strat_small_u256(),
             withdraw_recipient in strat_address(),
             slash_addr in strat_address(),
             freeze_spender in strat_address(),
