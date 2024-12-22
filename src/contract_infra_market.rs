@@ -530,7 +530,7 @@ impl StorageInfraMarket {
         // revert, since the caller made a mistake.
         assert_or!(
             !e.commitments.get(victim_addr).is_zero()
-                && e.reveals.get(victim_addr) == e.campaign_winner.get(),
+                && e.reveals.get(victim_addr) != e.campaign_winner.get(),
             Error::BadVictim
         );
         // We check the victim's vested arb in the lockup contract, and
