@@ -622,7 +622,7 @@ impl StorageInfraMarket {
         let indeterminate_winner = e.campaign_winner_set.get() && e.campaign_winner.get().is_zero();
         let is_calling_period = e.campaign_what_called.get().is_zero();
         assert_or!(
-            self.campaign_call_deadline.get(trading_addr) > U64::from(block_timestamp())
+            self.campaign_call_deadline.get(trading_addr) < U64::from(block_timestamp())
                 && !self.campaign_has_escaped.get(trading_addr)
                 && (indeterminate_winner || is_calling_period),
             Error::CannotEscape
