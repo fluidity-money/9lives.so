@@ -10,7 +10,7 @@ use crate::{
     lockup_call, nineliveslockedarb_call, proxy,
     timing_infra_market::*,
     trading_call,
-    utils::{block_timestamp, msg_sender, contract_address},
+    utils::{block_timestamp, contract_address, msg_sender},
 };
 
 pub use crate::storage_infra_market::*;
@@ -36,6 +36,14 @@ impl StorageInfraMarket {
         self.lockup_addr.set(lockup_addr);
         self.locked_arb_token_addr.set(locked_arb_token_addr);
         self.factory_addr.set(factory_addr);
+        evm::log(events::InfraMarketEnabled { status: true });
+        Ok(())
+    }
+
+    pub fn enable_contract(&mut self, status: bool) -> R<()> {
+        assert_or!(msg_sender() == self.operator.get(), Error::NotOperator);
+        self.enabled.set(status);
+        evm::log(events::InfraMarketEnabled { status });
         Ok(())
     }
 
@@ -111,6 +119,7 @@ impl StorageInfraMarket {
         winner: FixedBytes<8>,
         incentive_recipient: Address,
     ) -> R<()> {
+        assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
             self.campaign_call_begins.get(trading_addr) < U64::from(block_timestamp()),
             Error::NotInsideCallingPeriod
@@ -178,6 +187,7 @@ impl StorageInfraMarket {
     /// in a state where no-one has whinged. This will reward the caller their incentive amount.
     /// This will set the campaign_winner storage field to what was declared by the caller.
     pub fn close(&mut self, trading_addr: Address, fee_recipient: Address) -> R<U256> {
+        assert_or!(self.enabled.get(), Error::NotEnabled);
         let mut epochs = self.epochs.setter(trading_addr);
         let mut e = epochs.setter(self.cur_epochs.get(trading_addr));
         assert_or!(
@@ -259,6 +269,7 @@ impl StorageInfraMarket {
         preferred_outcome: FixedBytes<8>,
         bond_recipient: Address,
     ) -> R<U256> {
+        assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
@@ -348,6 +359,7 @@ impl StorageInfraMarket {
         outcome: FixedBytes<8>,
         seed: U256,
     ) -> R<()> {
+        assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
@@ -604,6 +616,7 @@ impl StorageInfraMarket {
         // this should be set aside in this situation by the beneficiary of this
         // contract, but since the cost of calling is likely quite slim, it's
         // low.
+        assert_or!(self.enabled.get(), Error::NotEnabled);
         let epochs = self.epochs.getter(trading_addr);
         let e = epochs.getter(self.cur_epochs.get(trading_addr));
         let indeterminate_winner = e.campaign_winner_set.get() && e.campaign_winner.get().is_zero();
@@ -620,5 +633,83 @@ impl StorageInfraMarket {
             tradingAddr: trading_addr,
         });
         Ok(())
+    }
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod test {
+    use super::*;
+    use crate::{
+        error::panic_guard,
+        utils::{strat_address, strat_fixed_bytes, strat_u256},
+    };
+    use proptest::prelude::*;
+    proptest! {
+        #[test]
+        fn test_infra_operator_pause_no_run(
+            mut c in strat_storage_infra_market(),
+            register_trading_addr in strat_address(),
+            register_incentive_sender in strat_address(),
+            register_desc in strat_fixed_bytes::<32>(),
+            register_launch_ts in any::<u64>(),
+            register_call_deadline in any::<u64>(),
+            call_trading_addr in strat_address(),
+            call_winner in strat_fixed_bytes::<8>(),
+            call_incentive_recipient in strat_address(),
+            close_trading_addr in strat_address(),
+            close_trading_recipient in strat_address(),
+            whinge_trading_addr in strat_address(),
+            whinge_preferred_outcome in strat_fixed_bytes::<8>(),
+            whinge_bond_recipient in strat_address(),
+            predict_trading_addr in strat_address(),
+            predict_commit in strat_fixed_bytes::<32>(),
+            reveal_committer_addr in strat_address(),
+            reveal_trading_addr in strat_address(),
+            reveal_outcome in strat_fixed_bytes::<8>(),
+            reveal_seed in strat_u256(),
+            sweep_trading_addr in strat_address(),
+            sweep_victim_addr in strat_address(),
+            sweep_outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 0..8),
+            sweep_on_behalf_of_addr in strat_address(),
+            sweep_fee_recipient_addr in strat_address(),
+            escape_trading_addr in strat_address()
+        ) {
+            c.operator.set(msg_sender());
+            c.enable_contract(false).unwrap();
+            panic_guard(|| {
+                let rs = [
+                    c.register(
+                        register_trading_addr,
+                        register_incentive_sender,
+                        register_desc,
+                        register_launch_ts,
+                        register_call_deadline
+                    )
+                        .unwrap_err(),
+                    c.call(call_trading_addr, call_winner, call_incentive_recipient)
+                        .unwrap_err(),
+                    c.close(close_trading_addr, close_trading_recipient)
+                        .unwrap_err(),
+                    c.whinge(whinge_trading_addr, whinge_preferred_outcome, whinge_bond_recipient)
+                        .unwrap_err(),
+                    c.predict(predict_trading_addr, predict_commit)
+                        .unwrap_err(),
+                    c.reveal(reveal_committer_addr, reveal_trading_addr, reveal_outcome, reveal_seed)
+                        .unwrap_err(),
+                    c.sweep(
+                        sweep_trading_addr,
+                        sweep_victim_addr,
+                        sweep_outcomes,
+                        sweep_on_behalf_of_addr,
+                        sweep_fee_recipient_addr,
+                    )
+                        .unwrap_err(),
+                    c.escape(escape_trading_addr).unwrap_err()
+                ];
+                for (i, r) in rs.into_iter().enumerate() {
+                    assert_eq!(Error::NotEnabled, r, "{i}");
+                }
+            })
+        }
     }
 }

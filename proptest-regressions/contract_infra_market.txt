@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc dc773ac9618144df345dcf169f269a9cf511258c2c9206bf606b3a4d62c8a269 # shrinks to mut c = StorageInfraMarket { false, true, 0x0000000000000000000000000000000000000000, 309372152117003192435584, 0x0000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000, .. }, register_trading_addr = 0x0000000000000000000000000000000000000000, register_incentive_sender = 0x0000000000000000000000000000000000000000, register_desc = 0x000000000000000000000000000000000000000000009abec711e7787be044b0, register_launch_ts = 0, register_call_deadline = 0

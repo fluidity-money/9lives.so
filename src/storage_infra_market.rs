@@ -122,3 +122,62 @@ impl crate::host::StorageNew for StorageInfraMarket {
         unsafe { <Self as StorageType>::new(i, v) }
     }
 }
+
+#[cfg(not(target_arch = "wasm32"))]
+impl std::fmt::Debug for StorageInfraMarket {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+        write!(
+            f,
+            "StorageInfraMarket {{ {}, {}, {}, {}, {}, {}, {}, .. }}",
+            self.created.get(),
+            self.enabled.get(),
+            self.operator.get(),
+            self.dao_money.get(),
+            self.emergency_council.get(),
+            self.lockup_addr.get(),
+            self.factory_addr.get(),
+        )
+    }
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+pub fn strat_storage_infra_market() -> impl proptest::prelude::Strategy<Value = StorageInfraMarket>
+{
+    use crate::{
+        storage_set_fields,
+        utils::{strat_address, strat_u256},
+    };
+    use proptest::prelude::*;
+    (
+        strat_u256().no_shrink(), // Storage offset
+        any::<bool>(),
+        any::<bool>(),
+        strat_address(),
+        strat_u256(),
+        strat_address(),
+        strat_address(),
+        strat_address(),
+    )
+        .prop_map(
+            |(
+                i,
+                created,
+                enabled,
+                operator,
+                dao_money,
+                emergency_council,
+                lockup_addr,
+                factory_addr,
+            )| {
+                storage_set_fields!(StorageInfraMarket, i, {
+                    created,
+                    enabled,
+                    operator,
+                    dao_money,
+                    emergency_council,
+                    lockup_addr,
+                    factory_addr
+                })
+            },
+        )
+}

@@ -51,6 +51,8 @@ interface IEvents {
 
     /* INFRASTRUCTURE MARKET */
 
+    event InfraMarketEnabled(bool indexed status);
+
     event MarketCreated2(
         address indexed incentiveSender,
         address indexed tradingAddr

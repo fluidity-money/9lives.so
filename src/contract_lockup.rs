@@ -135,7 +135,7 @@ mod test {
     use proptest::prelude::*;
     proptest! {
         #[test]
-        fn test_operator_can_pause_stuff_and_stuff_wont_run(
+        fn test_lockup_operator_pause_no_run(
             mut c in strat_storage_lockup(),
             lockup_amt in strat_u256(),
             lockup_recipient in strat_address(),
@@ -145,7 +145,8 @@ mod test {
             freeze_spender in strat_address(),
             freeze_until in any::<u64>()
         ) {
-            c.enabled.set(false);
+            c.operator.set(msg_sender());
+            c.enable_contract(false).unwrap();
             panic_guard(|| {
                 let res = [
                     c.lockup(lockup_amt, lockup_recipient).unwrap_err(),

@@ -1,8 +1,5 @@
 use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
-use proptest::prelude::*;
-
 #[storage]
 #[cfg_attr(feature = "contract-lockup", entrypoint)]
 pub struct StorageLockup {
@@ -48,20 +45,24 @@ pub fn strat_storage_lockup() -> impl proptest::prelude::Strategy<Value = Storag
     // We hope that the random storage offset protects us in the
     // test invocations so we don't need to do special setup
     // work.
-    use crate::utils::{strat_address, strat_u256};
+    use proptest::prelude::*;
+    use crate::{
+        storage_set_fields,
+        utils::{strat_address, strat_u256},
+    };
     (
-        strat_u256(), // Offset
+        strat_u256().no_shrink(), // Storage offset
         any::<bool>(),
         any::<bool>(),
         strat_address(),
         strat_address(),
     )
         .prop_map(|(i, created, enabled, operator, token_addr)| {
-            let mut c = unsafe { StorageLockup::new(i, 0) };
-            c.created.set(created);
-            c.enabled.set(enabled);
-            c.operator.set(operator);
-            c.token_addr.set(token_addr);
-            c
+            storage_set_fields!(StorageLockup, i, {
+                created,
+                enabled,
+                operator,
+                token_addr
+            })
         })
 }
