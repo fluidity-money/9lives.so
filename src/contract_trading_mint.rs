@@ -94,7 +94,6 @@ impl StorageTrading {
         let m = c!(fusdc_u256_to_decimal(value));
         // Prevent them from taking less than the minimum amount to LP with.
         assert_or!(m > Decimal::from(MINIMUM_MINT_AMT), Error::TooSmallNumber);
-        dbg!(outcome_invested);
         let m_1 = c!(fusdc_u256_to_decimal(outcome_invested));
         let n_2 = self.global_shares.get() - n_1;
         let n_1 = c!(share_u256_to_decimal(n_1));
