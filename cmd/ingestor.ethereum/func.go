@@ -296,14 +296,21 @@ type BlockCheckpoint struct {
 
 func getLastBlockCheckpointed(db *gorm.DB) (uint64, error) {
 	var c BlockCheckpoint
-	err := db.Table("ninelives_ingestor_checkpointing_1").Find(&c).Error
+	err := db.Table("ninelives_ingestor_checkpointing_1").
+		Where("id = ?", 1).
+		Find(&c).
+		Error
 	if err != nil {
 		return 0, err
+	}
+	if c.BlockNumber == 0 {
+		return 0, fmt.Errorf("ninelives_ingestor_checkpointing_1 id not set")
 	}
 	return c.BlockNumber, nil
 }
 
 func updateCheckpoint(db *gorm.DB, blockNo uint64) error {
+	// We observed a wicked Gorm bug here, so we do this explicitly ourselves.
 	err := db.Table("ninelives_ingestor_checkpointing_1").
 		Where("id = 1").
 		Update("last_updated", time.Now()).
