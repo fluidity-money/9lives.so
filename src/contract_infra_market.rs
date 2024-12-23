@@ -470,10 +470,6 @@ impl StorageInfraMarket {
         };
         e.campaign_winner.set(voting_power_winner);
         e.campaign_winner_set.set(true);
-        assert_eq!(
-            voting_power_winner,
-            e.campaign_whinger_preferred_winner.get()
-        );
         // If the whinger was correct, we owe them their bond + the caller's bond.
         {
             let bond_amts = BOND_FOR_WHINGE + BOND_FOR_CALL;
