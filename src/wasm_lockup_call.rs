@@ -1,5 +1,4 @@
 
-
 use stylus_sdk::{
     alloy_primitives::{Address, U256},
     alloy_sol_types::{sol, SolCall},
@@ -11,7 +10,7 @@ use crate::{calldata::unpack_u256, error::Error};
 sol! {
     function freeze(address spender, uint256 until);
     function stakedArbBal(address holder);
-    function confiscate(address victim, address recipient);
+    function slash(address victim, uint256 amount, address recipient);
 }
 
 pub fn freeze(addr: Address, spender: Address, until: U256) -> Result<(), Error> {
@@ -30,10 +29,10 @@ pub fn staked_arb_bal(addr: Address, holder: Address) -> Result<U256, Error> {
     .ok_or(Error::LockupUnableToUnpack)
 }
 
-pub fn confiscate(addr: Address, victim: Address, recipient: Address) -> Result<U256, Error> {
+pub fn slash(addr: Address, victim: Address, amount: U256, recipient: Address) -> Result<U256, Error> {
     unpack_u256(
         &RawCall::new()
-            .call(addr, &confiscateCall { victim, recipient }.abi_encode())
+            .call(addr, &slashCall { victim, amount, recipient }.abi_encode())
             .map_err(|b| Error::LockupError(addr, b))?,
     )
     .ok_or(Error::LockupUnableToUnpack)

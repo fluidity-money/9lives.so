@@ -10,6 +10,10 @@ pub const FEE_CREATOR_MINT_PCT: U256 = U256::from_limbs([5, 0, 0, 0]);
 // 2% of all trading to buy shares goes to SPN.
 pub const FEE_SPN_MINT_PCT: U256 = U256::from_limbs([2, 0, 0, 0]);
 
+// 2% of all pot amounts liquidated go to the caller of the function that
+// transitions their amounts over.
+pub const FEE_POT_INFRA_PCT: U256 = U256::from_limbs([2, 0, 0, 0]);
+
 // 2% of all confiscation fees go to the caller of the sweep function if
 // they differ from the recipient.
 pub const FEE_OTHER_CALLER_CONFISCATE_PCT: U256 = U256::from_limbs([2, 0, 0, 0]);

@@ -18,9 +18,6 @@ pub struct StorageLockup {
     /// 9lives Locked ARB token that we're controlling.
     pub token_addr: StorageAddress,
 
-    /// A user's slashed debt. Should be set to 0 on confiscate.
-    pub slashed_amt: StorageMap<Address, StorageU256>,
-
     /// The timestamp that the block timestamp must pass for a locker to withdraw
     /// their funds.
     pub deadlines: StorageMap<Address, StorageU64>,

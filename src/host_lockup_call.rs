@@ -1,5 +1,3 @@
-
-
 use stylus_sdk::alloy_primitives::{Address, U256};
 
 use crate::error::Error;
@@ -14,4 +12,13 @@ pub fn staked_arb_bal(_addr: Address, _holder: Address) -> Result<U256, Error> {
 
 pub fn confiscate(_addr: Address, _victim: Address, _recipient: Address) -> Result<U256, Error> {
     Ok(U256::from(1))
+}
+
+pub fn slash(
+    _addr: Address,
+    _victim: Address,
+    _amount: U256,
+    _recipient: Address,
+) -> Result<U256, Error> {
+    Ok(U256::ZERO)
 }

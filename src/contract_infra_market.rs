@@ -152,11 +152,7 @@ impl StorageInfraMarket {
             let e = epochs.getter(cur_epoch);
             let campaign_winner_set = e.campaign_winner_set.get();
             let campaign_winner = e.campaign_winner.get();
-            let campaign_when_whinged = e.campaign_when_whinged.get();
-            if campaign_winner_set
-                && campaign_winner.is_zero()
-                && are_we_after_anything_goes(campaign_when_whinged, block_timestamp())?
-            {
+            if campaign_winner_set && campaign_winner.is_zero() {
                 self.cur_epochs.setter(trading_addr).set(new_epoch);
                 epochs.setter(new_epoch)
             } else {
@@ -325,7 +321,7 @@ impl StorageInfraMarket {
             Error::PredictingNotStarted
         );
         assert_or!(!commit.is_zero(), Error::NotAllowedZeroCommit);
-        e.commitments.setter(msg_sender).set(commit);
+        e.commitments.setter(msg_sender()).set(commit);
         // Indicate to the Lockup contract that the user is unable to withdraw their funds
         // for the time of this interaction + a week.
         lockup_call::freeze(
@@ -407,14 +403,15 @@ impl StorageInfraMarket {
         Ok(())
     }
 
-    pub fn sweep(
+    /// "Declare" a winner, by providing the outcomes that were in use, along
+    /// with a fee recipient to collect the fee for providing this correct calldata
+    /// to.
+    pub fn declare(
         &mut self,
         trading_addr: Address,
-        victim_addr: Address,
         mut outcomes: Vec<FixedBytes<8>>,
-        on_behalf_of_addr: Address,
-        fee_recipient_addr: Address,
-    ) -> R<(U256, U256)> {
+        fee_recipient: Address,
+    ) -> R<U256> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
@@ -422,110 +419,133 @@ impl StorageInfraMarket {
         );
         let mut epochs = self.epochs.setter(trading_addr);
         let mut e = epochs.setter(self.cur_epochs.get(trading_addr));
+        // This can be called at any time now after the fact for the current epoch.
         assert_or!(
-            are_we_in_sweeping_period(e.campaign_when_whinged.get(), block_timestamp())?,
+            block_timestamp()
+                > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,
             Error::NotInsideSweepingPeriod
         );
-        outcomes.sort();
-        outcomes.dedup();
         // We check if the has sweeped flag is enabled by checking who the winner is.
         // If it isn't enabled, then we collect every identifier they specified, and
         // if it's identical (or over to accomodate for any decimal point errors),
         // we send them the finders fee, and we set the flag for the winner.
         // We track the yield of the recipient and the caller so we can give it
         // to them at the end of this function.
-        let mut caller_yield_taken = U256::ZERO;
-        let mut on_behalf_of_yield_taken = U256::ZERO;
-        if !e.campaign_winner_set.get() {
-            let mut arb_global = U256::ZERO;
-            let mut current_winner_amt = U256::ZERO;
-            let mut current_winner_id = None;
-            for winner in outcomes {
-                let arb = e.outcome_vested_arb.get(winner);
-                arb_global += arb;
-                // Set the current arb winner to whoever's greatest.
-                if arb > current_winner_amt {
-                    current_winner_amt = arb;
-                    current_winner_id = Some(winner);
-                }
+        assert_or!(!e.campaign_winner_set.get(), Error::CampaignWinnerSet);
+        outcomes.sort();
+        outcomes.dedup();
+        assert_or!(!outcomes.is_empty(), Error::OutcomesEmpty);
+        let mut arb_global = U256::ZERO;
+        let mut current_winner_amt = U256::ZERO;
+        let mut current_winner_id = None;
+        for winner in outcomes {
+            let arb = e.outcome_vested_arb.get(winner);
+            arb_global += arb;
+            // Set the current arb winner to whoever's greatest.
+            if arb > current_winner_amt {
+                current_winner_amt = arb;
+                current_winner_id = Some(winner);
             }
-            // If the amount that we tracked as ARB is greater than what we
-            // tracked so far, then we know that the user specified the correct
-            // amount.
-            assert_or!(
-                arb_global >= e.global_vested_arb.get(),
-                Error::IncorrectSweepInvocation
-            );
-            // At this point, if we're not Some with the winner choice here,
-            // then we need to default to what the caller provided during the calling
-            // stage. This could happen if the liquidity is even across every outcome.
-            // If that's the case, we're still going to slash people who bet poorly later.
-            // The assumption is that the whinging bond is the differentiating amount
-            // in this extreme scenario.
-            let voting_power_winner = match current_winner_id {
-                Some(v) => v,
-                None => {
-                    // In a REALLY extreme scenario, what could happen is that
-                    // there was a challenge to the default outcome but no-one called it
-                    // so there was no period of whinging. In this extreme circumstance,
-                    // we default to the whinger's preferred outcome, since they posted
-                    // a bond that would presumably tip the scales in their favour.
-                    e.campaign_whinger_preferred_winner.get()
-                }
-            };
-            e.campaign_winner.set(voting_power_winner);
-            e.campaign_winner_set.set(true);
-            assert_eq!(
-                voting_power_winner,
+        }
+        // If the amount that we tracked as ARB is greater than what we
+        // tracked so far, then we know that the user specified the correct
+        // amount.
+        assert_or!(
+            arb_global >= e.global_vested_arb.get(),
+            Error::IncorrectSweepInvocation
+        );
+        // At this point, if we're not Some with the winner choice here,
+        // then we need to default to what the caller provided during the calling
+        // stage. This could happen if the liquidity is even across every outcome.
+        // If that's the case, we're still going to slash people who bet poorly later.
+        // The assumption is that the whinging bond is the differentiating amount
+        // in this extreme scenario.
+        let voting_power_winner = match current_winner_id {
+            Some(v) => v,
+            None => {
+                // In a REALLY extreme scenario, what could happen is that
+                // there was a challenge to the default outcome but no-one called it
+                // so there was no period of whinging. In this extreme circumstance,
+                // we default to the whinger's preferred outcome, since they posted
+                // a bond that would presumably tip the scales in their favour.
                 e.campaign_whinger_preferred_winner.get()
-            );
-            // If the whinger was correct, we owe them their bond.
-            if voting_power_winner == e.campaign_whinger_preferred_winner.get() {
-                fusdc_call::transfer(e.campaign_who_whinged.get(), BOND_FOR_WHINGE)?;
             }
-            // Looks like we owe the fee recipient some money. This should only be the
-            // case in the happy path (we're on nonce 0). This is susceptible to griefing
-            // if someone were to intentionally trigger this behaviour, but the risk for them
-            // is the interaction with activating the bond and the costs associated.
-            if self.dao_money.get() >= INCENTIVE_AMT_SWEEP
-                && self.cur_epochs.get(trading_addr).is_zero()
-            {
-                self.dao_money
-                    .set(self.dao_money.get() - INCENTIVE_AMT_SWEEP);
-                fusdc_call::transfer(fee_recipient_addr, INCENTIVE_AMT_SWEEP)?;
-                caller_yield_taken += INCENTIVE_AMT_SWEEP;
-            }
-            // We need to check if the arb staked is 0, and if it is, then we need to reset
-            // to the beginning after the sweep period has passed.
-            if voting_power_winner.is_zero() {
-                // Since the outcome is in an indeterminate state, we need to give up the
-                // notion that someone set the who called argument. We need to activate
-                // the next epoch, so that that we must begin the next calling period
-                // once the anything goes period has concluded. The call function should
-                // check that that's needing to be the case by checking if the set winner is
-                // 0.
-                e.campaign_who_called.set(Address::ZERO);
-            } else {
-                // At this point we call the campaign that this is
-                // connected to let them know that there was a winner. Hopefully
-                // someone called shutdown on the contract in the past to prevent
-                // users from calling Longtail constantly.
-                trading_call::decide(trading_addr, voting_power_winner)?;
-            }
+        };
+        e.campaign_winner.set(voting_power_winner);
+        e.campaign_winner_set.set(true);
+        assert_eq!(
+            voting_power_winner,
+            e.campaign_whinger_preferred_winner.get()
+        );
+        // If the whinger was correct, we owe them their bond.
+        if voting_power_winner == e.campaign_whinger_preferred_winner.get() {
+            fusdc_call::transfer(e.campaign_who_whinged.get(), BOND_FOR_WHINGE)?;
         }
-        // The winning outcome in this campaign.
-        let campaign_winner = e.campaign_winner.get();
-        if victim_addr.is_zero() {
-            // We don't bother to slash the user if this is the case. We
-            // just return nicely. This might be paired with the
-            // interaction with sweep to collect the incentive amount.
-            return Ok((caller_yield_taken, U256::ZERO));
+        // Looks like we owe the fee recipient some money. This should only be the
+        // case in the happy path (we're on nonce 0). This is susceptible to griefing
+        // if someone were to intentionally trigger this behaviour, but the risk for them
+        // is the interaction with activating the bond and the costs associated.
+        let mut caller_yield_taken = U256::ZERO;
+        if self.dao_money.get() >= INCENTIVE_AMT_SWEEP
+            && self.cur_epochs.get(trading_addr).is_zero()
+        {
+            self.dao_money
+                .set(self.dao_money.get() - INCENTIVE_AMT_SWEEP);
+            fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_SWEEP)?;
+            caller_yield_taken += INCENTIVE_AMT_SWEEP;
         }
-        // We check if the victim's vested Arb is 0. If it is, then we assume
-        // that someone already claimed this victim's position!
-        if e.user_vested_arb.get(victim_addr).is_zero() {
-            return Ok((caller_yield_taken, on_behalf_of_yield_taken));
+        // We need to check if the arb staked is 0, and if it is, then we need to reset
+        // to the beginning after the sweep period has passed.
+        if voting_power_winner.is_zero() {
+            // Since the outcome is in an indeterminate state, we need to give up the
+            // notion that someone set the who called argument. We need to activate
+            // the next epoch, so that that we must begin the next calling period
+            // once the anything goes period has concluded. The call function should
+            // check that that's needing to be the case by checking if the set winner is
+            // 0.
+            e.campaign_who_called.set(Address::ZERO);
+        } else {
+            // At this point we call the campaign that this is
+            // connected to let them know that there was a winner. Hopefully
+            // someone called shutdown on the contract in the past to prevent
+            // users from calling Longtail constantly.
+            trading_call::decide(trading_addr, voting_power_winner)?;
         }
+        Ok(caller_yield_taken)
+    }
+
+    /// Slash incorrectly betting users' funds to the reward pool.
+    pub fn sweep(
+        &mut self,
+        trading_addr: Address,
+        epoch_no: U256,
+        victim_addr: Address,
+        fee_recipient_addr: Address,
+    ) -> R<U256> {
+        assert_or!(self.enabled.get(), Error::NotEnabled);
+        assert_or!(
+            !self.campaign_call_deadline.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
+        // Make sure that this sweeping is taking place after the epoch has passed.
+        assert_or!(
+            self.cur_epochs.get(trading_addr) >= epoch_no,
+            Error::InvalidEpoch
+        );
+        let mut epochs = self.epochs.setter(trading_addr);
+        let mut e = epochs.setter(epoch_no);
+        // This can be called at any time now after the fact for the current epoch.
+        assert_or!(
+            block_timestamp()
+                > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,
+            Error::NotInsideSweepingPeriod
+        );
+        // Let's check if the victim still has their funds (no-one added them to
+        // the pool to be claimed)
+        assert_or!(
+            !e.user_vested_arb.get(victim_addr).is_zero(),
+            Error::BadVictim
+        );
         // Let's check that they bet correctly. If they did, then we should
         // revert, since the caller made a mistake.
         assert_or!(
@@ -533,70 +553,74 @@ impl StorageInfraMarket {
                 && e.reveals.get(victim_addr) != e.campaign_winner.get(),
             Error::BadVictim
         );
-        // We check the victim's vested arb in the lockup contract, and
-        // if it's not greater than or equal to what was tracked at the
-        // time of minting, then we don't drain down their funds, we return!
-        // The setting of their Staked ARB to 0 should hopefully be enough to
-        // prevent double claiming later.
-        if e.user_vested_arb.get(victim_addr)
-            > lockup_call::staked_arb_bal(self.lockup_addr.get(), victim_addr)?
+        // We need to take the amount invested to this contract. This should be
+        // easily done, as the slash function will take their amount and send it
+        // to us. We can then add it to the outstanding pot.
+        let amt = lockup_call::slash(
+            self.lockup_addr.get(),
+            victim_addr,
+            e.user_vested_arb.get(victim_addr),
+            contract_address(),
+        )?;
+        //amt / infra fee
+        let amt_fee = ((amt * FEE_SCALING) * FEE_POT_INFRA_PCT) / FEE_SCALING;
+        let amt_no_fee = amt.checked_sub(amt_fee).ok_or(Error::CheckedSubOverflow)?;
         {
-            return Ok((caller_yield_taken, on_behalf_of_yield_taken));
+            let p = e.redeemable_pot_existing.get();
+            e.redeemable_pot_existing
+                .set(p.checked_add(amt_no_fee).ok_or(Error::CheckedAddOverflow)?);
         }
-        // We need to now take the amount that the victim bet in the
-        // incorrect outcome, and we need to dilute their arb down by
-        // the amount of the global arb relative to the winning arb.
-        // The winner gets the losing outcome on a pro-rata basis, and
-        // we dilute down their share of the winning.
-        // If Alex has 30% of the winning ARB invested...
-        let pct_of_winning_amt_caller = (e.user_vested_arb.get(on_behalf_of_addr) * SCALING_FACTOR)
-            / e.outcome_vested_arb.get(campaign_winner);
-        // If Erik has 20% of the winning ARB invested...
-        let pct_of_losing_amt_victim = (e.user_vested_arb.get(victim_addr) * SCALING_FACTOR)
-            / (e.global_vested_arb.get() - e.outcome_vested_arb.get(campaign_winner));
-        // If we're inside a "ANYTHING GOES" period where someone could claim the
-        // victim's entire position without beating them on the percentage of the share
-        // that's held.
-        let are_we_anything_goes_period =
-            are_we_in_anything_goes_period(e.campaign_when_whinged.get(), block_timestamp())?;
-        let can_winner_claim_victim =
-            are_we_anything_goes_period || pct_of_winning_amt_caller >= pct_of_losing_amt_victim;
-        let remaining_winner_pct = pct_of_winning_amt_caller - pct_of_losing_amt_victim;
-        assert_or!(can_winner_claim_victim, Error::VictimCannotClaim);
-        // Prevent the victim from being drained again, and dilute the caller's voting
-        // arb down in line with the amount the victim had.
-        e.user_vested_arb.setter(victim_addr).set(U256::ZERO);
-        if pct_of_winning_amt_caller >= pct_of_losing_amt_victim {
-            let winner_arb = e.user_vested_arb.get(on_behalf_of_addr);
-            e.user_vested_arb.setter(on_behalf_of_addr).set(
-                winner_arb
-                    .checked_sub((winner_arb * remaining_winner_pct) / SCALING_FACTOR)
-                    .ok_or(Error::CheckedSubOverflow)?,
-            );
+        {
+            let p = e.redeemable_pot_outstanding.get();
+            e.redeemable_pot_outstanding
+                .set(p.checked_add(amt_no_fee).ok_or(Error::CheckedAddOverflow)?);
         }
-        // Transfer the victim's entire staked ARB position to the
-        // caller. Make sure noone can drain from this user in this
-        // contract again! We shouldn't need to worry about overflow here due
-        // to the amount being sent being quite low and passing other checks.
-        if on_behalf_of_addr == fee_recipient_addr {
-            on_behalf_of_yield_taken +=
-                lockup_call::confiscate(self.lockup_addr.get(), victim_addr, on_behalf_of_addr)?;
+        if amt_fee > U256::ZERO {
+            erc20_call::transfer(STAKED_ARB_ADDR, fee_recipient_addr, amt_fee)?;
+        }
+        Ok(amt_fee)
+    }
+
+    // Capture fees from the global pot that the user partook in.
+    pub fn capture(
+        &mut self,
+        trading_addr: Address,
+        epoch_no: U256,
+        fee_recipient: Address,
+    ) -> R<U256> {
+        assert_or!(self.enabled.get(), Error::NotEnabled);
+        assert_or!(
+            !self.campaign_call_deadline.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
+        // Make sure that this sweeping is taking place after the epoch has passed.
+        assert_or!(
+            self.cur_epochs.get(trading_addr) >= epoch_no,
+            Error::InvalidEpoch
+        );
+        let mut epochs = self.epochs.setter(trading_addr);
+        let mut e = epochs.setter(epoch_no);
+        assert_or!(
+            e.reveals.get(msg_sender()) == e.campaign_winner.get(),
+            Error::NotWinner
+        );
+        assert_or!(!e.redeemable_user_has_claimed.get(msg_sender()), Error::PotAlreadyClaimed);
+        let scaling = U256::from(1e12 as u64);
+        let pct_of_winnings = (e.user_vested_arb.get(msg_sender()) * scaling) / e.outcome_vested_arb.get(e.campaign_winner.get());
+        let pot_available = (e.redeemable_pot_existing.get() * pct_of_winnings) / scaling;
+        e.redeemable_user_has_claimed.setter(msg_sender()).set(true);
+        let amt_to_send = if pot_available > e.redeemable_pot_outstanding.get() {
+            // How did this happen? We send it regardless.
+            e.redeemable_pot_outstanding.get()
         } else {
-            let confiscated =
-                lockup_call::confiscate(self.lockup_addr.get(), victim_addr, contract_address())?;
-            let confiscate_fee = (confiscated * FEE_OTHER_CALLER_CONFISCATE_PCT) / FEE_SCALING;
-            let confiscate_no_fee = confiscated - confiscate_fee;
-            on_behalf_of_yield_taken += confiscate_no_fee;
-            erc20_call::transfer(STAKED_ARB_ADDR, on_behalf_of_addr, confiscate_no_fee)?;
-            erc20_call::transfer(STAKED_ARB_ADDR, fee_recipient_addr, confiscate_fee)?;
-            caller_yield_taken += confiscate_fee;
-            on_behalf_of_yield_taken += confiscate_no_fee;
-        }
-        Ok((caller_yield_taken, on_behalf_of_yield_taken))
+            pot_available
+        };
+        erc20_call::transfer(STAKED_ARB_ADDR, fee_recipient, amt_to_send)?;
+        Ok(amt_to_send)
     }
 
     /// If this is being called, we're in a really bad situation where the
-    /// calling deadline has been passed, and no-one has called the function.
+    /// calling deadline has been passed.
     /// In this possibility, it's time to indicate to the Trading contract
     /// that we're in this indeterminate position, which should defer to the
     /// DAO that this is the case.
@@ -672,15 +696,15 @@ mod test {
             reveal_trading_addr in strat_address(),
             reveal_outcome in strat_fixed_bytes::<8>(),
             reveal_seed in strat_small_u256(),
+            _sweep_outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 0..8),
             sweep_trading_addr in strat_address(),
             sweep_victim_addr in strat_address(),
-            sweep_outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 0..8),
-            sweep_on_behalf_of_addr in strat_address(),
             sweep_fee_recipient_addr in strat_address(),
             escape_trading_addr in strat_address()
         ) {
             c.operator.set(msg_sender());
             c.enable_contract(false).unwrap();
+            let sweep_epoch_no = U256::ZERO;
             panic_guard(|| {
                 let rs = [
                     c.register(
@@ -703,9 +727,8 @@ mod test {
                         .unwrap_err(),
                     c.sweep(
                         sweep_trading_addr,
+                        sweep_epoch_no,
                         sweep_victim_addr,
-                        sweep_outcomes,
-                        sweep_on_behalf_of_addr,
                         sweep_fee_recipient_addr,
                     )
                         .unwrap_err(),

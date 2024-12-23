@@ -72,35 +72,23 @@ impl StorageLockup {
         erc20_call::balance_of(self.token_addr.get(), addr)
     }
 
-    pub fn slash(&mut self, addr: Address) -> Result<(), Error> {
+    /// Slash a user by taking this amount from them by burning the token
+    /// amount given, sending back the amount that was taken from them.
+    /// Reverts if they have less than the amount that was asked for.
+    pub fn slash(&mut self, victim: Address, amt: U256, recipient: Address) -> Result<U256, Error> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
             msg_sender() == self.infra_market_addr.get(),
             Error::NotInfraMarket
         );
-        let slashed = erc20_call::balance_of(self.token_addr.get(), addr)?;
-        self.slashed_amt.setter(addr).set(slashed);
-        evm::log(events::Slashed {
-            victim: addr,
-            slashedAmount: slashed,
-        });
-        Ok(())
-    }
-
-    pub fn confiscate(&mut self, victim: Address, recipient: Address) -> Result<U256, Error> {
-        assert_or!(self.enabled.get(), Error::NotEnabled);
-        assert_or!(
-            msg_sender() == self.infra_market_addr.get(),
-            Error::NotInfraMarket
-        );
-        let amt = erc20_call::balance_of(self.token_addr.get(), victim)?;
+        let locked_bal = erc20_call::balance_of(self.token_addr.get(), victim)?;
+        assert_or!(locked_bal >= amt, Error::VictimLowBal);
+        nineliveslockedarb_call::burn(self.token_addr.get(), victim, amt)?;
         erc20_call::transfer(STAKED_ARB_ADDR, recipient, amt)?;
-        // Reset their amount since they had their funds confiscated.
-        self.slashed_amt.setter(victim).set(U256::ZERO);
-        evm::log(events::Confiscated {
+        evm::log(events::Slashed {
             victim,
             recipient,
-            taken: amt,
+            slashedAmount: amt,
         });
         Ok(amt)
     }
@@ -152,7 +140,9 @@ mod test {
             lockup_recipient in strat_address(),
             withdraw_amt in strat_small_u256(),
             withdraw_recipient in strat_address(),
-            slash_addr in strat_address(),
+            slash_victim in strat_address(),
+            slash_amt in strat_small_u256(),
+            slash_recipient in strat_address(),
             freeze_spender in strat_address(),
             freeze_until in any::<u64>()
         ) {
@@ -162,7 +152,7 @@ mod test {
                 let res = [
                     c.lockup(lockup_amt, lockup_recipient).unwrap_err(),
                     c.withdraw(withdraw_amt, withdraw_recipient).unwrap_err(),
-                    c.slash(slash_addr).unwrap_err(),
+                    c.slash(slash_victim, slash_amt, slash_recipient).unwrap_err(),
                     c.freeze(freeze_spender, freeze_until).unwrap_err()
                 ];
                 for (i, f) in res.into_iter().enumerate() {

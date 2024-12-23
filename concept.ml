@@ -56,17 +56,11 @@ type s_o_completed
 *)
 type s_o_slashing
 
-(**
- * The Oracle is in a state of Anything Goes, where anyone could slash
- * anyone.
-*)
-type s_o_anything_goes
-
-(**
- * The Oracle has completed the Anything Goes period. This state could be used
- * to re-enter the calling period if the winning outcome is 0.
-*)
-type s_o_done_anything_goes
+(*
+ * The Oracle is in a conclusive state where it either concludes, or it
+ * reverts to the reset stage if the outcome is 0.
+ *)
+type s_o_done
 
 (*
  * This is a very bad situation. The Escape Hatch functionality is
@@ -88,10 +82,8 @@ type 's o =
   | Calling_over : s_o_calling -> s_o_completed o
   | Slashing_begun : s_o_completed o -> s_o_slashing o
   | Slashed : [`Victim of whinger] * [`Slasher of whinger] * s_o_slashing o -> s_o_slashing o
-  | Slashing_two_days_over : s_o_slashing o -> s_o_anything_goes o
-  | Anything_goes_slash : whinger * s_o_anything_goes o -> s_o_anything_goes o
-  | Anything_goes_slashing_over : s_o_anything_goes o -> s_o_done_anything_goes o
-  | Reset_winner_is_zero : s_o_done_anything_goes o -> s_o_waiting o
+  | Slashing_two_days_over : s_o_slashing o -> s_o_done o
+  | Reset_winner_is_zero : s_o_done o -> s_o_waiting o
   | Escape_hatch_is_needed: s_o_waiting o -> s_o_escape_hatch o
 
 (**
@@ -116,6 +108,7 @@ type s_m_claiming
  * the frontend should always create the indeterminate state for the
  * custom outcomes. This is really for the DPM.
  *)
+type s_m_escape_hatch
 
 type 's m =
   | Created : s_m_trading m

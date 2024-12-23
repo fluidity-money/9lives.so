@@ -62,7 +62,7 @@ fn test_infra_market_call_close_only_happy_path() {
             );
             // We should not be able to call sweep yet:
             assert_eq!(
-                c.sweep(trading, msg_sender(), vec![], msg_sender(), msg_sender())
+                c.sweep(trading, U256::ZERO, msg_sender(), msg_sender())
                     .unwrap_err(),
                 Error::WhingedTimeUnset
             );
@@ -136,26 +136,22 @@ fn test_unhappy_call_whinge_claim_no_bettors_path() {
         assert_eq!(
             c.sweep(
                 trading,
+                U256::ZERO,
                 Address::ZERO,
-                vec![winner, preferred_outcome_whinger],
-                Address::ZERO,
-                Address::ZERO,
+                Address::ZERO
             )
-            .unwrap()
-            .0,
+            .unwrap(),
             INCENTIVE_AMT_SWEEP
         );
         // We can't call this twice and get anything unless we're liquidating someone!
         assert_eq!(
             c.sweep(
                 trading,
-                Address::ZERO,
-                vec![winner, preferred_outcome_whinger],
+                U256::ZERO,
                 Address::ZERO,
                 Address::ZERO,
             )
-            .unwrap()
-            .0,
+            .unwrap(),
             U256::ZERO
         );
         assert_eq!(preferred_outcome_whinger, c.winner(trading).unwrap());

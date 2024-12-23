@@ -117,13 +117,8 @@ interface IEvents {
 
     event Slashed(
         address indexed victim,
-        uint256 indexed slashedAmount
-    );
-
-    event Confiscated(
-        address indexed victim,
         address indexed recipient,
-        uint256 indexed taken
+        uint256 indexed slashedAmount
     );
 
     event Frozen(

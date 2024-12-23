@@ -467,6 +467,26 @@ pub enum Error {
     // 0x60
     /// It's too early to withdraw from the Lockup contract!
     TooEarlyToWithdraw,
+
+    // 0x61
+    /// The victim has too low of a balance to have their amount slashed!
+    VictimLowBal,
+
+    // 0x61
+    /// The campaign winner was already set.
+    CampaignWinnerSet,
+
+    // 0x62
+    /// The outcome list is empty!
+    OutcomesEmpty,
+
+    // 0x63
+    /// The epoch submitted for sweeping isn't valid.
+    InvalidEpoch,
+
+    // 0x64
+    /// The pot was already claimed by the user!
+    PotAlreadyClaimed,
 }
 
 #[cfg(not(target_arch = "wasm32"))]

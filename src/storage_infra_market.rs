@@ -47,6 +47,19 @@ pub struct StorageEpochDetails {
     /// When someone "called" this contract, taking it out of the optimistic
     /// state period into the whinging stage.
     pub campaign_when_called: StorageU64,
+
+    /// The "Pot" that can be redeemed from by the correct bettors in this
+    /// market. This is the amount that was tracked as available, so we can
+    /// check the amount that they should receive based on their percentage
+    /// from the amount outstanding instead of infinitely drawing it down.
+    pub redeemable_pot_existing: StorageU256,
+
+    /// The "Pot" that's outstanding in this market. The amount that should be
+    /// decreased gradually per take from the pool.
+    pub redeemable_pot_outstanding: StorageU256,
+
+    /// Whether the user has claimed their outstanding share of the pool.
+    pub redeemable_user_has_claimed: StorageMap<Address, StorageBool>,
 }
 
 #[cfg_attr(

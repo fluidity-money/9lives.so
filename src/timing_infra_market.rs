@@ -3,14 +3,14 @@ use stylus_sdk::alloy_primitives::U64;
 use crate::error::Error;
 
 /*
-+--------------+--------------+-------------------+----------------+------------------+
-| Whinging     | Predicting   | Commitment reveal | Sweeping       | Anything         |
-| Period (2d)  | Period (2d)  | Period (2d)       | Period (2d)    | Goes (2d) +      |
-|              |              |                   |                | Sweeping         |
-|              |              |                   |                | Period           |
-+--------------+--------------+-------------------+----------------+------------------+
-| Day 1-2      | Day 3-4      | Day 5-6     ␣     | Day 7-11       | Day 9-10         |
-+--------------+--------------+-------------------+----------------+------------------+
++--------------+--------------+-------------------+----------+
+| Whinging     | Predicting   | Commitment reveal | Sweeping |
+| Period (2d)  | Period (2d)  | Period (2d)       | Period   |
+|              |              |                   |          |
+|              |              |                   |          |
++--------------+--------------+-------------------+----------+
+| Day 1-2      | Day 3-4      | Day 5-6     ␣     | Day 7+   |
++--------------+--------------+-------------------+----------+
 */
 
 macro_rules! define_period_checker {
@@ -51,37 +51,15 @@ define_period_checker!(
     2
 );
 
-// We're simultaneously in the sweeping and anything goes period.
-define_period_checker!(
-    are_we_in_sweeping_period,
-    when_whinged,
-    4,
-    WhingedTimeUnset,
-    4
-);
-define_period_checker!(
-    are_we_in_anything_goes_period,
-    when_whinged,
-    6,
-    WhingedTimeUnset,
-    2
-);
-
-pub const TWO_DAYS: u64 = 172800;
-pub const SIX_DAYS: u64 = 518400;
+pub const TWO_DAYS: u64 = 2 * 24 * 60 * 60;
+pub const FOUR_DAYS: u64 = 4 * 24 * 60 * 60;
+pub const SIX_DAYS: u64 = 6 * 24 * 60 * 60;
 
 pub fn are_we_after_whinging_period(whinged_ts: U64, ts: u64) -> Result<bool, Error> {
     if whinged_ts.is_zero() {
         return Err(Error::WhingedTimeUnset);
     }
     Ok(ts > u64::from_be_bytes(whinged_ts.to_be_bytes()) + TWO_DAYS)
-}
-
-pub fn are_we_after_anything_goes(whinged_ts: U64, ts: u64) -> Result<bool, Error> {
-    if whinged_ts.is_zero() {
-        return Err(Error::WhingedTimeUnset);
-    }
-    Ok(ts > u64::from_be_bytes(whinged_ts.to_be_bytes()) + SIX_DAYS)
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
