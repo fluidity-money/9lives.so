@@ -34,6 +34,22 @@ const geneva = localFont({
   display: "swap",
   variable: "--font-geneva",
 });
+const arial = localFont({
+  src: [
+    {
+      path: "../../public/fonts/arial.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/arial-bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+  variable: "--font-arial",
+});
 export const metadata: Metadata = {
   ...appConfig.metadata,
 };
@@ -48,7 +64,12 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={combineClass([chicago.variable, geneva.variable])}
+      className={combineClass([
+        chicago.variable,
+        geneva.variable,
+        arial.className,
+        arial.variable,
+      ])}
     >
       <body className="flex min-h-screen flex-col items-center bg-9layer">
         <Providers initialData={{ campaigns, totalUserCount }}>

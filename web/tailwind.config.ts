@@ -10,6 +10,7 @@ const config: Config = {
       fontFamily: {
         chicago: ["var(--font-chicago)"],
         geneva: ["var(--font-geneva)"],
+        arial: ["var(--font-arial)"],
       },
       height: {
         "degen-panel": "calc(var(--body-height) - 42px)",
