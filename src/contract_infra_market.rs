@@ -118,7 +118,7 @@ impl StorageInfraMarket {
         trading_addr: Address,
         winner: FixedBytes<8>,
         incentive_recipient: Address,
-    ) -> R<()> {
+    ) -> R<U256> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
             self.campaign_call_begins.get(trading_addr) < U64::from(block_timestamp()),
@@ -171,16 +171,18 @@ impl StorageInfraMarket {
         e.campaign_when_called.set(U64::from(block_timestamp()));
         e.campaign_who_called.set(incentive_recipient);
         e.campaign_what_called.set(winner);
+        fusdc_call::take_from_sender(BOND_FOR_CALL)?;
         evm::log(events::CallMade {
             tradingAddr: trading_addr,
             winner,
             incentiveRecipient: incentive_recipient,
         });
-        Ok(())
+        Ok(BOND_FOR_CALL)
     }
 
     /// This should be called by someone after the whinging period has ended, but only if we're
-    /// in a state where no-one has whinged. This will reward the caller their incentive amount.
+    /// in a state where no-one has whinged. This will reward the caller their incentive amount
+    /// and their bond.
     /// This will set the campaign_winner storage field to what was declared by the caller.
     pub fn close(&mut self, trading_addr: Address, fee_recipient: Address) -> R<U256> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
@@ -198,7 +200,12 @@ impl StorageInfraMarket {
             are_we_after_whinging_period(e.campaign_when_called.get(), block_timestamp())?,
             Error::NotAfterWhinging
         );
+        assert_or!(
+            !e.campaign_who_called.get().is_zero(),
+            Error::CampaignZeroCaller
+        );
         assert_or!(!e.campaign_winner_set.get(), Error::WinnerAlreadyDeclared);
+        let is_zero_epoch = self.cur_epochs.get(trading_addr).is_zero();
         let fee_recipient = if fee_recipient.is_zero() {
             msg_sender()
         } else {
@@ -207,24 +214,21 @@ impl StorageInfraMarket {
         // Send the caller of this function their incentive.
         // We need to prevent people from calling this unless they're at epoch
         // 0 so we don't see abuse somehow.
-        if self.dao_money.get() >= INCENTIVE_AMT_CLOSE
-            && self.cur_epochs.get(trading_addr).is_zero()
-        {
+        if self.dao_money.get() >= INCENTIVE_AMT_CLOSE && is_zero_epoch {
             self.dao_money
                 .set(self.dao_money.get() - INCENTIVE_AMT_CLOSE);
             fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_CLOSE)?;
         }
+        fusdc_call::transfer(msg_sender(), BOND_FOR_CALL)?;
         // Send the user who originally called this outcome their
         // incentive for doing so, and for being right.
-        let campaign_who_called = e.campaign_who_called.get();
-        // We make sure to send the fee for calling to either the user who
-        // called it, or this caller.
-        let fees_earned = INCENTIVE_AMT_CLOSE
-            + if campaign_who_called.is_zero() {
-                INCENTIVE_AMT_CALL
-            } else {
-                U256::ZERO
-            };
+        let mut fees_earned = U256::ZERO;
+        if self.dao_money.get() >= INCENTIVE_AMT_CLOSE && is_zero_epoch {
+            self.dao_money
+                .set(self.dao_money.get() - INCENTIVE_AMT_CLOSE);
+            fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_CLOSE)?;
+            fees_earned += INCENTIVE_AMT_CLOSE;
+        }
         // Send the next round of incentive amounts if we're able to do
         // so (the DAO hasn't overstepped their power here). As a backstep
         // against griefing (so we defer to Good Samaritans calling this contract,
@@ -233,14 +237,7 @@ impl StorageInfraMarket {
         {
             self.dao_money
                 .set(self.dao_money.get() - INCENTIVE_AMT_CALL);
-            fusdc_call::transfer(
-                if campaign_who_called.is_zero() {
-                    fee_recipient
-                } else {
-                    campaign_who_called
-                },
-                INCENTIVE_AMT_CALL,
-            )?;
+            fusdc_call::transfer(e.campaign_who_called.get(), INCENTIVE_AMT_CALL)?;
         }
         let campaign_what_called = e.campaign_what_called.get();
         e.campaign_winner.set(campaign_what_called);
@@ -477,9 +474,16 @@ impl StorageInfraMarket {
             voting_power_winner,
             e.campaign_whinger_preferred_winner.get()
         );
-        // If the whinger was correct, we owe them their bond.
-        if voting_power_winner == e.campaign_whinger_preferred_winner.get() {
-            fusdc_call::transfer(e.campaign_who_whinged.get(), BOND_FOR_WHINGE)?;
+        // If the whinger was correct, we owe them their bond + the caller's bond.
+        {
+            let bond_amts = BOND_FOR_WHINGE + BOND_FOR_CALL;
+            if voting_power_winner == e.campaign_whinger_preferred_winner.get() {
+                fusdc_call::transfer(e.campaign_who_whinged.get(), bond_amts)?;
+            }
+            // If the caller was correct, we owe them their bond + the whinger's bond.
+            if voting_power_winner == e.campaign_what_called.get() {
+                fusdc_call::transfer(e.campaign_who_called.get(), bond_amts)?;
+            }
         }
         // Looks like we owe the fee recipient some money. This should only be the
         // case in the happy path (we're on nonce 0). This is susceptible to griefing
@@ -604,9 +608,13 @@ impl StorageInfraMarket {
             e.reveals.get(msg_sender()) == e.campaign_winner.get(),
             Error::NotWinner
         );
-        assert_or!(!e.redeemable_user_has_claimed.get(msg_sender()), Error::PotAlreadyClaimed);
+        assert_or!(
+            !e.redeemable_user_has_claimed.get(msg_sender()),
+            Error::PotAlreadyClaimed
+        );
         let scaling = U256::from(1e12 as u64);
-        let pct_of_winnings = (e.user_vested_arb.get(msg_sender()) * scaling) / e.outcome_vested_arb.get(e.campaign_winner.get());
+        let pct_of_winnings = (e.user_vested_arb.get(msg_sender()) * scaling)
+            / e.outcome_vested_arb.get(e.campaign_winner.get());
         let pot_available = (e.redeemable_pot_existing.get() * pct_of_winnings) / scaling;
         e.redeemable_user_has_claimed.setter(msg_sender()).set(true);
         let amt_to_send = if pot_available > e.redeemable_pot_outstanding.get() {

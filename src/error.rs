@@ -487,6 +487,10 @@ pub enum Error {
     // 0x64
     /// The pot was already claimed by the user!
     PotAlreadyClaimed,
+
+    // 0x65
+    /// The campaign had a zero caller!
+    CampaignZeroCaller,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
