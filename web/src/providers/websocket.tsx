@@ -10,7 +10,7 @@ export const wsClient = createClient({
 });
 const subTenLatestCreates = `
   subscription {
-  ninelives_campaigns_1(limit: 10, order_by: {created_at: asc}){
+  ninelives_campaigns_1(limit: 10, order_by: {created_at: desc}){
     id
     created_at
     content
