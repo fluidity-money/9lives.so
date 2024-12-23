@@ -39,16 +39,32 @@ type s_o_calling
 type s_o_whinged
 
 (**
- * The Oracle has seen a prediction from someone to an outcome that was
- * given.
+ * The Oracle has seen a commitment from someone that will need to reveal.
 *)
-type s_o_predicting
+type s_o_committing
+
+(*
+ * The Oracle has seen the commitment stage conclude, and is now
+ * expecting the reveal stage.
+ *)
+type s_o_committing_over
+
+(**
+ * The Oracle is in a stage where revealing is needed from those who previously committed.
+ *)
+type s_o_revealing
+
+(**
+ * The Oracle has seen the revealing stage conclude, and is now expecting
+ * the slashing stage.
+ *)
+type s_o_revealing_done
 
 (**
  * The Oracle two day period predicting period has completed. Trading can benefit from the
  * outcome now.
 *)
-type s_o_completed
+type s_o_slashing_needed
 
 (**
  * The Oracle is now in a state where slashing is possible of bad
@@ -73,18 +89,18 @@ type s_o_done
  *)
 type s_o_escape_hatch
 
-type 's o =
-  | Waiting : s_o_waiting o
-  | Calling : s_o_waiting o -> s_o_calling o
-  | Whinged : outcome * whinger * s_o_calling o -> s_o_predicting o
-  | Prediction : s_l_spent l * s_o_whinged o -> s_o_predicting o
-  | Predicting_over : s_o_predicting o -> s_o_completed o
-  | Calling_over : s_o_calling -> s_o_completed o
-  | Slashing_begun : s_o_completed o -> s_o_slashing o
-  | Slashed : [`Victim of whinger] * [`Slasher of whinger] * s_o_slashing o -> s_o_slashing o
-  | Slashing_two_days_over : s_o_slashing o -> s_o_done o
-  | Reset_winner_is_zero : s_o_done o -> s_o_waiting o
-  | Escape_hatch_is_needed: s_o_waiting o -> s_o_escape_hatch o
+type _ o =
+  | Calling : s_o_calling o
+  | Whinged : outcome * whinger * s_o_calling o -> s_o_committing o
+  | Commitment : s_l_spent l * s_o_whinged o -> s_o_committing o
+  | Committing_over : s_o_committing o -> s_o_revealing o
+  | Revealed : outcome * s_o_revealing o -> s_o_revealing o
+  | Revealing_done : s_o_revealing o -> s_o_revealing_done o
+  | Declared : [`Winner of outcome]  * s_o_revealing_done o -> s_o_slashing_needed o
+  | Calling_over : s_o_calling -> s_o_done o
+  | Sweeped : [`Victim of whinger] * [`Slasher of whinger] * s_o_done o -> s_o_done o
+  | Reset_winner_is_zero : s_o_done o -> s_o_calling o
+  | Escape_hatch_is_needed: s_o_calling o -> s_o_escape_hatch o
 
 (**
  * The Trading market is trading, and people are predicting outcomes.
@@ -114,8 +130,8 @@ type 's m =
   | Created : s_m_trading m
   | Traded : outcome * [`Fusdc of int] * [`Shares of int] * s_m_trading m -> s_m_trading m
   | Deadline_passed : s_m_trading m -> s_m_pending_oracle m
-  | Oracle_submission_pending_oracle :  s_o_completed o * s_m_pending_oracle m -> s_m_claiming m
-  | Oracle_submission_trading :  s_o_completed o * s_m_trading m -> s_m_claiming m
+  | Oracle_submission_pending_oracle :  s_o_done o * s_m_pending_oracle m -> s_m_claiming m
+  | Oracle_submission_trading :  s_o_done o * s_m_trading m -> s_m_claiming m
   | Oracle_escape_hatch_trading : s_o_escape_hatch o * s_m_trading m -> s_m_escape_hatch m
   | Claim : outcome * int * s_m_claiming m -> s_m_claiming m
 
