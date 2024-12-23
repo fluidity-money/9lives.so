@@ -1,7 +1,266 @@
 [
 	{
 		"type": "event",
-		"name": "NewTrading",
+		"name": "CallMade",
+		"inputs": [
+			{
+				"name": "tradingAddr",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "winner",
+				"type": "bytes8",
+				"indexed": true,
+				"internalType": "bytes8"
+			},
+			{
+				"name": "incentiveRecipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "CampaignEscaped",
+		"inputs": [
+			{
+				"name": "tradingAddr",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "CommitmentRevealed",
+		"inputs": [
+			{
+				"name": "trading",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "revealer",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "outcome",
+				"type": "bytes8",
+				"indexed": true,
+				"internalType": "bytes8"
+			},
+			{
+				"name": "caller",
+				"type": "address",
+				"indexed": false,
+				"internalType": "address"
+			},
+			{
+				"name": "bal",
+				"type": "uint256",
+				"indexed": false,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "Committed",
+		"inputs": [
+			{
+				"name": "trading",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "predictor",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "commitment",
+				"type": "bytes32",
+				"indexed": true,
+				"internalType": "bytes32"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "DAOMoneyDistributed",
+		"inputs": [
+			{
+				"name": "amount",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "DeadlineExtension",
+		"inputs": [
+			{
+				"name": "timeBefore",
+				"type": "uint64",
+				"indexed": true,
+				"internalType": "uint64"
+			},
+			{
+				"name": "timeAfter",
+				"type": "uint64",
+				"indexed": true,
+				"internalType": "uint64"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "Frozen",
+		"inputs": [
+			{
+				"name": "victim",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "until",
+				"type": "uint64",
+				"indexed": true,
+				"internalType": "uint64"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "InfraMarketClosed",
+		"inputs": [
+			{
+				"name": "incentiveRecipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "tradingAddr",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "winner",
+				"type": "bytes8",
+				"indexed": true,
+				"internalType": "bytes8"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "InfraMarketEnabled",
+		"inputs": [
+			{
+				"name": "status",
+				"type": "bool",
+				"indexed": true,
+				"internalType": "bool"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "LockedUp",
+		"inputs": [
+			{
+				"name": "amount",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "LockupEnabled",
+		"inputs": [
+			{
+				"name": "status",
+				"type": "bool",
+				"indexed": true,
+				"internalType": "bool"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "LockupTokenProxyDeployed",
+		"inputs": [
+			{
+				"name": "token",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "MarketCreated2",
+		"inputs": [
+			{
+				"name": "incentiveSender",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "tradingAddr",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "NewTrading2",
 		"inputs": [
 			{
 				"name": "identifier",
@@ -20,6 +279,12 @@
 				"type": "address",
 				"indexed": true,
 				"internalType": "address"
+			},
+			{
+				"name": "backend",
+				"type": "uint8",
+				"indexed": false,
+				"internalType": "uint8"
 			}
 		],
 		"anonymous": false
@@ -138,6 +403,87 @@
 				"type": "uint256",
 				"indexed": false,
 				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "Slashed",
+		"inputs": [
+			{
+				"name": "victim",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "slashedAmount",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "UserPredicted",
+		"inputs": [
+			{
+				"name": "trading",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "predictor",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "tokenAmount",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "powerAmount",
+				"type": "uint256",
+				"indexed": false,
+				"internalType": "uint256"
+			},
+			{
+				"name": "outcome",
+				"type": "bytes8",
+				"indexed": false,
+				"internalType": "bytes8"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "Withdrew",
+		"inputs": [
+			{
+				"name": "amount",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
 			}
 		],
 		"anonymous": false

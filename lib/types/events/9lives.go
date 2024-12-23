@@ -1,13 +1,14 @@
 package events
 
 type (
-	// EventNewTrading event emitted by the factory.
-	EventNewTrading struct {
+	// EventNewTrading2 event emitted by the factory.
+	EventNewTrading2 struct {
 		Event
 
 		Identifier Bytes   `json:"identifier"`
 		Addr       Address `json:"address" gorm:"column:address"`
 		Oracle     Address `json:"oracle"`
+		Backend    uint8   `json:"backend"`
 	}
 
 	// EventOutcomeCreated by a factory for a trading instance.
@@ -35,7 +36,7 @@ type (
 		ShareAmount Number  `json:"share_amount"`
 		Spender     Address `json:"spender"`
 		Recipient   Address `json:"recipient"`
-		FusdcSpent  Number `json:"fusdc_spent"`
+		FusdcSpent  Number  `json:"fusdc_spent"`
 	}
 
 	EventPayoffActivated struct {
@@ -45,6 +46,6 @@ type (
 		SharesSpent   Number  `json:"shares_spent"`
 		Spender       Address `json:"spender"`
 		Recipient     Address `json:"recipient"`
-		FusdcReceived Number `json:"fusdc_received"`
+		FusdcReceived Number  `json:"fusdc_received"`
 	}
 )

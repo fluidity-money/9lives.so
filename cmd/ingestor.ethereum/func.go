@@ -26,7 +26,7 @@ import (
 
 // FilterTopics to filter for using the Websocket/HTTP collection of logs.
 var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic position.
-	events.TopicNewTrading,
+	events.TopicNewTrading2,
 	events.TopicOutcomeCreated,
 	events.TopicOutcomeDecided,
 	events.TopicSharesMinted,
@@ -202,15 +202,15 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 	)
 	isFactory := factoryAddr == emitterAddr
 	switch topic0 {
-	case events.TopicNewTrading:
+	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
 		var tradingAddr string
-		a, tradingAddr, err = events.UnpackNewTrading(topic1, topic2, topic3)
-		table = "ninelives_events_new_trading"
-		logEvent("NewTrading")
+		a, tradingAddr, err = events.UnpackNewTrading2(topic1, topic2, topic3, data)
+		table = "ninelives_events_new_trading2"
+		logEvent("NewTrading2")
 		err := cbTrackTradingContract(blockHash, transactionHash, tradingAddr)
 		if err != nil {
-			return false, fmt.Errorf("track trading: %v", err)
+			return false, fmt.Errorf("track trading2: %v", err)
 		}
 	case events.TopicOutcomeCreated:
 		a, err = events.UnpackOutcomeCreated(topic1, topic2, topic3)

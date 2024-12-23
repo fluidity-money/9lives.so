@@ -18,19 +18,28 @@ var abiB []byte
 var abi, _ = ethAbi.JSON(bytes.NewReader(abiB))
 
 var (
-	TopicNewTrading      = abi.Events["NewTrading"].ID
+	TopicNewTrading2      = abi.Events["NewTrading2"].ID
 	TopicOutcomeCreated  = abi.Events["OutcomeCreated"].ID
 	TopicOutcomeDecided  = abi.Events["OutcomeDecided"].ID
 	TopicSharesMinted    = abi.Events["SharesMinted"].ID
 	TopicPayoffActivated = abi.Events["PayoffActivated"].ID
 )
 
-func UnpackNewTrading(topic1, topic2, topic3 ethCommon.Hash) (*events.EventNewTrading, string, error) {
+func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
 	addr := hashToAddr(topic2)
-	return &events.EventNewTrading{
+	i, err := abi.Unpack("NewTrading2", b)
+	if err != nil {
+		return nil, "", err
+	}
+	backend, ok := i[0].(uint8)
+	if !ok {
+		return nil, "", fmt.Errorf("bad backend: %T", i[0])
+	}
+	return &events.EventNewTrading2{
 		Identifier: hashToBytes(topic1),
 		Addr:       addr,
 		Oracle:     hashToAddr(topic3),
+		Backend:    backend,
 	}, addr.String(), nil
 }
 
@@ -89,7 +98,7 @@ func UnpackPayoffActivated(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*ev
 		SharesSpent:   hashToNumber(topic2),
 		Spender:       hashToAddr(topic3),
 		Recipient:     events.AddressFromString(recipient.String()),
-		FusdcReceived:  events.NumberFromBig(fusdcReceived),
+		FusdcReceived: events.NumberFromBig(fusdcReceived),
 	}, nil
 }
 
