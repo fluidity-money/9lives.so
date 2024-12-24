@@ -52,6 +52,7 @@ export default function WebSocketProvider() {
           if (campaigns) {
             const actions: Action[] = campaigns.map((c) => ({
               id: c.id,
+              campaignId: c.id,
               type: "create",
               campaignName: c.content.name,
               timestamp: c.created_at,
@@ -97,9 +98,10 @@ export default function WebSocketProvider() {
               return {
                 id: buy.identifier + buy.id,
                 type: "buy",
-                campaignName: actionCampaign?.name || "Unknown campaign",
+                campaignId: actionCampaign?.identifier ?? "0x",
+                campaignName: actionCampaign?.name ?? "Unknown campaign",
                 timestamp: buy.created_by,
-                campaignPic: actionCampaign?.picture || "",
+                campaignPic: actionCampaign?.picture ?? "",
                 actionValue: "$" + formatUnits(buy.fusdc_spent, 6),
                 outcomeName:
                   actionCampaign?.outcomes.find(

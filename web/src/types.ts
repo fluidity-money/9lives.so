@@ -61,6 +61,7 @@ export type OutcomeInput = {
 export type Action = {
   id: string;
   campaignName: string;
+  campaignId: string;
   type: "create" | "buy" | "sell";
   campaignPic: string;
   timestamp: string;
