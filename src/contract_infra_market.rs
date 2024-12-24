@@ -219,7 +219,7 @@ impl StorageInfraMarket {
                 .set(self.dao_money.get() - INCENTIVE_AMT_CLOSE);
             fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_CLOSE)?;
         }
-        fusdc_call::transfer(msg_sender(), BOND_FOR_CALL)?;
+        fusdc_call::transfer(e.campaign_who_called.get(), BOND_FOR_CALL)?;
         // Send the user who originally called this outcome their
         // incentive for doing so, and for being right.
         let mut fees_earned = U256::ZERO;
@@ -417,7 +417,10 @@ impl StorageInfraMarket {
         let mut epochs = self.epochs.setter(trading_addr);
         let mut e = epochs.setter(self.cur_epochs.get(trading_addr));
         // This can be called at any time now after the fact for the current epoch.
-        assert_or!(!e.campaign_when_whinged.get().is_zero(), Error::WhingedTimeUnset);
+        assert_or!(
+            !e.campaign_when_whinged.get().is_zero(),
+            Error::WhingedTimeUnset
+        );
         assert_or!(
             block_timestamp()
                 > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,
@@ -536,7 +539,10 @@ impl StorageInfraMarket {
         let mut epochs = self.epochs.setter(trading_addr);
         let mut e = epochs.setter(epoch_no);
         // This can be called at any time now after the fact for the current epoch.
-        assert_or!(!e.campaign_when_whinged.get().is_zero(), Error::WhingedTimeUnset);
+        assert_or!(
+            !e.campaign_when_whinged.get().is_zero(),
+            Error::WhingedTimeUnset
+        );
         assert_or!(
             block_timestamp()
                 > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,
