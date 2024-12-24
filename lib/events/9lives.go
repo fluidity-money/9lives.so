@@ -110,6 +110,115 @@ func UnpackDeadlineExtension(topic1, topic2 ethCommon.Hash) (*events.EventDeadli
 	}, nil
 }
 
+func UnpackMarketCreated2(topic1, topic2, topic3 ethCommon.Hash, d []byte) (*events.EventMarketCreated2, error) {
+	a, err := abi.Unpack("MarketCreated2", d)
+	if err != nil {
+		return nil, err
+	}
+	launchTs, ok := a[0].(uint64)
+	if !ok {
+		return nil, fmt.Errorf("bad launch ts: %T", a[0])
+	}
+	callDeadline, ok := a[1].(uint64)
+	if !ok {
+		return nil, fmt.Errorf("bad call deadline: %T", a[1])
+	}
+	return &events.EventMarketCreated2{
+		IncentiveSender: hashToAddr(topic1),
+		TradingAddr:     hashToAddr(topic2),
+		Desc:            hashToBytes(topic3),
+		LaunchTs:        time.Unix(int64(launchTs), 0),
+		CallDeadline:    time.Unix(int64(callDeadline), 0),
+	}, nil
+}
+
+func UnpackCallMade(topic1, topic2, topic3 ethCommon.Hash) (*events.EventCallMade, error) {
+	return &events.EventCallMade{
+		TradingAddr: hashToAddr(topic1),
+		Winner:      hashToAddr(topic2),
+	}, nil
+}
+
+func UnpackInfraMarketClosed(topic1, topic2, topic3 ethCommon.Hash) (*events.EventInfraMarketClosed, error) {
+	return &events.EventInfraMarketClosed{
+		IncentiveRecipient: hashToAddr(topic1),
+		TradingAddr:        hashToAddr(topic2),
+		Winner:             hashToBytes(topic3),
+	}, nil
+}
+
+func UnpackDAOMoneyDistributed(topic1, topic2, topic3 ethCommon.Hash) (*events.EventDAOMoneyDistributed, error) {
+	return &events.EventDAOMoneyDistributed{
+		Amount:    hashToNumber(topic1),
+		Recipient: hashToAddr(topic2),
+	}, nil
+}
+
+func UnpackCommitted(topic1, topic2, topic3 ethCommon.Hash) (*events.EventCommitted, error) {
+	return &events.EventCommitted{
+		Trading:    hashToAddr(topic1),
+		Predictor:  hashToAddr(topic2),
+		Commitment: hashToBytes(topic3),
+	}, nil
+}
+
+func UnpackCommitmentRevealed(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventCommitmentRevealed, error) {
+	a, err := abi.Unpack("CommitmentRevealed", b)
+	if err != nil {
+		return nil, err
+	}
+	caller, ok := a[0].(ethCommon.Address)
+	if !ok {
+		return nil, fmt.Errorf("bad caller: %T", a[0])
+	}
+	bal, ok := a[1].(*big.Int)
+	if !ok {
+		return nil, fmt.Errorf("bad bal: %T", a[1])
+	}
+	return &events.EventCommitmentRevealed{
+		Trading:  hashToAddr(topic1),
+		Revealer: hashToAddr(topic2),
+		Outcome:  hashToBytes(topic3),
+		Caller:   events.AddressFromString(caller.String()),
+		Bal:      events.NumberFromBig(bal),
+	}, nil
+}
+
+func UnpackCampaignEscaped(topic1 ethCommon.Hash) (*events.EventCampaignEscaped, error) {
+	return &events.EventCampaignEscaped{
+		TradingAddr: hashToAddr(topic1),
+	}, nil
+}
+
+func UnpackLockedUp(topic1, topic2 ethCommon.Hash) (*events.EventLockedUp, error) {
+	return &events.EventLockedUp{
+		Amount:    hashToNumber(topic1),
+		Recipient: hashToAddr(topic2),
+	}, nil
+}
+
+func UnpackWithdrew(topic1, topic2 ethCommon.Hash) (*events.EventWithdrew, error) {
+	return &events.EventWithdrew{
+		Amount:    hashToNumber(topic1),
+		Recipient: hashToAddr(topic2),
+	}, nil
+}
+
+func UnpackSlashed(topic1, topic2, topic3 ethCommon.Hash) (*events.EventSlashed, error) {
+	return &events.EventSlashed{
+		Victim:        hashToAddr(topic1),
+		Recipient:     hashToAddr(topic2),
+		SlashedAmount: hashToNumber(topic3),
+	}, nil
+}
+
+func UnpackFrozen(topic1, topic2 ethCommon.Hash) (*events.EventFrozen, error) {
+	return &events.EventFrozen{
+		Victim: hashToAddr(topic1),
+		Until:  time.Unix(hashToNumber(topic2).Int64(), 0),
+	}, nil
+}
+
 func hashToBytes(h ethCommon.Hash) events.Bytes {
 	return events.BytesFromSlice(h.Bytes())
 }

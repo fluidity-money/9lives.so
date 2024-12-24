@@ -141,6 +141,6 @@ type (
 		Event
 
 		Victim Address `json:"victim"`
-		Recipient time.Time `json:"recipient"`
+		Until time.Time `json:"until"`
 	}
 )

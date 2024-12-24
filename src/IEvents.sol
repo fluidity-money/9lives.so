@@ -56,7 +56,7 @@ interface IEvents {
     event MarketCreated2(
         address indexed incentiveSender,
         address indexed tradingAddr,
-        bytes32 desc,
+        bytes32 indexed desc,
         uint64 launchTs,
         uint64 callDeadline
     );
