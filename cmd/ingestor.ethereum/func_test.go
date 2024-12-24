@@ -38,6 +38,7 @@ func TestSharesMinted(t *testing.T) {
 
 	handleLogCallback(
 		factoryAddr,
+		factoryAddr, // Actually the infra market
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.

@@ -24,6 +24,18 @@ var (
 	TopicOutcomeDecided  = abi.Events["OutcomeDecided"].ID
 	TopicSharesMinted    = abi.Events["SharesMinted"].ID
 	TopicPayoffActivated = abi.Events["PayoffActivated"].ID
+	TopicDeadlineExtension = abi.Events["DeadlineExtension"].ID
+	TopicMarketCreated2 = abi.Events["MarketCreated2"].ID
+	TopicCallMade = abi.Events["CallMade"].ID
+	TopicInfraMarketClosed = abi.Events["InfraMarketClosed"].ID
+	TopicDAOMoneyDistributed = abi.Events["DAOMoneyDistributed"].ID
+	TopicCommitted = abi.Events["Committed"].ID
+	TopicCommitmentRevealed = abi.Events["CommitmentRevealed"].ID
+	TopicCampaignEscaped = abi.Events["CampaignEscaped"].ID
+	TopicLockedUp = abi.Events["LockedUp"].ID
+	TopicWithdrew = abi.Events["Withdrew"].ID
+	TopicSlashed = abi.Events["Slashed"].ID
+	TopicFrozen = abi.Events["Frozen"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {

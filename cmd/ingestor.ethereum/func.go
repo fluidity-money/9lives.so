@@ -31,6 +31,18 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicOutcomeDecided,
 	events.TopicSharesMinted,
 	events.TopicPayoffActivated,
+	events.TopicDeadlineExtension,
+	events.TopicMarketCreated2,
+	events.TopicCallMade,
+	events.TopicInfraMarketClosed,
+	events.TopicDAOMoneyDistributed,
+	events.TopicCommitted,
+	events.TopicCommitmentRevealed,
+	events.TopicCampaignEscaped,
+	events.TopicLockedUp,
+	events.TopicWithdrew,
+	events.TopicSlashed,
+	events.TopicFrozen,
 }
 
 // Entry function, using the database to determine if polling should be
@@ -38,6 +50,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 // exclusively websockets.
 func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, c *ethclient.Client, db *gorm.DB) {
 	factoryAddr := ethCommon.HexToAddress(config.FactoryAddress)
+	infraMarketAddr := ethCommon.HexToAddress(config.InfraMarketAddress)
 	IngestPolling(
 		f,
 		c,
@@ -45,6 +58,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 		ingestorPagination,
 		pollWait,
 		factoryAddr,
+		infraMarketAddr,
 	)
 }
 
@@ -52,7 +66,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 // receive log updates. Checks the database first to determine where the
 // last point is before continuing. Assumes ethclient is HTTP.
 // Uses the IngestBlockRange function to do all the lifting.
-func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress ethCommon.Address) {
+func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress, infraMarketAddress ethCommon.Address) {
 	if ingestorPagination <= 0 {
 		panic("bad ingestor pagination")
 	}
@@ -72,6 +86,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 			c,
 			db,
 			factoryAddress,
+			infraMarketAddress,
 			from,
 			to,
 		)
@@ -87,7 +102,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 // funciton to write records found to the database. Assumes the ethclient
 // provided is a HTTP client. Also updates the underlying last block it
 // saw into the database checkpoints. Fatals if something goes wrong.
-func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr ethCommon.Address, from, to uint64) {
+func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr, infraMarket ethCommon.Address, from, to uint64) {
 	latestBlockNo, err := c.BlockNumber(context.Background())
 	if err != nil {
 		setup.Exitf("failed to get latest block number: %v", err)
@@ -104,10 +119,10 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 		biggestBlockNo := from
 		var (
 			hasChanged bool
-			err error
+			err        error
 		)
 		for _, l := range logs {
-			if hasChanged, err = handleLog(db, factoryAddr, l); err != nil {
+			if hasChanged, err = handleLog(db, factoryAddr, infraMarket, l); err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
 			biggestBlockNo = max(l.BlockNumber, biggestBlockNo)
@@ -131,9 +146,10 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 	}
 }
 
-func handleLog(db *gorm.DB, factoryAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
+func handleLog(db *gorm.DB, factoryAddr, infraMarketAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
 	return handleLogCallback(
 		factoryAddr,
+		infraMarketAddr,
 		l,
 		func(blockHash, txHash, addr string) error {
 			// Track this address as a trading contract.
@@ -149,7 +165,7 @@ func handleLog(db *gorm.DB, factoryAddr ethCommon.Address, l ethTypes.Log) (bool
 		},
 	)
 }
-func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
+func handleLogCallback(factoryAddr, infraMarketAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
 	var topic1, topic2, topic3 ethCommon.Hash
 	topic0 := l.Topics[0]
 	if len(l.Topics) > 1 {
@@ -200,7 +216,10 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 		err   error
 		table string
 	)
-	isFactory := factoryAddr == emitterAddr
+	var (
+		isFactory     = factoryAddr == emitterAddr
+		isInfraMarket = infraMarketAddr == emitterAddr
+	)
 	switch topic0 {
 	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
@@ -228,6 +247,54 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 		a, err = events.UnpackPayoffActivated(topic1, topic2, topic3, data)
 		table = "ninelives_events_payoff_activated"
 		logEvent("PayoffActivated")
+	case events.TopicDeadlineExtension:
+		a, err = events.UnpackDeadlineExtension(topic1, topic2)
+		table = "ninelives_events_deadline_extension"
+		logEvent("DeadlineExtension")
+	case events.TopicMarketCreated2:
+		a, err = events.UnpackMarketCreated2(topic1, topic2, topic3, data)
+		table = "ninelives_events_market_created2"
+		logEvent("MarketCreated2")
+	case events.TopicCallMade:
+		a, err = events.UnpackCallMade(topic1, topic2, topic3)
+		table = "ninelives_events_call_made"
+		logEvent("CallMade")
+	case events.TopicInfraMarketClosed:
+		a, err = events.UnpackInfraMarketClosed(topic1, topic2, topic3)
+		table = "ninelives_events_infra_market_closed"
+		logEvent("InfraMarketClosed")
+	case events.TopicDAOMoneyDistributed:
+		a, err = events.UnpackDAOMoneyDistributed(topic1, topic2, topic3)
+		table = "ninelives_events_dao_money_distributed"
+		logEvent("DAOMoneyDistributed")
+	case events.TopicCommitted:
+		a, err = events.UnpackCommitted(topic1, topic2, topic3)
+		table = "ninelives_events_committed"
+		logEvent("Committed")
+	case events.TopicCommitmentRevealed:
+		a, err = events.UnpackCommitmentRevealed(topic1, topic2, topic3, data)
+		table = "ninelives_events_commitment_revealed"
+		logEvent("CommitmentRevealed")
+	case events.TopicCampaignEscaped:
+		a, err = events.UnpackCampaignEscaped(topic1)
+		table = "ninelives_events_campaign_escaped"
+		logEvent("CampaignEscaped")
+	case events.TopicLockedUp:
+		a, err = events.UnpackLockedUp(topic1, topic2)
+		table = "ninelives_events_locked_up"
+		logEvent("LockedUp")
+	case events.TopicWithdrew:
+		a, err = events.UnpackWithdrew(topic1, topic2)
+		table = "ninelives_events_withdrew"
+		logEvent("Withdrew")
+	case events.TopicSlashed:
+		a, err = events.UnpackSlashed(topic1, topic2, topic3)
+		table = "ninelives_events_slashed"
+		logEvent("Slashed")
+	case events.TopicFrozen:
+		a, err = events.UnpackFrozen(topic1, topic2)
+		table = "ninelives_events_frozen"
+		logEvent("Frozen")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -246,7 +313,7 @@ func handleLogCallback(factoryAddr ethCommon.Address, l ethTypes.Log, cbTrackTra
 	if err != nil {
 		return false, fmt.Errorf("finding trading addr: %v", err)
 	}
-	if !isFactory && !isTradingAddr {
+	if !isFactory && !isTradingAddr && !isInfraMarket {
 		// The submitter was not the factory or the trading contract, we're going to
 		// disregard this event.
 		slog.Info("We disregarded an event that wasn't created by a trading contract",
