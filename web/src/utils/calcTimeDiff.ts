@@ -1,5 +1,5 @@
 // endTime is a millisecond timestamp
-export default function calcTimeDiff(endTime: number) {
+export function calcTimeLeft(endTime: number) {
   const differenceInMs = new Date(endTime).getTime() - Date.now();
   if (0 >= differenceInMs) {
     return {
@@ -25,4 +25,30 @@ export default function calcTimeDiff(endTime: number) {
     minutes,
     seconds,
   };
+}
+export function calcTimePassed(endTime: number) {
+  const differenceInMs = Date.now() - new Date(endTime).getTime();
+  let text = "";
+  let unit = 1000;
+  switch (true) {
+    case 1000 * 60 > differenceInMs:
+      text = `${Math.round(differenceInMs * 1000)} Sec Ago`;
+      unit = 1000;
+      break;
+    case 1000 * 60 * 60 > differenceInMs:
+      text = `${Math.round(differenceInMs / (1000 * 60))} Min Ago`;
+      unit = 1000 * 60;
+      break;
+    case 1000 * 60 * 60 * 24 > differenceInMs:
+      text = `${Math.round(differenceInMs / (1000 * 60 * 60))} Hrs Ago`;
+      unit = 1000 * 60 * 60;
+      break;
+    case 1000 * 60 * 60 * 24 * 30 > differenceInMs:
+      text = `${Math.round(differenceInMs / (1000 * 60 * 60 * 24))} Days Ago`;
+      unit = 1000 * 60 * 60 * 24;
+    case 1000 * 60 * 60 * 24 * 365 > differenceInMs:
+      text = `${Math.round(differenceInMs / (1000 * 60 * 60 * 24 * 30))} Months Ago`;
+      unit = 1000 * 60 * 60 * 24 * 30;
+  }
+  return { text, unit };
 }

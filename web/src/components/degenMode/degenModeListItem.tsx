@@ -1,7 +1,9 @@
+import useTimePassed from "@/hooks/useTimePassed";
 import { Action } from "@/types";
 import { combineClass } from "@/utils/combineClass";
 import Image from "next/image";
 export default function DegenModeListItem({ data }: { data: Action }) {
+  const timePassed = useTimePassed(new Date(data.timestamp).getTime());
   const typeColorBgClass =
     data.type === "buy"
       ? "bg-9green"
@@ -32,7 +34,7 @@ export default function DegenModeListItem({ data }: { data: Action }) {
           <div className="flex items-center justify-between">
             <span className="font-chicago text-xs">{data.campaignName}</span>
             <span className="font-geneva text-[10px] uppercase text-gray-500">
-              {data.timestamp}
+              {timePassed}
             </span>
           </div>
           <div className="flex items-center justify-between">
