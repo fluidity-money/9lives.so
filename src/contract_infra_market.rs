@@ -417,6 +417,7 @@ impl StorageInfraMarket {
         let mut epochs = self.epochs.setter(trading_addr);
         let mut e = epochs.setter(self.cur_epochs.get(trading_addr));
         // This can be called at any time now after the fact for the current epoch.
+        assert_or!(!e.campaign_when_whinged.get().is_zero(), Error::WhingedTimeUnset);
         assert_or!(
             block_timestamp()
                 > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,
@@ -535,6 +536,7 @@ impl StorageInfraMarket {
         let mut epochs = self.epochs.setter(trading_addr);
         let mut e = epochs.setter(epoch_no);
         // This can be called at any time now after the fact for the current epoch.
+        assert_or!(!e.campaign_when_whinged.get().is_zero(), Error::WhingedTimeUnset);
         assert_or!(
             block_timestamp()
                 > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,
