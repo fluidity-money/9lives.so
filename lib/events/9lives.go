@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"math/big"
+	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 
@@ -18,7 +19,7 @@ var abiB []byte
 var abi, _ = ethAbi.JSON(bytes.NewReader(abiB))
 
 var (
-	TopicNewTrading2      = abi.Events["NewTrading2"].ID
+	TopicNewTrading2     = abi.Events["NewTrading2"].ID
 	TopicOutcomeCreated  = abi.Events["OutcomeCreated"].ID
 	TopicOutcomeDecided  = abi.Events["OutcomeDecided"].ID
 	TopicSharesMinted    = abi.Events["SharesMinted"].ID
@@ -99,6 +100,13 @@ func UnpackPayoffActivated(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*ev
 		Spender:       hashToAddr(topic3),
 		Recipient:     events.AddressFromString(recipient.String()),
 		FusdcReceived: events.NumberFromBig(fusdcReceived),
+	}, nil
+}
+
+func UnpackDeadlineExtension(topic1, topic2 ethCommon.Hash) (*events.EventDeadlineExtension, error) {
+	return &events.EventDeadlineExtension{
+		TimeBefore: time.Unix(hashToNumber(topic1).Int64(), 0),
+		TimeAfter:  time.Unix(hashToNumber(topic2).Int64(), 0),
 	}, nil
 }
 

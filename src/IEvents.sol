@@ -55,21 +55,16 @@ interface IEvents {
 
     event MarketCreated2(
         address indexed incentiveSender,
-        address indexed tradingAddr
+        address indexed tradingAddr,
+        bytes32 desc,
+        uint64 launchTs,
+        uint64 callDeadline
     );
 
     event CallMade(
         address indexed tradingAddr,
         bytes8 indexed winner,
         address indexed incentiveRecipient
-    );
-
-    event UserPredicted(
-        address indexed trading,
-        address indexed predictor,
-        uint256 indexed tokenAmount,
-        uint256 powerAmount,
-        bytes8 outcome
     );
 
     event InfraMarketClosed(

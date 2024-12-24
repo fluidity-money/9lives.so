@@ -83,6 +83,9 @@ func NumberFromBig(x *big.Int) Number {
 func (n Number) String() string {
 	return n.i.String()
 }
+func (n Number) Int64() int64 {
+	return n.i.Int64()
+}
 func (n Number) Value() (sqlDriver.Value, error) {
 	return n.String(), nil
 }
