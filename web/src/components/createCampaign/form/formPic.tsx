@@ -71,7 +71,7 @@ export default function CreateCampaignFormPicture({
               <span className="font-chicago text-xs">Upload Here</span>
             </div>
             <p className="font-geneva text-[10px] uppercase">
-              Formats: GIF, PNG, JPG, JPEG.
+              Formats: GIF, PNG, JPG, JPEG (1:1)
             </p>
           </>
         )}

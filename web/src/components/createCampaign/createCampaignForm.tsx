@@ -30,9 +30,25 @@ export function onFileChange(
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => {
-    setFunc(reader.result?.toString());
+    const img = new Image();
+    img.src = reader.result as string;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const size = Math.min(img.width, img.height);
+      canvas.width = size;
+      canvas.height = size;
+
+      const xOffset = (img.width - size) / 2;
+      const yOffset = (img.height - size) / 2;
+
+      ctx.drawImage(img, xOffset, yOffset, size, size, 0, 0, size, size);
+      setFunc(canvas.toDataURL());
+    };
   };
-  reader.readAsDataURL(file!);
+  reader.readAsDataURL(file);
 }
 export default function CreateCampaignForm() {
   const { create } = useCreate();
