@@ -46,7 +46,7 @@ pub const INCENTIVE_AMT_CLOSE: U256 = U256::from_limbs([100000, 0, 0, 0]);
 pub const INCENTIVE_AMT_SWEEP: U256 = U256::from_limbs([300000, 0, 0, 0]);
 
 // Amount that we take as bond for calling. $2 fUSDC.
-pub const BOND_FOR_CALL: U256 = U256::from_limbs([1e2 as u64, 0, 0, 0]);
+pub const BOND_FOR_CALL: U256 = U256::from_limbs([2e6 as u64, 0, 0, 0]);
 
 // Amount that we take as bond for whinging. $7 fUSDC.
-pub const BOND_FOR_WHINGE: U256 = U256::from_limbs([1e7 as u64, 0, 0, 0]);
+pub const BOND_FOR_WHINGE: U256 = U256::from_limbs([7e6 as u64, 0, 0, 0]);
