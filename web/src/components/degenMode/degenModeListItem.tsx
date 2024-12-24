@@ -1,3 +1,4 @@
+"use client";
 import useTimePassed from "@/hooks/useTimePassed";
 import { Action } from "@/types";
 import { combineClass } from "@/utils/combineClass";
@@ -15,7 +16,7 @@ export default function DegenModeListItem({ data }: { data: Action }) {
     <Link href={`/campaign/${data.campaignId}`}>
       <div
         className={combineClass(
-          "relative rounded-[2px] border border-9black bg-white shadow-9degen",
+          "relative cursor-pointer rounded-[2px] border border-9black bg-white shadow-9degen",
         )}
       >
         <div

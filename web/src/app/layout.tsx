@@ -11,6 +11,7 @@ import CustomToaster from "@/components/customToaster";
 import { getCachedCampaigns } from "@/serverData/getCampaigns";
 import { getCachedTotalUserCount } from "@/serverData/getTotalUserCount";
 import CookieBanner from "@/components/cookieBanner";
+import DegenModeList from "@/components/degenMode/degenModeList";
 
 const chicago = localFont({
   src: [
@@ -71,11 +72,12 @@ export default async function RootLayout({
         arial.variable,
       ])}
     >
-      <body className="flex min-h-screen flex-col items-center bg-9layer">
+      <body className="flex min-h-screen flex-col bg-9layer">
         <Providers initialData={{ campaigns, totalUserCount }}>
           <Header />
-          <main className="mx-auto flex max-w-screen-xl flex-1 p-4 md:w-[1280px]">
-            {children}
+          <main className="flex flex-1 gap-2">
+            <div className="flex-1 p-4">{children}</div>
+            <DegenModeList />
           </main>
           <Footer />
         </Providers>

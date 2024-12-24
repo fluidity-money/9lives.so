@@ -4,7 +4,7 @@ import Link from "next/link";
 import HeaderLogo from "./headerLogo";
 import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
 import DisclaimerButton from "./disclaimerButton";
-import DegenMode from "./degenMode";
+import DegenModeButton from "./degenMode/degenModeButton";
 import Clock from "./clock";
 
 export default function Header() {
@@ -22,7 +22,7 @@ export default function Header() {
       <CreateCampaingButton />
       <div className="relative flex items-center">
         <ConnectButton />
-        <DegenMode />
+        <DegenModeButton />
         <Clock />
       </div>
     </header>

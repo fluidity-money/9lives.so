@@ -12,9 +12,6 @@ const config: Config = {
         geneva: ["var(--font-geneva)"],
         arial: ["var(--font-arial)"],
       },
-      height: {
-        "degen-panel": "calc(var(--body-height) - 42px)",
-      },
       backgroundImage: {
         closeIdle: "url('/icons/close.svg')",
         closePressed: "url('/icons/close-pressed.svg')",

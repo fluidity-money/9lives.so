@@ -3,12 +3,12 @@
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import { useEffect } from "react";
 import { setTag, setUser } from "@sentry/nextjs";
-import { usePathname } from "next/navigation";
+import { useUserStore } from "@/stores/userStore";
 
 export default function ContextInjector() {
   const account = useActiveAccount();
   const chain = useActiveWalletChain();
-  const pathname = usePathname();
+  const degenModeEnabled = useUserStore((state) => state.degenModeEnabled);
 
   useEffect(() => {
     if (account?.address) {
@@ -25,23 +25,11 @@ export default function ContextInjector() {
     setTag("chainId", chain?.id);
   }, [chain?.id]);
 
-  // this var(--body-height) is for degen mode panel
-  // update per page
   useEffect(() => {
-    const updateBodyHeight = () => {
-      const bodyHeight = document.body.offsetHeight;
-      document.documentElement.style.setProperty(
-        "--body-height",
-        `${bodyHeight}px`,
-      );
-    };
-    updateBodyHeight();
-    // Add an event listener for window resize
-    window.addEventListener("resize", updateBodyHeight);
-    return () => {
-      window.removeEventListener("resize", updateBodyHeight);
-    };
-  }, [pathname]);
+    const body = document.getElementsByTagName("body")[0];
+    if (degenModeEnabled) body.classList.add("degen-mode");
+    else body.classList.remove("degen-mode");
+  }, [degenModeEnabled]);
 
   return null;
 }

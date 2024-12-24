@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface UserStore {
+  degenModeEnabled: boolean;
+  toggleDegenMode: () => void;
   watchlist: string[];
   addToWatchlist: (id: string) => void;
   removeFromWatchlist: (id: string) => void;
@@ -9,6 +11,11 @@ interface UserStore {
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
+      degenModeEnabled: false,
+      toggleDegenMode: () =>
+        set(({ degenModeEnabled }) => ({
+          degenModeEnabled: !degenModeEnabled,
+        })),
       watchlist: [],
       addToWatchlist: (id: string) =>
         set(({ watchlist }) => ({
