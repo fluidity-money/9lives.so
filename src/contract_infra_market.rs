@@ -92,12 +92,15 @@ impl StorageInfraMarket {
         // calls sweep for the first time with the correct calldata.
         fusdc_call::take_from_funder_to(incentive_sender, contract_address(), INCENTIVE_AMT_BASE)?;
         // If we experience an overflow, that's not a big deal (we should've been collecting revenue more
-        // frequently).
+        // frequently). From this base amount, we should be able to send INCENTIVE_AMT_DECLARE.
         self.dao_money
             .set(self.dao_money.get() + INCENTIVE_AMT_BASE);
         evm::log(events::MarketCreated2 {
             incentiveSender: incentive_sender,
             tradingAddr: trading_addr,
+            desc,
+            callDeadline: call_deadline_ts,
+            launchTs: launch_ts,
         });
         Ok(INCENTIVE_AMT_BASE)
     }
@@ -128,6 +131,7 @@ impl StorageInfraMarket {
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
         );
+        assert_or!(!winner.is_zero(), Error::BadWinner);
         // Though we allow the outcome to be inconclusive through the predict
         // path, we don't allow someone to set the call to the inconclusive outcome.
         // This should remain unset so someone can come in and activate the escape
@@ -317,15 +321,6 @@ impl StorageInfraMarket {
             are_we_in_predicting_period(e.campaign_when_whinged.get(), block_timestamp())?,
             Error::PredictingNotStarted
         );
-        assert_or!(!commit.is_zero(), Error::NotAllowedZeroCommit);
-        e.commitments.setter(msg_sender()).set(commit);
-        // Indicate to the Lockup contract that the user is unable to withdraw their funds
-        // for the time of this interaction + a week.
-        lockup_call::freeze(
-            self.lockup_addr.get(),
-            msg_sender(),
-            U256::from(block_timestamp() + A_WEEK_SECS),
-        )?;
         // We check to see if the user's Staked ARB is less than what they had at this point.
         // If that's the case, then we don't want to take their donation here, since something
         // is amiss, and we can't slash them properly.
@@ -337,6 +332,15 @@ impl StorageInfraMarket {
             )? <= lockup_call::staked_arb_bal(self.lockup_addr.get(), msg_sender())?,
             Error::StakedArbUnusual
         );
+        assert_or!(!commit.is_zero(), Error::NotAllowedZeroCommit);
+        e.commitments.setter(msg_sender()).set(commit);
+        // Indicate to the Lockup contract that the user is unable to withdraw their funds
+        // for the time of this interaction + a week.
+        lockup_call::freeze(
+            self.lockup_addr.get(),
+            msg_sender(),
+            U256::from(block_timestamp() + A_WEEK_SECS),
+        )?;
         evm::log(events::Committed {
             trading: trading_addr,
             predictor: msg_sender(),
@@ -426,7 +430,7 @@ impl StorageInfraMarket {
                 > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,
             Error::NotInsideSweepingPeriod
         );
-        // We check if the has sweeped flag is enabled by checking who the winner is.
+        // We check if the has declared flag is enabled by checking who the winner is.
         // If it isn't enabled, then we collect every identifier they specified, and
         // if it's identical (or over to accomodate for any decimal point errors),
         // we send them the finders fee, and we set the flag for the winner.
@@ -490,13 +494,13 @@ impl StorageInfraMarket {
         // if someone were to intentionally trigger this behaviour, but the risk for them
         // is the interaction with activating the bond and the costs associated.
         let mut caller_yield_taken = U256::ZERO;
-        if self.dao_money.get() >= INCENTIVE_AMT_SWEEP
+        if self.dao_money.get() >= INCENTIVE_AMT_DECLARE
             && self.cur_epochs.get(trading_addr).is_zero()
         {
             self.dao_money
-                .set(self.dao_money.get() - INCENTIVE_AMT_SWEEP);
-            fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_SWEEP)?;
-            caller_yield_taken += INCENTIVE_AMT_SWEEP;
+                .set(self.dao_money.get() - INCENTIVE_AMT_DECLARE);
+            fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_DECLARE)?;
+            caller_yield_taken += INCENTIVE_AMT_DECLARE;
         }
         // We need to check if the arb staked is 0, and if it is, then we need to reset
         // to the beginning after the sweep period has passed.
@@ -531,6 +535,11 @@ impl StorageInfraMarket {
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
         );
+        // Make sure the caller isn't using this for themselves for a bizarre reason.
+        assert_or!(
+            victim_addr != msg_sender() && victim_addr != fee_recipient_addr,
+            Error::BadVictim
+        );
         // Make sure that this sweeping is taking place after the epoch has passed.
         assert_or!(
             self.cur_epochs.get(trading_addr) >= epoch_no,
@@ -543,6 +552,7 @@ impl StorageInfraMarket {
             !e.campaign_when_whinged.get().is_zero(),
             Error::WhingedTimeUnset
         );
+        assert_or!(e.campaign_winner_set.get(), Error::WinnerUnset);
         assert_or!(
             block_timestamp()
                 > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,

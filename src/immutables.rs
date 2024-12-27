@@ -22,7 +22,7 @@ macro_rules! env_addr {
             pub const $name: Address = Address::new([<$name _BYTES>]);
         }
         #[cfg(feature = "testing")]
-        pub const $name: Address = Address::new(testing_addrs::$default);
+        pub const $name: Address = testing_addrs::$default;
     };
 }
 
@@ -40,13 +40,13 @@ env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
 env_addr!(DAO_ADDR, "SPN_DAO_ADDR", DAO);
 
 #[cfg(feature = "testing")]
-pub const TESTING_SHARE_ADDR: Address = Address::new(testing_addrs::SHARE);
+pub const TESTING_SHARE_ADDR: Address = testing_addrs::SHARE;
 
 #[cfg(feature = "testing")]
-pub const TESTING_LOCKUP_CONTRACT_ADDR: Address = Address::new(testing_addrs::LOCKUP_CONTRACT);
+pub const TESTING_LOCKUP_CONTRACT_ADDR: Address = testing_addrs::LOCKUP_CONTRACT;
 
 #[cfg(feature = "testing")]
-pub const TESTING_LOCKUP_TOKEN_ADDR: Address = Address::new(testing_addrs::LOCKUP_TOKEN);
+pub const TESTING_LOCKUP_TOKEN_ADDR: Address = testing_addrs::LOCKUP_TOKEN;
 
 // Scaled amount to use for drawing down funds on request based on a
 // percentage.

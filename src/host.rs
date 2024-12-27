@@ -16,7 +16,7 @@ thread_local! {
 }
 
 // Helpful memory of the contract address of the currently executing contract.
-pub const CONTRACT_ADDRESS: Address = Address::new(testing_addrs::CONTRACT);
+pub const CONTRACT_ADDRESS: Address = testing_addrs::CONTRACT;
 
 unsafe fn read_word(key: *const u8) -> Word {
     let mut res = Word::default();
@@ -119,9 +119,13 @@ pub fn get_contract_address() -> Address {
     CONTRACT_ADDRESS
 }
 
+pub fn clear_storage() {
+    STORAGE.with(|s| s.borrow_mut().clear());
+}
+
 #[allow(dead_code)]
 pub fn with_contract<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {
-    STORAGE.with(|s| s.borrow_mut().clear());
+    clear_storage();
     set_msg_sender(Address::from(testing_addrs::MSG_SENDER));
     set_block_timestamp(0);
     f(&mut P::new(U256::ZERO, 0))

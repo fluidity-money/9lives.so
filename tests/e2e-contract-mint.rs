@@ -32,7 +32,8 @@ fn test_e2e_mint() {
         assert_eq!(c.outcome_shares.get(outcome_2), U256::from(1e6));
         // To the contract after fee taking, this will be 5.7.
         let value = U256::from(1e6) * U256::from(6);
-        let fee = U256::from(300000);
+        // Take 7% from the amount (this is the fee).
+        let fee = (value * U256::from(70)) / U256::from(1000);
         assert_eq!(
             should_spend!(FUSDC_ADDR, {msg_sender() => value},
                 c.mint_test(outcome_1, value, msg_sender())

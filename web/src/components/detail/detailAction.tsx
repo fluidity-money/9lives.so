@@ -183,7 +183,11 @@ export default function DetailCall2Action({
           // rel="noopener,noreferrer"
           className="contents"
         >
-          <Button size={"medium"} className={"flex-1"}>
+          <Button
+            size={"medium"}
+            className={"flex-1"}
+            disabled={shouldStopAction}
+          >
             <div className="flex items-center justify-center gap-1">
               <span className="font-chicago text-sm uppercase">
                 Trade Position
@@ -200,7 +204,6 @@ export default function DetailCall2Action({
         >
           <Button
             size={"medium"}
-            disabled={shouldStopAction}
             className={"flex-1"}
           >
             <div className="flex items-center justify-center gap-1">

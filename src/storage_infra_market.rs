@@ -153,7 +153,7 @@ impl std::fmt::Debug for StorageInfraMarket {
     }
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub fn strat_storage_infra_market() -> impl proptest::prelude::Strategy<Value = StorageInfraMarket>
 {
     use crate::{

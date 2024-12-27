@@ -26,24 +26,34 @@ Base Amount:      100% (3 FUSDC)
     - Sweep:      50%  (0.3 FUSDC)
 */
 
-// Incentive amount to take from users who create markets (for the infra
-// market). $3 fUSDC.
-pub const INCENTIVE_AMT_BASE: U256 = U256::from_limbs([3000000, 0, 0, 0]);
-
 // Share of the incentive amount that we take for Fluidity Labs
 // operations.
-pub const INCENTIVE_AMT_MODERATION: U256 = U256::from_limbs([2000000, 0, 0, 0]);
+const INCENTIVE_AMT_MODERATION_INT: u64 = 2000000;
+pub const INCENTIVE_AMT_MODERATION: U256 =
+    U256::from_limbs([INCENTIVE_AMT_MODERATION_INT, 0, 0, 0]);
 
 // Share of the amount for activating the call function for the first
 // time.
-pub const INCENTIVE_AMT_CALL: U256 = U256::from_limbs([600000, 0, 0, 0]);
+const INCENTIVE_AMT_CALL_INT: u64 = 600000;
+pub const INCENTIVE_AMT_CALL: U256 = U256::from_limbs([INCENTIVE_AMT_CALL_INT, 0, 0, 0]);
 
 // Share of the amount for calling the close function after someone has
 // called and the whinge period has ended.
-pub const INCENTIVE_AMT_CLOSE: U256 = U256::from_limbs([100000, 0, 0, 0]);
+const INCENTIVE_AMT_CLOSE_INT: u64 = 100000;
+pub const INCENTIVE_AMT_CLOSE: U256 = U256::from_limbs([INCENTIVE_AMT_CLOSE_INT, 0, 0, 0]);
 
-// Amount that's sent to incentive callers of the sweep function.
-pub const INCENTIVE_AMT_SWEEP: U256 = U256::from_limbs([300000, 0, 0, 0]);
+// Amount that's sent to incentive callers of the declare function.
+const INCENTIVE_AMT_DECLARE_INT: u64 = 300000;
+pub const INCENTIVE_AMT_DECLARE: U256 = U256::from_limbs([INCENTIVE_AMT_DECLARE_INT, 0, 0, 0]);
+
+// Incentive amount to take from users who create markets (for the infra
+// market). $3 fUSDC.
+pub const INCENTIVE_AMT_BASE: U256 = U256::from_limbs([
+    INCENTIVE_AMT_MODERATION_INT + INCENTIVE_AMT_CALL_INT + INCENTIVE_AMT_CLOSE_INT + INCENTIVE_AMT_DECLARE_INT,
+    0,
+    0,
+    0,
+]);
 
 // Amount that we take as bond for calling. $2 fUSDC.
 pub const BOND_FOR_CALL: U256 = U256::from_limbs([2e6 as u64, 0, 0, 0]);

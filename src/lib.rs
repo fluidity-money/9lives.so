@@ -21,7 +21,7 @@ mod wasm_proxy;
 
 pub mod calldata;
 
-mod testing_addrs;
+pub mod testing_addrs;
 
 pub mod utils;
 

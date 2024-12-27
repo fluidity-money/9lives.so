@@ -8,11 +8,12 @@ use crate::{
     decimal::u256_to_decimal,
     error::{rename_addr, Error},
     immutables,
-    utils::{contract_address},
+    utils::contract_address,
 };
 
 thread_local! {
-    static BALANCES: RefCell<HashMap<Address, HashMap<Address, U256>>> = RefCell::new(HashMap::new());
+    static BALANCES: RefCell<HashMap<Address, HashMap<Address, U256>>> =
+        RefCell::new(HashMap::new());
 }
 
 #[macro_export]
@@ -28,6 +29,33 @@ macro_rules! should_spend {
             || { $func }
         ).unwrap()
     };
+}
+
+#[macro_export]
+macro_rules! should_spend_fusdc {
+    ($args:tt, $func:expr) => {
+        $crate::should_spend!($crate::immutables::FUSDC_ADDR, $args, $func)
+    };
+}
+
+#[macro_export]
+macro_rules! should_spend_fusdc_sender {
+    ($amt:expr, $func:expr) => {
+        $crate::should_spend_fusdc!(
+            {msg_sender() => $amt},
+            $func
+        )
+    }
+}
+
+#[macro_export]
+macro_rules! should_spend_fusdc_contract {
+    ($amt:expr, $func:expr) => {
+        $crate::should_spend_fusdc!(
+            {$crate::utils::contract_address() => $amt},
+            $func
+        )
+    }
 }
 
 fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {

@@ -4,214 +4,147 @@ use proptest::prelude::*;
 
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
 
-use arrayvec::ArrayVec;
-
 use lib9lives::{
     error::{panic_guard, Error},
     fees::*,
-    host::{set_msg_sender, ts_add_time, with_contract},
+    host::{set_block_timestamp, ts_add_time, with_contract},
     immutables::FUSDC_ADDR,
-    should_spend,
-    utils::{block_timestamp, msg_sender},
-    StorageInfraMarket,
+    interactions_clear_after, panic_guard_eq, should_spend, should_spend_fusdc_contract,
+    should_spend_fusdc_sender, strat_storage_infra_market,
+    testing_addrs::*,
+    fusdc_call,
+    utils::{block_timestamp, msg_sender, strat_address_not_empty, strat_fixed_bytes},
 };
 
-#[test]
-fn test_infra_market_call_close_only_happy_path() {
-    // Simple situation, someone creates a infra market, and during its
-    // optimistic stage someone calls it. It's not whinged at, and it calls
-    // predict without issue. The caller gets their small amount.
-    use lib9lives::storage_infra_market::StorageInfraMarket;
-    with_contract::<_, StorageInfraMarket, _>(|c| {
-        c.enabled.set(true);
-        c.factory_addr.set(msg_sender());
-        let trading = Address::from([1u8; 20]);
-        let winner = fixed_bytes!("0541d76af67ad076");
-        assert_eq!(
-            should_spend!(
-                FUSDC_ADDR,
-                {msg_sender() => INCENTIVE_AMT_BASE},
-                c.register(
-                    trading,
-                    msg_sender(),
-                    FixedBytes::<32>::from([1u8; 32]),
-                    block_timestamp() + 100,
-                    u64::MAX
-                )
-            ),
-            INCENTIVE_AMT_BASE,
-        );
-        ts_add_time(150);
-        c.call(trading, winner, msg_sender()).unwrap();
-        // We're currently in day 1, the WHINGING PERIOD. This should
-        // last for 2 days.
-        // Prevent us from indisciminantly panicking (and unwinding) so we can check
-        // the return statuses here.
-        panic_guard(|| {
-            // Now we wait the period. Let's try to call different things
-            // while this is happening that shouldn't run otherwise.
-            // We should not be able to call call again:
-            assert_eq!(
-                c.call(trading, winner, msg_sender()).unwrap_err(),
-                Error::CampaignAlreadyCalled
-            );
-            // We should not be able to call predict yet:
-            assert_eq!(
-                c.predict(trading, FixedBytes::<32>::ZERO).unwrap_err(),
-                Error::WhingedTimeUnset
-            );
-            // We should not be able to call sweep yet:
-            assert_eq!(
-                c.sweep(trading, U256::ZERO, msg_sender(), msg_sender())
-                    .unwrap_err(),
-                Error::WhingedTimeUnset
-            );
-            // We should not be able to call close yet:
-            assert_eq!(
-                c.close(trading, msg_sender()).unwrap_err(),
-                Error::NotAfterWhinging
-            );
-        });
-        let two_days = 172800;
-        ts_add_time(two_days + 10);
-        // No-one called claim! It's time for us to call close.
-        assert_eq!(c.close(trading, msg_sender()).unwrap(), INCENTIVE_AMT_CLOSE);
-        // Let's confirm that the winner was set correctly.
-        assert_eq!(c.winner(trading).unwrap(), winner);
-    })
-}
-
-#[test]
-fn test_unhappy_call_whinge_claim_no_bettors_path() {
-    // In this situation, someone calls the call code, but unfortunately,
-    // someone whinges about it. During the 7 day period that follows, NO-ONE
-    // predicts using the contract, strangely enough. This should entitle someone
-    // to call the sweep function, but only to discover that there is no-one to claim.
-    // If that's the case, they should be able to submit the zero address, and collect
-    // a small dividend, and the whinger's preferred choice is what's used.
-    use lib9lives::storage_infra_market::StorageInfraMarket;
-    with_contract::<_, StorageInfraMarket, _>(|c| {
-        c.enabled.set(true);
-        c.factory_addr.set(msg_sender());
-        let trading = Address::from([1u8; 20]);
-        let winner = fixed_bytes!("0541d76af67ad076");
-        assert_eq!(
-            should_spend!(
-                FUSDC_ADDR,
-                {msg_sender() => INCENTIVE_AMT_BASE},
-                c.register(
-                    trading,
-                    msg_sender(),
-                    FixedBytes::<32>::from([1u8; 32]),
-                    block_timestamp() + 100,
-                    u64::MAX
-                )
-            ),
-            INCENTIVE_AMT_BASE,
-        );
-        ts_add_time(150);
-        c.call(trading, winner, msg_sender()).unwrap();
-        // We're currently in day 1, the WHINGING PERIOD. This should
-        // last for 2 days.
-        let preferred_outcome_whinger = fixed_bytes!("7777777777777777");
-        assert_eq!(
-            should_spend!(
-                FUSDC_ADDR,
-                { msg_sender() => BOND_FOR_WHINGE },
-                c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
-            ),
-            BOND_FOR_WHINGE
-        );
-        panic_guard(|| {
-            assert_eq!(
-                c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
-                    .unwrap_err(),
-                Error::AlreadyWhinged
-            );
-        });
-        // We are now 5 days in. The SWEEPING PERIOD.
-        let five_days = 432000;
-        ts_add_time(five_days);
-        // Since no-one predicted, it must be the whinger that was correct!
-        assert_eq!(
-            c.sweep(
-                trading,
-                U256::ZERO,
-                Address::ZERO,
-                Address::ZERO
-            )
-            .unwrap(),
-            INCENTIVE_AMT_SWEEP
-        );
-        // We can't call this twice and get anything unless we're liquidating someone!
-        assert_eq!(
-            c.sweep(
-                trading,
-                U256::ZERO,
-                Address::ZERO,
-                Address::ZERO,
-            )
-            .unwrap(),
-            U256::ZERO
-        );
-        assert_eq!(preferred_outcome_whinger, c.winner(trading).unwrap());
-    })
-}
-
-/*
 proptest! {
     #[test]
-    fn test_unhappy_call_whinge_claim_different_from_caller(
-        predictions in proptest::collection::vec(
-            (
-                strat_addr(),     // The address of this sender to use.
-                any::<u64>(),     // The random number seed.
-                strat_u256(),     // The balance this predictor has.
-                prop_oneof![1, 2] // The outcome that they bet on.
-            ),
-            0..1000
-        )
+    fn test_infra_market_call_close_only_happy_path(
+        trading_addr in strat_address_not_empty(),
+        desc in strat_fixed_bytes::<32>(),
+        call_deadline in block_timestamp()+100..100000,
+        outcome_1 in strat_fixed_bytes::<8>(),
+        outcome_2 in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_infra_market()
     ) {
-        // Someone creates a market, it's called by someone, the whinger
-        // disagrees, the predictors agree in line with the caller.
-        with_contract::<_, StorageInfraMarket, _>(|c| {
-            c.enabled.set(true);
-            c.factory_addr.set(msg_sender());
-            let trading = Address::from([1u8; 20]);
-            let winner = fixed_bytes!("0541d76af67ad076");
-            should_spend!(
-                FUSDC_ADDR,
-                {msg_sender() => INCENTIVE_AMT_BASE},
-                c.register(
-                    trading,
-                    msg_sender(),
-                    FixedBytes::<32>::from([1u8; 32]),
-                    block_timestamp() + 100,
-                    u64::MAX
-                )
-            );
-            ts_add_time(150);
-            c.call(trading, winner, msg_sender()).unwrap();
-            // We're currently in day 1, the WHINGING PERIOD. This should
-            // last for 2 days.
-            let preferred_outcome_whinger = fixed_bytes!("7777777777777777");
-            should_spend!(
-                FUSDC_ADDR,
-                {msg_sender() => BOND_FOR_WHINGE},
-                c.whinge(trading, preferred_outcome_whinger, Address::ZERO)
-            );
-            // We are now a day after the whinge, so we're in the PREDICTING PERIOD.
-            for (sender_addr, seed, bal, outcome) in predictions {
-                set_msg_sender(sender_addr);
-                should_spend!(
-                    TESTING_LOCKUP_ADDR,
-                    {msg_sender() => bal},
+        // Simple situation, someone creates a infra market, and during its
+        // optimistic stage someone calls it. It's not whinged at, and it calls
+        // predict without issue. The caller gets their small amount.
+        c.enabled.set(true);
+        c.factory_addr.set(IVAN);
+        set_block_timestamp(0);
+        // Interactions should handle teardown for us.
+        interactions_clear_after! {
+            IVAN => {
+                should_spend_fusdc_sender!(
+                    INCENTIVE_AMT_BASE,
+                    c.register(trading_addr, IVAN, desc, block_timestamp() + 1, call_deadline)
                 );
+                ts_add_time(block_timestamp() + 150);
+                should_spend_fusdc_sender!(
+                    BOND_FOR_CALL,
+                    c.call(trading_addr, outcome_1, msg_sender())
+                );
+            },
+            ERIK => {
+                panic_guard(|| {
+                    // Now we wait the period. Let's try to call different things
+                    // while this is happening that shouldn't run otherwise.
+                    // We should not be able to call call again:
+                    assert_eq!(
+                        c.call(trading_addr, outcome_1, msg_sender()).unwrap_err(),
+                        Error::CampaignAlreadyCalled
+                    );
+                    // We should not be able to call predict yet:
+                    assert_eq!(
+                        c.predict(trading_addr, FixedBytes::<32>::ZERO).unwrap_err(),
+                        Error::WhingedTimeUnset
+                    );
+                    // We should not be able to call sweep yet:
+                    assert_eq!(
+                        c.sweep(trading_addr, U256::ZERO, IVAN, msg_sender())
+                            .unwrap_err(),
+                        Error::WhingedTimeUnset
+                    );
+                    // We should not be able to call close yet:
+                    assert_eq!(
+                        c.close(trading_addr, msg_sender()).unwrap_err(),
+                        Error::NotAfterWhinging
+                    );
+                });
             }
-            // We are now 5 days in. The SWEEPING PERIOD.
-            let five_days = 432000;
-            ts_add_time(five_days);
-        })
+        }
+    }
+
+    #[test]
+    fn test_unhappy_call_whinge_claim_no_bettors_path(
+        trading_addr in strat_address_not_empty(),
+        desc in strat_fixed_bytes::<32>(),
+        call_deadline in block_timestamp()+100..100000,
+        outcome_1 in strat_fixed_bytes::<8>(),
+        outcome_2 in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_infra_market()
+    ) {
+        // In this situation, someone calls the call code, but unfortunately,
+        // someone whinges about it. During the 7 day period that follows, NO-ONE
+        // predicts using the contract, strangely enough. This should entitle someone
+        // to call the declare function.
+        c.enabled.set(true);
+        c.factory_addr.set(IVAN);
+        set_block_timestamp(0);
+        // Interactions should handle teardown for us.
+        interactions_clear_after! {
+            IVAN => {
+                // Ivan sets up the contract, creates the market, waits a little, then calls.
+                should_spend_fusdc_sender!(
+                    INCENTIVE_AMT_BASE,
+                    c.register(trading_addr, IVAN, desc, block_timestamp() + 1, call_deadline)
+                );
+                // Since we haven't waited the amount of time before we can call,
+                // this should refuse to be used.
+                panic_guard_eq!(
+                    c.call(trading_addr, outcome_1, msg_sender()),
+                    Error::NotInsideCallingPeriod
+                );
+                ts_add_time(block_timestamp() + 10);
+                should_spend_fusdc_sender!(
+                    BOND_FOR_CALL,
+                    c.call(trading_addr, outcome_2, IVAN)
+                );
+            },
+            ERIK => {
+                // Erik sees that no-one has predicted, and he calls whinge.
+                should_spend_fusdc_sender!(
+                    BOND_FOR_WHINGE,
+                    c.whinge(trading_addr, outcome_1, ERIK)
+                );
+                // And he waits the amount of time for four days to go by.
+                ts_add_time(60 * 60 * 24 * 4 + 1);
+            },
+            IVAN => {
+                // Ivan finally goes to call declare, and in doing so, sees his amount
+                // go to Erik.
+                should_spend_fusdc_contract!(
+                    BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_DECLARE,
+                    {
+                        c.declare(trading_addr, vec![outcome_1, outcome_2], IVAN).unwrap();
+                        // Erik was correct, so he should receive the bond for calling.
+                        assert_eq!(
+                            BOND_FOR_WHINGE + BOND_FOR_CALL,
+                            fusdc_call::balance_of(ERIK).unwrap()
+                        );
+                        // Ivan was incorrect, but he should still receive the declare amount.
+                        assert_eq!(
+                            INCENTIVE_AMT_DECLARE,
+                            fusdc_call::balance_of(IVAN).unwrap()
+                        );
+                        Ok(())
+                    }
+                );
+                panic_guard_eq!(
+                    c.declare(trading_addr, vec![outcome_1, outcome_2], IVAN),
+                    Error::CampaignWinnerSet
+                )
+            }
+        }
     }
 }
-*/
