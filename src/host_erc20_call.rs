@@ -58,7 +58,7 @@ macro_rules! should_spend_fusdc_contract {
     }
 }
 
-fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
+pub fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
     BALANCES.with(|b| {
         let mut b = b.borrow_mut();
         let b = match b.get_mut(&addr) {
@@ -76,12 +76,22 @@ fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
     });
 }
 
-fn test_reset_bal(addr: Address, recipient: Address) {
+pub fn test_reset_bal(addr: Address, recipient: Address) {
     BALANCES.with(|b| -> Option<()> {
         let mut b = b.borrow_mut();
         b.get_mut(&addr)?.insert(recipient, U256::ZERO);
         Some(())
     });
+}
+
+#[macro_export]
+macro_rules! give_then_reset_token {
+    ($token:expr, $addr:expr, $amt:expr, $func:expr) => {
+        $crate::host_erc20_call::test_give_tokens($token, $addr, $amt);
+        let v = $func;
+        $crate::host_erc20_call::test_reset_bal($token, $addr);
+        v.unwrap()
+    }
 }
 
 /// Go through each token that we have as defaults, and set their balances to max, then at

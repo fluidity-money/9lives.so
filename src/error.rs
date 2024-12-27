@@ -413,6 +413,9 @@ pub enum Error {
 
     /// The whinger can't whinge about what was called with the same agrument.
     CantWhingeCalled,
+
+    // We're not able to declare since we're not past the period for predicting!
+    NotReadyToDeclare,
 }
 
 #[cfg(not(target_arch = "wasm32"))]

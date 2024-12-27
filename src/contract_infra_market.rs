@@ -218,21 +218,14 @@ impl StorageInfraMarket {
         // Send the caller of this function their incentive.
         // We need to prevent people from calling this unless they're at epoch
         // 0 so we don't see abuse somehow.
-        if self.dao_money.get() >= INCENTIVE_AMT_CLOSE && is_zero_epoch {
-            self.dao_money
-                .set(self.dao_money.get() - INCENTIVE_AMT_CLOSE);
-            fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_CLOSE)?;
-        }
-        fusdc_call::transfer(e.campaign_who_called.get(), BOND_FOR_CALL)?;
-        // Send the user who originally called this outcome their
-        // incentive for doing so, and for being right.
         let mut fees_earned = U256::ZERO;
         if self.dao_money.get() >= INCENTIVE_AMT_CLOSE && is_zero_epoch {
             self.dao_money
                 .set(self.dao_money.get() - INCENTIVE_AMT_CLOSE);
-            fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_CLOSE)?;
             fees_earned += INCENTIVE_AMT_CLOSE;
+            fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_CLOSE)?;
         }
+        fusdc_call::transfer(e.campaign_who_called.get(), BOND_FOR_CALL)?;
         // Send the next round of incentive amounts if we're able to do
         // so (the DAO hasn't overstepped their power here). As a backstep
         // against griefing (so we defer to Good Samaritans calling this contract,
@@ -241,6 +234,7 @@ impl StorageInfraMarket {
         {
             self.dao_money
                 .set(self.dao_money.get() - INCENTIVE_AMT_CALL);
+            fees_earned += INCENTIVE_AMT_CALL;
             fusdc_call::transfer(e.campaign_who_called.get(), INCENTIVE_AMT_CALL)?;
         }
         let campaign_what_called = e.campaign_what_called.get();
@@ -440,7 +434,7 @@ impl StorageInfraMarket {
         assert_or!(
             block_timestamp()
                 > u64::from_le_bytes(e.campaign_when_whinged.get().to_le_bytes()) + FOUR_DAYS,
-            Error::NotInsideSweepingPeriod
+            Error::NotReadyToDeclare
         );
         // We check if the has declared flag is enabled by checking who the winner is.
         // If it isn't enabled, then we collect every identifier they specified, and
@@ -513,6 +507,15 @@ impl StorageInfraMarket {
                 .set(self.dao_money.get() - INCENTIVE_AMT_DECLARE);
             fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_DECLARE)?;
             caller_yield_taken += INCENTIVE_AMT_DECLARE;
+        }
+        // If we're in the zero epoch, we should send the caller of this function
+        // the amount that the closer would get.
+        if self.dao_money.get() >= INCENTIVE_AMT_CLOSE
+            && self.cur_epochs.get(trading_addr).is_zero()
+        {
+            self.dao_money
+                .set(self.dao_money.get() - INCENTIVE_AMT_CLOSE);
+            fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_CLOSE)?;
         }
         // We need to check if the arb staked is 0, and if it is, then we need to reset
         // to the beginning after the sweep period has passed.

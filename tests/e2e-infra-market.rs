@@ -7,14 +7,16 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
 use lib9lives::{
     error::{panic_guard, Error},
     fees::*,
-    fusdc_call,
+    fusdc_call, give_then_reset_token,
     host::{set_block_timestamp, ts_add_time, with_contract},
+    host_erc20_call::test_give_tokens,
     immutables::FUSDC_ADDR,
     interactions_clear_after, panic_guard_eq, proxy, should_spend, should_spend_fusdc_contract,
     should_spend_fusdc_sender, strat_storage_infra_market,
     testing_addrs::*,
     utils::{
         block_timestamp, msg_sender, strat_address_not_empty, strat_fixed_bytes, strat_large_u256,
+        strat_small_u256,
     },
 };
 
@@ -126,7 +128,7 @@ proptest! {
                 // Ivan finally goes to call declare, and in doing so, sees his amount
                 // go to Erik.
                 should_spend_fusdc_contract!(
-                    BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_DECLARE,
+                    BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE,
                     {
                         c.declare(trading_addr, vec![outcome_1, outcome_2], IVAN).unwrap();
                         // Erik was correct, so he should receive the bond for calling.
@@ -157,10 +159,10 @@ proptest! {
         call_deadline in block_timestamp()+100..100000,
         outcome_preferred_ivan in strat_fixed_bytes::<8>(),
         outcome_preferred_erik in strat_fixed_bytes::<8>(),
+        outcome_garbage in proptest::collection::vec(strat_fixed_bytes::<8>(), 1..1000),
         eli_seed in strat_large_u256(),
         ogous_seed in strat_large_u256(),
-        eli_bal in strat_small_u256(),
-        ogous_bal in strat_small_u256(),
+        paxia_seed in strat_large_u256(),
         mut c in strat_storage_infra_market()
     ) {
         // Create a infra market. Ivan calls it, Erik disputes it with a whinge,
@@ -171,6 +173,9 @@ proptest! {
         c.enabled.set(true);
         c.factory_addr.set(IVAN);
         set_block_timestamp(0);
+        let eli_amt = U256::from(10000);
+        let ogous_amt = U256::from(100);
+        let paxia_amt = U256::from(200);
         interactions_clear_after! {
             IVAN => {
                 // Ivan sets up the contract, creates the market, waits a little, then calls.
@@ -198,27 +203,73 @@ proptest! {
             },
             ELI => {
                 // Eli commits his preference for Ivan's suggested outcome.
-                c.predict(trading_addr, proxy::create_identifier(&[
-                    ELI.as_slice(),
-                    outcome_preferred_ivan.as_slice(),
-                    eli_seed.as_le_slice()
-                ]))
-                    .unwrap();
+                give_then_reset_token!(
+                    LOCKUP_TOKEN,
+                    ELI,
+                    eli_amt,
+                    c.predict(trading_addr, proxy::create_identifier(&[
+                        ELI.as_slice(),
+                        outcome_preferred_ivan.as_slice(),
+                        eli_seed.as_le_slice()
+                    ]))
+                );
             },
             OGOUS => {
-
+                // Ogous commits his preference for Erik's suggested outcome.
+                give_then_reset_token!(
+                    LOCKUP_TOKEN,
+                    OGOUS,
+                    ogous_amt,
+                    c.predict(trading_addr, proxy::create_identifier(&[
+                        OGOUS.as_slice(),
+                        outcome_preferred_erik.as_slice(),
+                        ogous_seed.as_le_slice()
+                    ]))
+                );
             },
             PAXIA => {
-
+                // Paxia commits his preference for Erik's suggested outcome.
+                give_then_reset_token!(
+                    LOCKUP_TOKEN,
+                    PAXIA,
+                    paxia_amt,
+                    c.predict(trading_addr, proxy::create_identifier(&[
+                        PAXIA.as_slice(),
+                        outcome_preferred_erik.as_slice(),
+                        paxia_seed.as_le_slice()
+                    ]))
+                );
             },
             ERIK => {
-
+                // In submitting the outcomes, Erik submits a few garbage
+                // outcomes. It should be that this won't matter.
+                // First, Erik waits 4 days.
+                ts_add_time(24 * 60 * 60 * 4 + 1);
+                let mut outcomes = outcome_garbage.clone();
+                outcomes.push(outcome_preferred_ivan);
+                outcomes.push(outcome_preferred_erik);
+                should_spend_fusdc_contract!(
+                    BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CALL,
+                    {
+                        c.declare(trading_addr, outcomes, ERIK).unwrap();
+                        // Ivan was correct, so he should receive the bond for calling, the
+                        // calling incentive amount, and the closing incentive amount.
+                        assert_eq!(
+                            BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_CALL,
+                            fusdc_call::balance_of(IVAN).unwrap()
+                        );
+                        // Erik was incorrect, but he should receive the close and declare incentive.
+                        assert_eq!(
+                            INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CLOSE,
+                            fusdc_call::balance_of(ERIK).unwrap()
+                        );
+                        Ok(())
+                    }
+                );
             },
             YOEL => {
-
             },
             ELI => {
-
             }
         }
     }
