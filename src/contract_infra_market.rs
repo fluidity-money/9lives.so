@@ -282,6 +282,11 @@ impl StorageInfraMarket {
             are_we_in_whinging_period(e.campaign_when_called.get(), block_timestamp())?,
             Error::NotInWhingingPeriod
         );
+        // We can't allow people to whinge the same outcome as call.
+        assert_or!(
+            e.campaign_what_called.get() != preferred_outcome,
+            Error::CantWhingeCalled
+        );
         // We only allow the inconclusive statement to be made in the predict path.
         assert_or!(!preferred_outcome.is_zero(), Error::PreferredOutcomeIsZero);
         assert_or!(
@@ -325,11 +330,18 @@ impl StorageInfraMarket {
         // If that's the case, then we don't want to take their donation here, since something
         // is amiss, and we can't slash them properly.
         assert_or!(
-            nineliveslockedarb_call::get_past_votes(
-                self.locked_arb_token_addr.get(),
-                msg_sender(),
-                U256::from(self.campaign_call_begins.get(trading_addr)),
-            )? <= lockup_call::staked_arb_bal(self.lockup_addr.get(), msg_sender())?,
+            {
+                let cur_bal = nineliveslockedarb_call::balance_of(
+                    self.locked_arb_token_addr.get(),
+                    msg_sender(),
+                )?;
+                let past_bal = nineliveslockedarb_call::get_past_votes(
+                    self.locked_arb_token_addr.get(),
+                    msg_sender(),
+                    U256::from(self.campaign_call_begins.get(trading_addr)),
+                )?;
+                cur_bal >= past_bal
+            },
             Error::StakedArbUnusual
         );
         assert_or!(!commit.is_zero(), Error::NotAllowedZeroCommit);

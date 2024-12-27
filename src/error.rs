@@ -410,6 +410,9 @@ pub enum Error {
 
     /// Bad winner!
     BadWinner,
+
+    /// The whinger can't whinge about what was called with the same agrument.
+    CantWhingeCalled,
 }
 
 #[cfg(not(target_arch = "wasm32"))]

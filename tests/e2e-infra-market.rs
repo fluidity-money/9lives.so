@@ -7,13 +7,15 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
 use lib9lives::{
     error::{panic_guard, Error},
     fees::*,
+    fusdc_call,
     host::{set_block_timestamp, ts_add_time, with_contract},
     immutables::FUSDC_ADDR,
-    interactions_clear_after, panic_guard_eq, should_spend, should_spend_fusdc_contract,
+    interactions_clear_after, panic_guard_eq, proxy, should_spend, should_spend_fusdc_contract,
     should_spend_fusdc_sender, strat_storage_infra_market,
     testing_addrs::*,
-    fusdc_call,
-    utils::{block_timestamp, msg_sender, strat_address_not_empty, strat_fixed_bytes},
+    utils::{
+        block_timestamp, msg_sender, strat_address_not_empty, strat_fixed_bytes, strat_large_u256,
+    },
 };
 
 proptest! {
@@ -144,6 +146,79 @@ proptest! {
                     c.declare(trading_addr, vec![outcome_1, outcome_2], IVAN),
                     Error::CampaignWinnerSet
                 )
+            }
+        }
+    }
+
+    #[test]
+    fn test_whinge_predict_slash(
+        trading_addr in strat_address_not_empty(),
+        desc in strat_fixed_bytes::<32>(),
+        call_deadline in block_timestamp()+100..100000,
+        outcome_preferred_ivan in strat_fixed_bytes::<8>(),
+        outcome_preferred_erik in strat_fixed_bytes::<8>(),
+        eli_seed in strat_large_u256(),
+        ogous_seed in strat_large_u256(),
+        eli_bal in strat_small_u256(),
+        ogous_bal in strat_small_u256(),
+        mut c in strat_storage_infra_market()
+    ) {
+        // Create a infra market. Ivan calls it, Erik disputes it with a whinge,
+        // Eli, Ogous, and Paxia commit. Eventually, they reveal themselves. In
+        // the end, Ivan's preferred outcome wins, and finally, Erik declares it.
+        // Eli bet correctly, so he takes money from Ogous and Paxia after Yoel
+        // calls sweep on Ogous and Paxia by drawing down the pot.
+        c.enabled.set(true);
+        c.factory_addr.set(IVAN);
+        set_block_timestamp(0);
+        interactions_clear_after! {
+            IVAN => {
+                // Ivan sets up the contract, creates the market, waits a little, then calls.
+                should_spend_fusdc_sender!(
+                    INCENTIVE_AMT_BASE,
+                    c.register(trading_addr, IVAN, desc, block_timestamp() + 1, call_deadline)
+                );
+                ts_add_time(block_timestamp() + 10);
+                should_spend_fusdc_sender!(
+                    BOND_FOR_CALL,
+                    c.call(trading_addr, outcome_preferred_ivan, IVAN)
+                );
+            },
+            ERIK => {
+                // Erik disputes the call with a whinge. The first attempt should fail
+                // since the check is that it's the same as the called outcome.
+                panic_guard_eq!(
+                    c.whinge(trading_addr, outcome_preferred_ivan, ERIK),
+                    Error::CantWhingeCalled
+                );
+                should_spend_fusdc_sender!(
+                    BOND_FOR_WHINGE,
+                    c.whinge(trading_addr, outcome_preferred_erik, ERIK)
+                );
+            },
+            ELI => {
+                // Eli commits his preference for Ivan's suggested outcome.
+                c.predict(trading_addr, proxy::create_identifier(&[
+                    ELI.as_slice(),
+                    outcome_preferred_ivan.as_slice(),
+                    eli_seed.as_le_slice()
+                ]))
+                    .unwrap();
+            },
+            OGOUS => {
+
+            },
+            PAXIA => {
+
+            },
+            ERIK => {
+
+            },
+            YOEL => {
+
+            },
+            ELI => {
+
             }
         }
     }

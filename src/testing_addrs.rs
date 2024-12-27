@@ -29,5 +29,7 @@ defaults! {
     IVAN,
     ERIK,
     ELI,
-    OGOUS
+    OGOUS,
+    PAXIA,
+    YOEL
 }

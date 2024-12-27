@@ -68,10 +68,6 @@ impl StorageLockup {
         Ok(amt)
     }
 
-    pub fn staked_arb_bal(&self, addr: Address) -> Result<U256, Error> {
-        erc20_call::balance_of(self.token_addr.get(), addr)
-    }
-
     /// Slash a user by taking this amount from them by burning the token
     /// amount given, sending back the amount that was taken from them.
     /// Reverts if they have less than the amount that was asked for.
@@ -142,9 +138,7 @@ mod test {
             withdraw_recipient in strat_address(),
             slash_victim in strat_address(),
             slash_amt in strat_small_u256(),
-            slash_recipient in strat_address(),
-            freeze_spender in strat_address(),
-            freeze_until in any::<u64>()
+            slash_recipient in strat_address()
         ) {
             c.operator.set(msg_sender());
             c.enable_contract(false).unwrap();
@@ -153,7 +147,6 @@ mod test {
                     c.lockup(lockup_amt, lockup_recipient).unwrap_err(),
                     c.withdraw(withdraw_amt, withdraw_recipient).unwrap_err(),
                     c.slash(slash_victim, slash_amt, slash_recipient).unwrap_err(),
-                    c.freeze(freeze_spender, freeze_until).unwrap_err()
                 ];
                 for (i, f) in res.into_iter().enumerate() {
                     assert_eq!(Error::NotEnabled, f, "{i}");
