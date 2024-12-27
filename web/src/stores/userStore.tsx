@@ -11,7 +11,7 @@ interface UserStore {
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
-      degenModeEnabled: false,
+      degenModeEnabled: true,
       toggleDegenMode: () =>
         set(({ degenModeEnabled }) => ({
           degenModeEnabled: !degenModeEnabled,
