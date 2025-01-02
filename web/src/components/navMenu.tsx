@@ -20,6 +20,11 @@ export default function NavigationMenu() {
       page: "/staking",
       disabled: true,
     },
+    {
+      title: "AI Agents",
+      page: "/ai-agents",
+      disabled: true,
+    },
   ];
 
   return (
