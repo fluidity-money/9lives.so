@@ -58,6 +58,33 @@ macro_rules! should_spend_fusdc_contract {
     }
 }
 
+#[macro_export]
+macro_rules! should_spend_staked_arb {
+    ($args:tt, $func:expr) => {
+        $crate::should_spend!($crate::immutables::STAKED_ARB_ADDR, $args, $func)
+    };
+}
+
+#[macro_export]
+macro_rules! should_spend_staked_arb_sender {
+    ($amt:expr, $func:expr) => {
+        $crate::should_spend_staked_arb!(
+            {msg_sender() => $amt},
+            $func
+        )
+    }
+}
+
+#[macro_export]
+macro_rules! should_spend_staked_arb_contract {
+    ($amt:expr, $func:expr) => {
+        $crate::should_spend_staked_arb!(
+            {$crate::utils::contract_address() => $amt},
+            $func
+        )
+    }
+}
+
 pub fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
     BALANCES.with(|b| {
         let mut b = b.borrow_mut();
@@ -91,7 +118,7 @@ macro_rules! give_then_reset_token {
         let v = $func;
         $crate::host_erc20_call::test_reset_bal($token, $addr);
         v.unwrap()
-    }
+    };
 }
 
 /// Go through each token that we have as defaults, and set their balances to max, then at
@@ -140,7 +167,7 @@ pub fn should_spend<T>(
         test_give_tokens(addr, r, amt)
     }
     let x = f();
-    // Wipe their balances clean before returning (useful for proptest)
+    // Wipe the balances of the spenders.
     for k in spenders.keys() {
         test_reset_bal(addr, *k);
     }
@@ -172,24 +199,25 @@ pub fn transfer_from(
     amount: U256,
 ) -> Result<(), Error> {
     BALANCES
-        .with(|b| -> Option<()> {
+        .with(|b| -> Result<(), U256> {
             let mut b = b.borrow_mut();
-            let b = b.get_mut(&addr)?;
-            let x = b.get(&spender)?;
+            let b = b.get_mut(&addr).ok_or(U256::ZERO)?;
+            let x = b.get(&spender).ok_or(U256::ZERO)?;
             if *x >= amount {
-                b.insert(spender, x - amount)
+                let _ = b.insert(spender, x - amount);
+                Ok(())
             } else {
-                None
-            }?;
-            Some(())
+                Err(*x)
+            }
         })
-        .ok_or(Error::ERC20ErrorTransfer(
+        .map_err(|cur_bal| Error::ERC20ErrorTransfer(
             addr,
             format!(
-                "{} sending {} to {}: no bal",
+                "{} sending {} to {}: bal was {}",
                 rename_addr(spender),
                 rename_amt(addr, amount),
                 rename_addr(recipient),
+                rename_amt(addr, cur_bal)
             )
             .into(),
         ))?;

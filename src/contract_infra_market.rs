@@ -338,6 +338,10 @@ impl StorageInfraMarket {
             },
             Error::StakedArbUnusual
         );
+        assert_or!(
+            e.commitments.get(msg_sender()).is_zero(),
+            Error::AlreadyCommitted
+        );
         assert_or!(!commit.is_zero(), Error::NotAllowedZeroCommit);
         e.commitments.setter(msg_sender()).set(commit);
         // Indicate to the Lockup contract that the user is unable to withdraw their funds
@@ -357,8 +361,8 @@ impl StorageInfraMarket {
 
     pub fn reveal(
         &mut self,
-        committer_addr: Address,
         trading_addr: Address,
+        committer_addr: Address,
         outcome: FixedBytes<8>,
         seed: U256,
     ) -> R<()> {
@@ -377,12 +381,12 @@ impl StorageInfraMarket {
             e.reveals.get(committer_addr).is_zero(),
             Error::AlreadyRevealed
         );
-        let commit = e.commitments.get(trading_addr);
+        let commit = e.commitments.get(committer_addr);
         // We can create the random numb/er the same way that we do it for proxies.
         let hash = proxy::create_identifier(&[
             committer_addr.as_slice(),
             outcome.as_slice(),
-            &seed.to_le_bytes::<32>(),
+            &seed.to_be_bytes::<32>(),
         ]);
         assert_or!(commit == hash, Error::CommitNotTheSame);
         let bal = nineliveslockedarb_call::get_past_votes(
@@ -390,7 +394,22 @@ impl StorageInfraMarket {
             msg_sender(),
             U256::from(self.campaign_call_begins.get(trading_addr)),
         )?;
-        assert_or!(bal > U256::ZERO, Error::ZeroBal);
+        // Extra check to see if the user was slashed in the interim between calling this function.
+        assert_or!(
+            {
+                let cur_bal = nineliveslockedarb_call::balance_of(
+                    self.locked_arb_token_addr.get(),
+                    msg_sender(),
+                )?;
+                let past_bal = nineliveslockedarb_call::get_past_votes(
+                    self.locked_arb_token_addr.get(),
+                    msg_sender(),
+                    U256::from(self.campaign_call_begins.get(trading_addr)),
+                )?;
+                cur_bal >= past_bal
+            },
+            Error::StakedArbUnusual
+        );
         // Overflows aren't likely, since we're taking ARB as the token.
         let global_vested_arb = e.global_vested_arb.get();
         e.global_vested_arb.set(global_vested_arb + bal);
@@ -446,25 +465,36 @@ impl StorageInfraMarket {
         outcomes.sort();
         outcomes.dedup();
         assert_or!(!outcomes.is_empty(), Error::OutcomesEmpty);
-        let mut arb_global = U256::ZERO;
-        let mut current_winner_amt = U256::ZERO;
-        let mut current_winner_id = None;
-        for winner in outcomes {
-            let arb = e.outcome_vested_arb.get(winner);
-            arb_global += arb;
-            // Set the current arb winner to whoever's greatest.
-            if arb > current_winner_amt {
-                current_winner_amt = arb;
-                current_winner_id = Some(winner);
+        let current_winner_id = {
+            let mut lowest_arb = U256::MAX;
+            let mut current_winner_amt = U256::ZERO;
+            let mut arb_acc = U256::ZERO;
+            let mut current_winner_id = None;
+            for winner in outcomes {
+                // To find the winner, we count the ARB invested in each outcome, and if
+                // we find that the lowest amount is greater than the amount outstanding
+                // minus the amount invested, then we assume they supplied the correct
+                // amount.
+                let arb = e.outcome_vested_arb.get(winner);
+                arb_acc += arb;
+                // Set the current arb winner to whoever's greatest.
+                if arb > current_winner_amt {
+                    current_winner_amt = arb;
+                    current_winner_id = Some(winner);
+                }
+                // Set the minimum amount now.
+                if arb < lowest_arb && !arb.is_zero() {
+                    lowest_arb = arb;
+                }
             }
-        }
-        // If the amount that we tracked as ARB is greater than what we
-        // tracked so far, then we know that the user specified the correct
-        // amount.
-        assert_or!(
-            arb_global >= e.global_vested_arb.get(),
-            Error::IncorrectSweepInvocation
-        );
+            // If the least amount of ARB invested is greater than or equal to the
+            // amount remaining, then we know the user supplied the correct amount.
+            assert_or!(
+                lowest_arb >= e.global_vested_arb.get() - arb_acc,
+                Error::IncorrectSweepInvocation
+            );
+            current_winner_id
+        };
         // At this point, if we're not Some with the winner choice here,
         // then we need to default to what the caller provided during the calling
         // stage. This could happen if the liquidity is even across every outcome.
@@ -484,13 +514,23 @@ impl StorageInfraMarket {
         };
         e.campaign_winner.set(voting_power_winner);
         e.campaign_winner_set.set(true);
-        // If the whinger was correct, we owe them their bond + the caller's bond.
         {
-            let bond_amts = BOND_FOR_WHINGE + BOND_FOR_CALL;
+            // We send the caller incentive if we can.
+            let caller_incentive = if self.dao_money.get() >= INCENTIVE_AMT_CALL
+                && self.cur_epochs.get(trading_addr).is_zero()
+            {
+                self.dao_money
+                    .set(self.dao_money.get() - INCENTIVE_AMT_CALL);
+                INCENTIVE_AMT_CALL
+            } else {
+                U256::ZERO
+            };
+            let bond_amts = BOND_FOR_WHINGE + BOND_FOR_CALL + caller_incentive;
+            // If the whinger was correct, we owe them their bond + the caller's bond + the caller's incentive.
             if voting_power_winner == e.campaign_whinger_preferred_winner.get() {
                 fusdc_call::transfer(e.campaign_who_whinged.get(), bond_amts)?;
             }
-            // If the caller was correct, we owe them their bond + the whinger's bond.
+            // If the caller was correct, we owe them their bond + the whinger's bond + the caller's incentive.
             if voting_power_winner == e.campaign_what_called.get() {
                 fusdc_call::transfer(e.campaign_who_called.get(), bond_amts)?;
             }
@@ -595,9 +635,9 @@ impl StorageInfraMarket {
             e.user_vested_arb.get(victim_addr),
             contract_address(),
         )?;
-        //amt / infra fee
-        let amt_fee = ((amt * FEE_SCALING) * FEE_POT_INFRA_PCT) / FEE_SCALING;
-        let amt_no_fee = amt.checked_sub(amt_fee).ok_or(Error::CheckedSubOverflow)?;
+        //amt - (amt * infra fee);
+        let amt_fee = (amt * FEE_POT_INFRA_PCT) / FEE_SCALING;
+        let amt_no_fee = c!(amt.checked_sub(amt_fee).ok_or(Error::CheckedSubOverflow));
         {
             let p = e.redeemable_pot_existing.get();
             e.redeemable_pot_existing

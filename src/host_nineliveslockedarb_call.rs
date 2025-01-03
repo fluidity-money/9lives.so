@@ -30,7 +30,7 @@ macro_rules! should_points {
         $amt: expr,
         $func:expr
     ) => {
-        $crate::host_nineliveslockedarb_call::should_points($addr, $amt, || $func).unwrap()
+        $crate::host_nineliveslockedarb_call::should_points($addr, $amt, || $func)
     };
 }
 

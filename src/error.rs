@@ -8,7 +8,10 @@
 use alloc::{vec, vec::Vec};
 
 #[cfg(not(target_arch = "wasm32"))]
-use crate::{immutables, utils::{contract_address, msg_sender}};
+use crate::{
+    immutables, testing_addrs,
+    utils::{contract_address, msg_sender},
+};
 
 use stylus_sdk::alloy_primitives::{Address, U256};
 
@@ -73,14 +76,14 @@ mod testing {
     macro_rules! panic_guard {
         ($func:expr) => {
             panic_guard(|| $func)
-        }
+        };
     }
 
     #[macro_export]
     macro_rules! panic_guard_eq {
         ($func:expr, $expect:expr) => {
             assert_eq!($expect, $crate::panic_guard!($func).unwrap_err())
-        }
+        };
     }
 }
 
@@ -416,6 +419,9 @@ pub enum Error {
 
     // We're not able to declare since we're not past the period for predicting!
     NotReadyToDeclare,
+
+    // The caller has already declared their commitment!
+    AlreadyCommitted,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -425,6 +431,15 @@ pub(crate) fn rename_addr(v: Address) -> String {
         immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
         immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
         immutables::DAO_ADDR => "testing dao".to_string(),
+        testing_addrs::SHARE => "share".to_string(),
+        testing_addrs::LOCKUP_CONTRACT => "lockup contract".to_string(),
+        testing_addrs::LOCKUP_TOKEN => "lockup token".to_string(),
+        testing_addrs::IVAN => "ivan".to_string(),
+        testing_addrs::ERIK => "erik".to_string(),
+        testing_addrs::ELI => "eli".to_string(),
+        testing_addrs::OGOUS => "ogous".to_string(),
+        testing_addrs::PAXIA => "paxia".to_string(),
+        testing_addrs::YOEL => "yoel".to_string(),
         _ => {
             if v == msg_sender() {
                 "msg sender".to_string()

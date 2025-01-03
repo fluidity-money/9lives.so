@@ -2,21 +2,19 @@
 
 use proptest::prelude::*;
 
-use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{FixedBytes, U256};
 
 use lib9lives::{
     error::{panic_guard, Error},
     fees::*,
     fusdc_call, give_then_reset_token,
-    host::{set_block_timestamp, ts_add_time, with_contract},
-    host_erc20_call::test_give_tokens,
-    immutables::FUSDC_ADDR,
-    interactions_clear_after, panic_guard_eq, proxy, should_spend, should_spend_fusdc_contract,
-    should_spend_fusdc_sender, strat_storage_infra_market,
+    host::{set_block_timestamp, ts_add_time},
+    interactions_clear_after, nineliveslockedarb_call, panic_guard_eq, proxy, should_points,
+    should_spend_fusdc_contract, should_spend_fusdc_sender, should_spend_staked_arb,
+    strat_storage_infra_market,
     testing_addrs::*,
     utils::{
         block_timestamp, msg_sender, strat_address_not_empty, strat_fixed_bytes, strat_large_u256,
-        strat_small_u256,
     },
 };
 
@@ -27,7 +25,6 @@ proptest! {
         desc in strat_fixed_bytes::<32>(),
         call_deadline in block_timestamp()+100..100000,
         outcome_1 in strat_fixed_bytes::<8>(),
-        outcome_2 in strat_fixed_bytes::<8>(),
         mut c in strat_storage_infra_market()
     ) {
         // Simple situation, someone creates a infra market, and during its
@@ -159,7 +156,10 @@ proptest! {
         call_deadline in block_timestamp()+100..100000,
         outcome_preferred_ivan in strat_fixed_bytes::<8>(),
         outcome_preferred_erik in strat_fixed_bytes::<8>(),
-        outcome_garbage in proptest::collection::vec(strat_fixed_bytes::<8>(), 1..1000),
+        outcome_garbage in proptest::collection::vec(strat_fixed_bytes::<8>(), 1..10),
+        eli_amt in (5000 + 9000)..1000000,
+        ogous_amt in 100..5000,
+        paxia_amt in 500..9000,
         eli_seed in strat_large_u256(),
         ogous_seed in strat_large_u256(),
         paxia_seed in strat_large_u256(),
@@ -171,11 +171,18 @@ proptest! {
         // Eli bet correctly, so he takes money from Ogous and Paxia after Yoel
         // calls sweep on Ogous and Paxia by drawing down the pot.
         c.enabled.set(true);
+        c.locked_arb_token_addr.set(LOCKUP_TOKEN);
         c.factory_addr.set(IVAN);
         set_block_timestamp(0);
-        let eli_amt = U256::from(10000);
-        let ogous_amt = U256::from(100);
-        let paxia_amt = U256::from(200);
+        let ogous_amt_fee = U256::from((ogous_amt as f64 * 0.02) as u64);
+        let paxia_amt_fee = U256::from((paxia_amt as f64 * 0.02) as u64);
+        let eli_amt_fee = U256::from((eli_amt as f64 * 0.02) as u64);
+        let ogous_amt = U256::from(ogous_amt);
+        let paxia_amt = U256::from(paxia_amt);
+        let eli_amt = U256::from(eli_amt);
+        let ogous_amt_no_fee = ogous_amt - ogous_amt_fee;
+        let paxia_amt_no_fee = paxia_amt - paxia_amt_fee;
+        let eli_amt_no_fee = eli_amt - eli_amt_fee;
         interactions_clear_after! {
             IVAN => {
                 // Ivan sets up the contract, creates the market, waits a little, then calls.
@@ -203,62 +210,89 @@ proptest! {
             },
             ELI => {
                 // Eli commits his preference for Ivan's suggested outcome.
-                give_then_reset_token!(
-                    LOCKUP_TOKEN,
+                give_then_reset_token!(LOCKUP_TOKEN, ELI, eli_amt, should_points!(
                     ELI,
                     eli_amt,
                     c.predict(trading_addr, proxy::create_identifier(&[
                         ELI.as_slice(),
                         outcome_preferred_ivan.as_slice(),
-                        eli_seed.as_le_slice()
+                        &eli_seed.to_be_bytes::<32>()
                     ]))
-                );
+                ));
             },
             OGOUS => {
                 // Ogous commits his preference for Erik's suggested outcome.
-                give_then_reset_token!(
-                    LOCKUP_TOKEN,
+                give_then_reset_token!(LOCKUP_TOKEN, OGOUS, ogous_amt, should_points!(
                     OGOUS,
                     ogous_amt,
                     c.predict(trading_addr, proxy::create_identifier(&[
                         OGOUS.as_slice(),
                         outcome_preferred_erik.as_slice(),
-                        ogous_seed.as_le_slice()
+                        &ogous_seed.to_be_bytes::<32>()
                     ]))
-                );
+                ));
             },
             PAXIA => {
                 // Paxia commits his preference for Erik's suggested outcome.
-                give_then_reset_token!(
-                    LOCKUP_TOKEN,
+                give_then_reset_token!(LOCKUP_TOKEN, PAXIA, paxia_amt, should_points!(
                     PAXIA,
                     paxia_amt,
                     c.predict(trading_addr, proxy::create_identifier(&[
                         PAXIA.as_slice(),
                         outcome_preferred_erik.as_slice(),
-                        paxia_seed.as_le_slice()
+                        &paxia_seed.to_be_bytes::<32>()
                     ]))
-                );
+                ));
+            },
+            ELI => {
+                // After waiting some time, it's needed to reveal the commitments. We wait 2 days.
+                ts_add_time(24 * 60 * 60 * 2 + 1);
+                give_then_reset_token!(LOCKUP_TOKEN, ELI, eli_amt, should_points!(ELI, eli_amt, c.reveal(
+                    trading_addr,
+                    ELI,
+                    outcome_preferred_ivan,
+                    eli_seed
+                )));
+            },
+            OGOUS => {
+                give_then_reset_token!(LOCKUP_TOKEN, OGOUS, ogous_amt, should_points!(OGOUS, ogous_amt, c.reveal(
+                    trading_addr,
+                    OGOUS,
+                    outcome_preferred_erik,
+                    ogous_seed
+                )));
+            },
+            PAXIA => {
+                give_then_reset_token!(LOCKUP_TOKEN, PAXIA, paxia_amt, should_points!(PAXIA, paxia_amt, c.reveal(
+                    trading_addr,
+                    PAXIA,
+                    outcome_preferred_erik,
+                    paxia_seed
+                )));
             },
             ERIK => {
                 // In submitting the outcomes, Erik submits a few garbage
                 // outcomes. It should be that this won't matter.
-                // First, Erik waits 4 days.
-                ts_add_time(24 * 60 * 60 * 4 + 1);
+                // First, Erik waits 2 days.
+                ts_add_time(24 * 60 * 60 * 2 + 1);
                 let mut outcomes = outcome_garbage.clone();
                 outcomes.push(outcome_preferred_ivan);
                 outcomes.push(outcome_preferred_erik);
                 should_spend_fusdc_contract!(
-                    BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CALL,
+                    BOND_FOR_WHINGE +
+                    BOND_FOR_CALL +
+                    INCENTIVE_AMT_CLOSE +
+                    INCENTIVE_AMT_DECLARE +
+                    INCENTIVE_AMT_CALL,
                     {
                         c.declare(trading_addr, outcomes, ERIK).unwrap();
-                        // Ivan was correct, so he should receive the bond for calling, the
+                        // Ivan (the caller) was correct, so he should receive the bond for calling, the
                         // calling incentive amount, and the closing incentive amount.
                         assert_eq!(
                             BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_CALL,
                             fusdc_call::balance_of(IVAN).unwrap()
                         );
-                        // Erik was incorrect, but he should receive the close and declare incentive.
+                        // Erik (the whinger) was incorrect, but he should receive the close and declare incentive.
                         assert_eq!(
                             INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CLOSE,
                             fusdc_call::balance_of(ERIK).unwrap()
@@ -268,8 +302,56 @@ proptest! {
                 );
             },
             YOEL => {
+                // Yoel calls sweep on Ogous and Paxia, and collects some compensation
+                // for doing so.
+                should_spend_staked_arb!(
+                    // We also set this here so that Yoel and the lockup contract are reset after.
+                    { LOCKUP_CONTRACT => ogous_amt, YOEL => U256::ZERO },
+                    {
+                        assert_eq!(
+                            ogous_amt_fee,
+                            c.sweep(trading_addr, U256::ZERO, OGOUS, YOEL).unwrap()
+                        );
+                        assert_eq!(
+                            U256::ZERO,
+                            nineliveslockedarb_call::balance_of(STAKED_ARB, LOCKUP_CONTRACT).unwrap()
+                        );
+                        assert_eq!(
+                            ogous_amt_fee,
+                            nineliveslockedarb_call::balance_of(STAKED_ARB, YOEL).unwrap()
+                        );
+                        Ok(())
+                    }
+                );
+                should_spend_staked_arb!(
+                    { LOCKUP_CONTRACT => paxia_amt, YOEL => U256::ZERO },
+                    {
+                        c.sweep(trading_addr, U256::ZERO, PAXIA, YOEL).unwrap();
+                        assert_eq!(
+                            U256::ZERO,
+                            nineliveslockedarb_call::balance_of(STAKED_ARB, LOCKUP_CONTRACT).unwrap()
+                        );
+                        assert_eq!(
+                            paxia_amt_fee,
+                            nineliveslockedarb_call::balance_of(STAKED_ARB, YOEL).unwrap()
+                        );
+                        Ok(())
+                    }
+                );
             },
             ELI => {
+                // Eli now draws down the pot.
+                should_spend_staked_arb!(
+                    { LOCKUP_CONTRACT => ogous_amt_no_fee + paxia_amt_no_fee, YOEL => U256::ZERO },
+                    {
+                        c.capture(trading_addr, U256::ZERO, ELI).unwrap();
+                        assert_eq!(
+                            ogous_amt_no_fee + paxia_amt_no_fee,
+                            nineliveslockedarb_call::balance_of(STAKED_ARB, LOCKUP_CONTRACT).unwrap()
+                        );
+                        Ok(())
+                    }
+                );
             }
         }
     }

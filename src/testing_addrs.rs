@@ -33,3 +33,21 @@ defaults! {
     PAXIA,
     YOEL
 }
+
+pub const TESTING_ADDRS: [Address; 15] = [
+    MSG_SENDER,
+    CONTRACT,
+    FUSDC,
+    LONGTAIL,
+    STAKED_ARB,
+    DAO,
+    SHARE,
+    LOCKUP_CONTRACT,
+    LOCKUP_TOKEN,
+    IVAN,
+    ERIK,
+    ELI,
+    OGOUS,
+    PAXIA,
+    YOEL
+];
