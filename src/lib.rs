@@ -47,12 +47,16 @@ pub mod factory_call;
 pub mod host_factory_call;
 pub mod wasm_factory_call;
 
+#[cfg(not(target_arch = "wasm32"))]
 pub mod host_lockup_call;
-pub mod lockup_call;
+#[cfg(target_arch = "wasm32")]
 pub mod wasm_lockup_call;
+pub mod lockup_call;
 
+#[cfg(not(target_arch = "wasm32"))]
 pub mod host_nineliveslockedarb_call;
 pub mod nineliveslockedarb_call;
+#[cfg(target_arch = "wasm32")]
 pub mod wasm_nineliveslockedarb_call;
 
 pub mod host_infra_market_call;
