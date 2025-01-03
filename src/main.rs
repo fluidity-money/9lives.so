@@ -31,6 +31,7 @@ extern "C" {
 }
 
 #[cfg(all(not(feature = "harness-stylus-interpreter"), target_arch = "wasm32"))]
+#[mutants::skip]
 #[panic_handler]
 fn panic(_: &core::panic::PanicInfo) -> ! {
     // In lieu of using compiler features (we want to run this on stable

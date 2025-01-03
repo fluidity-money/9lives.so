@@ -23,7 +23,7 @@ proptest! {
     fn test_infra_market_call_close_only_happy_path(
         trading_addr in strat_address_not_empty(),
         desc in strat_fixed_bytes::<32>(),
-        call_deadline in block_timestamp()+100..100000,
+        call_deadline in block_timestamp()+151..100000,
         outcome_1 in strat_fixed_bytes::<8>(),
         mut c in strat_storage_infra_market()
     ) {
@@ -43,7 +43,13 @@ proptest! {
                 ts_add_time(block_timestamp() + 150);
                 should_spend_fusdc_sender!(
                     BOND_FOR_CALL,
-                    c.call(trading_addr, outcome_1, msg_sender())
+                    {
+                        assert_eq!(
+                            BOND_FOR_CALL,
+                            c.call(trading_addr, outcome_1, msg_sender()).unwrap(),
+                        );
+                        Ok(())
+                    }
                 );
             },
             ERIK => {
@@ -128,14 +134,14 @@ proptest! {
                     BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE,
                     {
                         c.declare(trading_addr, vec![outcome_1, outcome_2], IVAN).unwrap();
-                        // Erik was correct, so he should receive the bond for calling.
+                        // Erik was correct, so he should receive the bond + incentive for calling.
                         assert_eq!(
-                            BOND_FOR_WHINGE + BOND_FOR_CALL,
+                            BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_CALL,
                             fusdc_call::balance_of(ERIK).unwrap()
                         );
-                        // Ivan was incorrect, but he should still receive the declare amount.
+                        // Ivan was incorrect, but he should still receive the declare + close amount.
                         assert_eq!(
-                            INCENTIVE_AMT_DECLARE,
+                            INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CLOSE,
                             fusdc_call::balance_of(IVAN).unwrap()
                         );
                         Ok(())
@@ -176,13 +182,11 @@ proptest! {
         set_block_timestamp(0);
         let ogous_amt_fee = U256::from((ogous_amt as f64 * 0.02) as u64);
         let paxia_amt_fee = U256::from((paxia_amt as f64 * 0.02) as u64);
-        let eli_amt_fee = U256::from((eli_amt as f64 * 0.02) as u64);
         let ogous_amt = U256::from(ogous_amt);
         let paxia_amt = U256::from(paxia_amt);
         let eli_amt = U256::from(eli_amt);
         let ogous_amt_no_fee = ogous_amt - ogous_amt_fee;
         let paxia_amt_no_fee = paxia_amt - paxia_amt_fee;
-        let eli_amt_no_fee = eli_amt - eli_amt_fee;
         interactions_clear_after! {
             IVAN => {
                 // Ivan sets up the contract, creates the market, waits a little, then calls.
@@ -285,16 +289,21 @@ proptest! {
                     INCENTIVE_AMT_DECLARE +
                     INCENTIVE_AMT_CALL,
                     {
-                        c.declare(trading_addr, outcomes, ERIK).unwrap();
-                        // Ivan (the caller) was correct, so he should receive the bond for calling, the
-                        // calling incentive amount, and the closing incentive amount.
+                        let erik_incentive_amt = INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CLOSE;
+                        // Ivan (the caller) was correct, so he should receive the bond for calling and
+                        // calling incentive amount.
+                        assert_eq!(
+                            erik_incentive_amt,
+                            c.declare(trading_addr, outcomes, ERIK).unwrap()
+                        );
                         assert_eq!(
                             BOND_FOR_WHINGE + BOND_FOR_CALL + INCENTIVE_AMT_CALL,
                             fusdc_call::balance_of(IVAN).unwrap()
                         );
-                        // Erik (the whinger) was incorrect, but he should receive the close and declare incentive.
+                        // Erik (the whinger) was incorrect, but he should receive the close and
+                        // declare incentive.
                         assert_eq!(
-                            INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CLOSE,
+                            erik_incentive_amt,
                             fusdc_call::balance_of(ERIK).unwrap()
                         );
                         Ok(())

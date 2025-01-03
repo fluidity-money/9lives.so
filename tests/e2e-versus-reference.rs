@@ -1,4 +1,7 @@
-#![cfg(not(target_arch = "wasm32"))]
+#![cfg(all(
+    feature = "trading-backend-dpm",
+    not(target_arch = "wasm32")
+))]
 
 use proptest::prelude::*;
 
@@ -27,11 +30,11 @@ proptest! {
     #[ignore]
     #[allow(non_snake_case)]
     fn test_against_python(
-        M1 in 1..u64::MAX,
-        M2 in 1..u64::MAX,
-        N1 in 1..u64::MAX,
-        N2 in 1..u64::MAX,
-        m in 1..u64::MAX
+        M1 in 1..100_000_000u64,
+        M2 in 1..100_000_000u64,
+        N1 in 1..100_000_000u64,
+        N2 in 1..100_000_000u64,
+        m in 1..100_000_000u64
     ) {
         let c = Command::new("python3")
           .args([

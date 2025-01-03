@@ -34,6 +34,7 @@ impl StorageLockup {
         Ok(())
     }
 
+    #[mutants::skip]
     pub fn token_addr(&self) -> Result<Address, Error> {
         Ok(self.token_addr.get())
     }

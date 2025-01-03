@@ -37,6 +37,12 @@ pub enum Uintsize {
     Large,
 }
 
+/// Simple strategy that generates values up to a million.
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub fn strat_tiny_u256() -> impl proptest::prelude::Strategy<Value = U256> {
+    (0..1_000_000).prop_map(|x| U256::from(x))
+}
+
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub fn strat_fixed_bytes_sizeable<const N: usize>(
     u: Uintsize,

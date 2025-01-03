@@ -1,20 +1,25 @@
-
-
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes, U256},
+    alloy_sol_types::{sol, SolCall},
     call::RawCall,
 };
 
 use crate::{
     calldata::{unpack_bool_safe, unpack_u256},
-    erc20_cd::{pack_balance_of, pack_permit, pack_transfer, pack_transfer_from},
     error::Error,
 };
+
+sol! {
+    function transfer(address recipient, uint256 value);
+    function transferFrom(address spender, address recipient, uint256 amount);
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s);
+    function balanceOf(address spender);
+}
 
 pub fn transfer(addr: Address, recipient: Address, value: U256) -> Result<(), Error> {
     unpack_bool_safe(
         &RawCall::new()
-            .call(addr, &pack_transfer(recipient, value))
+            .call(addr, &transferCall { recipient, value }.abi_encode())
             .map_err(|b| Error::ERC20ErrorTransfer(addr, b))?,
     )
 }
@@ -27,7 +32,15 @@ pub fn transfer_from(
 ) -> Result<(), Error> {
     unpack_bool_safe(
         &RawCall::new()
-            .call(addr, &pack_transfer_from(spender, recipient, amount))
+            .call(
+                addr,
+                &transferFromCall {
+                    spender,
+                    recipient,
+                    amount,
+                }
+                .abi_encode(),
+            )
             .map_err(|_| Error::ERC20ErrorTransferFrom(addr, spender, recipient, amount))?,
     )
 }
@@ -45,7 +58,19 @@ pub fn permit(
 ) -> Result<(), Error> {
     unpack_bool_safe(
         &RawCall::new()
-            .call(addr, &pack_permit(owner, spender, value, deadline, v, r, s))
+            .call(
+                addr,
+                &permitCall {
+                    owner,
+                    spender,
+                    value,
+                    deadline,
+                    v,
+                    r,
+                    s,
+                }
+                .abi_encode(),
+            )
             .map_err(|b| Error::ERC20ErrorPermit(addr, b))?,
     )
 }
@@ -53,7 +78,7 @@ pub fn permit(
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
     unpack_u256(
         &RawCall::new_static()
-            .call(addr, &pack_balance_of(spender))
+            .call(addr, &balanceOfCall { spender }.abi_encode())
             .map_err(|b| Error::ERC20ErrorBalanceOf(addr, b))?,
     )
     .ok_or(Error::ERC20UnableToUnpack)

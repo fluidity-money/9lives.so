@@ -53,7 +53,6 @@ define_period_checker!(
 
 pub const TWO_DAYS: u64 = 2 * 24 * 60 * 60;
 pub const FOUR_DAYS: u64 = 4 * 24 * 60 * 60;
-pub const SIX_DAYS: u64 = 6 * 24 * 60 * 60;
 
 pub fn are_we_after_whinging_period(whinged_ts: U64, ts: u64) -> Result<bool, Error> {
     if whinged_ts.is_zero() {

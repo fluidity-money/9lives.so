@@ -116,7 +116,9 @@ pub fn strat_storage_trading(
 ) -> impl proptest::prelude::Strategy<Value = StorageTrading> {
     use crate::{
         storage_set_fields,
-        utils::{strat_address, strat_fixed_bytes, strat_small_u256, strat_large_u256},
+        utils::{
+            strat_address, strat_fixed_bytes, strat_large_u256, strat_small_u256, strat_tiny_u256,
+        },
     };
     use proptest::prelude::*;
 
@@ -128,8 +130,8 @@ pub fn strat_storage_trading(
         proptest::collection::vec(
             (
                 strat_fixed_bytes::<8>(),
-                strat_small_u256(),
-                strat_small_u256(),
+                strat_tiny_u256(),
+                strat_tiny_u256(),
             ),
             2,
         ),

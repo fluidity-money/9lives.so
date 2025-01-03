@@ -4,7 +4,6 @@ use crate::{
     erc20_call,
     error::Error,
     testing_addrs::{LOCKUP_CONTRACT, STAKED_ARB},
-    utils::contract_address,
 };
 
 pub fn freeze(_addr: Address, _spender: Address, _until: U256) -> Result<(), Error> {

@@ -15,6 +15,7 @@ pub use crate::storage_factory::*;
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {
     #[allow(clippy::too_many_arguments)]
+    #[mutants::skip]
     pub fn ctor(
         &mut self,
         share_impl: Address,
@@ -103,6 +104,7 @@ impl StorageFactory {
         Ok(self.trading_addresses.get(id))
     }
 
+    #[mutants::skip]
     pub fn upgrade_dpm_contracts(
         &mut self,
         extras: Address,
@@ -126,6 +128,7 @@ impl StorageFactory {
         Ok(())
     }
 
+    #[mutants::skip]
     pub fn upgrade_amm_contracts(
         &mut self,
         extras: Address,

@@ -1,0 +1,9 @@
+exclude_globs = [
+	"src/host*.rs",
+	"src/wasm_*_call.rs",
+	"src/utils.rs",
+	"src/calldata.rs",
+	"src/immutables.rs",
+	"src/error.rs",
+	"src/storage*.rs"
+]

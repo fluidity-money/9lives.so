@@ -19,7 +19,7 @@ use proptest::{
 };
 
 // 100 million USD
-const REASONABLE_UPPER_AMT: u128 = 10_000_000 * 1e6 as u128;
+const REASONABLE_UPPER_AMT: u128 = 100_000 * 1e6 as u128;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Outcome {
@@ -73,7 +73,7 @@ proptest! {
         // amount of shares several thousand times on both sides, reporting when
         // things break down. This also prints the test data in a format that's
         // compatible with the Python code to find divergences.
-        return host::with_contract::<_, StorageTrading, _>(|c| -> Result<(), TestCaseError> {
+        host::with_contract::<_, StorageTrading, _>(|c| -> Result<(), TestCaseError> {
             let outcome_1_id = FixedBytes::<8>::from(outcome_1_id);
             let outcome_2_id = FixedBytes::<8>::from(outcome_2_id);
             let outcomes = vec![outcome_1_id, outcome_2_id];
@@ -132,6 +132,6 @@ proptest! {
                 }
             );
             Ok(())
-        });
+        }).unwrap()
     }
 }

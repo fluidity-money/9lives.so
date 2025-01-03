@@ -128,6 +128,10 @@ impl StorageInfraMarket {
             Error::NotInsideCallingPeriod
         );
         assert_or!(
+            self.campaign_call_deadline.get(trading_addr) > U64::from(block_timestamp()),
+            Error::PastCallingDeadline
+        );
+        assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
         );
@@ -137,11 +141,6 @@ impl StorageInfraMarket {
         // This should remain unset so someone can come in and activate the escape
         // hatch if it's needed.
         assert_or!(!winner.is_zero(), Error::InconclusiveAnswerToCall);
-        // We're in bad shape, we need to assume someone will call the escape hatch function.
-        assert_or!(
-            self.campaign_call_deadline.get(trading_addr) > U64::from(block_timestamp()),
-            Error::PastCallingDeadline
-        );
         // Get the current epoch. If the current winner is 0, and we
         // haven't exceeded the deadline for calling, then we assume that
         // a reset has taken place, and we increment the nonce.
@@ -514,6 +513,8 @@ impl StorageInfraMarket {
         };
         e.campaign_winner.set(voting_power_winner);
         e.campaign_winner_set.set(true);
+        // This is the amount returned to the caller after running this code.
+        let mut caller_yield_taken = U256::ZERO;
         {
             // We send the caller incentive if we can.
             let caller_incentive = if self.dao_money.get() >= INCENTIVE_AMT_CALL
@@ -539,7 +540,6 @@ impl StorageInfraMarket {
         // case in the happy path (we're on nonce 0). This is susceptible to griefing
         // if someone were to intentionally trigger this behaviour, but the risk for them
         // is the interaction with activating the bond and the costs associated.
-        let mut caller_yield_taken = U256::ZERO;
         if self.dao_money.get() >= INCENTIVE_AMT_DECLARE
             && self.cur_epochs.get(trading_addr).is_zero()
         {
@@ -556,6 +556,7 @@ impl StorageInfraMarket {
             self.dao_money
                 .set(self.dao_money.get() - INCENTIVE_AMT_CLOSE);
             fusdc_call::transfer(fee_recipient, INCENTIVE_AMT_CLOSE)?;
+            caller_yield_taken += INCENTIVE_AMT_CLOSE;
         }
         // We need to check if the arb staked is 0, and if it is, then we need to reset
         // to the beginning after the sweep period has passed.
@@ -692,7 +693,9 @@ impl StorageInfraMarket {
         } else {
             pot_available
         };
-        erc20_call::transfer(STAKED_ARB_ADDR, fee_recipient, amt_to_send)?;
+        if amt_to_send > U256::ZERO {
+            erc20_call::transfer(STAKED_ARB_ADDR, fee_recipient, amt_to_send)?;
+        }
         Ok(amt_to_send)
     }
 

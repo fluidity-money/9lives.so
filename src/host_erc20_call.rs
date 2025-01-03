@@ -7,7 +7,7 @@ use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 use crate::{
     decimal::u256_to_decimal,
     error::{rename_addr, Error},
-    immutables,
+    immutables, testing_addrs,
     utils::contract_address,
 };
 
@@ -121,22 +121,6 @@ macro_rules! give_then_reset_token {
     };
 }
 
-/// Go through each token that we have as defaults, and set their balances to max, then at
-/// the end, go through them again, and set them to 0. This is only useful for situations
-/// where you might want to induce an error.
-pub fn max_bals_guard<T>(spender: Address, f: impl FnOnce() -> T) -> T {
-    use immutables::*;
-    let tokens = [FUSDC_ADDR, STAKED_ARB_ADDR, TESTING_SHARE_ADDR];
-    for t in tokens {
-        test_give_tokens(t, spender, U256::MAX);
-    }
-    let x = f();
-    for t in tokens {
-        test_reset_bal(t, spender);
-    }
-    x
-}
-
 fn safe_print(x: U256, d: u8) -> String {
     match x {
         U256::MAX => "max".to_string(),
@@ -145,11 +129,12 @@ fn safe_print(x: U256, d: u8) -> String {
 }
 
 fn rename_amt(a: Address, v: U256) -> String {
-    use crate::immutables::*;
     match a {
-        FUSDC_ADDR => format!("$fusdc {}", safe_print(v, FUSDC_DECIMALS)),
-        TESTING_SHARE_ADDR => format!("$share {}", safe_print(v, SHARE_DECIMALS)),
-        STAKED_ARB_ADDR => format!("ARB{}", safe_print(v, STAKED_ARB_DECIMALS)),
+        immutables::FUSDC_ADDR => format!("$fusdc {}", safe_print(v, immutables::FUSDC_DECIMALS)),
+        testing_addrs::SHARE => format!("$share {}", safe_print(v, immutables::SHARE_DECIMALS)),
+        testing_addrs::STAKED_ARB => {
+            format!("ARB{}", safe_print(v, immutables::STAKED_ARB_DECIMALS))
+        }
         _ => format!("unknown token amt {}", v),
     }
 }
@@ -210,17 +195,19 @@ pub fn transfer_from(
                 Err(*x)
             }
         })
-        .map_err(|cur_bal| Error::ERC20ErrorTransfer(
-            addr,
-            format!(
-                "{} sending {} to {}: bal was {}",
-                rename_addr(spender),
-                rename_amt(addr, amount),
-                rename_addr(recipient),
-                rename_amt(addr, cur_bal)
+        .map_err(|cur_bal| {
+            Error::ERC20ErrorTransfer(
+                addr,
+                format!(
+                    "{} sending {} to {}: bal was {}",
+                    rename_addr(spender),
+                    rename_amt(addr, amount),
+                    rename_addr(recipient),
+                    rename_amt(addr, cur_bal)
+                )
+                .into(),
             )
-            .into(),
-        ))?;
+        })?;
     test_give_tokens(addr, recipient, amount);
     Ok(())
 }

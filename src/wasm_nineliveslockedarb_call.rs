@@ -1,15 +1,11 @@
 
-
 use crate::{calldata::unpack_u256, error::Error};
 
 use stylus_sdk::{
     alloy_primitives::{Address, U256},
     call::RawCall,
+    alloy_sol_types::{SolCall, sol}
 };
-
-use stylus_sdk::alloy_sol_types::sol;
-
-use alloy_sol_types::SolCall;
 
 sol! {
     function ctor(address owner) external;

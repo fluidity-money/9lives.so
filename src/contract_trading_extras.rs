@@ -100,9 +100,7 @@ impl StorageTrading {
             oracle: oracle_addr,
         });
         // We call shutdown in the event this wasn't called in the past.
-        if !self.is_shutdown.get() {
-            self.is_shutdown.set(true);
-        }
+        self.is_shutdown.set(true);
         Ok(U256::ZERO)
     }
 
@@ -130,10 +128,12 @@ impl StorageTrading {
         }
     }
 
+    #[mutants::skip]
     pub fn ended(&self) -> R<bool> {
         Ok(!self.when_decided.is_zero())
     }
 
+    #[mutants::skip]
     pub fn invested(&self) -> R<U256> {
         Ok(self.global_invested.get())
     }

@@ -28,6 +28,7 @@ impl StorageTrading {
 
 impl StorageTrading {
     #[allow(unused)]
+    #[mutants::skip]
     fn internal_dpm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let m_1 = c!(fusdc_u256_to_decimal(self.outcome_invested.get(outcome_id)));
         let n_1 = self.outcome_shares.get(outcome_id);

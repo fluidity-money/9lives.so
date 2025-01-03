@@ -1,18 +1,20 @@
-#![cfg(not(target_arch = "wasm32"))]
+#![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
 
 use lib9lives::{
     erc20_call,
     host::with_contract,
-    immutables::{FUSDC_ADDR, DAO_ADDR},
-    should_spend,
+    immutables::{DAO_ADDR, FUSDC_ADDR},
+    should_spend, strat_storage_trading,
     utils::{block_timestamp, msg_sender},
 };
 
+use proptest::proptest;
+
 #[test]
 #[cfg(feature = "trading-backend-dpm")]
-fn test_e2e_mint() {
+fn test_e2e_mint_dpm() {
     use lib9lives::storage_trading::StorageTrading;
     with_contract::<_, StorageTrading, _>(|c| {
         let outcome_1 = fixed_bytes!("0541d76af67ad076");
@@ -41,9 +43,19 @@ fn test_e2e_mint() {
             U256::from(4181648)
         );
         c.decide(outcome_1).unwrap();
-        assert_eq!(
-            erc20_call::balance_of(FUSDC_ADDR, DAO_ADDR).unwrap(),
-            fee
-        );
+        assert_eq!(erc20_call::balance_of(FUSDC_ADDR, DAO_ADDR).unwrap(), fee);
     })
+}
+
+proptest! {
+    #[test]
+    #[cfg(feature = "trading-backend-amm")]
+    fn test_e2e_outcome_prices_sum_to_1_amm(mut c in strat_storage_trading(false)) {
+        // Generate several outcomes, then test that the price equals 1.
+        c.created.set(true);
+        for o in (0..c.outcome_list.len()).map(|i|c.outcome_list.get(i).unwrap()) {
+            let r = c.price_A_827_E_D_27(o).unwrap();
+            assert_eq!(U256::from(1), r, "outcome: {o}, amt: {r}");
+        }
+    }
 }
