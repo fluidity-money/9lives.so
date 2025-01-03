@@ -33,6 +33,8 @@ impl StorageTrading {
         should_buffer_time: bool,
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
+        // DPM only for now.
+        assert_or!(outcomes.len() == 2, Error::DPMOnly);
         // We assume that the caller already supplied the liquidity to
         // us, and we set them as the factory.
         let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;

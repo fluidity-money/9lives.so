@@ -422,6 +422,9 @@ pub enum Error {
 
     // The caller has already declared their commitment!
     AlreadyCommitted,
+
+    // DPM only (for now).
+    DPMOnly,
 }
 
 #[cfg(not(target_arch = "wasm32"))]

@@ -120,7 +120,6 @@ class TestPredMarket(unittest.TestCase):
 		except ValueError:
 			pass  # Valid case for rejected invalid trades
 
-
 	@given(
 		liquidity=st.integers(min_value=1, max_value=1000),
 		outcomes=st.integers(min_value=2, max_value=10),
@@ -187,7 +186,6 @@ class TestPredMarket(unittest.TestCase):
 		total_combined_sum = sum(combined_sums)
 		assert math.isclose(total_combined_sum, outcomes, rel_tol=1e-0), \
 			f"Total combined sum {total_combined_sum} not equal to outcomes {outcomes}"
-
 
 	@given(
 		liquidity=st.integers(min_value=1, max_value=1000),
