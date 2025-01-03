@@ -12,7 +12,7 @@ pub type Word = [u8; WORD_BYTES];
 thread_local! {
     static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
     static CUR_TIME: RefCell<u64> = const { RefCell::new(0) };
-    static MSG_SENDER: RefCell<Address> = RefCell::new(Address::from(testing_addrs::MSG_SENDER));
+    static MSG_SENDER: RefCell<Address> = const { RefCell::new(testing_addrs::MSG_SENDER) };
 }
 
 // Helpful memory of the contract address of the currently executing contract.
@@ -109,7 +109,7 @@ pub fn set_msg_sender(a: Address) {
 }
 
 pub fn reset_msg_sender() {
-    set_msg_sender(Address::from(testing_addrs::MSG_SENDER))
+    set_msg_sender(testing_addrs::MSG_SENDER)
 }
 
 #[no_mangle]
@@ -126,7 +126,7 @@ pub fn clear_storage() {
 #[allow(dead_code)]
 pub fn with_contract<T, P: StorageNew, F: FnOnce(&mut P) -> T>(f: F) -> T {
     clear_storage();
-    set_msg_sender(Address::from(testing_addrs::MSG_SENDER));
+    set_msg_sender(testing_addrs::MSG_SENDER);
     set_block_timestamp(0);
     f(&mut P::new(U256::ZERO, 0))
 }

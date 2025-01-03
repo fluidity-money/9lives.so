@@ -2,6 +2,7 @@
 
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
 
+#[allow(unused)]
 use lib9lives::{
     erc20_call,
     host::with_contract,

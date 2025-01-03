@@ -156,9 +156,7 @@ pub fn should_spend<T>(
     for k in spenders.keys() {
         test_reset_bal(addr, *k);
     }
-    if x.is_err() {
-        return x;
-    }
+    let v = x?;
     for (k, v) in spenders {
         let b = balance_of(addr, k).unwrap();
         if !b.is_zero() {
@@ -174,7 +172,7 @@ pub fn should_spend<T>(
             ));
         }
     }
-    x
+    Ok(v)
 }
 
 pub fn transfer_from(
@@ -232,7 +230,7 @@ pub fn permit(
 
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
     Ok(
-        match BALANCES.with(|b| b.borrow().get(&addr)?.get(&spender).map(|v| v.clone())) {
+        match BALANCES.with(|b| b.borrow().get(&addr)?.get(&spender).copied()) {
             Some(v) => v,
             None => U256::ZERO,
         },

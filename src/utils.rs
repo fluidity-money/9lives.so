@@ -109,7 +109,7 @@ pub fn strat_fixed_bytes<const N: usize>() -> impl proptest::prelude::Strategy<V
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub fn strat_address() -> impl proptest::prelude::Strategy<Value = Address> {
-    proptest::arbitrary::any::<[u8; 20]>().prop_map(|x| Address::new(x))
+    proptest::arbitrary::any::<[u8; 20]>().prop_map(Address::new)
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
@@ -136,7 +136,7 @@ pub fn strat_address_not_empty() -> impl proptest::prelude::Strategy<Value = Add
         0..u8::MAX,
         0..u8::MAX,
     ])
-    .prop_map(|x| Address::new(x))
+    .prop_map(Address::new)
 }
 
 #[macro_export]

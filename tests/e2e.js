@@ -74,7 +74,7 @@ describe("End to end tests", async () => {
         "SPN_SARP_AI": "0x0000000000000000000000000000000000000000",
         "SPN_DAO_ADDR": defaultAccountAddr,
       },
-      stdio: ["ignore", "pipe", "ignore"]
+      stdio: ["ignore", "pipe", "pipe"]
     },
   );
 
