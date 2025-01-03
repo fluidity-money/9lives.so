@@ -9,3 +9,4 @@ broadcast
 .vercel
 mutants.out*
 db/db/schema.sql
+tests/.hypothesis

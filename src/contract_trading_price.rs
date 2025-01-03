@@ -62,6 +62,7 @@ impl StorageTrading {
                 //if i != j:
                 if i != j {
                     //product *= self.shares[j]
+                    dbg!(product, self.outcome_shares.get(o));
                     product = c!(product
                         .checked_mul(self.outcome_shares.get(o))
                         .ok_or(Error::CheckedMulOverflow));
