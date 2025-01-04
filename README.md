@@ -80,6 +80,7 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 This table is a helpful reference for the types of errors the contracts might produce:
 
+|               Name            | Code |
 |-------------------------------|------|
 | AlreadyConstructed            | 0x0  |
 | MustContainOutcomes           | 0x1  |
@@ -188,7 +189,6 @@ This table is a helpful reference for the types of errors the contracts might pr
 | NotReadyToDeclare             | 0x68 |
 | AlreadyCommitted              | 0x69 |
 | DPMOnly                       | 0x6a |
-|-------------------------------|------|
 
 ## Deployments
 
