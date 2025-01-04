@@ -101,7 +101,10 @@ macro_rules! assert_or {
 
 #[derive(PartialEq)]
 #[repr(u8)]
-#[cfg_attr(not(target_arch = "wasm32"), derive(strum::IntoStaticStr))]
+#[cfg_attr(
+    not(target_arch = "wasm32"),
+    derive(strum::IntoStaticStr, strum::EnumIter)
+)]
 pub enum Error {
     /// Proxy already created.
     AlreadyConstructed,
@@ -453,6 +456,21 @@ pub(crate) fn rename_addr(v: Address) -> String {
             }
         }
     }
+}
+
+#[test]
+#[ignore]
+fn test_print_error_table() {
+    use prettytable::{Cell, Row, Table};
+    use strum::IntoEnumIterator;
+    let mut t = Table::new();
+    for (i, n) in Error::iter().enumerate() {
+        t.add_row(Row::new(vec![
+            Cell::new(n.into()),
+            Cell::new(&format!("0x{i:x}")),
+        ]));
+    }
+    t.printstd();
 }
 
 #[cfg(not(target_arch = "wasm32"))]

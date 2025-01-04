@@ -1,5 +1,6 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
+#[cfg(feature = "trading-backend-dpm")]
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
 
 #[allow(unused)]

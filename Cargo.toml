@@ -61,6 +61,7 @@ getrandom = "0.2.15"
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 alloy-primitives = { version = "0.7.6", features = ["getrandom"] }
 rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths", "proptest"] }
+prettytable-rs = "0.10.0"
 
 [features]
 contract-factory-1 = []
