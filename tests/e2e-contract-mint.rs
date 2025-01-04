@@ -1,15 +1,15 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
 #[cfg(feature = "trading-backend-dpm")]
-use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
+use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
 
 #[allow(unused)]
 use lib9lives::{
     erc20_call,
-    host::with_contract,
+    host::{ts_add_time, with_contract},
     immutables::{DAO_ADDR, FUSDC_ADDR},
-    should_spend, strat_storage_trading,
-    utils::{block_timestamp, msg_sender},
+    should_spend_fusdc_sender, strat_storage_trading,
+    utils::{block_timestamp, msg_sender, strat_fixed_bytes, strat_tiny_u256},
 };
 
 use proptest::proptest;
@@ -39,7 +39,8 @@ fn test_e2e_mint_dpm() {
         // Take 7% from the amount (this is the fee).
         let fee = (value * U256::from(70)) / U256::from(1000);
         assert_eq!(
-            should_spend!(FUSDC_ADDR, {msg_sender() => value},
+            should_spend_fusdc_sender!(
+                value,
                 c.mint_test(outcome_1, value, msg_sender())
             ),
             U256::from(4181648)
@@ -50,6 +51,39 @@ fn test_e2e_mint_dpm() {
 }
 
 proptest! {
+    #[test]
+    #[cfg(feature = "trading-backend-dpm")]
+    fn test_e2e_based_on_js(
+        outcome_1 in strat_fixed_bytes::<8>(),
+        outcome_2 in strat_fixed_bytes::<8>(),
+        mint_value in strat_tiny_u256(),
+        secs_since in 1..100_000_000u64,
+        mut c in strat_storage_trading(false)
+    ) {
+        c.created.set(false);
+        c.is_shutdown.set(false);
+        c.ctor(
+            vec![outcome_1, outcome_2],
+            msg_sender(), // Whoever can call the oracle.
+            block_timestamp() + 1,
+            u64::MAX,
+            DAO_ADDR,
+            Address::ZERO, // The fee recipient.
+            false,
+        )
+        .unwrap();
+        ts_add_time(secs_since);
+        should_spend_fusdc_sender!(mint_value, c.mint_permit_E_90275_A_B(
+            outcome_1,
+            mint_value,
+            msg_sender(),
+            U256::ZERO,
+            0,
+            FixedBytes::<32>::ZERO,
+            FixedBytes::<32>::ZERO
+         ));
+    }
+
     #[test]
     #[cfg(feature = "trading-backend-amm")]
     fn test_e2e_outcome_prices_sum_to_1_amm(mut c in strat_storage_trading(false)) {

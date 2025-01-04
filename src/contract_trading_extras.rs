@@ -33,7 +33,8 @@ impl StorageTrading {
         should_buffer_time: bool,
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
-        // DPM only for now.
+        // DPM only for now (TODO, as we test the AMM properly, this will
+        // change).
         assert_or!(outcomes.len() == 2, Error::DPMOnly);
         // We assume that the caller already supplied the liquidity to
         // us, and we set them as the factory.
@@ -43,8 +44,14 @@ impl StorageTrading {
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
         self.global_shares
             .set(U256::from(outcomes_len) * SHARE_DECIMALS_EXP);
-        // Start to go through each outcome, and seed it with its initial amount. And
-        // set each slot in the storage with the outcome id for Longtail later.
+        // Start to go through each outcome, and seed it with its initial amount.
+        // And set each slot in the storage with the outcome id for Longtail
+        // later.
+        unsafe {
+            // We don't need to reset this, but it's useful for testing, and
+            // is presumably pretty cheap.
+            self.outcome_list.set_len(0);
+        }
         for outcome_id in outcomes {
             // We always set this to 1 now.
             self.outcome_invested

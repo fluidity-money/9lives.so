@@ -5,6 +5,10 @@ make solidity
 cargo test --features testing,trading-backend-dpm $@
 #cargo mutants --features testing,trading-backend-dpm $@
 
+if ! [ -z "$SPN_TEST_NO_JS" ]; then
+	exit 0
+fi
+
 forge test
 
 SPN_SUPERPOSITION_URL=${SPN_SUPERPOSITION_URL:-http://localhost:8547} \

@@ -151,7 +151,7 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> R<U256> {
-        // Ensure that we're not complete, and that the time hasn't expired
+        // Ensure that we're not complete, and that the time hasn't expired.
         assert_or!(
             self.when_decided.get().is_zero()
                 && !self.is_shutdown.get()
