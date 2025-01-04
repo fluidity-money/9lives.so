@@ -99,7 +99,7 @@ macro_rules! assert_or {
     };
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 #[repr(u8)]
 #[cfg_attr(
     not(target_arch = "wasm32"),
@@ -461,13 +461,29 @@ pub(crate) fn rename_addr(v: Address) -> String {
 #[test]
 #[ignore]
 fn test_print_error_table() {
-    use prettytable::{Cell, Row, Table};
+    use prettytable::{
+        format::{FormatBuilder, LinePosition, LineSeparator},
+        Cell, Row, Table,
+    };
     use strum::IntoEnumIterator;
     let mut t = Table::new();
-    for (i, n) in Error::iter().enumerate() {
+    t.set_format(
+        FormatBuilder::new()
+            .padding(1, 1)
+            .borders('|')
+            .separator(LinePosition::Title, LineSeparator::new('-', '|', '|', '|'))
+            .column_separator('|')
+            .build(),
+    );
+    t.set_titles(Row::new(vec![
+        Cell::new("Error name"),
+        Cell::new("Error hex"),
+    ]));
+    for n in Error::iter() {
+        let v: Vec<u8> = n.clone().into();
         t.add_row(Row::new(vec![
             Cell::new(n.into()),
-            Cell::new(&format!("0x{i:x}")),
+            Cell::new(&format!("0x{}", const_hex::encode(v))),
         ]));
     }
     t.printstd();
