@@ -48,6 +48,7 @@ contract HelperFactory {
         bytes32 documentation,
         address feeRecipient
     ) internal returns (address) {
+        require(timeEnding > block.timestamp, "time ending before timestamp");
         return FACTORY.newTrading09393DA8(
             outcomes,
             oracle,

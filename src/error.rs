@@ -442,6 +442,9 @@ pub enum Error {
 
     // DPM only (for now).
     DPMOnly,
+
+    // Bad trading configuration!
+    BadTradingCtor,
 }
 
 #[cfg(any(

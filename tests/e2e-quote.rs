@@ -7,6 +7,7 @@ use lib9lives::{
     error::Error,
     host,
     utils::{block_timestamp, msg_sender},
+    testing_addrs,
 };
 
 use proptest::prelude::*;
@@ -26,8 +27,8 @@ proptest! {
                 Address::from([1_u8; 20]),
                 block_timestamp() + 1,
                 block_timestamp() + 2,
-                msg_sender(),
-                Address::ZERO,
+                msg_sender(), // Fee recipient.
+                testing_addrs::SHARE, // Share impl.
                 false
             )
             .unwrap();

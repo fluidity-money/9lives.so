@@ -1,14 +1,14 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
 #[cfg(feature = "trading-backend-dpm")]
-use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256};
 
 #[allow(unused)]
 use lib9lives::{
     erc20_call,
     host::{ts_add_time, with_contract},
     immutables::{DAO_ADDR, FUSDC_ADDR},
-    should_spend_fusdc_sender, strat_storage_trading,
+    should_spend_fusdc_sender, strat_storage_trading, testing_addrs,
     utils::{block_timestamp, msg_sender, strat_fixed_bytes, strat_tiny_u256},
 };
 
@@ -26,8 +26,8 @@ fn test_e2e_mint_dpm() {
             msg_sender(), // Whoever can call the oracle.
             block_timestamp() + 1,
             block_timestamp() + 2,
-            DAO_ADDR,
-            Address::ZERO, // The fee recipient.
+            DAO_ADDR,             // The fee recipient.
+            testing_addrs::SHARE, // The share impl.
             false,
         )
         .unwrap();
@@ -39,10 +39,7 @@ fn test_e2e_mint_dpm() {
         // Take 7% from the amount (this is the fee).
         let fee = (value * U256::from(70)) / U256::from(1000);
         assert_eq!(
-            should_spend_fusdc_sender!(
-                value,
-                c.mint_test(outcome_1, value, msg_sender())
-            ),
+            should_spend_fusdc_sender!(value, c.mint_test(outcome_1, value, msg_sender())),
             U256::from(4181648)
         );
         c.decide(outcome_1).unwrap();
@@ -67,8 +64,8 @@ proptest! {
             msg_sender(), // Whoever can call the oracle.
             block_timestamp() + 1,
             u64::MAX,
-            DAO_ADDR,
-            Address::ZERO, // The fee recipient.
+            DAO_ADDR,  // The fee recipient.
+            testing_addrs::SHARE, // The share implementation
             false,
         )
         .unwrap();

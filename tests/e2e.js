@@ -19,7 +19,7 @@ const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 const LensesV1 = require("../out/LensesV1.sol/LensesV1.json");
 const HelperFactory = require("../out/HelperFactory.sol/HelperFactory.json");
 
-const MaxU64 = (1 << 64) - 1;
+const MaxU64 = 18446744073709551615n;
 
 describe("End to end tests", async () => {
   const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
