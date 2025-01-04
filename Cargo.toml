@@ -42,7 +42,7 @@ rust_decimal = { version =  "1.36.0", default-features = false, features = ["mat
 keccak-const = "0.2.0"
 alloy-sol-macro-expander = "=0.7.6"
 alloy-sol-macro-input = "=0.7.6"
-strum = { version = "0.26.3", features = ["derive"] }
+strum = { version = "0.26.3", default-features = false, features = ["derive"] }
 mutants = "0.0.3"
 
 [dev-dependencies]

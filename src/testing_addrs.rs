@@ -1,4 +1,3 @@
-#![cfg(not(target_arch = "wasm32"))]
 
 use stylus_sdk::alloy_primitives::Address;
 

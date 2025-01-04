@@ -76,6 +76,20 @@ on the local environment, or with end to end tests with an Arbitrum node.
 
 	./tests.sh
 
+Interrogation of the deployment in the end to end testing library could be done using the
+`build.rs` use of `environment.lst`, which could be in turn read with a fresh deploy (and
+a clean artifacts directory):
+
+	sort $(find target -name environment.lst) | uniq
+
+You could clear the recorded environment variables the same way with a test harness:
+
+	rm $(find target -name environment.lst)
+
+You could use this to test the code by making a debug build, which includes more
+information about reverts, then simulate your calldata against it using
+`stylus-interpreter`, making debugging a breeze.
+
 ## Errors
 
 This table is a helpful reference for the types of errors the contracts might produce. To

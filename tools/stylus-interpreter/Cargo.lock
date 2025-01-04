@@ -3267,6 +3267,7 @@ name = "stylus-interpreter"
 version = "0.1.0"
 dependencies = [
  "alloy-eips",
+ "alloy-json-rpc",
  "alloy-network",
  "alloy-network-primitives",
  "alloy-primitives",

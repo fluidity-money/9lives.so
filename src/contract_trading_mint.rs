@@ -37,9 +37,11 @@ impl StorageTrading {
         s: FixedBytes<32>,
     ) -> R<U256> {
         if deadline.is_zero() {
-            fusdc_call::take_from_sender(value)?;
+            c!(fusdc_call::take_from_sender(value));
         } else {
-            fusdc_call::take_from_sender_permit(value, deadline, v, r, s)?;
+            c!(fusdc_call::take_from_sender_permit(
+                value, deadline, v, r, s
+            ))
         }
         self.internal_mint(outcome, value, recipient)
     }
@@ -97,7 +99,9 @@ impl StorageTrading {
         let m_1 = c!(fusdc_u256_to_decimal(outcome_invested));
         let n_2 = self.global_shares.get() - n_1;
         let n_1 = c!(share_u256_to_decimal(n_1));
-        let m_2 = c!(fusdc_u256_to_decimal(self.global_invested.get() - outcome_invested));
+        let m_2 = c!(fusdc_u256_to_decimal(
+            self.global_invested.get() - outcome_invested
+        ));
         let n_2 = c!(share_u256_to_decimal(n_2));
         share_decimal_to_u256(c!(maths::dpm_shares(m_1, m_2, n_1, n_2, m)))
     }

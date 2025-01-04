@@ -297,20 +297,13 @@ async fn main() -> Result<(), Error> {
                         }
                         (0, Some(d))
                     }
-                    Err(RpcError::ErrorResp(ErrorPayload {
-                        code: 1,
-                        data: Some(d),
-                        ..
-                    })) => {
-                        let d = const_hex::decode(d.get()).unwrap();
+                    Err(RpcError::ErrorResp(p)) => {
+                        let d = p.as_revert_data().unwrap();
                         (1, Some(Bytes::copy_from_slice(&d)))
-                    }
-                    err => {
-                        // If the RPC hasn't given us much info, let's
-                        // just blow up. Maybe a networking situation is
-                        // taking place.
-                        err.unwrap();
-                        unreachable!()
+                    },
+                    e => {
+                        let _ = e.unwrap();
+                        unreachable!();
                     }
                 };
                 *LAST_CALL_CALLDATA.get().unwrap().lock().await = d;

@@ -7,10 +7,21 @@
 #[cfg(target_arch = "wasm32")]
 use alloc::{vec, vec::Vec};
 
-#[cfg(not(target_arch = "wasm32"))]
-use crate::{
-    immutables, testing_addrs,
-    utils::{contract_address, msg_sender},
+#[allow(unused)]
+#[cfg(any(
+    not(target_arch = "wasm32"),
+    all(target_arch = "wasm32", feature = "harness-stylus-interpreter")
+))]
+use {
+    crate::{
+        immutables, testing_addrs,
+        utils::{contract_address, msg_sender},
+    },
+    alloc::{
+        borrow::ToOwned,
+        format,
+        string::{String, ToString},
+    },
 };
 
 use stylus_sdk::alloy_primitives::{Address, U256};
@@ -102,7 +113,10 @@ macro_rules! assert_or {
 #[derive(PartialEq, Clone)]
 #[repr(u8)]
 #[cfg_attr(
-    not(target_arch = "wasm32"),
+    any(
+        not(target_arch = "wasm32"),
+        all(target_arch = "wasm32", feature = "harness-stylus-interpreter")
+    ),
     derive(strum::IntoStaticStr, strum::EnumIter)
 )]
 pub enum Error {
@@ -430,30 +444,31 @@ pub enum Error {
     DPMOnly,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(any(
+    not(target_arch = "wasm32"),
+    all(target_arch = "wasm32", feature = "harness-stylus-interpreter")
+))]
 pub(crate) fn rename_addr(v: Address) -> String {
-    match v {
-        immutables::FUSDC_ADDR => "fusdc contract".to_string(),
-        immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
-        immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
-        immutables::DAO_ADDR => "testing dao".to_string(),
-        testing_addrs::SHARE => "share".to_string(),
-        testing_addrs::LOCKUP_CONTRACT => "lockup contract".to_string(),
-        testing_addrs::LOCKUP_TOKEN => "lockup token".to_string(),
-        testing_addrs::IVAN => "ivan".to_string(),
-        testing_addrs::ERIK => "erik".to_string(),
-        testing_addrs::ELI => "eli".to_string(),
-        testing_addrs::OGOUS => "ogous".to_string(),
-        testing_addrs::PAXIA => "paxia".to_string(),
-        testing_addrs::YOEL => "yoel".to_string(),
-        _ => {
-            if v == msg_sender() {
-                "msg sender".to_string()
-            } else if v == contract_address() {
-                "9lives contract".to_string()
-            } else {
-                v.to_string()
-            }
+    if v == msg_sender() {
+        "msg sender".to_string()
+    } else if v == contract_address() {
+        "contract".to_string()
+    } else {
+        match v {
+            immutables::FUSDC_ADDR => "fusdc contract".to_string(),
+            immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
+            immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
+            immutables::DAO_ADDR => "testing dao".to_string(),
+            testing_addrs::SHARE => "share".to_string(),
+            testing_addrs::LOCKUP_CONTRACT => "lockup contract".to_string(),
+            testing_addrs::LOCKUP_TOKEN => "lockup token".to_string(),
+            testing_addrs::IVAN => "ivan".to_string(),
+            testing_addrs::ERIK => "erik".to_string(),
+            testing_addrs::ELI => "eli".to_string(),
+            testing_addrs::OGOUS => "ogous".to_string(),
+            testing_addrs::PAXIA => "paxia".to_string(),
+            testing_addrs::YOEL => "yoel".to_string(),
+            _ => v.to_string()
         }
     }
 }
@@ -489,28 +504,26 @@ fn test_print_error_table() {
     t.printstd();
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-impl std::fmt::Debug for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+#[cfg(any(
+    not(target_arch = "wasm32"),
+    all(target_arch = "wasm32", feature = "harness-stylus-interpreter")
+))]
+impl core::fmt::Debug for Error {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let n: &str = self.into();
         write!(
             f,
             "{n}: {}",
             match self {
+                Error::ERC20ErrorTransferFrom(addr, from, to, amt) => format!(
+                    "{}: {} sending to {}, amt: {amt}",
+                    rename_addr(*addr),
+                    rename_addr(*from),
+                    rename_addr(*to),
+                ),
                 Error::ERC20ErrorTransfer(addr, msg) => format!(
                     "{}: {:?}",
-                    match *addr {
-                        immutables::FUSDC_ADDR => "fusdc contract".to_string(),
-                        immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
-                        immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
-                        immutables::DAO_ADDR => "testing dao".to_string(),
-                        _ =>
-                            if *addr == msg_sender() {
-                                "msg sender".to_string()
-                            } else {
-                                addr.to_string()
-                            },
-                    },
+                    rename_addr(*addr),
                     String::from_utf8(msg.clone())
                 ),
                 _ => "".to_owned(),
