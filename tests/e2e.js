@@ -61,6 +61,16 @@ describe("End to end tests", async () => {
   await longtailDeploy.waitForDeployment();
   const longtailAddress = await longtailDeploy.getAddress();
 
+  console.error("build config", {
+    "SPN_LONGTAIL_ADDR": longtailAddress,
+    "SPN_FUSDC_ADDR": fusdcAddress,
+    "SPN_STAKED_ARB_ADDR": stakedArbAddress,
+    "SPN_PROXY_ADMIN": defaultAccountAddr,
+    "SPN_EMERGENCY_COUNCIL": defaultAccountAddr,
+    "SPN_SARP_AI": "0x0000000000000000000000000000000000000000",
+    "SPN_DAO_ADDR": defaultAccountAddr,
+  });
+
   const deployStr = execSync(
     "./build-and-deploy.sh",
     {

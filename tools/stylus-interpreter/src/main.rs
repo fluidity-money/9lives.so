@@ -464,7 +464,28 @@ async fn main() -> Result<(), Error> {
             unreachable!()
         },
     )?;
-    linker.func_wrap("vm_hooks", "return_data_size", |_: Caller<_>| -> i32 { 0 })?;
+    linker.func_wrap_async(
+        "vm_hooks",
+        "return_data_size",
+        |_: Caller<_>, ()| -> Box<dyn Future<Output = i32> + Send> {
+            Box::new(async move {
+                dbg!(LAST_CALL_CALLDATA
+                    .get()
+                    .unwrap()
+                    .lock()
+                    .await
+                    .clone()
+                    .map_or(0, |x| x.len()) as i32);
+                LAST_CALL_CALLDATA
+                    .get()
+                    .unwrap()
+                    .lock()
+                    .await
+                    .clone()
+                    .map_or(0, |x| x.len()) as i32
+            })
+        },
+    )?;
     linker.func_wrap_async(
         "vm_hooks",
         "read_return_data",
@@ -528,7 +549,20 @@ async fn main() -> Result<(), Error> {
             }
         },
     )?;
-    linker.func_wrap("vm_hooks", "contract_address", |_: Caller<_>, _: i32| {})?;
+    linker.func_wrap(
+        "vm_hooks",
+        "contract_address",
+        |mut caller: Caller<_>, ptr: i32| {
+            let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+            unsafe {
+                std::ptr::copy(
+                    ADDR.get().unwrap().as_slice().as_ptr(),
+                    mem.data_ptr(&mut caller).offset(ptr as isize),
+                    20,
+                );
+            }
+        },
+    )?;
     linker.func_wrap("vm_hooks", "pay_for_memory_grow", |_: Caller<_>, _: i32| {})?;
 
     linker.func_wrap(
