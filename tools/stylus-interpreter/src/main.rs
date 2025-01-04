@@ -1,13 +1,24 @@
-use std::{collections::HashMap, env, future::Future, process, str::FromStr, sync::OnceLock};
+use std::{collections::HashMap, future::Future, process, str::FromStr, sync::OnceLock};
 
 use keccak_const::Keccak256;
 
 use alloy_eips::{BlockId, BlockNumberOrTag};
-use alloy_json_rpc::{ErrorPayload, RpcError};
 use alloy_network_primitives::BlockTransactionsKind;
-use alloy_primitives::{Address, Bytes, TxKind, U256};
-use alloy_provider::{Provider, RootProvider};
-use alloy_rpc_types_eth::{TransactionInput, TransactionRequest};
+use alloy_primitives::{
+    map::{AddressHashMap, FbBuildHasher},
+    Address, Bytes, TxKind, U256,
+};
+use alloy_provider::{ext::DebugApi, Provider, RootProvider};
+use alloy_rpc_types_eth::{state::AccountOverride, TransactionInput, TransactionRequest};
+use alloy_rpc_types_trace::geth::{
+    mux::MuxConfig,
+    CallConfig, CallFrame, DiffMode, GethDebugBuiltInTracerType, GethDebugTracingCallOptions,
+    GethDebugTracingOptions,
+    GethTrace::{CallTracer, PreStateTracer},
+    PreStateConfig, PreStateFrame,
+};
+
+use clap::Parser;
 
 use url::Url;
 
@@ -17,28 +28,49 @@ use tokio::sync::Mutex;
 
 type Word = [u8; 32];
 
+#[derive(Parser)]
+#[command(version, about)]
+struct Args {
+    #[arg(short, long)]
+    sender: String,
+    #[arg(short, long)]
+    block: u64,
+    #[arg(short, long)]
+    addr: String,
+    #[arg(short, long, group = "action")]
+    calldata: String,
+
+    #[arg(short, long, group = "action")]
+    run_tests: bool,
+
+    #[arg(short, long, required = true)]
+    file: String,
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    if env::args().len() == 1 {
-        eprintln!("stylus-interpreter <sender> <block> <addr> <file> <calldata>");
-        std::process::exit(1);
-    }
-    let engine = Engine::new(Config::new().wasm_backtrace(true).async_support(true)).unwrap();
-    let [_, sender_str, block, addr, file, calldata]: [String; 6] =
-        env::args().take(6).collect::<Vec<_>>().try_into().unwrap();
+    let args = Args::parse();
+
     static SENDER: OnceLock<Address> = OnceLock::new();
-    SENDER.set(Address::from_str(&sender_str).unwrap()).unwrap();
     static BLOCK: OnceLock<u64> = OnceLock::new();
-    BLOCK.set(u64::from_str(&block).unwrap()).unwrap();
     static ADDR: OnceLock<Address> = OnceLock::new();
-    ADDR.set(Address::from_str(&addr).unwrap()).unwrap();
 
-    let module = Module::from_file(&engine, file.clone()).unwrap();
+    SENDER
+        .set(Address::from_str(&args.sender).unwrap())
+        .unwrap();
+    BLOCK.set(args.block).unwrap();
+    ADDR.set(Address::from_str(&args.addr).unwrap()).unwrap();
 
-    eprintln!("stylus-interpreter {sender_str} {block} {addr} {file} {calldata}",);
+    // We always set the calldata here, though we won't use it since
+    // presumably the application won't read from it if we run the tests
+    // in the test running mode.
 
-    let calldata = const_hex::decode(calldata).unwrap();
+    let calldata = const_hex::decode(args.calldata).unwrap();
     let calldata_len = calldata.len();
+
+    let engine = Engine::new(Config::new().wasm_backtrace(true).async_support(true)).unwrap();
+
+    let module = Module::from_file(&engine, args.file.clone()).unwrap();
 
     let mut store: Store<()> = Store::new(&engine, ());
     let mut linker = Linker::new(&engine);
@@ -58,6 +90,12 @@ async fn main() -> Result<(), Error> {
 
     static LAST_CALL_CALLDATA: OnceLock<Mutex<Option<Bytes>>> = OnceLock::new();
     LAST_CALL_CALLDATA.set(Mutex::new(None)).unwrap();
+
+    // State overrides set by calls, on a per contract address basis.
+    static STATE_OVERRIDES: OnceLock<Mutex<AddressHashMap<AccountOverride>>> = OnceLock::new();
+    STATE_OVERRIDES
+        .set(Mutex::new(HashMap::with_hasher(FbBuildHasher::default())))
+        .unwrap();
 
     linker.func_wrap(
         "vm_hooks",
@@ -222,7 +260,7 @@ async fn main() -> Result<(), Error> {
                 // calling a contract that's presumably deployed there. Look at the storage slots
                 // that were used in the operation, and write every SSTORE and result of
                 // SLOAD that's used to our storage hashmap for the contract's address.
-                // (TODO). Currently we simply make a request.
+                // Then do a merge to know what the current state is.
                 let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
                 let mut contract = [0_u8; 20];
                 let mut calldata = Vec::with_capacity(calldata_len as usize);
@@ -246,67 +284,134 @@ async fn main() -> Result<(), Error> {
                     );
                 }
                 let contract = Address::from(contract);
-                eprintln!(
-                    "calling {} calldata {}",
-                    contract,
-                    const_hex::encode(&calldata)
-                );
-                let (status, d) = match PROVIDER
+                // Below, we're using debug_tracecall for this. It would
+                // be preferable to use eth_simulate now.
+                let trace = PROVIDER
                     .get()
                     .unwrap()
                     .lock()
                     .await
-                    .call(&TransactionRequest {
-                        from: Some(*ADDR.get().unwrap()),
-                        to: Some(TxKind::Call(contract)),
-                        input: TransactionInput {
-                            input: Some(Bytes::copy_from_slice(&calldata)),
-                            data: None,
+                    .debug_trace_call(
+                        TransactionRequest {
+                            from: Some(*ADDR.get().unwrap()),
+                            to: Some(TxKind::Call(contract)),
+                            input: TransactionInput {
+                                input: Some(Bytes::copy_from_slice(&calldata)),
+                                data: None,
+                            },
+                            gas_price: None,
+                            max_fee_per_gas: None,
+                            max_priority_fee_per_gas: None,
+                            max_fee_per_blob_gas: None,
+                            gas: if gas > 0 {
+                                Some(gas.try_into().unwrap())
+                            } else {
+                                None
+                            },
+                            value: Some(U256::from_be_bytes(value)),
+                            nonce: None,
+                            chain_id: None,
+                            access_list: None,
+                            transaction_type: None,
+                            blob_versioned_hashes: None,
+                            sidecar: None,
+                            authorization_list: None,
                         },
-                        gas_price: None,
-                        max_fee_per_gas: None,
-                        max_priority_fee_per_gas: None,
-                        max_fee_per_blob_gas: None,
-                        gas: if gas > 0 {
-                            Some(gas.try_into().unwrap())
-                        } else {
-                            None
+                        BlockId::Number(BlockNumberOrTag::Number(*BLOCK.get().unwrap())),
+                        GethDebugTracingCallOptions {
+                            tracing_options: GethDebugTracingOptions::mux_tracer({
+                                let mut h = MuxConfig::default();
+                                h.0.insert(
+                                    GethDebugBuiltInTracerType::CallTracer,
+                                    Some(
+                                        CallConfig {
+                                            only_top_call: Some(true),
+                                            with_log: Some(false),
+                                        }
+                                        .into(),
+                                    ),
+                                );
+                                h.0.insert(
+                                    GethDebugBuiltInTracerType::PreStateTracer,
+                                    Some(
+                                        PreStateConfig {
+                                            diff_mode: Some(true),
+                                            disable_code: Some(true),
+                                            disable_storage: None,
+                                        }
+                                        .into(),
+                                    ),
+                                );
+                                h
+                            }),
+                            block_overrides: None,
+                            state_overrides: Some(
+                                STATE_OVERRIDES.get().unwrap().lock().await.clone(),
+                            ),
                         },
-                        value: Some(U256::from_be_bytes(value)),
-                        nonce: None,
-                        chain_id: None,
-                        access_list: None,
-                        transaction_type: None,
-                        blob_versioned_hashes: None,
-                        sidecar: None,
-                        authorization_list: None,
-                    })
-                    .block(BlockId::Number(BlockNumberOrTag::Number(
-                        *BLOCK.get().unwrap(),
-                    )))
-                    .await
+                    )
+                    .await;
+                let trace = trace.unwrap().try_into_mux_frame().unwrap();
+                match trace
+                    .0
+                    .get(&GethDebugBuiltInTracerType::PreStateTracer)
+                    .unwrap()
                 {
-                    Ok(d) => {
-                        unsafe {
-                            std::ptr::copy(
-                                d.len().to_le_bytes().as_ptr(),
-                                mem.data_ptr(&mut caller)
-                                    .offset(return_data_len_ptr as isize),
-                                std::mem::size_of::<u64>(),
-                            )
+                    PreStateTracer(PreStateFrame::Diff(DiffMode { post, .. })) => {
+                        let mut state_overrides = STATE_OVERRIDES.get().unwrap().lock().await;
+                        for (addr, state) in post {
+                            // It's not clear to me whether this is needed, but we're explicitly
+                            // merging this anyway.
+                            let o = state_overrides
+                                .entry(*addr)
+                                .or_insert_with(AccountOverride::default);
+                            o.balance = state.balance;
+                            o.nonce = state.nonce;
+                            o.code = state.code.clone();
+                            let storage = state.storage.iter();
+                            match &mut o.state {
+                                Some(state) => state.extend(storage),
+                                None => {
+                                    let mut h = HashMap::with_hasher(FbBuildHasher::default());
+                                    h.extend(storage);
+                                    o.state = Some(h)
+                                }
+                            }
                         }
-                        (0, Some(d))
                     }
-                    Err(RpcError::ErrorResp(p)) => {
-                        let d = p.as_revert_data().unwrap();
-                        (1, Some(Bytes::copy_from_slice(&d)))
-                    },
-                    e => {
-                        let _ = e.unwrap();
-                        unreachable!();
-                    }
+                    a => panic!("not diff prestate tracer in mux: {a:?}"),
                 };
-                *LAST_CALL_CALLDATA.get().unwrap().lock().await = d;
+                let (d, status) = match trace
+                    .0
+                    .get(&GethDebugBuiltInTracerType::CallTracer)
+                    .unwrap()
+                {
+                    CallTracer(CallFrame { output, error, .. }) => (
+                        output,
+                        match error {
+                            None => 0,
+                            Some(_) => 1,
+                        },
+                    ),
+                    a => panic!("not calltracer in mux: {a:?}"),
+                };
+                if let Some(d) = d.clone() {
+                    unsafe {
+                        std::ptr::copy(
+                            d.len().to_le_bytes().as_ptr(),
+                            mem.data_ptr(&mut caller)
+                                .offset(return_data_len_ptr as isize),
+                            std::mem::size_of::<u64>(),
+                        )
+                    }
+                }
+                eprintln!(
+                    "spn call --from {} {contract} {} # => status {status}: {:x}",
+                    ADDR.get().unwrap(),
+                    const_hex::encode(&calldata),
+                    d.clone().unwrap_or_default()
+                );
+                *LAST_CALL_CALLDATA.get().unwrap().lock().await = d.clone();
                 status
             })
         },
@@ -346,7 +451,7 @@ async fn main() -> Result<(), Error> {
             // Use debug_traceCall with stateOverride to copy the storage that we have in this
             // contract to the other contract with a call. Store any SSTORE interactions to this
             // contract.
-            0
+            unreachable!()
         },
     )?;
     linker.func_wrap(
@@ -356,7 +461,7 @@ async fn main() -> Result<(), Error> {
             // Use the debug_traceCall function with the rpc to simulate the experience of
             // calling a contract that's presumably deployed there. Store any SLOADs that take
             // place during that operation in the hashmap for here.
-            0
+            unreachable!()
         },
     )?;
     linker.func_wrap("vm_hooks", "return_data_size", |_: Caller<_>| -> i32 { 0 })?;
@@ -370,7 +475,7 @@ async fn main() -> Result<(), Error> {
                 let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
                 match LAST_CALL_CALLDATA.get().unwrap().lock().await.as_deref() {
                     Some(b) => {
-                        let b = &b[copy_offset as usize..len as usize];
+                        let b = &b[copy_offset as usize..copy_offset as usize + len as usize];
                         unsafe {
                             std::ptr::copy(
                                 b.as_ptr(),
@@ -442,17 +547,23 @@ async fn main() -> Result<(), Error> {
             }
             eprintln!("{}", String::from_utf8(buf).unwrap());
             process::exit(code);
+            #[allow(unused)]
+            Ok(())
         },
     )?;
 
     let instance = linker.instantiate_async(&mut store, &module).await?;
 
-    let entrypoint = instance.get_typed_func::<i32, i32>(&mut store, "user_entrypoint")?;
-    eprintln!(
-        "{}",
-        entrypoint
-            .call_async(&mut store, calldata_len as i32)
-            .await?
-    );
+    if args.run_tests {
+    } else {
+        let entrypoint = instance.get_typed_func::<i32, i32>(&mut store, "user_entrypoint")?;
+        eprintln!(
+            "{}",
+            entrypoint
+                .call_async(&mut store, calldata_len as i32)
+                .await?
+        );
+    }
+
     Ok(())
 }

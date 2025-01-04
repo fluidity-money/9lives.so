@@ -102,6 +102,14 @@ pub use contract_lockup::*;
 pub use contract_infra_market::*;
 pub use contract_beauty_contest::*;
 
+#[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
+#[link(wasm_import_module = "stylus_interpreter")]
+extern "C" {
+    #[allow(dead_code)]
+    // It's easier to do this than to go through the work of a custom panic handler.
+    pub fn die(ptr: *const u8, len: usize, rc: i32);
+}
+
 #[cfg(all(
     target_arch = "wasm32",
     not(any(

@@ -5,8 +5,9 @@ edition = "2021"
 
 [dependencies]
 alloy-network-primitives = "^0.6"
-alloy-primitives = "=0.8.11"
-alloy-provider = "=0.6.4"
+alloy-primitives = { version = "=0.8.11", features = ["map"] }
+alloy-provider = { version = "=0.6.4", features = ["debug-api"] }
+alloy-rpc-types-trace = "^0.6"
 alloy-eips = "^0.6"
 alloy-transport-http = "=0.6.4"
 alloy-network = "^0.6"
@@ -23,3 +24,4 @@ url = "2.5.3"
 wasmtime = { version = "25.0.1", features = ["runtime", "cranelift"] }
 alloy-rpc-types-eth = "^0.6"
 alloy-json-rpc = "^0.6"
+clap = { version = "4.5.23", features = ["derive"] }

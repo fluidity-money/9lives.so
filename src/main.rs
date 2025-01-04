@@ -6,20 +6,12 @@ use lib9lives::alloc::format;
 #[cfg(target_arch = "wasm32")]
 pub use lib9lives::user_entrypoint;
 
-#[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
-#[link(wasm_import_module = "stylus_interpreter")]
-extern "C" {
-    #[allow(dead_code)]
-    // It's easier to do this than to go through the work of a custom panic handler.
-    fn die(ptr: *const u8, len: usize, rc: i32);
-}
-
 #[cfg(all(feature = "harness-stylus-interpreter", target_arch = "wasm32"))]
 #[mutants::skip]
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
     let msg = format!("{}", info);
-    unsafe { die(msg.as_ptr(), msg.len(), 1) }
+    unsafe { lib9lives::die(msg.as_ptr(), msg.len(), 1) }
     loop {}
 }
 

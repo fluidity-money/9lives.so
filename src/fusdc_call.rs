@@ -1,13 +1,10 @@
-
-use stylus_sdk::{
-    alloy_primitives::{Address, FixedBytes, U256},
-};
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use crate::{
     erc20_call::{self, permit, transfer_from},
     error::Error,
     immutables::FUSDC_ADDR,
-    utils::{msg_sender, contract_address},
+    utils::{contract_address, msg_sender},
 };
 
 pub fn balance_of(spender: Address) -> Result<U256, Error> {
