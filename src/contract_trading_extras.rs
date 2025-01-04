@@ -56,6 +56,7 @@ impl StorageTrading {
             self.outcome_list.push(outcome_id);
         }
         // We assume that the sender is the factory.
+        self.created.set(true);
         self.factory_addr.set(msg_sender());
         self.share_impl.set(share_impl);
         self.fee_recipient.set(fee_recipient);
@@ -66,28 +67,28 @@ impl StorageTrading {
         Ok(())
     }
 
+    pub fn is_shutdown(&self) -> R<bool> {
+        Ok(self.is_shutdown.get())
+    }
+
+    pub fn time_start(&self) -> R<u64> {
+        Ok(u64::from_le_bytes(self.time_start.get().to_le_bytes()))
+    }
+
+    pub fn time_ending(&self) -> R<u64> {
+        Ok(u64::from_le_bytes(self.time_ending.get().to_le_bytes()))
+    }
+
     pub fn oracle(&self) -> R<Address> {
         Ok(self.oracle.get())
     }
 
     pub fn shutdown(&mut self) -> R<U256> {
-        // Notify Longtail to pause trading on every outcome pool.
-        // TODO, send a "thank you" amount to the caller of this function
-        // when it's called for the first time. This should be called by anyone
-        // after the date of this closing.
         assert_or!(
             u64::from_be_bytes(self.time_ending.get().to_be_bytes()) < block_timestamp(),
             Error::NotPastDeadline
         );
-        assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
-        factory_call::disable_shares(
-            self.factory_addr.get(),
-            &(0..self.outcome_list.len())
-                .map(|i| self.outcome_list.get(i).unwrap())
-                .collect::<Vec<_>>(),
-        )?;
-        self.is_shutdown.set(true);
-        Ok(U256::ZERO)
+        self.internal_shutdown()
     }
 
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> R<U256> {
@@ -102,7 +103,9 @@ impl StorageTrading {
             oracle: oracle_addr,
         });
         // We call shutdown in the event this wasn't called in the past.
-        self.is_shutdown.set(true);
+        if !self.is_shutdown.get() {
+            self.internal_shutdown()?;
+        }
         Ok(U256::ZERO)
     }
 
@@ -148,4 +151,56 @@ impl StorageTrading {
             outcome,
         ))
     }
+}
+
+impl StorageTrading {
+    fn internal_shutdown(&mut self) -> R<U256> {
+        // Notify Longtail to pause trading on every outcome pool.
+        assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
+        factory_call::disable_shares(
+            self.factory_addr.get(),
+            &(0..self.outcome_list.len())
+                .map(|i| self.outcome_list.get(i).unwrap())
+                .collect::<Vec<_>>(),
+        )?;
+        self.is_shutdown.set(true);
+        Ok(U256::ZERO)
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+#[test]
+fn test_cant_recreate() {
+    use stylus_sdk::alloy_primitives::fixed_bytes;
+    crate::host::with_contract::<_, StorageTrading, _>(|c| {
+        c.ctor(
+            vec![
+                fixed_bytes!("0541d76af67ad076"),
+                fixed_bytes!("0541d76af67ad077"),
+            ],
+            Address::ZERO,
+            0,
+            u64::MAX,
+            Address::ZERO,
+            Address::ZERO,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            Error::AlreadyConstructed,
+            c.ctor(
+                vec![
+                    fixed_bytes!("0541d76af67ad076"),
+                    fixed_bytes!("0541d76af67ad077"),
+                ],
+                Address::ZERO,
+                0,
+                u64::MAX,
+                Address::ZERO,
+                Address::ZERO,
+                false,
+            )
+            .unwrap_err()
+        )
+    });
 }

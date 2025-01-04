@@ -62,43 +62,9 @@ impl StorageBeautyContest {
             global_shares - count_shares <= min_shares,
             Error::BeautyContestBadOutcomes
         );
-        // Now that we know the winner, we need to call shutdown, then decide on
-        // the contract. We're tolerable of shutdown failing if someone already
-        // called it (it should revert with Error::IsShutdown), since anyone
-        // could call this function.
-        let shutdown_comp = match trading_call::shutdown(trading_addr) {
-            Ok(v) => v,
-            Err(Error::TradingError(b)) => {
-                // This unpacks the shutdown message, continuing if all is okay. If it's
-                // not, then it returns, which causes the revert.
-                unpack_shutdown(&b)?;
-                U256::ZERO
-            }
-            err => err?,
-        };
-        let comp = shutdown_comp + trading_call::decide(trading_addr, winning_outcome)?;
+        // Now that we know the winner, we need to decide the outcome.
+        let comp = trading_call::decide(trading_addr, winning_outcome)?;
         fusdc_call::transfer(fee_recipient, comp)?;
         Ok(comp)
     }
-}
-
-// Attempt to unpack a shutdown byte combination from the contract call.
-// If we unpack the shutdown error, then we return Ok(()). If not, then
-// we revert with Error::TradingError.
-fn unpack_shutdown(b: &[u8]) -> Result<(), Error> {
-    if b == [0x99, 0x90, Error::IsShutdown.into()] {
-        Ok(())
-    } else {
-        Err(Error::TradingError(b.to_vec()))
-    }
-}
-
-#[test]
-fn test_unpack_shutdown() {
-    let resp = Vec::from(Error::NotPastDeadline);
-    assert_eq!(
-        Error::TradingError(resp.clone()),
-        unpack_shutdown(&resp).err().unwrap()
-    );
-    unpack_shutdown(&Vec::from(Error::IsShutdown)).unwrap();
 }

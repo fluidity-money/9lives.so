@@ -19,6 +19,8 @@ const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 const LensesV1 = require("../out/LensesV1.sol/LensesV1.json");
 const HelperFactory = require("../out/HelperFactory.sol/HelperFactory.json");
 
+const MaxU64 = (1 << 64) - 1;
+
 describe("End to end tests", async () => {
   const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
   const DEPLOY_KEY = process.env.SPN_SUPERPOSITION_KEY;
@@ -160,14 +162,14 @@ describe("End to end tests", async () => {
   const tradingAddr = await helperFactory.createWithCustom.staticCall(
       defaultAccountAddr, // Custom oracle
       outcomes,
-      timestamp + 100, // Time end
+      MaxU64, // Time end
       documentationHash,
       defaultAccountAddr, // Fee recipient
   );
   await (await helperFactory.createWithCustom(
       defaultAccountAddr, // Custom oracle
       outcomes,
-      timestamp + 100, // Time end
+      MaxU64, // Time end
       documentationHash,
       defaultAccountAddr, // Fee recipient
   )).wait();

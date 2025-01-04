@@ -26,7 +26,6 @@ sol! {
     function decide(bytes8 winner);
     function globalShares();
     function details(bytes8 outcome);
-    function shutdown();
     function escape();
 }
 
@@ -83,15 +82,6 @@ pub fn details(
                 }
                 .abi_encode(),
             )
-            .map_err(Error::TradingError)?,
-    )
-    .ok_or(Error::TradingUnableToUnpack)
-}
-
-pub fn shutdown(addr: Address) -> Result<U256, Error> {
-    unpack_u256(
-        &RawCall::new()
-            .call(addr, &shutdownCall {}.abi_encode())
             .map_err(Error::TradingError)?,
     )
     .ok_or(Error::TradingUnableToUnpack)

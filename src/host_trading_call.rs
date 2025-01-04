@@ -34,10 +34,6 @@ pub fn details(
     Ok((U256::ZERO, U256::ZERO, U256::ZERO, FixedBytes::ZERO))
 }
 
-pub fn shutdown(_addr: Address) -> Result<U256, Error> {
-    Ok(U256::ZERO)
-}
-
 pub fn escape(_addr: Address) -> Result<(), Error> {
     Ok(())
 }
