@@ -9,7 +9,9 @@ use alloy_primitives::{
     Address, Bytes, TxKind, U256,
 };
 use alloy_provider::{ext::DebugApi, Provider, RootProvider};
-use alloy_rpc_types_eth::{state::AccountOverride, TransactionInput, TransactionRequest};
+use alloy_rpc_types_eth::{
+    state::AccountOverride, BlockOverrides, TransactionInput, TransactionRequest,
+};
 use alloy_rpc_types_trace::geth::{
     mux::MuxConfig,
     CallConfig, CallFrame, DiffMode, GethDebugBuiltInTracerType, GethDebugTracingCallOptions,
@@ -54,12 +56,45 @@ async fn main() -> Result<(), Error> {
     static SENDER: OnceLock<Address> = OnceLock::new();
     static BLOCK: OnceLock<u64> = OnceLock::new();
     static ADDR: OnceLock<Address> = OnceLock::new();
+    static TIMESTAMP: OnceLock<i64> = OnceLock::new();
 
     SENDER
         .set(Address::from_str(&args.sender).unwrap())
         .unwrap();
     BLOCK.set(args.block).unwrap();
+
+    static PROVIDER: OnceLock<Mutex<RootProvider<alloy_transport_http::Http<reqwest::Client>>>> =
+        OnceLock::new();
+    PROVIDER
+        .set(Mutex::new(RootProvider::new_http(
+            Url::parse("http://localhost:9999").unwrap(),
+        )))
+        .unwrap();
+
     ADDR.set(Address::from_str(&args.addr).unwrap()).unwrap();
+    TIMESTAMP
+        .set(
+            u64::from_be_bytes(
+                PROVIDER
+                    .get()
+                    .unwrap()
+                    .lock()
+                    .await
+                    .get_block_by_number(
+                        BlockNumberOrTag::Number(args.block),
+                        BlockTransactionsKind::Hashes,
+                    )
+                    .await
+                    .unwrap()
+                    .unwrap()
+                    .header
+                    .timestamp
+                    .to_be_bytes(),
+            )
+            .try_into()
+            .unwrap(),
+        )
+        .unwrap();
 
     // We always set the calldata here, though we won't use it since
     // presumably the application won't read from it if we run the tests
@@ -74,14 +109,6 @@ async fn main() -> Result<(), Error> {
 
     let mut store: Store<()> = Store::new(&engine, ());
     let mut linker = Linker::new(&engine);
-
-    static PROVIDER: OnceLock<Mutex<RootProvider<alloy_transport_http::Http<reqwest::Client>>>> =
-        OnceLock::new();
-    PROVIDER
-        .set(Mutex::new(RootProvider::new_http(
-            Url::parse("http://localhost:9999").unwrap(),
-        )))
-        .unwrap();
 
     // Storage written is used to store the storage that we've committed to storage, or
     // storage used by other contracts. The 0 word is used by our contract.
@@ -175,7 +202,9 @@ async fn main() -> Result<(), Error> {
          _endowment: i32,
          _contract: i32,
          _revert_data_len: i32| {
-            // Use const_keccak for whatever we have, and return it.
+            // Simulate a creation by simulating the deployment of the contract using
+            // a prestate tracer, then remembering the runtime code at the post state
+            // address the same way we remember other state changes. Store the address.
         },
     )?;
     linker.func_wrap(
@@ -188,7 +217,7 @@ async fn main() -> Result<(), Error> {
          _salt: i32,
          _contract: i32,
          _revert_data_len: i32| {
-            // Use const_keccak for whatever we have, and return it.
+            // Use a similar process as create1.
         },
     )?;
     linker.func_wrap_async(
@@ -344,7 +373,11 @@ async fn main() -> Result<(), Error> {
                                 );
                                 h
                             }),
-                            block_overrides: None,
+                            block_overrides: Some({
+                                let mut b = BlockOverrides::default();
+                                b.time = Some(*TIMESTAMP.get().unwrap() as u64);
+                                b
+                            }),
                             state_overrides: Some(
                                 STATE_OVERRIDES.get().unwrap().lock().await.clone(),
                             ),
@@ -416,34 +449,9 @@ async fn main() -> Result<(), Error> {
             })
         },
     )?;
-    linker.func_wrap_async(
-        "vm_hooks",
-        "block_timestamp",
-        |_: Caller<_>, _: ()| -> Box<dyn Future<Output = i64> + Send> {
-            Box::new(async move {
-                let block = BLOCK.get().unwrap();
-                u64::from_be_bytes(
-                    PROVIDER
-                        .get()
-                        .unwrap()
-                        .lock()
-                        .await
-                        .get_block_by_number(
-                            BlockNumberOrTag::Number(*block),
-                            BlockTransactionsKind::Hashes,
-                        )
-                        .await
-                        .unwrap()
-                        .unwrap()
-                        .header
-                        .timestamp
-                        .to_be_bytes(),
-                )
-                .try_into()
-                .unwrap()
-            })
-        },
-    )?;
+    linker.func_wrap("vm_hooks", "block_timestamp", |_: Caller<_>| -> i64 {
+        *TIMESTAMP.get().unwrap()
+    })?;
     linker.func_wrap(
         "vm_hooks",
         "delegate_call_contract",
@@ -469,13 +477,6 @@ async fn main() -> Result<(), Error> {
         "return_data_size",
         |_: Caller<_>, ()| -> Box<dyn Future<Output = i32> + Send> {
             Box::new(async move {
-                dbg!(LAST_CALL_CALLDATA
-                    .get()
-                    .unwrap()
-                    .lock()
-                    .await
-                    .clone()
-                    .map_or(0, |x| x.len()) as i32);
                 LAST_CALL_CALLDATA
                     .get()
                     .unwrap()
@@ -565,6 +566,38 @@ async fn main() -> Result<(), Error> {
     )?;
     linker.func_wrap("vm_hooks", "pay_for_memory_grow", |_: Caller<_>, _: i32| {})?;
 
+    // Handy console logging functions that Stylus gives us.
+    linker.func_wrap("console", "log_f32", |_: Caller<_>, value: f32| {
+        eprintln!("log: {value}");
+    })?;
+    linker.func_wrap("console", "log_f64", |_: Caller<_>, value: f64| {
+        eprintln!("log: {value}");
+    })?;
+    linker.func_wrap("console", "log_i32", |_: Caller<_>, value: i32| {
+        eprintln!("log: {value}");
+    })?;
+    linker.func_wrap("console", "log_i64", |_: Caller<_>, value: i64| {
+        eprintln!("log: {value}");
+    })?;
+
+    linker.func_wrap(
+        "console",
+        "log_txt",
+        |mut caller: Caller<_>, ptr: i32, len: i32| {
+            let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+            let mut buf = Vec::with_capacity(len as usize);
+            unsafe {
+                std::ptr::copy(
+                    mem.data_ptr(&mut caller).offset(ptr as isize),
+                    buf.as_mut_ptr(),
+                    len as usize,
+                );
+                buf.set_len(len as usize);
+            }
+            eprintln!("{}", String::from_utf8(buf).unwrap())
+        },
+    )?;
+
     linker.func_wrap(
         "stylus_interpreter",
         "die",
@@ -579,16 +612,63 @@ async fn main() -> Result<(), Error> {
                 );
                 buf.set_len(len as usize);
             }
-            eprintln!("{}", String::from_utf8(buf).unwrap());
+            eprintln!("exit: {}", String::from_utf8(buf).unwrap());
             process::exit(code);
             #[allow(unused)]
             Ok(())
+        },
+    )?;
+    // Custom features defined by us for varying reasons.
+    linker.func_wrap(
+        "stylus_test_runner",
+        "set_msg_sender",
+        |mut caller: Caller<_>, ptr: i32| {
+            // Set the msg::sender to the storage that we have.
+            let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+            let mut arr = [0_u8; 20];
+            unsafe {
+                std::ptr::copy(
+                    mem.data_ptr(&mut caller).offset(ptr as isize),
+                    arr.as_mut_ptr(),
+                    20,
+                );
+            }
+        },
+    )?;
+    linker.func_wrap(
+        "stylus_test_runner",
+        "wasm_request_rand",
+        |mut caller: Caller<_>, ptr: i32, len: i32| {
+            // Get some random for the user from the PRG (100 bits).
+            let mut buf = Vec::with_capacity(len as usize);
+            getrandom::getrandom(&mut buf).unwrap();
+            let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+            mem.write(&mut caller, ptr as usize, &buf).unwrap();
         },
     )?;
 
     let instance = linker.instantiate_async(&mut store, &module).await?;
 
     if args.run_tests {
+        let exports = instance
+            .exports(&mut store)
+            .map(|x| x.name().to_owned())
+            .collect::<Vec<_>>();
+        for f_name in exports {
+            if f_name.starts_with("stylus_interpreter_test") {
+                let mut results = Vec::with_capacity(1);
+                match instance.get_func(&mut store, &f_name).unwrap().call(
+                    &mut store,
+                    &[],
+                    &mut results,
+                ) {
+                    Ok(_) => (),
+                    err => {
+                        eprintln!("fname {f_name}: {:?}", err)
+                    }
+                }
+            }
+        }
     } else {
         let entrypoint = instance.get_typed_func::<i32, i32>(&mut store, "user_entrypoint")?;
         eprintln!(
