@@ -13,6 +13,23 @@ use crate::error::Error;
 +--------------+--------------+-------------------+----------+
 */
 
+#[repr(C)]
+pub enum InfraMarketState {
+    Callable,
+    Closable,
+    Whinging,
+    Predicting,
+    Revealing,
+    Sweeping,
+    Closed
+}
+
+impl From<InfraMarketState> for u8 {
+    fn from(v: InfraMarketState) -> Self {
+        v as u8
+    }
+}
+
 macro_rules! define_period_checker {
     ($func_name:ident, $when:ident, $from_days:expr, $unset_err:ident, $days:expr) => {
         pub fn $func_name($when: U64, current_ts: u64) -> Result<bool, Error> {

@@ -124,16 +124,16 @@ impl StorageInfraMarket {
     ) -> R<U256> {
         assert_or!(self.enabled.get(), Error::NotEnabled);
         assert_or!(
+            !self.campaign_call_deadline.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
+        assert_or!(
             self.campaign_call_begins.get(trading_addr) < U64::from(block_timestamp()),
             Error::NotInsideCallingPeriod
         );
         assert_or!(
             self.campaign_call_deadline.get(trading_addr) > U64::from(block_timestamp()),
             Error::PastCallingDeadline
-        );
-        assert_or!(
-            !self.campaign_call_deadline.get(trading_addr).is_zero(),
-            Error::NotRegistered
         );
         assert_or!(!winner.is_zero(), Error::BadWinner);
         // Though we allow the outcome to be inconclusive through the predict
@@ -238,6 +238,7 @@ impl StorageInfraMarket {
         }
         let campaign_what_called = e.campaign_what_called.get();
         e.campaign_winner.set(campaign_what_called);
+        e.campaign_winner_set.set(true);
         evm::log(events::InfraMarketClosed {
             incentiveRecipient: fee_recipient,
             tradingAddr: trading_addr,
@@ -300,6 +301,61 @@ impl StorageInfraMarket {
             .getter(self.cur_epochs.get(trading))
             .campaign_winner
             .get())
+    }
+
+    pub fn status(&self, trading_addr: Address) -> R<(u8, u64)> {
+        assert_or!(self.enabled.get(), Error::NotEnabled);
+        assert_or!(
+            !self.campaign_call_deadline.get(trading_addr).is_zero(),
+            Error::NotRegistered
+        );
+        let epochs = self.epochs.get(trading_addr);
+        let e = epochs.getter(self.cur_epochs.get(trading_addr));
+        let when_called = e.campaign_when_called.get();
+        let has_called = !when_called.is_zero();
+        let is_winner_set = e.campaign_winner_set.get();
+        let has_whinged = !e.campaign_when_whinged.get().is_zero();
+        let when_whinged = e.campaign_when_whinged.get();
+        let block_timestamp = u64::from_be_bytes(block_timestamp().to_be_bytes());
+        let time_since_called = block_timestamp - u64::from_be_bytes(when_called.to_be_bytes());
+        let time_since_whinged = block_timestamp - u64::from_be_bytes(when_whinged.to_be_bytes());
+        let (state, time) = match true {
+            // If the winner wasn't called, and no-one has called, then we're callable.
+            _ if !is_winner_set && !has_called => {
+                let call_deadline =
+                    u64::from_be_bytes(self.campaign_call_deadline.get(trading_addr).to_be_bytes());
+                (
+                    InfraMarketState::Callable,
+                    // For the time remaining to be called, the time until the deadline is sufficient.
+                    if call_deadline > block_timestamp {
+                        u64::from_be_bytes((call_deadline - block_timestamp).to_be_bytes())
+                    } else {
+                        0
+                    },
+                )
+            }
+            // If the winner was called, but no-one has whinged, and we're within two
+            // days, then we're whinging.
+            _ if time_since_called < TWO_DAYS && !has_whinged => {
+                (InfraMarketState::Whinging, TWO_DAYS - time_since_called)
+            }
+            // If the winner was called, but no-one whinged, and we're outside two days,
+            // then we're callable.
+            _ if time_since_called > TWO_DAYS && !has_whinged => (InfraMarketState::Closable, 0),
+            // If the winner was declared, two days has passed, and we're in a state where
+            // no-one whinged, then we need to assume we were closed.
+            _ if time_since_called > TWO_DAYS && !has_whinged => (InfraMarketState::Closed, 0),
+            // If we're within two days after the whinge, then we're in a state of predicting.
+            _ if time_since_whinged < TWO_DAYS => (InfraMarketState::Predicting, TWO_DAYS - time_since_whinged),
+            // If we're past two days after the whinge, then we're in a state of revealing.
+            _ if time_since_whinged > TWO_DAYS => {
+                (InfraMarketState::Revealing, FOUR_DAYS - time_since_whinged)
+            }
+            // If we're past four days after the whing, then we're in a state of sweeping.
+            _ if time_since_whinged > FOUR_DAYS => (InfraMarketState::Closed, 0),
+            _ => unreachable!(), // We're in a strange internal state that should be impossible.
+        };
+        Ok((state.into(), time))
     }
 
     // This function must be called during the predicting period. It's
