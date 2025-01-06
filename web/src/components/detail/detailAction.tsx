@@ -202,10 +202,7 @@ export default function DetailCall2Action({
           rel="noopener,noreferrer"
           className="contents"
         >
-          <Button
-            size={"medium"}
-            className={"flex-1"}
-          >
+          <Button size={"medium"} className={"flex-1"}>
             <div className="flex items-center justify-center gap-1">
               <span className="font-chicago text-sm uppercase">Provide LP</span>
               <Image src={LinkIcon} alt="" width={14} />
