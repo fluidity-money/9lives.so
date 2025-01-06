@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
 import RightCaretIcon from "#/icons/right-caret.svg";
-import { useUserStore } from "@/stores/userStore";
+import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
 export default function DegenModeButton() {
-  const toggleDegenMode = useUserStore((s) => s.toggleDegenMode);
-  const degenModeEnabled = useUserStore((s) => s.degenModeEnabled);
+  const toggleDegenMode = useDegenStore((s) => s.toggleDegenMode);
+  const degenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   return (
     <button
       className={combineClass(

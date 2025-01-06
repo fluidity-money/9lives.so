@@ -2,10 +2,17 @@ import { Action } from "@/types";
 import { create } from "zustand";
 
 interface DegenStore {
+  degenModeEnabled: boolean;
+  toggleDegenMode: () => void;
   actions: Action[];
   pushActions: (actions: Action[]) => void;
 }
 export const useDegenStore = create<DegenStore>()((set) => ({
+  degenModeEnabled: true,
+  toggleDegenMode: () =>
+    set(({ degenModeEnabled }) => ({
+      degenModeEnabled: !degenModeEnabled,
+    })),
   actions: [],
   pushActions: (actions: Action[]) =>
     set((state) => {

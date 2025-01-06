@@ -5,7 +5,7 @@ import { useDegenStore } from "@/stores/degenStore";
 
 export default function DegenModeList() {
   const actions = useDegenStore((state) => state.actions);
-  const degenModeEnabled = useUserStore((state) => state.degenModeEnabled);
+  const degenModeEnabled = useDegenStore((state) => state.degenModeEnabled);
   if (!degenModeEnabled) return null;
   return (
     <div className="relative h-auto w-[400px] overflow-y-hidden border-l-2 border-l-9black bg-9layer">
