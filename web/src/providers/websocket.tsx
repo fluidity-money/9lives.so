@@ -84,7 +84,7 @@ export default function WebSocketProvider() {
         next: async ({ data }) => {
           const buys = data?.ninelives_events_shares_minted;
           if (buys) {
-            await queryClient.refetchQueries({ queryKey: ["campaigns"] });
+            await queryClient.fetchQuery({ queryKey: ["campaigns"] });
             const campaigns = queryClient.getQueryData<Campaign[]>([
               "campaigns",
             ]);
