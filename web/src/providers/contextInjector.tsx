@@ -3,12 +3,12 @@
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import { useEffect } from "react";
 import { setTag, setUser } from "@sentry/nextjs";
-import { useUserStore } from "@/stores/userStore";
+import { useDegenStore } from "@/stores/degenStore";
 
 export default function ContextInjector() {
   const account = useActiveAccount();
   const chain = useActiveWalletChain();
-  const degenModeEnabled = useUserStore((state) => state.degenModeEnabled);
+  const degenModeEnabled = useDegenStore((state) => state.degenModeEnabled);
 
   useEffect(() => {
     if (account?.address) {
