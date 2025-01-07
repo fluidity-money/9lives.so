@@ -12,6 +12,7 @@ CREATE TABLE ninelives_buys_and_sells_1 (
     type VARCHAR(4) CHECK (type IN ('buy', 'sell')) NOT NULL,
     spender ADDRESS NOT NULL,
     recipient ADDRESS NOT NULL,
+    total_volume HUGEINT NOT NULL,
     campaign_id TEXT REFERENCES ninelives_campaigns_1 (id),
     campaign_content JSONB NOT NULL
 );
@@ -22,11 +23,18 @@ RETURNS TRIGGER LANGUAGE plpgsql AS $$
 DECLARE
     campaign_id TEXT;
     campaign_content JSONB;
+	total_volume HUGEINT;
 BEGIN
  	SELECT id, content
     INTO campaign_id, campaign_content
     FROM ninelives_campaigns_1
     WHERE content::text LIKE CONCAT('%', '0x', LEFT(NEW.identifier, 16), '%');
+
+	SELECT SUM(fusdc_spent)
+	INTO total_volume
+	FROM ninelives_events_shares_minted
+	WHERE emitter_addr = NEW.emitter_addr
+	GROUP BY emitter_addr;
 	
 	INSERT INTO ninelives_buys_and_sells_1 (
 		transaction_hash,
@@ -41,6 +49,7 @@ BEGIN
 		type,
 		spender,
 		recipient,
+		total_volume,
 		campaign_id,
 		campaign_content
 	)
@@ -57,6 +66,7 @@ BEGIN
 		'buy',
 		NEW.spender,
 		NEW.recipient,
+		total_volume,
 		campaign_id,
 		campaign_content
 	);
