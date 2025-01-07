@@ -174,6 +174,7 @@ const useBuy = ({
           });
           res(null);
         } catch (e) {
+          console.error("buying: ", e);
           rej(e);
         }
       }),
