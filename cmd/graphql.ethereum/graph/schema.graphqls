@@ -48,7 +48,8 @@ input OutcomeInput {
 
 type Mutation {
   """
-  "Explain" a campaign, so an on-chain campaign creation is listed in the frontend. Campaign is then spooled in a would-be frontend aggregation table.
+  "Explain" a campaign, so an on-chain campaign creation is listed in the frontend.
+  Campaign is then spooled in a would-be frontend aggregation table.
   """
   explainCampaign(
     """
@@ -98,14 +99,16 @@ type Mutation {
     creator: String!
 
     """
-    Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
+    Oracle description defines under which conditions campaigns conclude if infra market
+    used as settlement source.
     """
     oracleDescription: String
-    
+
     """
-    Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+    Oracle URLs are helper sources for documents when the infrastructure market is used as
+    a settlement source.
     """
-		oracleUrls: [String]
+    oracleUrls: [String]
 
     """
     X/Twitter username
@@ -121,6 +124,44 @@ type Mutation {
     Web url
     """
     web: String
+  ): Boolean
+
+  """
+  Reveal a commitment, including a hash, to the server. It's okay for us to be
+  permissive with the input that we accept, since a sophisticated worker will simulate
+  these calls to identify the correct approach for submitting on behalf of a user. If
+  a user were to spam submissions, the impact would be negligible thankfully. However,
+  in those degraded scenarios where we pass 10 submissions, in the calling of this
+  function, it's possible for the backend to notify the frontend that it needs to use
+  revealCommitment2, which takes a signature. This will always return false,
+  unless the frontend should be prompted to provide a signature.
+  """
+  revealCommitment(
+      """
+      In this highly simplified form, this is the Trading address to provide the
+      commitment for. This information will be kept until the contract goes into a state
+      of being able to be predicted (after the whinge is picked up on).
+      """
+      tradingAddr: String,
+
+      """
+      The sender's address. This is needed to simulate and then send the call. If someone
+      were to abuse this permissionless process, the degraded form would be the frontend
+      needing to be prompted for a signature before accepting submissions. The backend
+      will deduplicate this once the time has begun.
+      """
+      sender: String,
+
+      """
+      The seed that's in use for this commitment. This is a large number, so this is in
+      base10 as a string, which is handled with Go.
+      """
+      seed: String,
+
+      """
+      The preferred outcome, hex identified, preceded with 0x.
+      """
+      preferredOutcome: String,
   ): Boolean
 }
 
