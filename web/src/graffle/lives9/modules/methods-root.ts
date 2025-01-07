@@ -154,7 +154,8 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * "Explain" a campaign, so an on-chain campaign creation is listed in the frontend. Campaign is then spooled in a would-be frontend aggregation table.
+   * "Explain" a campaign, so an on-chain campaign creation is listed in the frontend.
+   * Campaign is then spooled in a would-be frontend aggregation table.
    */
   explainCampaign: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
@@ -172,6 +173,62 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
             $$Schema.Schema<$Context["scalars"]>
           >,
           "explainCampaign"
+        >
+    >
+  >;
+  /**
+   * Reveal a commitment, including a hash, to the server. It's okay for us to be
+   * permissive with the input that we accept, since a sophisticated worker will simulate
+   * these calls to identify the correct approach for submitting on behalf of a user. If
+   * a user were to spam submissions, the impact would be negligible thankfully. However,
+   * in those degraded scenarios where we pass 10 submissions, in the calling of this
+   * function, it's possible for the backend to notify the frontend that it needs to use
+   * revealCommitment2, which takes a signature. This will always return false,
+   * unless the frontend should be prompted to provide a signature.
+   */
+  revealCommitment: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet?: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.revealCommitment<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { revealCommitment: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "revealCommitment"
+        >
+    >
+  >;
+  /**
+   * The degraded form of revealCommitment, this is a version that needs to be used when
+   * there's an overabundance of signatures (more than 10), perhaps indicating some form of
+   * griefing. This should begin to be used after the server has indicated receipt of
+   * revealCommitment, but it's returned true. It's identical to revealCommitment, except
+   * gated with a signature, and will reject the user's submission unless they provide a
+   * correct signature. True will always be returned here.
+   */
+  revealCommitment2: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet?: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.revealCommitment2<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { revealCommitment2: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "revealCommitment2"
         >
     >
   >;

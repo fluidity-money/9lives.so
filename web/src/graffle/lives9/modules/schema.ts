@@ -110,6 +110,8 @@ export namespace Schema {
     fields: {
       __typename: Mutation.__typename;
       explainCampaign: Mutation.explainCampaign;
+      revealCommitment: Mutation.revealCommitment;
+      revealCommitment2: Mutation.revealCommitment2;
     };
   }
 
@@ -125,7 +127,8 @@ export namespace Schema {
     }
 
     /**
-     * "Explain" a campaign, so an on-chain campaign creation is listed in the frontend. Campaign is then spooled in a would-be frontend aggregation table.
+     * "Explain" a campaign, so an on-chain campaign creation is listed in the frontend.
+     * Campaign is then spooled in a would-be frontend aggregation table.
      */
     export interface explainCampaign extends $.OutputField {
       name: "explainCampaign";
@@ -213,7 +216,8 @@ export namespace Schema {
           namedType: $$NamedTypes.$$String;
         };
         /**
-         * Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
+         * Oracle description defines under which conditions campaigns conclude if infra market
+         * used as settlement source.
          */
         oracleDescription: {
           kind: "InputField";
@@ -222,7 +226,8 @@ export namespace Schema {
           namedType: $$NamedTypes.$$String;
         };
         /**
-         * Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+         * Oracle URLs are helper sources for documents when the infrastructure market is used as
+         * a settlement source.
          */
         oracleUrls: {
           kind: "InputField";
@@ -254,6 +259,153 @@ export namespace Schema {
         web: {
           kind: "InputField";
           name: "web";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Reveal a commitment, including a hash, to the server. It's okay for us to be
+     * permissive with the input that we accept, since a sophisticated worker will simulate
+     * these calls to identify the correct approach for submitting on behalf of a user. If
+     * a user were to spam submissions, the impact would be negligible thankfully. However,
+     * in those degraded scenarios where we pass 10 submissions, in the calling of this
+     * function, it's possible for the backend to notify the frontend that it needs to use
+     * revealCommitment2, which takes a signature. This will always return false,
+     * unless the frontend should be prompted to provide a signature.
+     */
+    export interface revealCommitment extends $.OutputField {
+      name: "revealCommitment";
+      arguments: {
+        /**
+         * In this highly simplified form, this is the Trading address to provide the
+         * commitment for. This information will be kept until the contract goes into a state
+         * of being able to be predicted (after the whinge is picked up on).
+         */
+        tradingAddr: {
+          kind: "InputField";
+          name: "tradingAddr";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The sender's address. This is needed to simulate and then send the call. If someone
+         * were to abuse this permissionless process, the degraded form would be the frontend
+         * needing to be prompted for a signature before accepting submissions. The backend
+         * will deduplicate this once the time has begun.
+         */
+        sender: {
+          kind: "InputField";
+          name: "sender";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The seed that's in use for this commitment. This is a large number, so this is in
+         * base10 as a string, which is handled with Go.
+         */
+        seed: {
+          kind: "InputField";
+          name: "seed";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The preferred outcome, hex identified, preceded with 0x.
+         */
+        preferredOutcome: {
+          kind: "InputField";
+          name: "preferredOutcome";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * The degraded form of revealCommitment, this is a version that needs to be used when
+     * there's an overabundance of signatures (more than 10), perhaps indicating some form of
+     * griefing. This should begin to be used after the server has indicated receipt of
+     * revealCommitment, but it's returned true. It's identical to revealCommitment, except
+     * gated with a signature, and will reject the user's submission unless they provide a
+     * correct signature. True will always be returned here.
+     */
+    export interface revealCommitment2 extends $.OutputField {
+      name: "revealCommitment2";
+      arguments: {
+        /**
+         * In this highly simplified form, this is the Trading address to provide the
+         * commitment for. This information will be kept until the contract goes into a state
+         * of being able to be predicted (after the whinge is picked up on).
+         */
+        tradingAddr: {
+          kind: "InputField";
+          name: "tradingAddr";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The sender's address. This is needed to simulate and then send the call. If someone
+         * were to abuse this permissionless process, the degraded form would be the frontend
+         * needing to be prompted for a signature before accepting submissions. The backend
+         * will deduplicate this once the time has begun.
+         */
+        sender: {
+          kind: "InputField";
+          name: "sender";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The seed that's in use for this commitment. This is a large number, so this is in
+         * base10 as a string, which is handled with Go.
+         */
+        seed: {
+          kind: "InputField";
+          name: "seed";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The preferred outcome, hex identified, preceded with 0x.
+         */
+        preferredOutcome: {
+          kind: "InputField";
+          name: "preferredOutcome";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
+         * prefix.
+         */
+        rr: {
+          kind: "InputField";
+          name: "rr";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The signature proof, derived from the private key and hash of this submission
+         * concenated left to right. Hex encoded, with the 0x prefix.
+         */
+        s: {
+          kind: "InputField";
+          name: "s";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The recovery ID (27) for the private key used for this signature. A Int.
+         */
+        v: {
+          kind: "InputField";
+          name: "v";
           inlineType: [0];
           namedType: $$NamedTypes.$$String;
         };

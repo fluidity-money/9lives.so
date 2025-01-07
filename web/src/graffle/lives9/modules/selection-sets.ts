@@ -270,6 +270,22 @@ export interface Mutation<
   explainCampaign?:
     | Mutation.explainCampaign<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.explainCampaign<_$Scalars>>;
+  /**
+   *
+   * Select the `revealCommitment` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  revealCommitment?:
+    | Mutation.revealCommitment$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.revealCommitment<_$Scalars>>;
+  /**
+   *
+   * Select the `revealCommitment2` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  revealCommitment2?:
+    | Mutation.revealCommitment2$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.revealCommitment2<_$Scalars>>;
 
   /**
    *
@@ -363,11 +379,13 @@ export namespace Mutation {
      */
     creator: string;
     /**
-     * Oracle description defines under which conditions campaigns conclude if infra market used as settlement source
+     * Oracle description defines under which conditions campaigns conclude if infra market
+     * used as settlement source.
      */
     oracleDescription?: string | undefined | null;
     /**
-     * Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
+     * Oracle URLs are helper sources for documents when the infrastructure market is used as
+     * a settlement source.
      */
     oracleUrls?: Array<string | undefined | null> | undefined | null;
     /**
@@ -397,6 +415,147 @@ export namespace Mutation {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<explainCampaign$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type revealCommitment<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | revealCommitment$SelectionSet<_$Scalars>;
+
+  export interface revealCommitment$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `revealCommitment` field. No arguments are required so you may omit this.
+     */
+    $?: revealCommitment$Arguments<_$Scalars>;
+  }
+
+  export interface revealCommitment$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    /**
+     * In this highly simplified form, this is the Trading address to provide the
+     * commitment for. This information will be kept until the contract goes into a state
+     * of being able to be predicted (after the whinge is picked up on).
+     */
+    tradingAddr?: string | undefined | null;
+    /**
+     * The sender's address. This is needed to simulate and then send the call. If someone
+     * were to abuse this permissionless process, the degraded form would be the frontend
+     * needing to be prompted for a signature before accepting submissions. The backend
+     * will deduplicate this once the time has begun.
+     */
+    sender?: string | undefined | null;
+    /**
+     * The seed that's in use for this commitment. This is a large number, so this is in
+     * base10 as a string, which is handled with Go.
+     */
+    seed?: string | undefined | null;
+    /**
+     * The preferred outcome, hex identified, preceded with 0x.
+     */
+    preferredOutcome?: string | undefined | null;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `revealCommitment` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type revealCommitment$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | revealCommitment$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type revealCommitment2<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | revealCommitment2$SelectionSet<_$Scalars>;
+
+  export interface revealCommitment2$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `revealCommitment2` field. No arguments are required so you may omit this.
+     */
+    $?: revealCommitment2$Arguments<_$Scalars>;
+  }
+
+  export interface revealCommitment2$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    /**
+     * In this highly simplified form, this is the Trading address to provide the
+     * commitment for. This information will be kept until the contract goes into a state
+     * of being able to be predicted (after the whinge is picked up on).
+     */
+    tradingAddr?: string | undefined | null;
+    /**
+     * The sender's address. This is needed to simulate and then send the call. If someone
+     * were to abuse this permissionless process, the degraded form would be the frontend
+     * needing to be prompted for a signature before accepting submissions. The backend
+     * will deduplicate this once the time has begun.
+     */
+    sender?: string | undefined | null;
+    /**
+     * The seed that's in use for this commitment. This is a large number, so this is in
+     * base10 as a string, which is handled with Go.
+     */
+    seed?: string | undefined | null;
+    /**
+     * The preferred outcome, hex identified, preceded with 0x.
+     */
+    preferredOutcome?: string | undefined | null;
+    /**
+     * The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
+     * prefix.
+     */
+    rr?: string | undefined | null;
+    /**
+     * The signature proof, derived from the private key and hash of this submission
+     * concenated left to right. Hex encoded, with the 0x prefix.
+     */
+    s?: string | undefined | null;
+    /**
+     * The recovery ID (27) for the private key used for this signature. A Int.
+     */
+    v?: string | undefined | null;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `revealCommitment2` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type revealCommitment2$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    | $Select.Indicator.NoArgsIndicator
+    | revealCommitment2$SelectionSet<_$Scalars>
+  >;
 }
 
 //

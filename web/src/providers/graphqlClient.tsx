@@ -1,10 +1,14 @@
 import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
+import { Lives9Subscriptions } from "@/graffle/lives9Sub/__";
 import { Points } from "@/graffle/points/__";
 import { OutcomeInput } from "@/types";
 
 const graph9Lives = Lives9.create().transport({
   url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
+});
+const graph9LivesSubs = Lives9Subscriptions.create().transport({
+  url: appConfig.NEXT_PUBLIC_WS_URL,
 });
 const graphPoints = Points.create().transport({
   url: appConfig.NEXT_PUBLIC_POINTS_URL,
@@ -89,3 +93,26 @@ export const requestCreateCampaign = (params: {
     },
   });
 export const requestGetAITitles = graph9Lives.query.suggestedHeadlines();
+
+export const requestBuysAndSells = (limit?: number) =>
+  graph9LivesSubs.gql(`
+    query {
+      ninelives_buys_and_sells_1(limit: ${limit ?? 10}, order_by: {created_by: desc}) {
+        to_amount
+    to_symbol
+    transaction_hash
+    recipient
+    spender
+    block_hash
+    block_number
+    campaign_id
+    created_by
+    emitter_addr
+    from_amount
+    from_symbol
+    type
+    total_volume
+    campaign_content
+      }
+    }
+  `).send;

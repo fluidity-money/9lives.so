@@ -308,6 +308,58 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    revealCommitment: {
+      a: {
+        tradingAddr: {
+          nt: String,
+          it: [0],
+        },
+        sender: {
+          nt: String,
+          it: [0],
+        },
+        seed: {
+          nt: String,
+          it: [0],
+        },
+        preferredOutcome: {
+          nt: String,
+          it: [0],
+        },
+      },
+    },
+    revealCommitment2: {
+      a: {
+        tradingAddr: {
+          nt: String,
+          it: [0],
+        },
+        sender: {
+          nt: String,
+          it: [0],
+        },
+        seed: {
+          nt: String,
+          it: [0],
+        },
+        preferredOutcome: {
+          nt: String,
+          it: [0],
+        },
+        rr: {
+          nt: String,
+          it: [0],
+        },
+        s: {
+          nt: String,
+          it: [0],
+        },
+        v: {
+          nt: String,
+          it: [0],
+        },
+      },
+    },
   },
 };
 
