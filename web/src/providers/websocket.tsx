@@ -22,13 +22,23 @@ const subTenLatestCreate = `
 `;
 const subTenLatestBuy = `
 subscription {
-  ninelives_events_shares_minted(limit: 10, order_by: {created_by: desc}) {
-    fusdc_spent
+  ninelives_buys_and_sells_1(limit: 10, order_by: {created_by: desc}) {
+    to_amount
+    to_symbol
+    transaction_hash
+    recipient
     spender
-    id
-    identifier
-    share_amount
+    block_hash
+    block_number
+    outcome_id
+    campaign_id
     created_by
+    emitter_addr
+    from_amount
+    from_symbol
+    type
+    total_volume
+    campaign_content
   }
 }
 `;
@@ -69,44 +79,48 @@ export default function WebSocketProvider() {
         },
       },
     );
-    const unsubBuyEvents = wsClient.subscribe<{
-      ninelives_events_shares_minted: {
-        id: number;
-        identifier: string;
-        fusdc_spent: number;
-        share_amount: number;
-        spender: string;
+    const unsubBuyAndSellEvents = wsClient.subscribe<{
+      ninelives_buys_and_sells_1: {
+        to_amount: number;
+        to_symbol: string;
+        transaction_hash: `0x${string}`;
+        recipient: `0x${string}`;
+        spender: `0x${string}`;
+        block_hash: string;
+        block_number: number;
+        outcome_id: `0x${string}`;
+        campaign_id: `0x${string}`;
         created_by: string;
+        emitter_addr: `0x${string}`;
+        from_amount: number;
+        from_symbol: string;
+        type: "buy" | "sell";
+        total_volume: number;
+        campaign_content: Campaign;
       }[];
     }>(
       { query: subTenLatestBuy },
       {
         next: async ({ data }) => {
-          const buys = data?.ninelives_events_shares_minted;
-          if (buys) {
-            await queryClient.fetchQuery({ queryKey: ["campaigns"] });
-            const campaigns = queryClient.getQueryData<Campaign[]>([
-              "campaigns",
-            ]);
-            const actions: Action[] = buys.map((buy) => {
-              const actionCampaign = campaigns?.find(
-                (c) =>
-                  !!c.outcomes.find(
-                    (o) => o.identifier === `0x${buy.identifier.slice(0, 16)}`,
-                  ),
-              );
+          const events = data?.ninelives_buys_and_sells_1;
+          if (events) {
+            const actions: Action[] = events.map((event) => {
               return {
-                id: buy.identifier + buy.id,
-                type: "buy",
-                campaignId: actionCampaign?.identifier ?? "0x",
-                campaignName: actionCampaign?.name ?? "Unknown campaign",
-                timestamp: buy.created_by,
-                campaignPic: actionCampaign?.picture ?? "",
-                actionValue: "$" + formatUnits(buy.fusdc_spent, 6),
-                outcomeName:
-                  actionCampaign?.outcomes.find(
-                    (o) => o.identifier === `0x${buy.identifier.slice(0, 16)}`,
-                  )?.name || "Unknown outcome",
+                id: event.transaction_hash,
+                type: event.type,
+                campaignId: event.campaign_id,
+                campaignName: event.campaign_content.name,
+                timestamp: event.created_by,
+                campaignPic: event.campaign_content.picture,
+                campaignVol: (event.total_volume / 1e6).toFixed(2),
+                actionValue: (
+                  (event.from_symbol === "FUSDC"
+                    ? event.from_amount
+                    : event.to_amount) / 1e6
+                ).toFixed(2),
+                outcomeName: event.campaign_content.outcomes.find(
+                  (o) => o.identifier === event.outcome_id,
+                )?.name,
               };
             });
             pushActions(actions);
@@ -122,7 +136,7 @@ export default function WebSocketProvider() {
     );
     return () => {
       unsubCreateEvents();
-      unsubBuyEvents();
+      unsubBuyAndSellEvents();
     };
   }, [queryClient]);
 
