@@ -16,6 +16,7 @@ use lib9lives::{
     utils::{
         block_timestamp, msg_sender, strat_address_not_empty, strat_fixed_bytes, strat_large_u256,
     },
+    InfraMarketState,
 };
 
 proptest! {
@@ -24,13 +25,17 @@ proptest! {
         trading_addr in strat_address_not_empty(),
         desc in strat_fixed_bytes::<32>(),
         call_deadline in block_timestamp()+151..100000,
-        outcome_1 in strat_fixed_bytes::<8>(),
+        mut outcome_1 in strat_fixed_bytes::<8>(),
         mut c in strat_storage_infra_market()
     ) {
         // Simple situation, someone creates a infra market, and during its
         // optimistic stage someone calls it. It's not whinged at, and it calls
         // predict without issue. The caller gets their small amount.
         c.enabled.set(true);
+        // Add 1 to the outcome_1 so that we don't have a 0 outcome.
+        if outcome_1[0] == 0 {
+            outcome_1[0] = 1;
+        }
         c.factory_addr.set(IVAN);
         set_block_timestamp(0);
         // Interactions should handle teardown for us.
@@ -87,7 +92,7 @@ proptest! {
         trading_addr in strat_address_not_empty(),
         desc in strat_fixed_bytes::<32>(),
         call_deadline in block_timestamp()+100..100000,
-        outcome_1 in strat_fixed_bytes::<8>(),
+        mut outcome_1 in strat_fixed_bytes::<8>(),
         outcome_2 in strat_fixed_bytes::<8>(),
         mut c in strat_storage_infra_market()
     ) {
@@ -98,6 +103,11 @@ proptest! {
         c.enabled.set(true);
         c.factory_addr.set(IVAN);
         set_block_timestamp(0);
+        // We add 1 to the outcome that we're going to whinge about, so that it
+        // won't break for being 0.
+        if outcome_1[0] == 0 {
+            outcome_1[0] += 1;
+        }
         // Interactions should handle teardown for us.
         interactions_clear_after! {
             IVAN => {
@@ -160,8 +170,8 @@ proptest! {
         trading_addr in strat_address_not_empty(),
         desc in strat_fixed_bytes::<32>(),
         call_deadline in block_timestamp()+100..100000,
-        outcome_preferred_ivan in strat_fixed_bytes::<8>(),
-        outcome_preferred_erik in strat_fixed_bytes::<8>(),
+        mut outcome_preferred_ivan in strat_fixed_bytes::<8>(),
+        mut outcome_preferred_erik in strat_fixed_bytes::<8>(),
         outcome_garbage in proptest::collection::vec(strat_fixed_bytes::<8>(), 1..10),
         eli_amt in (5000 + 9000)..1000000,
         ogous_amt in 100..5000,
@@ -177,6 +187,13 @@ proptest! {
         // Eli bet correctly, so he takes money from Ogous and Paxia after Yoel
         // calls sweep on Ogous and Paxia by drawing down the pot.
         c.enabled.set(true);
+        // Add one to the outcome identifiers for Erik and Ivan so they're not empty.
+        if outcome_preferred_ivan[0] == 0 {
+            outcome_preferred_ivan[0] = 1;
+        }
+        if outcome_preferred_erik[0] == 0 {
+            outcome_preferred_erik[0] = 1;
+        }
         c.locked_arb_token_addr.set(LOCKUP_TOKEN);
         c.factory_addr.set(IVAN);
         set_block_timestamp(0);
@@ -195,6 +212,10 @@ proptest! {
                     c.register(trading_addr, IVAN, desc, block_timestamp() + 1, call_deadline)
                 );
                 ts_add_time(block_timestamp() + 10);
+                assert_eq!(
+                    { let c: u8 = InfraMarketState::Callable.into(); c },
+                    c.status(trading_addr).unwrap().0
+                );
                 should_spend_fusdc_sender!(
                     BOND_FOR_CALL,
                     c.call(trading_addr, outcome_preferred_ivan, IVAN)
@@ -203,6 +224,7 @@ proptest! {
             ERIK => {
                 // Erik disputes the call with a whinge. The first attempt should fail
                 // since the check is that it's the same as the called outcome.
+                assert_eq!(c.status(trading_addr).unwrap().0, InfraMarketState::Whinging.into());
                 panic_guard_eq!(
                     c.whinge(trading_addr, outcome_preferred_ivan, ERIK),
                     Error::CantWhingeCalled
@@ -210,6 +232,10 @@ proptest! {
                 should_spend_fusdc_sender!(
                     BOND_FOR_WHINGE,
                     c.whinge(trading_addr, outcome_preferred_erik, ERIK)
+                );
+                assert_eq!(
+                    { let c: u8 = InfraMarketState::Predicting.into(); c },
+                    c.status(trading_addr).unwrap().0
                 );
             },
             ELI => {
@@ -251,6 +277,10 @@ proptest! {
             ELI => {
                 // After waiting some time, it's needed to reveal the commitments. We wait 2 days.
                 ts_add_time(24 * 60 * 60 * 2 + 1);
+                assert_eq!(
+                    { let c: u8 = InfraMarketState::Revealing.into(); c },
+                    c.status(trading_addr).unwrap().0
+                );
                 give_then_reset_token!(LOCKUP_TOKEN, ELI, eli_amt, should_points!(ELI, eli_amt, c.reveal(
                     trading_addr,
                     ELI,
@@ -279,6 +309,10 @@ proptest! {
                 // outcomes. It should be that this won't matter.
                 // First, Erik waits 2 days.
                 ts_add_time(24 * 60 * 60 * 2 + 1);
+                assert_eq!(
+                    { let c: u8 = InfraMarketState::Declarable.into(); c },
+                    c.status(trading_addr).unwrap().0,
+                );
                 let mut outcomes = outcome_garbage.clone();
                 outcomes.push(outcome_preferred_ivan);
                 outcomes.push(outcome_preferred_erik);
@@ -289,7 +323,8 @@ proptest! {
                     INCENTIVE_AMT_DECLARE +
                     INCENTIVE_AMT_CALL,
                     {
-                        let erik_incentive_amt = INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CLOSE;
+                        let erik_incentive_amt =
+                            INCENTIVE_AMT_DECLARE + INCENTIVE_AMT_CLOSE;
                         // Ivan (the caller) was correct, so he should receive the bond for calling and
                         // calling incentive amount.
                         assert_eq!(
@@ -308,6 +343,10 @@ proptest! {
                         );
                         Ok(())
                     }
+                );
+                assert_eq!(
+                    { let c: u8 = InfraMarketState::Sweeping.into(); c },
+                    c.status(trading_addr).unwrap().0,
                 );
             },
             YOEL => {

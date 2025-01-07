@@ -14,12 +14,14 @@ use crate::error::Error;
 */
 
 #[repr(C)]
+#[derive(Debug)]
 pub enum InfraMarketState {
     Callable,
     Closable,
     Whinging,
     Predicting,
     Revealing,
+    Declarable,
     Sweeping,
     Closed
 }

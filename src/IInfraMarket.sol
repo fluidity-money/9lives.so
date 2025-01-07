@@ -1,6 +1,8 @@
 // SPDX-Identifier: MIT
 pragma solidity 0.8.20;
 
+import "./InfraMarketState.sol";
+
 interface IInfraMarket {
     /**
      * @notice Register this campaign, taking a small stipend for management from the
@@ -122,5 +124,8 @@ interface IInfraMarket {
 
     function winner(address tradingAddr) external view returns (bytes8 winnerId);
 
-    function status(address tradingAddr) external view returns (uint8 currentState, uint64 secsRemaining);
+    function status(address tradingAddr) external view returns (
+        InfraMarketState currentState,
+        uint64 secsRemaining
+    );
 }

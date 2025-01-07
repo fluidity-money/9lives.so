@@ -12,6 +12,7 @@ pub mod fees;
 pub mod immutables;
 
 pub mod timing_infra_market;
+pub use timing_infra_market::InfraMarketState;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod host_proxy;

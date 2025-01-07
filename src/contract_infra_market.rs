@@ -346,13 +346,22 @@ impl StorageInfraMarket {
             // no-one whinged, then we need to assume we were closed.
             _ if time_since_called > TWO_DAYS && !has_whinged => (InfraMarketState::Closed, 0),
             // If we're within two days after the whinge, then we're in a state of predicting.
-            _ if time_since_whinged < TWO_DAYS => (InfraMarketState::Predicting, TWO_DAYS - time_since_whinged),
-            // If we're past two days after the whinge, then we're in a state of revealing.
-            _ if time_since_whinged > TWO_DAYS => {
-                (InfraMarketState::Revealing, FOUR_DAYS - time_since_whinged)
+            _ if time_since_whinged < TWO_DAYS => {
+                (InfraMarketState::Predicting, TWO_DAYS - time_since_whinged)
             }
-            // If we're past four days after the whing, then we're in a state of sweeping.
-            _ if time_since_whinged > FOUR_DAYS => (InfraMarketState::Closed, 0),
+            // If we're past two days after the whinge, then we're in a state of revealing.
+            _ if time_since_whinged > TWO_DAYS &&time_since_whinged < FOUR_DAYS => (
+                InfraMarketState::Revealing,
+                time_since_whinged + FOUR_DAYS - block_timestamp,
+            ),
+            // If we're past four days after the whinging, but no-one has declared
+            // what the outcome is, then we're in a state where things are
+            // declarable.
+            _ if time_since_whinged > FOUR_DAYS && !e.campaign_winner_set.get() =>
+            (InfraMarketState::Declarable, 0),
+            // If we're past four days after the whinging, and someone has declared, then we're
+            // in a state where we're sweeping.
+            _ if time_since_whinged > FOUR_DAYS => (InfraMarketState::Sweeping, 0),
             _ => unreachable!(), // We're in a strange internal state that should be impossible.
         };
         Ok((state.into(), time))
