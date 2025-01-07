@@ -122,7 +122,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 			err        error
 		)
 		for _, l := range logs {
-			if hasChanged, err = handleLog(db, factoryAddr, infraMarket, l); err != nil {
+			if hasChanged, err = handleLog(f, db, factoryAddr, infraMarket, l); err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
 			biggestBlockNo = max(l.BlockNumber, biggestBlockNo)
@@ -146,7 +146,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 	}
 }
 
-func handleLog(db *gorm.DB, factoryAddr, infraMarketAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
+func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
 	return handleLogCallback(
 		factoryAddr,
 		infraMarketAddr,
@@ -157,7 +157,11 @@ func handleLog(db *gorm.DB, factoryAddr, infraMarketAddr ethCommon.Address, l et
 		},
 		func(addr string) (bool, error) {
 			// Check if the address of the submitter is tracked by us as a trading contract.
-			return databaseDoesContainTrading(db, addr)
+			if f.Is(features.FeatureShouldCheckIfTrackedFirst) {
+				return databaseDoesContainTrading(db, addr)
+			} else {
+				return true, nil
+			}
 		},
 		func(t string, a any) error {
 			// Use the database connection as the callback to insert this log.

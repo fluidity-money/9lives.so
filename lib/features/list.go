@@ -2,5 +2,9 @@
 
 package features
 
-// FeatureGraphqlMockGraph by sending mocked data instead of database data.
-const FeatureGraphqlMockGraph = "graphql mock demo data"
+const (
+	// FeatureGraphqlMockGraph by sending mocked data instead of database data.
+	FeatureGraphqlMockGraph = "graphql mock demo data"
+	// FeatureShouldCheckIfTrackedFirst in the database when inserting a Trading log
+	FeatureShouldCheckIfTrackedFirst = "ingestor should track trading first"
+)
