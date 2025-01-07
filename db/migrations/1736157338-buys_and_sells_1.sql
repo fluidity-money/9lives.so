@@ -13,6 +13,7 @@ CREATE TABLE ninelives_buys_and_sells_1 (
     spender ADDRESS NOT NULL,
     recipient ADDRESS NOT NULL,
     total_volume HUGEINT NOT NULL,
+    outcome_id VARCHAR(18) NOT NULL,
     campaign_id TEXT REFERENCES ninelives_campaigns_1 (id),
     campaign_content JSONB NOT NULL
 );
@@ -50,6 +51,7 @@ BEGIN
 		spender,
 		recipient,
 		total_volume,
+		outcome_id,
 		campaign_id,
 		campaign_content
 	)
@@ -67,6 +69,7 @@ BEGIN
 		NEW.spender,
 		NEW.recipient,
 		total_volume,
+		CONCAT('0x', LEFT(NEW.identifier,16)),
 		campaign_id,
 		campaign_content
 	);
