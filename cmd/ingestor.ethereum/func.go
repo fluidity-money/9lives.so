@@ -160,6 +160,10 @@ func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr ethCommon
 			if f.Is(features.FeatureShouldCheckIfTrackedFirst) {
 				return databaseDoesContainTrading(db, addr)
 			} else {
+				// It's useful to optionally be ultra permissive, since there's a race
+				// condition where the same block contains the creation, and the share
+				// minting, then the logs come out disordered. It might be better to
+				// simply accept everything and do filtering after the fact.
 				return true, nil
 			}
 		},
