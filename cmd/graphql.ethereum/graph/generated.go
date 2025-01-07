@@ -77,8 +77,9 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ExplainCampaign  func(childComplexity int, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) int
-		RevealCommitment func(childComplexity int, tradingAddr *string, sender *string, seed *string, preferredOutcome *string) int
+		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) int
+		RevealCommitment  func(childComplexity int, tradingAddr *string, sender *string, seed *string, preferredOutcome *string) int
+		RevealCommitment2 func(childComplexity int, tradingAddr *string, sender *string, seed *string, preferredOutcome *string, rr *string, s *string, v *string) int
 	}
 
 	Outcome struct {
@@ -131,6 +132,7 @@ type ChangelogResolver interface {
 type MutationResolver interface {
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr *string, sender *string, seed *string, preferredOutcome *string) (*bool, error)
+	RevealCommitment2(ctx context.Context, tradingAddr *string, sender *string, seed *string, preferredOutcome *string, rr *string, s *string, v *string) (*bool, error)
 }
 type QueryResolver interface {
 	Campaigns(ctx context.Context, category []string) ([]types.Campaign, error)
@@ -314,6 +316,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.RevealCommitment(childComplexity, args["tradingAddr"].(*string), args["sender"].(*string), args["seed"].(*string), args["preferredOutcome"].(*string)), true
+
+	case "Mutation.revealCommitment2":
+		if e.complexity.Mutation.RevealCommitment2 == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_revealCommitment2_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RevealCommitment2(childComplexity, args["tradingAddr"].(*string), args["sender"].(*string), args["seed"].(*string), args["preferredOutcome"].(*string), args["rr"].(*string), args["s"].(*string), args["v"].(*string)), true
 
 	case "Outcome.description":
 		if e.complexity.Outcome.Description == nil {
@@ -656,6 +670,75 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 		}
 	}
 	args["web"] = arg13
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_revealCommitment2_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["tradingAddr"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tradingAddr"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tradingAddr"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["sender"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sender"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["sender"] = arg1
+	var arg2 *string
+	if tmp, ok := rawArgs["seed"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seed"))
+		arg2, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["seed"] = arg2
+	var arg3 *string
+	if tmp, ok := rawArgs["preferredOutcome"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("preferredOutcome"))
+		arg3, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["preferredOutcome"] = arg3
+	var arg4 *string
+	if tmp, ok := rawArgs["rr"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rr"))
+		arg4, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["rr"] = arg4
+	var arg5 *string
+	if tmp, ok := rawArgs["s"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
+		arg5, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["s"] = arg5
+	var arg6 *string
+	if tmp, ok := rawArgs["v"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
+		arg6, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["v"] = arg6
 	return args, nil
 }
 
@@ -1719,6 +1802,58 @@ func (ec *executionContext) fieldContext_Mutation_revealCommitment(ctx context.C
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_revealCommitment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_revealCommitment2(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_revealCommitment2(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RevealCommitment2(rctx, fc.Args["tradingAddr"].(*string), fc.Args["sender"].(*string), fc.Args["seed"].(*string), fc.Args["preferredOutcome"].(*string), fc.Args["rr"].(*string), fc.Args["s"].(*string), fc.Args["v"].(*string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_revealCommitment2(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_revealCommitment2_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4996,6 +5131,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "revealCommitment":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_revealCommitment(ctx, field)
+			})
+		case "revealCommitment2":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_revealCommitment2(ctx, field)
 			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))

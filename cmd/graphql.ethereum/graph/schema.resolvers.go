@@ -391,6 +391,11 @@ func (r *mutationResolver) RevealCommitment(ctx context.Context, tradingAddr *st
 	panic(fmt.Errorf("not implemented: RevealCommitment - revealCommitment"))
 }
 
+// RevealCommitment2 is the resolver for the revealCommitment2 field.
+func (r *mutationResolver) RevealCommitment2(ctx context.Context, tradingAddr *string, sender *string, seed *string, preferredOutcome *string, rr *string, s *string, v *string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: RevealCommitment2 - revealCommitment2"))
+}
+
 // Campaigns is the resolver for the campaigns field.
 func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
