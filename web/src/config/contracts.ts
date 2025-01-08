@@ -3,7 +3,7 @@ import { getContract } from "thirdweb";
 import thirdweb from "@/config/thirdweb";
 import ERC20Abi from "./abi/erc20";
 import ammAbi from "./abi/amm";
-import helperAbi from "./abi/helper";
+import helperAbi from "./abi/helperFactory";
 import clientEnv from "./clientEnv";
 import lensAbi from "./abi/lens";
 import { currentChain } from "./chains";

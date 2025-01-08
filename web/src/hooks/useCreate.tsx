@@ -14,7 +14,7 @@ import { requestCreateCampaign } from "@/providers/graphqlClient";
 import { useCampaignStore } from "@/stores/campaignStore";
 import clientEnv from "../config/clientEnv";
 import { generateId } from "@/utils/generateId";
-import helperAbi from "@/config/abi/helper";
+import helperAbi from "@/config/abi/helperFactory";
 // HelperApprovalAmount taken by the contract for every deployment (in the current
 // two outcome DPM mode).
 const HelperApprovalAmount = BigInt(5000000);
