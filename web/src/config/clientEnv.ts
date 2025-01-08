@@ -32,7 +32,11 @@ const clientEnvSchema = z.object({
   /**
    * Helper contract address for create campaigns with various settlements
    */
-  NEXT_PUBLIC_HELPER_ADDR: z.string().length(42),
+  NEXT_PUBLIC_HELPER_FACTORY_ADDR: z.string().length(42),
+  /**
+   * Router contract address for buying the related tokens
+   */
+  NEXT_PUBLIC_BUY_HELPER_ADDR: z.string().length(42),
   /**
    * Settlement Infra market oracle address
    */
@@ -67,7 +71,8 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_AMM_ADDR: process.env.NEXT_PUBLIC_AMM_ADDR,
   NEXT_PUBLIC_LENS_ADDR: process.env.NEXT_PUBLIC_LENS_ADDR,
   NEXT_PUBLIC_POINTS_URL: process.env.NEXT_PUBLIC_POINTS_URL,
-  NEXT_PUBLIC_HELPER_ADDR: process.env.NEXT_PUBLIC_HELPER_ADDR,
+  NEXT_PUBLIC_HELPER_FACTORY_ADDR: process.env.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+  NEXT_PUBLIC_BUY_HELPER_ADDR: process.env.NEXT_PUBLIC_BUY_HELPER_ADDR,
   NEXT_PUBLIC_INFRA_ADDR: process.env.NEXT_PUBLIC_INFRA_ADDR,
   NEXT_PUBLIC_AI_ADDR: process.env.NEXT_PUBLIC_AI_ADDR,
   NEXT_PUBLIC_BEAUTY_ADDR: process.env.NEXT_PUBLIC_BEAUTY_ADDR,

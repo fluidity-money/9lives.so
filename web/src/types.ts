@@ -69,3 +69,13 @@ export type Action = {
   actionValue?: string;
   outcomeName?: string;
 };
+export enum InfraMarketState {
+  Callable,
+  Closable,
+  Whinging,
+  Predicting,
+  Revealing,
+  Declarable,
+  Sweeping,
+  Closed,
+}

@@ -21,7 +21,7 @@ const HelperApprovalAmount = BigInt(5000000);
 const approveHelperTx = prepareContractCall({
   contract: config.contracts.fusdc,
   method: "approve",
-  params: [clientEnv.NEXT_PUBLIC_HELPER_ADDR, HelperApprovalAmount],
+  params: [clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR, HelperApprovalAmount],
 });
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type FunctionNames = ExtractNames<(typeof helperAbi)[number]>;
@@ -58,7 +58,7 @@ const useCreate = () => {
               hashedDocumentation = keccak256(descBytes) as `0x${string}`;
             }
             const createTx = prepareContractCall({
-              contract: config.contracts.helper,
+              contract: config.contracts.helperFactory,
               method: settlementFunctionMap[input.settlementType],
               params: [
                 creationList, // outcomes
@@ -70,7 +70,10 @@ const useCreate = () => {
             const allowanceHelperTx = prepareContractCall({
               contract: config.contracts.fusdc,
               method: "allowance",
-              params: [account.address, clientEnv.NEXT_PUBLIC_HELPER_ADDR],
+              params: [
+                account.address,
+                clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+              ],
             });
             const allowanceOfHelper = (await simulateTransaction({
               transaction: allowanceHelperTx,

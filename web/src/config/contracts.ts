@@ -3,7 +3,8 @@ import { getContract } from "thirdweb";
 import thirdweb from "@/config/thirdweb";
 import ERC20Abi from "./abi/erc20";
 import ammAbi from "./abi/amm";
-import helperAbi from "./abi/helperFactory";
+import helperFactoryAbi from "./abi/helperFactory";
+import buyHelperAbi from "./abi/buyHelper";
 import clientEnv from "./clientEnv";
 import lensAbi from "./abi/lens";
 import { currentChain } from "./chains";
@@ -27,8 +28,9 @@ const allContractSchema = z.object({
   fusdc: contractSchema,
   amm: contractSchema,
   lens: contractSchema,
-  helper: contractSchema,
+  helperFactory: contractSchema,
   infra: contractSchema,
+  buyHelper: contractSchema,
 });
 
 const fusdc = getContract({
@@ -49,15 +51,21 @@ const lens = getContract({
   chain: currentChain,
   client: thirdweb.client,
 });
-const helper = getContract({
-  abi: helperAbi,
-  address: clientEnv.NEXT_PUBLIC_HELPER_ADDR,
+const helperFactory = getContract({
+  abi: helperFactoryAbi,
+  address: clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
   chain: currentChain,
   client: thirdweb.client,
 });
 const infra = getContract({
   abi: infraAbi,
   address: clientEnv.NEXT_PUBLIC_INFRA_ADDR,
+  chain: currentChain,
+  client: thirdweb.client,
+});
+const buyHelper = getContract({
+  abi: buyHelperAbi,
+  address: clientEnv.NEXT_PUBLIC_BUY_HELPER_ADDR,
   chain: currentChain,
   client: thirdweb.client,
 });
@@ -69,8 +77,9 @@ const contractValidation = allContractSchema.safeParse({
   fusdc,
   amm,
   lens,
-  helper,
+  helperFactory,
   infra,
+  buyHelper,
 });
 
 type ContractsType = z.infer<typeof allContractSchema>;
@@ -85,6 +94,7 @@ export default contractValidation.data as {
   fusdc: typeof fusdc;
   amm: typeof amm;
   lens: typeof lens;
-  helper: typeof helper;
+  helperFactory: typeof helperFactory;
   infra: typeof infra;
+  buyHelper: typeof buyHelper;
 };
