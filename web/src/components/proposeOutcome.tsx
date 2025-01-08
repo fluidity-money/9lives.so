@@ -1,17 +1,17 @@
-import { Outcome } from "@/types";
+import { InfraMarketState, InfraMarketStateTitles, Outcome } from "@/types";
 import { Description, Field, Label, Select } from "@headlessui/react";
 import Image from "next/image";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
 import Button from "./themed/button";
 import useCountdown from "@/hooks/useCountdown";
-import useProposeOutcome from "@/hooks/useProposeOutcome";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LogoHero from "#/images/logo-hero.svg";
 import Link from "next/link";
 import LinkIcon from "#/icons/link.svg";
+import useInfraMarket from "@/hooks/useInfraMarket";
 export default function ProposeOutcome({
   title,
   ending,
@@ -29,10 +29,12 @@ export default function ProposeOutcome({
   const [isProposing, setIsProposing] = useState(false);
   const [isProposed, setIsProposed] = useState(false);
   const [txHash, setTxHash] = useState<string>("");
+  const [infraStatus, setInfraStatus] =
+    useState<(typeof InfraMarketStateTitles)[InfraMarketState]>();
   const [selectedOutcome, setSelectedOutcome] = useState<`0x${string}`>(
     outcomes[0].identifier,
   );
-  const { propose } = useProposeOutcome({ tradingAddr });
+  const { propose, getStatus } = useInfraMarket({ tradingAddr });
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   async function handleProposal() {
@@ -46,7 +48,12 @@ export default function ProposeOutcome({
       setIsProposing(false);
     }
   }
-
+  useEffect(() => {
+    (async () => {
+      const status = await getStatus();
+      setInfraStatus(status);
+    })();
+  }, []);
   if (isProposed)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
@@ -91,6 +98,9 @@ export default function ProposeOutcome({
           Time left to dispute: {timeLeft}
         </span>
       </div>
+      <h5 className="text-center font-geneva text-sm uppercase text-9black">
+        Status: {infraStatus}
+      </h5>
       <div className="w-full text-9black">
         <Field>
           <Label className="font-bold text-9black">
