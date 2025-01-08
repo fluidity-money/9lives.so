@@ -445,6 +445,9 @@ pub enum Error {
 
     // Bad trading configuration!
     BadTradingCtor,
+
+    // This trading instance is nonexistent!
+    TradingAddrNonExistent,
 }
 
 #[cfg(any(

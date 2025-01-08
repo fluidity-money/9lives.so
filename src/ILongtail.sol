@@ -11,4 +11,10 @@ interface ILongtail {
         int256 amount,
         uint256 priceLimitX96
      ) external;
+
+     function swapIn32502CA71(
+         address _token,
+         uint256 _amount,
+         uint256 _minOut
+     ) external returns (int256, int256);
 }

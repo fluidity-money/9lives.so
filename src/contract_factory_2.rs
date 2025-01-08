@@ -1,4 +1,4 @@
-use stylus_sdk::{alloy_primitives::*};
+use stylus_sdk::alloy_primitives::*;
 
 use alloc::vec::Vec;
 
@@ -101,7 +101,9 @@ impl StorageFactory {
     }
 
     pub fn get_trading_addr(&self, id: FixedBytes<32>) -> R<Address> {
-        Ok(self.trading_addresses.get(id))
+        let addr = self.trading_addresses.get(id);
+        assert_or!(!addr.is_zero(), Error::TradingAddrNonExistent);
+        Ok(addr)
     }
 
     #[mutants::skip]
