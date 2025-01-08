@@ -4,7 +4,7 @@ const infraAbi = [
     name: "call",
     inputs: [
       {
-        name: "trading",
+        name: "tradingAddr",
         type: "address",
         internalType: "address",
       },
@@ -19,7 +19,42 @@ const infraAbi = [
         internalType: "address",
       },
     ],
-    outputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "capture",
+    inputs: [
+      {
+        name: "tradingAddr",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "epochNo",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "feeRecipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "yieldForFeeRecipient",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
   },
   {
@@ -27,7 +62,7 @@ const infraAbi = [
     name: "close",
     inputs: [
       {
-        name: "trading",
+        name: "tradingAddr",
         type: "address",
         internalType: "address",
       },
@@ -42,22 +77,30 @@ const infraAbi = [
   },
   {
     type: "function",
+    name: "escape",
+    inputs: [
+      {
+        name: "tradingAddr",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "predict",
     inputs: [
       {
-        name: "trading",
+        name: "tradingAddr",
         type: "address",
         internalType: "address",
       },
       {
-        name: "winner",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
-      {
-        name: "amount",
-        type: "uint256",
-        internalType: "uint256",
+        name: "commit",
+        type: "bytes32",
+        internalType: "bytes32",
       },
     ],
     outputs: [],
@@ -88,9 +131,9 @@ const infraAbi = [
         internalType: "uint64",
       },
       {
-        name: "defaultWinner",
-        type: "bytes8",
-        internalType: "bytes8",
+        name: "callDeadlineTs",
+        type: "uint64",
+        internalType: "uint64",
       },
     ],
     outputs: [
@@ -104,25 +147,72 @@ const infraAbi = [
   },
   {
     type: "function",
+    name: "reveal",
+    inputs: [
+      {
+        name: "tradingAddr",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "committerAddr",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "seed",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "status",
+    inputs: [
+      {
+        name: "tradingAddr",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "currentState",
+        type: "uint8",
+        internalType: "enum InfraMarketState",
+      },
+      {
+        name: "secsRemaining",
+        type: "uint64",
+        internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "sweep",
     inputs: [
       {
-        name: "trading",
+        name: "tradingAddr",
         type: "address",
         internalType: "address",
+      },
+      {
+        name: "epochNo",
+        type: "uint256",
+        internalType: "uint256",
       },
       {
         name: "victim",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "outcomes",
-        type: "bytes8[]",
-        internalType: "bytes8[]",
-      },
-      {
-        name: "onBehalfOfAddr",
         type: "address",
         internalType: "address",
       },
@@ -134,7 +224,7 @@ const infraAbi = [
     ],
     outputs: [
       {
-        name: "yieldForCaller",
+        name: "yieldForFeeRecipient",
         type: "uint256",
         internalType: "uint256",
       },
@@ -146,7 +236,7 @@ const infraAbi = [
     name: "whinge",
     inputs: [
       {
-        name: "trading",
+        name: "tradingAddr",
         type: "address",
         internalType: "address",
       },
@@ -161,7 +251,13 @@ const infraAbi = [
         internalType: "address",
       },
     ],
-    outputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
   },
   {
@@ -169,7 +265,7 @@ const infraAbi = [
     name: "winner",
     inputs: [
       {
-        name: "trading",
+        name: "tradingAddr",
         type: "address",
         internalType: "address",
       },
@@ -181,7 +277,7 @@ const infraAbi = [
         internalType: "bytes8",
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
   },
 ] as const;
 export default infraAbi;
