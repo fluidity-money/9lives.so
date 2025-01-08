@@ -35,7 +35,12 @@ const menu = [
     title: "Docs",
     page: "https://docs.9lives.so",
   },
+  {
+    title: "ARB Infra Markets",
+    page: "https://arbinframarkets.xyz",
+  },
 ];
+
 const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
   <Link
     href={item.page}
