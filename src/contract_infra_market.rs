@@ -7,10 +7,11 @@ use crate::{
     fees::*,
     fusdc_call,
     immutables::*,
-    lockup_call, nineliveslockedarb_call, proxy,
+    lockup_call, nineliveslockedarb_call,
     timing_infra_market::*,
     trading_call,
     utils::{block_timestamp, contract_address, msg_sender},
+    outcome,
 };
 
 pub use crate::storage_infra_market::*;
@@ -350,15 +351,16 @@ impl StorageInfraMarket {
                 (InfraMarketState::Predicting, TWO_DAYS - time_since_whinged)
             }
             // If we're past two days after the whinge, then we're in a state of revealing.
-            _ if time_since_whinged > TWO_DAYS &&time_since_whinged < FOUR_DAYS => (
+            _ if time_since_whinged > TWO_DAYS && time_since_whinged < FOUR_DAYS => (
                 InfraMarketState::Revealing,
                 time_since_whinged + FOUR_DAYS - block_timestamp,
             ),
             // If we're past four days after the whinging, but no-one has declared
             // what the outcome is, then we're in a state where things are
             // declarable.
-            _ if time_since_whinged > FOUR_DAYS && !e.campaign_winner_set.get() =>
-            (InfraMarketState::Declarable, 0),
+            _ if time_since_whinged > FOUR_DAYS && !e.campaign_winner_set.get() => {
+                (InfraMarketState::Declarable, 0)
+            }
             // If we're past four days after the whinging, and someone has declared, then we're
             // in a state where we're sweeping.
             _ if time_since_whinged > FOUR_DAYS => (InfraMarketState::Sweeping, 0),
@@ -447,11 +449,7 @@ impl StorageInfraMarket {
         );
         let commit = e.commitments.get(committer_addr);
         // We can create the random numb/er the same way that we do it for proxies.
-        let hash = proxy::create_identifier(&[
-            committer_addr.as_slice(),
-            outcome.as_slice(),
-            &seed.to_be_bytes::<32>(),
-        ]);
+        let hash = outcome::create_commit(committer_addr, outcome, seed);
         assert_or!(commit == hash, Error::CommitNotTheSame);
         let bal = nineliveslockedarb_call::get_past_votes(
             self.locked_arb_token_addr.get(),

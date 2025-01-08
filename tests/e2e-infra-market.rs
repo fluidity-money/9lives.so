@@ -9,7 +9,7 @@ use lib9lives::{
     fees::*,
     fusdc_call, give_then_reset_token,
     host::{set_block_timestamp, ts_add_time},
-    interactions_clear_after, nineliveslockedarb_call, panic_guard_eq, proxy, should_points,
+    interactions_clear_after, nineliveslockedarb_call, panic_guard_eq, should_points,
     should_spend_fusdc_contract, should_spend_fusdc_sender, should_spend_staked_arb,
     strat_storage_infra_market,
     testing_addrs::*,
@@ -17,6 +17,7 @@ use lib9lives::{
         block_timestamp, msg_sender, strat_address_not_empty, strat_fixed_bytes, strat_large_u256,
     },
     InfraMarketState,
+    outcome,
 };
 
 proptest! {
@@ -243,11 +244,11 @@ proptest! {
                 give_then_reset_token!(LOCKUP_TOKEN, ELI, eli_amt, should_points!(
                     ELI,
                     eli_amt,
-                    c.predict(trading_addr, proxy::create_identifier(&[
-                        ELI.as_slice(),
-                        outcome_preferred_ivan.as_slice(),
-                        &eli_seed.to_be_bytes::<32>()
-                    ]))
+                    c.predict(trading_addr, outcome::create_commit(
+                        ELI,
+                        outcome_preferred_ivan,
+                        eli_seed,
+                    ))
                 ));
             },
             OGOUS => {
@@ -255,11 +256,11 @@ proptest! {
                 give_then_reset_token!(LOCKUP_TOKEN, OGOUS, ogous_amt, should_points!(
                     OGOUS,
                     ogous_amt,
-                    c.predict(trading_addr, proxy::create_identifier(&[
-                        OGOUS.as_slice(),
-                        outcome_preferred_erik.as_slice(),
-                        &ogous_seed.to_be_bytes::<32>()
-                    ]))
+                    c.predict(trading_addr, outcome::create_commit(
+                        OGOUS,
+                        outcome_preferred_erik,
+                        ogous_seed,
+                    ))
                 ));
             },
             PAXIA => {
@@ -267,11 +268,11 @@ proptest! {
                 give_then_reset_token!(LOCKUP_TOKEN, PAXIA, paxia_amt, should_points!(
                     PAXIA,
                     paxia_amt,
-                    c.predict(trading_addr, proxy::create_identifier(&[
-                        PAXIA.as_slice(),
-                        outcome_preferred_erik.as_slice(),
-                        &paxia_seed.to_be_bytes::<32>()
-                    ]))
+                    c.predict(trading_addr, outcome::create_commit(
+                        PAXIA,
+                        outcome_preferred_erik,
+                        paxia_seed,
+                    ))
                 ));
             },
             ELI => {

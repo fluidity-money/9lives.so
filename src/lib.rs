@@ -14,6 +14,8 @@ pub mod immutables;
 pub mod timing_infra_market;
 pub use timing_infra_market::InfraMarketState;
 
+pub mod outcome;
+
 #[cfg(not(target_arch = "wasm32"))]
 mod host_proxy;
 pub mod proxy;
