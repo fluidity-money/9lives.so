@@ -122,8 +122,14 @@ interface IInfraMarket {
      */
     function escape(address tradingAddr) external;
 
+    /**
+     * @notice Winner that was declared for this infra market, if there is one.
+     */
     function winner(address tradingAddr) external view returns (bytes8 winnerId);
 
+    /**
+     * @notice Status of this trading contract's oracle.
+     */
     function status(address tradingAddr) external view returns (
         InfraMarketState currentState,
         uint64 secsRemaining

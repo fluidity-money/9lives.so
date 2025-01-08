@@ -7,4 +7,11 @@ interface IDecidable {
      * @param outcome to set as the winner.
      */
     function decide(bytes8 outcome) external;
+
+    /**
+     * @notice Escape an indeterminate/inconclusive campaign, where an associated contract
+     *         needs to do something.
+     */
+    function escape() external;
 }
+
