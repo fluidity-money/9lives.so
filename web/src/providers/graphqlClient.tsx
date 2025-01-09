@@ -117,3 +117,30 @@ export const requestBuysAndSells = (limit?: number) =>
       }
     }
   `).send;
+
+export const requestCampaignById = (id: string) =>
+  graph9Lives.query.campaignById({
+    $: { id },
+    name: true,
+    identifier: true,
+    description: true,
+    picture: true,
+    oracleDescription: true,
+    oracleUrls: true,
+    settlement: true,
+    poolAddress: true,
+    creator: {
+      address: true,
+    },
+    outcomes: {
+      identifier: true,
+      name: true,
+      description: true,
+      picture: true,
+      share: {
+        address: true,
+      },
+    },
+    ending: true,
+    starting: true,
+  });

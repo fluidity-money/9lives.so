@@ -1,5 +1,7 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
+import { requestCampaignById } from "@/providers/graphqlClient";
 import { getCampaigns } from "@/serverData/getCampaigns";
+import { Campaign } from "@/types";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -14,9 +16,14 @@ export async function generateStaticParams() {
 type Params = Promise<{ id: string }>;
 export default async function DetailPage({ params }: { params: Params }) {
   const { id } = await params;
-  const campaigns = await getCampaigns();
-  const campaign = campaigns.find((campaign) => campaign.identifier === id)!;
+  const campaign = (await requestCampaignById(id)) as Campaign;
   if (!campaign) notFound();
+  Object.assign(campaign, {
+    isYesNo:
+      campaign.outcomes.length === 2 &&
+      campaign.outcomes.findIndex((outcome) => outcome.name === "Yes") !== -1 &&
+      campaign.outcomes.findIndex((outcome) => outcome.name === "No") !== -1,
+  });
   return (
     <section className="flex h-full gap-4">
       <Suspense>
