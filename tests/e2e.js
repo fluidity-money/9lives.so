@@ -20,6 +20,7 @@ const LensesV1 = require("../out/LensesV1.sol/LensesV1.json");
 const HelperFactory = require("../out/HelperFactory.sol/HelperFactory.json");
 const InfraMarket = require("../out/IInfraMarket.sol/IInfraMarket.json");
 const TestingProxy = require("../out/TestingProxy.sol/TestingProxy.json");
+const Lockup = require("../out/ILockup.sol/ILockup.json");
 
 const MaxU64 = 18446744073709551615n;
 
@@ -88,11 +89,12 @@ describe("End to end tests", async () => {
     lockupProxyToken: lockupProxyTokenAddr,
     factoryProxy: factoryProxyAddr,
     optimisticInfraMarketImplementation: infraMarketImplAddr,
-    shareImplementation,
+    sharImplementation,
     tradingDpmExtrasImplementation,
     tradingDpmMintImplementation,
     tradingDpmPriceImplementation,
-    tradingDpmQuotesImplementation
+    tradingDpmQuotesImplementation,
+    shareImplementation
   } = (() => {
     try {
       return JSON.parse(deployStr);
@@ -101,7 +103,7 @@ describe("End to end tests", async () => {
     }
   })();
 
-    const infraMarketTestingAddr = execSync(
+  const infraMarketTestingAddr = execSync(
     "./deploy-stylus.sh contract-infra-market-testing.wasm",
     {
       env: {
@@ -111,7 +113,11 @@ describe("End to end tests", async () => {
       },
       stdio: ["ignore", "pipe", "pipe"]
     },
-  );
+  ).toString().trim();
+
+  const lockup = new Contract(lockupAddr, Lockup.abi, signer);
+
+  await (await stakedArb.approve(lockupAddr, MaxUint256)).wait();
 
   const TestingProxyFactory = new ContractFactory(
     TestingProxy.abi,
@@ -241,5 +247,9 @@ describe("End to end tests", async () => {
     await (await trading.payoff91FA8C2E(outcome1, balAfter, defaultAccountAddr)).wait();
     assert.equal(await share1.balanceOf(defaultAccountAddr), "0");
     assert.ok(await fusdc.balanceOf(defaultAccountAddr) > fusdcBalBefore);
+  });
+
+  it("Should support locking up some funds, creating an infra market, voting on each stage of the process", async () => {
+      lockupProxyAddr
   });
 });
