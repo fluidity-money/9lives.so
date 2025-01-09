@@ -14,6 +14,7 @@ sol! {
     function transferFrom(address spender, address recipient, uint256 amount);
     function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s);
     function balanceOf(address spender);
+    function approve(address spender, uint256 amount);
 }
 
 pub fn transfer(addr: Address, recipient: Address, value: U256) -> Result<(), Error> {
@@ -82,4 +83,12 @@ pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
             .map_err(|b| Error::ERC20ErrorBalanceOf(addr, b))?,
     )
     .ok_or(Error::ERC20UnableToUnpack)
+}
+
+pub fn approve(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
+    unpack_bool_safe(
+        &RawCall::new_static()
+            .call(addr, &approveCall { spender, amount }.abi_encode())
+            .map_err(|_| Error::ERC20Approve)?,
+    )
 }

@@ -38,7 +38,6 @@ contract HelperFactory {
         BEAUTY_CONTEST = _beautyContest;
         SARP_AI = _sarpAi;
         FUSDC.approve(address(_factory), type(uint256).max);
-        FUSDC.approve(address(_infraMarket), type(uint256).max);
     }
 
     function create(

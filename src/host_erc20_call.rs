@@ -236,3 +236,8 @@ pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
         },
     )
 }
+
+pub fn approve(_addr: Address, _spender: Address, _amount: U256) -> Result<(), Error> {
+    // Do nothing!
+    Ok(())
+}

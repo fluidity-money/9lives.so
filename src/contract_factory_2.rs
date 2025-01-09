@@ -46,6 +46,9 @@ impl StorageFactory {
         self.infra_market.set(oracle_addr);
         self.version.set(U8::from(1));
         self.operator.set(operator_addr);
+        // Make sure that you always remove the approvals from this in a
+        // migration.
+        fusdc_call::approve(oracle_addr, U256::MAX)?;
         Ok(())
     }
 

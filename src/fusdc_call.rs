@@ -11,6 +11,10 @@ pub fn balance_of(spender: Address) -> Result<U256, Error> {
     erc20_call::balance_of(FUSDC_ADDR, spender)
 }
 
+pub fn approve(spender: Address, amount: U256) -> Result<(), Error> {
+    erc20_call::approve(FUSDC_ADDR, spender, amount)
+}
+
 pub fn take_from_funder_to(funder: Address, recipient: Address, amount: U256) -> Result<(), Error> {
     transfer_from(FUSDC_ADDR, funder, recipient, amount)
 }

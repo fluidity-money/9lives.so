@@ -448,6 +448,9 @@ pub enum Error {
 
     // This trading instance is nonexistent!
     TradingAddrNonExistent,
+
+    // Error calling approve on a ERC20!
+    ERC20Approve,
 }
 
 #[cfg(any(
