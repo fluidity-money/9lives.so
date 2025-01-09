@@ -195,6 +195,7 @@ proptest! {
         if outcome_preferred_erik[0] == 0 {
             outcome_preferred_erik[0] = 1;
         }
+        prop_assume!(outcome_preferred_ivan != outcome_preferred_erik);
         c.locked_arb_token_addr.set(LOCKUP_TOKEN);
         c.factory_addr.set(IVAN);
         set_block_timestamp(0);

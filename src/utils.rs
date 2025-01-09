@@ -37,7 +37,7 @@ unsafe fn load_word(key: FixedBytes<32>) -> U256 {
 #[cfg(feature = "e2e-adjust-time")]
 unsafe fn load_word_u64(key: FixedBytes<32>) -> u64 {
     u64::from_be_bytes(
-        load_word(key).to_be_bytes::<32>()[32 - 6..]
+        load_word(key).to_be_bytes::<32>()[32 - 8..]
             .try_into()
             .unwrap(),
     )

@@ -70,7 +70,13 @@ pub struct StorageEpochDetails {
     ),
     stylus_sdk::prelude::storage
 )]
-#[cfg_attr(feature = "contract-infra-market", stylus_sdk::prelude::entrypoint)]
+#[cfg_attr(
+    any(
+        feature = "contract-infra-market",
+        feature = "contract-infra-market-testing"
+    ),
+    stylus_sdk::prelude::entrypoint
+)]
 pub struct StorageInfraMarket {
     /// Was this contract created successfully?
     pub created: StorageBool,

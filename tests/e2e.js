@@ -102,7 +102,7 @@ describe("End to end tests", async () => {
   })();
 
     const infraMarketTestingAddr = execSync(
-    "./deploy.sh contract-infra-market-testing.wasm",
+    "./deploy-stylus.sh contract-infra-market-testing.wasm",
     {
       env: {
         "PATH": process.env.PATH,
@@ -139,7 +139,7 @@ describe("End to end tests", async () => {
   const helperFactoryDeploy = await helperFactoryFactory.deploy(
     fusdcAddress,
     factoryProxyAddr,
-    infraMarketProxyAddr,
+    infraMarketAddr,
     "0x0000000000000000000000000000000000000000", // TODO (beauty contest)
     "0x0000000000000000000000000000000000000000" // We don't test SARP AI here.
   );
