@@ -23,7 +23,7 @@ pub const STORAGE_SUB_TIME: FixedBytes<32> =
 #[cfg(feature = "e2e-adjust-time")]
 #[link(wasm_import_module = "vm_hooks")]
 unsafe extern "C" {
-    pub fn storage_store_bytes32(key: *const u8, value: *const u8);
+    pub fn storage_cache_bytes32(key: *const u8, value: *const u8);
     pub fn storage_load_bytes32(key: *const u8, out: *mut u8);
 }
 
@@ -45,7 +45,7 @@ unsafe fn load_word_u64(key: FixedBytes<32>) -> u64 {
 
 #[cfg(feature = "e2e-adjust-time")]
 unsafe fn store_word(key: FixedBytes<32>, v: U256) {
-    storage_store_bytes32(key.as_slice().as_ptr(), v.to_be_bytes::<32>().as_ptr());
+    storage_cache_bytes32(key.as_slice().as_ptr(), v.to_be_bytes::<32>().as_ptr());
 }
 
 #[cfg(feature = "e2e-adjust-time")]
