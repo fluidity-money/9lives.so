@@ -18,6 +18,8 @@ const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
 const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 const LensesV1 = require("../out/LensesV1.sol/LensesV1.json");
 const HelperFactory = require("../out/HelperFactory.sol/HelperFactory.json");
+const InfraMarket = require("../out/IInfraMarket.sol/IInfraMarket.json");
+const TestingProxy = require("../out/TestingProxy.sol/TestingProxy.json");
 
 const MaxU64 = 18446744073709551615n;
 
@@ -61,16 +63,6 @@ describe("End to end tests", async () => {
   await longtailDeploy.waitForDeployment();
   const longtailAddress = await longtailDeploy.getAddress();
 
-  console.error("build config", {
-    "SPN_LONGTAIL_ADDR": longtailAddress,
-    "SPN_FUSDC_ADDR": fusdcAddress,
-    "SPN_STAKED_ARB_ADDR": stakedArbAddress,
-    "SPN_PROXY_ADMIN": defaultAccountAddr,
-    "SPN_EMERGENCY_COUNCIL": defaultAccountAddr,
-    "SPN_SARP_AI": "0x0000000000000000000000000000000000000000",
-    "SPN_DAO_ADDR": defaultAccountAddr,
-  });
-
   const deployStr = execSync(
     "./build-and-deploy.sh",
     {
@@ -85,6 +77,7 @@ describe("End to end tests", async () => {
         "SPN_EMERGENCY_COUNCIL": defaultAccountAddr,
         "SPN_SARP_AI": "0x0000000000000000000000000000000000000000",
         "SPN_DAO_ADDR": defaultAccountAddr,
+        "SPN_ADJUST_TIME": "yes"
       },
       stdio: ["ignore", "pipe", "pipe"]
     },
@@ -94,7 +87,7 @@ describe("End to end tests", async () => {
     lockupProxy: lockupProxyAddr,
     lockupProxyToken: lockupProxyTokenAddr,
     factoryProxy: factoryProxyAddr,
-    infrastructureMarketProxy: infraMarketProxyAddr,
+    optimisticInfraMarketImplementation: infraMarketImplAddr,
     shareImplementation,
     tradingDpmExtrasImplementation,
     tradingDpmMintImplementation,
@@ -107,6 +100,35 @@ describe("End to end tests", async () => {
       throw new Error(`deploy str: ${deployStr}`);
     }
   })();
+
+    const infraMarketTestingAddr = execSync(
+    "./deploy.sh contract-infra-market-testing.wasm",
+    {
+      env: {
+        "PATH": process.env.PATH,
+        "SPN_SUPERPOSITION_URL": RPC_URL,
+        "SPN_SUPERPOSITION_KEY": DEPLOY_KEY
+      },
+      stdio: ["ignore", "pipe", "pipe"]
+    },
+  );
+
+  const TestingProxyFactory = new ContractFactory(
+    TestingProxy.abi,
+    TestingProxy.bytecode,
+    signer
+  );
+
+  const infraMarketProxy = await TestingProxyFactory.deploy(
+    infraMarketImplAddr,
+    infraMarketTestingAddr
+  );
+
+  await infraMarketProxy.waitForDeployment();
+
+  const infraMarketAddr = await infraMarketProxy.getAddress();
+
+  const infraMarket = new Contract(infraMarketAddr, InfraMarket.abi, signer);
 
   const helperFactoryFactory = new ContractFactory(
     HelperFactory.abi,

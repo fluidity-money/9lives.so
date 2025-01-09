@@ -4,16 +4,90 @@ use stylus_sdk::alloy_primitives::Address;
 
 // We need these for our testing helper functions.
 #[allow(unused)]
-use stylus_sdk::alloy_primitives::{FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256};
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 use proptest::prelude::*;
 
+#[cfg(all(feature = "e2e-adjust-time", not(target_arch = "wasm32")))]
+compile_error!("unable to use e2e-adjust-time without wasm!");
+
+//keccak256(abi.encodePacked("superposition.9lives.time.add"))
+pub const STORAGE_ADD_TIME: FixedBytes<32> =
+    fixed_bytes!("1034bf4e0ceda10ff9c4b44b7a23917b10fb80c3103da502294c70e79054e669");
+
+//keccak256(abi.encodePacked("superposition.9lives.time.sub"))
+pub const STORAGE_SUB_TIME: FixedBytes<32> =
+    fixed_bytes!("bc21bb295b95ee34b23dda0ac2e03bf17b4daaf83f6c98c49e1ac7152c7c7210");
+
+#[cfg(feature = "e2e-adjust-time")]
+#[link(wasm_import_module = "vm_hooks")]
+unsafe extern "C" {
+    pub fn storage_store_bytes32(key: *const u8, value: *const u8);
+    pub fn storage_load_bytes32(key: *const u8, out: *mut u8);
+}
+
+#[cfg(feature = "e2e-adjust-time")]
+unsafe fn load_word(key: FixedBytes<32>) -> U256 {
+    let mut out = [0u8; 32];
+    storage_load_bytes32(key.as_slice().as_ptr(), out.as_mut_ptr());
+    U256::from_be_bytes(out)
+}
+
+#[cfg(feature = "e2e-adjust-time")]
+unsafe fn load_word_u64(key: FixedBytes<32>) -> u64 {
+    u64::from_be_bytes(
+        load_word(key).to_be_bytes::<32>()[32 - 6..]
+            .try_into()
+            .unwrap(),
+    )
+}
+
+#[cfg(feature = "e2e-adjust-time")]
+unsafe fn store_word(key: FixedBytes<32>, v: U256) {
+    storage_store_bytes32(key.as_slice().as_ptr(), v.to_be_bytes::<32>().as_ptr());
+}
+
+#[cfg(feature = "e2e-adjust-time")]
+unsafe fn store_word_u64(key: FixedBytes<32>, v: u64) {
+    store_word(key, U256::from(v))
+}
+
+#[cfg(feature = "e2e-adjust-time")]
+pub fn test_block_timestamp_add_time(t: u64) {
+    unsafe { store_word_u64(STORAGE_ADD_TIME, load_word_u64(STORAGE_ADD_TIME) + t) }
+}
+
+#[cfg(feature = "e2e-adjust-time")]
+pub fn test_block_timestamp_sub_time(t: u64) {
+    unsafe {
+        let x = load_word_u64(STORAGE_SUB_TIME);
+        if x > t {
+            store_word_u64(STORAGE_SUB_TIME, x - t)
+        } else {
+            store_word(STORAGE_SUB_TIME, U256::ZERO)
+        }
+    }
+}
+
+// Get the block timestamp. If the e2e code is enabled to adjust the
+// time, then this also reads from a storage slot that loads the amount.
 pub fn block_timestamp() -> u64 {
     #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-    return crate::host::block_timestamp();
-    #[allow(unreachable_code)]
-    stylus_sdk::block::timestamp()
+    let time = crate::host::block_timestamp();
+    #[cfg(target_arch = "wasm32")]
+    let time = stylus_sdk::block::timestamp();
+    #[cfg(feature = "e2e-adjust-time")]
+    let time = unsafe {
+        let sub = load_word_u64(STORAGE_SUB_TIME);
+        let time = time + load_word_u64(STORAGE_ADD_TIME);
+        if time > sub {
+            time - sub
+        } else {
+            time
+        }
+    };
+    time
 }
 
 pub fn msg_sender() -> Address {

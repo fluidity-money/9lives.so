@@ -86,6 +86,7 @@ pub mod contract_lockup;
 pub mod storage_lockup;
 
 pub mod contract_infra_market;
+pub mod contract_infra_market_testing;
 pub mod storage_infra_market;
 
 pub mod contract_beauty_contest;
@@ -104,6 +105,9 @@ pub use contract_trading::*;
 pub use contract_lockup::*;
 pub use contract_infra_market::*;
 pub use contract_beauty_contest::*;
+
+#[cfg(feature = "contract-infra-market-testing")]
+pub use contract_infra_market_testing::user_entrypoint;
 
 #[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
 #[link(wasm_import_module = "stylus_interpreter")]
@@ -124,7 +128,8 @@ extern "C" {
         feature = "contract-trading-price",
         feature = "contract-lockup",
         feature = "contract-infra-market",
-        feature = "contract-beauty-contest"
+        feature = "contract-beauty-contest",
+        feature = "contract-infra-market-testing"
     ))
 ))]
 compile_error!("one of the contract-* features must be enabled!");

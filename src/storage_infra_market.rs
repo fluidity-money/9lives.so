@@ -63,7 +63,11 @@ pub struct StorageEpochDetails {
 }
 
 #[cfg_attr(
-    any(feature = "contract-infra-market", feature = "testing"),
+    any(
+        feature = "contract-infra-market",
+        feature = "contract-infra-market-testing",
+        feature = "testing"
+    ),
     stylus_sdk::prelude::storage
 )]
 #[cfg_attr(feature = "contract-infra-market", stylus_sdk::prelude::entrypoint)]

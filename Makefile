@@ -1,7 +1,9 @@
 
 comma=,
-CARGO_EXTRA_FEATURES := \
+CARGO_EXTRA_FEATURES = \
 	$(if ${SPN_HARNESS_BACKEND},${comma}harness-stylus-interpreter)
+CARGO_EXTRA_FEATURES = \
+	$(if ${SPN_ADJUST_TIME},${comma}e2e-adjust-time)
 
 CARGO_BUILD_STYLUS := \
 	cargo build \
@@ -37,7 +39,8 @@ build: \
 	contract-trading-amm-price \
 	contract-lockup \
 	contract-infra-market \
-	contract-beauty-contest
+	contract-beauty-contest \
+	contract-infra-market-testing
 
 solidity: ${OUT_SHARE}
 
@@ -66,6 +69,8 @@ contract-lockup: contract-lockup.wasm
 contract-infra-market: contract-infra-market.wasm
 
 contract-beauty-contest: contract-beauty-contest.wasm
+
+contract-infra-market-testing: contract-infra-market-testing.wasm
 
 contract-factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-factory-1.wasm
@@ -132,6 +137,11 @@ contract-beauty-contest.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-beauty-contest${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-beauty-contest.wasm
 
+contract-infra-market-testing.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-infra-market-testing.wasm
+	@${CARGO_BUILD_STYLUS} contract-infra-market-testing${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-testing.wasm
+
 clean:
 	@rm -rf \
 		contract-beauty-contest.wasm \
@@ -145,10 +155,9 @@ clean:
 		contract-trading-dpm-mint.wasm \
 		contract-trading-dpm-trading-extras.wasm \
 		contract-trading-dpm-trading-mint.wasm \
+		contract-infra-market-testing.wasm \
 		factory-2.wasm \
 		factory-extras-.wasm \
 		liblib9lives.rlib \
 		ninelives.wasm \
-		target \
-		trading-extras.wasm \
-		trading-mint.wasm
+		target
