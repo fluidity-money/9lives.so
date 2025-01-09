@@ -7,11 +7,10 @@ use crate::{
     fees::*,
     fusdc_call,
     immutables::*,
-    lockup_call, nineliveslockedarb_call,
+    lockup_call, nineliveslockedarb_call, outcome,
     timing_infra_market::*,
     trading_call,
     utils::{block_timestamp, contract_address, msg_sender},
-    outcome,
 };
 
 pub use crate::storage_infra_market::*;
@@ -59,7 +58,6 @@ impl StorageInfraMarket {
     pub fn register(
         &mut self,
         trading_addr: Address,
-        incentive_sender: Address,
         desc: FixedBytes<32>,
         launch_ts: u64,
         call_deadline_ts: u64,
@@ -72,12 +70,6 @@ impl StorageInfraMarket {
         // This must be set. If this should never happen, then set to the
         // maximum U256.
         assert_or!(call_deadline_ts > 0, Error::ZeroCallDeadline);
-        // Only the factory can use this, so it should be safe to have
-        // taking from a user.
-        assert_or!(
-            msg_sender() == self.factory_addr.get(),
-            Error::NotFactoryContract
-        );
         assert_or!(!trading_addr.is_zero(), Error::ZeroTradingAddr);
         assert_or!(!desc.is_zero(), Error::ZeroDesc);
         self.campaign_call_begins
@@ -91,19 +83,19 @@ impl StorageInfraMarket {
             .set(U64::from(call_deadline_ts));
         // Take the incentive amount base amount to give to the user who
         // calls sweep for the first time with the correct calldata.
-        fusdc_call::take_from_funder_to(incentive_sender, contract_address(), INCENTIVE_AMT_BASE)?;
+        let incentive_amts = INCENTIVE_AMT_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE;
+        fusdc_call::take_from_sender(incentive_amts)?;
         // If we experience an overflow, that's not a big deal (we should've been collecting revenue more
         // frequently). From this base amount, we should be able to send INCENTIVE_AMT_DECLARE.
-        self.dao_money
-            .set(self.dao_money.get() + INCENTIVE_AMT_BASE);
+        self.dao_money.set(self.dao_money.get() + incentive_amts);
         evm::log(events::MarketCreated2 {
-            incentiveSender: incentive_sender,
+            incentiveSender: msg_sender(),
             tradingAddr: trading_addr,
             desc,
             callDeadline: call_deadline_ts,
             launchTs: launch_ts,
         });
-        Ok(INCENTIVE_AMT_BASE)
+        Ok(incentive_amts)
     }
 
     // Transition this function from being in the state of the campaign being
@@ -821,7 +813,6 @@ mod test {
         fn test_infra_operator_pause_no_run(
             mut c in strat_storage_infra_market(),
             register_trading_addr in strat_address(),
-            register_incentive_sender in strat_address(),
             register_desc in strat_fixed_bytes::<32>(),
             register_launch_ts in any::<u64>(),
             register_call_deadline in any::<u64>(),
@@ -852,7 +843,6 @@ mod test {
                 let rs = [
                     c.register(
                         register_trading_addr,
-                        register_incentive_sender,
                         register_desc,
                         register_launch_ts,
                         register_call_deadline

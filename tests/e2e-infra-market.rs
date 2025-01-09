@@ -9,7 +9,7 @@ use lib9lives::{
     fees::*,
     fusdc_call, give_then_reset_token,
     host::{set_block_timestamp, ts_add_time},
-    interactions_clear_after, nineliveslockedarb_call, panic_guard_eq, should_points,
+    interactions_clear_after, nineliveslockedarb_call, outcome, panic_guard_eq, should_points,
     should_spend_fusdc_contract, should_spend_fusdc_sender, should_spend_staked_arb,
     strat_storage_infra_market,
     testing_addrs::*,
@@ -17,7 +17,6 @@ use lib9lives::{
         block_timestamp, msg_sender, strat_address_not_empty, strat_fixed_bytes, strat_large_u256,
     },
     InfraMarketState,
-    outcome,
 };
 
 proptest! {
@@ -43,8 +42,10 @@ proptest! {
         interactions_clear_after! {
             IVAN => {
                 should_spend_fusdc_sender!(
-                    INCENTIVE_AMT_BASE,
-                    c.register(trading_addr, IVAN, desc, block_timestamp() + 1, call_deadline)
+                    INCENTIVE_AMT_CALL +
+                    INCENTIVE_AMT_CLOSE +
+                    INCENTIVE_AMT_DECLARE,
+                    c.register(trading_addr, desc, block_timestamp() + 1, call_deadline)
                 );
                 ts_add_time(block_timestamp() + 150);
                 should_spend_fusdc_sender!(
@@ -114,8 +115,10 @@ proptest! {
             IVAN => {
                 // Ivan sets up the contract, creates the market, waits a little, then calls.
                 should_spend_fusdc_sender!(
-                    INCENTIVE_AMT_BASE,
-                    c.register(trading_addr, IVAN, desc, block_timestamp() + 1, call_deadline)
+                    INCENTIVE_AMT_CALL +
+                    INCENTIVE_AMT_CLOSE +
+                    INCENTIVE_AMT_DECLARE,
+                    c.register(trading_addr, desc, block_timestamp() + 1, call_deadline)
                 );
                 // Since we haven't waited the amount of time before we can call,
                 // this should refuse to be used.
@@ -210,8 +213,10 @@ proptest! {
             IVAN => {
                 // Ivan sets up the contract, creates the market, waits a little, then calls.
                 should_spend_fusdc_sender!(
-                    INCENTIVE_AMT_BASE,
-                    c.register(trading_addr, IVAN, desc, block_timestamp() + 1, call_deadline)
+                    INCENTIVE_AMT_CALL +
+                    INCENTIVE_AMT_CLOSE +
+                    INCENTIVE_AMT_DECLARE,
+                    c.register(trading_addr, desc, block_timestamp() + 1, call_deadline)
                 );
                 ts_add_time(block_timestamp() + 10);
                 assert_eq!(

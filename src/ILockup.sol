@@ -16,6 +16,11 @@ interface ILockup {
     function tokenAddr() external view returns (address);
 
     /**
+     * @notice Get the until locked time timestamp.
+     */
+    function lockedUntil() external view returns (uint64 timestamp);
+
+    /**
      * @notice Withdraw some LARB to ARB.
      * @param amount to withdraw.
      * @param recipient to send the returned amounts to.

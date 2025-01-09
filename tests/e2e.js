@@ -103,6 +103,11 @@ describe("End to end tests", async () => {
     }
   })();
 
+  const lockup = new Contract(lockupProxyAddr, Lockup.abi, signer);
+  const lockedArbToken = new Contract(lockupProxyTokenAddr, TestERC20.abi, signer);
+
+  await (await stakedArb.approve(lockupProxyAddr, MaxUint256)).wait();
+
   const infraMarketTestingAddr = execSync(
     "./deploy-stylus.sh contract-infra-market-testing.wasm",
     {
@@ -114,10 +119,6 @@ describe("End to end tests", async () => {
       stdio: ["ignore", "pipe", "pipe"]
     },
   ).toString().trim();
-
-  const lockup = new Contract(lockupAddr, Lockup.abi, signer);
-
-  await (await stakedArb.approve(lockupAddr, MaxUint256)).wait();
 
   const TestingProxyFactory = new ContractFactory(
     TestingProxy.abi,
@@ -250,6 +251,19 @@ describe("End to end tests", async () => {
   });
 
   it("Should support locking up some funds, creating an infra market, voting on each stage of the process", async () => {
-      lockupProxyAddr
+      const lockupAmt = 10000n;
+      const stakedArbBalBefore = await stakedArb.balanceOf(defaultAccountAddr);
+      await (await lockup.lockup(lockupAmt, defaultAccountAddr)).wait();
+      assert.equal(
+        stakedArbBalBefore - lockupAmt,
+        await stakedArb.balanceOf(defaultAccountAddr)
+      );
+      assert.equal(
+        lockupAmt,
+        await lockedArbToken.balanceOf(defaultAccountAddr, lockupAmt)
+      );
+      assert.equal(0n, await lockup.lockedUntil(defaultAccountAddr));
+      // Now that we've confirmed locking up works, we need to create a market.
+      infraMarket
   });
 });

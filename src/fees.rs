@@ -46,15 +46,6 @@ pub const INCENTIVE_AMT_CLOSE: U256 = U256::from_limbs([INCENTIVE_AMT_CLOSE_INT,
 const INCENTIVE_AMT_DECLARE_INT: u64 = 300000;
 pub const INCENTIVE_AMT_DECLARE: U256 = U256::from_limbs([INCENTIVE_AMT_DECLARE_INT, 0, 0, 0]);
 
-// Incentive amount to take from users who create markets (for the infra
-// market). $3 fUSDC.
-pub const INCENTIVE_AMT_BASE: U256 = U256::from_limbs([
-    INCENTIVE_AMT_MODERATION_INT + INCENTIVE_AMT_CALL_INT + INCENTIVE_AMT_CLOSE_INT + INCENTIVE_AMT_DECLARE_INT,
-    0,
-    0,
-    0,
-]);
-
 // Amount that we take as bond for calling. $2 fUSDC.
 pub const BOND_FOR_CALL: U256 = U256::from_limbs([2e6 as u64, 0, 0, 0]);
 

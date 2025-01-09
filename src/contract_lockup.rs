@@ -39,6 +39,10 @@ impl StorageLockup {
         Ok(self.token_addr.get())
     }
 
+    pub fn locked_until(&self, addr: Address) -> Result<u64, Error> {
+        Ok(u64::from_be_bytes(self.deadlines.get(addr).to_be_bytes()))
+    }
+
     /// Lockup sends Locked ARB to the user after taking Staked ARB from
     /// them.
     pub fn lockup(&mut self, amt: U256, recipient: Address) -> Result<U256, Error> {
@@ -117,7 +121,10 @@ impl StorageLockup {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod test {
     use super::*;
-    use crate::{utils::{strat_address, strat_small_u256}, error::panic_guard};
+    use crate::{
+        error::panic_guard,
+        utils::{strat_address, strat_small_u256},
+    };
     use proptest::prelude::*;
     proptest! {
         #[test]

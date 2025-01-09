@@ -10,7 +10,6 @@ use crate::error::Error;
 sol! {
     function register(
         address trading,
-        address incentiveSender,
         bytes32 desc,
         uint64 launchTs,
         uint64 deadlineTs
@@ -22,17 +21,15 @@ sol! {
 pub fn register(
     infra_market: Address,
     trading: Address,
-    incentive_sender: Address,
     desc: FixedBytes<32>,
     launch_ts: u64,
-    deadline_ts: u64
+    deadline_ts: u64,
 ) -> Result<(), Error> {
     RawCall::new()
         .call(
             infra_market,
             &registerCall {
                 trading,
-                incentiveSender: incentive_sender,
                 desc,
                 launchTs: launch_ts,
                 deadlineTs: deadline_ts,
