@@ -87,7 +87,7 @@ pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
 
 pub fn approve(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
     unpack_bool_safe(
-        &RawCall::new_static()
+        &RawCall::new()
             .call(addr, &approveCall { spender, amount }.abi_encode())
             .map_err(|_| Error::ERC20Approve)?,
     )
