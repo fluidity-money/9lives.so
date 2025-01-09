@@ -77,6 +77,54 @@ const infraAbi = [
   },
   {
     type: "function",
+    name: "declare",
+    inputs: [
+      {
+        name: "tradingAddr",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "outcomes",
+        type: "bytes8[]",
+        internalType: "bytes8[]",
+      },
+      {
+        name: "feeRecipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "enable_contract",
+    inputs: [
+      {
+        name: "status",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "escape",
     inputs: [
       {
@@ -112,11 +160,6 @@ const infraAbi = [
     inputs: [
       {
         name: "trading",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "incentiveSender",
         type: "address",
         internalType: "address",
       },
