@@ -88,10 +88,14 @@ impl StorageFactory {
 
         // Take the full amount to use as incentives for calling cranks.
         fusdc_call::take_from_sender(
-            INCENTIVE_AMT_MODERATION
-                + INCENTIVE_AMT_CALL
-                + INCENTIVE_AMT_CLOSE
-                + INCENTIVE_AMT_DECLARE,
+            INCENTIVE_AMT_MODERATION + {
+                if oracle == self.infra_market.get() {
+                    // Make sure to take the amount that we need for the infra market.
+                    INCENTIVE_AMT_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE
+                } else {
+                    U256::ZERO
+                }
+            },
         )?;
 
         // Bump the amount that we need to track as a part of our operation revenue.
