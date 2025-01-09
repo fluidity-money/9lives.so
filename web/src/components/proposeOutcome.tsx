@@ -98,9 +98,9 @@ export default function ProposeOutcome({
           Time left to dispute: {timeLeft}
         </span>
       </div>
-      <h5 className="text-center font-geneva text-sm uppercase text-9black">
+      {/* <h5 className="text-center font-geneva text-sm uppercase text-9black">
         Status: {infraStatus}
-      </h5>
+      </h5> */}
       <div className="w-full text-9black">
         <Field>
           <Label className="font-bold text-9black">
