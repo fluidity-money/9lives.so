@@ -15,6 +15,10 @@ contract TestingProxy {
         TESTING = _t;
     }
 
+    // It's difficult to do testing properly with this format, so the
+    // approach we're going to use is having this format so it's possible to
+    // do end to end testing that things are functioning. This code should
+    // not be relied upon for serious testing!
     function addTime(address /* tradingAddr */, uint256 /* secs */) external {
         (bool success,) = TESTING.delegatecall(msg.data);
         require(success);
