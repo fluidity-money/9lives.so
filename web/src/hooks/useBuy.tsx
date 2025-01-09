@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
+import { generateMarketId } from "@/utils/generateMarketId";
 
 const EmptyBytes32 =
   "0x0000000000000000000000000000000000000000000000000000000000000000";
@@ -36,42 +37,24 @@ const useBuy = ({
             fusdc.toString(),
             config.contracts.decimals.fusdc,
           );
-          const tradingContract = getContract({
-            abi: tradingAbi,
-            address: tradingAddr,
-            client: config.thirdweb.client,
-            chain: config.chains.currentChain,
-          });
           const checkAmmReturnTx = prepareContractCall({
             contract: config.contracts.lens,
             method: "getLongtailQuote",
             params: [shareAddr, true, amount, MaxUint256],
           });
-          const check9liveReturnTx = prepareContractCall({
-            contract: tradingContract,
-            method: "quoteC0E17FC7",
-            params: [outcomeId, amount],
-          });
-          const mintWith9LivesTx = (
-            signature: string,
-            accountAddress: string,
-          ) => {
-            const { v, r, s } = Signature.from(signature);
-            const deadline = Date.now();
-            return prepareContractCall({
-              contract: tradingContract,
-              method: "mintPermitE90275AB",
+          const marketId = generateMarketId(outcomes.map((o) => o.identifier));
+          const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
+            prepareContractCall({
+              contract: config.contracts.buyHelper,
+              method: "mint",
               params: [
+                marketId,
+                config.contracts.fusdc.address,
                 outcomeId,
+                minShareOut,
                 amount,
-                accountAddress,
-                BigInt(deadline),
-                v,
-                r as `0x${string}`,
-                s as `0x${string}`,
               ],
             });
-          };
           const mintWithAMMTx = prepareContractCall({
             contract: config.contracts.amm,
             method: "swap904369BE",
@@ -83,7 +66,7 @@ const useBuy = ({
               account,
             }),
             simulateTransaction({
-              transaction: check9liveReturnTx,
+              transaction: mintWith9LivesTx(),
               account,
             }),
           ]);
@@ -91,20 +74,6 @@ const useBuy = ({
           if (useAmm) {
             return sendTransaction({
               transaction: mintWithAMMTx,
-              account,
-            });
-          } else if (account.signTransaction) {
-            const approveCallTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "approve",
-              params: [tradingAddr, MaxUint256],
-            });
-            const serializedTx = await toSerializableTransaction({
-              transaction: approveCallTx,
-            });
-            const signature = await account.signTransaction(serializedTx);
-            return sendTransaction({
-              transaction: mintWith9LivesTx(signature, account.address),
               account,
             });
           } else {
@@ -128,23 +97,10 @@ const useBuy = ({
                 account,
               });
             }
-            const mintTx = prepareContractCall({
-              contract: tradingContract,
-              method: "mintPermitE90275AB",
-              // if deadline is zero, following params are not evaluated
-              // so it become a standard mint without permit
-              params: [
-                outcomeId,
-                amount,
-                account.address,
-                BigInt(0),
-                0,
-                EmptyBytes32,
-                EmptyBytes32,
-              ],
-            });
+            // sets minimum share to %90 of expected return shares
+            const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
             await sendTransaction({
-              transaction: mintTx,
+              transaction: mintWith9LivesTx(minShareOut),
               account,
             });
           }
