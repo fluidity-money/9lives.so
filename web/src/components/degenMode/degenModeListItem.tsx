@@ -61,7 +61,7 @@ export default function DegenModeListItem({ data }: { data: Action }) {
                 ) : null}
               </div>
               <span className="font-geneva text-[10px] uppercase">
-                ${data.campaignVol ?? "?"} VOL.
+                ${data.campaignVol ?? "0"} VOL.
               </span>
             </div>
           </div>
