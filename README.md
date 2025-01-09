@@ -225,14 +225,28 @@ generate these, run `./print-error-table.sh`.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xFEb6034FC7dF27dF18a3a6baD5Fb94C0D3dCb6d5` |
-| Factory 1 implementation      | `0x1736213dc056931ac544e114c74408c9aab44b26` |
-| Factory 2 implementation      | `0x8487351dd709efac014d5b834edb7678e34574d9` |
-| Lockup implementation         | `0x771fa829ba1b445b03dae165d59d418b389fda0d` |
-| Infrastructure market proxy   | `0xbdce46aca28a05f969cf675cb2777bae23bd7ff8` |
-| Lockup proxy                  | `0x8ab2b21084e2145a5338b3cf7cd45dad2f01222e` |
-| Lockup token proxy            | `0x3ca49832937a86c0a99dd897e775ed9b7d6b38db` |
-| Factory proxy                 | `0x048db37b4bf07744bca95498e078af490c7b66fd` |
-| Helper factory                | `0x2790A6F7aA7679385Af917F06cFF0C0ff484F0d7` |
-| LensesV1                      | `0xe5d515eC8ECa5d70518e452b594dD0EFb715cB7d` |
-| Beauty contest                | `0x3f8cd5a3a67b57f8370c5699064e642d5924608b` |
+| Factory 1 implementation      | `0xe88c7ba004448956413490001bd07369cf0c2144` |
+| Factory 2 implementation      | `0x675ac9df1d2f9dc45c69d4928bc0b39913fe6114` |
+| Lockup implementation         | `0x061aec2e656167a021861e326f009ebe55b30b9d` |
+| Optimistic infra predict impl | `0x297a6ffc507aebff4316c460dc09bf48d89930db` |
+| Trading DPM mint impl         | `0xf42848787e102d4ab5cf35118b391c15219b2115` |
+| Trading DPM extras impl       | `0xbe2c0d864fa9c496203c9474748dbe302a649643` |
+| Trading DPM price impl        | `0xa25593e653e0ea5b8ac98d1f0ed483a4982cb0e2` |
+| Trading DPM quotes impl       | `0xa36636d7d2cb4e46a1cdf68f2a370eb642382414` |
+| Trading DPM price impl        | `0xa25593e653e0ea5b8ac98d1f0ed483a4982cb0e2` |
+| Trading AMM mint impl         | `0xd9431c10b09405bbda393ada4ef9d1c9df0bdcb2` |
+| Trading AMM extras impl       | `0xa93b637dfb596c7c5510bb0dfc9a6872381d8f3f` |
+| Trading AMM price impl        | `0x2a49c8aa07f47b4dca0f1df7f13921e0cade7213` |
+| Trading AMM quotes impl       | `0x71ffffe4f95510f59221bc40b4ab6d94cc2969ed` |
+| Trading AMM price impl        | `0x2a49c8aa07f47b4dca0f1df7f13921e0cade7213` |
+| Share implementation          | `0x901570280d72dC42d5DAFF2461Da21211b5a35a1` |
+| Lockup token implementation   | `0x9FC5266a46951c4543a7748ae4A71aBd33b770D1` |
+| Infrastructure market proxy   | `0xab80e599786fcaddeaa9e68e4e148227bc1c8e8d` |
+| Lockup proxy                  | `0x48bbfbd4438f245a7e3e793bff794c2e92537034` |
+| Lockup token proxy            | `0x39f9e59d1419887c8358f4e00c1bc32eaa5ec811` |
+| Factory proxy                 | `0x2d8d202c11ab72bcd98cca155510c2c350385057` |
+| Helper factory                | `0x6d4f1BA24eB4dC3665D7F91bD324C5D890dDb236` |
+| LensesV1                      | `0xDFcfDdbb70C950D4539c60D191E719Cf3B20385E` |
+| Beauty contest                | `0xca018c29994c2bd8ff9b5ff80a7010c5a0c0bf51` |
 | Sarp AI Resolver              | `0x15bebdf285bfe0039fd266af207f6d278aaac7f3` |
+| Helper buy                    | `0x827EC88bD4fdECA5a2D742C8db6C9d942eEa7aad` |
