@@ -18,6 +18,8 @@ interface IERC20Permit {
     function transferFrom(address owner, address spender, uint256 amount) external;
 }
 
+uint256 constant INCENTIVE_AMT_MODERATION = 2000000;
+
 contract HelperFactory {
     IERC20Permit immutable FUSDC;
     INineLivesFactory immutable FACTORY;
@@ -104,7 +106,11 @@ contract HelperFactory {
         address feeRecipient
     ) public returns (address tradingAddr) {
         // No extra fluff work is needed to support this.
-        FUSDC.transferFrom(msg.sender, address(this), outcomes.length * 1e6);
+        FUSDC.transferFrom(
+            msg.sender,
+            address(this),
+            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
+        );
         return create(BEAUTY_CONTEST, outcomes, timeEnding, documentation, feeRecipient);
     }
 
@@ -118,7 +124,15 @@ contract HelperFactory {
         bytes32 r,
         bytes32 s
     ) external returns (address tradingAddr) {
-        FUSDC.permit(msg.sender, address(this), outcomes.length * 1e6, deadline, v, r, s);
+        FUSDC.permit(
+            msg.sender,
+            address(this),
+            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
+            deadline,
+            v,
+            r,
+            s
+        );
         return createWithBeautyContest(outcomes, timeEnding, documentation, feeRecipient);
     }
 
@@ -129,7 +143,11 @@ contract HelperFactory {
         address feeRecipient
     ) public returns (address tradingAddr) {
         // No extra fluff work is needed to support this.
-        FUSDC.transferFrom(msg.sender, address(this), outcomes.length * 1e6);
+        FUSDC.transferFrom(
+            msg.sender,
+            address(this),
+            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
+        );
         return create(SARP_AI, outcomes, timeEnding, documentation, feeRecipient);
     }
 
@@ -143,7 +161,15 @@ contract HelperFactory {
         bytes32 r,
         bytes32 s
     ) external returns (address tradingAddr) {
-        FUSDC.permit(msg.sender, address(this), outcomes.length * 1e6, deadline, v, r, s);
+        FUSDC.permit(
+            msg.sender,
+            address(this),
+            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
+            deadline,
+            v,
+            r,
+            s
+        );
         return createWithAI(outcomes, timeEnding, documentation, feeRecipient);
     }
 
@@ -157,7 +183,11 @@ contract HelperFactory {
         bytes32 documentation,
         address feeRecipient
     ) public returns (address tradingAddr) {
-        FUSDC.transferFrom(msg.sender, address(this), outcomes.length * 1e6);
+        FUSDC.transferFrom(
+            msg.sender,
+            address(this),
+            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
+        );
         return create(oracle, outcomes, timeEnding, documentation, feeRecipient);
     }
 
@@ -173,7 +203,15 @@ contract HelperFactory {
         bytes32 r,
         bytes32 s
     ) public returns (address tradingAddr) {
-        FUSDC.permit(msg.sender, address(this), outcomes.length * 1e6, deadline, v, r, s);
+        FUSDC.permit(
+            msg.sender,
+            address(this),
+            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
+            deadline,
+            v,
+            r,
+            s
+        );
         return createWithCustom(oracle, outcomes, timeEnding, documentation, feeRecipient);
     }
 }
