@@ -10,8 +10,8 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-    amm_call, error::*, events, fees::INCENTIVE_AMT_MODERATION, fusdc_call, immutables::*,
-    infra_market_call, proxy, share_call, trading_call,
+    amm_call, error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy,
+    share_call, trading_call,
 };
 
 pub use crate::storage_factory::*;
@@ -86,9 +86,17 @@ impl StorageFactory {
         let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
         fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
 
-        // Take the moderation amount to send to the DAO for ongoing
-        // content moderation reasons.
-        fusdc_call::take_from_sender_to(DAO_ADDR, INCENTIVE_AMT_MODERATION)?;
+        // Take the full amount to use as incentives for calling cranks.
+        fusdc_call::take_from_sender(
+            INCENTIVE_AMT_MODERATION
+                + INCENTIVE_AMT_CALL
+                + INCENTIVE_AMT_CLOSE
+                + INCENTIVE_AMT_DECLARE,
+        )?;
+
+        // Bump the amount that we need to track as a part of our operation revenue.
+        self.dao_claimable
+            .set(self.dao_claimable.get() + INCENTIVE_AMT_MODERATION);
 
         for (outcome_identifier, sqrt_price, outcome_name) in outcomes.iter() {
             let erc20_identifier =

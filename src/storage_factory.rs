@@ -63,6 +63,9 @@ pub struct StorageFactory {
 
     /// Utility for getting trading addresses quickly based on their inputs.
     pub trading_addresses: StorageMap<FixedBytes<32>, StorageAddress>,
+
+    /// Amounts claimable by the DAO for moderation operations.
+    pub dao_claimable: StorageU256
 }
 
 #[cfg(feature = "testing")]

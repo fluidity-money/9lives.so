@@ -1,10 +1,12 @@
-use stylus_sdk::alloy_primitives::*;
+use stylus_sdk::{alloy_primitives::*, evm};
 
+#[cfg(target_arch = "wasm32")]
 use alloc::vec::Vec;
 
 use crate::{
     amm_call,
     error::*,
+    events, fusdc_call,
     immutables::*,
     proxy,
     utils::{contract_address, msg_sender},
@@ -104,6 +106,18 @@ impl StorageFactory {
         let addr = self.trading_addresses.get(id);
         assert_or!(!addr.is_zero(), Error::TradingAddrNonExistent);
         Ok(addr)
+    }
+
+    pub fn drain_dao_claimable(&mut self, recipient: Address) -> R<U256> {
+        assert_or!(msg_sender() == self.operator.get(), Error::NotOperator);
+        let amt = self.dao_claimable.get();
+        fusdc_call::transfer(recipient, amt)?;
+        self.dao_claimable.set(U256::ZERO);
+        evm::log(events::ClaimedDAOFunds {
+            recipient,
+            amount: amt,
+        });
+        Ok(amt)
     }
 
     #[mutants::skip]

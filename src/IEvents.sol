@@ -21,6 +21,8 @@ interface IEvents {
         address indexed erc20Addr
     );
 
+    event ClaimedDAOFunds(address indexed recipient, uint256 indexed amount);
+
     /* TRADING CONTRACTS */
 
     event OutcomeDecided(
