@@ -37,6 +37,7 @@ export default function ProposeOutcome({
   const { propose, getStatus } = useInfraMarket({ tradingAddr });
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
+  const zeroByte8 = "0x0000000000000000";
   async function handleProposal() {
     if (!account) return connect();
     try {
@@ -126,6 +127,10 @@ export default function ProposeOutcome({
                   {outcome.name}
                 </option>
               ))}
+              {infraStatus ===
+                InfraMarketStateTitles[InfraMarketState.Predicting] && (
+                <option value={zeroByte8}>Unsure</option>
+              )}
             </Select>
             <Image
               alt=""
