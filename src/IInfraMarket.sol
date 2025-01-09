@@ -1,4 +1,4 @@
-// SPDX-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
 import "./InfraMarketState.sol";
@@ -8,7 +8,6 @@ interface IInfraMarket {
      * @notice Register this campaign, taking a small stipend for management from the
      *         creator in the form of $3 fUSDC. Factory caller only.
      * @param trading address to configure this
-     * @param incentiveSender to send the initial amount, assuming they approved this.
      * @param desc of the contract to commit as info for users. Should be info for a oracle.
      * @param launchTs to use as the timestamp to begin this infra market.
      *        Could be the conclusion date.
@@ -17,7 +16,6 @@ interface IInfraMarket {
      */
     function register(
         address trading,
-        address incentiveSender,
         bytes32 desc,
         uint64 launchTs,
         uint64 callDeadlineTs
@@ -134,4 +132,24 @@ interface IInfraMarket {
         InfraMarketState currentState,
         uint64 secsRemaining
     );
+
+    /**
+     * @notice Declare a winner, by providing the outcomes that were in use, along
+     *         with a fee recipient to collect the fee for providing this correct calldata
+     *         to.
+     * @param tradingAddr to use as the trading address for the campaign.
+     * @param outcomes to use as the outcomes that were in use.
+     * @param feeRecipient to send the incentive for declaring to.
+     */
+    function declare(
+        address tradingAddr,
+        bytes8[] calldata outcomes,
+        address feeRecipient
+    ) external returns (uint256);
+
+    /**
+     * @notice Enable or disable the contract.
+     * @param status to set the contract to.
+     */
+    function enable_contract(bool status) external returns (bool);
 }
