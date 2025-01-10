@@ -417,6 +417,12 @@ impl StorageInfraMarket {
         Ok(())
     }
 
+    pub fn cur_outcome_vested_arb(&self, trading_addr: Address, outcome: FixedBytes<8>) -> R<U256> {
+        let epochs = self.epochs.getter(trading_addr);
+        let e = epochs.get(self.cur_epochs.get(trading_addr));
+        Ok(e.outcome_vested_arb.get(outcome))
+    }
+
     pub fn reveal(
         &mut self,
         trading_addr: Address,
@@ -645,11 +651,6 @@ impl StorageInfraMarket {
         assert_or!(
             !self.campaign_call_deadline.get(trading_addr).is_zero(),
             Error::NotRegistered
-        );
-        // Make sure the caller isn't using this for themselves for a bizarre reason.
-        assert_or!(
-            victim_addr != msg_sender() && victim_addr != fee_recipient_addr,
-            Error::BadVictim
         );
         // Make sure that this sweeping is taking place after the epoch has passed.
         assert_or!(

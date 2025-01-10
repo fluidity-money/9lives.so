@@ -69,6 +69,17 @@ interface IInfraMarket {
     function predict(address tradingAddr, bytes32 commit) external;
 
     /**
+     * @notice Get the amount of vested ARB in a specific outcome produced by
+     *         reveals up until now.
+     * @param trading contract this is for.
+     * @param outcome that we want to know.
+     */
+    function curOutcomeVestedArb(
+        address trading,
+        bytes8 outcome
+    ) external view returns (uint256);
+
+    /**
      * @notice Reveal a previously made commitment. Should be done in the revealing
      *         period (two days after the first whinge, for two days).
      * @param tradingAddr to use as the place for the commitments to be tracked.

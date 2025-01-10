@@ -12,9 +12,9 @@ contract WhingeHelper {
         address _token,
         IInfraMarket _infraMarket,
         address _tradingAddr,
-        bytes8 outcome
+        bytes8 _outcome
     ) {
         IERC20(_token).transferFrom(msg.sender, address(this), 7e6);
-        _infraMarket.whinge(_tradingAddr, outcome, msg.sender);
+        _infraMarket.whinge(_tradingAddr, _outcome, msg.sender);
     }
 }
