@@ -349,7 +349,7 @@ describe("End to end tests", async () => {
       await predictorAlex.waitForDeployment();
       const predictorAlexAmt = 20000n;
       const predictorAlexAddr = await predictorAlex.getAddress();
-      await (await stakedArbAddress.approve(predictorAlexAddr, predictorAlexAmt)).wait();
+      await (await stakedArb.approve(predictorAlexAddr, predictorAlexAmt)).wait();
       console.log("about to do lockup with predictor alex");
       await (await predictorAlex.lockup(predictorAlexAmt)).wait();
       console.log("done with predictor alex lockup");
