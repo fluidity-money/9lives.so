@@ -361,6 +361,14 @@ impl StorageInfraMarket {
         Ok((state.into(), time))
     }
 
+    pub fn start_ts(&self, trading_addr: Address) -> R<u64> {
+        Ok(u64::from_be_bytes(self.campaign_call_begins.get(trading_addr).to_be_bytes()))
+    }
+
+    pub fn end_ts(&self, trading_addr: Address) -> R<u64> {
+        Ok(u64::from_be_bytes(self.campaign_call_deadline.get(trading_addr).to_be_bytes()))
+    }
+
     // This function must be called during the predicting period. It's
     // possible to vote for the zero outcome, which is considered a statement
     // that an outcome is inconclusive. If later, the contract resolves this

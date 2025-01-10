@@ -152,6 +152,10 @@ interface IInfraMarket {
         uint64 secsRemaining
     );
 
+    function startTs(address trading) external view returns (uint64);
+
+    function endTs(address trading) external view returns (uint64);
+
     /**
      * @notice Declare a winner, by providing the outcomes that were in use, along
      *         with a fee recipient to collect the fee for providing this correct calldata

@@ -348,7 +348,7 @@ describe("End to end tests", async () => {
       );
       await predictorAlex.waitForDeployment();
       const predictorAlexAmt = 20000;
-      await fusdc.approve(predictorAlex.getAddress(), predictoAlexAmt);
+      await fusdc.approve(predictorAlex.getAddress(), predictorAlexAmt);
       await predictorAlex.lockup(predictorAlexAmt);
       // Create the market using a helper to simplify things.
       await (await infraMarketHelper.register(
