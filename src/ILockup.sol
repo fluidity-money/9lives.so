@@ -17,8 +17,9 @@ interface ILockup {
 
     /**
      * @notice Get the until locked time timestamp.
+     * @param spender to get the locked until for.
      */
-    function lockedUntil() external view returns (uint64 timestamp);
+    function lockedUntil(address spender) external view returns (uint64 timestamp);
 
     /**
      * @notice Withdraw some LARB to ARB.
