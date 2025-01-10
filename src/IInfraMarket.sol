@@ -152,8 +152,14 @@ interface IInfraMarket {
         uint64 secsRemaining
     );
 
+    /**
+     * @notice Starting timestamp of the campaign.
+     */
     function startTs(address trading) external view returns (uint64);
 
+    /**
+     * @notice Ending timestamp of the campaign.
+     */
     function endTs(address trading) external view returns (uint64);
 
     /**

@@ -9,8 +9,7 @@ const {
   Provider,
   Wallet,
   encodeBytes32String,
-  keccak256,
-  toUtf8Bytes } = require("ethers");
+  keccak256 } = require("ethers");
 
 const {execSync} = require("node:child_process");
 
@@ -151,13 +150,13 @@ describe("End to end tests", async () => {
 
   const infraMarket = new Contract(infraMarketAddr, InfraMarket.abi, signer);
 
-  await infraMarket.ctor(
+  await (await infraMarket.ctor(
     defaultAccountAddr, // Operator
     defaultAccountAddr, // Emergency council
     lockupProxyAddr,
     lockedArbTokenAddr,
     factoryProxyAddr
-  );
+  )).wait();
 
   const InfraMarketHelperFactory = new ContractFactory(
     InfraMarketHelper.abi,
@@ -340,51 +339,63 @@ describe("End to end tests", async () => {
       );
       // This predictor will eventually make a bigger investment than our user.
       // This will let us test that the slashing functionality is working.
+      console.log("about to deploy the test predictor factory");
       const predictorAlex = await TestPredictorFactory.deploy(
           stakedArbAddress,
           lockupProxyAddr,
-          infraMarketAddr,
-          mockTradingAddr
+          infraMarketAddr
       );
+      console.log("predictor factory deploy done");
       await predictorAlex.waitForDeployment();
-      const predictorAlexAmt = 20000;
-      await fusdc.approve(predictorAlex.getAddress(), predictorAlexAmt);
-      await predictorAlex.lockup(predictorAlexAmt);
+      const predictorAlexAmt = 20000n;
+      const predictorAlexAddr = await predictorAlex.getAddress();
+      await (await stakedArbAddress.approve(predictorAlexAddr, predictorAlexAmt)).wait();
+      console.log("about to do lockup with predictor alex");
+      await (await predictorAlex.lockup(predictorAlexAmt)).wait();
+      console.log("done with predictor alex lockup");
       // Create the market using a helper to simplify things.
       await (await infraMarketHelper.register(
         mockTradingAddr,
         MockInfraMarketDesc,
         MaxU64
       )).wait();
+      console.log("done registering");
       // Now that we've made the market, we can call it to begin the next step.
       // First, we must waste our time to advance the block timestamp.
       await infraMarketProxy.wasteOfTime();
+      console.log("done calling for the first time");
       await infraMarket.call(mockTradingAddr, outcome1, defaultAccountAddr);
       const WhingeHelperFactory = new ContractFactory(
         WhingeHelper.bytecode,
         WhingeHelper.abi,
         signer
       );
+      console.log("done using whinge approve");
       const txCount = await provider.getTransactionCount(defaultAccountAddr);
       const whingeHelperFactoryAddr = getCreateAddress({
         from: defaultAccountAddr,
         nonce: txCount
       });
-      fusdc.approve(whingeHelperFactoryAddr, MaxUint256);
+      await (fusdc.approve(whingeHelperFactoryAddr, MaxUint256)).wait();
+      console.log("done deploying whinge helper factory");
       await (await WhingeHelperFactory.deploy(
         fusdcAddr,
         infraMarketAddr,
         mockTradingAddr,
         outcome1
       )).waitForDeployment();
+      console.log("done doing predict");
       // Now that whinging has taken place, we need to have the bettor make a prediction.
-      const predictionHash = keccak256(toUtf8Bytes(`${defaultAccountAddr}${outcome1}100`));
+      const predictionHash = keccak256(`${defaultAccountAddr}${outcome1}100`);
       await infraMarket.predict(tradingAddr, predictionHash);
       // We also need to make a prediction with a helper for making a bad prediction,
       // so we can test if slashing works with our default user here.
+      console.log("about to do predict with predictoralex");
       await predictorAlex.predict(tradingAddr, outcome2);
+      console.log("done doing predict with predictoralex");
       // Now that we've submitted our prediction, we need to wait two days and 1 second.
       await (await infraMarketProxy.addTime(2 * 60 * 24 + 1)).wait();
+      console.log("about to reveal");
       // Now that we've waited, it's time for us to come up with reveals.
       await (await infraMarket.reveal(
         tradingAddr,

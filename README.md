@@ -225,10 +225,10 @@ generate these, run `./print-error-table.sh`.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xFEb6034FC7dF27dF18a3a6baD5Fb94C0D3dCb6d5` |
-| Factory 1 implementation      | `0xe88c7ba004448956413490001bd07369cf0c2144` |
+| Factory 1 implementation      | `0xe1841050df5ae8aa09b0980383a62723d70597ad` |
 | Factory 2 implementation      | `0x675ac9df1d2f9dc45c69d4928bc0b39913fe6114` |
 | Lockup implementation         | `0x061aec2e656167a021861e326f009ebe55b30b9d` |
-| Optimistic infra predict impl | `0x297a6ffc507aebff4316c460dc09bf48d89930db` |
+| Optimistic infra predict impl | `0x2359935aedbc39e124f0e429da2f55015c2293c7` |
 | Trading DPM mint impl         | `0xf42848787e102d4ab5cf35118b391c15219b2115` |
 | Trading DPM extras impl       | `0xbe2c0d864fa9c496203c9474748dbe302a649643` |
 | Trading DPM price impl        | `0xa25593e653e0ea5b8ac98d1f0ed483a4982cb0e2` |

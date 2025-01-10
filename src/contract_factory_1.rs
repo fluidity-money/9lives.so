@@ -11,7 +11,7 @@ use alloc::{string::String, vec::Vec};
 
 use crate::{
     amm_call, error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy,
-    share_call, trading_call,
+    share_call, trading_call, utils::block_timestamp,
 };
 
 pub use crate::storage_factory::*;
@@ -154,7 +154,7 @@ impl StorageFactory {
                 self.infra_market.get(),
                 trading_addr,
                 documentation,
-                time_start,
+                block_timestamp() + 1,
                 deadline_add_two_weeks,
             )?;
         }
