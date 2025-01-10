@@ -7,6 +7,7 @@ import InactiveIndicator from "#/images/inactive-indicator.svg";
 import { combineClass } from "@/utils/combineClass";
 import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
+import DetailCreatedBy from "./detailCreatedBy";
 export default function DetailHeader({
   data,
   isEnded,
@@ -46,18 +47,11 @@ export default function DetailHeader({
               />{" "}
               <h1 className="font-chicago text-2xl">{data.name}</h1>
             </div>
-            <div className="flex items-center justify-between gap-4 font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+            <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <span>
-                  <a
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    href={`https://testnet-explorer.superposition.so/address/${data.creator.address}`}
-                  >
-                    Created by {data.creator.address.slice(0, 4)}...
-                    {data.creator.address.slice(-4)}
-                  </a>
-                </span>
+                <DetailCreatedBy
+                  address={data.creator.address as `0x${string}`}
+                />
               </div>
             </div>
           </div>

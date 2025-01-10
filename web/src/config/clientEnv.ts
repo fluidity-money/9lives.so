@@ -50,6 +50,10 @@ const clientEnvSchema = z.object({
    */
   NEXT_PUBLIC_BEAUTY_ADDR: z.string().length(42),
   /**
+   * Meow domains contract address
+   */
+  NEXT_PUBLIC_MEOW_DOMAINS_ADDR: z.string().length(42),
+  /**
    * Websocket url
    */
   NEXT_PUBLIC_WS_URL: z.string().url(),
@@ -76,6 +80,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_INFRA_ADDR: process.env.NEXT_PUBLIC_INFRA_ADDR,
   NEXT_PUBLIC_AI_ADDR: process.env.NEXT_PUBLIC_AI_ADDR,
   NEXT_PUBLIC_BEAUTY_ADDR: process.env.NEXT_PUBLIC_BEAUTY_ADDR,
+  NEXT_PUBLIC_MEOW_DOMAINS_ADDR: process.env.NEXT_PUBLIC_MEOW_DOMAINS_ADDR,
   NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
 });
 

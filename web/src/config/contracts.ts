@@ -9,6 +9,7 @@ import clientEnv from "./clientEnv";
 import lensAbi from "./abi/lens";
 import { currentChain } from "./chains";
 import infraAbi from "./abi/infra";
+import meowDomainsAbi from "./abi/meowDomains";
 const contractSchema = z.object({
   abi: z.array(z.any()).optional(),
   address: z.string(),
@@ -31,6 +32,7 @@ const allContractSchema = z.object({
   helperFactory: contractSchema,
   infra: contractSchema,
   buyHelper: contractSchema,
+  meowDomains: contractSchema,
 });
 
 const fusdc = getContract({
@@ -69,6 +71,12 @@ const buyHelper = getContract({
   chain: currentChain,
   client: thirdweb.client,
 });
+const meowDomains = getContract({
+  abi: meowDomainsAbi,
+  address: clientEnv.NEXT_PUBLIC_MEOW_DOMAINS_ADDR,
+  chain: currentChain,
+  client: thirdweb.client,
+});
 const contractValidation = allContractSchema.safeParse({
   decimals: {
     fusdc: 6,
@@ -80,6 +88,7 @@ const contractValidation = allContractSchema.safeParse({
   helperFactory,
   infra,
   buyHelper,
+  meowDomains,
 });
 
 type ContractsType = z.infer<typeof allContractSchema>;
@@ -97,4 +106,5 @@ export default contractValidation.data as {
   helperFactory: typeof helperFactory;
   infra: typeof infra;
   buyHelper: typeof buyHelper;
+  meowDomains: typeof meowDomains;
 };
