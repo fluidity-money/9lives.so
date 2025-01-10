@@ -46,9 +46,13 @@ export function calcTimePassed(endTime: number) {
     case 1000 * 60 * 60 * 24 * 30 > differenceInMs:
       text = `${Math.round(differenceInMs / (1000 * 60 * 60 * 24))} Days Ago`;
       unit = 1000 * 60 * 60 * 24;
+      break;
     case 1000 * 60 * 60 * 24 * 365 > differenceInMs:
       text = `${Math.round(differenceInMs / (1000 * 60 * 60 * 24 * 30))} Months Ago`;
       unit = 1000 * 60 * 60 * 24 * 30;
+      break;
+    default:
+      text = new Date(endTime).toDateString();
   }
   return { text, unit };
 }
