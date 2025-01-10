@@ -13,5 +13,5 @@ export function generateMarketId(outcomeIds: string[]) {
     .update(combinedBuffer)
     .digest()
     .toString("hex");
-  return hash as `0x${string}`;
+  return `0x${hash}` as `0x${string}`;
 }
