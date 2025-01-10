@@ -16,6 +16,8 @@ contract MockTrading is INineLivesTrading {
     IERC20 immutable SHARE_ADDR;
     uint256 counter_;
 
+    bytes8 public calledOutcome_;
+
     address oracle_;
     uint256 timeStart_;
     uint256 timeEnding_;
@@ -90,9 +92,9 @@ contract MockTrading is INineLivesTrading {
         return counter_;
     }
 
-    function decide(bytes8 /* outcome */) external {
-        // Do nothing
+    function decide(bytes8 outcome) external {
         ++counter_;
+        calledOutcome_ = outcome;
     }
 
     function payoff91FA8C2E(

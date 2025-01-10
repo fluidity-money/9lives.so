@@ -8,7 +8,9 @@ const {
   MaxUint256,
   Provider,
   Wallet,
-  encodeBytes32String, } = require("ethers");
+  encodeBytes32String,
+  keccak256,
+  toUtf8Bytes } = require("ethers");
 
 const {execSync} = require("node:child_process");
 
@@ -21,8 +23,14 @@ const HelperFactory = require("../out/HelperFactory.sol/HelperFactory.json");
 const InfraMarket = require("../out/IInfraMarket.sol/IInfraMarket.json");
 const TestingProxy = require("../out/TestingProxy.sol/TestingProxy.json");
 const Lockup = require("../out/ILockup.sol/ILockup.json");
+const MockTrading = require("../out/MockTrading.sol/MockTrading.json");
+const InfraMarketHelper = require("../out/InfraMarketHelper.sol/InfraMarketHelper.json");
+const WhingeHelper = require("../out/WhingeHelper.sol/WhingeHelper.json");
 
 const MaxU64 = 18446744073709551615n;
+const ZeroAddress = "0x0000000000000000000000000000000000000000";
+
+const MockInfraMarketDesc = "0x199c5aae6c811d3ac01629ab086452a4b306754d68eb3d79e28da2cc4ffa0eca";
 
 describe("End to end tests", async () => {
   const RPC_URL = process.env.SPN_SUPERPOSITION_URL;
@@ -109,6 +117,8 @@ describe("End to end tests", async () => {
     signer
   );
 
+  const lockedArbTokenAddr = await lockedArbToken.getAddress();
+
   await (await stakedArb.approve(lockupProxyAddr, MaxUint256)).wait();
 
   const infraMarketTestingAddr = execSync(
@@ -139,6 +149,29 @@ describe("End to end tests", async () => {
   const infraMarketAddr = await infraMarketProxy.getAddress();
 
   const infraMarket = new Contract(infraMarketAddr, InfraMarket.abi, signer);
+
+  await infraMarket.ctor(
+    defaultAccountAddr, // Operator
+    defaultAccountAddr, // Emergency council
+    lockupProxyAddr,
+    lockedArbTokenAddr,
+    factoryProxyAddr
+  );
+
+  const InfraMarketHelperFactory = new ContractFactory(
+    InfraMarketHelper.abi,
+    InfraMarketHelper.bytecode,
+    signer
+  );
+
+  const infraMarketHelper = await InfraMarketHelperFactory.deploy(
+    fusdcAddress,
+    infraMarketAddr
+  );
+
+  await infraMarketHelper.waitForDeployment();
+
+  await (await fusdc.approve(infraMarketHelper.getAddress(), MaxUint256)).wait();
 
   const helperFactoryFactory = new ContractFactory(
     HelperFactory.abi,
@@ -171,6 +204,12 @@ describe("End to end tests", async () => {
   assert.equal(
     shareImplementation.toLowerCase(),
     (await factoryProxy.shareImpl()).toLowerCase()
+  );
+
+  const MockTradingFactory = new ContractFactory(
+    MockTrading.abi,
+    MockTrading.bytecode,
+    signer
   );
 
   const outcome1 = "0x1e9e51837f3ea6ea";
@@ -230,12 +269,12 @@ describe("End to end tests", async () => {
       signer
     );
     try {
-        await tradingDpmPrice.priceA827ED27(outcome1);
+        await tradingDpmPrice.priceA827ED27.staticCall(outcome1);
     } catch (err) {
         throw new Error(`price from trading price impl (${tradingDpmPriceImplementation}): ${err}`);
     }
     try {
-        await trading.priceA827ED27(outcome1);
+        await trading.priceA827ED27.staticCall(outcome1);
     } catch (err) {
         throw new Error(`price from trading proxy: ${err}`);
     }
@@ -271,7 +310,9 @@ describe("End to end tests", async () => {
     assert.ok(await fusdc.balanceOf(defaultAccountAddr) > fusdcBalBefore);
   });
 
-  it("Should support locking up some funds, creating an infra market, voting on each stage of the process", async () => {
+  it(
+    "Should support locking up some funds, creating an infra market, voting on each stage of the process",
+    async () => {
       const lockupAmt = 10000n;
       const stakedArbBalBefore = await stakedArb.balanceOf(defaultAccountAddr);
       await (await lockup.lockup(lockupAmt, defaultAccountAddr)).wait();
@@ -285,5 +326,39 @@ describe("End to end tests", async () => {
       );
       assert.equal(0n, await lockup.lockedUntil(defaultAccountAddr));
       // Now that we've confirmed locking up works, we need to create a market.
+      // We use this test contract to check its state once the decide function is called.
+      const mockTrading = await MockTradingFactory.deploy(ZeroAddress, ZeroAddress);
+      await mockTrading.waitForDeployment();
+      const mockTradingAddr = await mockTrading.getAddress();
+      // Create the market using a helper to simplify things.
+      await (await infraMarketHelper.register(
+        mockTradingAddr,
+        MockInfraMarketDesc,
+        MaxU64
+      )).wait();
+      // Now that we've made the market, we can call it to begin the next step.
+      // First, we must waste our time to advance the block timestamp.
+      await infraMarketProxy.wasteOfTime();
+      await infraMarket.call(mockTradingAddr, outcome1, defaultAccountAddr);
+      const WhingeHelperFactory = new ContractFactory(
+        WhingeHelperFactory.bytecode,
+        WhingeHelperFactory.abi,
+        signer
+      );
+      const txCount = await provider.getTransactionCount(defaultAccountAddr);
+      const whingeHelperFactoryAddr = getCreateAddress({
+        from: defaultAccountAddr,
+        nonce: txCount
+      });
+      fusdc.approve(whingeHelperFactoryAddr, MaxUint256);
+      await (await WhingeHelperFactory.deploy(
+        fusdcAddr,
+        infraMarketAddr,
+        mockTradingAddr,
+        outcome1
+      )).waitForDeployment();
+      // Now that whinging has taken place, we need to have the bettor make a prediction.
+      const predictionHash = keccak256(toUtf8Bytes(`${defaultAccountAddr}${outcome1}100`));
+      await infraMarket.predict(tradingAddr, predictionHash);
   });
 });

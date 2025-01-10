@@ -4,6 +4,14 @@ pragma solidity 0.8.20;
 import "./InfraMarketState.sol";
 
 interface IInfraMarket {
+    function ctor(
+        address operator,
+        address emergencyCouncil,
+        address lockup,
+        address lockedArbToken,
+        address factory
+    ) external;
+
     /**
      * @notice Register this campaign, taking a small stipend for management from the
      *         creator in the form of $3 fUSDC. Factory caller only.
