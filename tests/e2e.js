@@ -86,10 +86,8 @@ describe("End to end tests", async () => {
 
   const {
     lockupProxy: lockupProxyAddr,
-    lockupProxyToken: lockupProxyTokenAddr,
     factoryProxy: factoryProxyAddr,
     optimisticInfraMarketImplementation: infraMarketImplAddr,
-    sharImplementation,
     tradingDpmExtrasImplementation,
     tradingDpmMintImplementation,
     tradingDpmPriceImplementation,
@@ -104,7 +102,12 @@ describe("End to end tests", async () => {
   })();
 
   const lockup = new Contract(lockupProxyAddr, Lockup.abi, signer);
-  const lockedArbToken = new Contract(lockupProxyTokenAddr, TestERC20.abi, signer);
+
+  const lockedArbToken = new Contract(
+    await lockup.tokenAddr(),
+    TestERC20.abi,
+    signer
+  );
 
   await (await stakedArb.approve(lockupProxyAddr, MaxUint256)).wait();
 
@@ -220,6 +223,24 @@ describe("End to end tests", async () => {
 
   await (await fusdc.approve(tradingAddr, MaxUint256)).wait();
 
+  it("Should support simulating price calls", async () => {
+    const tradingDpmPrice = new Contract(
+      tradingDpmPriceImplementation,
+      Trading.abi,
+      signer
+    );
+    try {
+        await tradingDpmPrice.priceA827ED27(outcome1);
+    } catch (err) {
+        throw new Error(`price from trading price impl (${tradingDpmPriceImplementation}): ${err}`);
+    }
+    try {
+        await trading.priceA827ED27(outcome1);
+    } catch (err) {
+        throw new Error(`price from trading proxy: ${err}`);
+    }
+  });
+
   it("Should support minting shares, then activating payoff, and receiving all of the pool.", async () => {
     const balBefore = await share1.balanceOf(defaultAccountAddr);
     await (await trading.mintPermitE90275AB(
@@ -260,10 +281,9 @@ describe("End to end tests", async () => {
       );
       assert.equal(
         lockupAmt,
-        await lockedArbToken.balanceOf(defaultAccountAddr, lockupAmt)
+        await lockedArbToken.balanceOf(defaultAccountAddr)
       );
       assert.equal(0n, await lockup.lockedUntil(defaultAccountAddr));
       // Now that we've confirmed locking up works, we need to create a market.
-      infraMarket
   });
 });
