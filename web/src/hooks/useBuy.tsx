@@ -1,23 +1,16 @@
 import config from "@/config";
-import tradingAbi from "@/config/abi/trading";
 import {
-  getContract,
   prepareContractCall,
   sendTransaction,
   simulateTransaction,
-  toSerializableTransaction,
 } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
-import { MaxUint256, Signature } from "ethers";
+import { MaxUint256 } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
-import { generateMarketId } from "@/utils/generateMarketId";
-
-const EmptyBytes32 =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 const useBuy = ({
   shareAddr,
@@ -42,13 +35,12 @@ const useBuy = ({
             method: "getLongtailQuote",
             params: [shareAddr, true, amount, MaxUint256],
           });
-          const marketId = generateMarketId(outcomes.map((o) => o.identifier));
           const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
             prepareContractCall({
               contract: config.contracts.buyHelper,
               method: "mint",
               params: [
-                marketId,
+                tradingAddr,
                 config.contracts.fusdc.address,
                 outcomeId,
                 minShareOut,
