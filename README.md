@@ -245,8 +245,8 @@ generate these, run `./print-error-table.sh`.
 | Lockup proxy                  | `0x48bbfbd4438f245a7e3e793bff794c2e92537034` |
 | Lockup token proxy            | `0x39f9e59d1419887c8358f4e00c1bc32eaa5ec811` |
 | Factory proxy                 | `0x2d8d202c11ab72bcd98cca155510c2c350385057` |
-| Helper factory                | `0x6d4f1BA24eB4dC3665D7F91bD324C5D890dDb236` |
+| Helper factory                | `0x31EC9E431664ff8006fE7f7bD36F749121612e04` |
 | LensesV1                      | `0xDFcfDdbb70C950D4539c60D191E719Cf3B20385E` |
 | Beauty contest                | `0xca018c29994c2bd8ff9b5ff80a7010c5a0c0bf51` |
 | Sarp AI Resolver              | `0x15bebdf285bfe0039fd266af207f6d278aaac7f3` |
-| Helper buy                    | `0x827EC88bD4fdECA5a2D742C8db6C9d942eEa7aad` |
+| Helper buy                    | `0x2Aa6ddAF979A8B2cE1853e2AE23C1Db2a2A33939` |
