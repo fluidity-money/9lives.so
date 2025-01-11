@@ -30,9 +30,9 @@ const buyHelperAbi = [
     name: "mint",
     inputs: [
       {
-        name: "_id",
-        type: "bytes32",
-        internalType: "bytes32",
+        name: "_tradingAddr",
+        type: "address",
+        internalType: "address",
       },
       {
         name: "_asset",
