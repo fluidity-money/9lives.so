@@ -179,6 +179,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		}
 	}
 	marketId := crypto.GetMarketId(outcomes_)
+	hexMarketId := "0x" + hex.EncodeToString(marketId)
 	tradingAddr, err := getTradingAddr(r.Geth, r.FactoryAddr, marketId)
 	if err != nil {
 		slog.Error("Error checking if trading contract is deployed",
@@ -354,7 +355,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		return nil, fmt.Errorf("error uploading image")
 	}
 	campaign := types.Campaign{
-		ID: hexCampaignId,
+		ID: hexMarketId,
 		Content: types.CampaignContent{
 			Name:        name,
 			Description: description,

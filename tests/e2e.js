@@ -362,13 +362,9 @@ describe("End to end tests", async () => {
       console.log("done registering");
       // Now that we've made the market, we can call it to begin the next step.
       // First, we must waste our time to advance the block timestamp.
-      await (await infraMarketProxy.wasteOfTime()).wait();
+      await infraMarketProxy.wasteOfTime();
       console.log("done calling for the first time");
-      await (await infraMarket.call(
-        mockTradingAddr,
-        outcome1,
-        defaultAccountAddr
-      )).wait();
+      await infraMarket.call(mockTradingAddr, outcome1, defaultAccountAddr);
       const WhingeHelperFactory = new ContractFactory(
         WhingeHelper.bytecode,
         WhingeHelper.abi,
@@ -391,11 +387,11 @@ describe("End to end tests", async () => {
       console.log("done doing predict");
       // Now that whinging has taken place, we need to have the bettor make a prediction.
       const predictionHash = keccak256(`${defaultAccountAddr}${outcome1}100`);
-      await (await infraMarket.predict(tradingAddr, predictionHash)).wait();
+      await infraMarket.predict(tradingAddr, predictionHash);
       // We also need to make a prediction with a helper for making a bad prediction,
       // so we can test if slashing works with our default user here.
       console.log("about to do predict with predictoralex");
-      await (await predictorAlex.predict(tradingAddr, outcome2)).wait();
+      await predictorAlex.predict(tradingAddr, outcome2);
       console.log("done doing predict with predictoralex");
       // Now that we've submitted our prediction, we need to wait two days and 1 second.
       await (await infraMarketProxy.addTime(2 * 60 * 24 + 1)).wait();
