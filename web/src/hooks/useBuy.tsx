@@ -52,6 +52,26 @@ const useBuy = ({
             method: "swap904369BE",
             params: [outcomeId, true, amount, BigInt(Number.MAX_SAFE_INTEGER)],
           });
+          const allowanceTx = prepareContractCall({
+            contract: config.contracts.fusdc,
+            method: "allowance",
+            params: [account.address, config.contracts.buyHelper.address],
+          });
+          const allowance = (await simulateTransaction({
+            transaction: allowanceTx,
+            account,
+          })) as bigint;
+          if (amount > allowance) {
+            const approveTx = prepareContractCall({
+              contract: config.contracts.fusdc,
+              method: "approve",
+              params: [config.contracts.buyHelper.address, amount],
+            });
+            await sendTransaction({
+              transaction: approveTx,
+              account,
+            });
+          }
           const [returnAmm, return9lives] = await Promise.all<bigint>([
             simulateTransaction({
               transaction: checkAmmReturnTx,
@@ -69,26 +89,6 @@ const useBuy = ({
               account,
             });
           } else {
-            const allowanceTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "allowance",
-              params: [account.address, tradingAddr],
-            });
-            const allowance = (await simulateTransaction({
-              transaction: allowanceTx,
-              account,
-            })) as bigint;
-            if (amount > allowance) {
-              const approveTx = prepareContractCall({
-                contract: config.contracts.fusdc,
-                method: "approve",
-                params: [tradingAddr, amount],
-              });
-              await sendTransaction({
-                transaction: approveTx,
-                account,
-              });
-            }
             // sets minimum share to %90 of expected return shares
             const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
             await sendTransaction({
