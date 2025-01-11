@@ -204,21 +204,37 @@ generate these, run `./print-error-table.sh`.
 | NotReadyToDeclare             | 0x999068                                                                                                                                                                                       |
 | AlreadyCommitted              | 0x999069                                                                                                                                                                                       |
 | DPMOnly                       | 0x99906a                                                                                                                                                                                       |
-
 ## Deployments
 
 ### Superposition mainnet
 
-|      Deployment name     |              Deployment address            |
-|--------------------------|--------------------------------------------|
-| Proxy admin              |  |
-| Factory 1 implementation |  |
-| Factory 2 implementation |  |
-| Trading mint impl        |  |
-| Trading extras impl      |  |
-| Factory proxy            |  |
-| ERC20 implementation     |  |
-| LensesV1                 |  |
+|        Deployment name        |              Deployment address            |
+|-------------------------------|--------------------------------------------|
+| Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
+| Factory 1 implementation      | `0x8cea04ab0085173201f2220e097f3d4fe373096c` |
+| Factory 2 implementation      | `0x379fe7e831a57a3ec712cb5335eb5ec5617de1ad` |
+| Lockup implementation         | `0xd827109ef4dad532861c5eaa9dcc0b084cb0159f` |
+| Optimistic infra predict impl | `0xccfb040e4024dcb9f40ca76bab3ea70b34a4a16d` |
+| Trading DPM mint impl         | `0xef3d61db18b288bb8262fa2ac874260fb0c520e6` |
+| Trading DPM extras impl       | `0x6592d0ee412129f1e75fe74933107cbff3c29cbb` |
+| Trading DPM price impl        | `0x0aa841e923214f7105a643519e80fd7c5fa50073` |
+| Trading DPM quotes impl       | `0xff6db85681418cacd5bc452f54eba8edc314950f` |
+| Trading DPM price impl        | `0x0aa841e923214f7105a643519e80fd7c5fa50073` |
+| Trading AMM mint impl         | `0x9eaba6d49f39c8e88f31bdccec5c81bf69ceb567` |
+| Trading AMM extras impl       | `0xe58323c9c556bad7cc6767620c3f82300e80da02` |
+| Trading AMM price impl        | `0xa53703a0dd532cf491941f3e3b6469c9db756811` |
+| Trading AMM quotes impl       | `0x4ca056f2bd802d5d10d318e0d0cf183e557bf6fd` |
+| Trading AMM price impl        | `0xa53703a0dd532cf491941f3e3b6469c9db756811` |
+| Share implementation          | `0x1278da41113d1a5b6204Fd4D9A48AB04AB3CFd8E` |
+| Lockup token implementation   | `0x27FACc2cAE37929b5c62278E7F6D94aE4f1a3A14` |
+| Infrastructure market proxy   | `0x6b38fb48cdae954f369105924ba9fa6b9b68777c` |
+| Lockup proxy                  | `0x4fe0de5a7ecb431753037bf7213772267098145a` |
+| Lockup token proxy            | `0x4308e787b00aa13d41d7ee48158de0ca18c539fd` |
+| Factory proxy                 | `0x68e15214616be129d82e5a23d0c9f4d998711c6b` |
+| Helper factory                | `0x34472166903043cCD16044055325B9Dd750Dc601` |
+| LensesV1                      | `0x96e686b7c21f3fE6ADe182C25d8D98898A1924c6` |
+| Beauty contest                | `0x1d15b0bf21c47c56203ba10ec450bb24e5bd562f` |
+| Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 
 ### Superposition testnet
 
