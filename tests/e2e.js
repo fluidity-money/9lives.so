@@ -451,5 +451,10 @@ describe("End to end tests", async () => {
       )).wait();
       // Let's see if the lockup amount excess is fine.
       assert.equal(lockupAmtExcess, await lockedArbToken.balanceOf(defaultAccountAddr));
+      try {
+        await infraMarket.capture.staticCall(mockTradingAddr, 0, predictorAlexAddr);
+        assert.fail("was able to claim with the bad user");
+      } catch (err) {}
+      await (await predictorAlex.capture(mockTradingAddr)).wait();
   });
 });

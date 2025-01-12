@@ -53,6 +53,21 @@ contract LockupToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeabl
         super._update(from, to, value);
     }
 
+    function delegate(address /* delegatee */) public pure override {
+        revert("disabled");
+    }
+
+    function delegateBySig(
+        address /* delegatee */,
+        uint256 /* nonce */,
+        uint256 /* expiry */,
+        uint8 /* v */,
+        bytes32 /* r */,
+        bytes32 /* s */
+    ) public pure override {
+        revert("disabled");
+    }
+
     function nonces(address owner)
         public
         view

@@ -5,7 +5,7 @@
 // (outside of this executable).
 
 #[cfg(target_arch = "wasm32")]
-use alloc::{vec, vec::Vec};
+use alloc::{vec::Vec};
 
 #[allow(unused)]
 #[cfg(any(

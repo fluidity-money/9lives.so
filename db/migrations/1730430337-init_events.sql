@@ -49,7 +49,7 @@ CREATE TABLE ninelives_tracked_trading_contracts_1(
 	block_hash HASH NOT NULL,
 	transaction_hash HASH NOT NULL,
 	-- The trading address to track as a creation of this factory.
-	trading_addr ADDRESS NOT NULL UNIQUE
+	trading_addr ADDRESS NOT NULL
 );
 
 CREATE TABLE ninelives_events_new_trading(

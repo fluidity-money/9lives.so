@@ -44,4 +44,8 @@ contract TestPredictor {
     function reveal(address _trading, bytes8 _outcome) external {
         INFRA_MARKET.reveal(_trading, address(this), _outcome, seed);
     }
+
+    function capture(address _trading) external returns (uint256) {
+        return INFRA_MARKET.capture(_trading, 0, address(this));
+    }
 }
