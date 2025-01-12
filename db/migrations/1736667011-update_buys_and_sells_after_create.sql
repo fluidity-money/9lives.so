@@ -4,7 +4,7 @@ CREATE FUNCTION ninelives_update_buys_sells_on_create()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN
 	UPDATE ninelives_buys_and_sells_1
-	SET content = NEW.content
+	SET campaign_content = NEW.content
 	WHERE emitter_addr = NEW.content->>'poolAddress';
 
 	RETURN NEW;
