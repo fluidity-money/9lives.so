@@ -39,6 +39,25 @@
 	},
 	{
 		"type": "event",
+		"name": "ClaimedDAOFunds",
+		"inputs": [
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
 		"name": "CommitmentRevealed",
 		"inputs": [
 			{
@@ -254,6 +273,24 @@
 				"type": "address",
 				"indexed": true,
 				"internalType": "address"
+			},
+			{
+				"name": "desc",
+				"type": "bytes32",
+				"indexed": true,
+				"internalType": "bytes32"
+			},
+			{
+				"name": "launchTs",
+				"type": "uint64",
+				"indexed": false,
+				"internalType": "uint64"
+			},
+			{
+				"name": "callDeadline",
+				"type": "uint64",
+				"indexed": false,
+				"internalType": "uint64"
 			}
 		],
 		"anonymous": false
@@ -428,43 +465,6 @@
 				"type": "uint256",
 				"indexed": true,
 				"internalType": "uint256"
-			}
-		],
-		"anonymous": false
-	},
-	{
-		"type": "event",
-		"name": "UserPredicted",
-		"inputs": [
-			{
-				"name": "trading",
-				"type": "address",
-				"indexed": true,
-				"internalType": "address"
-			},
-			{
-				"name": "predictor",
-				"type": "address",
-				"indexed": true,
-				"internalType": "address"
-			},
-			{
-				"name": "tokenAmount",
-				"type": "uint256",
-				"indexed": true,
-				"internalType": "uint256"
-			},
-			{
-				"name": "powerAmount",
-				"type": "uint256",
-				"indexed": false,
-				"internalType": "uint256"
-			},
-			{
-				"name": "outcome",
-				"type": "bytes8",
-				"indexed": false,
-				"internalType": "bytes8"
 			}
 		],
 		"anonymous": false
