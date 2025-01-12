@@ -63,7 +63,7 @@ type (
 
 		IncentiveSender Address `json:"incentive_sender"`
 		TradingAddr Address `json:"trading_addr"`
-		Desc Bytes `json:"desc"`
+		Desc Bytes `json:"desc" gorm:"column:desc_"`
 		LaunchTs time.Time `json:"launch_ts"`
 		CallDeadline time.Time `json:"call_deadline"`
 	}

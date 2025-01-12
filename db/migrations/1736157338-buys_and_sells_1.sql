@@ -30,7 +30,7 @@ BEGIN
  	SELECT id, content
 	INTO campaign_id, campaign_content
 	FROM ninelives_campaigns_1
-	WHERE content::text LIKE CONCAT('%', '0x', LEFT(NEW.identifier, 16), '%');
+	WHERE content->"poolAddress" = NEW.emitter_addr;
 
 	SELECT SUM(fusdc_spent)
 	INTO total_volume
@@ -63,14 +63,14 @@ BEGIN
 		NEW.block_number,
 		NEW.emitter_addr,
 		NEW.fusdc_spent,
-		'FUSDC',
+		'fUSDC',
 		NEW.share_amount,
 		'9#Share',
 		'buy',
 		NEW.spender,
 		NEW.recipient,
 		total_volume,
-		NEW.identifier,16,
+		NEW.identifier,
 		campaign_id,
 		campaign_content
 	);
