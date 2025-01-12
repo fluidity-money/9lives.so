@@ -5,7 +5,7 @@ RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN
 	UPDATE ninelives_buys_and_sells_1
 	SET content = NEW.content
-	WHERE emitter_addr = NEW.content->"poolAddress";
+	WHERE emitter_addr = NEW.content->>'poolAddress';
 
 	RETURN NEW;
 END $$;

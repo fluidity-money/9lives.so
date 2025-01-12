@@ -228,6 +228,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr ethCommon.Address, l ethType
 		isFactory     = factoryAddr == emitterAddr
 		isInfraMarket = infraMarketAddr == emitterAddr
 	)
+	var fromTrading bool
 	switch topic0 {
 	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
@@ -247,18 +248,22 @@ func handleLogCallback(factoryAddr, infraMarketAddr ethCommon.Address, l ethType
 		a, err = events.UnpackOutcomeDecided(topic1, topic2)
 		table = "ninelives_events_outcome_decided"
 		logEvent("OutcomeDecided")
+		fromTrading = true
 	case events.TopicSharesMinted:
 		a, err = events.UnpackSharesMinted(topic1, topic2, topic3, data)
 		table = "ninelives_events_shares_minted"
 		logEvent("SharesMinted")
+		fromTrading = true
 	case events.TopicPayoffActivated:
 		a, err = events.UnpackPayoffActivated(topic1, topic2, topic3, data)
 		table = "ninelives_events_payoff_activated"
 		logEvent("PayoffActivated")
+		fromTrading = true
 	case events.TopicDeadlineExtension:
 		a, err = events.UnpackDeadlineExtension(topic1, topic2)
 		table = "ninelives_events_deadline_extension"
 		logEvent("DeadlineExtension")
+		fromTrading = true
 	case events.TopicMarketCreated2:
 		a, err = events.UnpackMarketCreated2(topic1, topic2, topic3, data)
 		table = "ninelives_events_market_created2"
@@ -321,7 +326,12 @@ func handleLogCallback(factoryAddr, infraMarketAddr ethCommon.Address, l ethType
 	if err != nil {
 		return false, fmt.Errorf("finding trading addr: %v", err)
 	}
-	if !isFactory && !isTradingAddr && !isInfraMarket {
+	switch {
+	case fromTrading && isTradingAddr:
+		// We allow any trading contract.
+	case isFactory || isInfraMarket:
+		// We allow either the factory or the infra market.
+	default:
 		// The submitter was not the factory or the trading contract, we're going to
 		// disregard this event.
 		slog.Info("We disregarded an event that wasn't created by a trading contract",

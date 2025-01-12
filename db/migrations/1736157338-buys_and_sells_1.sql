@@ -30,7 +30,7 @@ BEGIN
  	SELECT id, content
 	INTO campaign_id, campaign_content
 	FROM ninelives_campaigns_1
-	WHERE content->"poolAddress" = NEW.emitter_addr;
+	WHERE content->>'poolAddress' = NEW.emitter_addr;
 
 	SELECT SUM(fusdc_spent)
 	INTO total_volume
