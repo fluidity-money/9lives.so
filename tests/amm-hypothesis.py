@@ -235,7 +235,7 @@ class TestPredMarket(unittest.TestCase):
     buy_amount=st.floats(min_value=1, max_value=100, allow_nan=False),
     sell_percentage=st.floats(min_value=0.1, max_value=1.0, allow_nan=False)
     )
-    def test_buy_then_sell(liquidity, outcomes, outcome, buy_amount, sell_percentage):
+    def test_buy_then_sell(self, liquidity, outcomes, outcome, buy_amount, sell_percentage):
         """
         Test that buying and then selling works correctly:
         1. Check that we can buy first
