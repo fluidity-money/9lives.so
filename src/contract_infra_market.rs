@@ -390,6 +390,14 @@ impl StorageInfraMarket {
             are_we_in_predicting_period(e.campaign_when_whinged.get(), block_timestamp())?,
             Error::PredictingNotStarted
         );
+        // We don't allow the user to participate here if they have 0
+        // balance at that point in history.
+        let past_bal = nineliveslockedarb_call::get_past_votes(
+            self.locked_arb_token_addr.get(),
+            msg_sender(),
+            U256::from(self.campaign_call_begins.get(trading_addr)),
+        )?;
+        assert_or!(past_bal > U256::ZERO, Error::ZeroBal);
         // We check to see if the user's Staked ARB is less than what they had at this point.
         // If that's the case, then we don't want to take their donation here, since something
         // is amiss, and we can't slash them properly.
@@ -398,11 +406,6 @@ impl StorageInfraMarket {
                 let cur_bal = nineliveslockedarb_call::balance_of(
                     self.locked_arb_token_addr.get(),
                     msg_sender(),
-                )?;
-                let past_bal = nineliveslockedarb_call::get_past_votes(
-                    self.locked_arb_token_addr.get(),
-                    msg_sender(),
-                    U256::from(self.campaign_call_begins.get(trading_addr)),
                 )?;
                 cur_bal >= past_bal
             },
