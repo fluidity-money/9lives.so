@@ -20,7 +20,7 @@ interface InfraMarket {
 }
 
 interface Lockup {
-    function ctor(address tokenImpl, address infraMarket) external;
+    function ctor(address tokenImpl, address infraMarket, address operator) external;
 }
 
 interface Factory {
@@ -86,7 +86,8 @@ contract DeployHelper {
             abi.encodeWithSelector(
                 Lockup.ctor.selector,
                 _a.lockupTokenImpl,
-                address(infraMarket)
+                address(infraMarket),
+                _a.admin
             )
         )));
         emit LockupDeployed(address(lockup));

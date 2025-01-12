@@ -47,6 +47,8 @@ struct Args {
         default_value = "0x0000000000000000000000000000000000000002"
     )]
     addr: String,
+    #[arg(short, long, default_value = "http://localhost:9999")]
+    url: String,
 
     #[arg(short, long, group = "action")]
     run_tests: bool,
@@ -76,7 +78,7 @@ async fn main() -> Result<(), Error> {
         OnceLock::new();
     PROVIDER
         .set(Mutex::new(RootProvider::new_http(
-            Url::parse("http://localhost:9999").unwrap(),
+            Url::parse(&args.url).unwrap(),
         )))
         .unwrap();
 
@@ -623,9 +625,7 @@ async fn main() -> Result<(), Error> {
         "vm_hooks",
         "static_call_contract",
         |_: Caller<_>, _: i32, _: i32, _: i32, _: i64, _: i32| -> i32 {
-            // Use the debug_traceCall function with the rpc to simulate the experience of
-            // calling a contract that's presumably deployed there. Store any SLOADs that take
-            // place during that operation in the hashmap for here.
+            // TODO
             unreachable!()
         },
     )?;

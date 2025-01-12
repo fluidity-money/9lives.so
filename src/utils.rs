@@ -9,9 +9,6 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256};
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 use proptest::prelude::*;
 
-#[cfg(all(feature = "e2e-adjust-time", not(target_arch = "wasm32")))]
-compile_error!("unable to use e2e-adjust-time without wasm!");
-
 //keccak256(abi.encodePacked("superposition.9lives.time.add"))
 pub const STORAGE_ADD_TIME: FixedBytes<32> =
     fixed_bytes!("1034bf4e0ceda10ff9c4b44b7a23917b10fb80c3103da502294c70e79054e669");
@@ -20,21 +17,18 @@ pub const STORAGE_ADD_TIME: FixedBytes<32> =
 pub const STORAGE_SUB_TIME: FixedBytes<32> =
     fixed_bytes!("bc21bb295b95ee34b23dda0ac2e03bf17b4daaf83f6c98c49e1ac7152c7c7210");
 
-#[cfg(feature = "e2e-adjust-time")]
 #[link(wasm_import_module = "vm_hooks")]
 unsafe extern "C" {
     pub fn storage_cache_bytes32(key: *const u8, value: *const u8);
     pub fn storage_load_bytes32(key: *const u8, out: *mut u8);
 }
 
-#[cfg(feature = "e2e-adjust-time")]
 unsafe fn load_word(key: FixedBytes<32>) -> U256 {
     let mut out = [0u8; 32];
     storage_load_bytes32(key.as_slice().as_ptr(), out.as_mut_ptr());
     U256::from_be_bytes(out)
 }
 
-#[cfg(feature = "e2e-adjust-time")]
 unsafe fn load_word_u64(key: FixedBytes<32>) -> u64 {
     u64::from_be_bytes(
         load_word(key).to_be_bytes::<32>()[32 - 8..]
@@ -43,31 +37,57 @@ unsafe fn load_word_u64(key: FixedBytes<32>) -> u64 {
     )
 }
 
-#[cfg(feature = "e2e-adjust-time")]
 unsafe fn store_word(key: FixedBytes<32>, v: U256) {
     storage_cache_bytes32(key.as_slice().as_ptr(), v.to_be_bytes::<32>().as_ptr());
 }
 
-#[cfg(feature = "e2e-adjust-time")]
 unsafe fn store_word_u64(key: FixedBytes<32>, v: u64) {
     store_word(key, U256::from(v))
 }
 
-#[cfg(feature = "e2e-adjust-time")]
 pub fn test_block_timestamp_add_time(t: u64) {
-    unsafe { store_word_u64(STORAGE_ADD_TIME, load_word_u64(STORAGE_ADD_TIME) + t) }
+    unsafe {
+      store_word_u64(
+          STORAGE_ADD_TIME,
+          load_word_u64(STORAGE_ADD_TIME) + t
+        )
+    }
 }
 
+#[test]
+fn test_test_block_timestamp_adjust_time() {
+    test_block_timestamp_add_time(100);
+    assert_eq!(100, unsafe { load_word_u64(STORAGE_ADD_TIME) });
+    test_block_timestamp_add_time(400);
+    assert_eq!(500, unsafe { load_word_u64(STORAGE_ADD_TIME) });
+}
+
+#[test]
 #[cfg(feature = "e2e-adjust-time")]
+fn test_block_timestamp_altered() {
+    let cur_time = block_timestamp();
+    test_block_timestamp_add_time(500);
+    assert_eq!(cur_time + 500, block_timestamp());
+    test_block_timestamp_sub_time(200);
+    assert_eq!(cur_time + 500 - 200, block_timestamp());
+    test_block_timestamp_sub_time(block_timestamp() + 500);
+    assert_eq!(0, block_timestamp());
+}
+
+// These functions are for instances where someone calls the modify time
+// slot functions, to ensure that the production instance won't use this.
+#[test]
+#[cfg(not(feature = "e2e-adjust-time"))]
+fn test_block_timestamp_wont_be_altered() {
+    let cur_time = block_timestamp();
+    test_block_timestamp_add_time(500);
+    assert_eq!(cur_time, block_timestamp());
+    test_block_timestamp_sub_time(500);
+    assert_eq!(cur_time, block_timestamp());
+}
+
 pub fn test_block_timestamp_sub_time(t: u64) {
-    unsafe {
-        let x = load_word_u64(STORAGE_SUB_TIME);
-        if x > t {
-            store_word_u64(STORAGE_SUB_TIME, x - t)
-        } else {
-            store_word(STORAGE_SUB_TIME, U256::ZERO)
-        }
-    }
+    unsafe { store_word_u64(STORAGE_SUB_TIME, load_word_u64(STORAGE_SUB_TIME) + t) }
 }
 
 // Get the block timestamp. If the e2e code is enabled to adjust the
@@ -81,10 +101,10 @@ pub fn block_timestamp() -> u64 {
     let time = unsafe {
         let sub = load_word_u64(STORAGE_SUB_TIME);
         let time = time + load_word_u64(STORAGE_ADD_TIME);
-        if time > sub {
+        if time >= sub {
             time - sub
         } else {
-            time
+            0
         }
     };
     time

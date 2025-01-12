@@ -49,7 +49,7 @@ func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events
 		return nil, "", fmt.Errorf("bad backend: %T", i[0])
 	}
 	return &events.EventNewTrading2{
-		Identifier: hashToBytes(topic1),
+		Identifier: hashToBytes32(topic1),
 		Addr:       addr,
 		Oracle:     hashToAddr(topic3),
 		Backend:    backend,
@@ -58,15 +58,15 @@ func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events
 
 func UnpackOutcomeCreated(topic1, topic2, topic3 ethCommon.Hash) (*events.EventOutcomeCreated, error) {
 	return &events.EventOutcomeCreated{
-		TradingIdentifier: hashToBytes(topic1),
-		Erc20Identifier:   hashToBytes(topic2),
+		TradingIdentifier: hashToBytes8(topic1),
+		Erc20Identifier:   hashToBytes32(topic2),
 		Erc20Addr:         hashToAddr(topic3),
 	}, nil
 }
 
 func UnpackOutcomeDecided(topic1, topic2 ethCommon.Hash) (*events.EventOutcomeDecided, error) {
 	return &events.EventOutcomeDecided{
-		Identifier: hashToBytes(topic1),
+		Identifier: hashToBytes8(topic1),
 		Oracle:     hashToAddr(topic2),
 	}, nil
 }
@@ -85,7 +85,7 @@ func UnpackSharesMinted(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*event
 		return nil, fmt.Errorf("bad fusdc spent: %T", i[1])
 	}
 	return &events.EventSharesMinted{
-		Identifier:  hashToBytes(topic1),
+		Identifier:  hashToBytes8(topic1),
 		ShareAmount: hashToNumber(topic2),
 		Spender:     hashToAddr(topic3),
 		Recipient:   events.AddressFromString(recipient.String()),
@@ -107,7 +107,7 @@ func UnpackPayoffActivated(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*ev
 		return nil, fmt.Errorf("bad fusdc received: %T", i[1])
 	}
 	return &events.EventPayoffActivated{
-		Identifier:    hashToBytes(topic1),
+		Identifier:    hashToBytes8(topic1),
 		SharesSpent:   hashToNumber(topic2),
 		Spender:       hashToAddr(topic3),
 		Recipient:     events.AddressFromString(recipient.String()),
@@ -138,7 +138,7 @@ func UnpackMarketCreated2(topic1, topic2, topic3 ethCommon.Hash, d []byte) (*eve
 	return &events.EventMarketCreated2{
 		IncentiveSender: hashToAddr(topic1),
 		TradingAddr:     hashToAddr(topic2),
-		Desc:            hashToBytes(topic3),
+		Desc:            hashToBytes32(topic3),
 		LaunchTs:        time.Unix(int64(launchTs), 0),
 		CallDeadline:    time.Unix(int64(callDeadline), 0),
 	}, nil
@@ -155,7 +155,7 @@ func UnpackInfraMarketClosed(topic1, topic2, topic3 ethCommon.Hash) (*events.Eve
 	return &events.EventInfraMarketClosed{
 		IncentiveRecipient: hashToAddr(topic1),
 		TradingAddr:        hashToAddr(topic2),
-		Winner:             hashToBytes(topic3),
+		Winner:             hashToBytes8(topic3),
 	}, nil
 }
 
@@ -170,7 +170,7 @@ func UnpackCommitted(topic1, topic2, topic3 ethCommon.Hash) (*events.EventCommit
 	return &events.EventCommitted{
 		Trading:    hashToAddr(topic1),
 		Predictor:  hashToAddr(topic2),
-		Commitment: hashToBytes(topic3),
+		Commitment: hashToBytes32(topic3),
 	}, nil
 }
 
@@ -190,7 +190,7 @@ func UnpackCommitmentRevealed(topic1, topic2, topic3 ethCommon.Hash, b []byte) (
 	return &events.EventCommitmentRevealed{
 		Trading:  hashToAddr(topic1),
 		Revealer: hashToAddr(topic2),
-		Outcome:  hashToBytes(topic3),
+		Outcome:  hashToBytes32(topic3),
 		Caller:   events.AddressFromString(caller.String()),
 		Bal:      events.NumberFromBig(bal),
 	}, nil
@@ -231,8 +231,12 @@ func UnpackFrozen(topic1, topic2 ethCommon.Hash) (*events.EventFrozen, error) {
 	}, nil
 }
 
-func hashToBytes(h ethCommon.Hash) events.Bytes {
+func hashToBytes32(h ethCommon.Hash) events.Bytes {
 	return events.BytesFromSlice(h.Bytes())
+}
+
+func hashToBytes8(h ethCommon.Hash) events.Bytes {
+	return events.BytesFromSlice(h.Bytes()[:8])
 }
 
 func hashToAddr(h ethCommon.Hash) events.Address {

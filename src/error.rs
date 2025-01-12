@@ -61,6 +61,8 @@ err_pre!(ERR_ERC20_BALANCE_OF_PREAMBLE, 0x06);
 err_pre!(ERR_LOCKED_ARB_PREAMBLE, 0x07);
 err_pre!(ERR_FACTORY_PREAMBLE, 0x07);
 err_pre!(ERR_INFRA_MARKET_PREAMBLE, 0x08);
+err_pre!(ERR_GENERAL_PREAMBLE, 0x09);
+err_pre!(ERR_LOCKED_PREAMBLE, 0x10);
 
 // Some testing affordances to make life easier with tracing the source
 // of issues.
@@ -387,7 +389,7 @@ pub enum Error {
     NotAfterWhinging,
 
     /// We're not in a commitment reveal period!
-    NotInCommitReveal,
+    NotInCommitReveal(u64, u64),
 
     /// The commitment reveal wasn't the same!
     CommitNotTheSame,
@@ -451,6 +453,10 @@ pub enum Error {
 
     // Error calling approve on a ERC20!
     ERC20Approve,
+
+    // There's been an issue in the build chain and you're accessing a
+    // function that shouldn't be able to be used.
+    TestingUnreachable,
 }
 
 #[cfg(any(
@@ -477,7 +483,7 @@ pub(crate) fn rename_addr(v: Address) -> String {
             testing_addrs::OGOUS => "ogous".to_string(),
             testing_addrs::PAXIA => "paxia".to_string(),
             testing_addrs::YOEL => "yoel".to_string(),
-            _ => v.to_string()
+            _ => v.to_string(),
         }
     }
 }
@@ -550,7 +556,7 @@ impl From<Error> for u8 {
 }
 
 impl From<Error> for Vec<u8> {
-    fn from(val: Error) -> Self {
+    fn from(v: Error) -> Self {
         fn ext(preamble: &[u8], b: &[&[u8]]) -> Vec<u8> {
             let mut x = preamble.to_vec();
             for b in b {
@@ -558,8 +564,11 @@ impl From<Error> for Vec<u8> {
             }
             x
         }
+        fn ext_general(b: &[&[u8]]) -> Vec<u8> {
+            ext(&[0x99, 0x09], &b)
+        }
 
-        match val {
+        match v {
             Error::LongtailError(b) => ext(&ERR_LONGTAIL_PREAMBLE, &[&b]),
             Error::ERC20ErrorTransfer(addr, b) => {
                 ext(&ERR_ERC20_TRANSFER_PREAMBLE, &[&b, addr.as_slice()])
@@ -580,11 +589,15 @@ impl From<Error> for Vec<u8> {
                 ext(&ERR_ERC20_BALANCE_OF_PREAMBLE, &[&b, addr.as_slice()])
             }
             Error::LockedARBError(addr, b) => ext(&ERR_LOCKED_ARB_PREAMBLE, &[&b, addr.as_slice()]),
+            Error::LockupError(addr, b) => ext(&ERR_LOCKED_PREAMBLE, &[addr.as_slice(), &b]),
             Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
             Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
             Error::FactoryCallError(b) => ext(&ERR_FACTORY_PREAMBLE, &[&b]),
             Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
-            v => vec![0x99, 0x90, v.into()],
+            Error::NotInCommitReveal(whinge_ts, cur_ts) => {
+                ext_general(&[&[v.into()], &whinge_ts.to_be_bytes(), &cur_ts.to_be_bytes()])
+            }
+            v => ext(&ERR_GENERAL_PREAMBLE, &[&[v.into()]]),
         }
     }
 }

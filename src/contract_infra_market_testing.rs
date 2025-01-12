@@ -11,7 +11,7 @@ impl StorageInfraMarket {
         #[cfg(feature = "e2e-adjust-time")]
         test_block_timestamp_add_time(_t);
         #[cfg(not(feature = "e2e-adjust-time"))]
-        unreachable!();
+        return Err(Error::TestingUnreachable);
         #[allow(unreachable_code)]
         Ok(())
     }
@@ -20,7 +20,7 @@ impl StorageInfraMarket {
         #[cfg(feature = "e2e-adjust-time")]
         test_block_timestamp_sub_time(_t);
         #[cfg(not(feature = "e2e-adjust-time"))]
-        unreachable!();
+        return Err(Error::TestingUnreachable);
         #[allow(unreachable_code)]
         Ok(())
     }

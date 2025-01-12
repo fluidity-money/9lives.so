@@ -13,7 +13,7 @@ pub use crate::storage_lockup::*;
 
 #[cfg_attr(feature = "contract-lockup", stylus_sdk::prelude::public)]
 impl StorageLockup {
-    pub fn ctor(&mut self, token_impl: Address, infra_market: Address) -> Result<(), Error> {
+    pub fn ctor(&mut self, token_impl: Address, infra_market: Address, operator_addr: Address) -> Result<(), Error> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         let token =
             proxy::deploy_proxy(token_impl).map_err(|_| Error::NinelivesLockedArbCreateError)?;
@@ -23,6 +23,7 @@ impl StorageLockup {
         self.infra_market_addr.set(infra_market);
         self.created.set(true);
         self.enabled.set(true);
+        self.operator.set(operator_addr);
         evm::log(events::LockupEnabled { status: true });
         Ok(())
     }
@@ -116,6 +117,12 @@ impl StorageLockup {
         });
         Ok(())
     }
+
+    pub fn update_infra_market(&mut self, addr: Address) -> Result<(), Error> {
+        assert_or!(self.operator.get() == msg_sender(), Error::NotOperator);
+        self.infra_market_addr.set(addr);
+        Ok(())
+    }
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
@@ -131,9 +138,9 @@ mod test {
         fn test_lockup_cant_be_recreated(mut c in strat_storage_lockup()) {
             c.created.set(false);
             let z = Address::ZERO;
-            c.ctor(z, z).unwrap();
+            c.ctor(z, z, msg_sender()).unwrap();
             panic_guard(|| {
-                assert_eq!(Error::AlreadyConstructed, c.ctor(z, z).unwrap_err());
+                assert_eq!(Error::AlreadyConstructed, c.ctor(z, z, msg_sender()).unwrap_err());
             });
         }
 

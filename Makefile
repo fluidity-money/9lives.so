@@ -1,9 +1,9 @@
 
 comma=,
-CARGO_EXTRA_FEATURES = \
+CARGO_EXTRA_FEATURES := \
 	$(if ${SPN_HARNESS_BACKEND},${comma}harness-stylus-interpreter)
-CARGO_EXTRA_FEATURES = \
-	$(if ${SPN_ADJUST_TIME},${comma}e2e-adjust-time)
+CARGO_EXTRA_FEATURES := \
+	$(if ${SPN_ADJUST_TIME},${comma}e2e-adjust-time)${CARGO_EXTRA_FEATURES}
 
 CARGO_BUILD_STYLUS := \
 	cargo build \

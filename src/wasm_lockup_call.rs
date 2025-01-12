@@ -7,11 +7,11 @@ use stylus_sdk::{
 use crate::{calldata::unpack_u256, error::Error};
 
 sol! {
-    function freeze(address spender, uint256 until);
+    function freeze(address spender, uint64 until);
     function slash(address victim, uint256 amount, address recipient);
 }
 
-pub fn freeze(addr: Address, spender: Address, until: U256) -> Result<(), Error> {
+pub fn freeze(addr: Address, spender: Address, until: u64) -> Result<(), Error> {
     RawCall::new()
         .call(addr, &freezeCall { spender, until }.abi_encode())
         .map_err(|b| Error::LockupError(addr, b))?;

@@ -6,7 +6,7 @@ use crate::{
     testing_addrs::{LOCKUP_CONTRACT, STAKED_ARB},
 };
 
-pub fn freeze(_addr: Address, _spender: Address, _until: U256) -> Result<(), Error> {
+pub fn freeze(_addr: Address, _spender: Address, _until: u64) -> Result<(), Error> {
     Ok(())
 }
 

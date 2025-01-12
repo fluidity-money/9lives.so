@@ -97,7 +97,7 @@ export const requestGetAITitles = graph9Lives.query.suggestedHeadlines();
 export const requestBuysAndSells = (limit?: number) =>
   graph9LivesSubs.gql(`
     query {
-      ninelives_buys_and_sells_1(limit: ${limit ?? 10}, order_by: {created_by: desc}) {
+      ninelives_buys_and_sells_1(limit: ${limit ?? 10}, order_by: {created_by: desc}, where: {campaign_content: {_is_null: false}}) {
         to_amount
         to_symbol
         transaction_hash

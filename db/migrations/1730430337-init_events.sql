@@ -73,7 +73,7 @@ CREATE TABLE ninelives_events_outcome_created(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	trading_identifier BYTES32 NOT NULL,
+	trading_identifier BYTES8 NOT NULL,
 	erc20_identifier BYTES32 NOT NULL UNIQUE,
 	erc20_addr BYTES32 NOT NULL UNIQUE
 );
@@ -86,7 +86,7 @@ CREATE TABLE ninelives_events_outcome_decided(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	identifier BYTES32 NOT NULL,
+	identifier BYTES8 NOT NULL,
 	oracle ADDRESS NOT NULL,
 
 	UNIQUE (emitter_addr, identifier)
@@ -100,7 +100,7 @@ CREATE TABLE ninelives_events_shares_minted(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	identifier BYTES32 NOT NULL,
+	identifier BYTES8 NOT NULL,
 	share_amount HUGEINT NOT NULL,
 	spender ADDRESS NOT NULL,
 	recipient ADDRESS NOT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE ninelives_events_payoff_activated(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	identifier BYTES32 NOT NULL,
+	identifier BYTES8 NOT NULL,
 	shares_spent HUGEINT NOT NULL,
 	spender ADDRESS NOT NULL,
 	recipient ADDRESS NOT NULL,

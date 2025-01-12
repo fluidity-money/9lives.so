@@ -362,11 +362,15 @@ impl StorageInfraMarket {
     }
 
     pub fn start_ts(&self, trading_addr: Address) -> R<u64> {
-        Ok(u64::from_be_bytes(self.campaign_call_begins.get(trading_addr).to_be_bytes()))
+        Ok(u64::from_be_bytes(
+            self.campaign_call_begins.get(trading_addr).to_be_bytes(),
+        ))
     }
 
     pub fn end_ts(&self, trading_addr: Address) -> R<u64> {
-        Ok(u64::from_be_bytes(self.campaign_call_deadline.get(trading_addr).to_be_bytes()))
+        Ok(u64::from_be_bytes(
+            self.campaign_call_deadline.get(trading_addr).to_be_bytes(),
+        ))
     }
 
     // This function must be called during the predicting period. It's
@@ -415,7 +419,7 @@ impl StorageInfraMarket {
         lockup_call::freeze(
             self.lockup_addr.get(),
             msg_sender(),
-            U256::from(block_timestamp() + A_WEEK_SECS),
+            block_timestamp() + A_WEEK_SECS,
         )?;
         evm::log(events::Committed {
             trading: trading_addr,
@@ -447,7 +451,10 @@ impl StorageInfraMarket {
         let mut e = epochs.setter(self.cur_epochs.get(trading_addr));
         assert_or!(
             are_we_in_commitment_reveal_period(e.campaign_when_whinged.get(), block_timestamp())?,
-            Error::NotInCommitReveal
+            Error::NotInCommitReveal(
+                u64::from_be_bytes(e.campaign_when_whinged.get().to_be_bytes()),
+                block_timestamp()
+            )
         );
         assert_or!(
             e.reveals.get(committer_addr).is_zero(),

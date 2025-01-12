@@ -46,5 +46,7 @@ interface ILockup {
      * deadline. If the amount is already set, then we use the latest value. The infra
      * market is responsible for a correct interaction here.
      */
-    function freeze(address spender, uint256 until) external;
+    function freeze(address spender, uint64 until) external;
+
+    function updateInfraMarket(address addr) external;
 }

@@ -7,6 +7,7 @@ const {
   JsonRpcProvider,
   MaxUint256,
   Provider,
+  toUtf8Bytes,
   Wallet,
   encodeBytes32String,
   keccak256 } = require("ethers");
@@ -148,6 +149,8 @@ describe("End to end tests", async () => {
 
   const infraMarketAddr = await infraMarketProxy.getAddress();
 
+  await (await lockup.updateInfraMarket(infraMarketAddr)).wait();
+
   const infraMarket = new Contract(infraMarketAddr, InfraMarket.abi, signer);
 
   await (await infraMarket.ctor(
@@ -242,18 +245,18 @@ describe("End to end tests", async () => {
     "0x482762a5bf88a80830135ebdf2bb2abca30d3ebe991712570faf4b85e5e27f1d";
 
   const tradingAddr = await helperFactory.createWithCustom.staticCall(
-      defaultAccountAddr, // Custom oracle
-      outcomes,
-      MaxU64, // Time end
-      documentationHash,
-      defaultAccountAddr, // Fee recipient
+    defaultAccountAddr, // Custom oracle
+    outcomes,
+    MaxU64, // Time end
+    documentationHash,
+    defaultAccountAddr, // Fee recipient
   );
   await (await helperFactory.createWithCustom(
-      defaultAccountAddr, // Custom oracle
-      outcomes,
-      MaxU64, // Time end
-      documentationHash,
-      defaultAccountAddr, // Fee recipient
+    defaultAccountAddr, // Custom oracle
+    outcomes,
+    MaxU64, // Time end
+    documentationHash,
+    defaultAccountAddr, // Fee recipient
   )).wait();
 
   const trading = new Contract(tradingAddr, Trading.abi, signer);
@@ -341,17 +344,15 @@ describe("End to end tests", async () => {
       // This will let us test that the slashing functionality is working.
       console.log("about to deploy the test predictor factory");
       const predictorAlex = await TestPredictorFactory.deploy(
-          stakedArbAddress,
-          lockupProxyAddr,
-          infraMarketAddr
+        stakedArbAddress,
+        lockupProxyAddr,
+        infraMarketAddr
       );
       console.log("predictor factory deploy done");
       await predictorAlex.waitForDeployment();
       const predictorAlexAmt = 20000n;
       const predictorAlexAddr = await predictorAlex.getAddress();
       await (await stakedArb.approve(predictorAlexAddr, predictorAlexAmt)).wait();
-
-      //return;
 
       console.log("about to do lockup with predictor alex");
       await (await predictorAlex.lockup(predictorAlexAmt)).wait();
@@ -363,62 +364,64 @@ describe("End to end tests", async () => {
         MockInfraMarketDesc,
         MaxU64
       )).wait();
-      return;
 
       console.log("done registering");
       // Now that we've made the market, we can call it to begin the next step.
       // First, we must waste our time to advance the block timestamp.
       await (await infraMarketProxy.wasteOfTime()).wait();
-      console.log("done calling for the first time");
+
       await (await infraMarket.call(
         mockTradingAddr,
         outcome1,
         defaultAccountAddr
       )).wait();
+
       const WhingeHelperFactory = new ContractFactory(
-        WhingeHelper.bytecode,
         WhingeHelper.abi,
+        WhingeHelper.bytecode,
         signer
       );
       console.log("done using whinge approve");
-      const txCount = await provider.getTransactionCount(defaultAccountAddr);
-      const whingeHelperFactoryAddr = getCreateAddress({
-        from: defaultAccountAddr,
-        nonce: txCount
-      });
-      await (fusdc.approve(whingeHelperFactoryAddr, MaxUint256)).wait();
-      console.log("done deploying whinge helper factory");
-      await (await WhingeHelperFactory.deploy(
-        fusdcAddr,
+      const whingeHelper = await WhingeHelperFactory.deploy();
+      await whingeHelper.waitForDeployment();
+      await (await fusdc.approve(
+        await whingeHelper.getAddress(),
+        MaxUint256
+      )).wait();
+      await (await whingeHelper.whinge(
+        fusdcAddress,
         infraMarketAddr,
         mockTradingAddr,
-        outcome1
-      )).waitForDeployment();
-      console.log("done doing predict");
+        outcome2
+      )).wait();
       // Now that whinging has taken place, we need to have the bettor make a prediction.
-      const predictionHash = keccak256(`${defaultAccountAddr}${outcome1}100`);
-      await (await infraMarket.predict(tradingAddr, predictionHash)).wait();
+      const seed1 = 100;
+      const predictionHash = keccak256(toUtf8Bytes(`${defaultAccountAddr}${outcome1}${seed1}`));
+      console.log("about to do prediction!");
+      await (await infraMarket.predict(mockTradingAddr, predictionHash)).wait();
       // We also need to make a prediction with a helper for making a bad prediction,
       // so we can test if slashing works with our default user here.
       console.log("about to do predict with predictoralex");
-      await (await predictorAlex.predict(tradingAddr, outcome2)).wait();
+      await (await predictorAlex.predict(mockTradingAddr, outcome2)).wait();
       console.log("done doing predict with predictoralex");
       // Now that we've submitted our prediction, we need to wait two days and 1 second.
-      await (await infraMarketProxy.addTime(2 * 60 * 24 + 1)).wait();
+      await (await infraMarketProxy.addTime(2 * 60 * 60 * 24 + 1)).wait();
       console.log("about to reveal");
       // Now that we've waited, it's time for us to come up with reveals.
       await (await infraMarket.reveal(
-        tradingAddr,
+        mockTradingAddr,
         defaultAccountAddr,
         outcome1,
         seed1
       )).wait();
+      console.log("about to do lockup for more");
       // Let's have the default account lock up some more funds to see if partial slashing
       // is fine.
       await (await lockup.lockup(lockupAmtExcess, defaultAccountAddr)).wait();
       // This user is predicting more than the account sender.
+      console.log("about to predictor alex reveal");
       await (await predictorAlex.reveal(
-        tradingAddr,
+        mockTradingAddr,
         outcome2
       )).wait();
       // At this point, the voting power should be proportionate to what we invested.
@@ -432,7 +435,8 @@ describe("End to end tests", async () => {
       );
       // Now we need to advance time again by two days, then submit the outcomes,
       // and slash everyone.
-      await (await infraMarketProxy.addTime(2 * 60 * 24)).wait();
+      console.log("about to begin slashing");
+      await (await infraMarketProxy.addTime(2 * 60 * 60 * 24)).wait();
       await (await infraMarket.declare(
         mockTradingAddr,
         [outcome1, outcome2],
