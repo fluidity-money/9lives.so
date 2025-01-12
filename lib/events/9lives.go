@@ -147,7 +147,8 @@ func UnpackMarketCreated2(topic1, topic2, topic3 ethCommon.Hash, d []byte) (*eve
 func UnpackCallMade(topic1, topic2, topic3 ethCommon.Hash) (*events.EventCallMade, error) {
 	return &events.EventCallMade{
 		TradingAddr: hashToAddr(topic1),
-		Winner:      hashToAddr(topic2),
+		Winner:      hashToBytes8(topic2),
+		IncentiveRecipient: hashToAddr(topic3),
 	}, nil
 }
 

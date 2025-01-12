@@ -72,7 +72,7 @@ type (
 		Event
 
 		TradingAddr Address `json:"trading_addr"`
-		Winner Address `json:"winner"`
+		Winner Bytes `json:"winner"`
 		IncentiveRecipient Address `json:"incentive_recipient"`
 	}
 
