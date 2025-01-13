@@ -71,7 +71,7 @@ contract HelperFactory {
         address feeRecipient
     ) public returns (address tradingAddr) {
         // We need to take the base incentive amount for transfers.
-        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6) + 3000000);
+        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6) + 2200000);
         return create(
             INFRA_MARKET,
             outcomes,
@@ -94,8 +94,8 @@ contract HelperFactory {
         bytes32 s
     ) external returns (address tradingAddr) {
         // We need to take some money from the sender for all the setup costs we're expecting.
-        // This should be the (number of outcomes * 1e6) + 10e6
-        FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6) + 3000000, deadline, v, r, s);
+        // This should be the (number of outcomes * 1e6) + (2.2 * 1e6)
+        FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6) + 2200000, deadline, v, r, s);
         return createWithInfraMarket(outcomes, timeEnding, documentation, feeRecipient);
     }
 

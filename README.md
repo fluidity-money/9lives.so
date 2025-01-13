@@ -50,7 +50,7 @@ clause that could be "no" if a user were to try to estimate the price of somethi
     1. [ ] Users can choose their favourite achievements to display in a minified form next to their Meow Domain.
     2. [ ] Meow domains is supported in the UI.
 - [X] Collect payoff from the campaign ending in the frontend.
-- [ ] Custom fee collection and pool configuration supported (use beauty contest with fixed date, many outcomes if they want)
+- [X] Custom fee collection and pool configuration supported (use beauty contest with fixed date, many outcomes if they want)
 - Anyone can create pools. Custom display of pools a la Ebay customisation.
     1. [X] A fixed fee is sent to creator of when shares are created.
     2. [X] Behind the scenes deferring to the AMM model if more than two outcomes.
@@ -211,20 +211,18 @@ generate these, run `./print-error-table.sh`.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0xc799373ef3ac45a9d994e4252a39eb9e34b445fb` |
-| Factory 2 implementation      | `0x02c541723a2d7347cf7d891352c54f7be9cf8646` |
-| Lockup implementation         | `0x65cd4a6e4209209383aa83b434f782a99b5d7311` |
-| Optimistic infra predict impl | `0x1281dc7f5e08d3201b4ea98f26cd41a872e1da41` |
-| Trading DPM mint impl         | `0x87e6db4768503a1aea36e38207ca6d444e34ecd0` |
-| Trading DPM extras impl       | `0xe311aba690b39503fe161c2e280b81d879f02e9e` |
-| Trading DPM price impl        | `0x57242f1937205704308d57fc93c816fa0a92faba` |
-| Trading DPM quotes impl       | `0xfe56fff2a673ca9785198fa0a632f7df44c75104` |
-| Trading DPM price impl        | `0x57242f1937205704308d57fc93c816fa0a92faba` |
-| Trading AMM mint impl         | `0x3db1eaa5028a8aac97e3beb4ca510135ef927b51` |
-| Trading AMM extras impl       | `0xa6fe4e7d05b11042067f3fa361440238d9439438` |
-| Trading AMM price impl        | `0x52414b27671f34e5b2013efbeb183e39d48b642d` |
-| Trading AMM quotes impl       | `0x2bdd28c6aa977a0c74d73fba3b4180f2363f4067` |
-| Trading AMM price impl        | `0x52414b27671f34e5b2013efbeb183e39d48b642d` |
+| Factory 1 implementation      | `0x3302ac14ad6b38baf789571395cc3a54f0f65e52` |
+| Factory 2 implementation      | `0xb1e52886e1346138ca1cede98c1a41dbff0fde9b` |
+| Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
+| Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
+| Trading DPM mint impl         | `0x824f4547cf245798472bbb2be4fb1f58a35be940` |
+| Trading DPM extras impl       | `0xbf602e27fc343fd7833e5b23f705c9ab1b545b74` |
+| Trading DPM price impl        | `0x8fc31d39edec596e8089b313920c05642e86d549` |
+| Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
+| Trading AMM mint impl         | `0x75a1561702de3a5bb5ae07ef0106a085a38b9369` |
+| Trading AMM extras impl       | `0xb73ceaf59fe6d13792153ee73ab2474de8c6df10` |
+| Trading AMM price impl        | 0xe8e2e4ac62b89a8b0e0632fd9f19316b8b2af76e`` |
+| Trading AMM quotes impl       | `0x1086fe3c7a453e31d5f04a55924ec633b62157d9` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
 | Infrastructure market proxy   | `0xc4451d8477cd6b92bfa0d3e2662ce0507a8e10b9` |
@@ -233,8 +231,9 @@ generate these, run `./print-error-table.sh`.
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
 | Helper factory                | `0xFA9B2A004F639bf27612B8dcd4cf4D47d1191d33` |
 | LensesV1                      | `0xa6f3dEBce04728d7a43224F051F03976c998CF83` |
-| Beauty contest                | `0x2ac645508fb3681d58408be824b9c9a8fcccd711` |
+| Beauty contest                | `0xb8379ec062a44a1ef308d01ddf27935976df52ad` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
+| Helper factory                | `0xE307205f1558aCE077EADb57DD9e1D4cFf4D3CC8` |
 
 ### Superposition testnet
 

@@ -108,12 +108,10 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Optimistic infra predict impl | \`$SPN_INFRA_MARKET_IMPL_ADDR\` |
 | Trading DPM mint impl         | \`$SPN_TRADING_DPM_MINT_IMPL_ADDR\` |
 | Trading DPM extras impl       | \`$SPN_TRADING_DPM_EXTRAS_IMPL_ADDR\` |
-| Trading DPM price impl        | \`$SPN_TRADING_DPM_PRICE_IMPL_ADDR\` |
 | Trading DPM quotes impl       | \`$SPN_TRADING_DPM_QUOTES_IMPL_ADDR\` |
 | Trading DPM price impl        | \`$SPN_TRADING_DPM_PRICE_IMPL_ADDR\` |
 | Trading AMM mint impl         | \`$SPN_TRADING_AMM_MINT_IMPL_ADDR\` |
 | Trading AMM extras impl       | \`$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR\` |
-| Trading AMM price impl        | \`$SPN_TRADING_AMM_PRICE_IMPL_ADDR\` |
 | Trading AMM quotes impl       | \`$SPN_TRADING_AMM_QUOTES_IMPL_ADDR\` |
 | Trading AMM price impl        | \`$SPN_TRADING_AMM_PRICE_IMPL_ADDR\` |
 | Share implementation          | \`$SPN_SHARE_IMPL_ADDR\` |

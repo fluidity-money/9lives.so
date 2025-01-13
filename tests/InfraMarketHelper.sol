@@ -19,7 +19,7 @@ contract InfraMarketHelper {
     }
 
     function register(address trading, bytes32 desc, uint64 deadline) external returns (uint256) {
-        TOKEN.transferFrom(msg.sender, address(this), 600000 + 100000 + 300000);
+        TOKEN.transferFrom(msg.sender, address(this), 1e6 + 1e5 + 1e5);
         return INFRA_MARKET.register(trading, desc, uint64(block.timestamp + 1), deadline);
     }
 }

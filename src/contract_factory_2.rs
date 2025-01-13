@@ -111,6 +111,10 @@ impl StorageFactory {
         Ok(addr)
     }
 
+    pub fn dao_addr(&self) -> R<Address> {
+        Ok(DAO_ADDR)
+    }
+
     pub fn drain_dao_claimable(&mut self, recipient: Address) -> R<U256> {
         assert_or!(msg_sender() == self.operator.get(), Error::NotOperator);
         let amt = self.dao_claimable.get();

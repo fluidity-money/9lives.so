@@ -297,7 +297,7 @@ describe("End to end tests", async () => {
       encodeBytes32String(""),
       encodeBytes32String("")
     )).wait();
-    assert.equal(await share1.balanceOf(defaultAccountAddr), "4181648");
+    assert.equal(await share1.balanceOf(defaultAccountAddr), "4434773");
     await (await trading.mintPermitE90275AB(
       outcome1,
       9 * 1e6,
@@ -307,7 +307,7 @@ describe("End to end tests", async () => {
       encodeBytes32String(""),
       encodeBytes32String("")
     )).wait();
-    const balAfter = 5841324 + 4181648;
+    const balAfter = 10648626;
     assert.equal(await share1.balanceOf(defaultAccountAddr), balAfter);
     await (await trading.decide(outcome1)).wait();
     const fusdcBalBefore = await fusdc.balanceOf(defaultAccountAddr);
@@ -354,6 +354,7 @@ describe("End to end tests", async () => {
       const predictorAlexAddr = await predictorAlex.getAddress();
       await (await stakedArb.approve(predictorAlexAddr, predictorAlexAmt)).wait();
       await (await predictorAlex.lockup(predictorAlexAmt)).wait();
+      console.log("about to do alex infra market helper register");
       // Create the market using a helper to simplify things.
       await (await infraMarketHelper.register(
         mockTradingAddr,

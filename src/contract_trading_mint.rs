@@ -194,7 +194,6 @@ impl StorageTrading {
         ));
         // Collect some fees for the team (for moderation reasons for screening).
         let fee_for_team = (value * FEE_SPN_MINT_PCT) / FEE_SCALING;
-        dbg!(fee_for_team);
         c!(fusdc_call::transfer(DAO_ADDR, fee_for_team));
         let value = value - fee_for_creator - fee_for_team;
         // Set the global amounts that were invested.

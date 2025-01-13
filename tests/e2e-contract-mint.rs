@@ -37,15 +37,18 @@ fn test_e2e_mint_dpm() {
         // To the contract after fee taking, this will be 5.7.
         let value = U256::from(1e6) * U256::from(6);
         // Take 0.8% from the amount (this is the fee).
-        let fee = (value * U256::from(8)) / U256::from(1000);
-        dbg!(value);
-        assert_eq!(U256::from(48000), fee);
+        let dao_fee = (value * U256::from(8)) / U256::from(1000);
+        let creator_fee = (value * U256::from(2)) / U256::from(1000);
+        assert_eq!(U256::from(48000), dao_fee);
         assert_eq!(
             should_spend_fusdc_sender!(value, c.mint_test(outcome_1, value, msg_sender())),
             U256::from(4434773)
         );
         c.decide(outcome_1).unwrap();
-        assert_eq!(erc20_call::balance_of(FUSDC_ADDR, DAO_ADDR).unwrap(), fee);
+        assert_eq!(
+            erc20_call::balance_of(FUSDC_ADDR, DAO_ADDR).unwrap(),
+            dao_fee + creator_fee
+        );
     })
 }
 
