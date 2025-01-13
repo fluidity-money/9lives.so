@@ -122,4 +122,16 @@ interface IEvents {
         address indexed victim,
         uint64 indexed until
     );
+
+    /* ON-CHAIN SARP SIGNALLER */
+
+    /// @notice Outstanding ticket requested by a user for SARP to resolve a market.
+    event Requested(
+        address indexed trading,
+        uint256 indexed ticket
+    );
+
+    /// @notice A request from a submitter was appropriate and resulted in a
+    /// non-indeterminate state. Refund the investor.
+    event Concluded(uint256 indexed ticket);
 }

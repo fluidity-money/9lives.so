@@ -235,6 +235,7 @@ generate these, run `./print-error-table.sh`.
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0xE307205f1558aCE077EADb57DD9e1D4cFf4D3CC8` |
 | Buy helper2                   | `0x98E5fEe28CB760A9a97391F319536175700D7524` |
+| SARP Signaller                | `0xa0Dc021Cbf8fe4062533D3Ee126Cc1a6Ab43C90d` |
 
 ### Superposition testnet
 

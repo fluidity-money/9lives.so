@@ -10,8 +10,8 @@ export default function CreateCampaign() {
           <h2 className="font-chicago text-2xl">Create Campaign</h2>
         </div>
         <p className="text-center text-xs">
-          This is where you can create your own campaign for other people to
-          participate in! For creation, $4.20 is needed.
+            Create a campaign for other people to participate in! For creation with infra
+            markets, $4.20 is needed. For everything else, $3 is needed.
           <br />
           <strong>Earn fees by creating markets:</strong> collect 0.2% of every
           deposit created!

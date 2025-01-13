@@ -36,6 +36,8 @@ var (
 	TopicWithdrew = abi.Events["Withdrew"].ID
 	TopicSlashed = abi.Events["Slashed"].ID
 	TopicFrozen = abi.Events["Frozen"].ID
+	TopicRequested = abi.Events["Requested"].ID
+	TopicConcluded = abi.Events["Concluded"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
@@ -229,6 +231,19 @@ func UnpackFrozen(topic1, topic2 ethCommon.Hash) (*events.EventFrozen, error) {
 	return &events.EventFrozen{
 		Victim: hashToAddr(topic1),
 		Until:  time.Unix(hashToNumber(topic2).Int64(), 0),
+	}, nil
+}
+
+func UnpackRequested(topic1, topic2 ethCommon.Hash) (*events.EventRequested, error) {
+	return &events.EventRequested{
+		Trading: hashToAddr(topic1),
+		Ticket: hashToNumber(topic2),
+	}, nil
+}
+
+func UnpackConcluded(topic1 ethCommon.Hash) (*events.EventConcluded, error) {
+	return &events.EventConcluded{
+		Ticket: hashToNumber(topic1),
 	}, nil
 }
 

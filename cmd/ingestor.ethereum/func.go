@@ -43,6 +43,8 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicWithdrew,
 	events.TopicSlashed,
 	events.TopicFrozen,
+	events.TopicRequested,
+	events.TopicConcluded,
 }
 
 // Entry function, using the database to determine if polling should be
@@ -53,6 +55,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 		factoryAddr     = ethCommon.HexToAddress(config.FactoryAddress)
 		infraMarketAddr = ethCommon.HexToAddress(config.InfraMarketAddress)
 		lockupAddr      = ethCommon.HexToAddress(config.LockupAddress)
+		sarpAiSignallerAddress = ethCommon.HexToAddress(config.SarpAiSignallerAddress)
 	)
 	IngestPolling(
 		f,
@@ -63,6 +66,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 		factoryAddr,
 		infraMarketAddr,
 		lockupAddr,
+		sarpAiSignallerAddress,
 	)
 }
 
@@ -70,7 +74,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 // receive log updates. Checks the database first to determine where the
 // last point is before continuing. Assumes ethclient is HTTP.
 // Uses the IngestBlockRange function to do all the lifting.
-func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress, infraMarketAddress, lockupAddress ethCommon.Address) {
+func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress, infraMarketAddress, lockupAddress, sarpAiSignallerAddress ethCommon.Address) {
 	if ingestorPagination <= 0 {
 		panic("bad ingestor pagination")
 	}
@@ -92,6 +96,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 			factoryAddress,
 			infraMarketAddress,
 			lockupAddress,
+			sarpAiSignallerAddress,
 			from,
 			to,
 		)
@@ -107,7 +112,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 // funciton to write records found to the database. Assumes the ethclient
 // provided is a HTTP client. Also updates the underlying last block it
 // saw into the database checkpoints. Fatals if something goes wrong.
-func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr, infraMarket, lockupAddr ethCommon.Address, from, to uint64) {
+func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr, infraMarket, lockupAddr, sarpSignallerAiAddr ethCommon.Address, from, to uint64) {
 	latestBlockNo, err := c.BlockNumber(context.Background())
 	if err != nil {
 		setup.Exitf("failed to get latest block number: %v", err)
@@ -127,7 +132,16 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 			err        error
 		)
 		for _, l := range logs {
-			if hasChanged, err = handleLog(f, db, factoryAddr, infraMarket, lockupAddr, l); err != nil {
+			hasChanged, err = handleLog(
+				f,
+				db,
+				factoryAddr,
+				infraMarket,
+				lockupAddr,
+				sarpSignallerAiAddr,
+				l,
+			)
+			if err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
 			biggestBlockNo = max(l.BlockNumber, biggestBlockNo)
@@ -151,11 +165,12 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 	}
 }
 
-func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
+func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAiAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
 	return handleLogCallback(
 		factoryAddr,
 		infraMarketAddr,
 		lockupAddr,
+		sarpSignallerAiAddr,
 		l,
 		func(blockHash, txHash, addr string) error {
 			// Track this address as a trading contract.
@@ -179,7 +194,7 @@ func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAd
 		},
 	)
 }
-func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
+func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAiAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
 	var topic1, topic2, topic3 ethCommon.Hash
 	topic0 := l.Topics[0]
 	if len(l.Topics) > 1 {
@@ -229,11 +244,6 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr ethCommon.Addres
 		a     any
 		err   error
 		table string
-	)
-	var (
-		isFactory     = factoryAddr == emitterAddr
-		isInfraMarket = infraMarketAddr == emitterAddr
-		isLockup      = lockupAddr == emitterAddr
 	)
 	var fromTrading bool
 	switch topic0 {
@@ -315,6 +325,14 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr ethCommon.Addres
 		a, err = events.UnpackFrozen(topic1, topic2)
 		table = "ninelives_events_frozen"
 		logEvent("Frozen")
+	case events.TopicRequested:
+		a, err = events.UnpackRequested(topic1, topic2)
+		table = "ninelives_events_requested"
+		logEvent("Requested")
+	case events.TopicConcluded:
+		a, err = events.UnpackConcluded(topic1)
+		table = "ninelives_events_concluded"
+		logEvent("Concluded")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -333,11 +351,17 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr ethCommon.Addres
 	if err != nil {
 		return false, fmt.Errorf("finding trading addr: %v", err)
 	}
+	var (
+		isFactory     = factoryAddr == emitterAddr
+		isInfraMarket = infraMarketAddr == emitterAddr
+		isLockup      = lockupAddr == emitterAddr
+		isSarpSignaller = sarpSignallerAiAddr == emitterAddr
+	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
-	case isFactory || isInfraMarket || isLockup:
-		// We allow either the factory or the infra market.
+	case isFactory || isInfraMarket || isLockup || isSarpSignaller :
+		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to
 		// disregard this event.

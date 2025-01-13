@@ -55,24 +55,24 @@ type (
 		Event
 
 		TimeBefore time.Time `json:"time_before"`
-		TimeAfter time.Time `json:"time_after"`
+		TimeAfter  time.Time `json:"time_after"`
 	}
 
 	EventMarketCreated2 struct {
 		Event
 
-		IncentiveSender Address `json:"incentive_sender"`
-		TradingAddr Address `json:"trading_addr"`
-		Desc Bytes `json:"desc" gorm:"column:desc_"`
-		LaunchTs time.Time `json:"launch_ts"`
-		CallDeadline time.Time `json:"call_deadline"`
+		IncentiveSender Address   `json:"incentive_sender"`
+		TradingAddr     Address   `json:"trading_addr"`
+		Desc            Bytes     `json:"desc" gorm:"column:desc_"`
+		LaunchTs        time.Time `json:"launch_ts"`
+		CallDeadline    time.Time `json:"call_deadline"`
 	}
 
 	EventCallMade struct {
 		Event
 
-		TradingAddr Address `json:"trading_addr"`
-		Winner Bytes `json:"winner"`
+		TradingAddr        Address `json:"trading_addr"`
+		Winner             Bytes   `json:"winner"`
 		IncentiveRecipient Address `json:"incentive_recipient"`
 	}
 
@@ -80,33 +80,33 @@ type (
 		Event
 
 		IncentiveRecipient Address `json:"incentive_recipient"`
-		TradingAddr Address `json:"trading_addr"`
-		Winner Bytes `json:"winner"`
+		TradingAddr        Address `json:"trading_addr"`
+		Winner             Bytes   `json:"winner"`
 	}
 
 	EventDAOMoneyDistributed struct {
 		Event
 
-		Amount Number `json:"amount"`
+		Amount    Number  `json:"amount"`
 		Recipient Address `json:"recipient"`
 	}
 
 	EventCommitted struct {
 		Event
 
-		Trading Address `json:"trading"`
-		Predictor Address `json:"predictor"`
-		Commitment Bytes `json:"commitment"`
+		Trading    Address `json:"trading"`
+		Predictor  Address `json:"predictor"`
+		Commitment Bytes   `json:"commitment"`
 	}
 
 	EventCommitmentRevealed struct {
 		Event
 
-		Trading Address `json:"trading"`
+		Trading  Address `json:"trading"`
 		Revealer Address `json:"revealer"`
-		Outcome Bytes `json:"outcome"`
-		Caller Address `json:"caller"`
-		Bal Number `json:"bal"`
+		Outcome  Bytes   `json:"outcome"`
+		Caller   Address `json:"caller"`
+		Bal      Number  `json:"bal"`
 	}
 
 	EventCampaignEscaped struct {
@@ -118,29 +118,42 @@ type (
 	EventLockedUp struct {
 		Event
 
-		Amount Number `json:"amount"`
+		Amount    Number  `json:"amount"`
 		Recipient Address `json:"recipient"`
 	}
 
 	EventWithdrew struct {
 		Event
 
-		Amount Number `json:"amount"`
+		Amount    Number  `json:"amount"`
 		Recipient Address `json:"recipient"`
 	}
 
 	EventSlashed struct {
 		Event
 
-		Victim Address `json:"victim"`
-		Recipient Address `json:"recipient"`
-		SlashedAmount Number `json:"slashed_amount"`
+		Victim        Address `json:"victim"`
+		Recipient     Address `json:"recipient"`
+		SlashedAmount Number  `json:"slashed_amount"`
 	}
 
 	EventFrozen struct {
 		Event
 
-		Victim Address `json:"victim"`
-		Until time.Time `json:"until"`
+		Victim Address   `json:"victim"`
+		Until  time.Time `json:"until"`
+	}
+
+	EventRequested struct {
+		Event
+
+		Trading Address `json:"trading"`
+		Ticket  Number  `json:"ticket"`
+	}
+
+	EventConcluded struct {
+		Event
+
+		Ticket Number `json:"ticket"`
 	}
 )

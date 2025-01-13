@@ -40,6 +40,7 @@ func TestSharesMinted(t *testing.T) {
 		factoryAddr,
 		factoryAddr, // Actually the infra market
 		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.

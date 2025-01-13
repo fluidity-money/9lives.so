@@ -120,6 +120,19 @@
 	},
 	{
 		"type": "event",
+		"name": "Concluded",
+		"inputs": [
+			{
+				"name": "ticket",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
 		"name": "DAOMoneyDistributed",
 		"inputs": [
 			{
@@ -402,6 +415,25 @@
 				"name": "fusdcReceived",
 				"type": "uint256",
 				"indexed": false,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "Requested",
+		"inputs": [
+			{
+				"name": "trading",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "ticket",
+				"type": "uint256",
+				"indexed": true,
 				"internalType": "uint256"
 			}
 		],

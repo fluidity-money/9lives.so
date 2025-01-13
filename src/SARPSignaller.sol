@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import "./IEvents.sol";
+
 /// @dev Bond that's taken from users who request SARP's settlement
 ///      of a market.
 uint256 constant SARP_BOND = 100000;
@@ -22,22 +24,11 @@ interface IERC20 {
  *         request conclusion of a market with SARP. This is done so as an alternative
  *         to an off-chain system based on the conclusion of a market.
  */
-contract SARPSignaller {
+contract SARPSignaller is IEvents {
     struct Ticket {
         address addr;
         bool repaid;
     }
-
-    /// @notice Outstanding ticket requested by a user for SARP to resolve a market using a
-    /// preferred on-chain method.
-    event Requested(
-        address indexed trading,
-        uint256 indexed ticket
-    );
-
-    /// @notice A request from a submitter was appropriate and resulted in a non-indeterminate
-    /// state. Refund the investor.
-    event Concluded(uint256 indexed ticket);
 
     mapping(uint256 => Ticket) public tickets;
     uint256 private ticketCount;
