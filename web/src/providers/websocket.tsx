@@ -138,7 +138,7 @@ export default function WebSocketProvider() {
       unsubCreateEvents();
       unsubBuyAndSellEvents();
     };
-  }, [queryClient]);
+  }, [queryClient, pushActions]);
 
   return null;
 }

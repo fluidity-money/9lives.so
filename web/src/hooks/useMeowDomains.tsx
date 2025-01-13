@@ -15,6 +15,6 @@ export default function useMeowDomains(address: `0x${string}`) {
       });
       setDomain(domain);
     })();
-  }, []);
+  }, [address]);
   return domain || address;
 }

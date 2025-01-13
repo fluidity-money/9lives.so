@@ -54,7 +54,7 @@ export default function ProposeOutcome({
       const response = await getStatus();
       setInfraStatus(response?.status);
     })();
-  }, []);
+  }, [getStatus]);
   if (isProposed)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
