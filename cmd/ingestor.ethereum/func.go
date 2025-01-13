@@ -49,8 +49,11 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 // used exclusively to receive logs, polling only for catchup, or
 // exclusively websockets.
 func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, c *ethclient.Client, db *gorm.DB) {
-	factoryAddr := ethCommon.HexToAddress(config.FactoryAddress)
-	infraMarketAddr := ethCommon.HexToAddress(config.InfraMarketAddress)
+	var (
+		factoryAddr     = ethCommon.HexToAddress(config.FactoryAddress)
+		infraMarketAddr = ethCommon.HexToAddress(config.InfraMarketAddress)
+		lockupAddr      = ethCommon.HexToAddress(config.LockupAddress)
+	)
 	IngestPolling(
 		f,
 		c,
@@ -59,6 +62,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 		pollWait,
 		factoryAddr,
 		infraMarketAddr,
+		lockupAddr,
 	)
 }
 
@@ -66,7 +70,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 // receive log updates. Checks the database first to determine where the
 // last point is before continuing. Assumes ethclient is HTTP.
 // Uses the IngestBlockRange function to do all the lifting.
-func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress, infraMarketAddress ethCommon.Address) {
+func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress, infraMarketAddress, lockupAddress ethCommon.Address) {
 	if ingestorPagination <= 0 {
 		panic("bad ingestor pagination")
 	}
@@ -87,6 +91,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 			db,
 			factoryAddress,
 			infraMarketAddress,
+			lockupAddress,
 			from,
 			to,
 		)
@@ -102,7 +107,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 // funciton to write records found to the database. Assumes the ethclient
 // provided is a HTTP client. Also updates the underlying last block it
 // saw into the database checkpoints. Fatals if something goes wrong.
-func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr, infraMarket ethCommon.Address, from, to uint64) {
+func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr, infraMarket, lockupAddr ethCommon.Address, from, to uint64) {
 	latestBlockNo, err := c.BlockNumber(context.Background())
 	if err != nil {
 		setup.Exitf("failed to get latest block number: %v", err)
@@ -122,7 +127,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 			err        error
 		)
 		for _, l := range logs {
-			if hasChanged, err = handleLog(f, db, factoryAddr, infraMarket, l); err != nil {
+			if hasChanged, err = handleLog(f, db, factoryAddr, infraMarket, lockupAddr, l); err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
 			biggestBlockNo = max(l.BlockNumber, biggestBlockNo)
@@ -146,10 +151,11 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 	}
 }
 
-func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
+func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
 	return handleLogCallback(
 		factoryAddr,
 		infraMarketAddr,
+		lockupAddr,
 		l,
 		func(blockHash, txHash, addr string) error {
 			// Track this address as a trading contract.
@@ -173,7 +179,7 @@ func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr ethCommon
 		},
 	)
 }
-func handleLogCallback(factoryAddr, infraMarketAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
+func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
 	var topic1, topic2, topic3 ethCommon.Hash
 	topic0 := l.Topics[0]
 	if len(l.Topics) > 1 {
@@ -227,6 +233,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr ethCommon.Address, l ethType
 	var (
 		isFactory     = factoryAddr == emitterAddr
 		isInfraMarket = infraMarketAddr == emitterAddr
+		isLockup      = lockupAddr == emitterAddr
 	)
 	var fromTrading bool
 	switch topic0 {
@@ -329,7 +336,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr ethCommon.Address, l ethType
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
-	case isFactory || isInfraMarket:
+	case isFactory || isInfraMarket || isLockup:
 		// We allow either the factory or the infra market.
 	default:
 		// The submitter was not the factory or the trading contract, we're going to

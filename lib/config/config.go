@@ -14,9 +14,11 @@ import (
 
 // C is configuration for each service, and globally.
 type C struct {
-	GethUrls                                                                []string
-	TimescaleUrls                                                           []string
-	FactoryAddress, InfraMarketAddress, BeautyContestAddress, SarpAiAddress string
+	GethUrls                            []string
+	TimescaleUrls                       []string
+	FactoryAddress, InfraMarketAddress  string
+	BeautyContestAddress, SarpAiAddress string
+	LockupAddress                       string
 }
 
 // Get config by querying environment variables.
@@ -48,6 +50,10 @@ func Get() C {
 	if sarpAiAddr == "" {
 		setup.Exitf("SPN_SARP_AI_ADDR not set")
 	}
+	lockupAddr := strings.ToLower(os.Getenv("SPN_LOCKUP_PROXY_ADDR"))
+	if lockupAddr == "" {
+		setup.Exitf("SPN_LOCKUP_PROXY_ADDR not set")
+	}
 	return C{
 		GethUrls:             gethUrls,
 		TimescaleUrls:        timescaleUrls,
@@ -55,6 +61,7 @@ func Get() C {
 		InfraMarketAddress:   infraMarketAddr,
 		BeautyContestAddress: beautyContestAddr,
 		SarpAiAddress:        sarpAiAddr,
+		LockupAddress:        lockupAddr,
 	}
 }
 
