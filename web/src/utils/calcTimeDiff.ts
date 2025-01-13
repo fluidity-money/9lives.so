@@ -35,7 +35,7 @@ export function calcTimePassed(endTime: number) {
   let unit = 1000;
   switch (true) {
     case 1000 * 60 > differenceInMs:
-      text = `${Math.round(differenceInMs * 1000)} Sec Ago`;
+      text = `${Math.round(differenceInMs / 1000)} Sec Ago`;
       unit = 1000;
       break;
     case 1000 * 60 * 60 > differenceInMs:
