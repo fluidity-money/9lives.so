@@ -50,7 +50,7 @@ func getTradingAddr(c *ethclient.Client, factoryAddr ethCommon.Address, id []byt
 	}
 	a, err := factoryAbi.Unpack("getTradingAddr", res)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unpack contract call res")
+		return nil, fmt.Errorf("failed to unpack contract call res: %v", err)
 	}
 	owner, ok := a[0].(ethCommon.Address)
 	if !ok {
@@ -84,7 +84,7 @@ func getOwner(c *ethclient.Client, factoryAddr, tradingAddr ethCommon.Address) (
 	var owner ethCommon.Address
 	err = factoryAbi.UnpackIntoInterface(&owner, "getOwner", res)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unpack contract call res")
+		return nil, fmt.Errorf("failed to unpack contract call res: %v", err)
 	}
 	return &owner, nil
 }
@@ -114,7 +114,7 @@ func getShareAddr(c *ethclient.Client, tradingAddr ethCommon.Address, outcomeId 
 	var shareAddr ethCommon.Address
 	err = tradingAbi.UnpackIntoInterface(&shareAddr, "shareAddr", result)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unpack contract call result")
+		return nil, fmt.Errorf("failed to unpack contract call res: %v", err)
 	}
 	return &shareAddr, nil
 }
