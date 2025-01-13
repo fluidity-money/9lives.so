@@ -28,14 +28,14 @@ export const networkSchema = z.object({
 });
 
 export const superpositionTestnet = defineChain({
-  name: "Superposition Testnet",
+  name: "Superposition",
   id: 98985,
-  nativeCurrency: { name: "Superposition", symbol: "SPN", decimals: 18 },
-  rpc: "https://testnet-rpc.superposition.so",
+  nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+  rpc: "https://rpc.superposition.so",
   blockExplorers: [
     {
       name: "CatScan",
-      url: "https://testnet-explorer.superposition.so",
+      url: "https://explorer.superposition.so",
     },
   ],
   testnet: true,
