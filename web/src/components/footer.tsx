@@ -39,6 +39,10 @@ const menu = [
     title: "ARB Infra Markets",
     page: "https://arbinframarkets.xyz",
   },
+  {
+    title: "Bridge to Superposition",
+    page: "https://bridge.superposition.so",
+  },
 ];
 
 const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
