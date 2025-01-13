@@ -27,7 +27,7 @@ export const networkSchema = z.object({
 });
 
 export const superpositionTestnet = defineChain({
-  name: "Superposition",
+  name: "Superposition Testnet",
   id: 98985,
   nativeCurrency: { name: "Superposition", symbol: "SPN", decimals: 18 },
   rpc: "https://testnet-rpc.superposition.so",
