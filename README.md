@@ -234,6 +234,7 @@ generate these, run `./print-error-table.sh`.
 | Beauty contest                | `0xb8379ec062a44a1ef308d01ddf27935976df52ad` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0xE307205f1558aCE077EADb57DD9e1D4cFf4D3CC8` |
+| Buy helper2                   | `0x98E5fEe28CB760A9a97391F319536175700D7524` |
 
 ### Superposition testnet
 
