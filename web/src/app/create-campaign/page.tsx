@@ -13,7 +13,7 @@ export default function CreateCampaign() {
           This is where you can create your own campaign for other people to
           participate in! For creation, $4.20 is needed.
           <br />
-          <strong>Earn fees by creating markets:</strong> collect 5% of every
+          <strong>Earn fees by creating markets:</strong> collect 0.2% of every
           deposit created!
         </p>
       </div>
