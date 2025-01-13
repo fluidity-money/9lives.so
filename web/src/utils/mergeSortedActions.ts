@@ -8,6 +8,6 @@ export function mergeSortedActions(arr1: Action[], arr2: Action[]): Action[] {
       (a, b) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
-    return merged;
+    return merged.slice(0, 30);
   } else return arr1;
 }
