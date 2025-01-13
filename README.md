@@ -211,29 +211,29 @@ generate these, run `./print-error-table.sh`.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x24e2b4376d4906e3d543572e5a92ea8636f77976` |
-| Factory 2 implementation      | `0xe2c7b717f82e94bdf978aaccd3204a7fe7a38e12` |
-| Lockup implementation         | `0xa49d36f7423c6068665a0e4216463e9ce22ec38d` |
-| Optimistic infra predict impl | `0xdd00cda801a64ef76c28382bb850d6d2e23cb770` |
-| Trading DPM mint impl         | `0xe8d13ecc6685fe2f9bc710467759ba0b69f252af` |
-| Trading DPM extras impl       | `0xd3e24d732748288ad7e016f93b1dc4f909af1ba0` |
-| Trading DPM price impl        | `0xd32b79997eafe0860a9f5a69722eef9bc55b7bff` |
-| Trading DPM quotes impl       | `0xfc204480544069fb0e038166497f78801221227f` |
-| Trading DPM price impl        | `0xd32b79997eafe0860a9f5a69722eef9bc55b7bff` |
-| Trading AMM mint impl         | `0x07a9f7e3b47ecfdc828a96b5d40414437e13f8d3` |
-| Trading AMM extras impl       | `0x8f1ee0de7c12f7c4105b2f9f87c5805d7a9e0a38` |
-| Trading AMM price impl        | `0x4cfda7a5615c3fc91a3ce0128c6a515cda447fba` |
-| Trading AMM quotes impl       | `0xb11f83a169f265f021eb5d2aa471e509f97f7f89` |
-| Trading AMM price impl        | `0x4cfda7a5615c3fc91a3ce0128c6a515cda447fba` |
-| Share implementation          | `0xD83bcA954ce577F442Afa738D063C219306a2741` |
-| Lockup token implementation   | `0xd982E57fc62888b01E500Ec6A67cCd937afB44DB` |
-| Infrastructure market proxy   | `0x1d945d6da0bfecdc82a9247032e831e7c8a0ee42` |
-| Lockup proxy                  | `0xfdd461ebd27a25b8e3fb24eac4c1d09bb13e28f5` |
-| Lockup token proxy            | `0x6e415b4bde88f11436fcc23b3196defec69e236d` |
-| Factory proxy                 | `0x62fe10017eb9cf86fa3e93fcbca80e197de16693` |
-| Helper factory                | `0x183E8484EF6f11173A65b4d8535C55f3b3005C38` |
-| LensesV1                      | `0x490bC0d70fFb06655726EDf54B90fE4bD70804A6` |
-| Beauty contest                | `0x471664fdb8ccbe0530496dc2deec83f376bd1a64` |
+| Factory 1 implementation      | `0xc799373ef3ac45a9d994e4252a39eb9e34b445fb` |
+| Factory 2 implementation      | `0x02c541723a2d7347cf7d891352c54f7be9cf8646` |
+| Lockup implementation         | `0x65cd4a6e4209209383aa83b434f782a99b5d7311` |
+| Optimistic infra predict impl | `0x1281dc7f5e08d3201b4ea98f26cd41a872e1da41` |
+| Trading DPM mint impl         | `0x87e6db4768503a1aea36e38207ca6d444e34ecd0` |
+| Trading DPM extras impl       | `0xe311aba690b39503fe161c2e280b81d879f02e9e` |
+| Trading DPM price impl        | `0x57242f1937205704308d57fc93c816fa0a92faba` |
+| Trading DPM quotes impl       | `0xfe56fff2a673ca9785198fa0a632f7df44c75104` |
+| Trading DPM price impl        | `0x57242f1937205704308d57fc93c816fa0a92faba` |
+| Trading AMM mint impl         | `0x3db1eaa5028a8aac97e3beb4ca510135ef927b51` |
+| Trading AMM extras impl       | `0xa6fe4e7d05b11042067f3fa361440238d9439438` |
+| Trading AMM price impl        | `0x52414b27671f34e5b2013efbeb183e39d48b642d` |
+| Trading AMM quotes impl       | `0x2bdd28c6aa977a0c74d73fba3b4180f2363f4067` |
+| Trading AMM price impl        | `0x52414b27671f34e5b2013efbeb183e39d48b642d` |
+| Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
+| Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
+| Infrastructure market proxy   | `0xc4451d8477cd6b92bfa0d3e2662ce0507a8e10b9` |
+| Lockup proxy                  | `0x20d2360706086ec9814d15a52ad2d2aec2c43caa` |
+| Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
+| Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
+| Helper factory                | `0xFA9B2A004F639bf27612B8dcd4cf4D47d1191d33` |
+| LensesV1                      | `0xa6f3dEBce04728d7a43224F051F03976c998CF83` |
+| Beauty contest                | `0x2ac645508fb3681d58408be824b9c9a8fcccd711` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 
 ### Superposition testnet

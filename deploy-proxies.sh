@@ -1,4 +1,4 @@
-#!/bin/sh -eu
+#!/bin/sh -eux
 
 # Uses the DeployHelper contract to deploy everything. Proxy admin is
 # a user-controlled admin account that will govern various ProxyAdmins
@@ -11,6 +11,7 @@ log() {
 deploy_hash="$(forge create --json \
 	--rpc-url "$SPN_SUPERPOSITION_URL" \
 	--private-key "$SPN_SUPERPOSITION_KEY" \
+	--broadcast \
 	src/DeployHelper.sol:DeployHelper \
 	--constructor-args \
 	"(\
@@ -37,7 +38,7 @@ deploy_hash="$(forge create --json \
 # Now that we've done that deployment, we need to mine the receipt's
 # logs to find the addresses of everything.
 
-receipt="$(cast receipt -r "$SPN_SUPERPOSITION_URL" -j "$deploy_hash")"
+receipt="$(cast receipt -r "$SPN_SUPERPOSITION_URL" --json "$deploy_hash")"
 
 factory_addr="0x$(echo "$receipt " | jq -r '.logs.[] | select(.topics[0] == "0x6dace608663275c38fa05e97b413c8d69120e110df4b506e7f73929c1eedb8fe") | .topics[1] | .[-40:]')"
 
