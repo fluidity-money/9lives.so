@@ -18,7 +18,7 @@ interface IERC20Permit {
     function transferFrom(address owner, address spender, uint256 amount) external;
 }
 
-uint256 constant INCENTIVE_AMT_MODERATION = 2000000;
+uint256 constant INCENTIVE_AMT_MODERATION = 1e6;
 
 contract HelperFactory {
     IERC20Permit immutable FUSDC;

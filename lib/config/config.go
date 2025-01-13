@@ -50,10 +50,7 @@ func Get() C {
 	if sarpAiAddr == "" {
 		setup.Exitf("SPN_SARP_AI_ADDR not set")
 	}
-	lockupAddr := strings.ToLower(os.Getenv("SPN_LOCKUP_PROXY_ADDR"))
-	if lockupAddr == "" {
-		setup.Exitf("SPN_LOCKUP_PROXY_ADDR not set")
-	}
+	lockupAddr := "0x20d2360706086ec9814d15a52ad2d2aec2c43caa"
 	return C{
 		GethUrls:             gethUrls,
 		TimescaleUrls:        timescaleUrls,
