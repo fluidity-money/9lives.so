@@ -8,7 +8,7 @@ const graph9Lives = Lives9.create().transport({
   url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
 });
 const graph9LivesSubs = Graffle.create().transport({
-  url: appConfig.NEXT_PUBLIC_WS_URL,
+  url: appConfig.NEXT_PUBLIC_WS_URL.replace("wss", "https"),
 });
 const graphPoints = Points.create().transport({
   url: appConfig.NEXT_PUBLIC_POINTS_URL,
@@ -95,7 +95,9 @@ export const requestCreateCampaign = (params: {
 export const requestGetAITitles = graph9Lives.query.suggestedHeadlines();
 
 export const requestBuysAndSells = (limit?: number) =>
-  graph9LivesSubs.gql(`
+  graph9LivesSubs
+    .gql(
+      `
     query {
       ninelives_buys_and_sells_1(limit: ${limit ?? 10}, order_by: {created_by: desc}, where: {campaign_content: {_is_null: false}}) {
         to_amount
@@ -116,7 +118,25 @@ export const requestBuysAndSells = (limit?: number) =>
         campaign_content
       }
     }
-  `).send;
+  `,
+    )
+    .send();
+
+export const requestCreations = (limit?: number) =>
+  graph9LivesSubs
+    .gql(
+      `
+    query {
+      ninelives_campaigns_1(limit: ${limit ?? 10}, order_by: {created_at: desc}) {
+       id
+       created_at
+       content
+       updated_at
+      }
+    }
+    `,
+    )
+    .send();
 
 export const requestCampaignById = (id: string) =>
   graph9Lives.query.campaignById({

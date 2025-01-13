@@ -2,9 +2,14 @@ import { useEffect } from "react";
 import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
-import { Action, Campaign } from "@/types";
-import { useDegenStore } from "@/stores/degenStore";
-import { formatUnits } from "ethers";
+import {
+  Action,
+  ActionFromBuysAndSells,
+  ActionFromCreation,
+  CreationResponse,
+} from "@/types";
+import { BuyAndSellResponse } from "../types";
+import { mergeSortedActions } from "@/utils/mergeSortedActions";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -45,30 +50,19 @@ subscription {
 
 export default function WebSocketProvider() {
   const queryClient = useQueryClient();
-  const pushActions = useDegenStore((s) => s.pushActions);
   useEffect(() => {
-    const unsubCreateEvents = wsClient.subscribe<{
-      ninelives_campaigns_1: {
-        id: string;
-        created_at: string;
-        content: Campaign;
-        updated_at: string;
-      }[];
-    }>(
+    const unsubCreateEvents = wsClient.subscribe<CreationResponse>(
       { query: subTenLatestCreate },
       {
         next: ({ data }) => {
           const campaigns = data?.ninelives_campaigns_1;
           if (campaigns) {
-            const actions: Action[] = campaigns.map((c) => ({
-              id: c.id,
-              campaignId: c.id,
-              type: "create",
-              campaignName: c.content.name,
-              timestamp: c.created_at,
-              campaignPic: c.content.picture,
-            }));
-            pushActions(actions);
+            const newActions: Action[] = campaigns.map(
+              (c) => new ActionFromCreation(c),
+            );
+            queryClient.setQueryData<Action[]>(["actions"], (data) =>
+              mergeSortedActions(data ?? [], newActions),
+            );
           }
         },
         error: (error) => {
@@ -79,51 +73,18 @@ export default function WebSocketProvider() {
         },
       },
     );
-    const unsubBuyAndSellEvents = wsClient.subscribe<{
-      ninelives_buys_and_sells_1: {
-        to_amount: number;
-        to_symbol: string;
-        transaction_hash: `0x${string}`;
-        recipient: `0x${string}`;
-        spender: `0x${string}`;
-        block_hash: string;
-        block_number: number;
-        outcome_id: `0x${string}`;
-        campaign_id: `0x${string}`;
-        created_by: string;
-        emitter_addr: `0x${string}`;
-        from_amount: number;
-        from_symbol: string;
-        type: "buy" | "sell";
-        total_volume: number;
-        campaign_content: Campaign;
-      }[];
-    }>(
+    const unsubBuyAndSellEvents = wsClient.subscribe<BuyAndSellResponse>(
       { query: subTenLatestBuy },
       {
         next: async ({ data }) => {
           const events = data?.ninelives_buys_and_sells_1;
           if (events) {
-            const actions: Action[] = events.map((event) => {
-              return {
-                id: event.transaction_hash,
-                type: event.type,
-                campaignId: event.campaign_id,
-                campaignName: event.campaign_content.name,
-                timestamp: event.created_by,
-                campaignPic: event.campaign_content.picture,
-                campaignVol: (event.total_volume / 1e6).toFixed(2),
-                actionValue: (
-                  (event.from_symbol === "FUSDC"
-                    ? event.from_amount
-                    : event.to_amount) / 1e6
-                ).toFixed(2),
-                outcomeName: event.campaign_content.outcomes.find(
-                  (o) => o.identifier === event.outcome_id,
-                )?.name,
-              };
-            });
-            pushActions(actions);
+            const newActions: Action[] = events.map(
+              (event) => new ActionFromBuysAndSells(event),
+            );
+            queryClient.setQueryData<Action[]>(["actions"], (data) =>
+              mergeSortedActions(newActions, data ?? []),
+            );
           }
         },
         error: (error) => {
@@ -138,7 +99,7 @@ export default function WebSocketProvider() {
       unsubCreateEvents();
       unsubBuyAndSellEvents();
     };
-  }, [queryClient, pushActions]);
+  }, [queryClient]);
 
   return null;
 }

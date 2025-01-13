@@ -1,7 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import appConfig from "@/config";
-import { Campaign } from "@/types";
+import {
+  ActionFromBuysAndSells,
+  ActionFromCreation,
+  BuyAndSellResponse,
+  Campaign,
+  CreationResponse,
+} from "@/types";
 import { getCampaigns } from "@/serverData/getCampaigns";
 import { getTotalUserCount } from "@/serverData/getTotalUserCount";
 
@@ -10,7 +16,12 @@ export default function ReactQueryProvider({
   initialData,
 }: {
   children: React.ReactNode;
-  initialData: { campaigns: Campaign[]; totalUserCount?: number };
+  initialData: {
+    campaigns: Campaign[];
+    totalUserCount?: number;
+    degenBuysAndSells: BuyAndSellResponse;
+    degenCreations: CreationResponse;
+  };
 }) {
   const [queryClient] = useState(() => {
     // eslint-disable-next-line @tanstack/query/stable-query-client
@@ -28,6 +39,21 @@ export default function ReactQueryProvider({
     client.setQueryDefaults(["totalUserCount"], {
       queryFn: getTotalUserCount,
       initialData: initialData.totalUserCount,
+    });
+
+    const buyAndSellActions =
+      initialData.degenBuysAndSells.ninelives_buys_and_sells_1.map(
+        (e) => new ActionFromBuysAndSells(e),
+      );
+    const creationActions =
+      initialData.degenCreations.ninelives_campaigns_1.map(
+        (c) => new ActionFromCreation(c),
+      );
+    client.setQueryDefaults(["actions"], {
+      initialData: [...creationActions, ...buyAndSellActions].sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      ),
     });
 
     return client;

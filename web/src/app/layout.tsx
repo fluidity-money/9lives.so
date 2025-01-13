@@ -12,6 +12,11 @@ import { getCachedCampaigns } from "@/serverData/getCampaigns";
 import { getCachedTotalUserCount } from "@/serverData/getTotalUserCount";
 import CookieBanner from "@/components/cookieBanner";
 import DegenModeList from "@/components/degenMode/degenModeList";
+import {
+  getCachedBuysAndSells,
+  getCachedCreations,
+} from "../serverData/getActions";
+import { BuyAndSellResponse, CreationResponse } from "@/types";
 
 const chicago = localFont({
   src: [
@@ -62,6 +67,9 @@ export default async function RootLayout({
 }>) {
   const campaigns = await getCachedCampaigns();
   const totalUserCount = await getCachedTotalUserCount();
+  const degenCreations = (await getCachedCreations()) as CreationResponse;
+  const degenBuysAndSells =
+    (await getCachedBuysAndSells()) as BuyAndSellResponse;
   return (
     <html
       lang="en"
@@ -73,7 +81,14 @@ export default async function RootLayout({
       ])}
     >
       <body className="flex min-h-screen flex-col bg-9layer">
-        <Providers initialData={{ campaigns, totalUserCount }}>
+        <Providers
+          initialData={{
+            campaigns,
+            totalUserCount,
+            degenCreations,
+            degenBuysAndSells,
+          }}
+        >
           <Header />
           <main className="flex flex-1 gap-2">
             <div className="flex-1 p-4">{children}</div>

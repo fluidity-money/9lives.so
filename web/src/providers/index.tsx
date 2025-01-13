@@ -2,7 +2,7 @@
 import { ThirdwebProvider } from "thirdweb/react";
 import ReactQueryProvider from "./reactQuery";
 import ContextInjector from "./contextInjector";
-import { Campaign } from "@/types";
+import { BuyAndSellResponse, Campaign, CreationResponse } from "@/types";
 import PostHogProvider from "./postHog";
 import WebSocketProvider from "./websocket";
 
@@ -11,7 +11,12 @@ export default function Providers({
   initialData,
 }: {
   children: React.ReactNode;
-  initialData: { campaigns: Campaign[]; totalUserCount?: number };
+  initialData: {
+    campaigns: Campaign[];
+    totalUserCount?: number;
+    degenBuysAndSells: BuyAndSellResponse;
+    degenCreations: CreationResponse;
+  };
 }) {
   return (
     <ThirdwebProvider>

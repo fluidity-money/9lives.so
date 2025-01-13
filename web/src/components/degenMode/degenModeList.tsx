@@ -1,10 +1,11 @@
 "use client";
-import { useUserStore } from "@/stores/userStore";
 import DegenModeListItem from "./degenModeListItem";
 import { useDegenStore } from "@/stores/degenStore";
+import { useQuery } from "@tanstack/react-query";
+import { Action } from "@/types";
 
 export default function DegenModeList() {
-  const actions = useDegenStore((state) => state.actions);
+  const { data: actions } = useQuery<Action[]>({ queryKey: ["actions"] });
   const degenModeEnabled = useDegenStore((state) => state.degenModeEnabled);
   if (!degenModeEnabled) return null;
   return (
@@ -17,7 +18,7 @@ export default function DegenModeList() {
           <div className="h-px w-full bg-9black" />
         </div>
         <ul className="flex flex-col gap-5">
-          {actions.map((item) => (
+          {actions?.map((item) => (
             <li key={item.id}>
               <DegenModeListItem data={item} />
             </li>

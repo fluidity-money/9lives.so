@@ -36,7 +36,7 @@ export default function DegenModeListItem({ data }: { data: Action }) {
           <div className="flex flex-1 flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <span className="font-chicago text-xs">{data.campaignName}</span>
-              <span className="font-geneva text-[10px] uppercase text-gray-500">
+              <span className="shrink-0 font-geneva text-[10px] uppercase text-gray-500">
                 {timePassed}
               </span>
             </div>
@@ -56,12 +56,12 @@ export default function DegenModeListItem({ data }: { data: Action }) {
                 </span>
                 {data.type !== "create" ? (
                   <span className="font-geneva text-[10px] uppercase">
-                    {data.actionValue ?? "?"} FOR {data.outcomeName ?? "?"}
+                    ${data.actionValue ?? "?"} FOR {data.outcomeName ?? "?"}
                   </span>
                 ) : null}
               </div>
               <span className="font-geneva text-[10px] uppercase">
-                $ {data.campaignVol ?? "0"} VOL.
+                ${data.campaignVol ?? "0"} VOL.
               </span>
             </div>
           </div>
