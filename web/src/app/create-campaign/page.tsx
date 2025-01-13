@@ -11,7 +11,7 @@ export default function CreateCampaign() {
         </div>
         <p className="text-center text-xs">
           This is where you can create your own campaign for other people to
-          participate in!
+          participate in! For creation, $4.20 is needed.
           <br />
           <strong>Earn fees by creating markets:</strong> collect 5% of every
           deposit created!
