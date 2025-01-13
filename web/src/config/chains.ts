@@ -41,7 +41,7 @@ export const superpositionTestnet = defineChain({
 });
 export const superpositionMainnet = defineChain({
   name: "Superposition",
-  id: 98985,
+  id: 55244,
   nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
   rpc: "https://rpc.superposition.so",
   blockExplorers: [
