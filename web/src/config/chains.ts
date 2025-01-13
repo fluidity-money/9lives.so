@@ -50,7 +50,6 @@ export const superpositionMainnet = defineChain({
       url: "https://explorer.superposition.so",
     },
   ],
-  testnet: true,
 });
 
 // validate all chains
