@@ -2,7 +2,6 @@ import { defineChain } from "thirdweb/chains";
 import z from "zod";
 import "thirdweb/utils";
 // import { arbitrum } from "thirdweb/chains";
-export { arbitrum } from "thirdweb/chains";
 
 export const networkSchema = z.object({
   id: z.number(),
@@ -30,6 +29,19 @@ export const networkSchema = z.object({
 export const superpositionTestnet = defineChain({
   name: "Superposition",
   id: 98985,
+  nativeCurrency: { name: "Superposition", symbol: "SPN", decimals: 18 },
+  rpc: "https://testnet-rpc.superposition.so",
+  blockExplorers: [
+    {
+      name: "CatScan",
+      url: "https://testnet-explorer.superposition.so",
+    },
+  ],
+  testnet: true,
+});
+export const superpositionMainnet = defineChain({
+  name: "Superposition",
+  id: 98985,
   nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
   rpc: "https://rpc.superposition.so",
   blockExplorers: [
@@ -42,7 +54,9 @@ export const superpositionTestnet = defineChain({
 });
 
 // validate all chains
-const chainValidation = networkSchema.safeParse(superpositionTestnet);
+const chainValidation = z
+  .array(networkSchema)
+  .safeParse([superpositionTestnet, superpositionMainnet]);
 
 if (!chainValidation.success) {
   console.error("Invalid chain: ", chainValidation.error.name);
@@ -50,4 +64,5 @@ if (!chainValidation.success) {
 }
 
 // export const currentChain = arbitrum
-export const currentChain = superpositionTestnet;
+// export const currentChain = superpositionTestnet;
+export const currentChain = superpositionMainnet;
