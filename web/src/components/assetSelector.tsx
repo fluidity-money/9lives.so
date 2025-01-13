@@ -9,11 +9,11 @@ import Image from "next/image";
 import { useState } from "react";
 import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
-import FUSDCImg from "#/images/fusdc.png";
+import USDCImg from "#/images/usdc.svg";
 const assets = [
   {
-    img: FUSDCImg,
-    name: "fUSDC",
+    img: USDCImg,
+    name: "USDC",
   },
 ];
 export default function AssetSelector() {
