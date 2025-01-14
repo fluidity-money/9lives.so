@@ -10,7 +10,7 @@ export default function Funding({
   closeModal,
 }: {
   title: string;
-  outcomes: { seed: number; name: string }[];
+  outcomes: { seed?: number; name: string }[];
   isYesNo: boolean;
   fundToBuy: number;
   closeModal: () => void;

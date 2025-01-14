@@ -16,10 +16,12 @@ const useBuy = ({
   shareAddr,
   tradingAddr,
   outcomeId,
+  openFundModal,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
+  openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();
   const buy = async (account: Account, fusdc: number, outcomes: Outcome[]) =>
@@ -39,8 +41,10 @@ const useBuy = ({
             transaction: userBalanceTx,
             account,
           });
-          if (amount > userBalance)
+          if (amount > userBalance) {
+            openFundModal();
             throw new Error("You dont have enough USDC.");
+          }
           const checkAmmReturnTx = prepareContractCall({
             contract: config.contracts.lens,
             method: "getLongtailQuote",
@@ -133,7 +137,6 @@ const useBuy = ({
           });
           res(null);
         } catch (e) {
-          console.error("buying: ", e);
           rej(e);
         }
       }),
