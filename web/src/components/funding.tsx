@@ -24,7 +24,7 @@ export default function Funding({
       <p className="text-center font-chicago text-xl">{title}</p>
       <p className="text-center text-xs">
         {isForBuying
-          ? `You have to supply $${fundToBuy} in order to mint the position.`
+          ? `You need to have at least $0.1 in order to mint a position. You don't have $${fundToBuy}, do you want to supply?`
           : `You have to supply total $${fundToBuy}, including $1 to each outcome in your campaign in order to kickstart the liquidity of the campaign.`}
       </p>
       <div className="flex gap-4">
