@@ -11,9 +11,6 @@ export default function LeaderTabScene() {
         <Tab as={Fragment}>
           {(props) => <TabButton title="Global" {...props} />}
         </Tab>
-        <Tab as={Fragment} disabled>
-          {(props) => <TabButton title="Friends on X" {...props} />}
-        </Tab>
       </TabList>
       <TabPanels>
         <TabPanel>
