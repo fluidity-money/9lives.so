@@ -130,7 +130,7 @@ const useCreate = () => {
       {
         loading: "Creating campaign...",
         success: "Campaign created successfully!",
-        error: "Failed to create.",
+        error: (e: string) => `Create failed. ${e}`,
       },
     );
   return { create };
