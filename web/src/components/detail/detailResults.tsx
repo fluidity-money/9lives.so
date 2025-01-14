@@ -11,15 +11,22 @@ import SparkleImg from "#/images/sparkle.svg";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useClaim from "@/hooks/useClaim";
 import { useState } from "react";
+import YesOutcomeImg from "#/images/yes-outcome.svg";
+import NoOutcomeImg from "#/images/no-outcome.svg";
+
 interface DetailResultsProps {
   results?: Detail;
   initialData: Outcome[];
   tradingAddr: `0x${string}`;
+  isYesNo: boolean;
+  chance?: number;
 }
 export default function DetailResults({
+  isYesNo,
   results,
   tradingAddr,
   initialData,
+  chance,
 }: DetailResultsProps) {
   const account = useActiveAccount();
   const { connect, isConnecting } = useConnectWallet();
@@ -94,7 +101,13 @@ export default function DetailResults({
               width={40}
               height={40}
               alt={winner.name}
-              src={winner.picture}
+              src={
+                isYesNo
+                  ? winner.name === "Yes"
+                    ? YesOutcomeImg
+                    : NoOutcomeImg
+                  : winner.picture
+              }
               className="size-full object-cover"
             />
           </div>
@@ -106,7 +119,9 @@ export default function DetailResults({
           </h3>
           <div className="flex items-center gap-1 font-geneva text-[10px]">
             <span className="uppercase">Chance</span>
-            <span className="bg-9green px-1 py-0.5">?%</span>
+            <span className="bg-9green px-1 py-0.5">
+              {chance ? Math.round(chance) : "?"}%
+            </span>
           </div>
         </div>
       </div>

@@ -67,11 +67,13 @@ export default function DetailWrapper({
         <DetailInfo data={initialData} />
       </div>
       <div className="flex flex-1 flex-col gap-8">
-        {isEnded && isConcluded ? (
+        {isConcluded ? (
           <DetailResults
+            isYesNo={initialData.isYesNo}
             results={details}
             initialData={initialData.outcomes}
             tradingAddr={initialData.poolAddress}
+            chance={chances.find((o) => o.id === details?.winner)?.chance}
           />
         ) : (
           <DetailCall2Action

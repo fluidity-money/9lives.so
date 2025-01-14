@@ -40,7 +40,9 @@ export default function DetailHeader({
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2.5">
               <Image
-                src={isEnded ? InactiveIndicator : ActiveIndicator}
+                src={
+                  isConcluded || isEnded ? InactiveIndicator : ActiveIndicator
+                }
                 alt=""
                 className="h-[16px] w-auto"
                 height={16}
