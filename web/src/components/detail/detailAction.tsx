@@ -176,40 +176,6 @@ export default function DetailCall2Action({
           </div>
         </div>
       </div>
-      <div className="flex gap-4">
-        <Link
-          href={`#`}
-          // target="_blank"
-          // rel="noopener,noreferrer"
-          className="contents"
-        >
-          <Button
-            size={"medium"}
-            className={"flex-1"}
-            disabled={shouldStopAction}
-          >
-            <div className="flex items-center justify-center gap-1">
-              <span className="font-chicago text-sm uppercase">
-                Trade Position
-              </span>
-              <Image src={LinkIcon} alt="" width={14} />
-            </div>
-          </Button>
-        </Link>
-        <Link
-          href={`https://long.so/stake/pool?id=${outcome.share.address}`}
-          target="_blank"
-          rel="noopener,noreferrer"
-          className="contents"
-        >
-          <Button size={"medium"} className={"flex-1"}>
-            <div className="flex items-center justify-center gap-1">
-              <span className="font-chicago text-sm uppercase">Provide LP</span>
-              <Image src={LinkIcon} alt="" width={14} />
-            </div>
-          </Button>
-        </Link>
-      </div>
       {/* <div>
         <span className="font-chicago text-xs font-normal text-9black">
           Outcome
@@ -323,12 +289,6 @@ export default function DetailCall2Action({
           )}
         />
         {errors.share && <ErrorInfo text={errors.share.message} />}
-      </div>
-      <div className="flex flex-col">
-        <span className="font-chicago text-xs font-normal text-9black">
-          Leverage
-        </span>
-        <Input type="range" intent="range" className={"mt-2 w-full"} disabled />
       </div>
       <div className="flex flex-col gap-4 bg-9gray p-5 text-xs shadow-9orderSummary">
         <span className="font-chicago uppercase">Order Summary</span>
