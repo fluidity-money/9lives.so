@@ -14,6 +14,7 @@ export default function ConnectButton() {
         client={appConfig.thirdweb.client}
         chain={appConfig.chains.currentChain}
         appMetadata={appConfig.thirdweb.metadata}
+        detailsModal={appConfig.thirdweb.payOptions}
         wallets={appConfig.thirdweb.wallets}
         theme={appConfig.thirdweb.theme}
         detailsButton={appConfig.thirdweb.detailsButton}

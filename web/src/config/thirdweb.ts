@@ -19,6 +19,7 @@ const thirdwebSchema = z.object({
   chain: networkSchema,
   theme: z.literal("light"),
   detailsButton: z.object({
+    displayBalanceToken: z.record(z.string()),
     style: z.any(),
   }),
   wallets: z.array(z.any()),
@@ -26,6 +27,7 @@ const thirdwebSchema = z.object({
     label: z.string(),
     style: z.any(),
   }),
+  payOptions: z.any(),
   connectModal: z.object({
     showThirdwebBranding: z.boolean(),
   }),
@@ -55,6 +57,9 @@ const thirdwebValidation = thirdwebSchema.safeParse({
   wallets,
   theme: "light",
   detailsButton: {
+    displayBalanceToken: {
+      [currentChain.id]: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
+    },
     style: {
       backgroundColor: "transparent",
       fontFamily: "var(--font-chicago)",
@@ -64,6 +69,18 @@ const thirdwebValidation = thirdwebSchema.safeParse({
       borderColor: "transparent",
       minWidth: "auto",
       border: "none",
+    },
+  },
+  payOptions: {
+    buyWithCrypto: {
+      prefillSource: {
+        chain: currentChain,
+        token: {
+          symbol: "USDC",
+          address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
+          name: "USDC",
+        },
+      },
     },
   },
   connectButton: {
