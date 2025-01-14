@@ -33,7 +33,7 @@ const settlementFunctionMap: Record<
   AI: "createWithAI",
   POLL: "createWithBeautyContest",
 };
-const useCreate = () => {
+const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const upsertCampaign = useCampaignStore((s) => s.upsertCampaign);
@@ -55,11 +55,15 @@ const useCreate = () => {
           });
           switch (input.settlementType) {
             case "ORACLE":
-              if (minOracleCreatePrice > userBalance)
+              if (minOracleCreatePrice > userBalance) {
+                openFundModal();
                 throw new Error("You dont have enough USDC.");
+              }
             default:
-              if (minDefaultCreatePrice > userBalance)
+              if (minDefaultCreatePrice > userBalance) {
+                openFundModal();
                 throw new Error("You dont have enough USDC.");
+              }
           }
           const campaignId = generateId(input.name, input.desc, input.seed);
           const draftCampaign = draftCampaigns.find((c) => c.id === campaignId);

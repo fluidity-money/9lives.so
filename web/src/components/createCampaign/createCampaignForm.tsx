@@ -19,6 +19,8 @@ import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { randomValue4Uint8 } from "@/utils/generateId";
 import { track, EVENTS } from "@/utils/analytics";
+import Modal from "../themed/modal";
+import Funding from "../funding";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -51,7 +53,8 @@ export function onFileChange(
   reader.readAsDataURL(file);
 }
 export default function CreateCampaignForm() {
-  const { create } = useCreate();
+  const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
+  const { create } = useCreate({ openFundModal: () => setFundModalOpen(true) });
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("custom");
@@ -221,43 +224,61 @@ export default function CreateCampaignForm() {
     settlementType,
   ]);
   return (
-    <form
-      className="flex flex-[2] flex-col gap-7"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <CreateCampaignFormName
-        register={register}
-        error={errors.name}
-        setValue={setValue}
-      />
-      <CreateCampaignFormDescription register={register} error={errors.desc} />
-      <CreateCampaignFormOutcomes
-        register={register}
-        control={control}
-        errors={errors}
-        outcomeType={outcomeType}
-        setOutcomeType={setOutcomeType}
-        outcomeImageBlobs={outcomeImageBlobs}
-        setOutcomeImageBlobs={setOutcomeImageBlobs}
-        setValue={setValue}
-      />
-      <CreateCampaignFormPicture
-        register={register}
-        error={errors.picture}
-        pictureBlob={pictureBlob}
-        setPictureBlob={setPictureBlob}
-        setValue={setValue}
-      />
-      <CreateCampaignFormEndDate register={register} error={errors.ending} />
-      <CreateCampaignFormSettlmentSource
-        control={control}
-        trigger={trigger}
-        register={register}
-        errors={errors}
-        setSettlementType={setSettlementType}
-      />
-      <CreateCampaignFormSocials register={register} errors={errors} />
-      <Button intent={"cta"} title="CONFIRM" size={"xlarge"} type="submit" />
-    </form>
+    <>
+      <form
+        className="flex flex-[2] flex-col gap-7"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <CreateCampaignFormName
+          register={register}
+          error={errors.name}
+          setValue={setValue}
+        />
+        <CreateCampaignFormDescription
+          register={register}
+          error={errors.desc}
+        />
+        <CreateCampaignFormOutcomes
+          register={register}
+          control={control}
+          errors={errors}
+          outcomeType={outcomeType}
+          setOutcomeType={setOutcomeType}
+          outcomeImageBlobs={outcomeImageBlobs}
+          setOutcomeImageBlobs={setOutcomeImageBlobs}
+          setValue={setValue}
+        />
+        <CreateCampaignFormPicture
+          register={register}
+          error={errors.picture}
+          pictureBlob={pictureBlob}
+          setPictureBlob={setPictureBlob}
+          setValue={setValue}
+        />
+        <CreateCampaignFormEndDate register={register} error={errors.ending} />
+        <CreateCampaignFormSettlmentSource
+          control={control}
+          trigger={trigger}
+          register={register}
+          errors={errors}
+          setSettlementType={setSettlementType}
+        />
+        <CreateCampaignFormSocials register={register} errors={errors} />
+        <Button intent={"cta"} title="CONFIRM" size={"xlarge"} type="submit" />
+      </form>
+      <Modal
+        isOpen={isFundModalOpen}
+        setIsOpen={setFundModalOpen}
+        title="CAMPAIGN SEED FUNDING"
+      >
+        <Funding
+          closeModal={() => setFundModalOpen(false)}
+          isYesNo={outcomeType === "default"}
+          title={fields.name}
+          outcomes={fields.outcomes}
+          fundToBuy={settlementType === "ORACLE" ? 4.2 : 3}
+        />
+      </Modal>
+    </>
   );
 }
