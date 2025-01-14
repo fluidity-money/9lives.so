@@ -38,10 +38,29 @@ const useCreate = () => {
   const router = useRouter();
   const upsertCampaign = useCampaignStore((s) => s.upsertCampaign);
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
+  const minOracleCreatePrice = BigInt(4e6);
+  const minDefaultCreatePrice = BigInt(3e6);
   const create = async (input: CampaignInput, account: Account) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          const userBalanceTx = prepareContractCall({
+            contract: config.contracts.fusdc,
+            method: "balanceOf",
+            params: [account?.address],
+          });
+          const userBalance = await simulateTransaction({
+            transaction: userBalanceTx,
+            account,
+          });
+          switch (input.settlementType) {
+            case "ORACLE":
+              if (minOracleCreatePrice > userBalance)
+                throw new Error("You dont have enough USDC.");
+            default:
+              if (minDefaultCreatePrice > userBalance)
+                throw new Error("You dont have enough USDC.");
+          }
           const campaignId = generateId(input.name, input.desc, input.seed);
           const draftCampaign = draftCampaigns.find((c) => c.id === campaignId);
           if (!draftCampaign) {
