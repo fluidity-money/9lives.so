@@ -62,7 +62,7 @@ export default function DetailInfo({ data }: { data: Campaign }) {
                 className="text-xs underline"
                 rel="noopener noreferrer"
                 target="_blank"
-                href={`https://explorer.superposition.so/address/${settlementContractMap[data.settlement] ?? settlementContractMap["ORACLE"]}`}
+                href={`${config.chains.currentChain.blockExplorers![0].url}/address/${settlementContractMap[data.settlement] ?? settlementContractMap["ORACLE"]}`}
               >
                 {settlementContractMap[data.settlement] ??
                   settlementContractMap["ORACLE"]}
@@ -99,7 +99,7 @@ export default function DetailInfo({ data }: { data: Campaign }) {
             rel="noopener noreferrer"
             target="_blank"
             className="text-xs underline"
-            href={`https://explorer.superposition.so/address/${data.creator?.address}`}
+            href={`${config.chains.currentChain.blockExplorers![0].url}/address/${data.creator?.address}`}
           >
             {data.creator?.address}
           </Link>

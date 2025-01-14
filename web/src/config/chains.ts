@@ -14,14 +14,12 @@ export const networkSchema = z.object({
     })
     .optional(),
   rpc: z.string().url(),
-  blockExplorers: z
-    .array(
-      z.object({
-        name: z.string(),
-        url: z.string(),
-      }),
-    )
-    .optional(),
+  blockExplorers: z.array(
+    z.object({
+      name: z.string(),
+      url: z.string(),
+    }),
+  ),
   testnet: z.boolean().optional(),
   icon: z.string().optional(),
 });
@@ -34,7 +32,7 @@ export const superpositionTestnet = defineChain({
   blockExplorers: [
     {
       name: "CatScan",
-      url: "https://explorer.superposition.so",
+      url: "https://testnet-explorer.superposition.so",
     },
   ],
   testnet: true,

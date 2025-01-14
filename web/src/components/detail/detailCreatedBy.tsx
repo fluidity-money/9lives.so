@@ -1,4 +1,5 @@
 "use client";
+import config from "@/config";
 import useMeowDomains from "@/hooks/useMeowDomains";
 export default function DetailCreatedBy({
   address,
@@ -11,7 +12,7 @@ export default function DetailCreatedBy({
       <a
         rel="noopener noreferrer"
         target="_blank"
-        href={`https://explorer.superposition.so/address/${address}`}
+        href={`${config.chains.currentChain.blockExplorers![0].url}/address/${address}`}
       >
         Created by{" "}
         {domain.startsWith("0x")
