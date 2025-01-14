@@ -34,7 +34,7 @@ export const superpositionTestnet = defineChain({
   blockExplorers: [
     {
       name: "CatScan",
-      url: "https://testnet-explorer.superposition.so",
+      url: "https://explorer.superposition.so",
     },
   ],
   testnet: true,

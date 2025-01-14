@@ -11,7 +11,7 @@ export default function DetailCreatedBy({
       <a
         rel="noopener noreferrer"
         target="_blank"
-        href={`https://testnet-explorer.superposition.so/address/${address}`}
+        href={`https://explorer.superposition.so/address/${address}`}
       >
         Created by{" "}
         {domain.startsWith("0x")
