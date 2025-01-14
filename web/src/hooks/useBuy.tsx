@@ -30,6 +30,17 @@ const useBuy = ({
             fusdc.toString(),
             config.contracts.decimals.fusdc,
           );
+          const userBalanceTx = prepareContractCall({
+            contract: config.contracts.fusdc,
+            method: "balanceOf",
+            params: [account?.address],
+          });
+          const userBalance = await simulateTransaction({
+            transaction: userBalanceTx,
+            account,
+          });
+          if (amount > userBalance)
+            throw new Error("You dont have enough USDC.");
           const checkAmmReturnTx = prepareContractCall({
             contract: config.contracts.lens,
             method: "getLongtailQuote",
@@ -129,7 +140,7 @@ const useBuy = ({
       {
         loading: "Buying shares...",
         success: "Shares bought successfully!",
-        error: "Failed to buy.",
+        error: (e) => `Buy failed. ${e ?? "Error: Unknown reason"}`,
       },
     );
 
