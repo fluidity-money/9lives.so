@@ -52,7 +52,9 @@ export default function DetailCall2Action({
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z.object({
     share: z.coerce.number().gt(0, { message: "Invalid share to buy" }),
-    fusdc: z.coerce.number().gt(0, { message: "Invalid usdc to spend" }),
+    fusdc: z.coerce
+      .number()
+      .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
   type FormData = z.infer<typeof formSchema>;
   const {

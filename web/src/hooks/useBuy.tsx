@@ -140,7 +140,7 @@ const useBuy = ({
       {
         loading: "Buying shares...",
         success: "Shares bought successfully!",
-        error: (e) => `Buy failed. ${e ?? "Error: Unknown reason"}`,
+        error: (e: string) => `Buy failed. ${e ?? "Error: Unknown reason"}`,
       },
     );
 
