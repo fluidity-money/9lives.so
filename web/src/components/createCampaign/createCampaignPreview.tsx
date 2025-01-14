@@ -24,7 +24,7 @@ export default function CreateCampaignPreview() {
     },
     ORACLE: {
       img: GlobeActiveIcon,
-      title: "Oracle Description",
+      title: "Oracle",
     },
     CONTRACT: {
       img: ContractIcon,

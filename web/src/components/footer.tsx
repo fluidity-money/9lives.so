@@ -36,7 +36,7 @@ const menu = [
     page: "https://docs.9lives.so",
   },
   {
-    title: "ARB Infra Markets",
+    title: "ARB Oracle",
     page: "https://arbinframarkets.xyz",
   },
   {

@@ -8,7 +8,7 @@ import ProposeOutcomeButton from "../proposeOutcomeButton";
 
 export default function DetailInfo({ data }: { data: Campaign }) {
   const settlementDescMap: Record<SettlementType, string> = {
-    ORACLE: "a 9lives Infrastructure Market",
+    ORACLE: "a 9lives Oracle",
     POLL: "an Opinion poll",
     AI: "an A.I Resolver",
     CONTRACT: "a Contract State",

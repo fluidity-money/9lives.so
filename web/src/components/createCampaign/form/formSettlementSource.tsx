@@ -110,7 +110,7 @@ export default function CreateCampaignFormSettlmentSource({
           <Tab as={Fragment}>
             {(props) => (
               <TabIconButton
-                title="Oracle Description"
+                title="Oracle"
                 activeIcon={GlobeActiveIcon}
                 inactiveIcon={GlobeInactiveIcon}
                 {...props}
@@ -167,7 +167,7 @@ export default function CreateCampaignFormSettlmentSource({
               <Field className={"flex flex-col gap-2.5"}>
                 <Label text={"Oracle"} required={true} />
                 <Textarea
-                  placeholder="Enter Oracle Description"
+                  placeholder="Enter Oracle description"
                   className={combineClass(
                     "text-left",
                     errors.oracleDescription && "border-2 border-red-500",
