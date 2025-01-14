@@ -73,7 +73,7 @@ const thirdwebValidation = thirdwebSchema.safeParse({
   },
   payOptions: {
     buyWithCrypto: {
-      prefillSource: {
+      prefillBuy: {
         chain: currentChain,
         token: {
           symbol: "USDC",
