@@ -84,6 +84,7 @@ export default function DetailWrapper({
             initalData={initialData.outcomes}
             tradingAddr={initialData.poolAddress}
             isYesNo={initialData.isYesNo}
+            campaignTitle={initialData.name}
             price={
               sharePrices?.find((item) => item.id === selectedOutcome.id)
                 ?.price ?? "0"
