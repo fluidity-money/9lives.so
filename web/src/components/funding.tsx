@@ -18,10 +18,10 @@ export default function Funding({
   const isForBuying = outcomes.length === 1;
   return (
     <div className="flex flex-col gap-4">
-      <p className="font-base text-center font-chicago">
+      <p className="text-center font-chicago text-base">
         Supply Liquidity to Your {isForBuying ? "Prediction" : "Campaign"}
       </p>
-      <p className="font-xl text-center font-chicago">{title}</p>
+      <p className="text-center font-chicago text-xl">{title}</p>
       <p className="text-center text-xs">
         {isForBuying
           ? `You have to supply $${fundToBuy} in order to mint the position.`
