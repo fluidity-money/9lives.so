@@ -27,7 +27,11 @@ const thirdwebSchema = z.object({
     label: z.string(),
     style: z.any(),
   }),
-  payOptions: z.any(),
+  detailsModal: z.object({
+    payOptions: z.object({
+      prefillBuy: z.any(),
+    }),
+  }),
   connectModal: z.object({
     showThirdwebBranding: z.boolean(),
   }),
@@ -71,13 +75,15 @@ const thirdwebValidation = thirdwebSchema.safeParse({
       border: "none",
     },
   },
-  payOptions: {
-    prefillBuy: {
-      chain: currentChain,
-      token: {
-        symbol: "USDC",
-        address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
-        name: "USDC",
+  detailsModal: {
+    payOptions: {
+      prefillBuy: {
+        chain: currentChain,
+        token: {
+          symbol: "USDC",
+          address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
+          name: "USDC",
+        },
       },
     },
   },
