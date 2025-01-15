@@ -21,7 +21,7 @@ export default function useDetails({
     queryFn: async () => {
       const shareIdx = 0;
       const investedIdx = 1;
-      const isWinnerIdx = 3;
+      const winnerIdx = 3;
       const tradingContract = getContract({
         abi: tradingAbi,
         address: tradingAddr,
@@ -42,8 +42,8 @@ export default function useDetails({
         (acc: Detail, cur: any[], curIdx) => {
           acc.totalInvestment += cur[investedIdx];
           acc.totalShares += cur[shareIdx];
-          acc.winner = Boolean(toBigInt(cur[isWinnerIdx]))
-            ? outcomeIds[curIdx]
+          acc.winner = Boolean(toBigInt(cur[winnerIdx]))
+            ? cur[winnerIdx].slice(0, 18) // get bytes8 of bytes32
             : acc.winner;
           acc.outcomes = [
             ...acc.outcomes,
@@ -51,7 +51,7 @@ export default function useDetails({
               id: outcomeIds[curIdx],
               share: cur[shareIdx],
               invested: cur[investedIdx],
-              isWinner: Boolean(toBigInt(cur[isWinnerIdx])),
+              isWinner: acc.winner === outcomeIds[curIdx],
             },
           ];
           return acc;
