@@ -72,14 +72,12 @@ const thirdwebValidation = thirdwebSchema.safeParse({
     },
   },
   payOptions: {
-    buyWithCrypto: {
-      prefillBuy: {
-        chain: currentChain,
-        token: {
-          symbol: "USDC",
-          address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
-          name: "USDC",
-        },
+    prefillBuy: {
+      chain: currentChain,
+      token: {
+        symbol: "USDC",
+        address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
+        name: "USDC",
       },
     },
   },
