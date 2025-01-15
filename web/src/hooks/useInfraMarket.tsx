@@ -25,7 +25,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
       //time remained returns in micro seconds
       return {
         status: InfraMarketStateTitles[status],
-        timeRemained: calcTimeLeft(Number(timeRemained / BigInt(1000))),
+        timeRemained: Number(timeRemained / BigInt(1000)),
       };
     } catch (error) {
       console.error(error);

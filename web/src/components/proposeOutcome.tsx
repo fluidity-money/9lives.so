@@ -26,12 +26,13 @@ export default function ProposeOutcome({
   outcomes: Outcome[];
   closeModal: () => void;
 }) {
-  const timeLeft = useCountdown(ending);
+  const [infraStatus, setInfraStatus] =
+    useState<(typeof InfraMarketStateTitles)[InfraMarketState]>();
+  const [infraTimeLeft, setInfraTimeLeft] = useState<number>();
+  const timeLeft = useCountdown(infraTimeLeft ?? ending);
   const [isProposing, setIsProposing] = useState(false);
   const [isProposed, setIsProposed] = useState(false);
   const [txHash, setTxHash] = useState<string>("");
-  const [infraStatus, setInfraStatus] =
-    useState<(typeof InfraMarketStateTitles)[InfraMarketState]>();
   const [selectedOutcome, setSelectedOutcome] = useState<`0x${string}`>(
     outcomes[0].identifier,
   );
@@ -54,6 +55,7 @@ export default function ProposeOutcome({
     (async () => {
       const response = await getStatus();
       setInfraStatus(response?.status);
+      setInfraTimeLeft(response?.timeRemained);
     })();
   }, [getStatus]);
   if (isProposed)
