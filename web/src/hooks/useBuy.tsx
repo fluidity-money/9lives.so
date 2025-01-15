@@ -143,7 +143,8 @@ const useBuy = ({
       {
         loading: "Buying shares...",
         success: "Shares bought successfully!",
-        error: (e: string) => `Buy failed. ${e ?? "Error: Unknown reason"}`,
+        error: (e: unknown) =>
+          `Create failed. ${e instanceof Error ? e.message : e instanceof String ? e : `Unknown error: ${JSON.stringify(e)}`}`,
       },
     );
 

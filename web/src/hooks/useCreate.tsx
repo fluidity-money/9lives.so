@@ -134,7 +134,8 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
       {
         loading: "Creating campaign...",
         success: "Campaign created successfully!",
-        error: (e: string) => `Create failed. ${e}`,
+        error: (e: unknown) =>
+          `Create failed. ${e instanceof Error ? e.message : e instanceof String ? e : `Unknown error: ${JSON.stringify(e)}`}`,
       },
     );
   return { create };
