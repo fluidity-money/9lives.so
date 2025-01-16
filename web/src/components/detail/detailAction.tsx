@@ -97,11 +97,11 @@ export default function DetailCall2Action({
     },
     {
       title: "Creator Fee",
-      value: `-$${fusdc * 0.05} (-5%)`,
+      value: `-$${fusdc * 0.002} (-0.2%)`,
     },
     {
       title: "Protocol Fee",
-      value: `-$${fusdc * 0.02} (-2%)`,
+      value: `-$${fusdc * 0.008} (-0.8%)`,
     },
     {
       title: "Shares",
