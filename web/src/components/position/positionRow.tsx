@@ -15,7 +15,7 @@ export default function PositionRow({
         <div className="flex flex-col gap-1 p-1">
           <p className="font-chicago text-xs">{data.name}</p>
           <Link
-            href={`https://explorer.superposition..so/token/${data.shareAddress}`}
+            href={`${config.chains.currentChain.blockExplorers![0].url}/token/${data.shareAddress}`}
             target="_blank"
           >
             <span className="font-geneva text-[10px] uppercase text-[#808080] underline">
