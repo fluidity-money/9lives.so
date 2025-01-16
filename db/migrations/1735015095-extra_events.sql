@@ -25,7 +25,7 @@ CREATE TABLE ninelives_events_market_created2(
 	trading_addr TEXT NOT NULL,
 	desc_ BYTES32 NOT NULL,
 	launch_ts TIMESTAMP NOT NULL,
-	call_deadline TIMESTAMP NOT NULL
+	call_deadline BIGINT NOT NULL
 );
 
 CREATE TABLE ninelives_events_call_made(

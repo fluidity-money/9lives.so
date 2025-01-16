@@ -142,7 +142,7 @@ func UnpackMarketCreated2(topic1, topic2, topic3 ethCommon.Hash, d []byte) (*eve
 		TradingAddr:     hashToAddr(topic2),
 		Desc:            hashToBytes32(topic3),
 		LaunchTs:        time.Unix(int64(launchTs), 0),
-		CallDeadline:    time.Unix(int64(callDeadline), 0),
+		CallDeadline:    callDeadline,
 	}, nil
 }
 

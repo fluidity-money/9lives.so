@@ -65,7 +65,7 @@ type (
 		TradingAddr     Address   `json:"trading_addr"`
 		Desc            Bytes     `json:"desc" gorm:"column:desc_"`
 		LaunchTs        time.Time `json:"launch_ts"`
-		CallDeadline    time.Time `json:"call_deadline"`
+		CallDeadline    uint64 `json:"call_deadline"`
 	}
 
 	EventCallMade struct {
