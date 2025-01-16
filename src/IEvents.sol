@@ -98,6 +98,8 @@ interface IEvents {
      /// indeterminate state! The DAO may be needed to step in.
     event CampaignEscaped(address indexed tradingAddr);
 
+    event InfraMarketUpdated(address indexed old, address indexed new_);
+
     /* LOCKUP CONTRACT */
 
     event LockupEnabled(bool indexed status);

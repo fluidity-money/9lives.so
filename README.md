@@ -242,8 +242,8 @@ generate these, run `./print-error-table.sh`.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xFEb6034FC7dF27dF18a3a6baD5Fb94C0D3dCb6d5` |
-| Factory 1 implementation      | `0xe1841050df5ae8aa09b0980383a62723d70597ad` |
-| Factory 2 implementation      | `0x675ac9df1d2f9dc45c69d4928bc0b39913fe6114` |
+| Factory 1 implementation      | `0x233c5078274a8963c9f78db1d6c73f76d855b0e2` |
+| Factory 2 implementation      | `0x0826ee373a30c1d5d737ee553e9cc3717e967d11` |
 | Lockup implementation         | `0x061aec2e656167a021861e326f009ebe55b30b9d` |
 | Optimistic infra predict impl | `0xab80e599786fcaddeaa9e68e4e148227bc1c8e8d` |
 | Trading DPM mint impl         | `0xf42848787e102d4ab5cf35118b391c15219b2115` |

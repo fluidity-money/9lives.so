@@ -115,6 +115,20 @@ impl StorageFactory {
         Ok(DAO_ADDR)
     }
 
+    pub fn update_infra_market(&mut self, addr: Address) -> R<()> {
+        assert_or!(msg_sender() == self.operator.get(), Error::NotOperator);
+        evm::log(events::InfraMarketUpdated {
+            old: self.infra_market.get(),
+            new_: addr,
+        });
+        self.infra_market.set(addr);
+        Ok(())
+    }
+
+    pub fn infra_market(&self) -> R<Address> {
+        Ok(self.infra_market.get())
+    }
+
     pub fn drain_dao_claimable(&mut self, recipient: Address) -> R<U256> {
         assert_or!(msg_sender() == self.operator.get(), Error::NotOperator);
         let amt = self.dao_claimable.get();
