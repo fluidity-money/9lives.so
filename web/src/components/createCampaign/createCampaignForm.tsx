@@ -1,7 +1,7 @@
 "use client";
 import Button from "@/components/themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { FormEvent, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useFormStore } from "@/stores/formStore";
@@ -21,6 +21,7 @@ import { randomValue4Uint8 } from "@/utils/generateId";
 import { track, EVENTS } from "@/utils/analytics";
 import Modal from "../themed/modal";
 import Funding from "../funding";
+import { Account } from "thirdweb/wallets";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -164,8 +165,7 @@ export default function CreateCampaignForm() {
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
-  const onSubmit = (input: FormData) => {
-    if (!account) return connect();
+  const onSubmit = (input: FormData, account: Account) => {
     let outcomes;
     if (outcomeType === "default") {
       outcomes = input.outcomes.slice(0, 2).map((o, idx) => ({
@@ -197,6 +197,14 @@ export default function CreateCampaignForm() {
     });
     create(preparedInput, account);
   };
+  const handleSubmitWithAccount = (e: FormEvent) => {
+    if (!account) {
+      e.preventDefault();
+      connect();
+      return;
+    }
+    handleSubmit((data) => onSubmit(data, account))(e);
+  };
   useEffect(() => {
     if (fields) {
       debouncedFillForm({
@@ -227,7 +235,7 @@ export default function CreateCampaignForm() {
     <>
       <form
         className="flex flex-[2] flex-col gap-7"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmitWithAccount}
       >
         <CreateCampaignFormName
           register={register}
