@@ -1,4 +1,4 @@
-#!/bin/sh -eux
+#!/bin/sh -eu
 
 # Uses the DeployHelper contract to deploy everything. Proxy admin is
 # a user-controlled admin account that will govern various ProxyAdmins

@@ -37,3 +37,7 @@ pub fn details(
 pub fn escape(_addr: Address) -> Result<(), Error> {
     Ok(())
 }
+
+pub fn time_ending(_addr: Address) -> Result<u64, Error> {
+    Ok(0)
+}

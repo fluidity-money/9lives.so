@@ -1,5 +1,3 @@
-
-
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes, U256},
     alloy_sol_types::{sol, SolCall},
@@ -9,7 +7,7 @@ use stylus_sdk::{
 use alloc::vec::Vec;
 
 use crate::{
-    calldata::{unpack_details, unpack_u256},
+    calldata::{unpack_details, unpack_u256, unpack_u64},
     error::Error,
 };
 
@@ -27,6 +25,7 @@ sol! {
     function globalShares();
     function details(bytes8 outcome);
     function escape();
+    function timeEnding();
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -92,4 +91,13 @@ pub fn escape(addr: Address) -> Result<(), Error> {
         .call(addr, &escapeCall {}.abi_encode())
         .map_err(Error::TradingError)?;
     Ok(())
+}
+
+pub fn time_ending(addr: Address) -> Result<u64, Error> {
+    unpack_u64(
+        &RawCall::new()
+            .call(addr, &timeEndingCall {}.abi_encode())
+            .map_err(Error::TradingError)?,
+    )
+    .ok_or(Error::TradingUnableToUnpack)
 }

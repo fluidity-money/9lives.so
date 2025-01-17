@@ -44,6 +44,10 @@ pub fn unpack_u256(data: &[u8]) -> Option<U256> {
     U256::try_from_be_slice(data)
 }
 
+pub fn unpack_u64(data: &[u8]) -> Option<u64> {
+    data.try_into().ok().map(u64::from_be_bytes)
+}
+
 pub fn unpack_bool_safe(data: &[u8]) -> Result<(), Error> {
     match data.get(31) {
         None | Some(1) => Ok(()),
