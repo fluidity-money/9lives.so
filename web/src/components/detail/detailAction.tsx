@@ -96,22 +96,8 @@ export default function DetailCall2Action({
       value: `$${price}`,
     },
     {
-      title: "Creator Fee",
-      value: `-$${fusdc * 0.002} (-0.2%)`,
-    },
-    {
-      title: "Protocol Fee",
-      value: `-$${fusdc * 0.008} (-0.8%)`,
-    },
-    {
       title: "Shares",
       value: share,
-    },
-    {
-      title: "Potential Return",
-      value: estimatedReturn
-        ? `$${estimatedReturn} (${estimatedReturnPerc}%)`
-        : "$0",
     },
   ];
   async function handleBuy({ fusdc }: FormData) {

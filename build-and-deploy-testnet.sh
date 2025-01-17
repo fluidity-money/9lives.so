@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Simple script that builds and deploys the contracts for testnet.
+
 export \
 	SPN_SUPERPOSITION_URL=https://testnet-rpc.superposition.so \
 	SPN_LONGTAIL_ADDR=0xAe86141e3f1C9168cE6c948FDC884F2A5f45d7B6 \

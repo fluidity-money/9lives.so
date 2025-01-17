@@ -242,22 +242,6 @@ generate these, run `./print-error-table.sh`.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xFEb6034FC7dF27dF18a3a6baD5Fb94C0D3dCb6d5` |
-| Factory 1 implementation      | `0x233c5078274a8963c9f78db1d6c73f76d855b0e2` |
-| Factory 2 implementation      | `0x0826ee373a30c1d5d737ee553e9cc3717e967d11` |
-| Lockup implementation         | `0x061aec2e656167a021861e326f009ebe55b30b9d` |
-| Optimistic infra predict impl | `0xab80e599786fcaddeaa9e68e4e148227bc1c8e8d` |
-| Trading DPM mint impl         | `0xf42848787e102d4ab5cf35118b391c15219b2115` |
-| Trading DPM extras impl       | `0xbe2c0d864fa9c496203c9474748dbe302a649643` |
-| Trading DPM price impl        | `0xa25593e653e0ea5b8ac98d1f0ed483a4982cb0e2` |
-| Trading DPM quotes impl       | `0xa36636d7d2cb4e46a1cdf68f2a370eb642382414` |
-| Trading DPM price impl        | `0xa25593e653e0ea5b8ac98d1f0ed483a4982cb0e2` |
-| Trading AMM mint impl         | `0xd9431c10b09405bbda393ada4ef9d1c9df0bdcb2` |
-| Trading AMM extras impl       | `0xa93b637dfb596c7c5510bb0dfc9a6872381d8f3f` |
-| Trading AMM price impl        | `0x2a49c8aa07f47b4dca0f1df7f13921e0cade7213` |
-| Trading AMM quotes impl       | `0x71ffffe4f95510f59221bc40b4ab6d94cc2969ed` |
-| Trading AMM price impl        | `0x2a49c8aa07f47b4dca0f1df7f13921e0cade7213` |
-| Share implementation          | `0x901570280d72dC42d5DAFF2461Da21211b5a35a1` |
-| Lockup token implementation   | `0x9FC5266a46951c4543a7748ae4A71aBd33b770D1` |
 | Infrastructure market proxy   | `0xab80e599786fcaddeaa9e68e4e148227bc1c8e8d` |
 | Lockup proxy                  | `0x48bbfbd4438f245a7e3e793bff794c2e92537034` |
 | Lockup token proxy            | `0x39f9e59d1419887c8358f4e00c1bc32eaa5ec811` |
