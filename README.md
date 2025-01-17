@@ -212,11 +212,11 @@ generate these, run `./print-error-table.sh`.
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
 | Factory 1 implementation      | `0x3302ac14ad6b38baf789571395cc3a54f0f65e52` |
-| Factory 2 implementation      | `0xb1e52886e1346138ca1cede98c1a41dbff0fde9b` |
+| Factory 2 implementation      | `0x928b627add9c2a3578b5c178423724f4d20202ed` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPM mint impl         | `0x824f4547cf245798472bbb2be4fb1f58a35be940` |
-| Trading DPM extras impl       | `0xbf602e27fc343fd7833e5b23f705c9ab1b545b74` |
+| Trading DPM mint impl         | `0x7b203ff48f76b163bed86b5f2cb66ce6a46d62d4` |
+| Trading DPM extras impl       | `0x81eebeda7eb9f68c9a825c619f5e0d13a117e5f6` |
 | Trading DPM price impl        | `0x8fc31d39edec596e8089b313920c05642e86d549` |
 | Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
 | Trading AMM mint impl         | `0x75a1561702de3a5bb5ae07ef0106a085a38b9369` |
@@ -231,7 +231,7 @@ generate these, run `./print-error-table.sh`.
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
 | Helper factory                | `0xFA9B2A004F639bf27612B8dcd4cf4D47d1191d33` |
 | LensesV1                      | `0xa6f3dEBce04728d7a43224F051F03976c998CF83` |
-| Beauty contest                | `0xb8379ec062a44a1ef308d01ddf27935976df52ad` |
+| Beauty contest                | `0x6f414270498a013ef5c60d32ad02a54eb06215af` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0xE307205f1558aCE077EADb57DD9e1D4cFf4D3CC8` |
 | Buy helper2                   | `0x98E5fEe28CB760A9a97391F319536175700D7524` |
