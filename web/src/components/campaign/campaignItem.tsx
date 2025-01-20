@@ -19,8 +19,8 @@ export default function CampaignItem({ data }: CampaignItemProps) {
   const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcomeType>();
 
   return (
-    <Link href={`/campaign/${data.identifier}`} className="flex flex-1">
-      <div className="flex w-full flex-col gap-2 rounded-[3px] border-2 border-9black bg-9gray p-3 shadow-9card">
+    <Link href={`/campaign/${data.identifier}`} className="flex">
+      <div className="flex flex-1 flex-col gap-2 rounded-[3px] border-2 border-9black bg-9gray p-3 shadow-9card">
         {selectedOutcome ? (
           <SelectedOutcome
             campaignId={data.identifier}

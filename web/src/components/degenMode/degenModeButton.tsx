@@ -10,7 +10,7 @@ export default function DegenModeButton() {
     <button
       className={combineClass(
         degenModeEnabled ? "bg-9layer" : "bg-9blueLight",
-        "relative flex h-10 items-center gap-0 border-l-2 border-l-9black px-4 focus:outline-none",
+        "relative hidden h-10 items-center gap-0 border-l-2 border-l-9black px-4 focus:outline-none md:flex",
       )}
       onClick={toggleDegenMode}
     >

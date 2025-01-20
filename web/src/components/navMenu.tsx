@@ -28,7 +28,7 @@ export default function NavigationMenu() {
   ];
 
   return (
-    <nav className="flex h-10 flex-1 items-center justify-center gap-4 border-x-2 border-x-black">
+    <nav className="hidden h-10 flex-1 items-center justify-center gap-4 border-x-2 border-x-black md:flex">
       {menu.map((item) => (
         <Link
           key={item.page}

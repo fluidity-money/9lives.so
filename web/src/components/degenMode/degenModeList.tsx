@@ -9,7 +9,7 @@ export default function DegenModeList() {
   const degenModeEnabled = useDegenStore((state) => state.degenModeEnabled);
   if (!degenModeEnabled) return null;
   return (
-    <div className="relative h-auto w-[400px] overflow-y-hidden border-l-2 border-l-9black bg-9layer">
+    <div className="hidden h-auto w-[400px] overflow-y-hidden border-l-2 border-l-9black bg-9layer md:relative md:flex">
       <div className="absolute inset-0 flex flex-col gap-5 p-5">
         <div className="flex flex-col gap-2.5">
           <h5 className="block text-right font-chicago text-xs">
