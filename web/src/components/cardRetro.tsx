@@ -15,7 +15,9 @@ export default function RetroCard(props: RetroCardProps) {
         position={props.position}
         showClose={props.showClose}
       />
-      <div className={combineClass(props.padding ?? "p-5", props.className)}>
+      <div
+        className={combineClass(props.padding ?? "p-3 md:p-5", props.className)}
+      >
         {props.children}
       </div>
     </ShadowCard>

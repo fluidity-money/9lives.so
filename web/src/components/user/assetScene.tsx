@@ -18,7 +18,7 @@ export default function AssetScene({ tradingAddr, outcomes }: AssetSceneProps) {
       </TabList>
       <TabPanels>
         <TabPanel>
-          <ShadowCard className="rounded-tl-none p-5">
+          <ShadowCard className="rounded-tl-none p-3 md:p-5">
             <PositionTable tradingAddr={tradingAddr} outcomes={outcomes} />
           </ShadowCard>
         </TabPanel>
