@@ -23,9 +23,9 @@ uint256 constant INCENTIVE_AMT_MODERATION = 1e6;
 contract HelperFactory {
     IERC20Permit immutable FUSDC;
     INineLivesFactory immutable FACTORY;
-    address immutable INFRA_MARKET;
-    address immutable BEAUTY_CONTEST;
-    address immutable SARP_AI;
+    address immutable public INFRA_MARKET;
+    address immutable public BEAUTY_CONTEST;
+    address immutable public SARP_AI;
 
     constructor(
         IERC20Permit _fusdc,
