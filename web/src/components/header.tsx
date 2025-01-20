@@ -6,6 +6,7 @@ import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
 import DisclaimerButton from "./disclaimerButton";
 import DegenModeButton from "./degenMode/degenModeButton";
 import Clock from "./clock";
+import MobileMenu from "./mobileMenu";
 
 export default function Header() {
   return (
@@ -17,10 +18,15 @@ export default function Header() {
       >
         <HeaderLogo />
       </Link>
-      <DisclaimerButton />
-      <NavigationMenu />
+      <div className="hidden md:flex">
+        <DisclaimerButton />
+      </div>
+      <div className="hidden h-10 flex-1 border-x-2 border-x-black md:flex">
+        <NavigationMenu />
+      </div>
       <CreateCampaingButton />
       <div className="relative flex items-center">
+        <MobileMenu />
         <ConnectButton />
         <DegenModeButton />
         <Clock />

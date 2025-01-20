@@ -17,10 +17,11 @@ export default function DisclaimerButton() {
   return (
     <>
       <button
-        className="hidden h-10 items-center justify-center gap-1 border-l-2 border-l-9black px-4 font-chicago text-xs underline md:flex"
+        className="flex h-10 items-center justify-center gap-1 border-t border-9black px-4 md:border-l-2 md:border-t-0"
         onClick={() => setIsModalOpen(true)}
       >
-        How It Works <Image src={InfoIcon} width={15} alt="How it works?" />
+        <span className="font-chicago text-xs underline">How It Works</span>{" "}
+        <Image src={InfoIcon} className="w-5 md:w-4" alt="How it works?" />
       </button>
       <Modal
         isOpen={isModalOpen}
