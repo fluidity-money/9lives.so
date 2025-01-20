@@ -58,7 +58,7 @@ export default function DetailOutcomeRow({
             "rounded-l-sm border-y border-l border-y-9black border-l-9black",
         )}
       >
-        <div className="flex items-center gap-2 px-4">
+        <div className="flex items-center gap-2 px-2 md:px-4">
           <div className="relative">
             {isWinner && (
               <Image
@@ -102,7 +102,10 @@ export default function DetailOutcomeRow({
         )}
       >
         <span className="font-chicago text-xs font-normal">
-          ${formatUnits(amount ?? 0, config.contracts.decimals.fusdc)}
+          $
+          {Number(
+            formatUnits(amount ?? 0, config.contracts.decimals.fusdc),
+          ).toFixed(2)}
         </span>
       </td>
       <td
@@ -115,7 +118,7 @@ export default function DetailOutcomeRow({
         )}
       >
         <p className="min-h-[50px] font-chicago text-xs font-normal leading-[50px]">
-          {`$ ${price}/Share`}
+          {`$ ${Number(price).toFixed(2)}/Share`}
         </p>
         {/* <Button
           title="Buy"

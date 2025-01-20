@@ -26,8 +26,8 @@ export default function DetailHeader({
   });
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col justify-between gap-4 md:flex-row">
+        <div className="flex flex-col items-center gap-4 md:flex-row">
           <a href={data.picture} target="_blank" rel="noopener noreferrer">
             <Image
               alt="tldr"
@@ -37,7 +37,7 @@ export default function DetailHeader({
               src={data.picture}
             />
           </a>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col items-center gap-2 md:items-start">
             <div className="flex items-center gap-2.5">
               <Image
                 src={
@@ -75,7 +75,7 @@ export default function DetailHeader({
             </div>
           )
         ) : (
-          <div className="flex shrink-0 flex-col items-end justify-center gap-2.5">
+          <div className="flex shrink-0 flex-col items-center justify-center gap-2.5 md:items-end">
             <span className="font-geneva text-xs uppercase text-[#808080]">
               Total Campaign Vol:
             </span>
@@ -87,7 +87,7 @@ export default function DetailHeader({
         <span
           className={combineClass(
             isEnded ? "bg-[#CCC]" : "bg-9yellow",
-            "px-1 py-0.5 font-geneva text-xs uppercase text-9black",
+            "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
           )}
         >
           {isEnded ? "Ended" : "End Date"}:{" "}

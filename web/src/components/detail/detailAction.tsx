@@ -135,7 +135,7 @@ export default function DetailCall2Action({
 
   return (
     <>
-      <ShadowCard className="sticky top-0 z-10 flex flex-col gap-4 p-4">
+      <ShadowCard className="top-0 z-10 flex flex-col gap-4 p-4 md:sticky">
         <div className="flex items-center gap-4">
           <div
             className={combineClass(

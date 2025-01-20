@@ -25,7 +25,7 @@ export default async function DetailPage({ params }: { params: Params }) {
       campaign.outcomes.findIndex((outcome) => outcome.name === "No") !== -1,
   });
   return (
-    <section className="flex h-full gap-4">
+    <section className="flex h-full flex-col gap-8 md:flex-row md:gap-4">
       <Suspense>
         <DetailWrapper initialData={campaign} />
       </Suspense>

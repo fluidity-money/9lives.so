@@ -55,9 +55,11 @@ export default function DetailInfo({ data }: { data: Campaign }) {
             ) : null}
           </div>
           <div className="ml-5 flex flex-col gap-2.5">
-            <div className="flex items-center gap-1">
-              <Image src={LinkIcon} alt="" width={16} />
-              <h6 className="text-xs">Settlement source:</h6>
+            <div className="flex flex-col gap-1 md:flex-row md:items-center">
+              <div className="flex gap-1">
+                <Image src={LinkIcon} alt="" width={16} />
+                <h6 className="text-xs">Settlement source:</h6>
+              </div>
               <Link
                 className="text-xs underline"
                 rel="noopener noreferrer"
