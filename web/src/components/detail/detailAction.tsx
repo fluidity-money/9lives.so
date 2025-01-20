@@ -21,6 +21,8 @@ import NoOutcomeImg from "#/images/no-outcome.svg";
 import AssetSelector from "../assetSelector";
 import Modal from "../themed/modal";
 import Funding from "../funding";
+import DownIcon from "#/icons/down-caret.svg";
+
 export default function DetailCall2Action({
   shouldStopAction,
   tradingAddr,
@@ -41,6 +43,7 @@ export default function DetailCall2Action({
   isYesNo: boolean;
   chance?: number;
 }) {
+  const [minimized, setMinimized] = useState(true);
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const [share, setShare] = useState<number>(0);
   const [fusdc, setFusdc] = useState<number>(0);
@@ -135,8 +138,28 @@ export default function DetailCall2Action({
 
   return (
     <>
-      <ShadowCard className="top-0 z-10 flex flex-col gap-4 p-4 md:sticky">
-        <div className="flex items-center gap-4">
+      <ShadowCard
+        className={combineClass(
+          minimized ? "flex-row" : "flex-col",
+          "fixed inset-x-0 bottom-0 z-10 flex gap-4 p-4 md:sticky md:top-0 md:flex-col",
+        )}
+      >
+        <div
+          className="absolute right-4 top-[-41px] rounded-t-sm border border-b-0 border-9black bg-9layer p-2 md:hidden"
+          onClick={() => setMinimized(!minimized)}
+        >
+          <Image
+            src={DownIcon}
+            alt=""
+            className={combineClass(minimized && "rotate-180")}
+          />
+        </div>
+        <div
+          className={combineClass(
+            "flex items-center gap-4",
+            minimized && "flex-col md:flex-row",
+          )}
+        >
           <div
             className={combineClass(
               !isYesNo && "size-10 overflow-hidden rounded-full",
@@ -168,102 +191,116 @@ export default function DetailCall2Action({
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <span className="font-chicago text-xs font-normal text-9black">
-              Asset to spend
-            </span>
-            <Button
-              disabled={shouldStopAction || !account}
-              onClick={setToMaxShare}
-              intent={"default"}
-              size={"small"}
-              title="Max"
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2.5">
+            <div
+              className={combineClass(
+                minimized ? "hidden" : "flex",
+                "items-center justify-between md:flex",
+              )}
+            >
+              <span className="font-chicago text-xs font-normal text-9black">
+                Asset to spend
+              </span>
+              <Button
+                disabled={shouldStopAction || !account}
+                onClick={setToMaxShare}
+                intent={"default"}
+                size={"small"}
+                title="Max"
+              />
+            </div>
+            <div className="flex gap-2.5">
+              <AssetSelector />
+              <Input
+                {...register("fusdc")}
+                type="number"
+                min={0}
+                max={Number.MAX_SAFE_INTEGER}
+                value={fusdc}
+                placeholder="0"
+                onChange={(e) => {
+                  const fusdc =
+                    Number(e.target.value) >= Number.MAX_SAFE_INTEGER
+                      ? Number.MAX_SAFE_INTEGER
+                      : Number(e.target.value);
+                  const share = fusdc / Number(price);
+                  setShare(share);
+                  setValue("share", share);
+                  setFusdc(fusdc);
+                  setValue("fusdc", fusdc);
+                  if (fusdc > 0) clearErrors();
+                }}
+                className={combineClass(
+                  "w-full flex-1 text-center",
+                  errors.fusdc && "border-2 border-red-500",
+                )}
+              />
+            </div>
+            {errors.fusdc && <ErrorInfo text={errors.fusdc.message} />}
           </div>
-          <div className="flex gap-2.5">
-            <AssetSelector />
+          <div
+            className={combineClass(minimized && "hidden", "flex-col md:flex")}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-chicago text-xs font-normal text-9black">
+                Shares to buy
+              </span>
+            </div>
             <Input
-              {...register("fusdc")}
+              {...register("share")}
               type="number"
               min={0}
               max={Number.MAX_SAFE_INTEGER}
-              value={fusdc}
+              value={share}
               placeholder="0"
               onChange={(e) => {
-                const fusdc =
+                const share =
                   Number(e.target.value) >= Number.MAX_SAFE_INTEGER
                     ? Number.MAX_SAFE_INTEGER
                     : Number(e.target.value);
-                const share = fusdc / Number(price);
+                const fusdc = share * Number(price);
                 setShare(share);
                 setValue("share", share);
                 setFusdc(fusdc);
                 setValue("fusdc", fusdc);
-                if (fusdc > 0) clearErrors();
+                if (share > 0) clearErrors();
               }}
               className={combineClass(
-                "flex-1 text-center",
-                errors.fusdc && "border-2 border-red-500",
+                "mt-2 w-full flex-1 text-center",
+                errors.share && "border-2 border-red-500",
               )}
             />
+            {errors.share && <ErrorInfo text={errors.share.message} />}
           </div>
-          {errors.fusdc && <ErrorInfo text={errors.fusdc.message} />}
-        </div>
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between">
-            <span className="font-chicago text-xs font-normal text-9black">
-              Shares to buy
-            </span>
-          </div>
-          <Input
-            {...register("share")}
-            type="number"
-            min={0}
-            max={Number.MAX_SAFE_INTEGER}
-            value={share}
-            placeholder="0"
-            onChange={(e) => {
-              const share =
-                Number(e.target.value) >= Number.MAX_SAFE_INTEGER
-                  ? Number.MAX_SAFE_INTEGER
-                  : Number(e.target.value);
-              const fusdc = share * Number(price);
-              setShare(share);
-              setValue("share", share);
-              setFusdc(fusdc);
-              setValue("fusdc", fusdc);
-              if (share > 0) clearErrors();
-            }}
+          <div
             className={combineClass(
-              "mt-2 flex-1 text-center",
-              errors.share && "border-2 border-red-500",
+              minimized && "hidden",
+              "flex-col gap-4 bg-9gray p-5 text-xs shadow-9orderSummary md:flex",
             )}
+          >
+            <span className="font-chicago uppercase">Order Summary</span>
+            <ul className="flex flex-col gap-1 text-gray-500">
+              {orderSummary.map((item) => (
+                <li
+                  className="flex items-center justify-between"
+                  key={item.title}
+                >
+                  <strong>{item.title}</strong>
+                  <span>{item.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <Button
+            disabled={isMinting || isConnecting || shouldStopAction}
+            title={isMinting ? "Loading.." : ctaTitle}
+            className={"uppercase"}
+            size={"xlarge"}
+            intent={"yes"}
+            onClick={onSubmit}
           />
-          {errors.share && <ErrorInfo text={errors.share.message} />}
         </div>
-        <div className="flex flex-col gap-4 bg-9gray p-5 text-xs shadow-9orderSummary">
-          <span className="font-chicago uppercase">Order Summary</span>
-          <ul className="flex flex-col gap-1 text-gray-500">
-            {orderSummary.map((item) => (
-              <li
-                className="flex items-center justify-between"
-                key={item.title}
-              >
-                <strong>{item.title}</strong>
-                <span>{item.value}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <Button
-          disabled={isMinting || isConnecting || shouldStopAction}
-          title={isMinting ? "Loading.." : ctaTitle}
-          className={"uppercase"}
-          size={"xlarge"}
-          intent={"yes"}
-          onClick={onSubmit}
-        />
       </ShadowCard>
       <Modal
         isOpen={isFundModalOpen}
