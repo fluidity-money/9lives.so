@@ -20,7 +20,7 @@ export default function CampaignItem({ data }: CampaignItemProps) {
 
   return (
     <Link href={`/campaign/${data.identifier}`} className="flex flex-1">
-      <div className="flex flex-col gap-2 rounded-[3px] border-2 border-9black bg-9gray p-3 shadow-9card">
+      <div className="flex flex-col gap-2 rounded-[3px] border-2 border-9black bg-9gray p-3 shadow-9card w-full">
         {selectedOutcome ? (
           <SelectedOutcome
             campaignId={data.identifier}
