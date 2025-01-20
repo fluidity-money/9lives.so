@@ -1,6 +1,10 @@
 use stylus_sdk::alloy_primitives::{aliases::*, *};
 
-use crate::{error::*, fusdc_call, trading_call, utils::msg_sender};
+use crate::{
+    error::*,
+    fusdc_call, trading_call,
+    utils::{block_timestamp, msg_sender},
+};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_beauty_contest::*;
@@ -23,6 +27,10 @@ impl StorageBeautyContest {
         // Sanity check that this isn't the AMM (currently), and that it's set up.
         assert_or!(!global_shares.is_zero(), Error::TradingEmpty);
         assert_or!(!outcome_ids.is_empty(), Error::MustContainOutcomes);
+        assert_or!(
+            trading_call::time_ending(trading_addr)? < block_timestamp(),
+            Error::NotPastDeadline
+        );
         let fee_recipient = if fee_recipient.is_zero() {
             msg_sender()
         } else {
