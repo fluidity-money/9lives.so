@@ -47,7 +47,7 @@ export default function DetailHeader({
                 className="h-[16px] w-auto"
                 height={16}
               />{" "}
-              <h1 className="font-chicago text-2xl">{data.name}</h1>
+              <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
