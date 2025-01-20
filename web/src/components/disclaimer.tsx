@@ -95,7 +95,7 @@ export default function Disclaimer() {
     <TabGroup>
       <TabList
         className={
-          "flex overflow-y-hidden overflow-x-scroll border-b border-b-9black"
+          "flex overflow-y-hidden overflow-x-scroll border-b border-b-9black md:overflow-x-hidden"
         }
       >
         <Tab as={Fragment}>
