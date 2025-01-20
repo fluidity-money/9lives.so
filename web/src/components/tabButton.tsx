@@ -18,7 +18,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
   ref,
 ) {
   return (
-    <button className="relative flex" ref={ref} {...props}>
+    <button className="relative flex shrink-0" ref={ref} {...props}>
       <Image
         src={selected ? Leftborder : LeftborderIdle}
         height={25}

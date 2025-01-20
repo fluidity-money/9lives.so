@@ -93,7 +93,11 @@ function Superposition() {
 export default function Disclaimer() {
   return (
     <TabGroup>
-      <TabList className={"flex border-b border-b-9black"}>
+      <TabList
+        className={
+          "flex overflow-y-hidden overflow-x-scroll border-b border-b-9black"
+        }
+      >
         <Tab as={Fragment}>
           {(props) => <TabButton title="About & Disclaimer" {...props} />}
         </Tab>
