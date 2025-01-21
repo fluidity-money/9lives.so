@@ -649,9 +649,7 @@ impl StorageInfraMarket {
             e.campaign_who_called.set(Address::ZERO);
         } else {
             // At this point we call the campaign that this is
-            // connected to let them know that there was a winner. Hopefully
-            // someone called shutdown on the contract in the past to prevent
-            // users from calling Longtail constantly.
+            // connected to let them know that there was a winner.
             trading_call::decide(trading_addr, voting_power_winner)?;
         }
         Ok(caller_yield_taken)

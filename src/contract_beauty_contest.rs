@@ -43,7 +43,7 @@ impl StorageBeautyContest {
             (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
             |(count_shares, max_shares, min_shares, winning_outcome), outcome_id| {
                 let (shares, _, _, winner) = c!(trading_call::details(trading_addr, outcome_id));
-                assert_or!(!winner.is_zero(), Error::WinnerAlreadyDeclared);
+                assert_or!(winner.is_zero(), Error::WinnerAlreadyDeclared);
                 let is_greater = shares > max_shares;
                 Ok((
                     count_shares + shares,
