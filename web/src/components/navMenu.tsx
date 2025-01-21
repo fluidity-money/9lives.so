@@ -7,23 +7,8 @@ export default function NavigationMenu() {
       page: "/",
     },
     {
-      title: "Portfolio",
-      page: "/portfolio",
-      disabled: true,
-    },
-    {
       title: "Leaderboard",
       page: "/leaderboard",
-    },
-    {
-      title: "Staking",
-      page: "/staking",
-      disabled: true,
-    },
-    {
-      title: "AI Agents",
-      page: "/ai-agents",
-      disabled: true,
     },
   ];
 
