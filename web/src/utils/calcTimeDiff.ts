@@ -1,6 +1,7 @@
-// endTime is a millisecond timestamp
+// endTime in calcTimeLeft is a second timestamp
 export function calcTimeLeft(endTime: number) {
-  const differenceInMs = new Date(endTime).getTime() - Date.now();
+  const endTimeInMs = endTime * 1000;
+  const differenceInMs = new Date(endTimeInMs).getTime() - Date.now();
   if (0 >= differenceInMs) {
     return {
       full: "End date is already due.",
@@ -26,6 +27,7 @@ export function calcTimeLeft(endTime: number) {
     seconds,
   };
 }
+// endTime in calcTimePassed is a milisecond timestamp
 export function calcTimePassed(endTime: number) {
   const differenceInMs =
     Date.now() -

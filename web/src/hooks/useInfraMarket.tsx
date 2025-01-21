@@ -7,7 +7,6 @@ import appConfig from "@/config";
 import { Account } from "thirdweb/wallets";
 import { InfraMarketState, InfraMarketStateTitles } from "@/types";
 import toast from "react-hot-toast";
-import { calcTimeLeft } from "@/utils/calcTimeDiff";
 interface InfraMarketProps {
   tradingAddr: `0x${string}`;
 }
@@ -22,10 +21,9 @@ export default function useInfraMarket(props: InfraMarketProps) {
       const [status, timeRemained] = (await simulateTransaction({
         transaction: statusTx,
       })) as [InfraMarketState, bigint];
-      //time remained returns in seconds
       return {
         status: InfraMarketStateTitles[status],
-        timeRemained: Number(timeRemained * BigInt(1000)), // convert seconds to miliseconds
+        timeRemained: Number(timeRemained), //time remained returns in seconds
       };
     } catch (error) {
       console.error(error);
