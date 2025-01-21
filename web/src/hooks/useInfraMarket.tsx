@@ -22,10 +22,10 @@ export default function useInfraMarket(props: InfraMarketProps) {
       const [status, timeRemained] = (await simulateTransaction({
         transaction: statusTx,
       })) as [InfraMarketState, bigint];
-      //time remained returns in micro seconds
+      //time remained returns in seconds
       return {
         status: InfraMarketStateTitles[status],
-        timeRemained: Number(timeRemained / BigInt(1000)),
+        timeRemained: Number(timeRemained * BigInt(1000)), // convert seconds to miliseconds
       };
     } catch (error) {
       console.error(error);
