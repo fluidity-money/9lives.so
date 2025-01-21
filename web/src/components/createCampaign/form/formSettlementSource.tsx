@@ -97,7 +97,7 @@ export default function CreateCampaignFormSettlmentSource({
         }}
       >
         <TabList className="flex gap-2.5">
-          <Tab as={Fragment}>
+          <Tab disabled as={Fragment}>
             {(props) => (
               <TabIconButton
                 title="Opinion Poll"
