@@ -56,14 +56,15 @@ contract SARPSignaller is IEvents {
 
     /**
      * @notice Conclude a market if the outcome was not an indeterminate state by
-     *         refunding the spender.
+     *         refunding the spender. In the calldata, it logs the receipt of the
+     *         justification for its decision.
      * @param _ticket that is relevant to this.
      */
-    function conclude(uint256 _ticket) external {
+    function conclude(uint256 _ticket, bytes32 _note) external {
         require(msg.sender == SARP, "only sarp");
         require(!tickets[_ticket].repaid, "already repaid");
         tickets[_ticket].repaid = true;
         FUSDC.transfer(tickets[_ticket].addr, SARP_REFUND);
-        emit Concluded(_ticket);
+        emit Concluded(_ticket, _note);
     }
 }
