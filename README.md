@@ -221,7 +221,7 @@ generate these, run `./print-error-table.sh`.
 | Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
 | Trading AMM mint impl         | `0x75a1561702de3a5bb5ae07ef0106a085a38b9369` |
 | Trading AMM extras impl       | `0xb73ceaf59fe6d13792153ee73ab2474de8c6df10` |
-| Trading AMM price impl        | 0xe8e2e4ac62b89a8b0e0632fd9f19316b8b2af76e`` |
+| Trading AMM price impl        | `0xe8e2e4ac62b89a8b0e0632fd9f19316b8b2af76e` |
 | Trading AMM quotes impl       | `0x1086fe3c7a453e31d5f04a55924ec633b62157d9` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
@@ -229,9 +229,10 @@ generate these, run `./print-error-table.sh`.
 | Lockup proxy                  | `0x20d2360706086ec9814d15a52ad2d2aec2c43caa` |
 | Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
-| Helper factory                | `0x4bAACB46a9bf3ab095858Ae6cFac07002dEa4723` |
+| Helper factory                | `0xe5476af9E9299F139d63077dA735d022953Fd404` |
 | LensesV1                      | `0xa6f3dEBce04728d7a43224F051F03976c998CF83` |
-| Beauty contest                | `0x3A2325146Da21CCD02A01A25dF8633141e09E658` |
+| Beauty contest implementation | `0x93fe07641576d1ca1ed44070beff5d01877cc7ac` |
+| Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0xE307205f1558aCE077EADb57DD9e1D4cFf4D3CC8` |
 | Buy helper2                   | `0x98E5fEe28CB760A9a97391F319536175700D7524` |

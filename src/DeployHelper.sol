@@ -56,12 +56,14 @@ struct DeployArgs {
     address tradingAmmMintImpl;
     address tradingAmmQuotesImpl;
     address tradingAmmPriceImpl;
+    address beautyContestImpl;
 }
 
 contract DeployHelper {
     event FactoryDeployed(address indexed addr);
     event InfraMarketDeployed(address indexed addr);
     event LockupDeployed(address indexed addr);
+    event BeautyContestDeployed(address indexed addr);
 
     constructor(DeployArgs memory _a) {
         // First, we deploy the factory proxy, but we don't do any setup on it.
@@ -91,6 +93,11 @@ contract DeployHelper {
             )
         )));
         emit LockupDeployed(address(lockup));
+        emit BeautyContestDeployed(address(new TransparentUpgradeableProxy(
+            _a.beautyContestImpl,
+            _a.admin,
+            ""
+        )));
         // Then, we do some setup on the infra market proxy.
         infraMarket.ctor(
             _a.admin,

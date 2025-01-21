@@ -23,12 +23,12 @@ impl StorageBeautyContest {
         mut outcome_ids: Vec<FixedBytes<8>>,
         fee_recipient: Address,
     ) -> R<U256> {
-        let global_shares = trading_call::global_shares(trading_addr)?;
+        let global_shares = c!(trading_call::global_shares(trading_addr));
         // Sanity check that this isn't the AMM (currently), and that it's set up.
         assert_or!(!global_shares.is_zero(), Error::TradingEmpty);
         assert_or!(!outcome_ids.is_empty(), Error::MustContainOutcomes);
         assert_or!(
-            trading_call::time_ending(trading_addr)? < block_timestamp(),
+            c!(trading_call::time_ending(trading_addr)) < block_timestamp(),
             Error::NotPastDeadline
         );
         let fee_recipient = if fee_recipient.is_zero() {
@@ -42,7 +42,7 @@ impl StorageBeautyContest {
         let (count_shares, _, min_shares, winning_outcome) = outcome_ids.into_iter().try_fold(
             (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
             |(count_shares, max_shares, min_shares, winning_outcome), outcome_id| {
-                let (shares, _, _, winner) = trading_call::details(trading_addr, outcome_id)?;
+                let (shares, _, _, winner) = c!(trading_call::details(trading_addr, outcome_id));
                 assert_or!(!winner.is_zero(), Error::WinnerAlreadyDeclared);
                 let is_greater = shares > max_shares;
                 Ok((
@@ -71,7 +71,7 @@ impl StorageBeautyContest {
             Error::BeautyContestBadOutcomes
         );
         // Now that we know the winner, we need to decide the outcome.
-        let comp = trading_call::decide(trading_addr, winning_outcome)?;
+        let comp = c!(trading_call::decide(trading_addr, winning_outcome));
         fusdc_call::transfer(fee_recipient, comp)?;
         Ok(comp)
     }

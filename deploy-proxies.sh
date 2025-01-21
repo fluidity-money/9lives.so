@@ -48,5 +48,7 @@ lockup_addr="0x$(echo "$receipt " | jq -r '.logs.[] | select(.topics[0] == "0xad
 
 lockup_token_proxy_addr="0x$(echo "$receipt " | jq -r '.logs.[] | select(.topics[0] == "0x6e62de6bcc281f60aa8cf0e4fe7453a72d9be2708c1a2ef64d45df9d41c22e9a") | .topics[1] | .[-40:]')"
 
+beauty_contest_proxy_addr="0x$(echo "$receipt " | jq -r '.logs.[] | select(.topics[0] == "0xab8a7107daac41d2a708323ce5044e7f965a241d2c5fbe336d314a0de32ed75b") | .topics[1] | .[-40:]')"
+
 cat <<EOF
-{"infraMarketAddr": "$infra_market_addr", "lockupAddr": "$lockup_addr", "factoryAddr": "$factory_addr", "lockupTokenProxyAddr": "$lockup_token_proxy_addr"}
+{"infraMarketAddr": "$infra_market_addr", "lockupAddr": "$lockup_addr", "factoryAddr": "$factory_addr", "lockupTokenProxyAddr": "$lockup_token_proxy_addr", "beautyContestProxyAddr": "$beauty_contest_proxy_addr"}

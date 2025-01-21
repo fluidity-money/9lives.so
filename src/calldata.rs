@@ -45,7 +45,19 @@ pub fn unpack_u256(data: &[u8]) -> Option<U256> {
 }
 
 pub fn unpack_u64(data: &[u8]) -> Option<u64> {
-    data.try_into().ok().map(u64::from_be_bytes)
+    data[32-8..].try_into().ok().map(u64::from_be_bytes)
+}
+
+#[test]
+fn test_unpack_u64() {
+    assert_eq!(
+        unpack_u64(
+            &const_hex::decode("00000000000000000000000000000000000000000000000000062c17f1088000")
+                .unwrap()
+        )
+        .unwrap(),
+        1737331200000000u64
+    );
 }
 
 pub fn unpack_bool_safe(data: &[u8]) -> Result<(), Error> {

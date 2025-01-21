@@ -5,7 +5,7 @@
 // (outside of this executable).
 
 #[cfg(target_arch = "wasm32")]
-use alloc::{vec::Vec};
+use alloc::vec::Vec;
 
 #[allow(unused)]
 #[cfg(any(
@@ -362,7 +362,7 @@ pub enum Error {
     TradingEmpty,
 
     /// Unable to unpack a response from the Trading contract.
-    TradingUnableToUnpack,
+    TradingUnableToUnpack(Address, Vec<u8>),
 
     /// Beauty contest had bad outcome calldata submitted to it.
     BeautyContestBadOutcomes,
@@ -541,6 +541,10 @@ impl core::fmt::Debug for Error {
                     rename_addr(*addr),
                     String::from_utf8(msg.clone())
                 ),
+                Error::TradingUnableToUnpack(addr, b) => format!(
+                    "trading unable to unpack from call to {addr}: {}",
+                    const_hex::encode(&b)
+                ),
                 _ => "".to_owned(),
             }
         )
@@ -596,6 +600,9 @@ impl From<Error> for Vec<u8> {
             Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
             Error::NotInCommitReveal(whinge_ts, cur_ts) => {
                 ext_general(&[&[v.into()], &whinge_ts.to_be_bytes(), &cur_ts.to_be_bytes()])
+            }
+            Error::TradingUnableToUnpack(addr, b) => {
+                ext(&ERR_GENERAL_PREAMBLE, &[addr.as_slice(), &b])
             }
             v => ext(&ERR_GENERAL_PREAMBLE, &[&[v.into()]]),
         }

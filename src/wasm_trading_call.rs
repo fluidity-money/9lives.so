@@ -55,35 +55,31 @@ pub fn ctor(
 
 pub fn decide(addr: Address, winner: FixedBytes<8>) -> Result<U256, Error> {
     let a = decideCall { winner }.abi_encode();
-    unpack_u256(&RawCall::new().call(addr, &a).map_err(Error::TradingError)?)
-        .ok_or(Error::TradingUnableToUnpack)
+    let b = RawCall::new().call(addr, &a).map_err(Error::TradingError)?;
+    unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
 
 pub fn global_shares(addr: Address) -> Result<U256, Error> {
-    unpack_u256(
-        &RawCall::new()
-            .call(addr, &globalSharesCall {}.abi_encode())
-            .map_err(Error::TradingError)?,
-    )
-    .ok_or(Error::TradingUnableToUnpack)
+    let b = RawCall::new()
+        .call(addr, &globalSharesCall {}.abi_encode())
+        .map_err(Error::TradingError)?;
+    unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
 
 pub fn details(
     addr: Address,
     outcome_id: FixedBytes<8>,
 ) -> Result<(U256, U256, U256, FixedBytes<8>), Error> {
-    unpack_details(
-        &RawCall::new()
-            .call(
-                addr,
-                &detailsCall {
-                    outcome: outcome_id,
-                }
-                .abi_encode(),
-            )
-            .map_err(Error::TradingError)?,
-    )
-    .ok_or(Error::TradingUnableToUnpack)
+    let b = RawCall::new()
+        .call(
+            addr,
+            &detailsCall {
+                outcome: outcome_id,
+            }
+            .abi_encode(),
+        )
+        .map_err(Error::TradingError)?;
+    unpack_details(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
 
 pub fn escape(addr: Address) -> Result<(), Error> {
@@ -94,10 +90,8 @@ pub fn escape(addr: Address) -> Result<(), Error> {
 }
 
 pub fn time_ending(addr: Address) -> Result<u64, Error> {
-    unpack_u64(
-        &RawCall::new()
-            .call(addr, &timeEndingCall {}.abi_encode())
-            .map_err(Error::TradingError)?,
-    )
-    .ok_or(Error::TradingUnableToUnpack)
+    let b = RawCall::new()
+        .call(addr, &timeEndingCall {}.abi_encode())
+        .map_err(Error::TradingError)?;
+    unpack_u64(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
