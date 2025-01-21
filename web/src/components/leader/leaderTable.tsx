@@ -7,8 +7,8 @@ export default function LeaderTable() {
   const titles = ["Rank", "User", "Score", "Profit"];
   const { data } = useLeaderboard();
   return (
-    <table className="w-full border-separate border-spacing-0">
-      <thead>
+    <table className="w-full border-separate border-spacing-0 overflow-auto">
+      <thead className="sticky top-0 bg-9layer">
         <tr>
           {titles.map((title, index) => (
             <th
@@ -23,7 +23,7 @@ export default function LeaderTable() {
           ))}
         </tr>
       </thead>
-      <tbody>
+      <tbody className="w-full">
         {data?.map((item) => <LeaderRow key={item.wallet} data={item} />)}
       </tbody>
     </table>

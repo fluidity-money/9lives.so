@@ -7,7 +7,11 @@ export default function LeaderRow({ data }: { data: Leader }) {
   return (
     <tr className="hover:bg-9blueLight/50">
       <td className={combineClass(cellStyle)}>{data.ranking}</td>
-      <td className={combineClass(cellStyle)}>{data.wallet}</td>
+      <td className={combineClass(cellStyle)}>
+        <span className="block w-[100px] truncate md:w-full">
+          {data.wallet}
+        </span>
+      </td>
       <td className={combineClass(cellStyle)}>{data.scoring}</td>
       <td className={combineClass(cellStyle)}></td>
     </tr>

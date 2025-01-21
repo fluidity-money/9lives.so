@@ -9,8 +9,8 @@ export default function AchievementGrid() {
     queryKey: ["totalUserCount"],
   });
   return (
-    <RetroCard title="All Achievements" padding="p-7">
-      <div className="grid grid-cols-3 gap-7">
+    <RetroCard title="All Achievements" padding="p-7" className="p-3 md:p-7">
+      <div className="grid gap-3 md:grid-cols-3 md:gap-7">
         {data?.map((item) => (
           <AchievementItem
             data={item}
