@@ -85,7 +85,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
               method: settlementFunctionMap[input.settlementType],
               params: [
                 creationList, // outcomes
-                BigInt(new Date(input.ending).getTime() * 1000), // time ending in seconds timestamp
+                BigInt(Math.floor(new Date(input.ending).getTime() / 1000)), // time ending in seconds timestamp
                 hashedDocumentation, // documentation (settlement description)
                 account.address, // fee recipient
               ],
