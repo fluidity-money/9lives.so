@@ -17,7 +17,7 @@ export default function DisclaimerButton() {
   return (
     <>
       <button
-        className="flex h-10 items-center justify-center gap-1 border-t border-9black px-4 md:border-l-2 md:border-t-0"
+        className="flex h-10 items-center justify-center gap-1 border-9black px-4 md:border-l-2"
         onClick={() => setIsModalOpen(true)}
       >
         <span className="font-chicago text-xs underline">How It Works</span>{" "}

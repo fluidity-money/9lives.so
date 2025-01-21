@@ -15,7 +15,12 @@ export default function DegenModeButton() {
       onClick={toggleDegenMode}
     >
       <span className="font-chicago text-xs underline">🐵 Degen Mode 🐵</span>
-      <Image alt="" src={RightCaretIcon} width={20} />
+      <Image
+        alt=""
+        src={RightCaretIcon}
+        width={20}
+        className={combineClass(degenModeEnabled && "rotate-90")}
+      />
       <div
         className={combineClass(
           !degenModeEnabled && "hidden",

@@ -5,6 +5,7 @@ import Modal from "./themed/modal";
 import { useState } from "react";
 import NavigationMenu from "./navMenu";
 import DisclaimerButton from "./disclaimerButton";
+import DegenModeMobileWrapper from "./degenMode/degenModeMobileWrapper";
 
 export default function MobileMenu() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -21,7 +22,10 @@ export default function MobileMenu() {
       >
         <div className="flex flex-col items-center justify-center gap-4">
           <NavigationMenu />
-          <DisclaimerButton />
+          <div className="flex flex-col items-center">
+            <DegenModeMobileWrapper />
+            <DisclaimerButton />
+          </div>
         </div>
       </Modal>
     </div>

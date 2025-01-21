@@ -11,12 +11,12 @@ import CustomToaster from "@/components/customToaster";
 import { getCachedCampaigns } from "@/serverData/getCampaigns";
 import { getCachedTotalUserCount } from "@/serverData/getTotalUserCount";
 import CookieBanner from "@/components/cookieBanner";
-import DegenModeList from "@/components/degenMode/degenModeList";
+import DegenModeWrapper from "@/components/degenMode/degenModeWrapper";
+import { BuyAndSellResponse, CreationResponse } from "@/types";
 import {
   getCachedBuysAndSells,
   getCachedCreations,
 } from "../serverData/getActions";
-import { BuyAndSellResponse, CreationResponse } from "@/types";
 
 const chicago = localFont({
   src: [
@@ -92,7 +92,7 @@ export default async function RootLayout({
           <Header />
           <main className="flex flex-1 gap-2">
             <div className="flex-1 p-4">{children}</div>
-            <DegenModeList />
+            <DegenModeWrapper />
           </main>
           <Footer />
         </Providers>
