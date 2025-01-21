@@ -45,7 +45,10 @@ export default function ContextInjector() {
 
   // pop up connect modal if user navigates any campaign page
   useEffect(() => {
-    if (pathname.startsWith("/campaign/") && !account) {
+    const previouslyConnected = window.localStorage.getItem(
+      "thirdweb:active-wallet-id",
+    );
+    if (pathname.startsWith("/campaign/") && !account && !previouslyConnected) {
       connect();
     }
   }, [pathname, account]);
