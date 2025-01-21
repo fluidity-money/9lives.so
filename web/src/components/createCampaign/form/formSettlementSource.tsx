@@ -103,6 +103,7 @@ export default function CreateCampaignFormSettlmentSource({
                 title="Opinion Poll"
                 activeIcon={LipsActiveIcon}
                 inactiveIcon={LipsInactiveIcon}
+                className="opacity-30"
                 {...props}
               />
             )}
