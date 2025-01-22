@@ -19,6 +19,8 @@ CREATE TABLE ninelives_buys_and_sells_1 (
 	campaign_content JSONB
 );
 
+CREATE INDEX idx_total_volume ON ninelives_buys_and_sells_1 (total_volume);
+
 CREATE FUNCTION
 NINELIVES_FUN_NINELIVES_EVENTS_SHARES_MINTED_TO_NINELIVES_BUYS_AND_SELLS_1()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
