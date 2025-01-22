@@ -448,7 +448,29 @@ func (r *queryResolver) CampaignByID(ctx context.Context, id string) (*types.Cam
 		return nil, fmt.Errorf("bad id")
 	}
 	var c types.Campaign
-	err := r.DB.Table("ninelives_campaigns_1").Where("id = ?", id).Find(&c).Error
+	err := r.DB.Raw(
+		`SELECT 
+			nc.*, 
+			COALESCE(nbas.total_volume, 0) AS total_volume
+		FROM 
+			ninelives_campaigns_1 nc
+		LEFT JOIN (
+			SELECT 
+				campaign_id, 
+				MAX(total_volume) AS total_volume
+			FROM 
+				ninelives_buys_and_sells_1
+			WHERE 
+				campaign_id = ?
+			GROUP BY 
+				campaign_id
+		) nbas
+		ON 
+			nc.id = nbas.campaign_id
+		WHERE 
+			nc.id = ?`, id, id).
+		Scan(&c).
+		Error
 	if err != nil {
 		return nil, fmt.Errorf("campaign find: %v", err)
 	}
