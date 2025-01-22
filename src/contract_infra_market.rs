@@ -438,6 +438,10 @@ impl StorageInfraMarket {
         Ok(e.outcome_vested_arb.get(outcome))
     }
 
+    pub fn epoch_number(&self, trading_addr: Address) -> R<U256> {
+        Ok(self.cur_epochs.get(trading_addr))
+    }
+
     pub fn reveal(
         &mut self,
         trading_addr: Address,

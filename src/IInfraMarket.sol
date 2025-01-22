@@ -80,6 +80,12 @@ interface IInfraMarket {
     ) external view returns (uint256);
 
     /**
+     * @notice Get the current epoch number for the trading contract given.
+     * @param trading to check.
+     */
+    function epochNumber(address trading) external view returns (uint256 epochNo);
+
+    /**
      * @notice Reveal a previously made commitment. Should be done in the revealing
      *         period (two days after the first whinge, for two days).
      * @param tradingAddr to use as the place for the commitments to be tracked.

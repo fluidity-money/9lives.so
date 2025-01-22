@@ -135,5 +135,5 @@ interface IEvents {
 
     /// @notice A request from a submitter was appropriate and resulted in a
     /// non-indeterminate state. Refund the investor.
-    event Concluded(uint256 indexed ticket);
+    event Concluded(uint256 indexed ticket, bytes32 indexed justification);
 }
