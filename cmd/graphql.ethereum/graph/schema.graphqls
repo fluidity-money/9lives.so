@@ -299,6 +299,11 @@ type Campaign {
   Web url
   """
   web: String
+
+  """
+  If any outcome declared as winner, it returns bytes8 id
+  """
+  winner: String
 }
 
 type Outcome {

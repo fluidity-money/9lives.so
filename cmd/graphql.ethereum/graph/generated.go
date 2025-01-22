@@ -66,6 +66,7 @@ type ComplexityRoot struct {
 		Starting          func(childComplexity int) int
 		Telegram          func(childComplexity int) int
 		Web               func(childComplexity int) int
+		Winner            func(childComplexity int) int
 		X                 func(childComplexity int) int
 	}
 
@@ -122,6 +123,7 @@ type CampaignResolver interface {
 	X(ctx context.Context, obj *types.Campaign) (*string, error)
 	Telegram(ctx context.Context, obj *types.Campaign) (*string, error)
 	Web(ctx context.Context, obj *types.Campaign) (*string, error)
+	Winner(ctx context.Context, obj *types.Campaign) (*string, error)
 }
 type ChangelogResolver interface {
 	ID(ctx context.Context, obj *changelog.Changelog) (string, error)
@@ -257,6 +259,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.Web(childComplexity), true
+
+	case "Campaign.winner":
+		if e.complexity.Campaign.Winner == nil {
+			break
+		}
+
+		return e.complexity.Campaign.Winner(childComplexity), true
 
 	case "Campaign.x":
 		if e.complexity.Campaign.X == nil {
@@ -1528,6 +1537,47 @@ func (ec *executionContext) fieldContext_Campaign_web(_ context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Campaign_winner(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_winner(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().Winner(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_winner(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Changelog_id(ctx context.Context, field graphql.CollectedField, obj *changelog.Changelog) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Changelog_id(ctx, field)
 	if err != nil {
@@ -2153,6 +2203,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_telegram(ctx, field)
 			case "web":
 				return ec.fieldContext_Campaign_web(ctx, field)
+			case "winner":
+				return ec.fieldContext_Campaign_winner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -2237,6 +2289,8 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_telegram(ctx, field)
 			case "web":
 				return ec.fieldContext_Campaign_web(ctx, field)
+			case "winner":
+				return ec.fieldContext_Campaign_winner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -4912,6 +4966,39 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Campaign_web(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "winner":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_winner(ctx, field, obj)
 				return res
 			}
 

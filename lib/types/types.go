@@ -83,6 +83,9 @@ type (
 
 		// Web url
 		Web *string `json:"web"`
+
+		// If any outcome declared as winner, it returns bytes8 id
+		Winner *string `json:"winner"`
 	}
 
 	// Wallet of the creator of a campaign.

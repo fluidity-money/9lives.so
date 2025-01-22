@@ -141,6 +141,14 @@ func (r *campaignResolver) Web(ctx context.Context, obj *types.Campaign) (*strin
 	return obj.Content.Web, nil
 }
 
+// Winner is the resolver for the winner field.
+func (r *campaignResolver) Winner(ctx context.Context, obj *types.Campaign) (*string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Content.Winner, nil
+}
+
 // ID is the resolver for the id field.
 func (r *changelogResolver) ID(ctx context.Context, obj *changelog.Changelog) (string, error) {
 	if obj == nil {
@@ -404,7 +412,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]typ
 		return campaigns, nil
 	}
 	err := r.DB.Raw(
-`SELECT *
+		`SELECT *
 FROM (
     SELECT DISTINCT ON (campaign_id)
         campaign_id AS id,
