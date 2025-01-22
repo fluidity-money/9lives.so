@@ -65,6 +65,7 @@ type ComplexityRoot struct {
 		Settlement        func(childComplexity int) int
 		Starting          func(childComplexity int) int
 		Telegram          func(childComplexity int) int
+		TotalVolume       func(childComplexity int) int
 		Web               func(childComplexity int) int
 		Winner            func(childComplexity int) int
 		X                 func(childComplexity int) int
@@ -252,6 +253,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.Telegram(childComplexity), true
+
+	case "Campaign.totalVolume":
+		if e.complexity.Campaign.TotalVolume == nil {
+			break
+		}
+
+		return e.complexity.Campaign.TotalVolume(childComplexity), true
 
 	case "Campaign.web":
 		if e.complexity.Campaign.Web == nil {
@@ -1578,6 +1586,50 @@ func (ec *executionContext) fieldContext_Campaign_winner(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Campaign_totalVolume(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_totalVolume(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalVolume, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_totalVolume(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Changelog_id(ctx context.Context, field graphql.CollectedField, obj *changelog.Changelog) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Changelog_id(ctx, field)
 	if err != nil {
@@ -2205,6 +2257,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_web(ctx, field)
 			case "winner":
 				return ec.fieldContext_Campaign_winner(ctx, field)
+			case "totalVolume":
+				return ec.fieldContext_Campaign_totalVolume(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -2291,6 +2345,8 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_web(ctx, field)
 			case "winner":
 				return ec.fieldContext_Campaign_winner(ctx, field)
+			case "totalVolume":
+				return ec.fieldContext_Campaign_totalVolume(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5022,6 +5078,11 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "totalVolume":
+			out.Values[i] = ec._Campaign_totalVolume(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

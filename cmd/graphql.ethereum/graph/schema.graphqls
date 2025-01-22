@@ -304,6 +304,11 @@ type Campaign {
   If any outcome declared as winner, it returns bytes8 id
   """
   winner: String
+
+  """
+  It returns total invested amount as usd
+  """
+  totalVolume: Int!
 }
 
 type Outcome {

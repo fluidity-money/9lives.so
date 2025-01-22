@@ -412,17 +412,24 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]typ
 		return campaigns, nil
 	}
 	err := r.DB.Raw(
-		`SELECT *
-FROM (
-    SELECT DISTINCT ON (campaign_id)
-        campaign_id AS id,
-        created_by AS created_at,
-        total_volume,
-        campaign_content AS content
-    FROM ninelives_buys_and_sells_1
-    ORDER BY campaign_id, total_volume DESC
-) sub
-ORDER BY total_volume DESC;`,
+		`SELECT 
+    nc.*, 
+    COALESCE(nbas.total_volume, 0) AS total_volume
+FROM 
+    ninelives_campaigns_1 nc
+LEFT JOIN (
+    SELECT 
+        campaign_id, 
+        MAX(total_volume) AS total_volume
+    FROM 
+        ninelives_buys_and_sells_1
+    GROUP BY 
+        campaign_id
+) nbas
+ON 
+    nc.id = nbas.campaign_id
+ORDER BY 
+    total_volume DESC;`,
 	).
 		Scan(&campaigns).
 		Error

@@ -9,10 +9,11 @@ import (
 
 type (
 	Campaign struct {
-		ID        string          `gorm:"primaryKey"`
-		CreatedAt time.Time       `gorm:"autoCreateTime"`
-		UpdatedAt time.Time       `gorm:"autoUpdateTime"`
-		Content   CampaignContent `json:"content"`
+		ID          string          `gorm:"primaryKey"`
+		CreatedAt   time.Time       `gorm:"autoCreateTime"`
+		UpdatedAt   time.Time       `gorm:"autoUpdateTime"`
+		Content     CampaignContent `json:"content"`
+		TotalVolume int             `json:"totalVolume"`
 	}
 
 	Outcome struct {
