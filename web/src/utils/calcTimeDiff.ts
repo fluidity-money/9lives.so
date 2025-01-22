@@ -1,6 +1,12 @@
 // endTime in calcTimeLeft is a second timestamp
 export function calcTimeLeft(endTime: number) {
-  const endTimeInMs = endTime * 1000;
+  let endTimeInMs: number = 0;
+  if (endTime.toString().length === 16) {
+    // if endTime in microseconds
+    endTimeInMs = endTime / 1000;
+  } else {
+    endTimeInMs = endTime * 1000;
+  }
   const differenceInMs = new Date(endTimeInMs).getTime() - Date.now();
   if (0 >= differenceInMs) {
     return {
