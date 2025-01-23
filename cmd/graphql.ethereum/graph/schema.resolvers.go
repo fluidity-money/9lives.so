@@ -53,6 +53,14 @@ func (r *campaignResolver) Creator(ctx context.Context, obj *types.Campaign) (*t
 	return obj.Content.Creator, nil
 }
 
+// CreatedAt is the resolver for the createdAt field.
+func (r *campaignResolver) CreatedAt(ctx context.Context, obj *types.Campaign) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("campaign is nil")
+	}
+	return int(obj.CreatedAt.Unix()), nil
+}
+
 // Settlement is the resolver for the settlement field.
 func (r *campaignResolver) Settlement(ctx context.Context, obj *types.Campaign) (model.SettlementType, error) {
 	if obj == nil {
@@ -412,23 +420,23 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]typ
 		return campaigns, nil
 	}
 	err := r.DB.Raw(
-		`SELECT 
-    nc.*, 
+		`SELECT
+    nc.*,
     COALESCE(nbas.total_volume, 0) AS total_volume
-FROM 
+FROM
     ninelives_campaigns_1 nc
 LEFT JOIN (
-    SELECT 
-        campaign_id, 
+    SELECT
+        campaign_id,
         MAX(total_volume) AS total_volume
-    FROM 
+    FROM
         ninelives_buys_and_sells_1
-    GROUP BY 
+    GROUP BY
         campaign_id
 ) nbas
-ON 
+ON
     nc.id = nbas.campaign_id
-ORDER BY 
+ORDER BY
     total_volume DESC;`,
 	).
 		Scan(&campaigns).
@@ -449,25 +457,25 @@ func (r *queryResolver) CampaignByID(ctx context.Context, id string) (*types.Cam
 	}
 	var c types.Campaign
 	err := r.DB.Raw(
-		`SELECT 
-			nc.*, 
+		`SELECT
+			nc.*,
 			COALESCE(nbas.total_volume, 0) AS total_volume
-		FROM 
+		FROM
 			ninelives_campaigns_1 nc
 		LEFT JOIN (
-			SELECT 
-				campaign_id, 
+			SELECT
+				campaign_id,
 				MAX(total_volume) AS total_volume
-			FROM 
+			FROM
 				ninelives_buys_and_sells_1
-			WHERE 
+			WHERE
 				campaign_id = ?
-			GROUP BY 
+			GROUP BY
 				campaign_id
 		) nbas
-		ON 
+		ON
 			nc.id = nbas.campaign_id
-		WHERE 
+		WHERE
 			nc.id = ?`, id, id).
 		Scan(&c).
 		Error

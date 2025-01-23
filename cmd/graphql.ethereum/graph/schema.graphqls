@@ -244,6 +244,12 @@ type Campaign {
   creator: Wallet!
 
   """
+  Timestamp of the creation of the creation of this campaign (specifically, when it was
+  included).
+  """
+  createdAt: Int!
+
+  """
   Defines the method used to determine the winner of a campaign.
   """
   settlement: SettlementType!
@@ -256,7 +262,7 @@ type Campaign {
   """
   Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
   """
-	oracleUrls: [String]
+  oracleUrls: [String]
 
   """
   Identifier that's used to do offline derivation of the campaign pool,

@@ -52,6 +52,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Campaign struct {
+		CreatedAt         func(childComplexity int) int
 		Creator           func(childComplexity int) int
 		Description       func(childComplexity int) int
 		Ending            func(childComplexity int) int
@@ -113,6 +114,7 @@ type CampaignResolver interface {
 	Description(ctx context.Context, obj *types.Campaign) (string, error)
 	Picture(ctx context.Context, obj *types.Campaign) (string, error)
 	Creator(ctx context.Context, obj *types.Campaign) (*types.Wallet, error)
+	CreatedAt(ctx context.Context, obj *types.Campaign) (int, error)
 	Settlement(ctx context.Context, obj *types.Campaign) (model.SettlementType, error)
 	OracleDescription(ctx context.Context, obj *types.Campaign) (*string, error)
 	OracleUrls(ctx context.Context, obj *types.Campaign) ([]*string, error)
@@ -162,6 +164,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Campaign.createdAt":
+		if e.complexity.Campaign.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Campaign.CreatedAt(childComplexity), true
 
 	case "Campaign.creator":
 		if e.complexity.Campaign.Creator == nil {
@@ -1059,6 +1068,50 @@ func (ec *executionContext) fieldContext_Campaign_creator(_ context.Context, fie
 				return ec.fieldContext_Wallet_address(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Wallet", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Campaign_createdAt(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2233,6 +2286,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_picture(ctx, field)
 			case "creator":
 				return ec.fieldContext_Campaign_creator(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Campaign_createdAt(ctx, field)
 			case "settlement":
 				return ec.fieldContext_Campaign_settlement(ctx, field)
 			case "oracleDescription":
@@ -2321,6 +2376,8 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_picture(ctx, field)
 			case "creator":
 				return ec.fieldContext_Campaign_creator(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Campaign_createdAt(ctx, field)
 			case "settlement":
 				return ec.fieldContext_Campaign_settlement(ctx, field)
 			case "oracleDescription":
@@ -4638,6 +4695,42 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Campaign_creator(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "createdAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_createdAt(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
