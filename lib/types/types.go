@@ -9,18 +9,21 @@ import (
 
 type (
 	Campaign struct {
-		ID          string          `gorm:"primaryKey"`
-		CreatedAt   time.Time       `gorm:"autoCreateTime"`
-		UpdatedAt   time.Time       `gorm:"autoUpdateTime"`
-		Content     CampaignContent `json:"content"`
-		TotalVolume int             `json:"totalVolume"`
-		Winner      string          `json:"winner"`
+		ID                string                `gorm:"primaryKey"`
+		CreatedAt         time.Time             `gorm:"autoCreateTime"`
+		UpdatedAt         time.Time             `gorm:"autoUpdateTime"`
+		Content           CampaignContent       `json:"content"`
+		TotalVolume       int                   `json:"totalVolume"`
+		Winner            string                `json:"winner"`
+		InvestmentAmounts InvestmentAmountsList `json:"investmentAmounts" gorm:"type:jsonb"`
 	}
 
 	InvestmentAmounts struct {
 		Id     string `json:"id"`
 		Amount int    `json:"amount"`
 	}
+
+	InvestmentAmountsList []*InvestmentAmounts
 
 	Outcome struct {
 		// Name of this campaign.
@@ -90,9 +93,6 @@ type (
 
 		// Web url
 		Web *string `json:"web"`
-
-		// Represents current investment amounts.
-		InvestmentAmounts []InvestmentAmounts `json:"investmentAmounts"`
 	}
 
 	// Wallet of the creator of a campaign.
@@ -165,6 +165,22 @@ func (content CampaignContent) Value() (driver.Value, error) {
 
 func (content *CampaignContent) Scan(value interface{}) error {
 	return JSONUnmarshal(value, content)
+}
+
+func (ai InvestmentAmounts) Value() (driver.Value, error) {
+	return JSONMarshal(ai)
+}
+
+func (ai InvestmentAmounts) Scan(value interface{}) error {
+	return JSONUnmarshal(value, ai)
+}
+
+func (ai InvestmentAmountsList) Value() (driver.Value, error) {
+	return JSONMarshal(ai)
+}
+
+func (ai *InvestmentAmountsList) Scan(value interface{}) error {
+	return JSONUnmarshal(value, ai)
 }
 
 type Frontpage struct {

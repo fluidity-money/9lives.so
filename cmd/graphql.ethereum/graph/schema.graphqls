@@ -319,7 +319,7 @@ type Campaign {
   """
   Represents investment results bytes8 ids to amounts.
   """
-  investmentAmounts: [InvestmentAmounts!]
+  investmentAmounts: [InvestmentAmounts]!
 }
 
 type InvestmentAmounts {

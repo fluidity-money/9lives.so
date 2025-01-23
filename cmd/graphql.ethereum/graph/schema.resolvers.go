@@ -150,11 +150,11 @@ func (r *campaignResolver) Web(ctx context.Context, obj *types.Campaign) (*strin
 }
 
 // InvestmentAmounts is the resolver for the investmentAmounts field.
-func (r *campaignResolver) InvestmentAmounts(ctx context.Context, obj *types.Campaign) ([]types.InvestmentAmounts, error) {
+func (r *campaignResolver) InvestmentAmounts(ctx context.Context, obj *types.Campaign) ([]*types.InvestmentAmounts, error) {
 	if obj == nil {
 		return nil, fmt.Errorf("campaign is nil")
 	}
-	return obj.Content.InvestmentAmounts, nil
+	return obj.InvestmentAmounts, nil
 }
 
 // ID is the resolver for the id field.
