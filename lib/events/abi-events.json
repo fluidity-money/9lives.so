@@ -127,6 +127,12 @@
 				"type": "uint256",
 				"indexed": true,
 				"internalType": "uint256"
+			},
+			{
+				"name": "justification",
+				"type": "bytes32",
+				"indexed": true,
+				"internalType": "bytes32"
 			}
 		],
 		"anonymous": false
@@ -222,6 +228,25 @@
 				"type": "bool",
 				"indexed": true,
 				"internalType": "bool"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "InfraMarketUpdated",
+		"inputs": [
+			{
+				"name": "old",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "new_",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
 			}
 		],
 		"anonymous": false
