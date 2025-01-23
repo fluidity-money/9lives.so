@@ -65,7 +65,7 @@ type (
 		TradingAddr     Address   `json:"trading_addr"`
 		Desc            Bytes     `json:"desc" gorm:"column:desc_"`
 		LaunchTs        time.Time `json:"launch_ts"`
-		CallDeadline    uint64 `json:"call_deadline"`
+		CallDeadline    uint64    `json:"call_deadline"`
 	}
 
 	EventCallMade struct {
@@ -154,6 +154,7 @@ type (
 	EventConcluded struct {
 		Event
 
-		Ticket Number `json:"ticket"`
+		Ticket        Number `json:"ticket"`
+		Justification Bytes  `json:"justification"`
 	}
 )

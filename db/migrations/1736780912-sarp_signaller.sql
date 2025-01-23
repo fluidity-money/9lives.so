@@ -20,7 +20,8 @@ CREATE TABLE ninelives_events_concluded(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	ticket HUGEINT NOT NULL UNIQUE
+	ticket HUGEINT NOT NULL UNIQUE,
+	justification BYTES32 NOT NULL
 );
 
 -- migrate:down
