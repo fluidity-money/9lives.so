@@ -167,14 +167,6 @@ pub fn strat_fixed_bytes_sizeable<const N: usize>(
     })
 }
 
-// Get a purely random u256, only useful for storage offsets.
-#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-pub fn rand_u256() -> U256 {
-    let mut x: [u8; 32] = [0u8; 32];
-    getrandom::getrandom(&mut x).unwrap();
-    U256::from_le_bytes(x)
-}
-
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub fn strat_u256(s: Uintsize) -> impl proptest::prelude::Strategy<Value = U256> {
     strat_fixed_bytes_sizeable::<32>(s).prop_map(|x| U256::from_be_bytes(x.into()))
