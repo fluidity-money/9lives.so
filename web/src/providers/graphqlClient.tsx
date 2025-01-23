@@ -36,6 +36,8 @@ export const requestCampaignList = graph9Lives.query.campaigns({
   },
   ending: true,
   starting: true,
+  winner: true,
+  totalVolume: true,
 });
 export const requestAchievments = (wallet?: string) =>
   graphPoints.query.achievements({
@@ -163,4 +165,10 @@ export const requestCampaignById = (id: string) =>
     },
     ending: true,
     starting: true,
+    winner: true,
+    totalVolume: true,
+    investmentAmounts: {
+      id: true,
+      amount: true,
+    },
   });

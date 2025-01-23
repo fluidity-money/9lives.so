@@ -446,6 +446,7 @@ export namespace Schema {
       description: Campaign.description;
       picture: Campaign.picture;
       creator: Campaign.creator;
+      createdAt: Campaign.createdAt;
       settlement: Campaign.settlement;
       oracleDescription: Campaign.oracleDescription;
       oracleUrls: Campaign.oracleUrls;
@@ -457,6 +458,9 @@ export namespace Schema {
       x: Campaign.x;
       telegram: Campaign.telegram;
       web: Campaign.web;
+      winner: Campaign.winner;
+      totalVolume: Campaign.totalVolume;
+      investmentAmounts: Campaign.investmentAmounts;
     };
   }
 
@@ -510,6 +514,17 @@ export namespace Schema {
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Wallet;
+    }
+
+    /**
+     * Timestamp of the creation of the creation of this campaign (specifically, when it was
+     * included).
+     */
+    export interface createdAt extends $.OutputField {
+      name: "createdAt";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
     }
 
     /**
@@ -622,6 +637,81 @@ export namespace Schema {
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * If any outcome declared as winner, it returns bytes8 id
+     */
+    export interface winner extends $.OutputField {
+      name: "winner";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * It returns total invested amount as usd
+     */
+    export interface totalVolume extends $.OutputField {
+      name: "totalVolume";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Represents investment results bytes8 ids to amounts.
+     */
+    export interface investmentAmounts extends $.OutputField {
+      name: "investmentAmounts";
+      arguments: {};
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$InvestmentAmounts;
+    }
+  }
+
+  //                                         InvestmentAmounts
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface InvestmentAmounts extends $.OutputObject {
+    name: "InvestmentAmounts";
+    fields: {
+      __typename: InvestmentAmounts.__typename;
+      id: InvestmentAmounts.id;
+      amount: InvestmentAmounts.amount;
+    };
+  }
+
+  export namespace InvestmentAmounts {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "InvestmentAmounts";
+      };
+    }
+
+    /**
+     * outcome id bytes8
+     */
+    export interface id extends $.OutputField {
+      name: "id";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * 6 decimals fusdc
+     */
+    export interface amount extends $.OutputField {
+      name: "amount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
     }
   }
 
@@ -1098,6 +1188,7 @@ export namespace Schema {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
     export type $$Campaign = Campaign;
+    export type $$InvestmentAmounts = InvestmentAmounts;
     export type $$Outcome = Outcome;
     export type $$Wallet = Wallet;
     export type $$Share = Share;
@@ -1145,6 +1236,7 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     Campaign: Schema.Campaign;
+    InvestmentAmounts: Schema.InvestmentAmounts;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;
     Share: Schema.Share;
@@ -1152,6 +1244,7 @@ export interface Schema<
   };
   objects: {
     Campaign: Schema.Campaign;
+    InvestmentAmounts: Schema.InvestmentAmounts;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;
     Share: Schema.Share;

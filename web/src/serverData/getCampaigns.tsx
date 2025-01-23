@@ -27,6 +27,8 @@ const query = `
         }
         ending
         starting
+        winner
+        totalVolume
       }
     }
   `;

@@ -118,6 +118,7 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     creator: {
       // nt: Wallet, <-- Assigned later to avoid potential circular dependency.
     },
+    createdAt: {},
     settlement: {},
     oracleDescription: {},
     oracleUrls: {},
@@ -131,6 +132,18 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     x: {},
     telegram: {},
     web: {},
+    winner: {},
+    totalVolume: {},
+    investmentAmounts: {
+      // nt: InvestmentAmounts, <-- Assigned later to avoid potential circular dependency.
+    },
+  },
+};
+
+const InvestmentAmounts: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    id: {},
+    amount: {},
   },
 };
 
@@ -382,6 +395,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 
 Campaign.f[`creator`]!.nt = Wallet;
 Campaign.f[`outcomes`]!.nt = Outcome;
+Campaign.f[`investmentAmounts`]!.nt = InvestmentAmounts;
 Outcome.f[`share`]!.nt = Share;
 Query.f[`campaigns`]!.nt = Campaign;
 Query.f[`campaignById`]!.nt = Campaign;
@@ -418,6 +432,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     SettlementType,
     OutcomeInput,
     Campaign,
+    InvestmentAmounts,
     Outcome,
     Wallet,
     Share,

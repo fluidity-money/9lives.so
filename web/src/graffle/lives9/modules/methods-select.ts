@@ -21,6 +21,7 @@ export interface $MethodsSelect {
   Query: Query;
   Mutation: Mutation;
   Campaign: Campaign;
+  InvestmentAmounts: InvestmentAmounts;
   Outcome: Outcome;
   Wallet: Wallet;
   Share: Share;
@@ -74,6 +75,15 @@ export interface Mutation {
 export interface Campaign {
   <$SelectionSet>(
     selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Campaign>,
+  ): $SelectionSet;
+}
+
+export interface InvestmentAmounts {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.InvestmentAmounts
+    >,
   ): $SelectionSet;
 }
 

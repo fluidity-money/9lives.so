@@ -63,6 +63,13 @@ export namespace Select {
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Campaign"]
     >;
+  export type InvestmentAmounts<
+    $SelectionSet extends $$SelectionSets.InvestmentAmounts,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["InvestmentAmounts"]
+  >;
   export type Outcome<$SelectionSet extends $$SelectionSets.Outcome> =
     InferResult.OutputObjectLike<
       $SelectionSet,
