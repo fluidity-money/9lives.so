@@ -149,12 +149,12 @@ func (r *campaignResolver) Web(ctx context.Context, obj *types.Campaign) (*strin
 	return obj.Content.Web, nil
 }
 
-// Winner is the resolver for the winner field.
-func (r *campaignResolver) Winner(ctx context.Context, obj *types.Campaign) (*string, error) {
+// InvestmentAmounts is the resolver for the investmentAmounts field.
+func (r *campaignResolver) InvestmentAmounts(ctx context.Context, obj *types.Campaign) ([]types.InvestmentAmounts, error) {
 	if obj == nil {
 		return nil, fmt.Errorf("campaign is nil")
 	}
-	return obj.Content.Winner, nil
+	return obj.Content.InvestmentAmounts, nil
 }
 
 // ID is the resolver for the id field.
@@ -420,24 +420,18 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]typ
 		return campaigns, nil
 	}
 	err := r.DB.Raw(
-		`SELECT
-    nc.*,
-    COALESCE(nbas.total_volume, 0) AS total_volume
-FROM
-    ninelives_campaigns_1 nc
-LEFT JOIN (
-    SELECT
-        campaign_id,
-        MAX(total_volume) AS total_volume
-    FROM
-        ninelives_buys_and_sells_1
-    GROUP BY
-        campaign_id
-) nbas
-ON
-    nc.id = nbas.campaign_id
-ORDER BY
-    total_volume DESC;`,
+		`SELECT *
+FROM (
+    SELECT DISTINCT ON (campaign_id)
+        campaign_id AS id,
+        created_by AS created_at,
+        total_volume,
+		winner,
+        campaign_content AS content
+    FROM ninelives_buys_and_sells_1
+    ORDER BY campaign_id, total_volume DESC
+) sub
+ORDER BY total_volume DESC;`,
 	).
 		Scan(&campaigns).
 		Error
@@ -456,29 +450,44 @@ func (r *queryResolver) CampaignByID(ctx context.Context, id string) (*types.Cam
 		return nil, fmt.Errorf("bad id")
 	}
 	var c types.Campaign
-	err := r.DB.Raw(
-		`SELECT
-			nc.*,
-			COALESCE(nbas.total_volume, 0) AS total_volume
-		FROM
-			ninelives_campaigns_1 nc
-		LEFT JOIN (
-			SELECT
-				campaign_id,
-				MAX(total_volume) AS total_volume
-			FROM
-				ninelives_buys_and_sells_1
-			WHERE
-				campaign_id = ?
-			GROUP BY
-				campaign_id
-		) nbas
-		ON
-			nc.id = nbas.campaign_id
-		WHERE
-			nc.id = ?`, id, id).
-		Scan(&c).
-		Error
+	err := r.DB.Raw(`WITH summed_amounts AS (
+    SELECT
+        campaign_id,
+        outcome_id,
+        SUM(from_amount) AS sum_from_amount
+    FROM 
+        ninelives_buys_and_sells_1
+    WHERE 
+        "type" = 'buy' AND campaign_id = ?
+    GROUP BY 
+        campaign_id, outcome_id
+),
+campaign_investments AS (
+    SELECT
+        campaign_id,
+        JSON_AGG(
+            JSON_BUILD_OBJECT('id', CONCAT('0x', outcome_id), 'amount', sum_from_amount)
+        ) AS investment_amounts
+    FROM 
+        summed_amounts
+    GROUP BY 
+        campaign_id
+)
+SELECT DISTINCT ON (n.campaign_id)
+    n.campaign_id AS id,
+    n.created_by AS created_at,
+    n.winner, 
+    n.total_volume,
+    n.campaign_content AS content,
+    ci.investment_amounts
+FROM 
+    ninelives_buys_and_sells_1 n
+LEFT JOIN 
+    campaign_investments ci ON n.campaign_id = ci.campaign_id
+WHERE 
+    n.campaign_id = ?
+ORDER BY 
+    n.campaign_id, n.total_volume DESC;`, id, id).Scan(&c).Error
 	if err != nil {
 		return nil, fmt.Errorf("campaign find: %v", err)
 	}

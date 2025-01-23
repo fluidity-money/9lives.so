@@ -315,6 +315,23 @@ type Campaign {
   It returns total invested amount as usd
   """
   totalVolume: Int!
+
+  """
+  Represents investment results bytes8 ids to amounts.
+  """
+  investmentAmounts: [InvestmentAmounts!]
+}
+
+type InvestmentAmounts {
+  """
+  outcome id bytes8
+  """
+  id: String!
+
+  """
+  6 decimals fusdc
+  """
+  amount: Int!
 }
 
 type Outcome {

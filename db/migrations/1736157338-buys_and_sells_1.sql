@@ -16,7 +16,8 @@ CREATE TABLE ninelives_buys_and_sells_1 (
 	total_volume HUGEINT NOT NULL DEFAULT 0,
 	outcome_id BYTES8 NOT NULL,
 	campaign_id TEXT REFERENCES ninelives_campaigns_1 (id),
-	campaign_content JSONB
+	campaign_content JSONB,
+	winner BYTES8 DEFAULT null
 );
 
 CREATE INDEX idx_total_volume ON ninelives_buys_and_sells_1 (total_volume);

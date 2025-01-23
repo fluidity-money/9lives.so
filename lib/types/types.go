@@ -14,6 +14,12 @@ type (
 		UpdatedAt   time.Time       `gorm:"autoUpdateTime"`
 		Content     CampaignContent `json:"content"`
 		TotalVolume int             `json:"totalVolume"`
+		Winner      string          `json:"winner"`
+	}
+
+	InvestmentAmounts struct {
+		Id     string `json:"id"`
+		Amount int    `json:"amount"`
 	}
 
 	Outcome struct {
@@ -85,8 +91,8 @@ type (
 		// Web url
 		Web *string `json:"web"`
 
-		// If any outcome declared as winner, it returns bytes8 id
-		Winner *string `json:"winner"`
+		// Represents current investment amounts.
+		InvestmentAmounts []InvestmentAmounts `json:"investmentAmounts"`
 	}
 
 	// Wallet of the creator of a campaign.
