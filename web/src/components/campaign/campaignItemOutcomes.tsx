@@ -7,13 +7,30 @@ interface CampaignItemOutcomesProps {
   outcomes: Outcome[];
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   isYesNo: boolean;
+  isConcluded: boolean;
 }
 export default function CampaignItemOutcomes({
   campaignId,
   outcomes,
   setSelectedOutcome,
   isYesNo,
+  isConcluded,
 }: CampaignItemOutcomesProps) {
+  if (isConcluded)
+    return (
+      <Link href={`/campaign/${campaignId}`} className="my-5 flex">
+        <Button
+          intent={isYesNo ? "yes" : "default"}
+          size={"large"}
+          title={"Claim rewards"}
+          // onClick={() =>
+          //   setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
+          // }
+          className={"flex-1"}
+        />
+      </Link>
+    );
+
   if (outcomes.length === 2 || isYesNo)
     return (
       <div className="my-5 flex flex-1 items-end gap-2">

@@ -21,15 +21,13 @@ export default function CampaignBody({
         soloRatio={32}
       />
       <CampaignItemOutcomes
+        isConcluded={Boolean(data.winner)}
         isYesNo={data.isYesNo}
         campaignId={data.identifier}
         outcomes={data.outcomes}
         setSelectedOutcome={setSelectedOutcome}
       />
-      <CampaignItemFooter
-        tradingAddr={data.poolAddress}
-        outcomeIds={outcomeIds}
-      />
+      <CampaignItemFooter volume={data.totalVolume} />
     </>
   );
 }
