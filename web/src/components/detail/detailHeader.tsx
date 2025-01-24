@@ -1,29 +1,23 @@
 import Image from "next/image";
 import WatchlistButton from "../watchlistButton";
-import { Campaign } from "@/types";
-import useInvestedAmount from "@/hooks/useInvestedAmount";
+import { CampaignDetail } from "@/types";
 import ActiveIndicator from "#/images/active-indicator.svg";
 import InactiveIndicator from "#/images/inactive-indicator.svg";
 import { combineClass } from "@/utils/combineClass";
 import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
+import { formatUnits } from "ethers";
+import config from "@/config";
 export default function DetailHeader({
   data,
   isEnded,
   isConcluded,
 }: {
-  data: Campaign;
+  data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
 }) {
-  const outcomeIds = data.outcomes.map(
-    (outcome) => outcome.identifier as `0x${string}`,
-  );
-  const investedAmount = useInvestedAmount({
-    tradingAddr: data.poolAddress,
-    outcomeIds,
-  });
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col justify-between gap-4 md:flex-row">
@@ -59,7 +53,7 @@ export default function DetailHeader({
           </div>
         </div>
         {isConcluded ? (
-          Number(investedAmount) > 0 ? (
+          Number(data.totalVolume) > 0 ? (
             <div className="flex items-center justify-center gap-[5px] self-center bg-9yellow px-2.5 py-[5px]">
               <Image src={UsdIcon} alt="" width={20} />
               <span className="font-geneva text-xs uppercase text-9black">
@@ -79,7 +73,12 @@ export default function DetailHeader({
             <span className="font-geneva text-xs uppercase text-[#808080]">
               Total Campaign Vol:
             </span>
-            <span className="font-chicago text-xl">$ {investedAmount}</span>
+            <span className="font-chicago text-xl">
+              ${" "}
+              {Number(
+                formatUnits(data.totalVolume, config.contracts.decimals.fusdc),
+              ).toFixed(0)}
+            </span>
           </div>
         )}
       </div>

@@ -2,9 +2,16 @@ import {
   requestCampaignList,
   requestLeaderboard,
   requestAchievments,
+  requestCampaignById,
 } from "./providers/graphqlClient";
 
 export type Campaign = Awaited<typeof requestCampaignList>[number] & {
+  identifier: `0x${string}`;
+  poolAddress: `0x${string}`;
+  isYesNo: boolean;
+  outcomes: Outcome[];
+};
+export type CampaignDetail = Awaited<ReturnType<typeof requestCampaignById>> & {
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
   isYesNo: boolean;
