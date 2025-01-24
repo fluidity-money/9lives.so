@@ -16,18 +16,18 @@ export async function generateStaticParams() {
 type Params = Promise<{ id: string }>;
 export default async function DetailPage({ params }: { params: Params }) {
   const { id } = await params;
-  const campaign = (await requestCampaignById(id)) as Campaign;
-  if (!campaign) notFound();
-  Object.assign(campaign, {
+  const response = await requestCampaignById(id);
+  if (!response) notFound();
+  const campaign = Object.assign(response, {
     isYesNo:
-      campaign.outcomes.length === 2 &&
-      campaign.outcomes.findIndex((outcome) => outcome.name === "Yes") !== -1 &&
-      campaign.outcomes.findIndex((outcome) => outcome.name === "No") !== -1,
+      response.outcomes.length === 2 &&
+      response.outcomes.findIndex((outcome) => outcome.name === "Yes") !== -1 &&
+      response.outcomes.findIndex((outcome) => outcome.name === "No") !== -1,
   });
   return (
     <section className="flex h-full flex-col gap-8 md:flex-row md:gap-4">
       <Suspense>
-        <DetailWrapper initialData={campaign} />
+        <DetailWrapper initialData={campaign as Campaign} />
       </Suspense>
     </section>
   );
