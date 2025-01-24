@@ -51,7 +51,7 @@ export default function ContextInjector() {
     if (pathname.startsWith("/campaign/") && !account && !previouslyConnected) {
       connect();
     }
-  }, [pathname, account]);
+  }, [pathname, account, connect]);
 
   return null;
 }
