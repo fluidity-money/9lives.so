@@ -20,7 +20,7 @@ export default function CampaignItemOutcomes({
     return (
       <Link href={`/campaign/${campaignId}`} className="my-5 flex">
         <Button
-          intent={isYesNo ? "yes" : "default"}
+          intent={"cta"}
           size={"large"}
           title={"Claim rewards"}
           // onClick={() =>
