@@ -2,10 +2,11 @@ import appConfig from "@/config";
 import { useConnectModal } from "thirdweb/react";
 import { track, EVENTS } from "@/utils/analytics";
 import { Wallet } from "thirdweb/wallets";
+import { useCallback } from "react";
 
 export default function useConnectWallet() {
   const { connect, isConnecting } = useConnectModal();
-  const handleConnect = async () => {
+  const handleConnect = useCallback(async () => {
     let result: Wallet | null = null;
     try {
       result = await connect({
@@ -29,6 +30,6 @@ export default function useConnectWallet() {
     } catch (error) {
       console.error("Failed to track wallet connection:", error);
     }
-  };
+  }, [connect]);
   return { connect: handleConnect, isConnecting };
 }
