@@ -56,7 +56,8 @@ export default function DegenModeListItem({ data }: { data: Action }) {
                 </span>
                 {data.type !== "create" ? (
                   <span className="font-geneva text-[10px] uppercase">
-                    {data.actionValue ?? "?"} SHARES FOR {data.outcomeName ?? "?"}
+                    {data.actionValue ?? "?"} SHARES FOR{" "}
+                    {data.outcomeName ?? "?"}
                   </span>
                 ) : null}
               </div>
