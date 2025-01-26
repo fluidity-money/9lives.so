@@ -369,7 +369,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		)
 		return nil, fmt.Errorf("error uploading image")
 	}
-	campaign := types.Campaign{
+	campaign := types.CampaignInsertion{
 		ID: hexCampaignId,
 		Content: types.CampaignContent{
 			Name:        name,
@@ -455,11 +455,11 @@ func (r *queryResolver) CampaignByID(ctx context.Context, id string) (*types.Cam
         campaign_id,
         outcome_id,
         SUM(from_amount) AS sum_from_amount
-    FROM 
+    FROM
         ninelives_buys_and_sells_1
-    WHERE 
+    WHERE
         "type" = 'buy' AND campaign_id = ?
-    GROUP BY 
+    GROUP BY
         campaign_id, outcome_id
 ),
 campaign_investments AS (
@@ -468,25 +468,25 @@ campaign_investments AS (
         JSON_AGG(
             JSON_BUILD_OBJECT('id', CONCAT('0x', outcome_id), 'amount', sum_from_amount)
         ) AS investment_amounts
-    FROM 
+    FROM
         summed_amounts
-    GROUP BY 
+    GROUP BY
         campaign_id
 )
 SELECT DISTINCT ON (n.campaign_id)
     n.campaign_id AS id,
     n.created_by AS created_at,
-    n.winner, 
+    n.winner,
     n.total_volume,
     n.campaign_content AS content,
     ci.investment_amounts
-FROM 
+FROM
     ninelives_buys_and_sells_1 n
-LEFT JOIN 
+LEFT JOIN
     campaign_investments ci ON n.campaign_id = ci.campaign_id
-WHERE 
+WHERE
     n.campaign_id = ?
-ORDER BY 
+ORDER BY
     n.campaign_id, n.total_volume DESC;`, id, id).Scan(&c).Error
 	if err != nil {
 		return nil, fmt.Errorf("campaign find: %v", err)

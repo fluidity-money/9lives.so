@@ -8,6 +8,13 @@ import (
 )
 
 type (
+	CampaignInsertion struct {
+		ID                string                `gorm:"primaryKey"`
+		CreatedAt         time.Time             `gorm:"autoCreateTime"`
+		UpdatedAt         time.Time             `gorm:"autoUpdateTime"`
+		Content           CampaignContent       `json:"content"`
+	}
+
 	Campaign struct {
 		ID                string                `gorm:"primaryKey"`
 		CreatedAt         time.Time             `gorm:"autoCreateTime"`
