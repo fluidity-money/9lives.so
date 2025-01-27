@@ -2,6 +2,7 @@ import { defineChain } from "thirdweb/chains";
 import z from "zod";
 import "thirdweb/utils";
 // import { arbitrum } from "thirdweb/chains";
+import clientEnv from "./clientEnv";
 
 export const networkSchema = z.object({
   id: z.number(),
@@ -62,4 +63,7 @@ if (!chainValidation.success) {
 
 // export const currentChain = arbitrum
 // export const currentChain = superpositionTestnet;
-export const currentChain = superpositionMainnet;
+export const currentChain =
+  clientEnv.NEXT_PUBLIC_CHAIN === "mainnet"
+    ? superpositionMainnet
+    : superpositionTestnet;
