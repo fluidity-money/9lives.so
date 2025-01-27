@@ -10,6 +10,8 @@ import DetailInfo from "./detailInfo";
 import { useSearchParams } from "next/navigation";
 import AssetScene from "../user/assetScene";
 import DetailResults from "./detailResults";
+import { useQuery } from "@tanstack/react-query";
+import { requestCampaignById } from "@/providers/graphqlClient";
 
 export default function DetailWrapper({
   initialData,
@@ -32,46 +34,43 @@ export default function DetailWrapper({
     tradingAddr: initialData.poolAddress as `0x${string}`,
     outcomeIds,
   });
-
+  const { data } = useQuery({
+    queryKey: ["campaign", initialData.identifier],
+    queryFn: async () => {
+      const res = await requestCampaignById(initialData.identifier);
+      return res as CampaignDetail;
+    },
+    initialData,
+  });
   return (
     <>
       <div className="flex flex-[2] flex-col gap-8">
-        <DetailHeader
-          data={initialData}
-          isEnded={isEnded}
-          isConcluded={isConcluded}
-        />
+        <DetailHeader data={data} isEnded={isEnded} isConcluded={isConcluded} />
         <DetailOutcomeTable
-          data={initialData}
+          data={data}
           sharePrices={sharePrices}
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
           isConcluded={isConcluded}
         />
-        <DetailInfo data={initialData} />
+        <DetailInfo data={data} />
       </div>
       <div className="flex flex-1 flex-col gap-8">
         {isConcluded ? (
-          <DetailResults
-            data={initialData}
-            tradingAddr={initialData.poolAddress}
-          />
+          <DetailResults data={data} />
         ) : (
           <DetailCall2Action
             shouldStopAction={isEnded || isConcluded}
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
-            data={initialData}
+            data={data}
             price={
               sharePrices?.find((item) => item.id === selectedOutcome.id)
                 ?.price ?? "0"
             }
           />
         )}
-        <AssetScene
-          tradingAddr={initialData.poolAddress}
-          outcomes={initialData.outcomes}
-        />
+        <AssetScene tradingAddr={data.poolAddress} outcomes={data.outcomes} />
       </div>
     </>
   );

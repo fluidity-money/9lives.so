@@ -80,6 +80,7 @@ export default function DetailCall2Action({
   const { buy } = useBuy({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
+    campaignId: data.identifier,
     outcomeId: outcome.identifier,
     openFundModal: () => setFundModalOpen(true),
   });

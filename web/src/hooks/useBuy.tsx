@@ -15,12 +15,14 @@ import { track, EVENTS } from "@/utils/analytics";
 const useBuy = ({
   shareAddr,
   tradingAddr,
+  campaignId,
   outcomeId,
   openFundModal,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
+  campaignId: `0x${string}`;
   openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();
@@ -127,6 +129,9 @@ const useBuy = ({
           });
           queryClient.invalidateQueries({
             queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["campaign", campaignId],
           });
           track(EVENTS.MINT, {
             wallet: account.address,
