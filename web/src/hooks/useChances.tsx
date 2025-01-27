@@ -1,29 +1,27 @@
-import useDetails from "./useDetails";
+import { CampaignDetail } from "@/types";
+import formatFusdc from "@/utils/formatFusdc";
 
 export default function useChances({
-  tradingAddr,
   outcomeIds,
+  totalVolume,
+  investmentAmounts,
 }: {
-  tradingAddr: `0x${string}`;
   outcomeIds: `0x${string}`[];
+  totalVolume: number;
+  investmentAmounts: CampaignDetail["investmentAmounts"];
 }) {
-  const { data } = useDetails({
-    tradingAddr,
-    outcomeIds,
-  });
-  if (!data)
+  if (!investmentAmounts.length)
     return outcomeIds.map((id) => ({
       id,
-      chance: 0,
-      investedAmount: BigInt(0),
+      chance: 50,
+      investedAmount: "1",
+      share: "1",
     }));
-  const chances = outcomeIds.map((id) => {
-    const investedAmount = data.outcomes.find((o) => o.id === id)!.invested;
-    return {
-      id,
-      chance: (Number(investedAmount) / Number(data.totalInvestment)) * 100,
-      investedAmount,
-    };
-  });
-  return chances;
+
+  return investmentAmounts!.map((o) => ({
+    id: o!.id,
+    chance: (Number(o!.usdc + 1e6) / Number(totalVolume + 2e6)) * 100,
+    investedAmount: formatFusdc(o!.usdc + 1e6),
+    share: formatFusdc(o!.share),
+  }));
 }

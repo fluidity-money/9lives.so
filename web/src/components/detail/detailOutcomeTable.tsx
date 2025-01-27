@@ -1,36 +1,32 @@
 import { combineClass } from "@/utils/combineClass";
 import DetailOutcomeRow from "@/components/detail/detailOutcomeRow";
-import { Detail, Outcome } from "@/types";
+import { CampaignDetail } from "@/types";
 import { SelectedOutcome } from "../../types";
 import React from "react";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
+import useChances from "@/hooks/useChances";
 
 export default function DetailOutcomes({
   data,
   sharePrices,
   selectedOutcome,
   setSelectedOutcome,
-  details,
   isConcluded,
-  isYesNo,
-  chances,
 }: {
-  data: Outcome[];
+  data: CampaignDetail;
   sharePrices?: { id: string; price: string }[];
   selectedOutcome: SelectedOutcome;
-  tradingAddr: `0x${string}`;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
-  details?: Detail;
   isConcluded: boolean;
-  isYesNo: boolean;
-  chances: {
-    id: `0x${string}`;
-    chance: number;
-    investedAmount: bigint;
-  }[];
 }) {
   const titles = ["Outcome", "Chance %", "Invested", "Current Price", ""];
   const displayQuickActions = useFeatureFlag("display quick actions");
+  const outcomeIds = data.outcomes.map((o) => o.identifier as `0x${string}`);
+  const chances = useChances({
+    investmentAmounts: data.investmentAmounts,
+    totalVolume: data.totalVolume,
+    outcomeIds,
+  });
   return (
     <table className="w-full border-separate border-spacing-0">
       <thead>
@@ -51,7 +47,7 @@ export default function DetailOutcomes({
         </tr>
       </thead>
       <tbody>
-        {data.map((outcome) => {
+        {data.outcomes.map((outcome) => {
           const chance = chances?.find(
             (chance) => chance.id === outcome.identifier,
           )!.chance;
@@ -60,20 +56,20 @@ export default function DetailOutcomes({
           )!.investedAmount;
           return (
             <DetailOutcomeRow
-              isYesNo={isYesNo}
+              isYesNo={data.isYesNo}
               selectedOutcome={selectedOutcome}
               setSelectedOutcome={setSelectedOutcome}
               price={
-                details?.winner && outcome.identifier !== details.winner
+                data.winner && outcome.identifier !== `0x${data.winner}`
                   ? "0"
                   : (sharePrices?.find((item) => item.id === outcome.identifier)
                       ?.price ?? "0")
               }
               chance={chance}
               amount={amount}
-              isWinner={outcome.identifier === details?.winner}
+              isWinner={outcome.identifier === `0x${data.winner}`}
               key={outcome.identifier}
-              data={outcome}
+              data={outcome as CampaignDetail["outcomes"][number]}
               displayQuickActions={displayQuickActions}
               isConcluded={isConcluded}
             />

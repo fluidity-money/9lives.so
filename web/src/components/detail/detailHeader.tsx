@@ -7,8 +7,7 @@ import { combineClass } from "@/utils/combineClass";
 import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
-import { formatUnits } from "ethers";
-import config from "@/config";
+import formatFusdc from "@/utils/formatFusdc";
 export default function DetailHeader({
   data,
   isEnded,
@@ -74,10 +73,7 @@ export default function DetailHeader({
               Total Campaign Vol:
             </span>
             <span className="font-chicago text-xl">
-              ${" "}
-              {Number(
-                formatUnits(data.totalVolume, config.contracts.decimals.fusdc),
-              ).toFixed(0)}
+              $ {formatFusdc(data.totalVolume + 2e6)}
             </span>
           </div>
         )}

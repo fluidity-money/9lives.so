@@ -2,15 +2,12 @@ import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import { Outcome, SelectedOutcome } from "@/types";
 import React from "react";
-import { formatUnits } from "ethers";
-import config from "@/config";
 import CrownImg from "#/images/crown.svg";
 import Button from "../themed/button";
 import Link from "next/link";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import LinkIcon from "#/icons/link.svg";
-import useFeatureFlag from "@/hooks/useFeatureFlag";
 export default function DetailOutcomeRow({
   data,
   price,
@@ -25,7 +22,7 @@ export default function DetailOutcomeRow({
 }: {
   data: Outcome;
   price: string;
-  amount?: bigint;
+  amount?: string;
   chance?: number;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
@@ -101,12 +98,7 @@ export default function DetailOutcomeRow({
           isSelected && "border-y border-y-9black",
         )}
       >
-        <span className="font-chicago text-xs font-normal">
-          $
-          {Number(
-            formatUnits(amount ?? 0, config.contracts.decimals.fusdc),
-          ).toFixed(2)}
-        </span>
+        <span className="font-chicago text-xs font-normal">${amount}</span>
       </td>
       <td
         className={combineClass(

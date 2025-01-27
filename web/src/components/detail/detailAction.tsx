@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
-import { Outcome, SelectedOutcome } from "@/types";
+import { CampaignDetail, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
 import { useActiveAccount } from "thirdweb/react";
 import { useForm } from "react-hook-form";
@@ -22,26 +22,19 @@ import AssetSelector from "../assetSelector";
 import Modal from "../themed/modal";
 import Funding from "../funding";
 import DownIcon from "#/icons/down-caret.svg";
+import useChances from "@/hooks/useChances";
 
 export default function DetailCall2Action({
   shouldStopAction,
-  tradingAddr,
-  initalData,
+  data,
   selectedOutcome,
   price,
-  isYesNo,
-  chance,
-  campaignTitle,
 }: {
-  campaignTitle: string;
   shouldStopAction: boolean;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
-  tradingAddr: `0x${string}`;
-  initalData: Outcome[];
+  data: CampaignDetail;
   price: string;
-  isYesNo: boolean;
-  chance?: number;
 }) {
   const [minimized, setMinimized] = useState(true);
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
@@ -50,9 +43,9 @@ export default function DetailCall2Action({
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
   const outcome = selectedOutcome
-    ? initalData.find((o) => o.identifier === selectedOutcome.id)!
-    : initalData[0];
-  const outcomeIds = initalData.map((o) => o.identifier);
+    ? data.outcomes.find((o) => o.identifier === selectedOutcome.id)!
+    : data.outcomes[0];
+  const outcomeIds = data.outcomes.map((o) => o.identifier);
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z.object({
@@ -61,6 +54,14 @@ export default function DetailCall2Action({
       .number()
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
+  const chances = useChances({
+    investmentAmounts: data.investmentAmounts,
+    totalVolume: data.totalVolume,
+    outcomeIds,
+  });
+  const chance = chances?.find(
+    (chance) => chance.id === outcome.identifier,
+  )!.chance;
   type FormData = z.infer<typeof formSchema>;
   const {
     register,
@@ -77,13 +78,13 @@ export default function DetailCall2Action({
     },
   });
   const { buy } = useBuy({
-    tradingAddr,
+    tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
     outcomeId: outcome.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
   const estimatedReturn = usePotentialReturn({
-    tradingAddr,
+    tradingAddr: data.poolAddress,
     outcomeIds,
     outcomeId: outcome.identifier,
     fusdc,
@@ -106,7 +107,7 @@ export default function DetailCall2Action({
   async function handleBuy({ fusdc }: FormData) {
     try {
       setIsMinting(true);
-      await buy(account!, fusdc, initalData);
+      await buy(account!, fusdc, data.outcomes);
     } finally {
       setIsMinting(false);
     }
@@ -162,7 +163,7 @@ export default function DetailCall2Action({
         >
           <div
             className={combineClass(
-              !isYesNo && "size-10 overflow-hidden rounded-full",
+              !data.isYesNo && "size-10 overflow-hidden rounded-full",
             )}
           >
             <Image
@@ -170,7 +171,7 @@ export default function DetailCall2Action({
               height={40}
               alt={outcome.name}
               src={
-                isYesNo
+                data.isYesNo
                   ? outcome.name === "Yes"
                     ? YesOutcomeImg
                     : NoOutcomeImg
@@ -309,12 +310,13 @@ export default function DetailCall2Action({
       >
         <Funding
           closeModal={() => setFundModalOpen(false)}
-          isYesNo={isYesNo}
-          title={campaignTitle}
+          isYesNo={data.isYesNo}
+          title={data.name}
           outcomes={[
             {
-              name: initalData.find((o) => o.identifier === selectedOutcome.id)!
-                .name,
+              name: data.outcomes.find(
+                (o) => o.identifier === selectedOutcome.id,
+              )!.name,
             },
           ]}
           fundToBuy={fusdc}

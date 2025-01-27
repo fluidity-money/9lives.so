@@ -1,10 +1,8 @@
-import { Detail, Outcome } from "@/types";
+import { CampaignDetail } from "@/types";
 import ShadowCard from "../cardShadow";
 import CrownImg from "#/images/crown.svg";
 import Image from "next/image";
 import Button from "../themed/button";
-import { formatUnits } from "ethers";
-import config from "@/config";
 import usePositions from "@/hooks/usePositions";
 import { useActiveAccount } from "thirdweb/react";
 import SparkleImg from "#/images/sparkle.svg";
@@ -13,42 +11,45 @@ import useClaim from "@/hooks/useClaim";
 import { useState } from "react";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
+import formatFusdc from "@/utils/formatFusdc";
+import useChances from "@/hooks/useChances";
 
 interface DetailResultsProps {
-  results?: Detail;
-  initialData: Outcome[];
+  data: CampaignDetail;
   tradingAddr: `0x${string}`;
-  isYesNo: boolean;
-  chance?: number;
 }
 export default function DetailResults({
-  isYesNo,
-  results,
   tradingAddr,
-  initialData,
-  chance,
+  data,
 }: DetailResultsProps) {
   const account = useActiveAccount();
   const { connect, isConnecting } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
-  const { data } = usePositions({
+  const { data: positionData } = usePositions({
     tradingAddr,
-    outcomes: initialData,
+    outcomes: data.outcomes,
     account,
   });
-  const winner = initialData.find(
-    (item) => item.identifier === results?.winner,
-  )!;
+  const winner = data.outcomes.find(
+    (item) => item.identifier === `0x${data.winner}`,
+  )! as CampaignDetail["outcomes"][number];
+
   const { claim } = useClaim({
     shareAddr: winner.share.address,
     tradingAddr,
-    outcomeId: initialData[0].identifier,
+    outcomeId: winner.identifier,
   });
-  const winnerShares = results?.outcomes.find(
+  const chances = useChances({
+    investmentAmounts: data.investmentAmounts,
+    totalVolume: data.totalVolume,
+    outcomeIds: data.outcomes.map((o) => o.identifier),
+  });
+  const winnerChance = chances.find((o) => o.id === winner.identifier)?.chance;
+  const winnerShares = data?.investmentAmounts.find(
     (o) => o.id === winner.identifier,
   )!.share;
-  const avgPrice = Number(results?.totalInvestment) / Number(winnerShares);
-  const accountShares = data?.reduce((acc, item) => {
+  const avgPrice = Number(data.totalVolume) / Number(winnerShares);
+  const accountShares = positionData?.reduce((acc, item) => {
     if (item.id === winner.identifier) {
       acc += Number(item.balance);
     }
@@ -61,11 +62,11 @@ export default function DetailResults({
     },
     {
       title: "Total Investment",
-      value: `$${formatUnits(results?.totalInvestment ?? 0, config.contracts.decimals.fusdc)}`,
+      value: `$${formatFusdc(data.totalVolume)}`,
     },
     {
       title: "Total Shares of The Winner",
-      value: formatUnits(winnerShares ?? 0, config.contracts.decimals.shares),
+      value: formatFusdc(winnerShares ?? 0),
     },
     {
       title: "Avg. Price/Share",
@@ -78,13 +79,11 @@ export default function DetailResults({
     if (!account) return connect();
     try {
       setIsClaiming(true);
-      await claim(account, accountShares!, initialData);
+      await claim(account, accountShares!, data.outcomes);
     } finally {
       setIsClaiming(false);
     }
   }
-
-  if (!results) return;
 
   return (
     <ShadowCard className="sticky top-0 z-10 flex flex-col gap-4 p-4">
@@ -102,7 +101,7 @@ export default function DetailResults({
               height={40}
               alt={winner.name}
               src={
-                isYesNo
+                data.isYesNo
                   ? winner.name === "Yes"
                     ? YesOutcomeImg
                     : NoOutcomeImg
@@ -120,7 +119,7 @@ export default function DetailResults({
           <div className="flex items-center gap-1 font-geneva text-[10px]">
             <span className="uppercase">Chance</span>
             <span className="bg-9green px-1 py-0.5">
-              {chance ? Math.round(chance) : "?"}%
+              {winnerChance ? Math.round(winnerChance) : "?"}%
             </span>
           </div>
         </div>
