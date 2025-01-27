@@ -60,14 +60,14 @@ export default function DetailOutcomes({
               selectedOutcome={selectedOutcome}
               setSelectedOutcome={setSelectedOutcome}
               price={
-                data.winner && outcome.identifier !== `0x${data.winner}`
+                data.winner && outcome.identifier !== data.winner
                   ? "0"
                   : (sharePrices?.find((item) => item.id === outcome.identifier)
                       ?.price ?? "0")
               }
               chance={chance}
               amount={amount}
-              isWinner={outcome.identifier === `0x${data.winner}`}
+              isWinner={outcome.identifier === data.winner}
               key={outcome.identifier}
               data={outcome as CampaignDetail["outcomes"][number]}
               displayQuickActions={displayQuickActions}

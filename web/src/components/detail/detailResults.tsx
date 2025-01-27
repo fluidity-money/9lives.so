@@ -16,27 +16,23 @@ import useChances from "@/hooks/useChances";
 
 interface DetailResultsProps {
   data: CampaignDetail;
-  tradingAddr: `0x${string}`;
 }
-export default function DetailResults({
-  tradingAddr,
-  data,
-}: DetailResultsProps) {
+export default function DetailResults({ data }: DetailResultsProps) {
   const account = useActiveAccount();
   const { connect, isConnecting } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
   const { data: positionData } = usePositions({
-    tradingAddr,
+    tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
     account,
   });
   const winner = data.outcomes.find(
-    (item) => item.identifier === `0x${data.winner}`,
+    (item) => item.identifier === data.winner,
   )! as CampaignDetail["outcomes"][number];
 
   const { claim } = useClaim({
     shareAddr: winner.share.address,
-    tradingAddr,
+    tradingAddr: data.poolAddress,
     outcomeId: winner.identifier,
   });
   const chances = useChances({
@@ -46,9 +42,10 @@ export default function DetailResults({
   });
   const winnerChance = chances.find((o) => o.id === winner.identifier)?.chance;
   const winnerShares = data?.investmentAmounts.find(
-    (o) => o.id === winner.identifier,
-  )!.share;
-  const avgPrice = Number(data.totalVolume) / Number(winnerShares);
+    (ia) => ia.id === winner.identifier,
+  )?.share;
+  const avgPrice =
+    Number(data.totalVolume ?? 2e6) / Number(winnerShares ?? 1e6);
   const accountShares = positionData?.reduce((acc, item) => {
     if (item.id === winner.identifier) {
       acc += Number(item.balance);
