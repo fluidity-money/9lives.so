@@ -679,7 +679,8 @@ export namespace Schema {
     fields: {
       __typename: InvestmentAmounts.__typename;
       id: InvestmentAmounts.id;
-      amount: InvestmentAmounts.amount;
+      usdc: InvestmentAmounts.usdc;
+      share: InvestmentAmounts.share;
     };
   }
 
@@ -707,8 +708,18 @@ export namespace Schema {
     /**
      * 6 decimals fusdc
      */
-    export interface amount extends $.OutputField {
-      name: "amount";
+    export interface usdc extends $.OutputField {
+      name: "usdc";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * 6 decimals share
+     */
+    export interface share extends $.OutputField {
+      name: "share";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;

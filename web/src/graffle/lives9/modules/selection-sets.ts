@@ -1404,12 +1404,20 @@ export interface InvestmentAmounts<
     | $Select.SelectAlias.SelectAlias<InvestmentAmounts.id<_$Scalars>>;
   /**
    *
-   * Select the `amount` field on the `InvestmentAmounts` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   * Select the `usdc` field on the `InvestmentAmounts` object. Its type is `Int` (a `ScalarStandard` kind of type).
    *
    */
-  amount?:
-    | InvestmentAmounts.amount$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<InvestmentAmounts.amount<_$Scalars>>;
+  usdc?:
+    | InvestmentAmounts.usdc$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<InvestmentAmounts.usdc<_$Scalars>>;
+  /**
+   *
+   * Select the `share` field on the `InvestmentAmounts` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  share?:
+    | InvestmentAmounts.share$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<InvestmentAmounts.share<_$Scalars>>;
 
   /**
    *
@@ -1474,12 +1482,12 @@ export namespace InvestmentAmounts {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type amount<
+  export type usdc<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | usdc$SelectionSet<_$Scalars>;
 
-  export interface amount$SelectionSet<
+  export interface usdc$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {}
@@ -1488,16 +1496,44 @@ export namespace InvestmentAmounts {
 
   /**
    *
-   * This is the "expanded" version of the `amount` type. It is identical except for the fact
+   * This is the "expanded" version of the `usdc` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type amount$Expanded<
+  export type usdc$Expanded<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | usdc$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type share<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | share$SelectionSet<_$Scalars>;
+
+  export interface share$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `share` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type share$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | share$SelectionSet<_$Scalars>
   >;
 }
 

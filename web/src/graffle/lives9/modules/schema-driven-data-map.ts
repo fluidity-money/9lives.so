@@ -143,7 +143,8 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 const InvestmentAmounts: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     id: {},
-    amount: {},
+    usdc: {},
+    share: {},
   },
 };
 

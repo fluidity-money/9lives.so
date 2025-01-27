@@ -169,6 +169,7 @@ export const requestCampaignById = (id: string) =>
     totalVolume: true,
     investmentAmounts: {
       id: true,
-      amount: true,
+      share: true,
+      usdc: true,
     },
   });
