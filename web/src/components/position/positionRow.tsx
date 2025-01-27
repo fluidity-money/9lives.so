@@ -25,7 +25,7 @@ export default function PositionRow({
         </div>
       </td>
       <td>
-        <span className="font-chicago text-xs">$ {data.balance}</span>
+        <span className="font-chicago text-xs">{data.balance}</span>
       </td>
       <td>
         <span className="font-chicago text-xs">
