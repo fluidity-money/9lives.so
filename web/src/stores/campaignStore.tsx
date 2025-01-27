@@ -7,6 +7,7 @@ interface CampaignStore {
   campaigns: (CampaignInput & { id: `0x${string}` })[];
   upsertCampaign: (input: CampaignInput) => void;
 }
+const maxDrafCount = 4;
 export const useCampaignStore = create<CampaignStore>()(
   persist(
     (set) => ({
@@ -20,8 +21,11 @@ export const useCampaignStore = create<CampaignStore>()(
               id: generateId(outcome.name, outcome.description, outcome.seed),
             };
           });
+          const existedCampaigns = [...state.campaigns];
+          if (existedCampaigns.length > maxDrafCount)
+            existedCampaigns.splice(0, existedCampaigns.length - maxDrafCount);
           const updatedCampaigns = [
-            ...state.campaigns,
+            ...existedCampaigns,
             { ...input, id: campaignId, outcomes: seededOutcomes },
           ];
           return { campaigns: updatedCampaigns };
