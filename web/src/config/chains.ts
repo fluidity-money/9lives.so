@@ -61,5 +61,5 @@ if (!chainValidation.success) {
 }
 
 // export const currentChain = arbitrum
-export const currentChain = superpositionTestnet;
-// export const currentChain = superpositionMainnet;
+// export const currentChain = superpositionTestnet;
+export const currentChain = superpositionMainnet;
