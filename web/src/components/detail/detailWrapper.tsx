@@ -37,8 +37,14 @@ export default function DetailWrapper({
   const { data } = useQuery({
     queryKey: ["campaign", initialData.identifier],
     queryFn: async () => {
-      const res = await requestCampaignById(initialData.identifier);
-      return res as CampaignDetail;
+      const res = (await requestCampaignById(initialData.identifier))!;
+      const campaign = Object.assign(res, {
+        isYesNo:
+          res.outcomes.length === 2 &&
+          res.outcomes.findIndex((outcome) => outcome.name === "Yes") !== -1 &&
+          res.outcomes.findIndex((outcome) => outcome.name === "No") !== -1,
+      });
+      return campaign as CampaignDetail;
     },
     initialData,
   });
