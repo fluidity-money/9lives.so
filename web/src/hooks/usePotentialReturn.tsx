@@ -1,34 +1,25 @@
-import { formatUnits } from "ethers";
-import useDetails from "./useDetails";
-import config from "@/config";
+import { CampaignDetail } from "@/types";
+
 interface usePotentialReturnProps {
-  tradingAddr: `0x${string}`;
-  outcomeIds: `0x${string}`[];
+  investmentAmounts: CampaignDetail["investmentAmounts"];
   outcomeId: `0x${string}`;
   fusdc: number;
   share: number;
+  totalInvestment: number;
 }
+
 export default function usePotentialReturn({
-  tradingAddr,
-  outcomeIds,
+  totalInvestment,
+  investmentAmounts,
   outcomeId,
   fusdc,
   share,
 }: usePotentialReturnProps) {
-  const { data } = useDetails({
-    tradingAddr,
-    outcomeIds,
-  });
-  if (!data) return 0;
-  const outcomeDetails = data.outcomes.find((o) => o.id === outcomeId)!;
-  const totalInvestment = formatUnits(
-    data.totalInvestment,
-    config.contracts.decimals.fusdc,
-  );
-  const sharesOfOutcome = formatUnits(
-    outcomeDetails.share,
-    config.contracts.decimals.shares,
-  );
+  if (!investmentAmounts.length) return 0;
+
+  const sharesOfOutcome =
+    investmentAmounts.find((t) => t.id === outcomeId)?.share || 0;
+
   return (
     ((Number(totalInvestment) + fusdc) / (Number(sharesOfOutcome) + share)) *
     share

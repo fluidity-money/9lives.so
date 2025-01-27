@@ -84,8 +84,8 @@ export default function DetailCall2Action({
     openFundModal: () => setFundModalOpen(true),
   });
   const estimatedReturn = usePotentialReturn({
-    tradingAddr: data.poolAddress,
-    outcomeIds,
+    totalInvestment: data.totalVolume,
+    investmentAmounts: data.investmentAmounts,
     outcomeId: outcome.identifier,
     fusdc,
     share,

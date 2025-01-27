@@ -1,7 +1,7 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
 import { requestCampaignById } from "@/providers/graphqlClient";
 import { getCampaigns } from "@/serverData/getCampaigns";
-import { Campaign } from "@/types";
+import { CampaignDetail } from "@/types";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -27,7 +27,7 @@ export default async function DetailPage({ params }: { params: Params }) {
   return (
     <section className="flex h-full flex-col gap-8 md:flex-row md:gap-4">
       <Suspense>
-        <DetailWrapper initialData={campaign as Campaign} />
+        <DetailWrapper initialData={campaign as CampaignDetail} />
       </Suspense>
     </section>
   );

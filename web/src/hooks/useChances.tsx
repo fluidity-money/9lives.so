@@ -10,18 +10,16 @@ export default function useChances({
   totalVolume: number;
   investmentAmounts: CampaignDetail["investmentAmounts"];
 }) {
-  if (!investmentAmounts.length)
-    return outcomeIds.map((id) => ({
-      id,
-      chance: 50,
-      investedAmount: "1",
-      share: "1",
-    }));
-
-  return investmentAmounts!.map((o) => ({
-    id: o!.id,
-    chance: (Number(o!.usdc + 1e6) / Number(totalVolume + 2e6)) * 100,
-    investedAmount: formatFusdc(o!.usdc + 1e6),
-    share: formatFusdc(o!.share),
-  }));
+  return outcomeIds.map((oId) => {
+    const investedOutcome = investmentAmounts.find((i) => i.id === oId);
+    return {
+      id: oId,
+      chance:
+        (Number((investedOutcome?.usdc ?? 0) + 1e6) /
+          Number(totalVolume + 2e6)) *
+        100,
+      investedAmount: formatFusdc((investedOutcome?.usdc ?? 0) + 1e6),
+      share: formatFusdc((investedOutcome?.share ?? 0) + 1e6),
+    };
+  });
 }
