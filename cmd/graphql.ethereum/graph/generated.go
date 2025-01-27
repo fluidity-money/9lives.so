@@ -81,8 +81,9 @@ type ComplexityRoot struct {
 	}
 
 	InvestmentAmounts struct {
-		Amount func(childComplexity int) int
-		Id     func(childComplexity int) int
+		Id    func(childComplexity int) int
+		Share func(childComplexity int) int
+		USDC  func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -132,6 +133,7 @@ type CampaignResolver interface {
 	X(ctx context.Context, obj *types.Campaign) (*string, error)
 	Telegram(ctx context.Context, obj *types.Campaign) (*string, error)
 	Web(ctx context.Context, obj *types.Campaign) (*string, error)
+	Winner(ctx context.Context, obj *types.Campaign) (*string, error)
 
 	InvestmentAmounts(ctx context.Context, obj *types.Campaign) ([]*types.InvestmentAmounts, error)
 }
@@ -333,19 +335,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Changelog.Title(childComplexity), true
 
-	case "InvestmentAmounts.amount":
-		if e.complexity.InvestmentAmounts.Amount == nil {
-			break
-		}
-
-		return e.complexity.InvestmentAmounts.Amount(childComplexity), true
-
 	case "InvestmentAmounts.id":
 		if e.complexity.InvestmentAmounts.Id == nil {
 			break
 		}
 
 		return e.complexity.InvestmentAmounts.Id(childComplexity), true
+
+	case "InvestmentAmounts.share":
+		if e.complexity.InvestmentAmounts.Share == nil {
+			break
+		}
+
+		return e.complexity.InvestmentAmounts.Share(childComplexity), true
+
+	case "InvestmentAmounts.usdc":
+		if e.complexity.InvestmentAmounts.USDC == nil {
+			break
+		}
+
+		return e.complexity.InvestmentAmounts.USDC(childComplexity), true
 
 	case "Mutation.explainCampaign":
 		if e.complexity.Mutation.ExplainCampaign == nil {
@@ -1640,7 +1649,7 @@ func (ec *executionContext) _Campaign_winner(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Winner, nil
+		return ec.resolvers.Campaign().Winner(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1649,17 +1658,17 @@ func (ec *executionContext) _Campaign_winner(ctx context.Context, field graphql.
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Campaign_winner(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Campaign",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -1752,8 +1761,10 @@ func (ec *executionContext) fieldContext_Campaign_investmentAmounts(_ context.Co
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_InvestmentAmounts_id(ctx, field)
-			case "amount":
-				return ec.fieldContext_InvestmentAmounts_amount(ctx, field)
+			case "usdc":
+				return ec.fieldContext_InvestmentAmounts_usdc(ctx, field)
+			case "share":
+				return ec.fieldContext_InvestmentAmounts_share(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type InvestmentAmounts", field.Name)
 		},
@@ -1981,8 +1992,8 @@ func (ec *executionContext) fieldContext_InvestmentAmounts_id(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _InvestmentAmounts_amount(ctx context.Context, field graphql.CollectedField, obj *types.InvestmentAmounts) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_InvestmentAmounts_amount(ctx, field)
+func (ec *executionContext) _InvestmentAmounts_usdc(ctx context.Context, field graphql.CollectedField, obj *types.InvestmentAmounts) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_InvestmentAmounts_usdc(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1995,7 +2006,7 @@ func (ec *executionContext) _InvestmentAmounts_amount(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Amount, nil
+		return obj.USDC, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2012,7 +2023,51 @@ func (ec *executionContext) _InvestmentAmounts_amount(ctx context.Context, field
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_InvestmentAmounts_amount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_InvestmentAmounts_usdc(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "InvestmentAmounts",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _InvestmentAmounts_share(ctx context.Context, field graphql.CollectedField, obj *types.InvestmentAmounts) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_InvestmentAmounts_share(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Share, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_InvestmentAmounts_share(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "InvestmentAmounts",
 		Field:      field,
@@ -5309,7 +5364,38 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "winner":
-			out.Values[i] = ec._Campaign_winner(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_winner(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "totalVolume":
 			out.Values[i] = ec._Campaign_totalVolume(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -5537,8 +5623,13 @@ func (ec *executionContext) _InvestmentAmounts(ctx context.Context, sel ast.Sele
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "amount":
-			out.Values[i] = ec._InvestmentAmounts_amount(ctx, field, obj)
+		case "usdc":
+			out.Values[i] = ec._InvestmentAmounts_usdc(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "share":
+			out.Values[i] = ec._InvestmentAmounts_share(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -6845,16 +6936,6 @@ func (ec *executionContext) marshalOInvestmentAmounts2ᚖgithubᚗcomᚋfluidity
 		return graphql.Null
 	}
 	return ec._InvestmentAmounts(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalString(v)
-	return res
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {

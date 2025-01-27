@@ -9,10 +9,10 @@ import (
 
 type (
 	CampaignInsertion struct {
-		ID                string                `gorm:"primaryKey"`
-		CreatedAt         time.Time             `gorm:"autoCreateTime"`
-		UpdatedAt         time.Time             `gorm:"autoUpdateTime"`
-		Content           CampaignContent       `json:"content"`
+		ID        string          `gorm:"primaryKey"`
+		CreatedAt time.Time       `gorm:"autoCreateTime"`
+		UpdatedAt time.Time       `gorm:"autoUpdateTime"`
+		Content   CampaignContent `json:"content"`
 	}
 
 	Campaign struct {
@@ -21,13 +21,13 @@ type (
 		UpdatedAt         time.Time             `gorm:"autoUpdateTime"`
 		Content           CampaignContent       `json:"content"`
 		TotalVolume       int                   `json:"totalVolume"`
-		Winner            string                `json:"winner"`
 		InvestmentAmounts InvestmentAmountsList `json:"investmentAmounts" gorm:"type:jsonb"`
 	}
 
 	InvestmentAmounts struct {
-		Id     string `json:"id"`
-		Amount int    `json:"amount"`
+		Id    string `json:"id"`
+		USDC  int    `json:"usdc"`
+		Share int    `json:"share"`
 	}
 
 	InvestmentAmountsList []*InvestmentAmounts
@@ -100,6 +100,9 @@ type (
 
 		// Web url
 		Web *string `json:"web"`
+
+		// If any outcome declared as winner, it returns bytes8 id
+		Winner *string `json:"winner"`
 	}
 
 	// Wallet of the creator of a campaign.

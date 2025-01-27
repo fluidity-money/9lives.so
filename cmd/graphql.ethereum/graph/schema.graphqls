@@ -331,7 +331,12 @@ type InvestmentAmounts {
   """
   6 decimals fusdc
   """
-  amount: Int!
+  usdc: Int!
+
+  """
+  6 decimals share
+  """
+  share: Int!
 }
 
 type Outcome {
