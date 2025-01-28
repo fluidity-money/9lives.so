@@ -100,7 +100,20 @@ export default function CreateCampaignForm() {
           .instanceof(File, { message: "You have to upload a picture" })
           .refine((file) => file.size <= 1024 * 1024, {
             message: "File size must be under 1MB",
-          }),
+          })
+          .refine((file) => file.size > 0, {
+            message: "You have to upload a picture",
+          })
+          .refine(
+            (file) => {
+              const validExtensions = ["png", "jpg", "jpeg", "gif"];
+              const fileExtension = file.name.split(".").pop()?.toLowerCase();
+              return fileExtension && validExtensions.includes(fileExtension);
+            },
+            {
+              message: "File must be a PNG, JPG, JPEG, or GIF image.",
+            },
+          ),
         starting: z.string().date(),
         ending: z
           .string()
