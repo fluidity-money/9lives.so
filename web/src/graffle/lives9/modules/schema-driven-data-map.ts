@@ -320,6 +320,10 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [0],
         },
+        isFake: {
+          nt: Boolean,
+          it: [0],
+        },
       },
     },
     revealCommitment: {

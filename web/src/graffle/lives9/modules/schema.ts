@@ -262,6 +262,15 @@ export namespace Schema {
           inlineType: [0];
           namedType: $$NamedTypes.$$String;
         };
+        /**
+         * Should this be a fake execution as a dry run?
+         */
+        isFake: {
+          kind: "InputField";
+          name: "isFake";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Boolean;
+        };
       };
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;

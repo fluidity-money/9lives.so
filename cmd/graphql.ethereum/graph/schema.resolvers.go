@@ -13,17 +13,15 @@ import (
 	"strings"
 	"time"
 
-	"gorm.io/gorm"
-
-	ethCommon "github.com/ethereum/go-ethereum/common"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
+	"gorm.io/gorm"
 )
 
 // Name is the resolver for the name field.

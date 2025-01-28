@@ -332,7 +332,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `explainCampaign` field. Some (9/14) arguments are required so you must include this.
+     * Arguments for `explainCampaign` field. Some (9/15) arguments are required so you must include this.
      */
     $: explainCampaign$Arguments<_$Scalars>;
   }
@@ -400,6 +400,10 @@ export namespace Mutation {
      * Web url
      */
     web?: string | undefined | null;
+    /**
+     * Should this be a fake execution as a dry run?
+     */
+    isFake?: boolean | undefined | null;
   }
 
   // --- expanded ---
