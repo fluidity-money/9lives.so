@@ -11,6 +11,7 @@ import (
 	"log/slog"
 	"net/url"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 
@@ -199,6 +200,13 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
 		return nil, fmt.Errorf("negative seed")
+	}
+	curTime := int(time.Now().Unix())
+	if curTime > starting {
+		return nil, fmt.Errorf("starting time too early")
+	}
+	if curTime > ending {
+		return nil, fmt.Errorf("ending time too early")
 	}
 	for i, o := range outcomes {
 		outcomes_[i] = crypto.Outcome{
