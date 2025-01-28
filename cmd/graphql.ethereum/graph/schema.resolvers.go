@@ -268,7 +268,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		tradingAddrStr = strings.ToLower(tradingAddr.Hex())
 		contractOwner  = strings.ToLower(contractOwner_.Hex())
 	)
-	if contractOwner != creator {
+	if isNotPrecommit && contractOwner != creator {
 		slog.Error("Staged creator is not the contract owner",
 			"trading contract", tradingAddr,
 			"contractOwner", contractOwner,
