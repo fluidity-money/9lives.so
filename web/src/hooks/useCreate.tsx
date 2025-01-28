@@ -44,6 +44,13 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          await requestCreateCampaign({
+            ...input,
+            starting: new Date(input.starting).getTime(),
+            ending: new Date(input.ending).getTime(),
+            creator: account.address,
+            isFake: true,
+          });
           const userBalanceTx = prepareContractCall({
             contract: config.contracts.fusdc,
             method: "balanceOf",
@@ -121,6 +128,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             starting: new Date(input.starting).getTime(),
             ending: new Date(input.ending).getTime(),
             creator: account.address,
+            isFake: false,
           });
           queryClient.invalidateQueries({
             queryKey: ["campaigns"],
