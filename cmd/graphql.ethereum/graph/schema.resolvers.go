@@ -13,15 +13,17 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
+	ethCommon "github.com/ethereum/go-ethereum/common"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
-	"gorm.io/gorm"
 )
 
 // Name is the resolver for the name field.
@@ -252,39 +254,37 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	// Create the campaign object
 	campaignId, _ := crypto.GetOutcomeId(name, description, uint64(seed))
 	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
-	contractOwner_, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
-	if err != nil {
-		slog.Error("Error checking if trading contract is deployed",
-			"trading contract", tradingAddr,
-			"factory address", r.FactoryAddr,
-			"market id", marketId,
-			"error", err,
-			"is not precommit", isNotPrecommit,
-		)
-		return nil, fmt.Errorf("error checking if trading contract is deployed")
-	}
-	creator = strings.ToLower(creator)
-	var (
-		tradingAddrStr = strings.ToLower(tradingAddr.Hex())
-		contractOwner  = strings.ToLower(contractOwner_.Hex())
-	)
-	if isNotPrecommit && contractOwner != creator {
-		slog.Error("Staged creator is not the contract owner",
-			"trading contract", tradingAddr,
-			"contractOwner", contractOwner,
-			"factory address", r.FactoryAddr,
-			"market id", marketId,
-			"submitted creator", creator,
-			"is not precommit", isNotPrecommit,
-		)
-		return nil, fmt.Errorf(
-			"staged creator is not the contract owner for id %x, owner is %v",
-			marketId,
-			contractOwner,
-		)
-	}
-	// Quick check to see if the entry already exists in the database.
+	var tradingAddrStr, contractOwner string
 	if isNotPrecommit {
+		contractOwner_, err := getOwner(r.Geth, r.FactoryAddr, *tradingAddr)
+		if err != nil {
+			slog.Error("Error checking if trading contract is deployed",
+				"trading contract", tradingAddr,
+				"factory address", r.FactoryAddr,
+				"market id", marketId,
+				"error", err,
+				"is not precommit", isNotPrecommit,
+			)
+			return nil, fmt.Errorf("error checking if trading contract is deployed")
+		}
+		creator = strings.ToLower(creator)
+		tradingAddrStr = strings.ToLower(tradingAddr.Hex())
+		contractOwner = strings.ToLower(contractOwner_.Hex())
+		if contractOwner != creator {
+			slog.Error("Staged creator is not the contract owner",
+				"trading contract", tradingAddr,
+				"contractOwner", contractOwner,
+				"factory address", r.FactoryAddr,
+				"market id", marketId,
+				"submitted creator", creator,
+				"is not precommit", isNotPrecommit,
+			)
+			return nil, fmt.Errorf(
+				"staged creator is not the contract owner for id %x, owner is %v",
+				marketId,
+				contractOwner,
+			)
+		}
 		var campaignIdCount int64
 		err = r.DB.Table("ninelives_campaigns_1").
 			Where("id = ?", hexCampaignId).
