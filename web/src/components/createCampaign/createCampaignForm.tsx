@@ -102,7 +102,21 @@ export default function CreateCampaignForm() {
             message: "File size must be under 1MB",
           }),
         starting: z.string().date(),
-        ending: z.string().date(),
+        ending: z
+          .string()
+          .date()
+          .refine(
+            (date) => {
+              const today = new Date();
+              const endingDate = new Date(date);
+              const diffTime = endingDate.getTime() - today.getTime();
+              const diffDays = diffTime / (1000 * 3600 * 24);
+              return diffDays >= 1;
+            },
+            {
+              message: "Ending date must be at least 24 hours in the future",
+            },
+          ),
         telegram: z.string().min(2).max(100).optional().or(z.literal("")),
         x: z.string().min(2).max(100).optional().or(z.literal("")),
         web: z.string().url().max(200).optional().or(z.literal("")),
