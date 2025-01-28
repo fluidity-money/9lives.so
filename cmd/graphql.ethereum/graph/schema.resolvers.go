@@ -12,6 +12,10 @@ import (
 	"net/url"
 	"strings"
 
+	"gorm.io/gorm"
+
+	ethCommon "github.com/ethereum/go-ethereum/common"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
@@ -190,7 +194,8 @@ func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) 
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error) {
+	isNotPrecommit := isFake == nil || !*isFake
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
 		return nil, fmt.Errorf("negative seed")
@@ -203,31 +208,40 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		}
 	}
 	marketId := crypto.GetMarketId(outcomes_)
-	tradingAddr, err := getTradingAddr(r.Geth, r.FactoryAddr, marketId)
-	if err != nil {
-		slog.Error("Error checking if trading contract is deployed",
-			"trading contract", tradingAddr,
-			"factory address", r.FactoryAddr,
-			"market id", marketId,
-			"error", err,
-		)
-		return nil, fmt.Errorf("error checking if trading contract is deployed")
-	}
-	settlement, err := getSettlementTypeDesc(
-		r.Geth,
-		r.InfraMarketAddr,
-		r.BeautyContestAddr,
-		r.SarpAiAddr,
-		*tradingAddr,
+	zeroAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	var (
+		tradingAddr *ethCommon.Address = &zeroAddr
+		settlement  string             = "ORACLE"
+		err         error
 	)
-	if err != nil {
-		slog.Error("Failed to get the settlement type description",
-			"trading contract", tradingAddr,
-			"factory address", r.FactoryAddr,
-			"market id", marketId,
-			"error", err,
+	if isNotPrecommit {
+		tradingAddr, err = getTradingAddr(r.Geth, r.FactoryAddr, marketId)
+		if err != nil {
+			slog.Error("Error checking if trading contract is deployed",
+				"trading contract", tradingAddr,
+				"factory address", r.FactoryAddr,
+				"market id", marketId,
+				"error", err,
+				"is not precommit", isNotPrecommit,
+			)
+			return nil, fmt.Errorf("error checking if trading contract is deployed")
+		}
+		settlement, err = getSettlementTypeDesc(
+			r.Geth,
+			r.InfraMarketAddr,
+			r.BeautyContestAddr,
+			r.SarpAiAddr,
+			*tradingAddr,
 		)
-		return nil, fmt.Errorf("error retrieving oracle type")
+		if err != nil {
+			slog.Error("Failed to get the settlement type description",
+				"trading contract", tradingAddr,
+				"factory address", r.FactoryAddr,
+				"market id", marketId,
+				"error", err,
+			)
+			return nil, fmt.Errorf("error retrieving oracle type")
+		}
 	}
 	// Create the campaign object
 	campaignId, _ := crypto.GetOutcomeId(name, description, uint64(seed))
@@ -239,6 +253,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			"factory address", r.FactoryAddr,
 			"market id", marketId,
 			"error", err,
+			"is not precommit", isNotPrecommit,
 		)
 		return nil, fmt.Errorf("error checking if trading contract is deployed")
 	}
@@ -247,24 +262,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		tradingAddrStr = strings.ToLower(tradingAddr.Hex())
 		contractOwner  = strings.ToLower(contractOwner_.Hex())
 	)
-	// Quick check to see if the entry already exists in the database.
-	var campaignIdCount int64
-	err = r.DB.Table("ninelives_campaigns_1").
-		Where("id = ?", hexCampaignId).
-		Count(&campaignIdCount).
-		Error
-	if err != nil {
-		slog.Error("Error checking the existence of this trading addr",
-			"trading contract", tradingAddr,
-			"factory address", r.FactoryAddr,
-			"market id", marketId,
-			"error", err,
-		)
-		return nil, fmt.Errorf("error finding trading addr existence")
-	}
-	if campaignIdCount > 0 {
-		return nil, fmt.Errorf("trading addr already exists")
-	}
 	if contractOwner != creator {
 		slog.Error("Staged creator is not the contract owner",
 			"trading contract", tradingAddr,
@@ -272,12 +269,34 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			"factory address", r.FactoryAddr,
 			"market id", marketId,
 			"submitted creator", creator,
+			"is not precommit", isNotPrecommit,
 		)
 		return nil, fmt.Errorf(
 			"staged creator is not the contract owner for id %x, owner is %v",
 			marketId,
 			contractOwner,
 		)
+	}
+	// Quick check to see if the entry already exists in the database.
+	if isNotPrecommit {
+		var campaignIdCount int64
+		err = r.DB.Table("ninelives_campaigns_1").
+			Where("id = ?", hexCampaignId).
+			Count(&campaignIdCount).
+			Error
+		if err != nil {
+			slog.Error("Error checking the existence of this trading addr",
+				"trading contract", tradingAddr,
+				"factory address", r.FactoryAddr,
+				"market id", marketId,
+				"error", err,
+				"is not precommit", isNotPrecommit,
+			)
+			return nil, fmt.Errorf("error finding trading addr existence")
+		}
+		if campaignIdCount > 0 {
+			return nil, fmt.Errorf("trading addr already exists")
+		}
 	}
 	// Create outcomes object
 	var campaignOutcomes = make([]types.Outcome, len(outcomes))
@@ -288,34 +307,40 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			uint64(outcome.Seed),
 		)
 		hexOutcomeId := "0x" + hex.EncodeToString(outcomeId)
-		shareAddr, _ := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
-		shareAddrStr := strings.ToLower(shareAddr.Hex())
+		var shareAddrStr string
+		if isNotPrecommit {
+			shareAddr, _ := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
+			shareAddrStr = strings.ToLower(shareAddr.Hex())
+		}
 		var outcomePicUrl string
 		if pic := outcome.Picture; pic != "" {
 			buf, err := decodeAndCheckPictureValidity(outcome.Picture)
 			if err != nil {
 				slog.Error("Failed to decode outcome image",
 					"err", err,
-					"share addr", shareAddr,
+					"share addr", shareAddrStr,
 					"outcome id", outcomeId,
 					"trading addr", tradingAddr,
+					"is not precommit", isNotPrecommit,
 				)
 				return nil, fmt.Errorf("bad outcome image")
 			}
-			picKey := fmt.Sprintf("%v-%v", tradingAddr, shareAddr)
-			_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
-				Bucket: aws.String(r.S3UploadBucketName),
-				Key:    aws.String(picKey),
-				Body:   buf,
-			})
-			if err != nil {
-				slog.Error("Failed to upload a outcome image",
-					"trading addr", tradingAddr,
-					"outcome key", picKey,
-					"creator", creator,
-					"err", err,
-				)
-				return nil, fmt.Errorf("error uploading image")
+			picKey := fmt.Sprintf("%v-%v", tradingAddr, shareAddrStr)
+			if isNotPrecommit {
+				_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
+					Bucket: aws.String(r.S3UploadBucketName),
+					Key:    aws.String(picKey),
+					Body:   buf,
+				})
+				if err != nil {
+					slog.Error("Failed to upload a outcome image",
+						"trading addr", tradingAddr,
+						"outcome key", picKey,
+						"creator", creator,
+						"err", err,
+					)
+					return nil, fmt.Errorf("error uploading image")
+				}
 			}
 			// Track the URL that's associated with this share's picture.
 			outcomePicUrl, err = url.JoinPath(r.PicturesUriBase, picKey)
@@ -326,6 +351,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 					"outcome key", picKey,
 					"creator", creator,
 					"err", err,
+					"is not precommit", isNotPrecommit,
 				)
 				return nil, fmt.Errorf("error uploading image")
 			}
@@ -350,23 +376,26 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			"trading addr", tradingAddr,
 			"creator", creator,
 			"err", err,
+			"is not precommit", isNotPrecommit,
 		)
 		return nil, fmt.Errorf("error uploading image")
 	}
 	tradingPicKey := tradingAddrStr + "-base"
-	_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(r.S3UploadBucketName),
-		Key:    aws.String(tradingPicKey),
-		Body:   buf,
-	})
-	if err != nil {
-		slog.Error("Failed to upload a trading image",
-			"picture", picture,
-			"trading addr", tradingAddr,
-			"trading pic key", tradingPicKey,
-			"err", err,
-		)
-		return nil, fmt.Errorf("error uploading image")
+	if isNotPrecommit {
+		_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
+			Bucket: aws.String(r.S3UploadBucketName),
+			Key:    aws.String(tradingPicKey),
+			Body:   buf,
+		})
+		if err != nil {
+			slog.Error("Failed to upload a trading image",
+				"picture", picture,
+				"trading addr", tradingAddr,
+				"trading pic key", tradingPicKey,
+				"err", err,
+			)
+			return nil, fmt.Errorf("error uploading image")
+		}
 	}
 	tradingPicUrl, err := url.JoinPath(r.PicturesUriBase, tradingPicKey)
 	if err != nil {
@@ -399,12 +428,29 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			Web:               web,
 		},
 	}
-	result := r.DB.Table("ninelives_campaigns_1").Create(&campaign)
-	if result.Error != nil {
-		slog.Error("Error inserting campaign into database",
-			"error", result.Error,
-		)
-		return nil, fmt.Errorf("error inserting campaign into database")
+	if isNotPrecommit {
+		err = r.DB.Table("ninelives_campaigns_1").Create(&campaign).Error
+		if err != nil {
+			slog.Error("Error inserting campaign into database",
+				"error", err,
+				"is not precommit", isNotPrecommit,
+			)
+			return nil, fmt.Errorf("error inserting campaign into database")
+		}
+	} else {
+		stmt := r.DB.Session(&gorm.Session{DryRun: true}).
+			Table("ninelives_campaigns_1").
+			Create(&campaign).
+			Statement
+		s := r.DB.Dialector.Explain(stmt.SQL.String(), stmt.Vars...)
+		if err := r.DB.Exec("EXPLAIN " + s).Error; err != nil {
+			slog.Error("Error explaining a precommit",
+				"error", err,
+				"is not precommit", isNotPrecommit,
+				"stmt", s,
+			)
+			return nil, fmt.Errorf("error with precommit")
+		}
 	}
 	res := true
 	return &res, nil
@@ -496,7 +542,7 @@ SELECT
 		FROM
 			ninelives_campaigns_1 nc
 		LEFT JOIN
-        campaign_investments ci ON nc.id = ci.campaign_id	
+        campaign_investments ci ON nc.id = ci.campaign_id
 		WHERE
 			nc.id = ?`, id, id).Scan(&c).Error
 	if err != nil {

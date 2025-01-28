@@ -124,6 +124,12 @@ type Mutation {
     Web url
     """
     web: String
+
+    """
+    Should this be a fake execution as a dry run?
+    """
+    isFake: Boolean
+
   ): Boolean
 
   """
