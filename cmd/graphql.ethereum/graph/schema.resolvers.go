@@ -352,7 +352,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			outcomePicUrl, err = url.JoinPath(r.PicturesUriBase, picKey)
 			if err != nil {
 				slog.Error("Failed to create a URL for a share picture",
-					"picture", picture,
 					"trading addr", tradingAddr,
 					"outcome key", picKey,
 					"creator", creator,
@@ -395,7 +394,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		})
 		if err != nil {
 			slog.Error("Failed to upload a trading image",
-				"picture", picture,
 				"trading addr", tradingAddr,
 				"trading pic key", tradingPicKey,
 				"err", err,
