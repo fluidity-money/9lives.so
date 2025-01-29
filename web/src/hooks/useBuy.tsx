@@ -44,8 +44,7 @@ const useBuy = ({
             account,
           });
           if (amount > userBalance) {
-            openFundModal();
-            throw new Error("You dont have enough USDC.");
+            return openFundModal();
           }
           const checkAmmReturnTx = prepareContractCall({
             contract: config.contracts.lens,
