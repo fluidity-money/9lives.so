@@ -86,7 +86,11 @@ export default function DetailHeader({
           )}
         >
           {isEnded ? "Ended" : "End Date"}:{" "}
-          {new Date(data.ending).toDateString()}
+          {new Date(
+            data.ending.toString().length === 10
+              ? data.ending * 1000
+              : data.ending,
+          ).toDateString()}
         </span>
         {isConcluded || isEnded ? (
           <span className="bg-[#CCC] p-2 font-chicago text-xs text-[#808080]">
