@@ -1,11 +1,16 @@
 "use client";
 
-import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
+import {
+  useActiveAccount,
+  useActiveWalletChain,
+  useActiveWallet,
+} from "thirdweb/react";
 import { useEffect } from "react";
 import { setTag, setUser } from "@sentry/nextjs";
 import { useDegenStore } from "@/stores/degenStore";
 import { usePathname } from "next/navigation";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import posthog from "posthog-js";
 
 export default function ContextInjector() {
   const account = useActiveAccount();
@@ -13,17 +18,23 @@ export default function ContextInjector() {
   const chain = useActiveWalletChain();
   const degenModeEnabled = useDegenStore((state) => state.degenModeEnabled);
   const pathname = usePathname();
+  const wallet = useActiveWallet();
 
   useEffect(() => {
     if (account?.address) {
       // wallet address stored to local storage for GTM to use it
       window.localStorage.setItem("walletAddress", account.address);
-      setUser({ id: account.address });
+      setUser({ id: account.address, walletId: wallet?.id ?? "unknown" });
+      posthog.identify(account.address);
+      posthog.people.set({
+        walletId: wallet?.id ?? "unknown",
+      });
     } else {
       window.localStorage.removeItem("walletAddress");
       setUser(null);
+      posthog.identify(undefined);
     }
-  }, [account?.address]);
+  }, [account?.address, wallet?.id]);
 
   useEffect(() => {
     setTag("chainId", chain?.id);
