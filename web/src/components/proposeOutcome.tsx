@@ -59,7 +59,7 @@ export default function ProposeOutcome({
       setInfraTimeLeft(response?.timeRemained);
     })();
   }, [getStatus]);
-  if (!isProposed)
+  if (isProposed)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
         <h4 className="text-center font-chicago text-xl">{title}</h4>
