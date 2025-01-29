@@ -202,10 +202,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		return nil, fmt.Errorf("negative seed")
 	}
 	curTime := int(time.Now().Unix())
-	if curTime > starting {
-		return nil, fmt.Errorf("starting time too early")
-	}
-	if curTime > ending {
+	if curTime >= ending {
 		return nil, fmt.Errorf("ending time too early")
 	}
 	for i, o := range outcomes {

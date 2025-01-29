@@ -4,8 +4,21 @@ export function calcTimeLeft(endTime: number) {
   if (endTime.toString().length === 16) {
     // if endTime in microseconds
     endTimeInMs = endTime / 1000;
-  } else {
+  } else if (endTime.toString().length === 13) {
+    // if endTime in milliseconds
+    endTimeInMs = endTime;
+  } else if (endTime.toString().length === 10) {
+    // if endTime in seconds
     endTimeInMs = endTime * 1000;
+  } else {
+    return {
+      full: "Inavalid timestamp",
+      short: "Inavalid timestamp",
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
   }
   const differenceInMs = new Date(endTimeInMs).getTime() - Date.now();
   if (0 >= differenceInMs) {

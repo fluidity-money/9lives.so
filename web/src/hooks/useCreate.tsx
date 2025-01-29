@@ -46,8 +46,8 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
         try {
           await requestCreateCampaign({
             ...input,
-            starting: new Date(input.starting).getTime(),
-            ending: new Date(input.ending).getTime(),
+            starting: Math.floor(new Date(input.starting).getTime() / 1000),
+            ending: Math.floor(new Date(input.ending).getTime() / 1000),
             creator: account.address,
             isFake: true,
           });
@@ -125,8 +125,8 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
           }
           await requestCreateCampaign({
             ...input,
-            starting: new Date(input.starting).getTime(),
-            ending: new Date(input.ending).getTime(),
+            starting: Math.floor(new Date(input.starting).getTime() / 1000),
+            ending: Math.floor(new Date(input.ending).getTime() / 1000),
             creator: account.address,
             isFake: false,
           });
