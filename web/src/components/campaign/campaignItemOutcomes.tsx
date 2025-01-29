@@ -2,6 +2,7 @@ import Button from "../themed/button";
 import React from "react";
 import Link from "next/link";
 import { Outcome, SelectedOutcome } from "@/types";
+import { useRouter } from "next/navigation";
 interface CampaignItemOutcomesProps {
   campaignId: string;
   outcomes: Outcome[];
@@ -16,49 +17,44 @@ export default function CampaignItemOutcomes({
   isYesNo,
   isConcluded,
 }: CampaignItemOutcomesProps) {
+  const router = useRouter();
+
   if (isConcluded)
     return (
-      <Link href={`/campaign/${campaignId}`} className="my-5 flex">
-        <Button
-          intent={"cta"}
-          size={"large"}
-          title={"Claim rewards"}
-          // onClick={() =>
-          //   setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
-          // }
-          className={"flex-1"}
-        />
-      </Link>
+      <Button
+        intent={"cta"}
+        size={"large"}
+        title={"Claim rewards"}
+        onClick={() => router.push(`/campaign/${campaignId}`)}
+        className={"my-5 flex-1"}
+      />
     );
 
   if (outcomes.length === 2 || isYesNo)
     return (
       <div className="my-5 flex flex-1 items-end gap-2">
-        <Link href={`/campaign/${campaignId}`} className="flex flex-1">
-          <Button
-            intent={isYesNo ? "yes" : "default"}
-            size={"large"}
-            title={isYesNo ? outcomes[0].name : `Predict ${outcomes[0].name}`}
-            // onClick={() =>
-            //   setSelectedOutcome({ id: outcomes[0].identifier, state: "buy" })
-            // }
-            className={"flex-1"}
-          />
-        </Link>
-        <Link
-          href={`/campaign/${campaignId}?outcomeId=${outcomes[1].identifier}`}
-          className="flex flex-1"
-        >
-          <Button
-            intent={isYesNo ? "no" : "default"}
-            size={"large"}
-            title={isYesNo ? outcomes[1].name : `Predict ${outcomes[1].name}`}
-            // onClick={() =>
-            //   setSelectedOutcome({ id: outcomes[1].identifier, state: "buy" })
-            // }
-            className={"flex-1"}
-          />
-        </Link>
+        <Button
+          intent={isYesNo ? "yes" : "default"}
+          size={"large"}
+          title={isYesNo ? outcomes[0].name : `Predict ${outcomes[0].name}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/campaign/${campaignId}`);
+          }}
+          className={"flex-1"}
+        />
+        <Button
+          intent={isYesNo ? "no" : "default"}
+          size={"large"}
+          title={isYesNo ? outcomes[1].name : `Predict ${outcomes[1].name}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(
+              `/campaign/${campaignId}?outcomeId=${outcomes[1].identifier}`,
+            );
+          }}
+          className={"flex-1"}
+        />
       </div>
     );
 
@@ -74,16 +70,18 @@ export default function CampaignItemOutcomes({
           </Link>
           <div className="flex items-center gap-1">
             <span className="font-chicago text-sm font-normal">{"%75"}</span>
-            <Link
-              href={`/campaign/${campaignId}?outcomeId=${outcome.identifier}`}
-            >
-              <Button
-                intent="default"
-                cat="secondary"
-                size="small"
-                title="Bet"
-              />
-            </Link>
+            <Button
+              intent="default"
+              cat="secondary"
+              size="small"
+              title="Bet"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(
+                  `/campaign/${campaignId}?outcomeId=${outcome.identifier}`,
+                );
+              }}
+            />
             {/* <Button
               intent="yes"
               cat="secondary"

@@ -18,12 +18,13 @@ export default function CampaignItemHeader({
 }: CampaignItemHeaderProps) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2">
+      <Link
+        href={`/campaign/${identifier}`}
+        className="flex items-center gap-2"
+      >
         <Image src={picture} width={40} height={40} alt={name} />
-        <Link href={`/campaign/${identifier}`}>
-          <h4 className="font-chicago text-sm font-bold">{name}</h4>
-        </Link>
-      </div>
+        <h4 className="font-chicago text-sm font-bold">{name}</h4>
+      </Link>
       {solo && soloRatio && (
         <div className="relative flex size-14 shrink-0 items-center justify-center">
           <span className="z-20 font-chicago text-xs font-normal text-gray-500">

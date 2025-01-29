@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
 import SelectedOutcome from "./selectedOutcome";
 import CampaignBody from "./campaignBody";
@@ -10,6 +9,7 @@ import {
   Outcome,
   SelectedOutcome as SelectedOutcomeType,
 } from "@/types";
+import { useRouter } from "next/navigation";
 
 interface CampaignItemProps {
   data: Campaign;
@@ -17,25 +17,29 @@ interface CampaignItemProps {
 
 export default function CampaignItem({ data }: CampaignItemProps) {
   const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcomeType>();
-
+  const router = useRouter();
   return (
-    <Link href={`/campaign/${data.identifier}`} className="flex">
-      <div className="flex flex-1 flex-col gap-2 rounded-[3px] border-2 border-9black bg-9gray p-3 shadow-9card">
-        {selectedOutcome ? (
-          <SelectedOutcome
-            campaignId={data.identifier}
-            selectedState={selectedOutcome.state}
-            data={
-              data.outcomes.find(
-                (o) => o.identifier === selectedOutcome.id,
-              )! as Outcome
-            }
-            setSelectedOutcome={setSelectedOutcome}
-          />
-        ) : (
-          <CampaignBody data={data} setSelectedOutcome={setSelectedOutcome} />
-        )}
-      </div>
-    </Link>
+    <div
+      className="flex flex-1 flex-col gap-2 rounded-[3px] border-2 border-9black bg-9gray p-3 shadow-9card"
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push(`/campaign/${data.identifier}`);
+      }}
+    >
+      {selectedOutcome ? (
+        <SelectedOutcome
+          campaignId={data.identifier}
+          selectedState={selectedOutcome.state}
+          data={
+            data.outcomes.find(
+              (o) => o.identifier === selectedOutcome.id,
+            )! as Outcome
+          }
+          setSelectedOutcome={setSelectedOutcome}
+        />
+      ) : (
+        <CampaignBody data={data} setSelectedOutcome={setSelectedOutcome} />
+      )}
+    </div>
   );
 }
