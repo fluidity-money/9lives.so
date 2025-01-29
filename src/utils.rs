@@ -18,7 +18,7 @@ pub const STORAGE_SUB_TIME: FixedBytes<32> =
     fixed_bytes!("bc21bb295b95ee34b23dda0ac2e03bf17b4daaf83f6c98c49e1ac7152c7c7210");
 
 #[link(wasm_import_module = "vm_hooks")]
-unsafe extern "C" {
+extern "C" {
     pub fn storage_cache_bytes32(key: *const u8, value: *const u8);
     pub fn storage_load_bytes32(key: *const u8, out: *mut u8);
 }

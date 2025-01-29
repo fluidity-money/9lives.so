@@ -100,6 +100,12 @@ interface IEvents {
 
     event InfraMarketUpdated(address indexed old, address indexed new_);
 
+    event Declared(
+        address indexed trading,
+        bytes8 indexed winningOutcome,
+        address indexed feeRecipient
+    );
+
     /* LOCKUP CONTRACT */
 
     event LockupEnabled(bool indexed status);

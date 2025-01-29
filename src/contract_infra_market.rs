@@ -656,6 +656,11 @@ impl StorageInfraMarket {
             // connected to let them know that there was a winner.
             trading_call::decide(trading_addr, voting_power_winner)?;
         }
+        evm::log(events::Declared{
+            trading: trading_addr,
+            winningOutcome: voting_power_winner,
+            feeRecipient: fee_recipient,
+        });
         Ok(caller_yield_taken)
     }
 

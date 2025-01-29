@@ -225,7 +225,7 @@ generate these, run `./print-error-table.sh`.
 | Trading AMM quotes impl       | `0x1086fe3c7a453e31d5f04a55924ec633b62157d9` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
-| Infrastructure market impl    | `0x9de1be6787682d6f67db2f8d3202a87819e2d1be` |
+| Infrastructure market impl    | `0xe96b68775d90f2df1c6ca5554d3e2cc3dca32d90` |
 | Infrastructure market proxy   | `0xc4451d8477cd6b92bfa0d3e2662ce0507a8e10b9` |
 | Lockup proxy                  | `0x20d2360706086ec9814d15a52ad2d2aec2c43caa` |
 | Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
