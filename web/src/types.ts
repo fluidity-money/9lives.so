@@ -84,17 +84,8 @@ export enum InfraMarketState {
   Declarable,
   Sweeping,
   Closed,
+  Loading,
 }
-export const InfraMarketStateTitles: Record<InfraMarketState, string> = {
-  [InfraMarketState.Callable]: "Callable",
-  [InfraMarketState.Closable]: "Closable",
-  [InfraMarketState.Whinging]: "Whinging",
-  [InfraMarketState.Predicting]: "Predicting",
-  [InfraMarketState.Revealing]: "Revealing",
-  [InfraMarketState.Declarable]: "Declarable",
-  [InfraMarketState.Sweeping]: "Sweeping",
-  [InfraMarketState.Closed]: "Closed",
-} as const;
 export type BuyAndSellResponse = {
   ninelives_buys_and_sells_1: {
     to_amount: number;

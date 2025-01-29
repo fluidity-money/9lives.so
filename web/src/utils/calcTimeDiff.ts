@@ -12,8 +12,8 @@ export function calcTimeLeft(endTime: number) {
     endTimeInMs = endTime * 1000;
   } else {
     return {
-      full: "Inavalid timestamp",
-      short: "Inavalid timestamp",
+      full: "Invalid timestamp",
+      short: "Invalid timestamp",
       days: 0,
       hours: 0,
       minutes: 0,

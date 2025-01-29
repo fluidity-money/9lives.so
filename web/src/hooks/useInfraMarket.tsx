@@ -5,10 +5,11 @@ import {
 } from "thirdweb";
 import appConfig from "@/config";
 import { Account } from "thirdweb/wallets";
-import { InfraMarketState, InfraMarketStateTitles } from "@/types";
+import { InfraMarketState } from "@/types";
 import toast from "react-hot-toast";
 interface InfraMarketProps {
   tradingAddr: `0x${string}`;
+  infraState?: InfraMarketState;
 }
 export default function useInfraMarket(props: InfraMarketProps) {
   const statusTx = prepareContractCall({
@@ -22,7 +23,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
         transaction: statusTx,
       })) as [InfraMarketState, bigint];
       return {
-        status: InfraMarketStateTitles[status],
+        status,
         timeRemained: Number(timeRemained), //time remained returns in seconds
       };
     } catch (error) {
@@ -131,5 +132,20 @@ export default function useInfraMarket(props: InfraMarketProps) {
       },
     );
 
-  return { getStatus, propose, whinge, predict, reveal };
+  const actionMap: Record<
+    InfraMarketState,
+    ((outcomeId: `0x${string}`, account: Account) => Promise<string>) | null
+  > = {
+    [InfraMarketState.Callable]: propose,
+    [InfraMarketState.Closable]: propose,
+    [InfraMarketState.Whinging]: whinge,
+    [InfraMarketState.Predicting]: predict,
+    [InfraMarketState.Revealing]: null,
+    [InfraMarketState.Declarable]: null,
+    [InfraMarketState.Sweeping]: null,
+    [InfraMarketState.Closed]: null,
+    [InfraMarketState.Loading]: null,
+  } as const;
+  const currentAction = actionMap[props.infraState ?? InfraMarketState.Loading];
+  return { getStatus, action: currentAction };
 }

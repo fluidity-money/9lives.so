@@ -1,3 +1,4 @@
+import { InfraMarketState } from "@/types";
 import z from "zod";
 
 const metadata = {
@@ -14,6 +15,39 @@ const metadata = {
     "blockchain",
   ],
 };
+const infraMarketStateTitles: Record<InfraMarketState, string> = {
+  [InfraMarketState.Callable]: "Callable",
+  [InfraMarketState.Closable]: "Callable",
+  [InfraMarketState.Whinging]: "In Dispute",
+  [InfraMarketState.Predicting]: "Prediction stage",
+  [InfraMarketState.Revealing]: "Claimable for yield",
+  [InfraMarketState.Declarable]: "Claimable for yield",
+  [InfraMarketState.Sweeping]: "Claimable for yield",
+  [InfraMarketState.Closed]: "Claimable for yield",
+  [InfraMarketState.Loading]: "Loading...",
+} as const;
+const infraMarketStateColors: Record<InfraMarketState, string> = {
+  [InfraMarketState.Callable]: "bg-9green",
+  [InfraMarketState.Closable]: "bg-9green",
+  [InfraMarketState.Whinging]: "bg-9purple",
+  [InfraMarketState.Predicting]: "bg-9lightBlue",
+  [InfraMarketState.Revealing]: "bg-9yellow",
+  [InfraMarketState.Declarable]: "bg-9yellow",
+  [InfraMarketState.Sweeping]: "bg-9yellow",
+  [InfraMarketState.Closed]: "bg-9yellow",
+  [InfraMarketState.Loading]: "bg-9gray",
+} as const;
+const infraMarketStateMethods: Record<InfraMarketState, string> = {
+  [InfraMarketState.Callable]: "bg-9green",
+  [InfraMarketState.Closable]: "bg-9green",
+  [InfraMarketState.Whinging]: "bg-9purple",
+  [InfraMarketState.Predicting]: "bg-9lightBlue",
+  [InfraMarketState.Revealing]: "bg-9yellow",
+  [InfraMarketState.Declarable]: "bg-9yellow",
+  [InfraMarketState.Sweeping]: "bg-9yellow",
+  [InfraMarketState.Closed]: "bg-9yellow",
+  [InfraMarketState.Loading]: "bg-9gray",
+} as const;
 
 const appSchema = z.object({
   /**
@@ -25,10 +59,18 @@ const appSchema = z.object({
     metadataBase: z.instanceof(URL),
     keywords: z.array(z.string()),
   }),
+  infraMarket: z.object({
+    titles: z.record(z.string(), z.string()),
+    colors: z.record(z.string(), z.string()),
+  }),
 });
 
 const appVars = appSchema.safeParse({
   metadata,
+  infraMarket: {
+    titles: infraMarketStateTitles,
+    colors: infraMarketStateColors,
+  },
 });
 
 if (!appVars.success) {
