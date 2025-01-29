@@ -8,11 +8,12 @@ import useCountdown from "@/hooks/useCountdown";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { useEffect, useState } from "react";
-import LogoHero from "#/images/logo-hero.svg";
 import Link from "next/link";
 import LinkIcon from "#/icons/link.svg";
 import useInfraMarket from "@/hooks/useInfraMarket";
 import config from "@/config";
+import CheckIcon from "#/icons/check-green.svg";
+
 export default function ProposeOutcome({
   title,
   ending,
@@ -58,14 +59,18 @@ export default function ProposeOutcome({
       setInfraTimeLeft(response?.timeRemained);
     })();
   }, [getStatus]);
-  if (isProposed)
+  if (!isProposed)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
         <h4 className="text-center font-chicago text-xl">{title}</h4>
-        <Image src={LogoHero} alt="" width={80} />
-        <p className="text-center font-bold text-9black">
-          Your proposed outcome has been submitted to the 9lives oracle.
-        </p>
+        <div className="flex items-center gap-2">
+          <Image src={CheckIcon} alt="" width={50} />
+          <p className="font-chicago text-xl">
+            &ldquo;
+            {outcomes.find((o) => o.identifier === selectedOutcome)?.name}
+            &ldquo; Outcome Submitted!
+          </p>
+        </div>
         <div className="flex items-center gap-1 bg-9green px-1 py-0.5">
           <Image src={LinkIcon} alt="" width={14} />
           <Link
@@ -75,11 +80,22 @@ export default function ProposeOutcome({
             Tx Hash:{txHash!.slice(0, 6)}...{txHash!.slice(-6)}
           </Link>
         </div>
-        <p className="text-xs text-9black/50">
-          Participating in more outcome proposals result in higher potential
-          yield per staked $ARB
+        <p className="text-center text-xs font-bold text-9black">
+          Your proposed outcome will be utilised in 9lives&apos; oracle.
         </p>
-        <Button intent={"cta"} title="Return to market" onClick={closeModal} />
+        <p className="text-center text-xs text-9black">
+          By participating in this outcome proposal, you agree to lock-up your
+          staked $ARB tokens until 1 week after the market&apos;s end date.
+        </p>
+        <p className="inline-block bg-9yellow px-5 py-1 text-xs font-bold">
+          Participating in more outcome proposals result in higher potential
+          yield per staked $ARB!
+        </p>
+        <Button
+          intent={"default"}
+          title={"ARB Staking Hub"}
+          className={"w-full"}
+        />
       </div>
     );
 
