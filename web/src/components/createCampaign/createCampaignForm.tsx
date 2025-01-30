@@ -308,9 +308,8 @@ export default function CreateCampaignForm() {
       >
         <Funding
           closeModal={() => setFundModalOpen(false)}
-          isYesNo={outcomeType === "default"}
           title={fields.name}
-          outcomes={fields.outcomes}
+          type="create"
           fundToBuy={settlementType === "ORACLE" ? 4.2 : 3}
         />
       </Modal>

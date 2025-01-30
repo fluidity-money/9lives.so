@@ -1,21 +1,22 @@
+import { EVENTS, track } from "@/utils/analytics";
 import AssetSelector from "./assetSelector";
 import Button from "./themed/button";
 import Link from "next/link";
 
 export default function Funding({
   title,
-  outcomes,
-  isYesNo,
   fundToBuy,
   closeModal,
+  campaignId,
+  type,
 }: {
   title: string;
-  outcomes: { seed?: number; name: string }[];
-  isYesNo: boolean;
   fundToBuy: number;
   closeModal: () => void;
+  campaignId?: string;
+  type: "buy" | "create";
 }) {
-  const isForBuying = outcomes.length === 1;
+  const isForBuying = type === "buy";
   return (
     <div className="flex flex-col gap-4">
       <p className="text-center font-chicago text-base">
@@ -28,29 +29,6 @@ export default function Funding({
           : `You have to supply total $${fundToBuy}, including $1 to each outcome in your campaign in order to kickstart the liquidity of the campaign.`}
       </p>
       <div className="flex gap-4">
-        {outcomes.map((o, idx) => (
-          <Button
-            key={o.name + o.seed}
-            intent={
-              isYesNo
-                ? outcomes.length === 2 && idx === 0
-                  ? "yes"
-                  : "no"
-                : "default"
-            }
-            size={"large"}
-            title={
-              isYesNo
-                ? outcomes.length === 2 && idx === 0
-                  ? "Yes"
-                  : "No"
-                : `Predict ${o.name}`
-            }
-            className={"flex-1"}
-          />
-        ))}
-      </div>
-      <div className="flex gap-4">
         <AssetSelector />
         <Link
           href={"https://bridge.superposition.so/"}
@@ -58,7 +36,15 @@ export default function Funding({
           className={"flex flex-1"}
         >
           <Button
-            title={`BUY $${fundToBuy} TO ${isForBuying ? "MINT POSITION" : "CREATE MARKET"}`}
+            onClick={() => {
+              console.log("triggered");
+              track(EVENTS.FUNDING_CLICKED, {
+                type,
+                campaignTitle: title,
+                campaignId,
+              });
+            }}
+            title={`GO TO THE BRIDGE FOR FUNDING`}
             intent={"yes"}
             size={"large"}
             className={"flex-1"}

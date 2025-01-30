@@ -310,16 +310,10 @@ export default function DetailCall2Action({
         title="MINT FUNDING"
       >
         <Funding
+          type="buy"
           closeModal={() => setFundModalOpen(false)}
-          isYesNo={data.isYesNo}
+          campaignId={data.identifier}
           title={data.name}
-          outcomes={[
-            {
-              name: data.outcomes.find(
-                (o) => o.identifier === selectedOutcome.id,
-              )!.name,
-            },
-          ]}
           fundToBuy={fusdc}
         />
       </Modal>

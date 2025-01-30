@@ -7,6 +7,7 @@ export const EVENTS = {
   CAMPAIGN_CREATE: "campaign_create",
   WALLET_CONNECT: "wallet_connect",
   OUTCOME_SELECT: "outcome_select",
+  FUNDING_CLICKED: "funding_clicked",
 } as const;
 
 export const track = (
