@@ -33,6 +33,7 @@ var (
 	TopicCommitmentRevealed = abi.Events["CommitmentRevealed"].ID
 	TopicCampaignEscaped = abi.Events["CampaignEscaped"].ID
 	TopicLockedUp = abi.Events["LockedUp"].ID
+	TopicDeclared = abi.Events["Declared"].ID
 	TopicWithdrew = abi.Events["Withdrew"].ID
 	TopicSlashed = abi.Events["Slashed"].ID
 	TopicFrozen = abi.Events["Frozen"].ID
@@ -202,6 +203,14 @@ func UnpackCommitmentRevealed(topic1, topic2, topic3 ethCommon.Hash, b []byte) (
 func UnpackCampaignEscaped(topic1 ethCommon.Hash) (*events.EventCampaignEscaped, error) {
 	return &events.EventCampaignEscaped{
 		TradingAddr: hashToAddr(topic1),
+	}, nil
+}
+
+func UnpackDeclared(topic1, topic2, topic3 ethCommon.Hash) (*events.EventDeclared, error) {
+	return &events.EventDeclared{
+		TradingAddr: hashToAddr(topic1),
+		WinningOutcome: hashToBytes8(topic2),
+		FeeRecipient: hashToAddr(topic3),
 	}, nil
 }
 

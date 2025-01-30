@@ -313,6 +313,10 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		a, err = events.UnpackLockedUp(topic1, topic2)
 		table = "ninelives_events_locked_up"
 		logEvent("LockedUp")
+	case events.TopicDeclared:
+		a, err = events.UnpackDeclared(topic1, topic2, topic3)
+		table = "ninelives_events_declared"
+		logEvent("Declared")
 	case events.TopicWithdrew:
 		a, err = events.UnpackWithdrew(topic1, topic2)
 		table = "ninelives_events_withdrew"

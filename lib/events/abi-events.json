@@ -177,6 +177,31 @@
 	},
 	{
 		"type": "event",
+		"name": "Declared",
+		"inputs": [
+			{
+				"name": "trading",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "winningOutcome",
+				"type": "bytes8",
+				"indexed": true,
+				"internalType": "bytes8"
+			},
+			{
+				"name": "feeRecipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
 		"name": "Frozen",
 		"inputs": [
 			{
