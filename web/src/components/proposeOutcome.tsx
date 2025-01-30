@@ -30,7 +30,7 @@ export default function ProposeOutcome({
   const [infraState, setInfraState] = useState<InfraMarketState>();
   const [infraTimeLeft, setInfraTimeLeft] = useState<number>();
   const timeLeft = useCountdown(infraTimeLeft ?? ending);
-  const [isProposing, setIsProposing] = useState(false);
+  const [inAction, setInAction] = useState(false);
   const [isProposed, setIsProposed] = useState(false);
   const [txHash, setTxHash] = useState<string>("");
   const [selectedOutcome, setSelectedOutcome] = useState<`0x${string}`>(
@@ -40,16 +40,16 @@ export default function ProposeOutcome({
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const zeroByte8 = "0x0000000000000000";
-  async function handleProposal() {
+  async function handleAction() {
     if (!account) return connect();
     if (!action) return;
     try {
-      setIsProposing(true);
+      setInAction(true);
       const txHash = await action(selectedOutcome, account);
       setTxHash(txHash);
       setIsProposed(true);
     } finally {
-      setIsProposing(false);
+      setInAction(false);
     }
   }
   useEffect(() => {
@@ -181,13 +181,15 @@ export default function ProposeOutcome({
       {infraState === InfraMarketState.Predicting ? (
         <Button intent={"default"} title={"ARB Staking Hub"} />
       ) : null}
-      <Button
-        intent={"yes"}
-        size={"large"}
-        title={isProposing ? "Submitting" : "SUBMIT"}
-        onClick={handleProposal}
-        disabled={isProposing}
-      />
+      {Boolean(action) ? (
+        <Button
+          intent={"yes"}
+          size={"large"}
+          title={inAction ? "Submitting" : "SUBMIT"}
+          onClick={handleAction}
+          disabled={inAction}
+        />
+      ) : null}
     </div>
   );
 }
