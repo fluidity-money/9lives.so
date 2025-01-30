@@ -48,7 +48,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
     Number(data.totalVolume ?? 2e6) / Number(winnerShares ?? 1e6);
   const accountShares = positionData?.reduce((acc, item) => {
     if (item.id === winner.identifier) {
-      acc += Number(item.balance);
+      acc += isNaN(Number(item.balance)) ? 0 : Number(item.balance);
     }
     return acc;
   }, 0);
@@ -76,7 +76,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
     if (!account) return connect();
     try {
       setIsClaiming(true);
-      await claim(account, accountShares!, data.outcomes);
+      await claim(account, data.outcomes, accountShares);
     } finally {
       setIsClaiming(false);
     }

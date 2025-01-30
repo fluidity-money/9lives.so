@@ -22,17 +22,18 @@ const useClaim = ({
   const queryClient = useQueryClient();
   const claim = async (
     account: Account,
-    accountShare: number,
     outcomes: Outcome[],
+    accountShare?: number,
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          // const shares = toUnits(
-          //   accountShare.toString(),
-          //   config.contracts.decimals.shares,
-          // );
-          const shares = BigInt(Math.floor(accountShare * 10 ** 6));
+          if (!accountShare || isNaN(accountShare))
+            throw new Error("Invalid winning shares");
+          const shares = toUnits(
+            accountShare.toString(),
+            config.contracts.decimals.shares,
+          );
           const shareContract = getContract({
             abi: ERC20Abi,
             address: shareAddr,
