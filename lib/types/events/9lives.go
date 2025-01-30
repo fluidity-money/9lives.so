@@ -115,6 +115,14 @@ type (
 		TradingAddr Address `json:"trading_addr"`
 	}
 
+	EventDeclared struct {
+		Event
+
+		TradingAddr Address `json:"trading_addr"`
+		WinningOutcome Bytes `json:"winning_outcome"`
+		FeeRecipient Address `json:"fee_recipient"`
+	}
+
 	EventLockedUp struct {
 		Event
 

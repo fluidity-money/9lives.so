@@ -85,6 +85,13 @@ proptest! {
                         Error::NotAfterWhinging
                     );
                 });
+                // Add two days.
+                ts_add_time(block_timestamp() + 24 * 60 * 60 * 2);
+                c.close(trading_addr, msg_sender()).unwrap();
+                assert_eq!(
+                    { let c: u8 = InfraMarketState::Closed.into(); c },
+                    c.status(trading_addr).unwrap().0,
+                );
             }
         }
     }

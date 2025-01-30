@@ -100,6 +100,7 @@ interface IEvents {
 
     event InfraMarketUpdated(address indexed old, address indexed new_);
 
+    /// @notice Declare was called on a market in the infra market.
     event Declared(
         address indexed trading,
         bytes8 indexed winningOutcome,

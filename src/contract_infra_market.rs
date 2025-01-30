@@ -334,7 +334,7 @@ impl StorageInfraMarket {
             }
             // If the winner was called, but no-one whinged, and we're outside two days,
             // then we're callable.
-            _ if time_since_called > TWO_DAYS && !has_whinged => (InfraMarketState::Closable, 0),
+            _ if time_since_called > TWO_DAYS && !has_whinged && !is_winner_set => (InfraMarketState::Closable, 0),
             // If the winner was declared, two days has passed, and we're in a state where
             // no-one whinged, then we need to assume we were closed.
             _ if time_since_called > TWO_DAYS && !has_whinged => (InfraMarketState::Closed, 0),
