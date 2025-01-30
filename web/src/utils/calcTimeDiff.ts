@@ -10,6 +10,15 @@ export function calcTimeLeft(endTime: number) {
   } else if (endTime.toString().length === 10) {
     // if endTime in seconds
     endTimeInMs = endTime * 1000;
+  } else if (endTime === 0) {
+    return {
+      full: "End date is already due.",
+      short: "End date is already due.",
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
   } else {
     return {
       full: "Invalid timestamp",
