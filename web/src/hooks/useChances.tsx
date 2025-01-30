@@ -18,7 +18,7 @@ export default function useChances({
         (Number((investedOutcome?.usdc ?? 0) + 1e6) /
           Number(totalVolume + 2e6)) *
         100,
-      investedAmount: formatFusdc((investedOutcome?.usdc ?? 0) + 1e6),
+      investedAmount: formatFusdc((investedOutcome?.usdc ?? 0) + 1e6, 2),
       share: formatFusdc((investedOutcome?.share ?? 0) + 1e6),
     };
   });
