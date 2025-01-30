@@ -102,19 +102,14 @@ export default function useInfraMarket(props: InfraMarketProps) {
         error: "Failed to predict outcome.",
       },
     );
-  const reveal = (outcomeId: `0x${string}`, account: Account) =>
+  const close = (outcomeId: `0x${string}`, account: Account) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
           const revealTx = prepareContractCall({
             contract: appConfig.contracts.infra,
-            method: "reveal",
-            params: [
-              props.tradingAddr,
-              account.address,
-              outcomeId,
-              BigInt(Math.random()),
-            ],
+            method: "close",
+            params: [props.tradingAddr, outcomeId],
           });
           const receipt = await sendTransaction({
             transaction: revealTx,
@@ -137,7 +132,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
     ((outcomeId: `0x${string}`, account: Account) => Promise<string>) | null
   > = {
     [InfraMarketState.Callable]: propose,
-    [InfraMarketState.Closable]: propose,
+    [InfraMarketState.Closable]: close,
     [InfraMarketState.Whinging]: whinge,
     [InfraMarketState.Predicting]: predict,
     [InfraMarketState.Revealing]: null,

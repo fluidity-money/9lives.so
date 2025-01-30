@@ -17,7 +17,7 @@ const metadata = {
 };
 const infraMarketStateTitles: Record<InfraMarketState, string> = {
   [InfraMarketState.Callable]: "Callable",
-  [InfraMarketState.Closable]: "Callable",
+  [InfraMarketState.Closable]: "Close and collect rewards",
   [InfraMarketState.Whinging]: "In Dispute",
   [InfraMarketState.Predicting]: "Prediction stage",
   [InfraMarketState.Revealing]: "Claimable for yield",
@@ -27,28 +27,16 @@ const infraMarketStateTitles: Record<InfraMarketState, string> = {
   [InfraMarketState.Loading]: "Loading...",
 } as const;
 const infraMarketStateColors: Record<InfraMarketState, string> = {
-  [InfraMarketState.Callable]: "bg-9green",
+  [InfraMarketState.Callable]: "bg-9yellow",
   [InfraMarketState.Closable]: "bg-9green",
   [InfraMarketState.Whinging]: "bg-9purple",
   [InfraMarketState.Predicting]: "bg-9lightBlue",
-  [InfraMarketState.Revealing]: "bg-9yellow",
-  [InfraMarketState.Declarable]: "bg-9yellow",
-  [InfraMarketState.Sweeping]: "bg-9yellow",
-  [InfraMarketState.Closed]: "bg-9yellow",
+  [InfraMarketState.Revealing]: "bg-9green",
+  [InfraMarketState.Declarable]: "bg-9green",
+  [InfraMarketState.Sweeping]: "bg-9green",
+  [InfraMarketState.Closed]: "bg-9green",
   [InfraMarketState.Loading]: "bg-9gray",
 } as const;
-const infraMarketStateMethods: Record<InfraMarketState, string> = {
-  [InfraMarketState.Callable]: "bg-9green",
-  [InfraMarketState.Closable]: "bg-9green",
-  [InfraMarketState.Whinging]: "bg-9purple",
-  [InfraMarketState.Predicting]: "bg-9lightBlue",
-  [InfraMarketState.Revealing]: "bg-9yellow",
-  [InfraMarketState.Declarable]: "bg-9yellow",
-  [InfraMarketState.Sweeping]: "bg-9yellow",
-  [InfraMarketState.Closed]: "bg-9yellow",
-  [InfraMarketState.Loading]: "bg-9gray",
-} as const;
-
 const appSchema = z.object({
   /**
    * Generated metadata of the web app and wagmi will use this object
