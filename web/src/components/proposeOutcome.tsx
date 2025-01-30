@@ -130,47 +130,56 @@ export default function ProposeOutcome({
         >
           {config.infraMarket.titles[infraState ?? InfraMarketState.Loading]}
         </h5>
-        <div className="w-full text-9black">
-          <Field>
-            <div className="relative">
-              <Select
-                defaultValue={outcomes[0].identifier}
-                onChange={(e) =>
-                  setSelectedOutcome(e.target.value as `0x${string}`)
-                }
-                className={combineClass(
-                  "mt-3 block w-full appearance-none border border-9black bg-9gray px-4 py-2 font-geneva text-sm text-9black shadow-9input",
-                  "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
-                )}
-              >
-                {outcomes.map((outcome) => (
-                  <option key={outcome.identifier} value={outcome.identifier}>
-                    {outcome.name}
-                  </option>
-                ))}
-                {infraState === InfraMarketState.Predicting && (
-                  <option value={zeroByte8}>Unsure</option>
-                )}
-              </Select>
-              <Image
-                alt=""
-                width={16}
-                src={DownIcon}
-                className="group pointer-events-none absolute right-2.5 top-2.5 size-4"
-                aria-hidden="true"
-              />
-            </div>
-          </Field>
-        </div>
-        <div className="flex flex-col gap-1">
+        {Boolean(action) ? (
+          <div className="w-full text-9black">
+            <Field>
+              <div className="relative">
+                <Select
+                  defaultValue={outcomes[0].identifier}
+                  onChange={(e) =>
+                    setSelectedOutcome(e.target.value as `0x${string}`)
+                  }
+                  className={combineClass(
+                    "mt-3 block w-full appearance-none border border-9black bg-9gray px-4 py-2 font-geneva text-sm text-9black shadow-9input",
+                    "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
+                  )}
+                >
+                  {outcomes.map((outcome) => (
+                    <option key={outcome.identifier} value={outcome.identifier}>
+                      {outcome.name}
+                    </option>
+                  ))}
+                  {infraState === InfraMarketState.Predicting && (
+                    <option value={zeroByte8}>Unsure</option>
+                  )}
+                </Select>
+                <Image
+                  alt=""
+                  width={16}
+                  src={DownIcon}
+                  className="group pointer-events-none absolute right-2.5 top-2.5 size-4"
+                  aria-hidden="true"
+                />
+              </div>
+            </Field>
+          </div>
+        ) : null}
+        {infraState && infraState > InfraMarketState.Predicting ? (
           <p className="text-center text-xs font-bold text-9black">
-            Your proposed outcome will be utilised in 9lives&apos; oracle.
+            Go back to detail page of the campaign and claim your rewards.
           </p>
-          <p className="text-center text-xs text-9black/50">
-            By participating in this outcome proposal, you agree to lock-up your
-            staked $ARB tokens until 1 week after the market&apos;s end date.
-          </p>
-        </div>
+        ) : (
+          <div className="flex flex-col gap-1">
+            <p className="text-center text-xs font-bold text-9black">
+              Your proposed outcome will be utilised in 9lives&apos; oracle.
+            </p>
+            <p className="text-center text-xs text-9black/50">
+              By participating in this outcome proposal, you agree to lock-up
+              your staked $ARB tokens until 1 week after the market&apos;s end
+              date.
+            </p>
+          </div>
+        )}
         {infraState === InfraMarketState.Predicting ? (
           <p className="inline-block bg-9yellow px-5 py-1 text-xs font-bold">
             Participating in more outcome proposals result in higher potential
