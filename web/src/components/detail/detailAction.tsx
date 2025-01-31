@@ -113,6 +113,9 @@ export default function DetailCall2Action({
       setIsMinting(false);
     }
   }
+  function handleFocus() {
+    if (!account) connect();
+  }
   const setToMaxShare = async () => {
     const balance = (await simulateTransaction({
       transaction: prepareContractCall({
@@ -221,6 +224,7 @@ export default function DetailCall2Action({
                 max={Number.MAX_SAFE_INTEGER}
                 value={fusdc}
                 placeholder="0"
+                onFocus={handleFocus}
                 onChange={(e) => {
                   const fusdc =
                     Number(e.target.value) >= Number.MAX_SAFE_INTEGER
@@ -256,6 +260,7 @@ export default function DetailCall2Action({
               max={Number.MAX_SAFE_INTEGER}
               value={share}
               placeholder="0"
+              onFocus={handleFocus}
               onChange={(e) => {
                 const share =
                   Number(e.target.value) >= Number.MAX_SAFE_INTEGER
