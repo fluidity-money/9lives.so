@@ -10,7 +10,6 @@ export default function CampaignBody({
   data: Campaign;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
-  const outcomeIds = data.outcomes.map((o) => o.identifier as `0x${string}`);
   return (
     <>
       <CampaignItemHeader
@@ -20,14 +19,16 @@ export default function CampaignBody({
         solo={data.outcomes.length === 1}
         soloRatio={32}
       />
-      <CampaignItemOutcomes
-        isConcluded={Boolean(data.winner)}
-        isYesNo={data.isYesNo}
-        campaignId={data.identifier}
-        outcomes={data.outcomes}
-        setSelectedOutcome={setSelectedOutcome}
-      />
-      <CampaignItemFooter volume={data.totalVolume} />
+      <div>
+        <CampaignItemOutcomes
+          isConcluded={Boolean(data.winner)}
+          isYesNo={data.isYesNo}
+          campaignId={data.identifier}
+          outcomes={data.outcomes}
+          setSelectedOutcome={setSelectedOutcome}
+        />
+        <CampaignItemFooter volume={data.totalVolume} />
+      </div>
     </>
   );
 }
