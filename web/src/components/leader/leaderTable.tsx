@@ -2,10 +2,12 @@ import { combineClass } from "@/utils/combineClass";
 import React from "react";
 import LeaderRow from "./leaderRow";
 import useLeaderboard from "@/hooks/useLeaderboard";
+import { useActiveAccount } from "thirdweb/react";
 
 export default function LeaderTable() {
   const titles = ["Rank", "User", "Score", "Profit"];
   const { data } = useLeaderboard();
+  const account = useActiveAccount();
   return (
     <table className="w-full border-separate border-spacing-0 overflow-auto">
       <thead className="sticky top-0 bg-9layer">
@@ -24,6 +26,7 @@ export default function LeaderTable() {
         </tr>
       </thead>
       <tbody className="w-full">
+        {account?.address ? null : <LeaderRow />}
         {data?.map((item) => <LeaderRow key={item.wallet} data={item} />)}
       </tbody>
     </table>
