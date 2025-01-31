@@ -13,17 +13,16 @@ import (
 	"strings"
 	"time"
 
-	"gorm.io/gorm"
-
-	ethCommon "github.com/ethereum/go-ethereum/common"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
+	"github.com/fluidity-money/9lives.so/lib/types/banners"
 	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
+	"gorm.io/gorm"
 )
 
 // Name is the resolver for the name field.
@@ -168,6 +167,30 @@ func (r *campaignResolver) InvestmentAmounts(ctx context.Context, obj *types.Cam
 		return nil, fmt.Errorf("campaign is nil")
 	}
 	return obj.InvestmentAmounts, nil
+}
+
+// Banners is the resolver for the banners field.
+func (r *campaignResolver) Banners(ctx context.Context, obj *types.Campaign) ([]string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("empty campaign")
+	}
+	var b []banners.Banner
+	err := r.DB.Table("ninelives_banners_1").
+		Where("pool = ?", obj.ID).
+		Find(&b).
+		Error
+	if err != nil {
+		slog.Error("Failed to find banners",
+			"pool", obj.ID,
+			"err", err,
+		)
+		return nil, fmt.Errorf("find banners: %v", err)
+	}
+	msgs := make([]string, len(b))
+	for i := 0; i < len(b); i++ {
+		msgs[i] = b[i].Message
+	}
+	return msgs, nil
 }
 
 // ID is the resolver for the id field.

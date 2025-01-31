@@ -326,6 +326,11 @@ type Campaign {
   Represents investment results bytes8 ids to amounts.
   """
   investmentAmounts: [InvestmentAmounts]!
+
+  """
+  Any moderator sent banners notifying people of a change in this market.
+  """
+  banners: [String!]!
 }
 
 type InvestmentAmounts {
