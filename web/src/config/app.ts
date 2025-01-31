@@ -3,7 +3,7 @@ import z from "zod";
 
 const metadata = {
   title: "9Lives.so",
-  description: "The most capital efficient prediction market",
+  description: "The most advanced prediction market",
   metadataBase: new URL("https://9lives.so"),
   keywords: [
     "prediction market",
@@ -13,6 +13,8 @@ const metadata = {
     "onchain",
     "superposition",
     "blockchain",
+    "arbitrum",
+    "web3",
   ],
 };
 const infraMarketStateTitles: Record<InfraMarketState, string> = {
