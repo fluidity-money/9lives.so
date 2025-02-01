@@ -757,6 +757,16 @@ async fn main() -> Result<(), Error> {
 
     linker.func_wrap(
         "stylus_interpreter",
+        "simpledie",
+        |mut caller: Caller<_>, code: i32| {
+            eprintln!("simple die exit: {code}");
+            process::exit(code);
+            #[allow(unused)]
+            Ok(())
+        },
+    )?;
+    linker.func_wrap(
+        "stylus_interpreter",
         "die",
         |mut caller: Caller<_>, ptr: i32, len: i32, code: i32| {
             let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
