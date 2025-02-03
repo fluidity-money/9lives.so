@@ -206,7 +206,7 @@ export default function DetailCall2Action({
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2.5">
             <div
               className={combineClass(

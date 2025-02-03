@@ -110,7 +110,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
       </div>
       <div
         className={combineClass(
-          minimized ? "flex-row" : "flex-col",
+          minimized ? "flex-row justify-between" : "flex-col",
           "flex gap-4",
         )}
       >

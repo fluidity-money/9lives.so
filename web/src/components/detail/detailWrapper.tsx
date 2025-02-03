@@ -12,6 +12,8 @@ import AssetScene from "../user/assetScene";
 import DetailResults from "./detailResults";
 import { useQuery } from "@tanstack/react-query";
 import { requestCampaignById } from "@/providers/graphqlClient";
+import { useDegenStore } from "@/stores/degenStore";
+import { combineClass } from "@/utils/combineClass";
 
 export default function DetailWrapper({
   initialData,
@@ -51,8 +53,15 @@ export default function DetailWrapper({
     },
     initialData,
   });
+  const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
+
   return (
-    <>
+    <section
+      className={combineClass(
+        isDegenModeEnabled ? "xl:flex-row xl:gap-4" : "md:flex-row md:gap-4",
+        "flex h-full flex-col gap-8",
+      )}
+    >
       <div className="flex flex-[2] flex-col gap-8">
         <DetailHeader data={data} isEnded={isEnded} isConcluded={isConcluded} />
         <DetailOutcomeTable
@@ -81,6 +90,6 @@ export default function DetailWrapper({
         )}
         <AssetScene tradingAddr={data.poolAddress} outcomes={data.outcomes} />
       </div>
-    </>
+    </section>
   );
 }

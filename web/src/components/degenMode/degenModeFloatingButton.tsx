@@ -13,7 +13,7 @@ export default function DegenModeFloatingButton() {
       <button
         id="degen-floating-button"
         onClick={handleClick}
-        className="fixed bottom-2 left-2 size-10 rounded-sm border border-9black bg-9layer text-base shadow-9btnPrimaryIdle hover:shadow-9btnPrimaryHover focus:outline-none focus-visible:shadow-9btnPrimaryFocus active:shadow-9btnPrimaryActive disabled:shadow-9btnPrimaryDisabled md:hidden"
+        className="fixed bottom-2 left-2 size-10 rounded-sm border border-9black bg-9layer text-base shadow-9btnPrimaryIdle hover:shadow-9btnPrimaryHover focus:outline-none focus-visible:shadow-9btnPrimaryFocus active:shadow-9btnPrimaryActive disabled:shadow-9btnPrimaryDisabled sm:hidden"
       >
         🐵
       </button>

@@ -14,7 +14,7 @@ export default function Clock() {
 
   return (
     <div
-      className="hidden h-10 items-center justify-center border-l-2 border-l-black px-4 font-chicago md:flex"
+      className="hidden h-10 items-center justify-center border-l-2 border-l-black px-4 font-chicago xl:flex"
       suppressHydrationWarning
     >
       {date.toLocaleTimeString("en", {

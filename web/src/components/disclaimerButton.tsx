@@ -20,7 +20,9 @@ export default function DisclaimerButton() {
         className="flex h-10 items-center justify-center gap-1 border-9black px-4 md:border-l-2"
         onClick={() => setIsModalOpen(true)}
       >
-        <span className="font-chicago text-xs underline">How It Works</span>{" "}
+        <span className="font-chicago text-xs underline md:hidden lg:inline">
+          How It Works
+        </span>{" "}
         <Image src={InfoIcon} className="w-5 md:w-4" alt="How it works?" />
       </button>
       <Modal
