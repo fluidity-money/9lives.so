@@ -20,6 +20,9 @@ jobs:
       - name: Enable pnpm
         run: corepack enable pnpm
 
+      - name: Prepare pnpm
+        run: corepack prepare pnpm@latest --activate
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
