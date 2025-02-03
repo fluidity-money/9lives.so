@@ -39,6 +39,17 @@ const infraMarketStateColors: Record<InfraMarketState, string> = {
   [InfraMarketState.Closed]: "bg-9green",
   [InfraMarketState.Loading]: "bg-9gray",
 } as const;
+const infraMarketStateFees: Record<InfraMarketState, bigint> = {
+  [InfraMarketState.Callable]: BigInt(2e6),
+  [InfraMarketState.Closable]: BigInt(0),
+  [InfraMarketState.Whinging]: BigInt(7e6),
+  [InfraMarketState.Predicting]: BigInt(0),
+  [InfraMarketState.Revealing]: BigInt(0),
+  [InfraMarketState.Declarable]: BigInt(0),
+  [InfraMarketState.Sweeping]: BigInt(0),
+  [InfraMarketState.Closed]: BigInt(0),
+  [InfraMarketState.Loading]: BigInt(0),
+} as const;
 const appSchema = z.object({
   /**
    * Generated metadata of the web app and wagmi will use this object
@@ -52,6 +63,7 @@ const appSchema = z.object({
   infraMarket: z.object({
     titles: z.record(z.string(), z.string()),
     colors: z.record(z.string(), z.string()),
+    fees: z.record(z.string(), z.bigint()),
   }),
 });
 
@@ -60,6 +72,7 @@ const appVars = appSchema.safeParse({
   infraMarket: {
     titles: infraMarketStateTitles,
     colors: infraMarketStateColors,
+    fees: infraMarketStateFees,
   },
 });
 

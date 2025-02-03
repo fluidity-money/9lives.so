@@ -7,6 +7,7 @@ import appConfig from "@/config";
 import { Account } from "thirdweb/wallets";
 import { InfraMarketState } from "@/types";
 import toast from "react-hot-toast";
+import config from "@/config";
 interface InfraMarketProps {
   tradingAddr: `0x${string}`;
   infraState?: InfraMarketState;
@@ -141,6 +142,36 @@ export default function useInfraMarket(props: InfraMarketProps) {
     [InfraMarketState.Closed]: null,
     [InfraMarketState.Loading]: null,
   } as const;
-  const currentAction = actionMap[props.infraState ?? InfraMarketState.Loading];
+  const currentAction = async (outcomeId: `0x${string}`, account: Account) => {
+    const amount =
+      config.infraMarket.fees[props.infraState ?? InfraMarketState.Loading];
+    if (amount > BigInt(0)) {
+      const allowanceTx = prepareContractCall({
+        contract: config.contracts.fusdc,
+        method: "allowance",
+        params: [account.address, config.contracts.buyHelper.address],
+      });
+      const allowance = (await simulateTransaction({
+        transaction: allowanceTx,
+        account,
+      })) as bigint;
+      if (amount > allowance) {
+        const approveTx = prepareContractCall({
+          contract: config.contracts.fusdc,
+          method: "approve",
+          params: [config.contracts.buyHelper.address, amount],
+        });
+        await sendTransaction({
+          transaction: approveTx,
+          account,
+        });
+      }
+    }
+    const action = actionMap[props.infraState ?? InfraMarketState.Loading];
+    if (action) {
+      return action(outcomeId, account);
+    }
+    throw new Error("No valid action available for the current state.");
+  };
   return { getStatus, action: currentAction };
 }
