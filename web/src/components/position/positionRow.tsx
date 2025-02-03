@@ -38,13 +38,13 @@ export default function PositionRow({
         </span>
       </td>
       <td className="flex justify-end px-2">
-        <a
+        {/* <a
           href={`https://long.so/stake/pool?id=${data.shareAddress}`}
           target="_blank"
           rel="noopener,noreferrer"
         >
           <Button title="LP" />
-        </a>
+        </a> */}
       </td>
     </tr>
   );
