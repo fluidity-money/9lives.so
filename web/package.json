@@ -1,7 +1,7 @@
 {
   "name": "web",
   "version": "0.1.0",
-  "packageManager": "pnpm@9.14.2+sha256.06e65a4965baff6d6097f9c8f75c35f6d420974dbc03d775009056a69edfd271",
+  "packageManager": "pnpm@9.15.0",
   "type": "module",
   "private": true,
   "scripts": {
