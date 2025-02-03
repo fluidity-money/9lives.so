@@ -1,9 +1,9 @@
-import CampaignList from "@/components/campaign/campaignList";
+import CampaignTabScene from "@/components/campaign/campaignTabScene";
 
 export default async function Home() {
   return (
     <section>
-      <CampaignList />
+      <CampaignTabScene />
     </section>
   );
 }
