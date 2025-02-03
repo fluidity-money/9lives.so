@@ -30,7 +30,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
       console.error(error);
     }
   };
-  const propose = (outcomeId: `0x${string}`, account: Account) =>
+  const call = (outcomeId: `0x${string}`, account: Account) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
@@ -131,7 +131,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
     InfraMarketState,
     ((outcomeId: `0x${string}`, account: Account) => Promise<string>) | null
   > = {
-    [InfraMarketState.Callable]: propose,
+    [InfraMarketState.Callable]: call,
     [InfraMarketState.Closable]: close,
     [InfraMarketState.Whinging]: whinge,
     [InfraMarketState.Predicting]: predict,
