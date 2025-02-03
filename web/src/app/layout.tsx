@@ -17,6 +17,7 @@ import {
   getCachedBuysAndSells,
   getCachedCreations,
 } from "../serverData/getActions";
+import DegenModeFloatingButton from "@/components/degenMode/degenModeFloatingButton";
 
 const chicago = localFont({
   src: [
@@ -95,6 +96,7 @@ export default async function RootLayout({
             <DegenModeWrapper />
           </main>
           <Footer />
+          <DegenModeFloatingButton />
         </Providers>
         <CookieBanner />
         <CustomToaster />

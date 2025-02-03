@@ -8,7 +8,7 @@ import { useActiveAccount } from "thirdweb/react";
 import SparkleImg from "#/images/sparkle.svg";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useClaim from "@/hooks/useClaim";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import formatFusdc from "@/utils/formatFusdc";
@@ -84,6 +84,17 @@ export default function DetailResults({ data }: DetailResultsProps) {
       setIsClaiming(false);
     }
   }
+
+  useEffect(() => {
+    const floatingBtn = document.getElementById("degen-floating-button");
+    if (floatingBtn) {
+      floatingBtn.style.marginBottom = "156px";
+
+      return () => {
+        floatingBtn.style.marginBottom = "0px";
+      };
+    }
+  }, []);
 
   return (
     <ShadowCard className="fixed inset-x-0 bottom-0 z-10 flex flex-col gap-4 p-4 md:relative">

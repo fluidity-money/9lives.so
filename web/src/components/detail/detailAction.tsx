@@ -141,6 +141,16 @@ export default function DetailCall2Action({
     setValue("share", 0);
   }, [price, setValue]);
 
+  useEffect(() => {
+    const floatingBtn = document.getElementById("degen-floating-button");
+    if (floatingBtn) {
+      floatingBtn.style.marginBottom = "150px";
+      return () => {
+        floatingBtn.style.marginBottom = "0px";
+      };
+    }
+  }, []);
+
   return (
     <>
       <ShadowCard
