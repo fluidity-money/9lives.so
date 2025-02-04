@@ -108,7 +108,10 @@ export default function ProposeOutcome({
             "bg-9yellow px-1 py-0.5 font-geneva text-xs uppercase text-9black"
           }
         >
-          End Date: {new Date(ending).toDateString()}
+          End Date:{" "}
+          {new Date(
+            ending.toString().length === 10 ? ending * 1000 : ending,
+          ).toDateString()}
         </span>
         <span
           className={
