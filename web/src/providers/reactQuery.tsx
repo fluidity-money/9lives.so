@@ -8,7 +8,6 @@ import {
   Campaign,
   CreationResponse,
 } from "@/types";
-import { getCampaigns } from "@/serverData/getCampaigns";
 import { getTotalUserCount } from "@/serverData/getTotalUserCount";
 
 export default function ReactQueryProvider({
@@ -31,10 +30,7 @@ export default function ReactQueryProvider({
       queryFn: () => fetch(appConfig.NEXT_PUBLIC_FEATURES_URL),
     });
 
-    client.setQueryDefaults(["campaigns"], {
-      queryFn: getCampaigns,
-      initialData: initialData.campaigns,
-    });
+    client.setQueryData(["campaigns", "volume"], initialData.campaigns);
 
     client.setQueryDefaults(["totalUserCount"], {
       queryFn: getTotalUserCount,

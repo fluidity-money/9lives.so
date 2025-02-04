@@ -3,9 +3,11 @@ import {
   requestLeaderboard,
   requestAchievments,
 } from "./providers/graphqlClient";
-
+export interface CampaignFilters {
+  orderBy?: "newest" | "volume" | "ending";
+}
 export type Campaign = Omit<
-  Awaited<typeof requestCampaignList>[number],
+  Awaited<ReturnType<typeof requestCampaignList>>[number],
   "outcomes"
 > & {
   identifier: `0x${string}`;

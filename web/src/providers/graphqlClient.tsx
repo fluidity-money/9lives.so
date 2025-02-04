@@ -2,7 +2,7 @@ import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
-import { OutcomeInput } from "@/types";
+import { CampaignFilters, OutcomeInput } from "@/types";
 
 const graph9Lives = Lives9.create().transport({
   url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
@@ -13,32 +13,34 @@ const graph9LivesSubs = Graffle.create().transport({
 const graphPoints = Points.create().transport({
   url: appConfig.NEXT_PUBLIC_POINTS_URL,
 });
-export const requestCampaignList = graph9Lives.query.campaigns({
-  name: true,
-  identifier: true,
-  description: true,
-  picture: true,
-  oracleDescription: true,
-  oracleUrls: true,
-  settlement: true,
-  poolAddress: true,
-  creator: {
-    address: true,
-  },
-  outcomes: {
-    identifier: true,
+export const requestCampaignList = (orderBy?: CampaignFilters["orderBy"]) =>
+  graph9Lives.query.campaigns({
+    $: { orderBy },
     name: true,
+    identifier: true,
     description: true,
     picture: true,
-    share: {
+    oracleDescription: true,
+    oracleUrls: true,
+    settlement: true,
+    poolAddress: true,
+    creator: {
       address: true,
     },
-  },
-  ending: true,
-  starting: true,
-  winner: true,
-  totalVolume: true,
-});
+    outcomes: {
+      identifier: true,
+      name: true,
+      description: true,
+      picture: true,
+      share: {
+        address: true,
+      },
+    },
+    ending: true,
+    starting: true,
+    winner: true,
+    totalVolume: true,
+  });
 export const requestAchievments = (wallet?: string) =>
   graphPoints.query.achievements({
     $: { wallet },

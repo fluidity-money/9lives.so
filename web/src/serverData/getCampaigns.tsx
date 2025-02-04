@@ -52,7 +52,11 @@ export async function getCampaigns() {
   });
 }
 
-export const getCachedCampaigns = unstable_cache(getCampaigns, ["campaigns"], {
-  revalidate: 3600,
-  tags: ["campaigns"],
-});
+export const getCachedCampaigns = unstable_cache(
+  getCampaigns,
+  ["campaigns", "volume"],
+  {
+    revalidate: 3600,
+    tags: ["campaigns"],
+  },
+);
