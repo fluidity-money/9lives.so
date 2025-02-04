@@ -7,10 +7,11 @@ import { useDegenStore } from "@/stores/degenStore";
 import { useState } from "react";
 import { Select } from "@headlessui/react";
 import { requestCampaignList } from "@/providers/graphqlClient";
-
+import Image from "next/image";
+import LoadingImage from "#/icons/loading.svg";
 export default function CampaignList() {
   const [orderBy, setOrderBy] = useState<CampaignFilters["orderBy"]>("volume");
-  const { data } = useQuery<Campaign[]>({
+  const { data, isLoading } = useQuery<Campaign[]>({
     queryKey: ["campaigns", orderBy],
     queryFn: async () => {
       const campaigns = (await requestCampaignList(orderBy)) as Campaign[];
@@ -49,16 +50,28 @@ export default function CampaignList() {
           </option>
         ))}
       </Select>
-      <div
-        className={combineClass(
-          "grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-4",
-          !isDegenModeEnabled && "sm:grid-cols-2",
-        )}
-      >
-        {data?.map((campaign) => (
-          <CampaignItem key={campaign.identifier} data={campaign} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="h-100 flex items-center justify-center">
+          <Image
+            src={LoadingImage}
+            className="animate-spin"
+            alt="Loading"
+            width={16}
+          />
+          <span className="ml-2 font-geneva text-sm">Loading...</span>
+        </div>
+      ) : (
+        <div
+          className={combineClass(
+            "grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-4",
+            !isDegenModeEnabled && "sm:grid-cols-2",
+          )}
+        >
+          {data?.map((campaign) => (
+            <CampaignItem key={campaign.identifier} data={campaign} />
+          ))}
+        </div>
+      )}
     </>
   );
 }
