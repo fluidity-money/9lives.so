@@ -3,7 +3,7 @@ type Query {
   """
   Campaign List that can be filtered according to categories
   """
-  campaigns(category:[String!]): [Campaign!]!
+  campaigns(category:[String!], orderBy:String): [Campaign!]!
 
   """
   Get a campaign by its ID. May or may not exist.

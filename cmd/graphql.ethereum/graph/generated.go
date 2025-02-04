@@ -103,7 +103,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		CampaignByID       func(childComplexity int, id string) int
-		Campaigns          func(childComplexity int, category []string) int
+		Campaigns          func(childComplexity int, category []string, orderBy *string) int
 		Changelog          func(childComplexity int) int
 		SuggestedHeadlines func(childComplexity int) int
 	}
@@ -151,7 +151,7 @@ type MutationResolver interface {
 	RevealCommitment2(ctx context.Context, tradingAddr *string, sender *string, seed *string, preferredOutcome *string, rr *string, s *string, v *string) (*bool, error)
 }
 type QueryResolver interface {
-	Campaigns(ctx context.Context, category []string) ([]types.Campaign, error)
+	Campaigns(ctx context.Context, category []string, orderBy *string) ([]types.Campaign, error)
 	CampaignByID(ctx context.Context, id string) (*types.Campaign, error)
 	SuggestedHeadlines(ctx context.Context) ([]string, error)
 	Changelog(ctx context.Context) ([]*changelog.Changelog, error)
@@ -458,7 +458,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Campaigns(childComplexity, args["category"].([]string)), true
+		return e.complexity.Query.Campaigns(childComplexity, args["category"].([]string), args["orderBy"].(*string)), true
 
 	case "Query.changelog":
 		if e.complexity.Query.Changelog == nil {
@@ -907,6 +907,15 @@ func (ec *executionContext) field_Query_campaigns_args(ctx context.Context, rawA
 		}
 	}
 	args["category"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg1
 	return args, nil
 }
 
@@ -2536,7 +2545,7 @@ func (ec *executionContext) _Query_campaigns(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Campaigns(rctx, fc.Args["category"].([]string))
+		return ec.resolvers.Query().Campaigns(rctx, fc.Args["category"].([]string), fc.Args["orderBy"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

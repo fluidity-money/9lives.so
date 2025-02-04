@@ -19,8 +19,8 @@ import (
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
-	"github.com/fluidity-money/9lives.so/lib/types/banners"
 	"github.com/fluidity-money/9lives.so/lib/types"
+	"github.com/fluidity-money/9lives.so/lib/types/banners"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
 	"gorm.io/gorm"
 )
@@ -491,32 +491,30 @@ func (r *mutationResolver) RevealCommitment2(ctx context.Context, tradingAddr *s
 }
 
 // Campaigns is the resolver for the campaigns field.
-func (r *queryResolver) Campaigns(ctx context.Context, category []string) ([]types.Campaign, error) {
+func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderBy *string) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
 	if r.F.Is(features.FeatureGraphqlMockGraph) {
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
-	err := r.DB.Raw(
-		`SELECT
-    nc.*,
-    COALESCE(nbas.total_volume, 0) AS total_volume
-FROM
-    ninelives_campaigns_1 nc
-LEFT JOIN (
-    SELECT
-        campaign_id,
-        MAX(total_volume) AS total_volume
-    FROM
-        ninelives_buys_and_sells_1
-    GROUP BY
-        campaign_id
-) nbas
-ON
-    nc.id = nbas.campaign_id
-ORDER BY
-    total_volume DESC;`,
-	).
+	query := r.DB.Table("ninelives_campaigns_1 AS nc").
+		Select("nc.*, COALESCE(nbas.total_volume, 0) AS total_volume").
+		Joins("LEFT JOIN (SELECT campaign_id, MAX(total_volume) AS total_volume FROM ninelives_buys_and_sells_1 GROUP BY campaign_id) nbas ON nc.id = nbas.campaign_id")
+	if orderBy == nil {
+		query = query.Order("total_volume DESC")
+	} else {
+		switch *orderBy {
+		case "newest":
+			query = query.Order("nc.created_at DESC")
+		case "volume":
+			query = query.Order("total_volume DESC")
+		case "ending":
+			query = query.Order("nc.content->>'ending' ASC")
+		default:
+			return nil, fmt.Errorf("invalid orderBy value")
+		}
+	}
+	err := query.
 		Scan(&campaigns).
 		Error
 	if err != nil {
