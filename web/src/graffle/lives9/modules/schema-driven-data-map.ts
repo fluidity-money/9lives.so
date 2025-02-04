@@ -137,6 +137,7 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     investmentAmounts: {
       // nt: InvestmentAmounts, <-- Assigned later to avoid potential circular dependency.
     },
+    banners: {},
   },
 };
 
@@ -240,6 +241,10 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         category: {
           nt: String,
           it: [0, [1]],
+        },
+        orderBy: {
+          nt: String,
+          it: [0],
         },
       },
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.

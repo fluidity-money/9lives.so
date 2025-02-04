@@ -138,6 +138,7 @@ export namespace Query {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     category?: Array<string | undefined | null> | undefined | null;
+    orderBy?: string | undefined | null;
   }
 
   // --- expanded ---
@@ -821,6 +822,14 @@ export interface Campaign<
   investmentAmounts?:
     | Campaign.investmentAmounts$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Campaign.investmentAmounts<_$Scalars>>;
+  /**
+   *
+   * Select the `banners` field on the `Campaign` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  banners?:
+    | Campaign.banners$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.banners<_$Scalars>>;
 
   /**
    *
@@ -1386,6 +1395,34 @@ export namespace Campaign {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<investmentAmounts$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type banners<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | banners$SelectionSet<_$Scalars>;
+
+  export interface banners$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `banners` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type banners$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | banners$SelectionSet<_$Scalars>
+  >;
 }
 
 //                                         InvestmentAmounts

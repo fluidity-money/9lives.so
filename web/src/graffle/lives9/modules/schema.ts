@@ -58,6 +58,12 @@ export namespace Schema {
           inlineType: [0, [1]];
           namedType: $$NamedTypes.$$String;
         };
+        orderBy: {
+          kind: "InputField";
+          name: "orderBy";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
       };
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$Campaign;
@@ -470,6 +476,7 @@ export namespace Schema {
       winner: Campaign.winner;
       totalVolume: Campaign.totalVolume;
       investmentAmounts: Campaign.investmentAmounts;
+      banners: Campaign.banners;
     };
   }
 
@@ -676,6 +683,16 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$InvestmentAmounts;
+    }
+
+    /**
+     * Any moderator sent banners notifying people of a change in this market.
+     */
+    export interface banners extends $.OutputField {
+      name: "banners";
+      arguments: {};
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$String;
     }
   }
 
