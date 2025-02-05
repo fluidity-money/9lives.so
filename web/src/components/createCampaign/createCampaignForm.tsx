@@ -87,7 +87,6 @@ export default function CreateCampaignForm() {
         },
       ),
     name: z.string().min(3),
-    description: z.string().min(5),
     seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
   });
   const formSchema = useMemo(
@@ -140,7 +139,6 @@ export default function CreateCampaignForm() {
                 z.object({
                   picture: z.instanceof(File),
                   name: z.string().max(300),
-                  description: z.string().max(1000),
                   seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
                 }),
               ),
@@ -176,13 +174,11 @@ export default function CreateCampaignForm() {
       outcomes: [
         {
           name: "",
-          description: "",
           picture: new File([], ""),
           seed: randomValue4Uint8(),
         },
         {
           name: "",
-          description: "",
           picture: new File([], ""),
           seed: randomValue4Uint8(),
         },
@@ -198,7 +194,6 @@ export default function CreateCampaignForm() {
       outcomes = input.outcomes.slice(0, 2).map((o, idx) => ({
         ...o,
         name: idx === 0 ? "Yes" : "No",
-        description: "",
         picture: "",
       }));
     } else {
@@ -243,7 +238,6 @@ export default function CreateCampaignForm() {
         outcomes: fields.outcomes.map((outcome, index) => {
           return {
             name: outcome.name,
-            description: outcome.description,
             picture: outcomeImageBlobs[index] ?? "",
             seed: 0,
           };

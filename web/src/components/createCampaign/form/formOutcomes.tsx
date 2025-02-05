@@ -36,7 +36,6 @@ type CreateCampaignFormOutcomesFields = {
   outcomes: {
     name: string;
     picture: File;
-    description: string;
   }[];
 };
 export default function CreateCampaignFormOutcomes({
@@ -180,15 +179,6 @@ export default function CreateCampaignFormOutcomes({
                     placeholder="Outcome name"
                     {...register(`outcomes.${idx}.name`)}
                   />
-                  <Input
-                    className={combineClass(
-                      "flex-1",
-                      errors.outcomes?.[idx]?.description &&
-                        "border-2 border-red-500",
-                    )}
-                    placeholder="Outcome description"
-                    {...register(`outcomes.${idx}.description`)}
-                  />
                   {idx > 1 && (
                     <Button
                       title="Del"
@@ -216,11 +206,6 @@ export default function CreateCampaignFormOutcomes({
                   {errors.outcomes?.[idx]?.name ? (
                     <ErrorInfo text={errors.outcomes?.[idx]?.name.message} />
                   ) : null}
-                  {errors.outcomes?.[idx]?.description ? (
-                    <ErrorInfo
-                      text={errors.outcomes?.[idx]?.description.message}
-                    />
-                  ) : null}
                 </div>
               </Field>
             ))}
@@ -231,7 +216,6 @@ export default function CreateCampaignFormOutcomes({
                 );
                 append({
                   name: "",
-                  description: "",
                   picture: new File([], ""),
                   seed: randomValue4Uint8(),
                 });

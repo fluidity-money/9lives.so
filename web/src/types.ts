@@ -20,7 +20,6 @@ export type CampaignDetail = Campaign & {
 };
 export type Outcome = {
   name: string;
-  description: string;
   picture: string;
   identifier: `0x${string}`;
   share: { address: `0x${string}` };
@@ -63,7 +62,6 @@ export type CampaignInput = {
 export type OutcomeInput = {
   picture: string;
   name: string;
-  description: string;
   seed: number;
 };
 export type Action = {
