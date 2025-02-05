@@ -88,7 +88,6 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
   n: "OutcomeInput",
   f: {
     name: {},
-    description: {},
     seed: {},
     picture: {},
   },
@@ -152,7 +151,6 @@ const InvestmentAmounts: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 const Outcome: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     name: {},
-    description: {},
     picture: {},
     identifier: {},
     share: {

@@ -123,13 +123,10 @@ export default function CreateCampaignPreview() {
                     </span>
                   </div>
                 )}
-                <div className="flex min-h-10 flex-1 flex-col gap-0.5 border border-9black p-1.5 shadow-9btnPrimaryIdle">
+                <div className="flex min-h-10 flex-1 flex-col justify-center gap-0.5 border border-9black p-1.5 shadow-9btnPrimaryIdle">
                   <h4 className="font-chicago text-xs">
                     {item.name || `Outcome ${idx + 1}`}
                   </h4>
-                  <h5 className="font-geneva text-xs text-gray-500">
-                    {item.description || "Description"}
-                  </h5>
                 </div>
               </div>
             ))}

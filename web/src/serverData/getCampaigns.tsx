@@ -19,7 +19,6 @@ const query = `
         outcomes {
           identifier
           name
-          description
           picture
           share {
             address

@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { requestCreateCampaign } from "@/providers/graphqlClient";
 import { useCampaignStore } from "@/stores/campaignStore";
 import clientEnv from "../config/clientEnv";
-import { generateId } from "@/utils/generateId";
+import { generateCampaignId, generateOutcomeId } from "@/utils/generateId";
 import helperAbi from "@/config/abi/helperFactory";
 // HelperApprovalAmount taken by the contract for every deployment (in the current
 // two outcome DPM mode).
@@ -72,11 +72,15 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
                 throw new Error("You dont have enough USDC.");
               }
           }
-          const campaignId = generateId(input.name, input.desc, input.seed);
+          const campaignId = generateCampaignId(
+            input.name,
+            input.desc,
+            input.seed,
+          );
           const draftCampaign = draftCampaigns.find((c) => c.id === campaignId);
           if (!draftCampaign) {
             const creationList = input.outcomes.map((o) => ({
-              identifier: generateId(o.name, o.description, o.seed),
+              identifier: generateOutcomeId(o.name, o.seed),
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
               name: input.name.slice(0, 8) + o.name,
             }));

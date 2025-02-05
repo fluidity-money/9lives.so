@@ -30,7 +30,6 @@ export const requestCampaignList = (orderBy?: CampaignFilters["orderBy"]) =>
     outcomes: {
       identifier: true,
       name: true,
-      description: true,
       picture: true,
       share: {
         address: true,
@@ -161,7 +160,6 @@ export const requestCampaignById = (id: string) =>
     outcomes: {
       identifier: true,
       name: true,
-      description: true,
       picture: true,
       share: {
         address: true,

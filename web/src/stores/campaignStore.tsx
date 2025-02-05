@@ -1,5 +1,5 @@
 import { CampaignInput } from "@/types";
-import { generateId } from "@/utils/generateId";
+import { generateOutcomeId, generateCampaignId } from "@/utils/generateId";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -14,11 +14,15 @@ export const useCampaignStore = create<CampaignStore>()(
       campaigns: [],
       upsertCampaign: (input) =>
         set((state) => {
-          const campaignId = generateId(input.name, input.desc, input.seed);
+          const campaignId = generateCampaignId(
+            input.name,
+            input.desc,
+            input.seed,
+          );
           const seededOutcomes = input.outcomes.map((outcome) => {
             return {
               ...outcome,
-              id: generateId(outcome.name, outcome.description, outcome.seed),
+              id: generateOutcomeId(outcome.name, outcome.seed),
             };
           });
           const existedCampaigns = [...state.campaigns];

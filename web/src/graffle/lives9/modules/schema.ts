@@ -761,7 +761,6 @@ export namespace Schema {
     fields: {
       __typename: Outcome.__typename;
       name: Outcome.name;
-      description: Outcome.description;
       picture: Outcome.picture;
       identifier: Outcome.identifier;
       share: Outcome.share;
@@ -784,16 +783,6 @@ export namespace Schema {
      */
     export interface name extends $.OutputField {
       name: "name";
-      arguments: {};
-      inlineType: [1];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    /**
-     * Text description of this campaign.
-     */
-    export interface description extends $.OutputField {
-      name: "description";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
@@ -1012,7 +1001,6 @@ export namespace Schema {
     isAllFieldsNullable: false;
     fields: {
       name: OutcomeInput.name;
-      description: OutcomeInput.description;
       seed: OutcomeInput.seed;
       picture: OutcomeInput.picture;
     };
@@ -1024,15 +1012,6 @@ export namespace Schema {
      */
     export interface name extends $.InputField {
       name: "name";
-      inlineType: [1];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    /**
-     * Text description of the outcome.
-     */
-    export interface description extends $.InputField {
-      name: "description";
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }

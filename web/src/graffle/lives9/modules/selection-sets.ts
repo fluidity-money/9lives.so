@@ -628,10 +628,6 @@ export interface OutcomeInput<
    */
   name: string;
   /**
-   * Text description of the outcome.
-   */
-  description: string;
-  /**
    * Randomly chosen seed for the creation of the identifier.
    */
   seed: number;
@@ -1598,14 +1594,6 @@ export interface Outcome<
     | $Select.SelectAlias.SelectAlias<Outcome.name<_$Scalars>>;
   /**
    *
-   * Select the `description` field on the `Outcome` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  description?:
-    | Outcome.description$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Outcome.description<_$Scalars>>;
-  /**
-   *
    * Select the `picture` field on the `Outcome` object. Its type is `String` (a `ScalarStandard` kind of type).
    *
    */
@@ -1686,34 +1674,6 @@ export namespace Outcome {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type description<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | description$SelectionSet<_$Scalars>;
-
-  export interface description$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `description` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type description$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | description$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
