@@ -271,7 +271,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		}
 	}
 	// Create the campaign object
-	campaignId, _ := crypto.GetOutcomeId(name, uint64(seed))
+	campaignId, _ := crypto.GetCampaignId(name, description, uint64(seed))
 	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
 	var tradingAddrStr, contractOwner string
 	if isNotPrecommit {

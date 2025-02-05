@@ -14,6 +14,22 @@ type Outcome struct {
 	Seed uint64
 }
 
+func GetCampaignId(name, desc string, seed uint64) ([]byte, error) {
+	var buf bytes.Buffer
+	if _, err := buf.WriteString(name); err != nil {
+		return nil, err
+	}
+	if _, err := buf.WriteString(desc); err != nil {
+		return nil, err
+	}
+	err := binary.Write(&buf, binary.BigEndian, uint64(seed))
+	if err != nil {
+		return nil, err
+	}
+	x := ethCrypto.Keccak256(buf.Bytes())[:8]
+	return x, nil
+}
+
 func GetOutcomeId(name string, seed uint64) ([]byte, error) {
 	var buf bytes.Buffer
 	if _, err := buf.WriteString(name); err != nil {
