@@ -21,10 +21,10 @@ The 2024 United States presidential election will be the 60th quadrennial presid
 			Seed:        123,
 			PoolAddress: "0x0000000000000000000000000000000000000000",
 			Outcomes: []types.Outcome{
-				{Name: "Kamala Harris", Description: "s", Seed: 12, Identifier: "0x59303e9e", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
-				{Name: "Donald Trump", Description: "d", Seed: 13, Identifier: "0x46647bf6", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
-				{Name: "Shahmeer Chaudhry", Description: "t", Seed: 14, Identifier: "0x233a1b30", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
-				{Name: "Michelle Obama", Description: "c", Seed: 15, Identifier: "0x2b48de91", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
+				{Name: "Kamala Harris", Seed: 12, Identifier: "0x59303e9e", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
+				{Name: "Donald Trump", Seed: 13, Identifier: "0x46647bf6", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
+				{Name: "Shahmeer Chaudhry", Seed: 14, Identifier: "0x233a1b30", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
+				{Name: "Michelle Obama", Seed: 15, Identifier: "0x2b48de91", Share: &types.Share{Address: "0x0000000000000000000000000000000000000000"}},
 			},
 		}}
 	var list = make([]types.Campaign, 1)

@@ -11,17 +11,17 @@ func TestGetMarketId(t *testing.T) {
 	outcomes := []Outcome{
 		{
 			Name: "Yes",
-			Desc: "",
 			Seed: 671424635701772,
 		},
 		{
 			Name: "No",
-			Desc: "",
 			Seed: 4374720138937106,
 		},
 	}
 	outcomeIds, err := GetOutcomeIds(outcomes)
 	assert.Nil(t, err)
+	// these test result will not be correct because description is removed after
+	// so test will fail, fix expected outputs
 	assert.Equalf(t, hex.EncodeToString(outcomeIds[0]), "72cfc911637aa0c4", "outcome 1 bad")
 	assert.Equalf(t, hex.EncodeToString(outcomeIds[1]), "d2cd4a70ce6885d5", "outcome 2 bad")
 	assert.Equal(t,

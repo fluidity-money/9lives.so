@@ -31,11 +31,6 @@ input OutcomeInput {
   name: String!
 
   """
-  Text description of the outcome.
-  """
-  description: String!
-
-  """
   Randomly chosen seed for the creation of the identifier.
   """
   seed: Int!
@@ -357,10 +352,6 @@ type Outcome {
   """
   name: String!
 
-  """
-  Text description of this campaign.
-  """
-  description: String!
 
   """
   Picture of the outcome.

@@ -231,7 +231,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	for i, o := range outcomes {
 		outcomes_[i] = crypto.Outcome{
 			Name: o.Name,
-			Desc: o.Description,
 			Seed: uint64(o.Seed),
 		}
 	}
@@ -272,7 +271,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		}
 	}
 	// Create the campaign object
-	campaignId, _ := crypto.GetOutcomeId(name, description, uint64(seed))
+	campaignId, _ := crypto.GetOutcomeId(name, uint64(seed))
 	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
 	var tradingAddrStr, contractOwner string
 	if isNotPrecommit {
@@ -329,7 +328,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	for i, outcome := range outcomes {
 		outcomeId, _ := crypto.GetOutcomeId(
 			outcome.Name,
-			outcome.Description,
 			uint64(outcome.Seed),
 		)
 		hexOutcomeId := "0x" + hex.EncodeToString(outcomeId)
@@ -382,11 +380,10 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			}
 		}
 		campaignOutcomes[i] = types.Outcome{
-			Name:        outcome.Name,
-			Description: outcome.Description,
-			Picture:     outcomePicUrl,
-			Seed:        outcome.Seed,
-			Identifier:  hexOutcomeId,
+			Name:       outcome.Name,
+			Picture:    outcomePicUrl,
+			Seed:       outcome.Seed,
+			Identifier: hexOutcomeId,
 			Share: &types.Share{
 				Address: shareAddrStr,
 			},

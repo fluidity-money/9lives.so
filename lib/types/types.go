@@ -36,9 +36,6 @@ type (
 		// Name of this campaign.
 		Name string `json:"name"`
 
-		// Text description of this campaign.
-		Description string `json:"description"`
-
 		// Picture of the outcome as base64 string.
 		Picture string `json:"picture"`
 

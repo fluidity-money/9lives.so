@@ -15,8 +15,6 @@ type Mutation struct {
 type OutcomeInput struct {
 	// Name of the campaign outcome. Ie, "Donald Trump" for the election.
 	Name string `json:"name"`
-	// Text description of the outcome.
-	Description string `json:"description"`
 	// Randomly chosen seed for the creation of the identifier.
 	Seed int `json:"seed"`
 	// Picture of the outcome.

@@ -10,11 +10,11 @@ import (
 )
 
 func main() {
-	seed, err := strconv.ParseInt(os.Args[3], 10, 0)
+	seed, err := strconv.ParseInt(os.Args[2], 10, 0)
 	if err != nil {
 		panic(err)
 	}
-	identifier, err := crypto.GetOutcomeId(os.Args[1], os.Args[2], uint64(seed))
+	identifier, err := crypto.GetOutcomeId(os.Args[1], uint64(seed))
 	if err != nil {
 		panic(err)
 	}
@@ -22,8 +22,7 @@ func main() {
 	defer writer.Flush()
 	data := []string{
 		os.Args[1],                      // Name
-		os.Args[2],                      // Description
-		os.Args[3],                      // Seed
+		os.Args[2],                      // Seed
 		fmt.Sprintf("0x%x", identifier), // Identifier in hex format
 	}
 	if err := writer.Write(data); err != nil {

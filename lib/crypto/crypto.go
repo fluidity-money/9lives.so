@@ -10,16 +10,13 @@ import (
 )
 
 type Outcome struct {
-	Name, Desc string
-	Seed       uint64
+	Name string
+	Seed uint64
 }
 
-func GetOutcomeId(name, desc string, seed uint64) ([]byte, error) {
+func GetOutcomeId(name string, seed uint64) ([]byte, error) {
 	var buf bytes.Buffer
 	if _, err := buf.WriteString(name); err != nil {
-		return nil, err
-	}
-	if _, err := buf.WriteString(desc); err != nil {
 		return nil, err
 	}
 	err := binary.Write(&buf, binary.BigEndian, uint64(seed))
@@ -33,7 +30,7 @@ func GetOutcomeId(name, desc string, seed uint64) ([]byte, error) {
 func GetOutcomeIds(outcomes []Outcome) (ids [][]byte, err error) {
 	ids = make([][]byte, len(outcomes))
 	for i, o := range outcomes {
-		ids[i], err = GetOutcomeId(o.Name, o.Desc, o.Seed)
+		ids[i], err = GetOutcomeId(o.Name, o.Seed)
 		if err != nil {
 			return nil, fmt.Errorf("get outcome id: %v", err)
 		}
