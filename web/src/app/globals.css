@@ -159,3 +159,11 @@ div[id^="radix"][role="dialog"][data-state="open"] div[data-error] {
 .mint-box-margin {
   margin-bottom: 150px;
 }
+
+body:not(.degen-mode) main {
+  @apply justify-center;
+}
+
+body:not(.degen-mode) main > div:first-child {
+  @apply max-w-screen-xl;
+}
