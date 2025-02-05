@@ -5,7 +5,7 @@ interface DegenStore {
   toggleDegenMode: () => void;
 }
 export const useDegenStore = create<DegenStore>()((set) => ({
-  degenModeEnabled: true,
+  degenModeEnabled: false,
   toggleDegenMode: () =>
     set(({ degenModeEnabled }) => ({
       degenModeEnabled: !degenModeEnabled,
