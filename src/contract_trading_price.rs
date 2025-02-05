@@ -5,6 +5,7 @@ use rust_decimal::Decimal;
 use crate::{
     decimal::{fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_u256_to_decimal},
     error::*,
+    immutables::*,
     maths,
 };
 
@@ -28,7 +29,7 @@ impl StorageTrading {
 impl StorageTrading {
     #[allow(unused)]
     fn internal_dpm_price(&self, id: FixedBytes<8>) -> R<U256> {
-        if self.outcome_invested.get(id).is_zero(){
+        if self.outcome_invested.get(id).is_zero() {
             return Ok(U256::ZERO);
         }
         let m_1 = c!(fusdc_u256_to_decimal(self.outcome_invested.get(id)));
@@ -67,6 +68,9 @@ impl StorageTrading {
                         .ok_or(Error::CheckedMulOverflow));
                 }
             }
+            product = product
+                .checked_div(SHARE_DECIMALS_EXP)
+                .ok_or(Error::CheckedDivOverflow)?;
             //outcome_price_weights.append(product)
             price_weight_sum = c!(price_weight_sum
                 .checked_add(product)
@@ -77,6 +81,9 @@ impl StorageTrading {
             }
         }
         //outcome_price_weights[k] / price_weight_of_all_outcomes
-        Ok(c!(price_weight_ours.ok_or(Error::NonexistentOutcome)) / price_weight_sum)
+        Ok(c!(c!(price_weight_ours.ok_or(Error::NonexistentOutcome))
+            .checked_mul(SHARE_DECIMALS_EXP)
+            .ok_or(Error::CheckedDivOverflow))
+            / price_weight_sum)
     }
 }

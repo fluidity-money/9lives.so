@@ -597,8 +597,9 @@ async fn main() -> Result<(), Error> {
                         )
                     }
                 }
+                let block = *BLOCK.get().unwrap();
                 eprintln!(
-                    "spn call --from {} {contract} {} # => status {status}: {:x}",
+                    "spn call --block {block} --from {} {contract} {} # => status {status}: {:x}",
                     ADDR.get().unwrap(),
                     const_hex::encode(&calldata),
                     d.clone().unwrap_or_default()
@@ -689,6 +690,11 @@ async fn main() -> Result<(), Error> {
                         32,
                     );
                 }
+                eprintln!(
+                    "written: {}: {}",
+                    const_hex::encode(key),
+                    const_hex::encode(val)
+                );
                 STORAGE_WRITTEN.get().unwrap().lock().await.insert(key, val);
             })
         }
@@ -758,7 +764,7 @@ async fn main() -> Result<(), Error> {
     linker.func_wrap(
         "stylus_interpreter",
         "simpledie",
-        |mut caller: Caller<_>, code: i32| {
+        |_: Caller<_>, code: i32| {
             eprintln!("simple die exit: {code}");
             process::exit(code);
             #[allow(unused)]

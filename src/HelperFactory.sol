@@ -20,6 +20,8 @@ interface IERC20Permit {
 
 uint256 constant INCENTIVE_AMT_MODERATION = 1e6;
 
+uint256 constant INCENTIVE_INFRA_MARKET = 2200000;
+
 contract HelperFactory {
     IERC20Permit immutable FUSDC;
     INineLivesFactory immutable FACTORY;
@@ -71,7 +73,7 @@ contract HelperFactory {
         address feeRecipient
     ) public returns (address tradingAddr) {
         // We need to take the base incentive amount for transfers.
-        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6) + 2200000);
+        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6) + INCENTIVE_INFRA_MARKET);
         return create(
             INFRA_MARKET,
             outcomes,

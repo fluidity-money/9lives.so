@@ -107,6 +107,13 @@ contract MockTrading is INineLivesTrading {
         return amount;
     }
 
+    function payoffQuote1FA6DC28(
+        bytes8 outcome,
+        uint256 amount
+    ) external view returns (uint256) {
+        return amount;
+    }
+
     function details(bytes8 /* outcomeId */) external pure returns (
         uint256 shares,
         uint256 investedAmt,

@@ -457,6 +457,10 @@ pub enum Error {
     // There's been an issue in the build chain and you're accessing a
     // function that shouldn't be able to be used.
     TestingUnreachable,
+
+    // This outcome was zero, and we want to prevent strange behaviour
+    // at this point.
+    OutcomeIsZero,
 }
 
 #[cfg(any(

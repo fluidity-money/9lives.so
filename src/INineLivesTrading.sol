@@ -84,6 +84,17 @@ interface INineLivesTrading {
     ) external returns (uint256);
 
     /**
+     * @notice Return the amount that would be earned if payoff was used under normal
+     * circumstances.
+     * @param outcomeId to use as the outcome to simulate payoff for.
+     * @param amount to simulate with.
+     */
+    function payoffQuote1FA6DC28(
+        bytes8 outcomeId,
+        uint256 amount
+    ) external view returns (uint256);
+
+    /**
      * @notice Details that're available for this outcome.
      * @param outcomeId to get the details for
      */

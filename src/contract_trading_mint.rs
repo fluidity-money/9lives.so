@@ -66,16 +66,7 @@ impl StorageTrading {
         let share_bal = U256::min(share_call::balance_of(share_addr, msg_sender())?, amt);
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg_sender(), share_bal)?;
-        #[cfg(feature = "trading-backend-dpm")]
-        let fusdc = fusdc_decimal_to_u256(maths::dpm_payoff(
-            share_u256_to_decimal(share_bal)?,
-            share_u256_to_decimal(self.outcome_shares.get(outcome_id))?,
-            fusdc_u256_to_decimal(self.global_invested.get())?,
-        )?)?;
-        // This should be $1!
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        let fusdc = self.global_invested.get() / self.outcome_shares.get(outcome_id);
-        fusdc_call::transfer(recipient, fusdc)?;
+        let fusdc = self.internal_payoff(outcome_id, share_bal)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
             sharesSpent: share_bal,
@@ -83,7 +74,13 @@ impl StorageTrading {
             recipient,
             fusdcReceived: fusdc,
         });
+        fusdc_call::transfer(recipient, fusdc)?;
         Ok(fusdc)
+    }
+
+    #[allow(non_snake_case)]
+    pub fn payoff_quote_1_F_A_6_D_C_28(&self, outcome_id: FixedBytes<8>, amt: U256) -> R<U256> {
+        self.internal_payoff(outcome_id, amt)
     }
 }
 
@@ -250,6 +247,19 @@ impl StorageTrading {
         });
 
         Ok(shares)
+    }
+
+    fn internal_payoff(&self, outcome_id: FixedBytes<8>, _share_bal: U256) -> R<U256> {
+        #[cfg(feature = "trading-backend-dpm")]
+        let fusdc = fusdc_decimal_to_u256(maths::dpm_payoff(
+            share_u256_to_decimal(_share_bal)?,
+            share_u256_to_decimal(self.outcome_shares.get(outcome_id))?,
+            fusdc_u256_to_decimal(self.global_invested.get())?,
+        )?)?;
+        // This should be $1!
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        let fusdc = self.global_invested.get() / self.outcome_shares.get(outcome_id);
+        Ok(fusdc)
     }
 }
 

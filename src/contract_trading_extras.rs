@@ -35,7 +35,7 @@ impl StorageTrading {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // DPM only for now (TODO, as we test the AMM properly, this will
         // change).
-        assert_or!(outcomes.len() == 2, Error::DPMOnly);
+         assert_or!(outcomes.len() == 2, Error::DPMOnly);
         // Make sure that the user hasn't given us any zero values, or the end
         // date isn't in the past, in places that don't make sense!
         assert_or!(
@@ -58,14 +58,24 @@ impl StorageTrading {
             // is presumably pretty cheap.
             self.outcome_list.set_len(0);
         }
+        #[cfg(feature = "trading-backend-amm")]
+        let outcome_len = outcomes.len();
         for outcome_id in outcomes {
+            // This isn't a precaution that we actually need, but there may be weird
+            // behaviour with this being possible (ie, payoff before the end date).
+            assert_or!(!outcome_id.is_zero(), Error::OutcomeIsZero);
             // We always set this to 1 now.
             self.outcome_invested
                 .setter(outcome_id)
                 .set(SHARE_DECIMALS_EXP);
+            #[cfg(feature = "trading-backend-dpm")]
             self.outcome_shares
                 .setter(outcome_id)
                 .set(U256::from(1) * SHARE_DECIMALS_EXP);
+            #[cfg(feature = "trading-backend-amm")]
+            self.outcome_shares
+                .setter(outcome_id)
+                .set(U256::from(outcome_len) * SHARE_DECIMALS_EXP);
             self.outcome_list.push(outcome_id);
         }
         // We assume that the sender is the factory.

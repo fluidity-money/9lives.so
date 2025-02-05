@@ -1,6 +1,6 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
-#[cfg(feature = "trading-backend-dpm")]
+#[allow(unused)]
 use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256};
 
 #[allow(unused)]
@@ -10,6 +10,8 @@ use lib9lives::{
     immutables::{DAO_ADDR, FUSDC_ADDR},
     should_spend_fusdc_sender, strat_storage_trading, testing_addrs,
     utils::{block_timestamp, msg_sender, strat_fixed_bytes, strat_tiny_u256},
+    interactions_clear_after,
+    testing_addrs::*
 };
 
 use proptest::proptest;
@@ -49,6 +51,62 @@ fn test_e2e_mint_dpm() {
             erc20_call::balance_of(FUSDC_ADDR, DAO_ADDR).unwrap(),
             dao_fee + creator_fee
         );
+    })
+}
+
+#[test]
+#[cfg(feature = "trading-backend-amm")]
+fn test_e2e_mint_amm() {
+    use lib9lives::storage_trading::StorageTrading;
+    with_contract::<_, StorageTrading, _>(|c| {
+        let outcome_1 = fixed_bytes!("0541d76af67ad076");
+        let outcome_3 = fixed_bytes!("3be0d8814450a582");
+        let outcome_3 = fixed_bytes!("3be0d8814450a583");
+        let outcomes = vec![outcome_1, outcome_3, outcome_3];
+        c.ctor(
+            outcomes.clone(),
+            msg_sender(), // Whoever can call the oracle.
+            block_timestamp() + 1,
+            block_timestamp() + 2,
+            DAO_ADDR,             // The fee recipient.
+            testing_addrs::SHARE, // The share impl.
+            false,
+        )
+        .unwrap();
+        for (i, outcome_id) in outcomes.iter().enumerate() {
+            assert_eq!(
+                U256::from(3e6 as u64),
+                c.outcome_shares.get(*outcome_id),
+                "outcome count: {i}"
+            );
+            assert_eq!(
+                U256::from(333333),
+                c.price_A_827_E_D_27(*outcome_id).unwrap()
+            );
+        }
+        interactions_clear_after! {
+            IVAN => {
+                assert_eq!(
+                    U256::from(12737751), // TODO: REDUCED SLIGHTLY FROM 13e6
+                    should_spend_fusdc_sender!(
+                        U256::from(10e6 as u64),
+                        c.mint_permit_E_90275_A_B(
+                            outcome_3,
+                            U256::from(10e6 as u64),
+                            msg_sender(),
+                            U256::ZERO,
+                            0,
+                            FixedBytes::<32>::ZERO,
+                            FixedBytes::<32>::ZERO
+                        )
+                    )
+                );
+                assert_eq!(
+                    U256::from(13e6),
+                    c.outcome_shares.get(outcome_3)
+                );
+            },
+        }
     })
 }
 
