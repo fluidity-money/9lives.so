@@ -46,7 +46,7 @@ export default function CampaignList() {
       >
         {orderByFilters.map(([key, title]) => (
           <option key={key} value={key}>
-            {title}
+            Sort: {title}
           </option>
         ))}
       </Select>
