@@ -523,6 +523,18 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	return campaigns, nil
 }
 
+// SearchCampaigns is the resolver for the searchCampaigns field.
+func (r *queryResolver) SearchCampaigns(ctx context.Context, term string) ([]types.Campaign, error) {
+	var campaigns []types.Campaign
+	err := r.DB.Table("ninelives_campaigns_1").
+		Where("name_to_search ILIKE ?", "%"+term+"%").
+		Find(&campaigns).Error
+	if err != nil {
+		return nil, fmt.Errorf("search error: %v", err)
+	}
+	return campaigns, nil
+}
+
 // CampaignByID is the resolver for the campaignById field.
 func (r *queryResolver) CampaignByID(ctx context.Context, id string) (*types.Campaign, error) {
 	if id == "" || !strings.HasPrefix(id, "0x") {

@@ -6,6 +6,11 @@ type Query {
   campaigns(category:[String!], orderBy:String): [Campaign!]!
 
   """
+  Search campaigns with name
+  """
+  searchCampaigns(term:String!): [Campaign!]!
+
+  """
   Get a campaign by its ID. May or may not exist.
   """
   campaignById(id: String!): Campaign
