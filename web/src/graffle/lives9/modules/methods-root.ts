@@ -56,6 +56,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
+   * Search campaigns with name
+   */
+  searchCampaigns: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.searchCampaigns<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { searchCampaigns: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "searchCampaigns"
+        >
+    >
+  >;
+  /**
    * Get a campaign by its ID. May or may not exist.
    */
   campaignById: $$Utilities.ClientTransports.PreflightCheck<

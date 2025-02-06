@@ -29,6 +29,7 @@ export namespace Schema {
     fields: {
       __typename: Query.__typename;
       campaigns: Query.campaigns;
+      searchCampaigns: Query.searchCampaigns;
       campaignById: Query.campaignById;
       suggestedHeadlines: Query.suggestedHeadlines;
       changelog: Query.changelog;
@@ -62,6 +63,23 @@ export namespace Schema {
           kind: "InputField";
           name: "orderBy";
           inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$Campaign;
+    }
+
+    /**
+     * Search campaigns with name
+     */
+    export interface searchCampaigns extends $.OutputField {
+      name: "searchCampaigns";
+      arguments: {
+        term: {
+          kind: "InputField";
+          name: "term";
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
       };

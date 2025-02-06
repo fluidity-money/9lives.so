@@ -61,6 +61,14 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.campaigns<_$Scalars>>;
   /**
    *
+   * Select the `searchCampaigns` field on the `Query` object. Its type is `Campaign` (a `OutputObject` kind of type).
+   *
+   */
+  searchCampaigns?:
+    | Query.searchCampaigns<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.searchCampaigns<_$Scalars>>;
+  /**
+   *
    * Select the `campaignById` field on the `Query` object. Its type is `Campaign` (a `OutputObject` kind of type).
    *
    */
@@ -154,6 +162,45 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<campaigns$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type searchCampaigns<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = searchCampaigns$SelectionSet<_$Scalars>;
+
+  export interface searchCampaigns$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Campaign<_$Scalars> {
+    /**
+     * Arguments for `searchCampaigns` field. All arguments are required so you must include this.
+     */
+    $: searchCampaigns$Arguments<_$Scalars>;
+  }
+
+  export interface searchCampaigns$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    term: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `searchCampaigns` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type searchCampaigns$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<searchCampaigns$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 

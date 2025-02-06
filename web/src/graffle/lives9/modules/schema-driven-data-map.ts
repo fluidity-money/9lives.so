@@ -247,6 +247,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
+    searchCampaigns: {
+      a: {
+        term: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
+    },
     campaignById: {
       a: {
         id: {
@@ -406,6 +415,7 @@ Campaign.f[`outcomes`]!.nt = Outcome;
 Campaign.f[`investmentAmounts`]!.nt = InvestmentAmounts;
 Outcome.f[`share`]!.nt = Share;
 Query.f[`campaigns`]!.nt = Campaign;
+Query.f[`searchCampaigns`]!.nt = Campaign;
 Query.f[`campaignById`]!.nt = Campaign;
 Query.f[`changelog`]!.nt = Changelog;
 
