@@ -55,10 +55,8 @@ export default function CampaignList() {
       ["volume", "Volume"],
     ];
   useEffect(() => {
-    if (searchTermInput) {
-      const timer = setTimeout(() => setSearcTermFilter(searchTermInput), 300);
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => setSearcTermFilter(searchTermInput), 300);
+    return () => clearTimeout(timer);
   }, [searchTermInput]);
   return (
     <>
