@@ -1,6 +1,6 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
 import { requestCampaignById } from "@/providers/graphqlClient";
-import { getCampaigns } from "@/serverData/getCampaigns";
+import { getCampaignsForSSG } from "@/serverData/getCampaigns";
 import { CampaignDetail } from "@/types";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -8,7 +8,7 @@ import { Suspense } from "react";
 export const dynamicParams = true;
 export const revalidate = 60;
 export async function generateStaticParams() {
-  const campaigns = await getCampaigns();
+  const campaigns = await getCampaignsForSSG();
   return campaigns.map((campaign) => ({
     id: campaign.identifier,
   }));

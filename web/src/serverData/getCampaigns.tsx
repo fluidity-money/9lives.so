@@ -31,7 +31,25 @@ const query = `
       }
     }
   `;
-
+const queryForSSG = `
+    query Campaigns {
+      campaigns {
+        identifier
+      }
+    }
+  `;
+export async function getCampaignsForSSG() {
+  const res = await fetch(appConfig.NEXT_PUBLIC_GRAPHQL_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query: queryForSSG }),
+  });
+  const result = await res.json();
+  const campaigns = result.data.campaigns as { identifier: string }[];
+  return campaigns;
+}
 export async function getCampaigns() {
   const res = await fetch(appConfig.NEXT_PUBLIC_GRAPHQL_URL, {
     method: "POST",
@@ -50,7 +68,6 @@ export async function getCampaigns() {
     return campaign;
   });
 }
-
 export const getCachedCampaigns = unstable_cache(
   getCampaigns,
   ["campaigns", "volume"],
