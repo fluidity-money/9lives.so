@@ -1,7 +1,6 @@
 "use client";
 import { Campaign, CampaignFilters } from "@/types";
 import CampaignItem from "./campaignItem";
-import { useQuery } from "@tanstack/react-query";
 import { combineClass } from "@/utils/combineClass";
 import { useDegenStore } from "@/stores/degenStore";
 import { useEffect, useState } from "react";
@@ -12,25 +11,42 @@ import Input from "../themed/input";
 import CloseIcon from "#/icons/close.svg";
 import SearchIcon from "#/icons/search.svg";
 import LoadingIndicator from "../loadingIndicator";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import Button from "../themed/button";
+
 export default function CampaignList() {
   const [orderBy, setOrderBy] = useState<CampaignFilters["orderBy"]>("volume");
   const [searchTermInput, setSearchTermInput] = useState("");
   const [searcTermFilter, setSearcTermFilter] = useState("");
-  const { data, isLoading } = useQuery<Campaign[]>({
-    queryKey: ["campaigns", orderBy],
-    queryFn: async () => {
-      const campaigns = (await requestCampaignList(orderBy)) as Campaign[];
-      return campaigns.map((campaign) => {
-        campaign["isYesNo"] =
-          campaign.outcomes.length === 2 &&
-          campaign.outcomes.findIndex((outcome) => outcome.name === "Yes") !==
-            -1 &&
-          campaign.outcomes.findIndex((outcome) => outcome.name === "No") !==
-            -1;
-        return campaign;
-      });
-    },
-  });
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery<Campaign[]>({
+      queryKey: ["campaigns", orderBy, searcTermFilter],
+      queryFn: async ({ pageParam }) => {
+        if (typeof pageParam !== "number") return [];
+        const campaigns = (await requestCampaignList({
+          orderBy,
+          searchTerm: searcTermFilter,
+          page: pageParam,
+          pageSize: pageParam === 0 ? 32 : 8,
+        })) as Campaign[];
+        return campaigns.map((campaign) => {
+          campaign["isYesNo"] =
+            campaign.outcomes.length === 2 &&
+            campaign.outcomes.findIndex((outcome) => outcome.name === "Yes") !==
+              -1 &&
+            campaign.outcomes.findIndex((outcome) => outcome.name === "No") !==
+              -1;
+          return campaign;
+        });
+      },
+      initialPageParam: 0,
+      getNextPageParam: (lastPage, pages, lastPageParam) => {
+        if (lastPage.length < 8) return undefined;
+        if (typeof lastPageParam !== "number") return undefined;
+        return lastPageParam + 1;
+      },
+    });
+  const campaigns = data?.pages.flatMap((c) => c);
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   const orderByFilters: Array<[Required<CampaignFilters["orderBy"]>, string]> =
     [
@@ -91,17 +107,31 @@ export default function CampaignList() {
       </div>
       {isLoading ? (
         <LoadingIndicator />
-      ) : (
-        <div
-          className={combineClass(
-            "grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-4",
-            !isDegenModeEnabled && "sm:grid-cols-2",
-          )}
-        >
-          {data?.map((campaign) => (
-            <CampaignItem key={campaign.identifier} data={campaign} />
-          ))}
+      ) : campaigns?.length === 0 ? (
+        <div className="flex items-center justify-center">
+          <span className="font-geneva text-xs">No result found.</span>
         </div>
+      ) : (
+        <>
+          <div
+            className={combineClass(
+              "grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-4",
+              !isDegenModeEnabled && "sm:grid-cols-2",
+            )}
+          >
+            {campaigns?.map((campaign) => (
+              <CampaignItem key={campaign.identifier} data={campaign} />
+            ))}
+          </div>
+          {hasNextPage ? (
+            <Button
+              disabled={isFetchingNextPage}
+              title={isFetchingNextPage ? "Loading" : "Load More"}
+              onClick={() => fetchNextPage()}
+              className={"mt-4 w-full"}
+            />
+          ) : null}
+        </>
       )}
     </>
   );

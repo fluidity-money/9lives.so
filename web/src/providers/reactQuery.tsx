@@ -30,7 +30,10 @@ export default function ReactQueryProvider({
       queryFn: () => fetch(appConfig.NEXT_PUBLIC_FEATURES_URL),
     });
 
-    client.setQueryData(["campaigns", "volume"], initialData.campaigns);
+    client.setQueryData(["campaigns", "volume", ""], () => ({
+      pages: [initialData.campaigns],
+      pageParams: [0],
+    }));
 
     client.setQueryDefaults(["totalUserCount"], {
       queryFn: getTotalUserCount,

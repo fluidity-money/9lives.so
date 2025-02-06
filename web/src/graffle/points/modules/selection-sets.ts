@@ -107,6 +107,14 @@ export interface Query<
   getDiscordName?:
     | Query.getDiscordName<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.getDiscordName<_$Scalars>>;
+  /**
+   *
+   * Select the `removeCampaign` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  removeCampaign?:
+    | Query.removeCampaign<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.removeCampaign<_$Scalars>>;
 
   /**
    *
@@ -413,6 +421,44 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getDiscordName$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type removeCampaign<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = removeCampaign$SelectionSet<_$Scalars>;
+
+  export interface removeCampaign$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `removeCampaign` field. All arguments are required so you must include this.
+     */
+    $: removeCampaign$Arguments<_$Scalars>;
+  }
+
+  export interface removeCampaign$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    campaignId: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `removeCampaign` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type removeCampaign$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<removeCampaign$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

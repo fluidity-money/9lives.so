@@ -4,7 +4,11 @@ import {
   requestAchievments,
 } from "./providers/graphqlClient";
 export interface CampaignFilters {
+  // category?: string; // not developed yet
   orderBy?: "newest" | "volume" | "ending";
+  searchTerm?: string;
+  page?: number;
+  pageSize?: number;
 }
 export type Campaign = Omit<
   Awaited<ReturnType<typeof requestCampaignList>>[number],

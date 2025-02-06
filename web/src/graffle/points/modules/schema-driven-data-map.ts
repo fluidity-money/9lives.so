@@ -253,6 +253,14 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    removeCampaign: {
+      a: {
+        campaignId: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 

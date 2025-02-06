@@ -13,9 +13,9 @@ const graph9LivesSubs = Graffle.create().transport({
 const graphPoints = Points.create().transport({
   url: appConfig.NEXT_PUBLIC_POINTS_URL,
 });
-export const requestCampaignList = (orderBy?: CampaignFilters["orderBy"]) =>
+export const requestCampaignList = (filterParams: CampaignFilters) =>
   graph9Lives.query.campaigns({
-    $: { orderBy },
+    $: { ...filterParams },
     name: true,
     identifier: true,
     description: true,

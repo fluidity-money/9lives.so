@@ -4,7 +4,7 @@ import { Campaign } from "@/types";
 import appConfig from "@/config";
 const query = `
     query Campaigns {
-      campaigns {
+      campaigns(pageSize: 32) {
         name
         identifier
         description
@@ -32,11 +32,11 @@ const query = `
     }
   `;
 const queryForSSG = `
-    query Campaigns {
-      campaigns {
-        identifier
-      }
+  query Campaigns {
+    campaigns(page: -1) {
+    identifier
     }
+  }
   `;
 export async function getCampaignsForSSG() {
   const res = await fetch(appConfig.NEXT_PUBLIC_GRAPHQL_URL, {

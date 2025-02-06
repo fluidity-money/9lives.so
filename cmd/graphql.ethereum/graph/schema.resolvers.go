@@ -488,15 +488,29 @@ func (r *mutationResolver) RevealCommitment2(ctx context.Context, tradingAddr *s
 }
 
 // Campaigns is the resolver for the campaigns field.
-func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderBy *string) ([]types.Campaign, error) {
+func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
 	if r.F.Is(features.FeatureGraphqlMockGraph) {
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
 	query := r.DB.Table("ninelives_campaigns_1 AS nc").
-		Select("nc.*, COALESCE(nbas.total_volume, 0) AS total_volume").
-		Joins("LEFT JOIN (SELECT campaign_id, MAX(total_volume) AS total_volume FROM ninelives_buys_and_sells_1 GROUP BY campaign_id) nbas ON nc.id = nbas.campaign_id")
+		Select("nc.*, COALESCE(nbas.total_volume, 0) AS total_volume")
+	if searchTerm != nil {
+		query = query.Where("name_to_search ILIKE ?", "%"+*searchTerm+"%")
+	}
+	if page == nil {
+		defaultPage := 0
+		page = &defaultPage
+	}
+	if pageSize == nil {
+		defaultPageSize := 8
+		pageSize = &defaultPageSize
+	}
+	if *page != -1 {
+		query = query.Offset(*page * *pageSize).Limit(*pageSize)
+	}
+	query = query.Joins("LEFT JOIN (SELECT campaign_id, MAX(total_volume) AS total_volume FROM ninelives_buys_and_sells_1 GROUP BY campaign_id) nbas ON nc.id = nbas.campaign_id")
 	if orderBy == nil {
 		query = query.Order("total_volume DESC")
 	} else {
@@ -519,18 +533,6 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 			"error", err,
 		)
 		return nil, fmt.Errorf("error getting campaigns from database")
-	}
-	return campaigns, nil
-}
-
-// SearchCampaigns is the resolver for the searchCampaigns field.
-func (r *queryResolver) SearchCampaigns(ctx context.Context, term string) ([]types.Campaign, error) {
-	var campaigns []types.Campaign
-	err := r.DB.Table("ninelives_campaigns_1").
-		Where("name_to_search ILIKE ?", "%"+term+"%").
-		Find(&campaigns).Error
-	if err != nil {
-		return nil, fmt.Errorf("search error: %v", err)
 	}
 	return campaigns, nil
 }

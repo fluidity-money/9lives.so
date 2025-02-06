@@ -35,6 +35,7 @@ export namespace Schema {
       getPointsComponent: Query.getPointsComponent;
       getAddressByDiscord: Query.getAddressByDiscord;
       getDiscordName: Query.getDiscordName;
+      removeCampaign: Query.removeCampaign;
     };
   }
 
@@ -169,6 +170,23 @@ export namespace Schema {
         handle: {
           kind: "InputField";
           name: "handle";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Remove a campaign, using authentication to do so.
+     */
+    export interface removeCampaign extends $.OutputField {
+      name: "removeCampaign";
+      arguments: {
+        campaignId: {
+          kind: "InputField";
+          name: "campaignId";
           inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
