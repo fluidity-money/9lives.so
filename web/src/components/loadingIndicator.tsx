@@ -2,7 +2,7 @@ import Image from "next/image";
 import LoadingImage from "#/icons/loading.svg";
 export default function LoadingIndicator() {
   return (
-    <div className="h-100 flex items-center justify-center">
+    <div className="flex items-center justify-center">
       <Image
         src={LoadingImage}
         className="animate-spin"
