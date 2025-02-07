@@ -8,9 +8,8 @@ CREATE TABLE ninelives_events_deadline_extension(
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
-	identifier BYTES32 NOT NULL UNIQUE,
-	address ADDRESS NOT NULL UNIQUE,
-	oracle ADDRESS NOT NULL
+	time_before TIMESTAMP NOT NULL,
+	time_after TIMESTAMP NOT NULL
 );
 
 CREATE TABLE ninelives_events_market_created2(
