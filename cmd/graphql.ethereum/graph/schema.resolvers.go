@@ -495,22 +495,11 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		return campaigns, nil
 	}
 	query := r.DB.Table("ninelives_campaigns_1 AS nc").
-		Select("nc.*, COALESCE(nbas.total_volume, 0) AS total_volume")
+		Select("nc.*, COALESCE(nbas.total_volume, 0) AS total_volume").
+		Joins("LEFT JOIN (SELECT campaign_id, MAX(total_volume) AS total_volume FROM ninelives_buys_and_sells_1 GROUP BY campaign_id) nbas ON nc.id = nbas.campaign_id")
 	if searchTerm != nil {
 		query = query.Where("name_to_search ILIKE ?", "%"+*searchTerm+"%")
 	}
-	if page == nil {
-		defaultPage := 0
-		page = &defaultPage
-	}
-	if pageSize == nil {
-		defaultPageSize := 8
-		pageSize = &defaultPageSize
-	}
-	if *page != -1 {
-		query = query.Offset(*page * *pageSize).Limit(*pageSize)
-	}
-	query = query.Joins("LEFT JOIN (SELECT campaign_id, MAX(total_volume) AS total_volume FROM ninelives_buys_and_sells_1 GROUP BY campaign_id) nbas ON nc.id = nbas.campaign_id")
 	if orderBy == nil {
 		query = query.Order("total_volume DESC")
 	} else {
@@ -525,6 +514,17 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 			return nil, fmt.Errorf("invalid orderBy value")
 		}
 	}
+	pageNum := 0
+	if page != nil {
+		pageNum = *page
+	}
+	pageSizeNum := 8
+	if pageSize != nil {
+		pageSizeNum = *pageSize
+	}
+	if pageNum != -1 {
+		query = query.Offset(pageNum * pageSizeNum).Limit(pageSizeNum)
+	}
 	err := query.
 		Scan(&campaigns).
 		Error
@@ -532,7 +532,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		slog.Error("Error getting campaigns from database",
 			"error", err,
 		)
-		return nil, fmt.Errorf("error getting campaigns from database")
+		return nil, fmt.Errorf("error getting campaigns from database: %w", err)
 	}
 	return campaigns, nil
 }
