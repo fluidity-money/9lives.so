@@ -41,8 +41,10 @@ export default function CampaignList() {
       },
       initialPageParam: 0,
       getNextPageParam: (lastPage, pages, lastPageParam) => {
+        if (lastPageParam === 0 && lastPage.length < 32) return undefined;
         if (lastPage.length < 8) return undefined;
         if (typeof lastPageParam !== "number") return undefined;
+        if (lastPageParam === 0) return 4;
         return lastPageParam + 1;
       },
     });
