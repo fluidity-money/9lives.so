@@ -107,7 +107,9 @@ export default function CampaignList() {
         <LoadingIndicator />
       ) : campaigns?.length === 0 ? (
         <div className="flex items-center justify-center">
-          <span className="font-geneva text-xs">No result found.</span>
+          <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+            No results found
+          </span>
         </div>
       ) : (
         <>
@@ -121,14 +123,20 @@ export default function CampaignList() {
               <CampaignItem key={campaign.identifier} data={campaign} />
             ))}
           </div>
-          {hasNextPage ? (
-            <Button
-              disabled={isFetchingNextPage}
-              title={isFetchingNextPage ? "Loading" : "Load More"}
-              onClick={() => fetchNextPage()}
-              className={"mt-4 w-full"}
-            />
-          ) : null}
+          <div className="mt-4 flex justify-center">
+            {hasNextPage ? (
+              <Button
+                intent={"cta"}
+                disabled={isFetchingNextPage}
+                title={isFetchingNextPage ? "Loading" : "Show More"}
+                onClick={() => fetchNextPage()}
+              />
+            ) : (
+              <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+                End of results
+              </span>
+            )}
+          </div>
         </>
       )}
     </>
