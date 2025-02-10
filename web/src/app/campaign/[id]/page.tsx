@@ -1,7 +1,7 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
 import { requestCampaignById } from "@/providers/graphqlClient";
 import { getCampaignsForSSG } from "@/serverData/getCampaigns";
-import { CampaignDetail } from "@/types";
+import { CampaignDetailDto } from "@/types";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -18,15 +18,10 @@ export default async function DetailPage({ params }: { params: Params }) {
   const { id } = await params;
   const response = await requestCampaignById(id);
   if (!response) notFound();
-  const campaign = Object.assign(response, {
-    isYesNo:
-      response.outcomes.length === 2 &&
-      response.outcomes.findIndex((outcome) => outcome.name === "Yes") !== -1 &&
-      response.outcomes.findIndex((outcome) => outcome.name === "No") !== -1,
-  });
+  const campaign = JSON.parse(JSON.stringify(new CampaignDetailDto(response)));
   return (
     <Suspense>
-      <DetailWrapper initialData={campaign as CampaignDetail} />
+      <DetailWrapper initialData={campaign} />
     </Suspense>
   );
 }

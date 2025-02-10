@@ -2,6 +2,7 @@ import {
   requestCampaignList,
   requestLeaderboard,
   requestAchievments,
+  requestCampaignById,
 } from "./providers/graphqlClient";
 export interface CampaignFilters {
   // category?: string; // not developed yet
@@ -164,5 +165,71 @@ export class ActionFromBuysAndSells implements Action {
       (this.outcomeName = response.campaign_content.outcomes.find(
         (o) => o.identifier === `0x${response.outcome_id}`,
       )?.name);
+  }
+}
+export class CampaignDto implements Campaign {
+  identifier: `0x${string}`;
+  poolAddress: `0x${string}`;
+  isYesNo: boolean;
+  outcomes: Outcome[];
+  name: string;
+  description: string;
+  winner: string | null;
+  picture: string;
+  oracleDescription: string | null;
+  oracleUrls: (string | null)[] | null;
+  settlement: SettlementType;
+  ending: number;
+  starting: number;
+  totalVolume: number;
+  creator: { address: string };
+  constructor(
+    rawCampaign: Awaited<ReturnType<typeof requestCampaignList>>[number],
+  ) {
+    this.identifier = rawCampaign.identifier as `0x${string}`;
+    this.poolAddress = rawCampaign.poolAddress as `0x${string}`;
+    this.isYesNo =
+      rawCampaign.outcomes?.length === 2 &&
+      rawCampaign.outcomes.findIndex((outcome) => outcome.name === "Yes") !==
+        -1 &&
+      rawCampaign.outcomes.findIndex((outcome) => outcome.name === "No") !== -1;
+    this.outcomes = rawCampaign.outcomes?.map((o) => new OutcomeDto(o));
+    this.name = rawCampaign.name;
+    this.description = rawCampaign.description;
+    this.winner = rawCampaign.winner;
+    this.picture = rawCampaign.picture;
+    this.oracleDescription = rawCampaign.oracleDescription;
+    this.oracleUrls = rawCampaign.oracleUrls;
+    this.settlement = rawCampaign.settlement;
+    this.ending = rawCampaign.ending;
+    this.starting = rawCampaign.starting;
+    this.totalVolume = rawCampaign.totalVolume
+      ? rawCampaign.totalVolume + 2e6
+      : 2e6;
+    this.creator = rawCampaign.creator;
+  }
+}
+export class CampaignDetailDto extends CampaignDto {
+  investmentAmounts: { id: string; usdc: number; share: number }[];
+  constructor(rc: Awaited<ReturnType<typeof requestCampaignById>>) {
+    if (!rc) throw new Error("Campaign dto can not be null");
+    super(rc);
+    this.investmentAmounts = rc.investmentAmounts.filter((a) => !!a);
+  }
+}
+class OutcomeDto implements Outcome {
+  identifier: `0x${string}`;
+  name: string;
+  picture: string;
+  share: { address: `0x${string}` };
+  constructor(
+    ro: Awaited<
+      ReturnType<typeof requestCampaignList>
+    >[number]["outcomes"][number],
+  ) {
+    this.identifier = ro.identifier as `0x${string}`;
+    this.name = ro.name;
+    this.picture = ro.picture;
+    this.share = { address: ro.share.address as `0x${string}` };
   }
 }

@@ -1,5 +1,5 @@
 "use client";
-import { Campaign, CampaignFilters } from "@/types";
+import { Campaign, CampaignDto, CampaignFilters } from "@/types";
 import CampaignItem from "./campaignItem";
 import { combineClass } from "@/utils/combineClass";
 import { useDegenStore } from "@/stores/degenStore";
@@ -29,15 +29,7 @@ export default function CampaignList() {
           page: pageParam,
           pageSize: pageParam === 0 ? 32 : 8,
         })) as Campaign[];
-        return campaigns.map((campaign) => {
-          campaign["isYesNo"] =
-            campaign.outcomes.length === 2 &&
-            campaign.outcomes.findIndex((outcome) => outcome.name === "Yes") !==
-              -1 &&
-            campaign.outcomes.findIndex((outcome) => outcome.name === "No") !==
-              -1;
-          return campaign;
-        });
+        return campaigns.map((campaign) => new CampaignDto(campaign));
       },
       initialPageParam: 0,
       getNextPageParam: (lastPage, pages, lastPageParam) => {

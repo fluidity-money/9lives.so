@@ -1,5 +1,5 @@
 "use client";
-import { CampaignDetail } from "@/types";
+import { CampaignDetail, CampaignDetailDto } from "@/types";
 import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
@@ -43,13 +43,8 @@ export default function DetailWrapper({
     queryKey: ["campaign", initialData.identifier],
     queryFn: async () => {
       const res = (await requestCampaignById(initialData.identifier))!;
-      const campaign = Object.assign(res, {
-        isYesNo:
-          res.outcomes.length === 2 &&
-          res.outcomes.findIndex((outcome) => outcome.name === "Yes") !== -1 &&
-          res.outcomes.findIndex((outcome) => outcome.name === "No") !== -1,
-      });
-      return campaign as CampaignDetail;
+      const campaign = new CampaignDetailDto(res);
+      return campaign;
     },
     initialData,
   });
