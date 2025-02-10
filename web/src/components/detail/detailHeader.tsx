@@ -97,7 +97,7 @@ export default function DetailHeader({
             Campaign {isConcluded ? "Concluded" : "Ended"}
           </span>
         ) : (
-          <WatchlistButton id={data.identifier} />
+          <WatchlistButton data={data} />
         )}
       </div>
     </div>

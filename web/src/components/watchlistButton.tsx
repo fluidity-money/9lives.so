@@ -2,15 +2,16 @@
 import { useUserStore } from "@/stores/userStore";
 import Button from "./themed/button";
 import { combineClass } from "@/utils/combineClass";
+import { Campaign } from "@/types";
 
-export default function WatchlistButton({ id }: { id: string }) {
+export default function WatchlistButton({ data }: { data: Campaign }) {
   const watchlist = useUserStore((s) => s.watchlist);
   const addToWatchlist = useUserStore((s) => s.addToWatchlist);
   const removeFromWatchlist = useUserStore((s) => s.removeFromWatchlist);
 
-  const isInWatchlist = watchlist.includes(id);
+  const isInWatchlist = watchlist.find((c) => c.identifier === data.identifier);
   function handleToggle() {
-    isInWatchlist ? removeFromWatchlist(id) : addToWatchlist(id);
+    isInWatchlist ? removeFromWatchlist(data.identifier) : addToWatchlist(data);
   }
 
   return (

@@ -1,22 +1,27 @@
+import { Campaign } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+type WatchlistItem = Omit<Campaign, "totalVolume" | "winner"> & {
+  totalVolume: 0;
+  winner: null;
+};
 interface UserStore {
-  watchlist: string[];
-  addToWatchlist: (id: string) => void;
+  watchlist: WatchlistItem[];
+  addToWatchlist: (campaign: Campaign) => void;
   removeFromWatchlist: (id: string) => void;
 }
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
       watchlist: [],
-      addToWatchlist: (id: string) =>
+      addToWatchlist: (c: Campaign) =>
         set(({ watchlist }) => ({
-          watchlist: [...watchlist, id],
+          watchlist: [...watchlist, { ...c, totalVolume: 0, winner: null }],
         })),
       removeFromWatchlist: (id: string) =>
         set(({ watchlist }) => ({
-          watchlist: watchlist.filter((_id) => _id !== id),
+          watchlist: watchlist.filter((c) => c.identifier !== id),
         })),
     }),
     {

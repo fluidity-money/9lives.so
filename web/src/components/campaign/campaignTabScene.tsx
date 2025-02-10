@@ -3,6 +3,7 @@ import TabButton from "../tabButton";
 import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment } from "react";
 import CampaignList from "./campaignList";
+import WatchList from "./watchList";
 
 export default function CampaignTabScene() {
   return (
@@ -11,6 +12,9 @@ export default function CampaignTabScene() {
         <Tab as={Fragment}>
           {(props) => <TabButton title="All" {...props} />}
         </Tab>
+        <Tab as={Fragment}>
+          {(props) => <TabButton title="My Watchlist" {...props} />}
+        </Tab>
         <Tab as={Fragment} disabled>
           {(props) => <TabButton title="More Soon..." {...props} />}
         </Tab>
@@ -18,6 +22,9 @@ export default function CampaignTabScene() {
       <TabPanels>
         <TabPanel>
           <CampaignList />
+        </TabPanel>
+        <TabPanel>
+          <WatchList />
         </TabPanel>
       </TabPanels>
     </TabGroup>
