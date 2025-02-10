@@ -62,7 +62,7 @@ export default function CampaignList() {
   }, [searchTermInput]);
   return (
     <>
-      <div className="mb-4 flex flex-1 items-center gap-4">
+      <div className="mb-4 flex flex-1 flex-col items-center gap-4 sm:flex-row">
         <Select
           name="order-by"
           aria-label="order-by"
@@ -78,7 +78,7 @@ export default function CampaignList() {
             </option>
           ))}
         </Select>
-        <div className="relative flex flex-1 items-center">
+        <div className="relative flex flex-1 items-center self-stretch">
           <Image
             src={SearchIcon}
             alt=""
