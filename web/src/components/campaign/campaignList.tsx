@@ -50,10 +50,10 @@ export default function CampaignList({
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   const orderByFilters: Array<[Required<CampaignFilters["orderBy"]>, string]> =
     [
+      ["volume", "Volume"],
+      ["newest", "Newest"],
       ["ending", "Ending Soon"],
       ["ended", "Ended Recently"],
-      ["newest", "Newest"],
-      ["volume", "Volume"],
     ];
   useEffect(() => {
     const timer = setTimeout(() => setSearcTermFilter(searchTermInput), 300);
