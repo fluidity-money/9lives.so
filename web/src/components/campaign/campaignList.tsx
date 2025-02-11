@@ -45,6 +45,7 @@ export default function CampaignList() {
   const orderByFilters: Array<[Required<CampaignFilters["orderBy"]>, string]> =
     [
       ["ending", "Ending Soon"],
+      ["ended", "Ended Recently"],
       ["newest", "Newest"],
       ["volume", "Volume"],
     ];
