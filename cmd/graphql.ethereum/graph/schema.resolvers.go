@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/url"
@@ -526,7 +527,11 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	}
 	query := r.DB.Table("ninelives_campaigns_1").Select("*")
 	if len(category) > 0 {
-		query = query.Where("content->'categories' ?| array[?]", category)
+		jsonCategories, err := json.Marshal(category)
+		if err != nil {
+			return nil, fmt.Errorf("category filter can not be converted to json")
+		}
+		query = query.Where("content->'categories' @> ?", jsonCategories)
 	}
 	if searchTerm != nil {
 		query = query.Where("name_to_search ILIKE ?", "%"+*searchTerm+"%")
