@@ -50,6 +50,16 @@ const infraMarketStateFees: Record<InfraMarketState, bigint> = {
   [InfraMarketState.Closed]: BigInt(0),
   [InfraMarketState.Loading]: BigInt(0),
 } as const;
+export const categories = [
+  "Opinion Poll",
+  "Price Prediction",
+  "Sports",
+  "Jailtime.fun",
+  "Politics",
+  "Crypto",
+  "Pop Culture",
+  "Business",
+];
 const appSchema = z.object({
   /**
    * Generated metadata of the web app and wagmi will use this object
@@ -65,6 +75,18 @@ const appSchema = z.object({
     colors: z.record(z.string(), z.string()),
     fees: z.record(z.string(), z.bigint()),
   }),
+  categories: z.array(
+    z.enum([
+      "Opinion Poll",
+      "Price Prediction",
+      "Sports",
+      "Jailtime.fun",
+      "Politics",
+      "Crypto",
+      "Pop Culture",
+      "Business",
+    ]),
+  ),
 });
 
 const appVars = appSchema.safeParse({
@@ -74,6 +96,7 @@ const appVars = appSchema.safeParse({
     colors: infraMarketStateColors,
     fees: infraMarketStateFees,
   },
+  categories,
 });
 
 if (!appVars.success) {

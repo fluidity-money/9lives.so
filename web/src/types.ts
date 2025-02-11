@@ -4,8 +4,10 @@ import {
   requestAchievments,
   requestCampaignById,
 } from "./providers/graphqlClient";
+import config from "./config";
+
 export interface CampaignFilters {
-  // category?: string; // not developed yet
+  category?: typeof config.categories;
   orderBy?: "newest" | "volume" | "ending" | "ended";
   searchTerm?: string;
   page?: number;
