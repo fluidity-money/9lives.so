@@ -51,14 +51,15 @@ const infraMarketStateFees: Record<InfraMarketState, bigint> = {
   [InfraMarketState.Loading]: BigInt(0),
 } as const;
 export const categories = [
+  "All",
+  "Crypto",
   "Opinion Poll",
   "Price Prediction",
   "Sports",
-  "Jailtime.fun",
   "Politics",
-  "Crypto",
   "Pop Culture",
   "Business",
+  "Jailtime.fun",
 ];
 const appSchema = z.object({
   /**
@@ -77,14 +78,15 @@ const appSchema = z.object({
   }),
   categories: z.array(
     z.enum([
+      "All",
+      "Crypto",
       "Opinion Poll",
       "Price Prediction",
       "Sports",
-      "Jailtime.fun",
       "Politics",
-      "Crypto",
       "Pop Culture",
       "Business",
+      "Jailtime.fun",
     ]),
   ),
 });

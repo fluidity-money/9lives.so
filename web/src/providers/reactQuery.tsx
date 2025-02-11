@@ -30,7 +30,7 @@ export default function ReactQueryProvider({
       queryFn: () => fetch(appConfig.NEXT_PUBLIC_FEATURES_URL),
     });
 
-    client.setQueryData(["campaigns", "volume", ""], () => ({
+    client.setQueryData(["campaigns", undefined, "volume", ""], () => ({
       pages: [initialData.campaigns],
       pageParams: [0],
     }));

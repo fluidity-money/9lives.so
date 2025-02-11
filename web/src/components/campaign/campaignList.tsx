@@ -13,14 +13,19 @@ import SearchIcon from "#/icons/search.svg";
 import LoadingIndicator from "../loadingIndicator";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Button from "../themed/button";
+import config from "@/config";
 
-export default function CampaignList() {
+export default function CampaignList({
+  category,
+}: {
+  category?: (typeof config.categories)[number];
+}) {
   const [orderBy, setOrderBy] = useState<CampaignFilters["orderBy"]>("volume");
   const [searchTermInput, setSearchTermInput] = useState("");
   const [searcTermFilter, setSearcTermFilter] = useState("");
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery<Campaign[]>({
-      queryKey: ["campaigns", orderBy, searcTermFilter],
+      queryKey: ["campaigns", category, orderBy, searcTermFilter],
       queryFn: async ({ pageParam }) => {
         if (typeof pageParam !== "number") return [];
         const campaigns = (await requestCampaignList({
@@ -28,6 +33,7 @@ export default function CampaignList() {
           searchTerm: searcTermFilter,
           page: pageParam,
           pageSize: pageParam === 0 ? 32 : 8,
+          category: category && [category],
         })) as Campaign[];
         return campaigns.map((campaign) => new CampaignDto(campaign));
       },
