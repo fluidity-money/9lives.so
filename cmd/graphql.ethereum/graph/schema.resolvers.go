@@ -194,6 +194,14 @@ func (r *campaignResolver) Banners(ctx context.Context, obj *types.Campaign) ([]
 	return msgs, nil
 }
 
+// Categories is the resolver for the categories field.
+func (r *campaignResolver) Categories(ctx context.Context, obj *types.Campaign) ([]string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("empty changelog")
+	}
+	return obj.Content.Categories, nil
+}
+
 // ID is the resolver for the id field.
 func (r *changelogResolver) ID(ctx context.Context, obj *changelog.Changelog) (string, error) {
 	if obj == nil {
@@ -219,7 +227,7 @@ func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) 
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, categories []string) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
@@ -517,6 +525,9 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		return campaigns, nil
 	}
 	query := r.DB.Table("ninelives_campaigns_1").Select("*")
+	if len(category) > 0 {
+		query = query.Where("content->'categories' ?| array[?]", category)
+	}
 	if searchTerm != nil {
 		query = query.Where("name_to_search ILIKE ?", "%"+*searchTerm+"%")
 	}
@@ -529,7 +540,9 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		case "volume":
 			query = query.Order("total_volume DESC")
 		case "ending":
-			query = query.Order("content->>'ending' ASC")
+			query = query.Order("content->>'ending' ASC").Where("content->>'winner' IS NULL")
+		case "ended":
+			query = query.Order("content->>'ending' DESC").Where("content->>'winner' IS NOT NULL")
 		default:
 			return nil, fmt.Errorf("invalid orderBy value")
 		}

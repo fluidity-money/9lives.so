@@ -103,6 +103,9 @@ type (
 
 		// If any outcome declared as winner, it returns bytes8 id
 		Winner *string `json:"winner"`
+
+		// Campaigns can be tagged with multiple categories
+		Categories []string `json:"categories"`
 	}
 
 	// Wallet of the creator of a campaign.
