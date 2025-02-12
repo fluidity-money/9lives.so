@@ -30,6 +30,7 @@ import (
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	lambdaService "github.com/aws/aws-sdk-go-v2/service/lambda"
 )
 
 const (
@@ -46,6 +47,10 @@ const (
 
 	// EnvListenAddr to listen the HTTP server on.
 	EnvListenAddr = "SPN_LISTEN_ADDR"
+
+	// EnvLambdaMiscAiBackend to use for frontend-related requests where
+	// existing infra is inappropriate.
+	EnvLambdaMiscAiBackend = "SPN_MISC_AI_FUNCTION_NAME"
 )
 
 // ChangelogLen to send to the user at max on request for the changelog endpoint.
@@ -81,6 +86,7 @@ func main() {
 		setup.Exitf("aws config: %v", err)
 	}
 	s3Client := s3.NewFromConfig(awsConf)
+	lambdaClient := lambdaService.NewFromConfig(awsConf)
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
 			DB:                 db,
@@ -88,15 +94,17 @@ func main() {
 			Geth:               geth,
 			C:                  config,
 			FactoryAddr:        ethCommon.HexToAddress(config.FactoryAddress),
-			InfraMarketAddr:        ethCommon.HexToAddress(config.InfraMarketAddress),
-			BeautyContestAddr:        ethCommon.HexToAddress(config.BeautyContestAddress),
-			SarpAiAddr:        ethCommon.HexToAddress(config.SarpAiAddress),
+			InfraMarketAddr:    ethCommon.HexToAddress(config.InfraMarketAddress),
+			BeautyContestAddr:  ethCommon.HexToAddress(config.BeautyContestAddress),
+			SarpAiAddr:         ethCommon.HexToAddress(config.SarpAiAddress),
 			ChangelogItems:     Changelog[:min(ChangelogLen, len(Changelog))],
 			S3UploadBucketName: S3UploadBucketName,
 			S3UploadManager: s3manager.NewUploader(s3Client, func(u *s3manager.Uploader) {
 				u.PartSize = 10 * 1024 * 1024
 			}),
-			PicturesUriBase: UploadTradingPicsUrl,
+			PicturesUriBase:            UploadTradingPicsUrl,
+			LambdaClient: lambdaClient,
+			LambdaMiscAiBackendName: os.Getenv(EnvLambdaMiscAiBackend),
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})
