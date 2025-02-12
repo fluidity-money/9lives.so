@@ -33,9 +33,6 @@ impl StorageTrading {
         should_buffer_time: bool,
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
-        // DPM only for now (TODO, as we test the AMM properly, this will
-        // change).
-         assert_or!(outcomes.len() == 2, Error::DPMOnly);
         // Make sure that the user hasn't given us any zero values, or the end
         // date isn't in the past, in places that don't make sense!
         assert_or!(
