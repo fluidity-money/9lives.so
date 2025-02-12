@@ -7,4 +7,6 @@ const (
 	FeatureGraphqlMockGraph = "graphql mock demo data"
 	// FeatureShouldCheckIfTrackedFirst in the database when inserting a Trading log
 	FeatureShouldCheckIfTrackedFirst = "ingestor should track trading first"
+	// FeatureUseAIForCategories to be enabled if the graph should use AI to check categories.
+	FeatureUseAIForCategories = "ai for categories"
 )

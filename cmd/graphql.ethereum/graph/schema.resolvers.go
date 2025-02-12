@@ -17,12 +17,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
+	"github.com/fluidity-money/9lives.so/lib/ai"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/banners"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
-	"github.com/fluidity-money/9lives.so/lib/ai"
 	"gorm.io/gorm"
 )
 
@@ -428,19 +428,33 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		)
 		return nil, fmt.Errorf("error uploading image")
 	}
-	categories, err := ai.RequestCategorySuggestions(
-		r.LambdaClient,
-		ctx,
-		r.LambdaMiscAiBackendName,
-		name,
-	)
+	var categories []string
+	err = r.F.On(features.FeatureUseAIForCategories, func() error {
+		categories, err = ai.RequestCategorySuggestions(
+			r.LambdaClient,
+			ctx,
+			r.LambdaMiscAiBackendName,
+			name,
+		)
+		if err != nil {
+			slog.Error("Failed to look up a request for categories",
+				"name", name,
+				"err", err,
+			)
+			return fmt.Errorf("failed to look up request: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
 	campaign := types.CampaignInsertion{
 		ID: hexCampaignId,
 		Content: types.CampaignContent{
 			Name:        name,
 			Description: description,
 			Picture:     tradingPicUrl,
-			Categories: categories,
+			Categories:  categories,
 			Seed:        seed,
 			Creator: &types.Wallet{
 				Address: creator,
