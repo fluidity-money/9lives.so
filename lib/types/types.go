@@ -62,6 +62,9 @@ type (
 		// Picture of the campaign as base64 string.
 		Picture string `json:"picture"`
 
+		// Categories associated with this campaign.
+		Categories []string `json:"categories"`
+
 		// Number to salt the identifier (id of the campaigns) of the outcome
 		Seed int `json:"seed"`
 

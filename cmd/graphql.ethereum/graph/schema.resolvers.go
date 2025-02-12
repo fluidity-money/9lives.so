@@ -22,6 +22,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/banners"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
+	"github.com/fluidity-money/9lives.so/lib/ai"
 	"gorm.io/gorm"
 )
 
@@ -427,12 +428,19 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		)
 		return nil, fmt.Errorf("error uploading image")
 	}
+	categories, err := ai.RequestCategorySuggestions(
+		r.LambdaClient,
+		ctx,
+		r.LambdaMiscAiBackendName,
+		name,
+	)
 	campaign := types.CampaignInsertion{
 		ID: hexCampaignId,
 		Content: types.CampaignContent{
 			Name:        name,
 			Description: description,
 			Picture:     tradingPicUrl,
+			Categories: categories,
 			Seed:        seed,
 			Creator: &types.Wallet{
 				Address: creator,
