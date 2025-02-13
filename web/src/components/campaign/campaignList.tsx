@@ -3,7 +3,7 @@ import { Campaign, CampaignDto, CampaignFilters } from "@/types";
 import CampaignItem from "./campaignItem";
 import { combineClass } from "@/utils/combineClass";
 import { useDegenStore } from "@/stores/degenStore";
-import { useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import { Select } from "@headlessui/react";
 import { requestCampaignList } from "@/providers/graphqlClient";
 import Image from "next/image";
@@ -17,10 +17,13 @@ import config from "@/config";
 
 export default function CampaignList({
   category,
+  orderBy,
+  setOrderBy,
 }: {
   category?: (typeof config.categories)[number];
+  orderBy: CampaignFilters["orderBy"];
+  setOrderBy: Dispatch<CampaignFilters["orderBy"]>;
 }) {
-  const [orderBy, setOrderBy] = useState<CampaignFilters["orderBy"]>("volume");
   const [searchTermInput, setSearchTermInput] = useState("");
   const [searcTermFilter, setSearcTermFilter] = useState("");
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =

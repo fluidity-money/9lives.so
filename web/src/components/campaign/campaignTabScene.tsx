@@ -5,9 +5,10 @@ import { Fragment, useState } from "react";
 import CampaignList from "./campaignList";
 import WatchList from "./watchList";
 import config from "@/config";
+import { CampaignFilters } from "@/types";
 export default function CampaignTabScene() {
   const [categoryIdx, setCategoryIdx] = useState(0);
-
+  const [orderBy, setOrderBy] = useState<CampaignFilters["orderBy"]>("volume");
   return (
     <TabGroup
       selectedIndex={categoryIdx}
@@ -29,6 +30,8 @@ export default function CampaignTabScene() {
         {config.categories.map((cat) => (
           <TabPanel key={"tab_panel_" + cat}>
             <CampaignList
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
               category={cat === config.categories[0] ? undefined : cat}
             />
           </TabPanel>
