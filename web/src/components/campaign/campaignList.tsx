@@ -72,7 +72,7 @@ export default function CampaignList({
             setOrderBy(e.target.value as CampaignFilters["orderBy"])
           }
           value={orderBy}
-          className="flex items-center self-stretch rounded-sm border border-9black px-2 py-1 font-chicago text-xs shadow-9btnSecondaryIdle focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
+          className="flex min-h-[36px] items-center self-stretch rounded-sm border border-9black px-2 py-1 font-chicago text-xs shadow-9btnSecondaryIdle focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
         >
           {orderByFilters.map(([key, title]) => (
             <option key={key} value={key}>
