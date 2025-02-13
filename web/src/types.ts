@@ -205,9 +205,7 @@ export class CampaignDto implements Campaign {
     this.settlement = rawCampaign.settlement;
     this.ending = rawCampaign.ending;
     this.starting = rawCampaign.starting;
-    this.totalVolume = rawCampaign.totalVolume
-      ? rawCampaign.totalVolume + 2e6
-      : 2e6;
+    this.totalVolume = rawCampaign.totalVolume;
     this.creator = rawCampaign.creator;
   }
 }
