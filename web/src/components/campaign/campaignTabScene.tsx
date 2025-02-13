@@ -14,18 +14,20 @@ export default function CampaignTabScene() {
       selectedIndex={categoryIdx}
       onChange={(idx) => setCategoryIdx(idx)}
     >
-      <TabList className="mb-4 flex items-end border-b border-b-9black">
-        {config.categories.map((cat) => (
-          <Tab as={Fragment} key={"tab_btn_" + cat}>
-            {(props) => <TabButton title={cat} {...props} />}
+      <div className="relative h-[42px] overflow-x-auto">
+        <TabList className="absolute inset-x-0 top-0 flex items-end border-b border-b-9black">
+          {config.categories.map((cat) => (
+            <Tab as={Fragment} key={"tab_btn_" + cat}>
+              {(props) => <TabButton title={cat} {...props} />}
+            </Tab>
+          ))}
+          <Tab as={Fragment}>
+            {(props) => (
+              <TabButton title="My Watchlist" {...props} watchlist={true} />
+            )}
           </Tab>
-        ))}
-        <Tab as={Fragment}>
-          {(props) => (
-            <TabButton title="My Watchlist" {...props} watchlist={true} />
-          )}
-        </Tab>
-      </TabList>
+        </TabList>
+      </div>
       <TabPanels>
         {config.categories.map((cat) => (
           <TabPanel key={"tab_panel_" + cat}>
