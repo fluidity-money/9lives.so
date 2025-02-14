@@ -16,6 +16,7 @@ const config: Config = {
         closeIdle: "url('/icons/close.svg')",
         closePressed: "url('/icons/close-pressed.svg')",
         watchlistAdd: "url('/icons/plus.svg')",
+        watchlistAddEye: "url('/icons/not-watching.svg')",
         watchlistIn: "url('/icons/watching.svg')",
         watchlistRemove: "url('/icons/x.svg')",
       },

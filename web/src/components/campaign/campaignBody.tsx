@@ -27,7 +27,7 @@ export default function CampaignBody({
           outcomes={data.outcomes}
           setSelectedOutcome={setSelectedOutcome}
         />
-        <CampaignItemFooter volume={data.totalVolume} />
+        <CampaignItemFooter data={data} />
       </div>
     </>
   );
