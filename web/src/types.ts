@@ -53,7 +53,7 @@ export type OutcomeType = "custom" | "default";
 export type SettlementType = "ORACLE" | "POLL" | "AI" | "CONTRACT";
 export type CampaignInput = {
   name: string;
-  desc: string;
+  desc: string | "";
   picture: string;
   starting: string;
   ending: string;

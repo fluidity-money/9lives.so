@@ -14,7 +14,7 @@ export default function CreateCampaignFormDescription({
 }) {
   return (
     <Field className={fieldClass}>
-      <Label text="Campaign Description" required />
+      <Label text="Campaign Description" />
       <Textarea
         {...register("desc")}
         className={combineClass(error && "border-2 border-red-500")}

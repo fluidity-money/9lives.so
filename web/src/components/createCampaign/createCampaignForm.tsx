@@ -93,7 +93,7 @@ export default function CreateCampaignForm() {
     () =>
       z.object({
         name: z.string().min(3).max(300),
-        desc: z.string().min(5).max(1000),
+        desc: z.string().max(1000).or(z.literal("")),
         seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
         picture: z
           .instanceof(File, { message: "You have to upload a picture" })
@@ -169,6 +169,7 @@ export default function CreateCampaignForm() {
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      desc: "",
       seed: randomValue4Uint8(),
       starting: new Date().toISOString().split("T")[0],
       outcomes: [
