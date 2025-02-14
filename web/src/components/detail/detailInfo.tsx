@@ -26,10 +26,12 @@ export default function DetailInfo({ data }: { data: Campaign }) {
         showClose={false}
         className="flex flex-col gap-5"
       >
-        <div className="flex flex-col gap-2.5">
-          <h5 className="font-chicago text-sm">Overview</h5>
-          <p className="ml-5 text-xs">{data.description}</p>
-        </div>
+        {data.description ? (
+          <div className="flex flex-col gap-2.5">
+            <h5 className="font-chicago text-sm">Overview</h5>
+            <p className="ml-5 text-xs">{data.description}</p>
+          </div>
+        ) : null}
         <div className="flex flex-col gap-2.5">
           <h5 className="font-chicago text-sm">Settlement</h5>
           <div className="ml-5 flex flex-col gap-2.5">
