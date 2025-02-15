@@ -84,12 +84,8 @@ export default function ProposeOutcome({
           Your proposed outcome will be utilised in 9lives&apos; oracle.
         </p>
         <p className="text-center text-xs text-9black">
-          By participating in this outcome proposal, you agree to lock-up your
-          staked $ARB tokens until 1 week after the market&apos;s end date.
-        </p>
-        <p className="inline-block bg-9yellow px-5 py-1 text-xs font-bold">
-          Participating in more outcome proposals result in higher potential
-          yield per staked $ARB!
+          By participating in this outcome proposal, you agree to lock up your
+          $2 USDC until this oracle is fully concluded.
         </p>
         <Button
           intent={"default"}
