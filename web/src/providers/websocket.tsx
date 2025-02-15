@@ -27,7 +27,7 @@ const subTenLatestCreate = `
 `;
 const subTenLatestBuy = `
 subscription {
-  ninelives_buys_and_sells_1(limit: 10, order_by: {created_by: desc}, where: {campaign_content: {_is_null: false}}) {
+  ninelives_buys_and_sells_1(limit: 10, order_by: {created_by: desc}, where: {campaign_content: {_is_null: false}, shown: {}}) {
     to_amount
     to_symbol
     transaction_hash

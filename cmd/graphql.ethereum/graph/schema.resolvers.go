@@ -525,7 +525,9 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
-	query := r.DB.Table("ninelives_campaigns_1").Select("*")
+	query := r.DB.Table("ninelives_campaigns_1").
+		Where("shown = TRUE").
+		Select("*")
 	if len(category) > 0 {
 		jsonCategories, err := json.Marshal(category)
 		if err != nil {
@@ -615,7 +617,7 @@ SELECT
 		LEFT JOIN
         campaign_investments ci ON nc.id = ci.campaign_id
 		WHERE
-			nc.id = ?`, id, id).Scan(&c).Error
+			nc.id = ? AND shown`,id, id).Scan(&c).Error
 	if err != nil {
 		return nil, fmt.Errorf("campaign find: %v", err)
 	}

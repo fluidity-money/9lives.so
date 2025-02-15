@@ -104,7 +104,7 @@ export const requestBuysAndSells = (limit?: number) =>
     .gql(
       `
     query {
-      ninelives_buys_and_sells_1(limit: ${limit ?? 10}, order_by: {created_by: desc}, where: {campaign_content: {_is_null: false}}) {
+      ninelives_buys_and_sells_1(limit: 10, order_by: {created_by: desc}, where: {campaign_content: {_is_null: false}, shown: {}}) {
         to_amount
         to_symbol
         transaction_hash
@@ -112,6 +112,7 @@ export const requestBuysAndSells = (limit?: number) =>
         spender
         block_hash
         block_number
+
         outcome_id
         campaign_id
         created_by
@@ -122,7 +123,6 @@ export const requestBuysAndSells = (limit?: number) =>
         total_volume
         campaign_content
       }
-    }
   `,
     )
     .send();
