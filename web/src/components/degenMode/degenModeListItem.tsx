@@ -26,13 +26,15 @@ export default function DegenModeListItem({ data }: { data: Action }) {
           )}
         />
         <div className="relative z-10 flex items-center gap-4 px-[10px] py-[15px]">
-          <Image
-            src={data.campaignPic}
-            alt={data.campaignName}
-            width={44}
-            height={44}
-            className="size-[44px] object-contain"
-          />
+          {data.campaignPic ? (
+            <Image
+              src={data.campaignPic}
+              alt={data.campaignName}
+              width={44}
+              height={44}
+              className="size-[44px] object-contain"
+            />
+          ) : null}
           <div className="flex flex-1 flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <span className="font-chicago text-xs">{data.campaignName}</span>

@@ -27,7 +27,7 @@ export type CampaignDetail = Campaign & {
 };
 export type Outcome = {
   name: string;
-  picture?: string;
+  picture: string | null;
   identifier: `0x${string}`;
   share: { address: `0x${string}` };
 };
@@ -76,7 +76,7 @@ export type Action = {
   campaignName: string;
   campaignId: string;
   type: "create" | "buy" | "sell";
-  campaignPic?: string;
+  campaignPic: string | null;
   timestamp: string;
   campaignVol?: string;
   actionValue?: string;
@@ -126,7 +126,7 @@ export class ActionFromCreation implements Action {
   campaignName: string;
   campaignId: string;
   type: "create";
-  campaignPic?: string;
+  campaignPic: string | null;
   timestamp: string;
 
   constructor(response: CreationResponse["ninelives_campaigns_1"][number]) {
@@ -143,7 +143,7 @@ export class ActionFromBuysAndSells implements Action {
   campaignName: string;
   campaignId: string;
   type: "buy" | "sell";
-  campaignPic: string;
+  campaignPic: string | null;
   timestamp: string;
   campaignVol?: string;
   actionValue?: string;
@@ -177,7 +177,7 @@ export class CampaignDto implements Campaign {
   name: string;
   description: string;
   winner: string | null;
-  picture: string;
+  picture: string | null;
   oracleDescription: string | null;
   oracleUrls: (string | null)[] | null;
   settlement: SettlementType;
@@ -220,7 +220,7 @@ export class CampaignDetailDto extends CampaignDto {
 class OutcomeDto implements Outcome {
   identifier: `0x${string}`;
   name: string;
-  picture: string;
+  picture: string | null;
   share: { address: `0x${string}` };
   constructor(
     ro: Awaited<
