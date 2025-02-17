@@ -21,15 +21,17 @@ export default function DetailHeader({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col justify-between gap-4 md:flex-row">
         <div className="flex flex-col items-center gap-4 md:flex-row">
-          <a href={data.picture} target="_blank" rel="noopener noreferrer">
-            <Image
-              alt="tldr"
-              width={60}
-              height={60}
-              className="border border-9black"
-              src={data.picture}
-            />
-          </a>
+          {data.picture ? (
+            <a href={data.picture} target="_blank" rel="noopener noreferrer">
+              <Image
+                alt="tldr"
+                width={60}
+                height={60}
+                className="border border-9black"
+                src={data.picture}
+              />
+            </a>
+          ) : null}
           <div className="flex flex-col items-center gap-2 md:items-start">
             <div className="flex items-center gap-2.5">
               <Image

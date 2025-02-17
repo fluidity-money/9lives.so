@@ -61,23 +61,27 @@ export default function DetailOutcomeRow({
               <Image
                 alt=""
                 width={20}
-                className="absolute inset-x-0 -top-2 mx-auto h-auto"
+                className={combineClass(
+                  data.picture && "absolute inset-x-0 -top-2 mx-auto h-auto",
+                )}
                 src={CrownImg}
               />
             )}
-            <Image
-              width={40}
-              height={40}
-              alt={data.name}
-              src={
-                isYesNo
-                  ? data.name === "Yes"
-                    ? YesOutcomeImg
-                    : NoOutcomeImg
-                  : data.picture
-              }
-              className={combineClass(!isYesNo && "border border-9black")}
-            />
+            {data.picture ? (
+              <Image
+                width={40}
+                height={40}
+                alt={data.name}
+                src={
+                  isYesNo
+                    ? data.name === "Yes"
+                      ? YesOutcomeImg
+                      : NoOutcomeImg
+                    : data.picture
+                }
+                className={combineClass(!isYesNo && "border border-9black")}
+              />
+            ) : null}
           </div>
           <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
         </div>

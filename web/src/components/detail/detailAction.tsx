@@ -175,25 +175,27 @@ export default function DetailCall2Action({
             minimized && "flex-col md:flex-row",
           )}
         >
-          <div
-            className={combineClass(
-              !data.isYesNo && "size-10 overflow-hidden rounded-full",
-            )}
-          >
-            <Image
-              width={40}
-              height={40}
-              alt={outcome.name}
-              src={
-                data.isYesNo
-                  ? outcome.name === "Yes"
-                    ? YesOutcomeImg
-                    : NoOutcomeImg
-                  : outcome.picture
-              }
-              className="size-full object-cover"
-            />
-          </div>
+          {outcome.picture ? (
+            <div
+              className={combineClass(
+                !data.isYesNo && "size-10 overflow-hidden rounded-full",
+              )}
+            >
+              <Image
+                width={40}
+                height={40}
+                alt={outcome.name}
+                src={
+                  data.isYesNo
+                    ? outcome.name === "Yes"
+                      ? YesOutcomeImg
+                      : NoOutcomeImg
+                    : outcome.picture
+                }
+                className="size-full object-cover"
+              />
+            </div>
+          ) : null}
           <div className="flex flex-col gap-1">
             <h3 className="font-chicago text-base font-normal text-9black">
               {outcome.name}

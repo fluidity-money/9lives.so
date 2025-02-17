@@ -22,7 +22,9 @@ export default function CampaignItemHeader({
         href={`/campaign/${identifier}`}
         className="flex items-center gap-2"
       >
-        <Image src={picture} width={40} height={40} alt={name} />
+        {picture ? (
+          <Image src={picture} width={40} height={40} alt={name} />
+        ) : null}
         <h4 className="font-chicago text-sm font-bold">{name}</h4>
       </Link>
       {solo && soloRatio && (
