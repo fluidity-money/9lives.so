@@ -126,7 +126,7 @@ export default function CreateCampaignForm() {
             ? z.array(outcomeschema)
             : z.array(
                 z.object({
-                  picture: z.instanceof(File).optional(),
+                  picture: pictureSchema,
                   name: z.string().max(300),
                   seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
                 }),
