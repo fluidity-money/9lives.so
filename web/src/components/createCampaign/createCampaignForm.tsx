@@ -66,17 +66,22 @@ export default function CreateCampaignForm() {
   const [settlementType, setSettlementType] =
     useState<SettlementType>("ORACLE");
   const pictureSchema = z
-    .instanceof(File, { message: "You have to upload a picture" })
-    .optional()
-    .refine((file) => (file ? file.size <= 1024 * 1024 : true), {
+    .custom<File | FileList>(
+      (file) => {
+        if (file instanceof FileList && file.length === 0) return true;
+        return file instanceof File;
+      },
+      { message: "You have to upload a picture" },
+    )
+    .refine((file) => file instanceof FileList || file.size <= 1024 * 1024, {
       message: "File size must be under 1MB",
     })
-    .refine((file) => (file ? file.size > 0 : true), {
+    .refine((file) => file instanceof FileList || file.size > 0, {
       message: "You have to upload a picture",
     })
     .refine(
       (file) => {
-        if (!file) return true;
+        if (file instanceof FileList) return true;
         const validExtensions = ["png", "jpg", "jpeg", "gif"];
         const fileExtension = file.name.split(".").pop()?.toLowerCase();
         return fileExtension && validExtensions.includes(fileExtension);
@@ -86,7 +91,7 @@ export default function CreateCampaignForm() {
       },
     );
   const outcomeschema = z.object({
-    picture: pictureSchema.optional(),
+    picture: pictureSchema,
     name: z.string().min(3),
     seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
   });
@@ -96,7 +101,7 @@ export default function CreateCampaignForm() {
         name: z.string().min(3).max(300),
         desc: z.string().max(1000).or(z.literal("")),
         seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
-        picture: pictureSchema.optional(),
+        picture: pictureSchema,
         starting: z.string().date(),
         ending: z
           .string()
