@@ -37,7 +37,7 @@ type (
 		Name string `json:"name"`
 
 		// Picture of the outcome as base64 string.
-		Picture string `json:"picture"`
+		Picture *string `json:"picture"`
 
 		// Number to salt the identifier of the outcome
 		Seed int `json:"seed"`
@@ -60,7 +60,7 @@ type (
 		Description string `json:"description"`
 
 		// Picture of the campaign as base64 string.
-		Picture string `json:"picture"`
+		Picture *string `json:"picture"`
 
 		// Categories associated with this campaign.
 		Categories []string `json:"categories"`

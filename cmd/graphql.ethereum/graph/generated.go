@@ -89,7 +89,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
+		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
 		RevealCommitment  func(childComplexity int, tradingAddr *string, sender *string, seed *string, preferredOutcome *string) int
 		RevealCommitment2 func(childComplexity int, tradingAddr *string, sender *string, seed *string, preferredOutcome *string, rr *string, s *string, v *string) int
 	}
@@ -120,7 +120,7 @@ type ComplexityRoot struct {
 type CampaignResolver interface {
 	Name(ctx context.Context, obj *types.Campaign) (string, error)
 	Description(ctx context.Context, obj *types.Campaign) (string, error)
-	Picture(ctx context.Context, obj *types.Campaign) (string, error)
+	Picture(ctx context.Context, obj *types.Campaign) (*string, error)
 	Creator(ctx context.Context, obj *types.Campaign) (*types.Wallet, error)
 	CreatedAt(ctx context.Context, obj *types.Campaign) (int, error)
 	Settlement(ctx context.Context, obj *types.Campaign) (model.SettlementType, error)
@@ -147,7 +147,7 @@ type ChangelogResolver interface {
 	HTML(ctx context.Context, obj *changelog.Changelog) (string, error)
 }
 type MutationResolver interface {
-	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error)
+	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr *string, sender *string, seed *string, preferredOutcome *string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr *string, sender *string, seed *string, preferredOutcome *string, rr *string, s *string, v *string) (*bool, error)
 }
@@ -383,7 +383,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string), args["isFake"].(*bool)), true
+		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(*string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string), args["isFake"].(*bool)), true
 
 	case "Mutation.revealCommitment":
 		if e.complexity.Mutation.RevealCommitment == nil {
@@ -644,10 +644,10 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 		}
 	}
 	args["description"] = arg2
-	var arg3 string
+	var arg3 *string
 	if tmp, ok := rawArgs["picture"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("picture"))
-		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+		arg3, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1094,14 +1094,11 @@ func (ec *executionContext) _Campaign_picture(ctx context.Context, field graphql
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Campaign_picture(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2235,7 +2232,7 @@ func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string), fc.Args["isFake"].(*bool))
+		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(*string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string), fc.Args["isFake"].(*bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2442,14 +2439,11 @@ func (ec *executionContext) _Outcome_picture(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Outcome_picture(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4870,7 +4864,7 @@ func (ec *executionContext) unmarshalInputOutcomeInput(ctx context.Context, obj 
 			it.Seed = data
 		case "picture":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("picture"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4975,16 +4969,13 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 		case "picture":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Campaign_picture(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -5898,9 +5889,6 @@ func (ec *executionContext) _Outcome(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "picture":
 			out.Values[i] = ec._Outcome_picture(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "identifier":
 			out.Values[i] = ec._Outcome_identifier(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

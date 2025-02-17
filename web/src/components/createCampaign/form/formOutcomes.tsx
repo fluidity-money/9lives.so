@@ -92,7 +92,7 @@ export default function CreateCampaignFormOutcomes({
 
   return (
     <Field className={fieldClass}>
-      <Label text="Campaign Type & Outcomes" required />
+      <Label text="Campaign Type & Outcomes" />
       <TabGroup
         defaultIndex={1}
         onChange={(idx) => setOutcomeType(idx === 0 ? "default" : "custom")}

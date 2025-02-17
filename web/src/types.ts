@@ -27,7 +27,7 @@ export type CampaignDetail = Campaign & {
 };
 export type Outcome = {
   name: string;
-  picture: string;
+  picture?: string;
   identifier: `0x${string}`;
   share: { address: `0x${string}` };
 };
@@ -54,7 +54,7 @@ export type SettlementType = "ORACLE" | "POLL" | "AI" | "CONTRACT";
 export type CampaignInput = {
   name: string;
   desc: string | "";
-  picture: string;
+  picture?: string;
   starting: string;
   ending: string;
   outcomes: OutcomeInput[];
@@ -67,7 +67,7 @@ export type CampaignInput = {
   oracleDescription?: string;
 };
 export type OutcomeInput = {
-  picture: string;
+  picture?: string;
   name: string;
   seed: number;
 };
@@ -76,7 +76,7 @@ export type Action = {
   campaignName: string;
   campaignId: string;
   type: "create" | "buy" | "sell";
-  campaignPic: string;
+  campaignPic?: string;
   timestamp: string;
   campaignVol?: string;
   actionValue?: string;
@@ -126,7 +126,7 @@ export class ActionFromCreation implements Action {
   campaignName: string;
   campaignId: string;
   type: "create";
-  campaignPic: string;
+  campaignPic?: string;
   timestamp: string;
 
   constructor(response: CreationResponse["ninelives_campaigns_1"][number]) {

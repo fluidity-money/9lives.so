@@ -107,14 +107,6 @@ export interface Query<
   getDiscordName?:
     | Query.getDiscordName<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.getDiscordName<_$Scalars>>;
-  /**
-   *
-   * Select the `removeCampaign` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  removeCampaign?:
-    | Query.removeCampaign<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Query.removeCampaign<_$Scalars>>;
 
   /**
    *
@@ -421,44 +413,6 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getDiscordName$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type removeCampaign<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = removeCampaign$SelectionSet<_$Scalars>;
-
-  export interface removeCampaign$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
-    /**
-     * Arguments for `removeCampaign` field. All arguments are required so you must include this.
-     */
-    $: removeCampaign$Arguments<_$Scalars>;
-  }
-
-  export interface removeCampaign$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    campaignId: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `removeCampaign` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type removeCampaign$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<removeCampaign$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -503,6 +457,24 @@ export interface Mutation<
   calculatePoints?:
     | Mutation.calculatePoints<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.calculatePoints<_$Scalars>>;
+  /**
+   *
+   * Select the `hideCampaign` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  hideCampaign?:
+    | Mutation.hideCampaign<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.hideCampaign<_$Scalars>>;
+  /**
+   *
+   * Select the `setCampaignCategories` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  setCampaignCategories?:
+    | Mutation.setCampaignCategories<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<
+        Mutation.setCampaignCategories<_$Scalars>
+      >;
 
   /**
    *
@@ -714,6 +686,83 @@ export namespace Mutation {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<calculatePoints$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type hideCampaign<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = hideCampaign$SelectionSet<_$Scalars>;
+
+  export interface hideCampaign$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `hideCampaign` field. All arguments are required so you must include this.
+     */
+    $: hideCampaign$Arguments<_$Scalars>;
+  }
+
+  export interface hideCampaign$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    id: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `hideCampaign` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type hideCampaign$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<hideCampaign$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type setCampaignCategories<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = setCampaignCategories$SelectionSet<_$Scalars>;
+
+  export interface setCampaignCategories$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `setCampaignCategories` field. All arguments are required so you must include this.
+     */
+    $: setCampaignCategories$Arguments<_$Scalars>;
+  }
+
+  export interface setCampaignCategories$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    id: string;
+    categories: Array<string | undefined | null>;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `setCampaignCategories` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type setCampaignCategories$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<setCampaignCategories$SelectionSet<_$Scalars>>;
 }
 
 //

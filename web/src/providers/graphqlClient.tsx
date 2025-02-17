@@ -65,7 +65,7 @@ export const requestTotalUserCount = graphPoints.query.productUserCount({
 export const requestCreateCampaign = (params: {
   name: string;
   desc: string;
-  picture: string;
+  picture?: string;
   outcomes: OutcomeInput[];
   oracleDescription?: string;
   oracleUrls?: string[];

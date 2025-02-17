@@ -190,28 +190,6 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
-  /**
-   * Remove a campaign, using authentication to do so.
-   */
-  removeCampaign: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Query.removeCampaign<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationQuery<
-            { removeCampaign: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "removeCampaign"
-        >
-    >
-  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
@@ -332,6 +310,50 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
             $$Schema.Schema<$Context["scalars"]>
           >,
           "calculatePoints"
+        >
+    >
+  >;
+  /**
+   * Remove a campaign using special powers from the frontpage.
+   */
+  hideCampaign: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.hideCampaign<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { hideCampaign: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "hideCampaign"
+        >
+    >
+  >;
+  /**
+   * Adjust a campaign's categories based on its id.
+   */
+  setCampaignCategories: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.setCampaignCategories<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { setCampaignCategories: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "setCampaignCategories"
         >
     >
   >;

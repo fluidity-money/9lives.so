@@ -44,9 +44,9 @@ func (r *campaignResolver) Description(ctx context.Context, obj *types.Campaign)
 }
 
 // Picture is the resolver for the picture field.
-func (r *campaignResolver) Picture(ctx context.Context, obj *types.Campaign) (string, error) {
+func (r *campaignResolver) Picture(ctx context.Context, obj *types.Campaign) (*string, error) {
 	if obj == nil {
-		return "", fmt.Errorf("campaign is nil")
+		return nil, fmt.Errorf("campaign is nil")
 	}
 	return obj.Content.Picture, nil
 }
@@ -228,7 +228,7 @@ func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) 
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
@@ -346,9 +346,9 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			shareAddr, _ := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
 			shareAddrStr = strings.ToLower(shareAddr.Hex())
 		}
-		var outcomePicUrl string
-		if pic := outcome.Picture; pic != "" {
-			buf, err := decodeAndCheckPictureValidity(outcome.Picture)
+		var outcomePicUrl *string
+		if pic := outcome.Picture; pic != nil {
+			buf, err := decodeAndCheckPictureValidity(*outcome.Picture)
 			if err != nil {
 				slog.Error("Failed to decode outcome image",
 					"err", err,
@@ -377,7 +377,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 				}
 			}
 			// Track the URL that's associated with this share's picture.
-			outcomePicUrl, err = url.JoinPath(r.PicturesUriBase, picKey)
+			concatUrl, err := url.JoinPath(r.PicturesUriBase, picKey)
 			if err != nil {
 				slog.Error("Failed to create a URL for a share picture",
 					"trading addr", tradingAddr,
@@ -388,6 +388,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 				)
 				return nil, fmt.Errorf("error uploading image")
 			}
+			outcomePicUrl = &concatUrl
 		}
 		campaignOutcomes[i] = types.Outcome{
 			Name:       outcome.Name,
@@ -399,43 +400,47 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			},
 		}
 	}
-	// Upload the image for the base to S3, so we can serve it later,
-	// start by unpacking the base64. This should also blow up if this
-	// is bad base64.
-	buf, err := decodeAndCheckPictureValidity(picture)
-	if err != nil {
-		slog.Error("Failed to decode a image",
-			"trading addr", tradingAddr,
-			"creator", creator,
-			"err", err,
-			"is not precommit", isNotPrecommit,
-		)
-		return nil, fmt.Errorf("error uploading image")
-	}
-	tradingPicKey := tradingAddrStr + "-base"
-	if isNotPrecommit {
-		_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
-			Bucket: aws.String(r.S3UploadBucketName),
-			Key:    aws.String(tradingPicKey),
-			Body:   buf,
-		})
+	var tradingPicUrl *string
+	if picture != nil {
+		// Upload the image for the base to S3, so we can serve it later,
+		// start by unpacking the base64. This should also blow up if this
+		// is bad base64.
+		buf, err := decodeAndCheckPictureValidity(*picture)
 		if err != nil {
-			slog.Error("Failed to upload a trading image",
+			slog.Error("Failed to decode a image",
+				"trading addr", tradingAddr,
+				"creator", creator,
+				"err", err,
+				"is not precommit", isNotPrecommit,
+			)
+			return nil, fmt.Errorf("error uploading image")
+		}
+		tradingPicKey := tradingAddrStr + "-base"
+		if isNotPrecommit {
+			_, err = r.S3UploadManager.Upload(ctx, &s3.PutObjectInput{
+				Bucket: aws.String(r.S3UploadBucketName),
+				Key:    aws.String(tradingPicKey),
+				Body:   buf,
+			})
+			if err != nil {
+				slog.Error("Failed to upload a trading image",
+					"trading addr", tradingAddr,
+					"trading pic key", tradingPicKey,
+					"err", err,
+				)
+				return nil, fmt.Errorf("error uploading image")
+			}
+		}
+		concatPicUrl, err := url.JoinPath(r.PicturesUriBase, tradingPicKey)
+		if err != nil {
+			slog.Error("Failed to join a trading image path",
 				"trading addr", tradingAddr,
 				"trading pic key", tradingPicKey,
 				"err", err,
 			)
 			return nil, fmt.Errorf("error uploading image")
 		}
-	}
-	tradingPicUrl, err := url.JoinPath(r.PicturesUriBase, tradingPicKey)
-	if err != nil {
-		slog.Error("Failed to join a trading image path",
-			"trading addr", tradingAddr,
-			"trading pic key", tradingPicKey,
-			"err", err,
-		)
-		return nil, fmt.Errorf("error uploading image")
+		tradingPicUrl = &concatPicUrl
 	}
 	var categories []string
 	err = r.F.On(features.FeatureUseAIForCategories, func() error {

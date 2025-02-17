@@ -18,7 +18,7 @@ type OutcomeInput struct {
 	// Randomly chosen seed for the creation of the identifier.
 	Seed int `json:"seed"`
 	// Picture of the outcome.
-	Picture string `json:"picture"`
+	Picture *string `json:"picture,omitempty"`
 }
 
 type Query struct {

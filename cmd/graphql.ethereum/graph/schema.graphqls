@@ -38,7 +38,7 @@ input OutcomeInput {
   """
   Picture of the outcome.
   """
-  picture: String!
+  picture: String
 }
 
 type Mutation {
@@ -65,7 +65,7 @@ type Mutation {
     """
     Picture of the campaign.
     """
-    picture: String!
+    picture: String
 
     """
     Randomly chosen seed for the creation of the identifier.
@@ -237,7 +237,7 @@ type Campaign {
   """
   Picture of the campaign.
   """
-  picture: String!
+  picture: String
 
   """
   Creator of the campaign.
@@ -361,7 +361,7 @@ type Outcome {
   """
   Picture of the outcome.
   """
-  picture: String!
+  picture: String
 
   """
   Identifier hex encoded associated with this outcome. Used to derive addresses.

@@ -190,7 +190,7 @@ export namespace Schema {
         picture: {
           kind: "InputField";
           name: "picture";
-          inlineType: [1];
+          inlineType: [0];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -495,6 +495,7 @@ export namespace Schema {
       totalVolume: Campaign.totalVolume;
       investmentAmounts: Campaign.investmentAmounts;
       banners: Campaign.banners;
+      categories: Campaign.categories;
     };
   }
 
@@ -536,7 +537,7 @@ export namespace Schema {
     export interface picture extends $.OutputField {
       name: "picture";
       arguments: {};
-      inlineType: [1];
+      inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
 
@@ -712,6 +713,16 @@ export namespace Schema {
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$String;
     }
+
+    /**
+     * Campaigns can be tagged with multiple categories
+     */
+    export interface categories extends $.OutputField {
+      name: "categories";
+      arguments: {};
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$String;
+    }
   }
 
   //                                         InvestmentAmounts
@@ -812,7 +823,7 @@ export namespace Schema {
     export interface picture extends $.OutputField {
       name: "picture";
       arguments: {};
-      inlineType: [1];
+      inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
 
@@ -1016,7 +1027,7 @@ export namespace Schema {
    */
   export interface OutcomeInput extends $.InputObject {
     name: "OutcomeInput";
-    isAllFieldsNullable: false;
+    isAllFieldsNullable: true;
     fields: {
       name: OutcomeInput.name;
       seed: OutcomeInput.seed;
@@ -1048,7 +1059,7 @@ export namespace Schema {
      */
     export interface picture extends $.InputField {
       name: "picture";
-      inlineType: [1];
+      inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
   }

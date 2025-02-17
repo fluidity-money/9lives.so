@@ -137,6 +137,7 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       // nt: InvestmentAmounts, <-- Assigned later to avoid potential circular dependency.
     },
     banners: {},
+    categories: {},
   },
 };
 
@@ -293,7 +294,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
         picture: {
           nt: String,
-          it: [1],
+          it: [0],
         },
         seed: {
           nt: Int,

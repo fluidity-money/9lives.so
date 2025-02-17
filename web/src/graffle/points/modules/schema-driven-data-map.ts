@@ -253,14 +253,6 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
-    removeCampaign: {
-      a: {
-        campaignId: {
-          nt: String,
-          it: [1],
-        },
-      },
-    },
   },
 };
 
@@ -315,6 +307,26 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         yes: {
           nt: Boolean,
           it: [1],
+        },
+      },
+    },
+    hideCampaign: {
+      a: {
+        id: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
+    setCampaignCategories: {
+      a: {
+        id: {
+          nt: String,
+          it: [1],
+        },
+        categories: {
+          nt: String,
+          it: [1, [1]],
         },
       },
     },

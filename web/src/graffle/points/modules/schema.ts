@@ -35,7 +35,6 @@ export namespace Schema {
       getPointsComponent: Query.getPointsComponent;
       getAddressByDiscord: Query.getAddressByDiscord;
       getDiscordName: Query.getDiscordName;
-      removeCampaign: Query.removeCampaign;
     };
   }
 
@@ -177,23 +176,6 @@ export namespace Schema {
       inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
-
-    /**
-     * Remove a campaign, using authentication to do so.
-     */
-    export interface removeCampaign extends $.OutputField {
-      name: "removeCampaign";
-      arguments: {
-        campaignId: {
-          kind: "InputField";
-          name: "campaignId";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [0];
-      namedType: $$NamedTypes.$$String;
-    }
   }
 
   //                                              Mutation
@@ -208,6 +190,8 @@ export namespace Schema {
       addAchievement: Mutation.addAchievement;
       registerDiscord: Mutation.registerDiscord;
       calculatePoints: Mutation.calculatePoints;
+      hideCampaign: Mutation.hideCampaign;
+      setCampaignCategories: Mutation.setCampaignCategories;
     };
   }
 
@@ -338,6 +322,46 @@ export namespace Schema {
           name: "yes";
           inlineType: [1];
           namedType: $$NamedTypes.$$Boolean;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Remove a campaign using special powers from the frontpage.
+     */
+    export interface hideCampaign extends $.OutputField {
+      name: "hideCampaign";
+      arguments: {
+        id: {
+          kind: "InputField";
+          name: "id";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Adjust a campaign's categories based on its id.
+     */
+    export interface setCampaignCategories extends $.OutputField {
+      name: "setCampaignCategories";
+      arguments: {
+        id: {
+          kind: "InputField";
+          name: "id";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        categories: {
+          kind: "InputField";
+          name: "categories";
+          inlineType: [1, [1]];
+          namedType: $$NamedTypes.$$String;
         };
       };
       inlineType: [1];

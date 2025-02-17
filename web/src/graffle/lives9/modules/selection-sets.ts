@@ -336,7 +336,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `explainCampaign` field. Some (9/15) arguments are required so you must include this.
+     * Arguments for `explainCampaign` field. Some (8/15) arguments are required so you must include this.
      */
     $: explainCampaign$Arguments<_$Scalars>;
   }
@@ -360,7 +360,7 @@ export namespace Mutation {
     /**
      * Picture of the campaign.
      */
-    picture: string;
+    picture?: string | undefined | null;
     /**
      * Randomly chosen seed for the creation of the identifier.
      */
@@ -637,7 +637,7 @@ export interface OutcomeInput<
   /**
    * Picture of the outcome.
    */
-  picture: string;
+  picture?: string | undefined | null;
 }
 
 //
@@ -829,6 +829,14 @@ export interface Campaign<
   banners?:
     | Campaign.banners$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Campaign.banners<_$Scalars>>;
+  /**
+   *
+   * Select the `categories` field on the `Campaign` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  categories?:
+    | Campaign.categories$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.categories<_$Scalars>>;
 
   /**
    *
@@ -1421,6 +1429,34 @@ export namespace Campaign {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | banners$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type categories<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | categories$SelectionSet<_$Scalars>;
+
+  export interface categories$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `categories` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type categories$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | categories$SelectionSet<_$Scalars>
   >;
 }
 

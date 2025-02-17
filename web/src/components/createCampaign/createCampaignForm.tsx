@@ -65,27 +65,28 @@ export default function CreateCampaignForm() {
   >([]);
   const [settlementType, setSettlementType] =
     useState<SettlementType>("ORACLE");
+  const pictureSchema = z
+    .instanceof(File, { message: "You have to upload a picture" })
+    .optional()
+    .refine((file) => (file ? file.size <= 1024 * 1024 : true), {
+      message: "File size must be under 1MB",
+    })
+    .refine((file) => (file ? file.size > 0 : true), {
+      message: "You have to upload a picture",
+    })
+    .refine(
+      (file) => {
+        if (!file) return true;
+        const validExtensions = ["png", "jpg", "jpeg", "gif"];
+        const fileExtension = file.name.split(".").pop()?.toLowerCase();
+        return fileExtension && validExtensions.includes(fileExtension);
+      },
+      {
+        message: "File must be a PNG, JPG, JPEG, or GIF image.",
+      },
+    );
   const outcomeschema = z.object({
-    picture: z
-      .instanceof(File, {
-        message: "You have to upload a picture",
-      })
-      .refine((file) => file.size <= 1024 * 1024, {
-        message: "File size must be under 1MB",
-      })
-      .refine((file) => file.size > 0, {
-        message: "You have to upload a picture",
-      })
-      .refine(
-        (file) => {
-          const validExtensions = ["png", "jpg", "jpeg", "gif"];
-          const fileExtension = file.name.split(".").pop()?.toLowerCase();
-          return fileExtension && validExtensions.includes(fileExtension);
-        },
-        {
-          message: "File must be a PNG, JPG, JPEG, or GIF image.",
-        },
-      ),
+    picture: pictureSchema.optional(),
     name: z.string().min(3),
     seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
   });
@@ -95,24 +96,7 @@ export default function CreateCampaignForm() {
         name: z.string().min(3).max(300),
         desc: z.string().max(1000).or(z.literal("")),
         seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
-        picture: z
-          .instanceof(File, { message: "You have to upload a picture" })
-          .refine((file) => file.size <= 1024 * 1024, {
-            message: "File size must be under 1MB",
-          })
-          .refine((file) => file.size > 0, {
-            message: "You have to upload a picture",
-          })
-          .refine(
-            (file) => {
-              const validExtensions = ["png", "jpg", "jpeg", "gif"];
-              const fileExtension = file.name.split(".").pop()?.toLowerCase();
-              return fileExtension && validExtensions.includes(fileExtension);
-            },
-            {
-              message: "File must be a PNG, JPG, JPEG, or GIF image.",
-            },
-          ),
+        picture: pictureSchema.optional(),
         starting: z.string().date(),
         ending: z
           .string()
@@ -137,7 +121,7 @@ export default function CreateCampaignForm() {
             ? z.array(outcomeschema)
             : z.array(
                 z.object({
-                  picture: z.instanceof(File),
+                  picture: z.instanceof(File).optional(),
                   name: z.string().max(300),
                   seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
                 }),
@@ -175,12 +159,10 @@ export default function CreateCampaignForm() {
       outcomes: [
         {
           name: "",
-          picture: new File([], ""),
           seed: randomValue4Uint8(),
         },
         {
           name: "",
-          picture: new File([], ""),
           seed: randomValue4Uint8(),
         },
       ],
@@ -195,17 +177,17 @@ export default function CreateCampaignForm() {
       outcomes = input.outcomes.slice(0, 2).map((o, idx) => ({
         ...o,
         name: idx === 0 ? "Yes" : "No",
-        picture: "",
+        picture: undefined,
       }));
     } else {
       outcomes = input.outcomes.map((o, idx) => ({
         ...o,
-        picture: outcomeImageBlobs[idx]!,
+        picture: outcomeImageBlobs[idx],
       }));
     }
     const preparedInput = {
       ...input,
-      picture: pictureBlob!,
+      picture: pictureBlob,
       settlementType,
       outcomes,
     };
@@ -232,14 +214,14 @@ export default function CreateCampaignForm() {
     if (fields) {
       debouncedFillForm({
         ...fields,
-        picture: pictureBlob ?? "",
+        picture: pictureBlob,
         seed: 0,
         outcomeType,
         settlementType,
         outcomes: fields.outcomes.map((outcome, index) => {
           return {
             name: outcome.name,
-            picture: outcomeImageBlobs[index] ?? "",
+            picture: outcomeImageBlobs[index],
             seed: 0,
           };
         }),

@@ -35,7 +35,7 @@ export default function CreateCampaignFormPicture({
   };
   return (
     <Field className={fieldClass}>
-      <Label text="Campaign Picture" required />
+      <Label text="Campaign Picture" />
       <Input
         type="file"
         accept="image/gif, image/jpeg, image/jpg, image/png"
