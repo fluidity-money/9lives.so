@@ -175,3 +175,19 @@ export const requestCampaignById = (id: string) =>
       usdc: true,
     },
   });
+
+export const requestUserParticipated = (address: string) => {
+  graph9Lives.query.userParticipatedCampaigns({
+    $: { address },
+    campaignId: true,
+    outcomeIds: true,
+    content: {
+      name: true,
+      picture: true,
+      outcomes: {
+        name: true,
+        identifier: true,
+      },
+    },
+  });
+};
