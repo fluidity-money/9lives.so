@@ -121,6 +121,73 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Returns user's created campaigns
+   */
+  userCampaigns: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.userCampaigns<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { userCampaigns: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "userCampaigns"
+        >
+    >
+  >;
+  /**
+   * Returns user's buy and sell activities
+   */
+  userActivity: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.userActivity<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { userActivity: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "userActivity"
+        >
+    >
+  >;
+  /**
+   * Returns user's participated positions as pool address of the campaigns
+   * and bought and sought outcome ids
+   */
+  userParticipatedCampaigns: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.userParticipatedCampaigns<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { userParticipatedCampaigns: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "userParticipatedCampaigns"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {

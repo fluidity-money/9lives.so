@@ -20,12 +20,14 @@ import type * as $$Utilities from "graffle/utilities-for-generated";
 export interface $MethodsSelect {
   Query: Query;
   Mutation: Mutation;
+  Position: Position;
   Campaign: Campaign;
   InvestmentAmounts: InvestmentAmounts;
   Outcome: Outcome;
   Wallet: Wallet;
   Share: Share;
   Changelog: Changelog;
+  Activity: Activity;
 }
 
 //
@@ -72,6 +74,12 @@ export interface Mutation {
 //
 //
 
+export interface Position {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Position>,
+  ): $SelectionSet;
+}
+
 export interface Campaign {
   <$SelectionSet>(
     selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Campaign>,
@@ -108,6 +116,12 @@ export interface Share {
 export interface Changelog {
   <$SelectionSet>(
     selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Changelog>,
+  ): $SelectionSet;
+}
+
+export interface Activity {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Activity>,
   ): $SelectionSet;
 }
 

@@ -57,6 +57,12 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
+  export type Position<$SelectionSet extends $$SelectionSets.Position> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["Position"]
+    >;
   export type Campaign<$SelectionSet extends $$SelectionSets.Campaign> =
     InferResult.OutputObjectLike<
       $SelectionSet,
@@ -93,6 +99,12 @@ export namespace Select {
       $SelectionSet,
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Changelog"]
+    >;
+  export type Activity<$SelectionSet extends $$SelectionSets.Activity> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["Activity"]
     >;
   //                                               Union
   // --------------------------------------------------------------------------------------------------

@@ -68,6 +68,11 @@ const SettlementType: $$Utilities.SchemaDrivenDataMap.Enum = {
   n: "SettlementType",
 };
 
+const ActivityType: $$Utilities.SchemaDrivenDataMap.Enum = {
+  k: "enum",
+  n: "ActivityType",
+};
+
 //
 //
 //
@@ -108,6 +113,16 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 //
+
+const Position: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    campaignId: {},
+    outcomeIds: {},
+    content: {
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
+    },
+  },
+};
 
 const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
@@ -178,6 +193,23 @@ const Changelog: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     title: {},
     afterTs: {},
     html: {},
+  },
+};
+
+const Activity: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    txHash: {},
+    spender: {},
+    poolAddress: {},
+    fromAmount: {},
+    fromSymbol: {},
+    toAmount: {},
+    toSymbol: {},
+    type: {},
+    outcomeId: {},
+    campaignId: {},
+    totalVolume: {},
+    createdAt: {},
   },
 };
 
@@ -272,6 +304,37 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     suggestedHeadlines: {},
     changelog: {
       // nt: Changelog, <-- Assigned later to avoid potential circular dependency.
+    },
+    userCampaigns: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
+    },
+    userActivity: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+        campaignId: {
+          nt: String,
+          it: [0],
+        },
+      },
+      // nt: Activity, <-- Assigned later to avoid potential circular dependency.
+    },
+    userParticipatedCampaigns: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: Position, <-- Assigned later to avoid potential circular dependency.
     },
   },
 };
@@ -414,6 +477,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 //
 
+Position.f[`content`]!.nt = Campaign;
 Campaign.f[`creator`]!.nt = Wallet;
 Campaign.f[`outcomes`]!.nt = Outcome;
 Campaign.f[`investmentAmounts`]!.nt = InvestmentAmounts;
@@ -421,6 +485,9 @@ Outcome.f[`share`]!.nt = Share;
 Query.f[`campaigns`]!.nt = Campaign;
 Query.f[`campaignById`]!.nt = Campaign;
 Query.f[`changelog`]!.nt = Changelog;
+Query.f[`userCampaigns`]!.nt = Campaign;
+Query.f[`userActivity`]!.nt = Activity;
+Query.f[`userParticipatedCampaigns`]!.nt = Position;
 
 //
 //
@@ -451,13 +518,16 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     ID,
     Modification,
     SettlementType,
+    ActivityType,
     OutcomeInput,
+    Position,
     Campaign,
     InvestmentAmounts,
     Outcome,
     Wallet,
     Share,
     Changelog,
+    Activity,
     Query,
     Mutation,
   },

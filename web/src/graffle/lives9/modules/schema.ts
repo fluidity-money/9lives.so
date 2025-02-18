@@ -32,6 +32,9 @@ export namespace Schema {
       campaignById: Query.campaignById;
       suggestedHeadlines: Query.suggestedHeadlines;
       changelog: Query.changelog;
+      userCampaigns: Query.userCampaigns;
+      userActivity: Query.userActivity;
+      userParticipatedCampaigns: Query.userParticipatedCampaigns;
     };
   }
 
@@ -122,6 +125,64 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Changelog;
+    }
+
+    /**
+     * Returns user's created campaigns
+     */
+    export interface userCampaigns extends $.OutputField {
+      name: "userCampaigns";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$Campaign;
+    }
+
+    /**
+     * Returns user's buy and sell activities
+     */
+    export interface userActivity extends $.OutputField {
+      name: "userActivity";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        campaignId: {
+          kind: "InputField";
+          name: "campaignId";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$Activity;
+    }
+
+    /**
+     * Returns user's participated positions as pool address of the campaigns
+     * and bought and sought outcome ids
+     */
+    export interface userParticipatedCampaigns extends $.OutputField {
+      name: "userParticipatedCampaigns";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$Position;
     }
   }
 
@@ -463,6 +524,56 @@ export namespace Schema {
   //
   //
   //
+
+  //                                              Position
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Participated pool address of the campaign and bought and sought outcome ids
+   */
+  export interface Position extends $.OutputObject {
+    name: "Position";
+    fields: {
+      __typename: Position.__typename;
+      campaignId: Position.campaignId;
+      outcomeIds: Position.outcomeIds;
+      content: Position.content;
+    };
+  }
+
+  export namespace Position {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Position";
+      };
+    }
+
+    export interface campaignId extends $.OutputField {
+      name: "campaignId";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface outcomeIds extends $.OutputField {
+      name: "outcomeIds";
+      arguments: {};
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface content extends $.OutputField {
+      name: "content";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Campaign;
+    }
+  }
 
   //                                              Campaign
   // --------------------------------------------------------------------------------------------------
@@ -1002,6 +1113,164 @@ export namespace Schema {
     }
   }
 
+  //                                              Activity
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Represents a buy or sell activity.
+   */
+  export interface Activity extends $.OutputObject {
+    name: "Activity";
+    fields: {
+      __typename: Activity.__typename;
+      txHash: Activity.txHash;
+      spender: Activity.spender;
+      poolAddress: Activity.poolAddress;
+      fromAmount: Activity.fromAmount;
+      fromSymbol: Activity.fromSymbol;
+      toAmount: Activity.toAmount;
+      toSymbol: Activity.toSymbol;
+      type: Activity.type;
+      outcomeId: Activity.outcomeId;
+      campaignId: Activity.campaignId;
+      totalVolume: Activity.totalVolume;
+      createdAt: Activity.createdAt;
+    };
+  }
+
+  export namespace Activity {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Activity";
+      };
+    }
+
+    /**
+     * Transaction hash of the activity.
+     */
+    export interface txHash extends $.OutputField {
+      name: "txHash";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Address of the spender involved in the activity.
+     */
+    export interface spender extends $.OutputField {
+      name: "spender";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Pool address associated with the activity.
+     */
+    export interface poolAddress extends $.OutputField {
+      name: "poolAddress";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Amount of the asset being transferred from.
+     */
+    export interface fromAmount extends $.OutputField {
+      name: "fromAmount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Symbol of the asset being transferred from.
+     */
+    export interface fromSymbol extends $.OutputField {
+      name: "fromSymbol";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Amount of the asset being transferred to.
+     */
+    export interface toAmount extends $.OutputField {
+      name: "toAmount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Symbol of the asset being transferred to.
+     */
+    export interface toSymbol extends $.OutputField {
+      name: "toSymbol";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Type of the activity (buy, sell).
+     */
+    export interface type extends $.OutputField {
+      name: "type";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$ActivityType;
+    }
+
+    /**
+     * ID of the outcome associated with the activity.
+     */
+    export interface outcomeId extends $.OutputField {
+      name: "outcomeId";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * ID of the campaign associated with the activity.
+     */
+    export interface campaignId extends $.OutputField {
+      name: "campaignId";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Total volume of the activity.
+     */
+    export interface totalVolume extends $.OutputField {
+      name: "totalVolume";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Timestamp of when the activity was created.
+     */
+    export interface createdAt extends $.OutputField {
+      name: "createdAt";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+  }
+
   //
   //
   //
@@ -1149,6 +1418,19 @@ export namespace Schema {
     membersUnion: "ORACLE" | "POLL" | "AI" | "CONTRACT";
   }
 
+  //                                            ActivityType
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Represents the type of an activity.
+   */
+  export interface ActivityType extends $.Enum {
+    name: "ActivityType";
+    members: ["buy", "sell"];
+    membersUnion: "buy" | "sell";
+  }
+
   //
   //
   //
@@ -1232,15 +1514,18 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$Position = Position;
     export type $$Campaign = Campaign;
     export type $$InvestmentAmounts = InvestmentAmounts;
     export type $$Outcome = Outcome;
     export type $$Wallet = Wallet;
     export type $$Share = Share;
     export type $$Changelog = Changelog;
+    export type $$Activity = Activity;
     export type $$OutcomeInput = OutcomeInput;
     export type $$Modification = Modification;
     export type $$SettlementType = SettlementType;
+    export type $$ActivityType = ActivityType;
     export type $$String = String;
     export type $$Int = Int;
     export type $$Boolean = Boolean;
@@ -1280,20 +1565,25 @@ export interface Schema<
     Mutation: Schema.Mutation;
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
+    ActivityType: Schema.ActivityType;
+    Position: Schema.Position;
     Campaign: Schema.Campaign;
     InvestmentAmounts: Schema.InvestmentAmounts;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;
     Share: Schema.Share;
     Changelog: Schema.Changelog;
+    Activity: Schema.Activity;
   };
   objects: {
+    Position: Schema.Position;
     Campaign: Schema.Campaign;
     InvestmentAmounts: Schema.InvestmentAmounts;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;
     Share: Schema.Share;
     Changelog: Schema.Changelog;
+    Activity: Schema.Activity;
   };
   unions: {};
   interfaces: {};
