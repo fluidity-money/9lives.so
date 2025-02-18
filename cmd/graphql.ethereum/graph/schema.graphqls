@@ -19,6 +19,33 @@ type Query {
   Any new changelog items that have come up recently.
   """
   changelog: [Changelog]!
+
+  """
+  Returns user's created campaigns
+  """
+  userCampaigns(address: String!): [Campaign]!
+
+  """
+  Returns user's buy and sell activities
+  """
+  userActivity(address: String!, campaignId: String): [Activity]!
+
+  """
+  Returns user's participated positions as pool address of the campaigns
+  and bought and sought outcome ids
+  """
+  userParticipatedCampaigns(address: String!): [Position]!
+}
+
+"""
+Participated pool address of the campaign and bought and sought outcome ids
+"""
+type Position {
+  campaignId: String!
+
+  outcomeIds: [String!]!
+
+  content: Campaign
 }
 
 """
@@ -468,4 +495,77 @@ enum SettlementType {
   Contract State.
   """
   CONTRACT
+}
+
+"""
+Represents the type of an activity.
+"""
+enum ActivityType {
+  buy,
+  sell
+}
+
+"""
+Represents a buy or sell activity.
+"""
+type Activity {
+  """
+  Transaction hash of the activity.
+  """
+  txHash: String!
+  
+  """
+  Address of the spender involved in the activity.
+  """
+  spender: String!
+
+  """
+  Pool address associated with the activity.
+  """
+  poolAddress: String!
+
+  """
+  Amount of the asset being transferred from.
+  """
+  fromAmount: Int!
+
+  """
+  Symbol of the asset being transferred from.
+  """
+  fromSymbol: String!
+
+  """
+  Amount of the asset being transferred to.
+  """
+  toAmount: Int!
+
+  """
+  Symbol of the asset being transferred to.
+  """
+  toSymbol: String!
+
+  """
+  Type of the activity (buy, sell).
+  """
+  type: ActivityType!
+
+  """
+  ID of the outcome associated with the activity.
+  """
+  outcomeId: String!
+
+  """
+  ID of the campaign associated with the activity.
+  """
+  campaignId: String!
+
+  """
+  Total volume of the activity.
+  """
+  totalVolume: Int!
+
+  """
+  Timestamp of when the activity was created.
+  """
+  createdAt: Int!
 }

@@ -27,6 +27,11 @@ import (
 	"gorm.io/gorm"
 )
 
+// CreatedAt is the resolver for the createdAt field.
+func (r *activityResolver) CreatedAt(ctx context.Context, obj *types.Activity) (int, error) {
+	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+}
+
 // Name is the resolver for the name field.
 func (r *campaignResolver) Name(ctx context.Context, obj *types.Campaign) (string, error) {
 	if obj == nil {
@@ -523,6 +528,29 @@ func (r *mutationResolver) RevealCommitment2(ctx context.Context, tradingAddr *s
 	panic(fmt.Errorf("not implemented: RevealCommitment2 - revealCommitment2"))
 }
 
+// OutcomeIds is the resolver for the outcomeIds field.
+func (r *positionResolver) OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Position is nil")
+	}
+	return obj.OutcomeIds, nil
+}
+
+// Content is the resolver for the content field.
+func (r *positionResolver) Content(ctx context.Context, obj *types.Position) (*types.Campaign, error) {
+	var campaign types.Campaign
+	if obj == nil {
+		return nil, fmt.Errorf("Position is nil")
+	}
+	campaign = types.Campaign{
+		ID:        obj.CampaignId,
+		Content:   obj.Content,
+		CreatedAt: time.Unix(int64(obj.Content.Starting), 0),
+		UpdatedAt: time.Unix(int64(obj.Content.Starting), 0),
+	}
+	return &campaign, nil
+}
+
 // Campaigns is the resolver for the campaigns field.
 func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
@@ -622,7 +650,7 @@ SELECT
 		LEFT JOIN
         campaign_investments ci ON nc.id = ci.campaign_id
 		WHERE
-			nc.id = ? AND shown`,id, id).Scan(&c).Error
+			nc.id = ? AND shown`, id, id).Scan(&c).Error
 	if err != nil {
 		return nil, fmt.Errorf("campaign find: %v", err)
 	}
@@ -648,6 +676,37 @@ func (r *queryResolver) Changelog(ctx context.Context) ([]*changelog.Changelog, 
 	return xs, nil
 }
 
+// UserCampaigns is the resolver for the userCampaigns field.
+func (r *queryResolver) UserCampaigns(ctx context.Context, address string) ([]*types.Campaign, error) {
+	panic(fmt.Errorf("not implemented: UserCampaigns - userCampaigns"))
+}
+
+// UserActivity is the resolver for the userActivity field.
+func (r *queryResolver) UserActivity(ctx context.Context, address string, campaignID *string) ([]*types.Activity, error) {
+	panic(fmt.Errorf("not implemented: UserActivity - userActivity"))
+}
+
+// UserParticipatedCampaigns is the resolver for the userParticipatedCampaigns field.
+func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error) {
+	var positions []*types.Position
+	err := r.DB.Raw(`
+	SELECT campaign_id, json_agg(outcome_id) AS outcome_ids, campaign_content AS content
+	FROM ninelives_buys_and_sells_1
+	WHERE recipient = ? and campaign_id is not null 
+	GROUP BY campaign_id, outcome_id, campaign_content;
+	`, address).Scan(&positions).Error
+	if err != nil {
+		slog.Error("Error getting positions from database",
+			"error", err,
+		)
+		return nil, fmt.Errorf("error getting positions from database: %w", err)
+	}
+	return positions, nil
+}
+
+// Activity returns ActivityResolver implementation.
+func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
+
 // Campaign returns CampaignResolver implementation.
 func (r *Resolver) Campaign() CampaignResolver { return &campaignResolver{r} }
 
@@ -657,10 +716,15 @@ func (r *Resolver) Changelog() ChangelogResolver { return &changelogResolver{r} 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
+// Position returns PositionResolver implementation.
+func (r *Resolver) Position() PositionResolver { return &positionResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type activityResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
 type changelogResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
+type positionResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

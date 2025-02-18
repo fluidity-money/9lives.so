@@ -123,6 +123,50 @@ type (
 		TransactionHash string `json:"transaction_hash"`
 		TradingAddr     string `json:"trading_addr"`
 	}
+
+	Activity struct {
+		// Transaction hash of the activity.
+		TxHash string `json:"txHash"`
+		// Address of the spender involved in the activity.
+		Spender string `json:"spender"`
+		// Pool address associated with the activity.
+		PoolAddress string `json:"poolAddress"`
+		// Amount of the asset being transferred from.
+		FromAmount int `json:"fromAmount"`
+		// Symbol of the asset being transferred from.
+		FromSymbol string `json:"fromSymbol"`
+		// Amount of the asset being transferred to.
+		ToAmount int `json:"toAmount"`
+		// Symbol of the asset being transferred to.
+		ToSymbol string `json:"toSymbol"`
+		// Type of the activity (buy, sell).
+		Type ActivityType `json:"type"`
+		// ID of the outcome associated with the activity.
+		OutcomeID string `json:"outcomeId"`
+		// ID of the campaign associated with the activity.
+		CampaignID string `json:"campaignId"`
+		// Total volume of the activity.
+		TotalVolume int `json:"totalVolume"`
+		// Timestamp of when the activity was created.
+		CreatedAt time.Time `json:"createdAt"`
+	}
+
+	ActivityType string
+
+	OutcomeIds []string
+
+	Position struct {
+		CampaignId string `json:"campaignId"`
+
+		OutcomeIds OutcomeIds `json:"outcomeIds" gorm:"type:jsonb"`
+
+		Content CampaignContent `json:"content"`
+	}
+)
+
+const (
+	ActivityTypeBuy  ActivityType = "buy"
+	ActivityTypeSell ActivityType = "sell"
 )
 
 func JSONMarshal(v interface{}) (driver.Value, error) {
@@ -191,6 +235,14 @@ func (ai InvestmentAmountsList) Value() (driver.Value, error) {
 
 func (ai *InvestmentAmountsList) Scan(value interface{}) error {
 	return JSONUnmarshal(value, ai)
+}
+
+func (ois OutcomeIds) Value() (driver.Value, error) {
+	return JSONMarshal(ois)
+}
+
+func (ois *OutcomeIds) Scan(value interface{}) error {
+	return JSONUnmarshal(value, ois)
 }
 
 type Frontpage struct {
