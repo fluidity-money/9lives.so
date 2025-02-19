@@ -689,6 +689,7 @@ func (r *queryResolver) UserActivity(ctx context.Context, address string, campai
 // UserParticipatedCampaigns is the resolver for the userParticipatedCampaigns field.
 func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error) {
 	var positions []*types.Position
+	address = strings.ToLower(address)
 	err := r.DB.Raw(`
 	SELECT campaign_id, json_agg(DISTINCT outcome_id) AS outcome_ids, campaign_content AS content
 	FROM ninelives_buys_and_sells_1
