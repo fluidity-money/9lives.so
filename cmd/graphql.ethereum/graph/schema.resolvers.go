@@ -690,10 +690,10 @@ func (r *queryResolver) UserActivity(ctx context.Context, address string, campai
 func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error) {
 	var positions []*types.Position
 	err := r.DB.Raw(`
-	SELECT campaign_id, json_agg(outcome_id) AS outcome_ids, campaign_content AS content
+	SELECT campaign_id, json_agg(DISTINCT outcome_id) AS outcome_ids, campaign_content AS content
 	FROM ninelives_buys_and_sells_1
 	WHERE recipient = ? and campaign_id is not null 
-	GROUP BY campaign_id, outcome_id, campaign_content;
+	GROUP BY campaign_id, campaign_content;
 	`, address).Scan(&positions).Error
 	if err != nil {
 		slog.Error("Error getting positions from database",
