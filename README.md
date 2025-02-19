@@ -244,12 +244,12 @@ generate these, run `./print-error-table.sh`.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5` |
-| Infrastructure market proxy   | `0x8aa856892f4c4110c3f2746d77530a8cde24189b` |
-| Lockup proxy                  | `0xedeb60590daf463b551295ceb57cfc7cf7f29491` |
+| Infrastructure market proxy   | `0xab80e599786fcaddeaa9e68e4e148227bc1c8e8d` |
+| Lockup proxy                  | `0x48bbfbd4438f245a7e3e793bff794c2e92537034` |
 | Lockup token proxy            | `0x2ed6450b4d48f049364676021e09ed39d59de62f` |
-| Factory proxy                 | `0xae011e461867e825268cc3df5fa06649809828e5` |
-| Helper factory                | `0xc401FCa17FdD967620a9cFC989ce2A33D22059ca` |
-| LensesV1                      | `0x76Fa8ea53cd6C5491496B1aEdf4F69F0E0506311` |
-| Beauty contest                | `0xf015ea35e410389aea6a6261db3b59f91ba9764c` |
-| Sarp AI Resolver              | `0x0000000000000000000000000000000000000000` |
-| Buy helper                    | `0xfCA868F1a7CF8B829ADDBbf3A703Af4a57ebfCFF` |
+| Factory proxy                 | `0x2d8d202c11ab72bcd98cca155510c2c350385057` |
+| Helper factory                | `0x723FCEAEF230c25Cba28610792184304694F3c67` |
+| LensesV1                      | `0x3aDE764d6852bf5dD59cF46c483181245ccA0B74` |
+| Beauty contest                | `0xca018c29994c2bd8ff9b5ff80a7010c5a0c0bf51` |
+| Sarp AI Resolver              | `0x15bebdf285bfe0039fd266af207f6d278aaac7f3` |
+| Buy helper                    | `0xFE974F446A31ddfb7cfC11202f08A33941EDEe3e` |
