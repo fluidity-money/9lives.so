@@ -5,8 +5,8 @@ import {
   prepareContractCall,
   simulateTransaction,
 } from "thirdweb";
-import { formatUnits } from "ethers";
 import { useQuery } from "@tanstack/react-query";
+import formatFusdc from "@/utils/formatFusdc";
 export default function useSharePrices({
   tradingAddr,
   outcomeIds,
@@ -36,7 +36,7 @@ export default function useSharePrices({
       );
       return res.map((price, idx) => ({
         id: outcomeIds[idx],
-        price: price ? formatUnits(price, config.contracts.decimals.fusdc) : "",
+        price: price ? formatFusdc(Number(price), 2) : "",
       }));
     },
   });

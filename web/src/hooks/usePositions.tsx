@@ -1,7 +1,8 @@
 import config from "@/config";
 import { Outcome } from "@/types";
+import formatFusdc from "@/utils/formatFusdc";
 import { useQuery } from "@tanstack/react-query";
-import { formatUnits, zeroPadValue } from "ethers";
+import { zeroPadValue } from "ethers";
 import { prepareContractCall, simulateTransaction } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 async function fetchPositions(
@@ -28,9 +29,9 @@ async function fetchPositions(
       id: outcome.identifier,
       shareAddress: outcome.share.address,
       name: outcome.name,
-      balance: formatUnits(balances[idx], config.contracts.decimals.shares),
+      balance: formatFusdc(Number(balances[idx]), 2),
     }))
-    .filter((item) => item.balance !== "0.0");
+    .filter((item) => item.balance !== "0.00");
 
   return mintedPositions;
 }

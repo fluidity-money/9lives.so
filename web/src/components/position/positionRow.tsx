@@ -46,7 +46,7 @@ export default function PositionRow({
         </div>
       </td>
       <td>
-        <span className="font-chicago text-xs">{price + "$"}</span>
+        <span className="font-chicago text-xs">${price}</span>
       </td>
       <td>
         <span className="font-chicago text-xs">
@@ -67,12 +67,9 @@ export default function PositionRow({
       </td>
       <td>
         <span className="font-chicago text-xs">
-          ${" "}
           {price
-            ? (Number(data.balance) * Number(price)).toFixed(
-                config.contracts.decimals.fusdc,
-              )
-            : ""}
+            ? "$" + (Number(data.balance) * Number(price)).toFixed(2)
+            : "?"}
         </span>
       </td>
       <td className="flex justify-end px-2">
