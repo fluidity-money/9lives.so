@@ -7,6 +7,7 @@ import useMeowDomains from "@/hooks/useMeowDomains";
 import AchYellow from "#/icons/ach-y.svg";
 import Image from "next/image";
 import formatFusdc from "@/utils/formatFusdc";
+import useConnectWallet from "@/hooks/useConnectWallet";
 
 export default function PortfolioHeader() {
   const account = useActiveAccount();
@@ -17,6 +18,7 @@ export default function PortfolioHeader() {
     chain: config.chains.currentChain,
   });
   const domainOrAddress = useMeowDomains(account?.address);
+  const { connect } = useConnectWallet();
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,7 +36,7 @@ export default function PortfolioHeader() {
               {domainOrAddress}
             </span>
           ) : (
-            <Button title="Connect your wallet" />
+            <Button title="Connect your wallet" onClick={connect} />
           )}
         </div>
         <div className="flex items-center gap-[70px] font-chicago">
