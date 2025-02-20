@@ -10,6 +10,10 @@ export default function NavigationMenu() {
       title: "Leaderboard",
       page: "/leaderboard",
     },
+    {
+      title: "Portfolio",
+      page: "/portfolio",
+    },
   ] as { disabled?: boolean; title: string; page: string }[];
 
   return (
