@@ -8,6 +8,8 @@ import AchYellow from "#/icons/ach-y.svg";
 import Image from "next/image";
 import formatFusdc from "@/utils/formatFusdc";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import Link from "next/link";
+import { EVENTS, track } from "@/utils/analytics";
 
 export default function PortfolioHeader() {
   const account = useActiveAccount();
@@ -65,7 +67,21 @@ export default function PortfolioHeader() {
               ${formatFusdc(Number(balance?.value) || 0)}
             </span>
           </div>
-          <Button title="+ Deposit" intent={"cta"} />
+          <Link
+            href={"https://bridge.superposition.so/"}
+            target="_blank"
+            className={"flex flex-1"}
+          >
+            <Button
+              title="+ Deposit"
+              intent={"cta"}
+              onClick={() => {
+                track(EVENTS.FUNDING_CLICKED, {
+                  type: "portfolio",
+                });
+              }}
+            />
+          </Link>
         </div>
 
         <div className="flex gap-[70px]">
