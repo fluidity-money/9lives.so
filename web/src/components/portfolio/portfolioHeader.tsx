@@ -32,11 +32,15 @@ export default function PortfolioHeader() {
             </div>
           </div>
           {account ? (
-            <span className="rounded-[3px] border border-9black bg-9gray p-1 font-geneva text-xs uppercase tracking-wide text-9black">
+            <span className="self-start rounded-[3px] border border-9black bg-9gray p-1 font-geneva text-xs uppercase tracking-wide text-9black">
               {domainOrAddress}
             </span>
           ) : (
-            <Button title="Connect your wallet" onClick={connect} />
+            <Button
+              title="Connect your wallet"
+              onClick={connect}
+              className={"self-start"}
+            />
           )}
         </div>
         <div className="flex items-center gap-[70px] font-chicago">
