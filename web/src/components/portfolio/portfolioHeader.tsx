@@ -10,6 +10,7 @@ import formatFusdc from "@/utils/formatFusdc";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import Link from "next/link";
 import { EVENTS, track } from "@/utils/analytics";
+import useAchievmentCount from "@/hooks/useAchievementCount";
 
 export default function PortfolioHeader() {
   const account = useActiveAccount();
@@ -21,7 +22,7 @@ export default function PortfolioHeader() {
   });
   const domainOrAddress = useMeowDomains(account?.address);
   const { connect } = useConnectWallet();
-
+  const { data: achievmentCount } = useAchievmentCount(account?.address);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -48,7 +49,7 @@ export default function PortfolioHeader() {
         <div className="flex items-center gap-4 font-chicago md:gap-[70px]">
           <div className="flex flex-col items-center gap-1 md:items-end">
             <span className="text-xs">Achievements</span>
-            <span className="text-2xl text-9black">0</span>
+            <span className="text-2xl text-9black">{achievmentCount}</span>
           </div>
           <div className="flex flex-col items-center gap-1 md:items-end">
             <span className="text-xs">Current Rank</span>

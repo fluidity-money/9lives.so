@@ -50,6 +50,11 @@ export const requestAchievments = (wallet?: string) =>
     shouldCountMatter: true,
     product: true,
   });
+export const requestAchievmentCount = (wallet: string) =>
+  graphPoints.query.achievements({
+    $: { wallet },
+    id: true,
+  });
 export const requestLeaderboard = (season?: number) =>
   graphPoints.query.leaderboards({
     $: { product: "9lives", season },
