@@ -3,23 +3,22 @@ import TabButton from "../tabButton";
 import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment } from "react";
 import ShadowCard from "../cardShadow";
-import { Outcome } from "@/types";
+import { PositionsProps } from "@/types";
 interface AssetSceneProps {
-  tradingAddr: `0x${string}`;
-  outcomes: Outcome[];
+  positionGrops: PositionsProps[];
 }
-export default function AssetScene({ tradingAddr, outcomes }: AssetSceneProps) {
+export default function AssetScene({ positionGrops }: AssetSceneProps) {
   return (
-    <TabGroup>
+    <TabGroup className={"flex-1"}>
       <TabList>
         <Tab as={Fragment}>
-          {(props) => <TabButton title="My Campaign Positions" {...props} />}
+          {(props) => <TabButton title="My Positions" {...props} />}
         </Tab>
       </TabList>
       <TabPanels>
         <TabPanel>
           <ShadowCard className="rounded-tl-none p-3 md:p-5">
-            <PositionTable tradingAddr={tradingAddr} outcomes={outcomes} />
+            <PositionTable positionGroups={positionGrops} />
           </ShadowCard>
         </TabPanel>
       </TabPanels>

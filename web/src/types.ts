@@ -233,3 +233,8 @@ class OutcomeDto implements Outcome {
     this.share = { address: ro.share.address as `0x${string}` };
   }
 }
+export type PositionsProps = {
+  campaignName?: string;
+  tradingAddr: `0x${string}`;
+  outcomes: Outcome[];
+};

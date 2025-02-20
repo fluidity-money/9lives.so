@@ -1,21 +1,14 @@
-import { Outcome } from "@/types";
-import PositionsBody from "./positionsBody";
-interface PositionsProps {
-  tradingAddr: `0x${string}`;
-  outcomes: Outcome[];
-}
+import { PositionsProps } from "@/types";
+import PositionsBody from "./positionBody";
+
 export default function PositionTable({
-  tradingAddr,
-  outcomes,
-}: PositionsProps) {
+  positionGroups,
+}: {
+  positionGroups: PositionsProps[];
+}) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
-  const tablesHeaders = [
-    "Position",
-    "Amount of Shares",
-    "Value of Shares",
-    "Actions",
-  ];
+  const tablesHeaders = ["Position", "Current", "Qty", "Value", "Actions"];
 
   return (
     <table className="w-full table-auto border-separate border-spacing-y-1">
@@ -28,7 +21,7 @@ export default function PositionTable({
           ))}
         </tr>
       </thead>
-      <PositionsBody tradingAddr={tradingAddr} outcomes={outcomes} />
+      <PositionsBody positionGroups={positionGroups} />
     </table>
   );
 }

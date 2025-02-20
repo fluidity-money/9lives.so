@@ -1,19 +1,40 @@
 import Link from "next/link";
-import Button from "../themed/button";
 import config from "@/config";
+import Image from "next/image";
+import { combineClass } from "@/utils/combineClass";
 
 export default function PositionRow({
   data,
   price,
 }: {
-  data: { shareAddress: `0x${string}`; name: string; balance: string };
+  data: {
+    shareAddress: `0x${string}`;
+    name: string;
+    balance: string;
+    campaignName?: string;
+    outcomePic?: string;
+  };
   price?: string;
 }) {
   return (
     <tr>
-      <td>
+      <td className="flex items-center">
+        {data.outcomePic ? (
+          <Image
+            src={data.outcomePic}
+            alt={data.name + "_" + data.campaignName}
+            className="size-10 border border-9black"
+          />
+        ) : null}
         <div className="flex flex-col gap-1 p-1">
-          <p className="font-chicago text-xs">{data.name}</p>
+          {data.campaignName ? (
+            <p className="font-chicago text-xs font-bold">
+              {data.campaignName}
+            </p>
+          ) : null}
+          <p className="font-geneva text-xs uppercase tracking-wide text-[#808080]">
+            {data.name}
+          </p>
           <Link
             href={`${config.chains.currentChain.blockExplorers![0].url}/token/${data.shareAddress}`}
             target="_blank"
@@ -25,7 +46,24 @@ export default function PositionRow({
         </div>
       </td>
       <td>
-        <span className="font-chicago text-xs">{data.balance}</span>
+        <span className="font-chicago text-xs">{price + "$"}</span>
+      </td>
+      <td>
+        <span className="font-chicago text-xs">
+          {data.balance}{" "}
+          <span
+            className={combineClass(
+              "p-0.5",
+              data.name === "Yes"
+                ? "bg-9green"
+                : data.name === "No"
+                  ? "bg-9red"
+                  : "bg-9gray",
+            )}
+          >
+            {data.name}
+          </span>
+        </span>
       </td>
       <td>
         <span className="font-chicago text-xs">

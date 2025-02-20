@@ -83,7 +83,11 @@ export default function DetailWrapper({
             }
           />
         )}
-        <AssetScene tradingAddr={data.poolAddress} outcomes={data.outcomes} />
+        <AssetScene
+          positionGrops={[
+            { tradingAddr: data.poolAddress, outcomes: data.outcomes },
+          ]}
+        />
       </div>
     </section>
   );

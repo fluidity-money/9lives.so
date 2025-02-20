@@ -1,3 +1,9 @@
+import PortfolioBody from "@/components/portfolio/portfolioBody";
+
 export default function PortfolioPage() {
-  return <div className="flex items-center justify-center">Portfolio Page</div>;
+  return (
+    <div className="flex items-center">
+      <PortfolioBody />
+    </div>
+  );
 }

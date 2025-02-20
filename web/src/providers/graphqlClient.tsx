@@ -176,7 +176,7 @@ export const requestCampaignById = (id: string) =>
     },
   });
 
-export const requestUserParticipated = (address: string) => {
+export const requestUserParticipated = (address: string) =>
   graph9Lives.query.userParticipatedCampaigns({
     $: { address },
     campaignId: true,
@@ -184,10 +184,14 @@ export const requestUserParticipated = (address: string) => {
     content: {
       name: true,
       picture: true,
+      poolAddress: true,
       outcomes: {
         name: true,
         identifier: true,
+        picture: true,
+        share: {
+          address: true,
+        },
       },
     },
   });
-};
