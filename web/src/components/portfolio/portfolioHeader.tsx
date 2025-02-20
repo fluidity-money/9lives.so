@@ -24,7 +24,7 @@ export default function PortfolioHeader() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-5">
             <div className="size-10 bg-9blueLight" />
@@ -34,23 +34,23 @@ export default function PortfolioHeader() {
             </div>
           </div>
           {account ? (
-            <span className="self-start rounded-[3px] border border-9black bg-9gray p-1 font-geneva text-xs uppercase tracking-wide text-9black">
+            <span className="rounded-[3px] border border-9black bg-9gray p-1 font-geneva text-xs uppercase tracking-wide text-9black md:self-start">
               {domainOrAddress}
             </span>
           ) : (
             <Button
               title="Connect your wallet"
               onClick={connect}
-              className={"self-start"}
+              className={"md:self-start"}
             />
           )}
         </div>
-        <div className="flex items-center gap-[70px] font-chicago">
-          <div className="flex flex-col items-end gap-1">
+        <div className="flex items-center gap-4 font-chicago md:gap-[70px]">
+          <div className="flex flex-col items-center gap-1 md:items-end">
             <span className="text-xs">Achievements</span>
             <span className="text-2xl text-9black">0</span>
           </div>
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-center gap-1 md:items-end">
             <span className="text-xs">Current Rank</span>
             <div className="flex items-center gap-1">
               <Image src={AchYellow} width={22} alt="Achievement" />
@@ -59,7 +59,7 @@ export default function PortfolioHeader() {
           </div>
         </div>
       </div>
-      <div className="rouded-[3px] flex items-center justify-between border border-9black bg-9gray p-5 font-chicago shadow-9orderSummary">
+      <div className="rouded-[3px] flex flex-col items-center justify-between gap-4 border border-9black bg-9gray p-5 font-chicago shadow-9orderSummary md:flex-row">
         <div className="flex items-center gap-5">
           <div className="flex flex-col gap-1">
             <span className="text-xs">My Available Cash</span>
@@ -84,18 +84,18 @@ export default function PortfolioHeader() {
           </Link>
         </div>
 
-        <div className="flex gap-[70px]">
+        <div className="flex gap-4 md:gap-[70px]">
           <div className="flex flex-col gap-1">
             <span className="text-xs">PnL</span>
-            <span className="text-xl text-[#808080]">Coming Soon</span>
+            <span className="text-[#808080] md:text-xl">Coming Soon</span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs">Volume</span>
-            <span className="text-xl text-[#808080]">Coming Soon</span>
+            <span className="text-[#808080] md:text-xl">Coming Soon</span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs">Position Value</span>
-            <span className="text-xl text-[#808080]">Coming Soon</span>
+            <span className="text-[#808080] md:text-xl">Coming Soon</span>
           </div>
         </div>
       </div>
