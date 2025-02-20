@@ -15,9 +15,9 @@ export default function DetailCreatedBy({
         href={`${config.chains.currentChain.blockExplorers![0].url}/address/${address}`}
       >
         Created by{" "}
-        {domain.startsWith("0x")
+        {domain?.startsWith("0x")
           ? `${address.slice(0, 4)}...${address.slice(-4)}`
-          : `${domain}.meow`}
+          : domain}
       </a>
     </span>
   );

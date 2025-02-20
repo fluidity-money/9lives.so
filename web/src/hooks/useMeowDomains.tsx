@@ -17,5 +17,5 @@ export default function useMeowDomains(address?: string) {
         setDomain(domain);
       })();
   }, [address]);
-  return domain || address;
+  return domain ? `${domain}.meow` : address;
 }
