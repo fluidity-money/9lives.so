@@ -6,8 +6,12 @@ import ShadowCard from "../cardShadow";
 import { PositionsProps } from "@/types";
 interface AssetSceneProps {
   positionGrops: PositionsProps[];
+  areGroupsLoading?: boolean;
 }
-export default function AssetScene({ positionGrops }: AssetSceneProps) {
+export default function AssetScene({
+  positionGrops,
+  areGroupsLoading,
+}: AssetSceneProps) {
   return (
     <TabGroup className={"flex-1"}>
       <TabList>
@@ -18,7 +22,10 @@ export default function AssetScene({ positionGrops }: AssetSceneProps) {
       <TabPanels>
         <TabPanel>
           <ShadowCard className="rounded-tl-none p-3 md:p-5">
-            <PositionTable positionGroups={positionGrops} />
+            <PositionTable
+              positionGroups={positionGrops}
+              areGroupsLoading={areGroupsLoading}
+            />
           </ShadowCard>
         </TabPanel>
       </TabPanels>

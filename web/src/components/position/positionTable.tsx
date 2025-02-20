@@ -3,8 +3,10 @@ import PositionsBody from "./positionBody";
 
 export default function PositionTable({
   positionGroups,
+  areGroupsLoading,
 }: {
   positionGroups: PositionsProps[];
+  areGroupsLoading?: boolean;
 }) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
@@ -21,7 +23,10 @@ export default function PositionTable({
           ))}
         </tr>
       </thead>
-      <PositionsBody positionGroups={positionGroups} />
+      <PositionsBody
+        positionGroups={positionGroups}
+        areGroupsLoading={areGroupsLoading}
+      />
     </table>
   );
 }

@@ -4,12 +4,16 @@ const bodyStyles = "min-h-24 bg-9gray";
 
 export default function PositionBody({
   positionGroups,
+  areGroupsLoading,
 }: {
   positionGroups: PositionsProps[];
+  areGroupsLoading?: boolean;
 }) {
   return (
     <tbody className={bodyStyles}>
-      {positionGroups?.length === 0 ? (
+      {areGroupsLoading ? (
+        <Placeholder title="Loading.." />
+      ) : positionGroups?.length === 0 ? (
         <Placeholder
           title="Nothing yet."
           subtitle="Start Growing Your Portfolio."

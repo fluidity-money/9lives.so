@@ -7,9 +7,8 @@ import { PositionsProps } from "@/types";
 
 export default function PortfolioBody() {
   const account = useActiveAccount();
-  const { data: participatedCampaigns } = useParticipatedCampaigns(
-    account?.address,
-  );
+  const { data: participatedCampaigns, isLoading: areGroupsLoading } =
+    useParticipatedCampaigns(account?.address);
   const positionGrops =
     participatedCampaigns?.map(
       (pc) =>
@@ -19,5 +18,10 @@ export default function PortfolioBody() {
           outcomes: pc?.content?.outcomes,
         }) as PositionsProps,
     ) ?? [];
-  return <AssetScene positionGrops={positionGrops} />;
+  return (
+    <AssetScene
+      positionGrops={positionGrops}
+      areGroupsLoading={areGroupsLoading}
+    />
+  );
 }
