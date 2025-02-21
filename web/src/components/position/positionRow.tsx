@@ -2,12 +2,15 @@ import Link from "next/link";
 import config from "@/config";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
+import { useEffect } from "react";
+import { usePortfolioStore } from "@/stores/portfolioStore";
 
 export default function PositionRow({
   data,
   price,
 }: {
   data: {
+    id: `0x${string}`;
     shareAddress: `0x${string}`;
     name: string;
     balance: string;
@@ -16,6 +19,15 @@ export default function PositionRow({
   };
   price?: string;
 }) {
+  const addPosition = usePortfolioStore((s) => s.addPositionValue);
+  useEffect(() => {
+    if (price && data.id && data.balance) {
+      addPosition({
+        outcomeId: data.id,
+        value: Number(price) * Number(data.balance),
+      });
+    }
+  }, [price, data.id, data.balance]);
   return (
     <tr>
       <td className="flex items-center">

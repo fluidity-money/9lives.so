@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import ERC20Abi from "@/config/abi/erc20";
 import { track, EVENTS } from "@/utils/analytics";
+import { usePortfolioStore } from "@/stores/portfolioStore";
 
 const useClaim = ({
   shareAddr,
@@ -20,6 +21,7 @@ const useClaim = ({
   outcomeId: `0x${string}`;
 }) => {
   const queryClient = useQueryClient();
+  const removePosition = usePortfolioStore((s) => s.removePositionValue);
   const claim = async (
     account: Account,
     outcomes: Outcome[],
@@ -64,6 +66,7 @@ const useClaim = ({
             transaction: claimTx,
             account,
           });
+          removePosition(outcomeId);
           queryClient.invalidateQueries({
             queryKey: ["positions", tradingAddr, outcomes, account],
           });
