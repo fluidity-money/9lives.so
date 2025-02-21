@@ -699,7 +699,7 @@ func (r *queryResolver) UserActivity(ctx context.Context, address string, campai
     transaction_hash AS tx_hash, 
     emitter_addr AS pool_address
 	FROM ninelives_buys_and_sells_1
-	WHERE recipient = ? AND campaign_id = ?
+	WHERE recipient = ? AND (campaign_id = ? OR ? IS NULL)
 	OFFSET ?
 	LIMIT ?
 	`, address, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&activities).Error
