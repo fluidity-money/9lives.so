@@ -28,7 +28,7 @@ type Query {
   """
   Returns user's buy and sell activities
   """
-  userActivity(address: String!, campaignId: String): [Activity]!
+  userActivity(address: String!, campaignId: String, page: Int, pageSize: Int): [Activity]!
 
   """
   Returns user's participated positions as pool address of the campaigns

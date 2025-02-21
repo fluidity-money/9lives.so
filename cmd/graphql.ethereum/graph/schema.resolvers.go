@@ -682,9 +682,17 @@ func (r *queryResolver) UserCampaigns(ctx context.Context, address string) ([]*t
 }
 
 // UserActivity is the resolver for the userActivity field.
-func (r *queryResolver) UserActivity(ctx context.Context, address string, campaignID *string) ([]*types.Activity, error) {
+func (r *queryResolver) UserActivity(ctx context.Context, address string, campaignID *string, page *int, pageSize *int) ([]*types.Activity, error) {
 	var activities []*types.Activity
 	address = strings.ToLower(address)
+	pageNum := 0
+	if page != nil {
+		pageNum = *page
+	}
+	pageSizeNum := 8
+	if pageSize != nil {
+		pageSizeNum = *pageSize
+	}
 	err := r.DB.Raw(`
 	SELECT *,
 	created_by AS created_at,
@@ -692,7 +700,9 @@ func (r *queryResolver) UserActivity(ctx context.Context, address string, campai
     emitter_addr AS pool_address
 	FROM ninelives_buys_and_sells_1
 	WHERE recipient = ? AND campaign_id = ?
-	`, address, campaignID).Scan(&activities).Error
+	OFFSET ?
+	LIMIT ?
+	`, address, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&activities).Error
 	if err != nil {
 		slog.Error("Error getting activities from database",
 			"error", err,
