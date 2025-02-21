@@ -36,7 +36,7 @@ export default function PortfolioHeader() {
               <span className="font-chicago">
                 $
                 {(
-                  Number(formatFusdc(Number(balance?.value) || 0)) +
+                  Number(formatFusdc(Number(balance?.value) || 0, 2)) +
                   (positionsValue || 0)
                 ).toFixed(2)}
               </span>
@@ -73,7 +73,7 @@ export default function PortfolioHeader() {
           <div className="flex flex-col gap-1">
             <span className="text-xs">My Available Cash</span>
             <span className="text-2xl">
-              ${formatFusdc(Number(balance?.value) || 0)}
+              ${formatFusdc(Number(balance?.value) || 0, 2)}
             </span>
           </div>
           <Link
