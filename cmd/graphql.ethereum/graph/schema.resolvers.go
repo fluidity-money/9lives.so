@@ -708,6 +708,7 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 // UserTotalVolume is the resolver for the userTotalVolume field.
 func (r *queryResolver) UserTotalVolume(ctx context.Context, address string) (int, error) {
 	var totalVolume int
+	address = strings.ToLower(address)
 	err := r.DB.Raw(`
 	select coalesce (SUM(from_amount), 0)
 	from ninelives_buys_and_sells_1
