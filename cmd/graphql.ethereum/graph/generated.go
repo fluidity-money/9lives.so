@@ -132,6 +132,7 @@ type ComplexityRoot struct {
 		UserActivity              func(childComplexity int, address string, campaignID *string) int
 		UserCampaigns             func(childComplexity int, address string) int
 		UserParticipatedCampaigns func(childComplexity int, address string) int
+		UserTotalVolume           func(childComplexity int, address string) int
 	}
 
 	Share struct {
@@ -192,6 +193,7 @@ type QueryResolver interface {
 	UserCampaigns(ctx context.Context, address string) ([]*types.Campaign, error)
 	UserActivity(ctx context.Context, address string, campaignID *string) ([]*types.Activity, error)
 	UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error)
+	UserTotalVolume(ctx context.Context, address string) (int, error)
 }
 
 type executableSchema struct {
@@ -651,6 +653,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.UserParticipatedCampaigns(childComplexity, args["address"].(string)), true
+
+	case "Query.userTotalVolume":
+		if e.complexity.Query.UserTotalVolume == nil {
+			break
+		}
+
+		args, err := ec.field_Query_userTotalVolume_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.UserTotalVolume(childComplexity, args["address"].(string)), true
 
 	case "Share.address":
 		if e.complexity.Share.Address == nil {
@@ -1164,6 +1178,21 @@ func (ec *executionContext) field_Query_userCampaigns_args(ctx context.Context, 
 }
 
 func (ec *executionContext) field_Query_userParticipatedCampaigns_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["address"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["address"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_userTotalVolume_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -4013,6 +4042,61 @@ func (ec *executionContext) fieldContext_Query_userParticipatedCampaigns(ctx con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_userParticipatedCampaigns_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_userTotalVolume(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_userTotalVolume(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UserTotalVolume(rctx, fc.Args["address"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_userTotalVolume(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_userTotalVolume_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -7488,6 +7572,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_userParticipatedCampaigns(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "userTotalVolume":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userTotalVolume(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

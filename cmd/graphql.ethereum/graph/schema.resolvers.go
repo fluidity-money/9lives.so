@@ -705,6 +705,24 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 	return positions, nil
 }
 
+// UserTotalVolume is the resolver for the userTotalVolume field.
+func (r *queryResolver) UserTotalVolume(ctx context.Context, address string) (int, error) {
+	var totalVolume int
+	err := r.DB.Raw(`
+	select coalesce (SUM(from_amount), 0)
+	from ninelives_buys_and_sells_1
+	where from_symbol = 'fUSDC' and recipient = ?
+	`, address).Scan(totalVolume).Error
+	if err != nil {
+		slog.Error("Error getting total volume from database",
+			"error", err,
+			"address", address,
+		)
+		return 0, fmt.Errorf("error getting total volume from database: %w", err)
+	}
+	return totalVolume, nil
+}
+
 // Activity returns ActivityResolver implementation.
 func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
 

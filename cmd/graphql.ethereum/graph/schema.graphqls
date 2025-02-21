@@ -35,6 +35,11 @@ type Query {
   and bought and sought outcome ids
   """
   userParticipatedCampaigns(address: String!): [Position]!
+
+  """
+  Returns total volume of user's all buy and sell actions
+  """
+  userTotalVolume(address: String!): Int!
 }
 
 """
