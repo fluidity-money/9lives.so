@@ -109,6 +109,14 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<
         Query.userParticipatedCampaigns<_$Scalars>
       >;
+  /**
+   *
+   * Select the `userTotalVolume` field on the `Query` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  userTotalVolume?:
+    | Query.userTotalVolume<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.userTotalVolume<_$Scalars>>;
 
   /**
    *
@@ -398,6 +406,44 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<userParticipatedCampaigns$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type userTotalVolume<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = userTotalVolume$SelectionSet<_$Scalars>;
+
+  export interface userTotalVolume$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `userTotalVolume` field. All arguments are required so you must include this.
+     */
+    $: userTotalVolume$Arguments<_$Scalars>;
+  }
+
+  export interface userTotalVolume$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    address: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `userTotalVolume` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type userTotalVolume$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<userTotalVolume$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

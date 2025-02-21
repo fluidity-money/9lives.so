@@ -336,6 +336,14 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Position, <-- Assigned later to avoid potential circular dependency.
     },
+    userTotalVolume: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 

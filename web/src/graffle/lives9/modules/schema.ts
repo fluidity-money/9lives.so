@@ -35,6 +35,7 @@ export namespace Schema {
       userCampaigns: Query.userCampaigns;
       userActivity: Query.userActivity;
       userParticipatedCampaigns: Query.userParticipatedCampaigns;
+      userTotalVolume: Query.userTotalVolume;
     };
   }
 
@@ -183,6 +184,23 @@ export namespace Schema {
       };
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Position;
+    }
+
+    /**
+     * Returns total volume of user's all buy and sell actions
+     */
+    export interface userTotalVolume extends $.OutputField {
+      name: "userTotalVolume";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
     }
   }
 
