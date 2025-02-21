@@ -702,7 +702,7 @@ func (r *queryResolver) UserActivity(ctx context.Context, address string, campai
 	WHERE recipient = ? AND (campaign_id = ? OR ? IS NULL)
 	OFFSET ?
 	LIMIT ?
-	`, address, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&activities).Error
+	`, address, campaignID, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&activities).Error
 	if err != nil {
 		slog.Error("Error getting activities from database",
 			"error", err,
