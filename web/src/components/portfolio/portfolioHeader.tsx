@@ -12,6 +12,7 @@ import Link from "next/link";
 import { EVENTS, track } from "@/utils/analytics";
 import useAchievmentCount from "@/hooks/useAchievementCount";
 import { usePortfolioStore } from "@/stores/portfolioStore";
+import useTotalVolume from "@/hooks/useTotalVolume";
 
 export default function PortfolioHeader() {
   const account = useActiveAccount();
@@ -25,6 +26,7 @@ export default function PortfolioHeader() {
   const { connect } = useConnectWallet();
   const { data: achievmentCount } = useAchievmentCount(account?.address);
   const positionsValue = usePortfolioStore((s) => s.positionsValue);
+  const { data: totalVolume } = useTotalVolume(account?.address);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -100,7 +102,9 @@ export default function PortfolioHeader() {
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs">Volume</span>
-            <span className="text-[#808080] md:text-xl">Coming Soon</span>
+            <span className="text-9black md:text-2xl">
+              ${formatFusdc(totalVolume ?? 0, 2)}
+            </span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs">Position Value</span>

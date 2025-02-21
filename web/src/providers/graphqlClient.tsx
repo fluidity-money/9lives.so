@@ -200,3 +200,8 @@ export const requestUserParticipated = (address: string) =>
       },
     },
   });
+
+export const requestTotalVolume = (address: string) =>
+  graph9Lives.query.userTotalVolume({
+    $: { address },
+  });
