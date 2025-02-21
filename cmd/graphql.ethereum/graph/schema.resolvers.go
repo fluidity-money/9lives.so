@@ -683,7 +683,23 @@ func (r *queryResolver) UserCampaigns(ctx context.Context, address string) ([]*t
 
 // UserActivity is the resolver for the userActivity field.
 func (r *queryResolver) UserActivity(ctx context.Context, address string, campaignID *string) ([]*types.Activity, error) {
-	panic(fmt.Errorf("not implemented: UserActivity - userActivity"))
+	var activities []*types.Activity
+	address = strings.ToLower(address)
+	err := r.DB.Raw(`
+	SELECT *,
+	created_by AS created_at,
+    transaction_hash AS tx_hash, 
+    emitter_addr AS pool_address
+	FROM ninelives_buys_and_sells_1
+	WHERE recipient = ? AND campaign_id = ?
+	`, address, campaignID).Scan(&activities).Error
+	if err != nil {
+		slog.Error("Error getting activities from database",
+			"error", err,
+		)
+		return nil, fmt.Errorf("error getting activities from database: %w", err)
+	}
+	return activities, nil
 }
 
 // UserParticipatedCampaigns is the resolver for the userParticipatedCampaigns field.

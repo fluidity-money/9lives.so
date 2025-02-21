@@ -60,7 +60,7 @@ type ComplexityRoot struct {
 		FromSymbol  func(childComplexity int) int
 		OutcomeID   func(childComplexity int) int
 		PoolAddress func(childComplexity int) int
-		Spender     func(childComplexity int) int
+		Recipient   func(childComplexity int) int
 		ToAmount    func(childComplexity int) int
 		ToSymbol    func(childComplexity int) int
 		TotalVolume func(childComplexity int) int
@@ -257,12 +257,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Activity.PoolAddress(childComplexity), true
 
-	case "Activity.spender":
-		if e.complexity.Activity.Spender == nil {
+	case "Activity.recipient":
+		if e.complexity.Activity.Recipient == nil {
 			break
 		}
 
-		return e.complexity.Activity.Spender(childComplexity), true
+		return e.complexity.Activity.Recipient(childComplexity), true
 
 	case "Activity.toAmount":
 		if e.complexity.Activity.ToAmount == nil {
@@ -1289,8 +1289,8 @@ func (ec *executionContext) fieldContext_Activity_txHash(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Activity_spender(ctx context.Context, field graphql.CollectedField, obj *types.Activity) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Activity_spender(ctx, field)
+func (ec *executionContext) _Activity_recipient(ctx context.Context, field graphql.CollectedField, obj *types.Activity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Activity_recipient(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1303,7 +1303,7 @@ func (ec *executionContext) _Activity_spender(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Spender, nil
+		return obj.Recipient, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1320,7 +1320,7 @@ func (ec *executionContext) _Activity_spender(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Activity_spender(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Activity_recipient(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Activity",
 		Field:      field,
@@ -3945,8 +3945,8 @@ func (ec *executionContext) fieldContext_Query_userActivity(ctx context.Context,
 			switch field.Name {
 			case "txHash":
 				return ec.fieldContext_Activity_txHash(ctx, field)
-			case "spender":
-				return ec.fieldContext_Activity_spender(ctx, field)
+			case "recipient":
+				return ec.fieldContext_Activity_recipient(ctx, field)
 			case "poolAddress":
 				return ec.fieldContext_Activity_poolAddress(ctx, field)
 			case "fromAmount":
@@ -6158,8 +6158,8 @@ func (ec *executionContext) _Activity(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "spender":
-			out.Values[i] = ec._Activity_spender(ctx, field, obj)
+		case "recipient":
+			out.Values[i] = ec._Activity_recipient(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

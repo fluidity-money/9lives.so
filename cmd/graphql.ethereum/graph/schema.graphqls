@@ -520,9 +520,9 @@ type Activity {
   txHash: String!
   
   """
-  Address of the spender involved in the activity.
+  Address of the recipient involved in the activity.
   """
-  spender: String!
+  recipient: String!
 
   """
   Pool address associated with the activity.

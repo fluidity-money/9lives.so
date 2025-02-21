@@ -127,8 +127,8 @@ type (
 	Activity struct {
 		// Transaction hash of the activity.
 		TxHash string `json:"txHash"`
-		// Address of the spender involved in the activity.
-		Spender string `json:"spender"`
+		// Address of the recipient involved in the activity.
+		Recipient string `json:"recipient"`
 		// Pool address associated with the activity.
 		PoolAddress string `json:"poolAddress"`
 		// Amount of the asset being transferred from.
