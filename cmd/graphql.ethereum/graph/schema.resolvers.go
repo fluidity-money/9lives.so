@@ -712,7 +712,7 @@ func (r *queryResolver) UserTotalVolume(ctx context.Context, address string) (in
 	select coalesce (SUM(from_amount), 0)
 	from ninelives_buys_and_sells_1
 	where from_symbol = 'fUSDC' and recipient = ?
-	`, address).Scan(totalVolume).Error
+	`, address).Scan(&totalVolume).Error
 	if err != nil {
 		slog.Error("Error getting total volume from database",
 			"error", err,
