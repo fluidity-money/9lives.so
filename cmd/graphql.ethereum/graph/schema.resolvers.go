@@ -693,16 +693,14 @@ func (r *queryResolver) UserActivity(ctx context.Context, address string, campai
 	if pageSize != nil {
 		pageSizeNum = *pageSize
 	}
-	err := r.DB.Raw(`
-	SELECT *,
-	created_by AS created_at,
-    transaction_hash AS tx_hash, 
-    emitter_addr AS pool_address
-	FROM ninelives_buys_and_sells_1
-	WHERE recipient = ? AND (campaign_id = ? OR ? IS NULL)
-	OFFSET ?
-	LIMIT ?
-	`, address, campaignID, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&activities).Error
+	query := r.DB.Table("ninelives_buys_and_sells_1").Select("*",
+		"created_by AS created_at",
+		"transaction_hash AS tx_hash",
+		"emitter_addr AS pool_address").Where(&types.Activity{Recipient: address})
+	if campaignID != nil {
+		query = query.Where(&types.Activity{CampaignID: *campaignID})
+	}
+	err := query.Offset(pageNum * pageSizeNum).Limit(pageSizeNum).Scan(&activities).Error
 	if err != nil {
 		slog.Error("Error getting activities from database",
 			"error", err,
