@@ -149,6 +149,8 @@ type (
 		TotalVolume int `json:"totalVolume"`
 		// Timestamp of when the activity was created.
 		CreatedAt time.Time `json:"createdAt"`
+		// Content of the campaign associated with the activity.
+		CampaignContent CampaignContent `json:"campaignContent"`
 	}
 
 	ActivityType string

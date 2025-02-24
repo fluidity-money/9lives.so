@@ -560,6 +560,21 @@ type Activity {
   outcomeId: String!
 
   """
+  Name of the outcome associated with the activity.
+  """
+  outcomeName: String!
+
+  """
+  Picture of the outcome associated with the activity.
+  """
+  outcomePic: String
+
+  """
+  Name of the campaign associated with the activity.
+  """
+  campaignName: String!
+
+  """
   ID of the campaign associated with the activity.
   """
   campaignId: String!

@@ -54,18 +54,21 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Activity struct {
-		CampaignID  func(childComplexity int) int
-		CreatedAt   func(childComplexity int) int
-		FromAmount  func(childComplexity int) int
-		FromSymbol  func(childComplexity int) int
-		OutcomeID   func(childComplexity int) int
-		PoolAddress func(childComplexity int) int
-		Recipient   func(childComplexity int) int
-		ToAmount    func(childComplexity int) int
-		ToSymbol    func(childComplexity int) int
-		TotalVolume func(childComplexity int) int
-		TxHash      func(childComplexity int) int
-		Type        func(childComplexity int) int
+		CampaignID   func(childComplexity int) int
+		CampaignName func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		FromAmount   func(childComplexity int) int
+		FromSymbol   func(childComplexity int) int
+		OutcomeID    func(childComplexity int) int
+		OutcomeName  func(childComplexity int) int
+		OutcomePic   func(childComplexity int) int
+		PoolAddress  func(childComplexity int) int
+		Recipient    func(childComplexity int) int
+		ToAmount     func(childComplexity int) int
+		ToSymbol     func(childComplexity int) int
+		TotalVolume  func(childComplexity int) int
+		TxHash       func(childComplexity int) int
+		Type         func(childComplexity int) int
 	}
 
 	Campaign struct {
@@ -145,6 +148,10 @@ type ComplexityRoot struct {
 }
 
 type ActivityResolver interface {
+	OutcomeName(ctx context.Context, obj *types.Activity) (string, error)
+	OutcomePic(ctx context.Context, obj *types.Activity) (*string, error)
+	CampaignName(ctx context.Context, obj *types.Activity) (string, error)
+
 	CreatedAt(ctx context.Context, obj *types.Activity) (int, error)
 }
 type CampaignResolver interface {
@@ -222,6 +229,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Activity.CampaignID(childComplexity), true
 
+	case "Activity.campaignName":
+		if e.complexity.Activity.CampaignName == nil {
+			break
+		}
+
+		return e.complexity.Activity.CampaignName(childComplexity), true
+
 	case "Activity.createdAt":
 		if e.complexity.Activity.CreatedAt == nil {
 			break
@@ -249,6 +263,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Activity.OutcomeID(childComplexity), true
+
+	case "Activity.outcomeName":
+		if e.complexity.Activity.OutcomeName == nil {
+			break
+		}
+
+		return e.complexity.Activity.OutcomeName(childComplexity), true
+
+	case "Activity.outcomePic":
+		if e.complexity.Activity.OutcomePic == nil {
+			break
+		}
+
+		return e.complexity.Activity.OutcomePic(childComplexity), true
 
 	case "Activity.poolAddress":
 		if e.complexity.Activity.PoolAddress == nil {
@@ -1652,6 +1680,135 @@ func (ec *executionContext) fieldContext_Activity_outcomeId(_ context.Context, f
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Activity_outcomeName(ctx context.Context, field graphql.CollectedField, obj *types.Activity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Activity_outcomeName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Activity().OutcomeName(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Activity_outcomeName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Activity",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Activity_outcomePic(ctx context.Context, field graphql.CollectedField, obj *types.Activity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Activity_outcomePic(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Activity().OutcomePic(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Activity_outcomePic(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Activity",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Activity_campaignName(ctx context.Context, field graphql.CollectedField, obj *types.Activity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Activity_campaignName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Activity().CampaignName(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Activity_campaignName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Activity",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -3979,6 +4136,12 @@ func (ec *executionContext) fieldContext_Query_userActivity(ctx context.Context,
 				return ec.fieldContext_Activity_type(ctx, field)
 			case "outcomeId":
 				return ec.fieldContext_Activity_outcomeId(ctx, field)
+			case "outcomeName":
+				return ec.fieldContext_Activity_outcomeName(ctx, field)
+			case "outcomePic":
+				return ec.fieldContext_Activity_outcomePic(ctx, field)
+			case "campaignName":
+				return ec.fieldContext_Activity_campaignName(ctx, field)
 			case "campaignId":
 				return ec.fieldContext_Activity_campaignId(ctx, field)
 			case "totalVolume":
@@ -6216,6 +6379,111 @@ func (ec *executionContext) _Activity(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "outcomeName":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Activity_outcomeName(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "outcomePic":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Activity_outcomePic(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "campaignName":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Activity_campaignName(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "campaignId":
 			out.Values[i] = ec._Activity_campaignId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

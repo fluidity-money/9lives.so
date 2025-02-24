@@ -27,6 +27,52 @@ import (
 	"gorm.io/gorm"
 )
 
+// OutcomeName is the resolver for the outcomeName field.
+func (r *activityResolver) OutcomeName(ctx context.Context, obj *types.Activity) (string, error) {
+	if obj == nil {
+		return "", fmt.Errorf("activity is nil")
+	}
+	var outcomes []types.Outcome
+	if err := obj.CampaignContent.Outcomes.Scan(&outcomes); err != nil {
+		return "", fmt.Errorf("error scanning outcomes: %w", err)
+	}
+	outcomeMap := make(map[string]types.Outcome, len(outcomes))
+	for _, _outcome := range outcomes {
+		outcomeMap[_outcome.Identifier] = _outcome
+	}
+	if outcome, found := outcomeMap[obj.OutcomeID]; found {
+		return outcome.Name, nil
+	}
+	return "", fmt.Errorf("outcome not found")
+}
+
+// OutcomePic is the resolver for the outcomePic field.
+func (r *activityResolver) OutcomePic(ctx context.Context, obj *types.Activity) (*string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("activity is nil")
+	}
+	var outcomes []types.Outcome
+	if err := obj.CampaignContent.Outcomes.Scan(&outcomes); err != nil {
+		return nil, fmt.Errorf("error scanning outcomes: %w", err)
+	}
+	outcomeMap := make(map[string]types.Outcome, len(outcomes))
+	for _, _outcome := range outcomes {
+		outcomeMap[_outcome.Identifier] = _outcome
+	}
+	if outcome, found := outcomeMap[obj.OutcomeID]; found {
+		return outcome.Picture, nil
+	}
+	return nil, fmt.Errorf("outcome not found")
+}
+
+// CampaignName is the resolver for the campaignName field.
+func (r *activityResolver) CampaignName(ctx context.Context, obj *types.Activity) (string, error) {
+	if obj == nil {
+		return "", fmt.Errorf("activity is nil")
+	}
+	return obj.CampaignContent.Name, nil
+}
+
 // CreatedAt is the resolver for the createdAt field.
 func (r *activityResolver) CreatedAt(ctx context.Context, obj *types.Activity) (int, error) {
 	if obj == nil {
