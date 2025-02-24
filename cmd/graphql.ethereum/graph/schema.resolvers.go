@@ -32,7 +32,7 @@ func (r *activityResolver) OutcomeName(ctx context.Context, obj *types.Activity)
 	if obj == nil {
 		return "", fmt.Errorf("activity is nil")
 	}
-	var outcomes []types.Outcome
+	var outcomes types.OutcomeList
 	if err := obj.CampaignContent.Outcomes.Scan(&outcomes); err != nil {
 		return "", fmt.Errorf("error scanning outcomes: %w", err)
 	}
@@ -51,7 +51,7 @@ func (r *activityResolver) OutcomePic(ctx context.Context, obj *types.Activity) 
 	if obj == nil {
 		return nil, fmt.Errorf("activity is nil")
 	}
-	var outcomes []types.Outcome
+	var outcomes types.OutcomeList
 	if err := obj.CampaignContent.Outcomes.Scan(&outcomes); err != nil {
 		return nil, fmt.Errorf("error scanning outcomes: %w", err)
 	}
