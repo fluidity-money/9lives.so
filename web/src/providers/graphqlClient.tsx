@@ -205,3 +205,31 @@ export const requestTotalVolume = (address: string) =>
   graph9Lives.query.userTotalVolume({
     $: { address },
   });
+
+export const requestUserActivities = ({
+  address,
+  campaignId,
+  page,
+  pageSize,
+}: {
+  address: string;
+  campaignId?: string;
+  page?: number;
+  pageSize?: number;
+}) =>
+  graph9Lives.query.userActivity({
+    $: { address, campaignId, page, pageSize },
+    campaignId: true,
+    campaignName: true,
+    outcomeId: true,
+    outcomeName: true,
+    outcomePic: true,
+    type: true,
+    fromSymbol: true,
+    fromAmount: true,
+    createdAt: true,
+    toAmount: true,
+    toSymbol: true,
+    poolAddress: true,
+    txHash: true,
+  });

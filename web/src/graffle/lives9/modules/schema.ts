@@ -163,6 +163,18 @@ export namespace Schema {
           inlineType: [0];
           namedType: $$NamedTypes.$$String;
         };
+        page: {
+          kind: "InputField";
+          name: "page";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
+        pageSize: {
+          kind: "InputField";
+          name: "pageSize";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
       };
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Activity;
@@ -1143,7 +1155,7 @@ export namespace Schema {
     fields: {
       __typename: Activity.__typename;
       txHash: Activity.txHash;
-      spender: Activity.spender;
+      recipient: Activity.recipient;
       poolAddress: Activity.poolAddress;
       fromAmount: Activity.fromAmount;
       fromSymbol: Activity.fromSymbol;
@@ -1151,6 +1163,9 @@ export namespace Schema {
       toSymbol: Activity.toSymbol;
       type: Activity.type;
       outcomeId: Activity.outcomeId;
+      outcomeName: Activity.outcomeName;
+      outcomePic: Activity.outcomePic;
+      campaignName: Activity.campaignName;
       campaignId: Activity.campaignId;
       totalVolume: Activity.totalVolume;
       createdAt: Activity.createdAt;
@@ -1179,10 +1194,10 @@ export namespace Schema {
     }
 
     /**
-     * Address of the spender involved in the activity.
+     * Address of the recipient involved in the activity.
      */
-    export interface spender extends $.OutputField {
-      name: "spender";
+    export interface recipient extends $.OutputField {
+      name: "recipient";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
@@ -1253,6 +1268,36 @@ export namespace Schema {
      */
     export interface outcomeId extends $.OutputField {
       name: "outcomeId";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Name of the outcome associated with the activity.
+     */
+    export interface outcomeName extends $.OutputField {
+      name: "outcomeName";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Picture of the outcome associated with the activity.
+     */
+    export interface outcomePic extends $.OutputField {
+      name: "outcomePic";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Name of the campaign associated with the activity.
+     */
+    export interface campaignName extends $.OutputField {
+      name: "campaignName";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;

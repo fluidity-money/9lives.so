@@ -199,7 +199,7 @@ const Changelog: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 const Activity: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     txHash: {},
-    spender: {},
+    recipient: {},
     poolAddress: {},
     fromAmount: {},
     fromSymbol: {},
@@ -207,6 +207,9 @@ const Activity: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     toSymbol: {},
     type: {},
     outcomeId: {},
+    outcomeName: {},
+    outcomePic: {},
+    campaignName: {},
     campaignId: {},
     totalVolume: {},
     createdAt: {},
@@ -322,6 +325,14 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
         campaignId: {
           nt: String,
+          it: [0],
+        },
+        page: {
+          nt: Int,
+          it: [0],
+        },
+        pageSize: {
+          nt: Int,
           it: [0],
         },
       },

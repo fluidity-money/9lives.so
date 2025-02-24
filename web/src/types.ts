@@ -5,6 +5,7 @@ import {
   requestCampaignById,
 } from "./providers/graphqlClient";
 import config from "./config";
+import { requestUserActivities } from "./providers/graphqlClient";
 
 export interface CampaignFilters {
   category?: typeof config.categories;
@@ -238,3 +239,7 @@ export type PositionsProps = {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
 };
+
+export type Activity = NonNullable<
+  Awaited<ReturnType<typeof requestUserActivities>>[number]
+>;

@@ -87,6 +87,7 @@ export default function DetailWrapper({
           positionGrops={[
             { tradingAddr: data.poolAddress, outcomes: data.outcomes },
           ]}
+          campaignId={data.identifier}
         />
       </div>
     </section>

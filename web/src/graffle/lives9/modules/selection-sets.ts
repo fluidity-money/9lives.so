@@ -341,7 +341,7 @@ export namespace Query {
   > extends $Select.Bases.Base,
       $NamedTypes.$Activity<_$Scalars> {
     /**
-     * Arguments for `userActivity` field. Some (1/2) arguments are required so you must include this.
+     * Arguments for `userActivity` field. Some (1/4) arguments are required so you must include this.
      */
     $: userActivity$Arguments<_$Scalars>;
   }
@@ -352,6 +352,8 @@ export namespace Query {
   > {
     address: string;
     campaignId?: string | undefined | null;
+    page?: number | undefined | null;
+    pageSize?: number | undefined | null;
   }
 
   // --- expanded ---
@@ -2540,12 +2542,12 @@ export interface Activity<
     | $Select.SelectAlias.SelectAlias<Activity.txHash<_$Scalars>>;
   /**
    *
-   * Select the `spender` field on the `Activity` object. Its type is `String` (a `ScalarStandard` kind of type).
+   * Select the `recipient` field on the `Activity` object. Its type is `String` (a `ScalarStandard` kind of type).
    *
    */
-  spender?:
-    | Activity.spender$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Activity.spender<_$Scalars>>;
+  recipient?:
+    | Activity.recipient$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Activity.recipient<_$Scalars>>;
   /**
    *
    * Select the `poolAddress` field on the `Activity` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -2602,6 +2604,30 @@ export interface Activity<
   outcomeId?:
     | Activity.outcomeId$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Activity.outcomeId<_$Scalars>>;
+  /**
+   *
+   * Select the `outcomeName` field on the `Activity` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  outcomeName?:
+    | Activity.outcomeName$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Activity.outcomeName<_$Scalars>>;
+  /**
+   *
+   * Select the `outcomePic` field on the `Activity` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  outcomePic?:
+    | Activity.outcomePic$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Activity.outcomePic<_$Scalars>>;
+  /**
+   *
+   * Select the `campaignName` field on the `Activity` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  campaignName?:
+    | Activity.campaignName$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Activity.campaignName<_$Scalars>>;
   /**
    *
    * Select the `campaignId` field on the `Activity` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -2690,12 +2716,12 @@ export namespace Activity {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type spender<
+  export type recipient<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | spender$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | recipient$SelectionSet<_$Scalars>;
 
-  export interface spender$SelectionSet<
+  export interface recipient$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {}
@@ -2704,16 +2730,16 @@ export namespace Activity {
 
   /**
    *
-   * This is the "expanded" version of the `spender` type. It is identical except for the fact
+   * This is the "expanded" version of the `recipient` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type spender$Expanded<
+  export type recipient$Expanded<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | spender$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | recipient$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -2910,6 +2936,90 @@ export namespace Activity {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | outcomeId$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type outcomeName<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | outcomeName$SelectionSet<_$Scalars>;
+
+  export interface outcomeName$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `outcomeName` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type outcomeName$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | outcomeName$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type outcomePic<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | outcomePic$SelectionSet<_$Scalars>;
+
+  export interface outcomePic$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `outcomePic` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type outcomePic$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | outcomePic$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type campaignName<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | campaignName$SelectionSet<_$Scalars>;
+
+  export interface campaignName$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `campaignName` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type campaignName$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | campaignName$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
