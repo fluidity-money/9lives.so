@@ -32,10 +32,7 @@ func (r *activityResolver) OutcomeName(ctx context.Context, obj *types.Activity)
 	if obj == nil {
 		return "", fmt.Errorf("activity is nil")
 	}
-	var outcomes types.OutcomeList
-	if err := obj.CampaignContent.Outcomes.Scan(&outcomes); err != nil {
-		return "", fmt.Errorf("error scanning outcomes: %w", err)
-	}
+	outcomes := obj.CampaignContent.Outcomes
 	outcomeMap := make(map[string]types.Outcome, len(outcomes))
 	for _, _outcome := range outcomes {
 		outcomeMap[_outcome.Identifier] = _outcome
@@ -51,10 +48,7 @@ func (r *activityResolver) OutcomePic(ctx context.Context, obj *types.Activity) 
 	if obj == nil {
 		return nil, fmt.Errorf("activity is nil")
 	}
-	var outcomes types.OutcomeList
-	if err := obj.CampaignContent.Outcomes.Scan(&outcomes); err != nil {
-		return nil, fmt.Errorf("error scanning outcomes: %w", err)
-	}
+	outcomes := obj.CampaignContent.Outcomes
 	outcomeMap := make(map[string]types.Outcome, len(outcomes))
 	for _, _outcome := range outcomes {
 		outcomeMap[_outcome.Identifier] = _outcome
