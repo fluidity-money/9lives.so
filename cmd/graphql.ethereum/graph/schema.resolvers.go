@@ -29,7 +29,10 @@ import (
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *activityResolver) CreatedAt(ctx context.Context, obj *types.Activity) (int, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	if obj == nil {
+		return 0, fmt.Errorf("activity is nil")
+	}
+	return int(obj.CreatedAt.Unix()), nil
 }
 
 // Name is the resolver for the name field.
