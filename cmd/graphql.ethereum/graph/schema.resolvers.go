@@ -37,10 +37,10 @@ func (r *activityResolver) OutcomeName(ctx context.Context, obj *types.Activity)
 	for _, _outcome := range outcomes {
 		outcomeMap[_outcome.Identifier] = _outcome
 	}
-	if outcome, found := outcomeMap[obj.OutcomeID]; found {
+	if outcome, found := outcomeMap["0x"+obj.OutcomeID]; found {
 		return outcome.Name, nil
 	}
-	return "", fmt.Errorf("outcome not found")
+	return "", nil
 }
 
 // OutcomePic is the resolver for the outcomePic field.
@@ -53,10 +53,10 @@ func (r *activityResolver) OutcomePic(ctx context.Context, obj *types.Activity) 
 	for _, _outcome := range outcomes {
 		outcomeMap[_outcome.Identifier] = _outcome
 	}
-	if outcome, found := outcomeMap[obj.OutcomeID]; found {
+	if outcome, found := outcomeMap["0x"+obj.OutcomeID]; found {
 		return outcome.Picture, nil
 	}
-	return nil, fmt.Errorf("outcome not found")
+	return nil, nil
 }
 
 // CampaignName is the resolver for the campaignName field.
