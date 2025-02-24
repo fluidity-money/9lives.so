@@ -16,15 +16,26 @@ export default function ActivityBody({ campaignId }: ActivityBodyProps) {
   } = useAcitivies({ address: account?.address, campaignId });
   const data = activities?.pages.flatMap((c) => c);
 
-  if (isLoading) return <Placeholder title="Loading..." />;
+  if (isLoading)
+    return (
+      <tbody>
+        <Placeholder title="Loading..." />
+      </tbody>
+    );
   if (isError)
-    return <Placeholder title="Whoops, error!" subtitle={error.message} />;
+    return (
+      <tbody>
+        <Placeholder title="Whoops, error!" subtitle={error.message} />
+      </tbody>
+    );
   if (data?.length === 0)
     return (
-      <Placeholder
-        title="Nothing yet."
-        subtitle="Start Growing Your Portfolio."
-      />
+      <tbody>
+        <Placeholder
+          title="Nothing yet."
+          subtitle="Start Growing Your Portfolio."
+        />
+      </tbody>
     );
   return (
     <tbody>
