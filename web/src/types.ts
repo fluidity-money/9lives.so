@@ -13,6 +13,7 @@ export interface CampaignFilters {
   searchTerm?: string;
   page?: number;
   pageSize?: number;
+  address?: string;
 }
 export type Campaign = Omit<
   Awaited<ReturnType<typeof requestCampaignList>>[number],

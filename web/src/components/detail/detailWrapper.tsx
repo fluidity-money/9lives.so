@@ -88,6 +88,7 @@ export default function DetailWrapper({
             { tradingAddr: data.poolAddress, outcomes: data.outcomes },
           ]}
           campaignId={data.identifier}
+          detailPage={true}
         />
       </div>
     </section>

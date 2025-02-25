@@ -1,54 +1,34 @@
 "use client";
-import { Campaign, CampaignDto, CampaignFilters } from "@/types";
+import { CampaignFilters } from "@/types";
 import CampaignItem from "./campaignItem";
 import { combineClass } from "@/utils/combineClass";
 import { useDegenStore } from "@/stores/degenStore";
 import { Dispatch, useEffect, useState } from "react";
 import { Select } from "@headlessui/react";
-import { requestCampaignList } from "@/providers/graphqlClient";
 import Image from "next/image";
 import Input from "../themed/input";
 import CloseIcon from "#/icons/close.svg";
 import SearchIcon from "#/icons/search.svg";
 import LoadingIndicator from "../loadingIndicator";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import Button from "../themed/button";
 import config from "@/config";
+import useCampaigns from "@/hooks/useCampaigns";
 
 export default function CampaignList({
   category,
   orderBy,
   setOrderBy,
+  address,
 }: {
   category?: (typeof config.categories)[number];
   orderBy: CampaignFilters["orderBy"];
   setOrderBy: Dispatch<CampaignFilters["orderBy"]>;
+  address?: string;
 }) {
   const [searchTermInput, setSearchTermInput] = useState("");
   const [searcTermFilter, setSearcTermFilter] = useState("");
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery<Campaign[]>({
-      queryKey: ["campaigns", category, orderBy, searcTermFilter],
-      queryFn: async ({ pageParam }) => {
-        if (typeof pageParam !== "number") return [];
-        const campaigns = (await requestCampaignList({
-          orderBy,
-          searchTerm: searcTermFilter,
-          page: pageParam,
-          pageSize: pageParam === 0 ? 32 : 8,
-          category: category && [category],
-        })) as Campaign[];
-        return campaigns.map((campaign) => new CampaignDto(campaign));
-      },
-      initialPageParam: 0,
-      getNextPageParam: (lastPage, pages, lastPageParam) => {
-        if (lastPageParam === 0 && lastPage.length < 32) return undefined;
-        if (lastPage.length < 8) return undefined;
-        if (typeof lastPageParam !== "number") return undefined;
-        if (lastPageParam === 0) return 4;
-        return lastPageParam + 1;
-      },
-    });
+    useCampaigns({ category, orderBy, searchTerm: searcTermFilter, address });
   const campaigns = data?.pages.flatMap((c) => c);
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   const orderByFilters: Array<[Required<CampaignFilters["orderBy"]>, string]> =
