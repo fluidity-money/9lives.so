@@ -606,7 +606,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		Select("*")
 	if address != nil {
 		*address = strings.ToLower(*address)
-		query = query.Where("content->>'creator' = ?", *address)
+		query = query.Where("content->'creator'->>'address' = ?", *address)
 	}
 	if len(category) > 0 {
 		jsonCategories, err := json.Marshal(category)
