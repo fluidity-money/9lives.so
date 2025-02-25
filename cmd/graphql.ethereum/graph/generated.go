@@ -129,11 +129,10 @@ type ComplexityRoot struct {
 
 	Query struct {
 		CampaignByID              func(childComplexity int, id string) int
-		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int) int
+		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) int
 		Changelog                 func(childComplexity int) int
 		SuggestedHeadlines        func(childComplexity int) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
-		UserCampaigns             func(childComplexity int, address string) int
 		UserParticipatedCampaigns func(childComplexity int, address string) int
 		UserTotalVolume           func(childComplexity int, address string) int
 	}
@@ -193,11 +192,10 @@ type PositionResolver interface {
 	Content(ctx context.Context, obj *types.Position) (*types.Campaign, error)
 }
 type QueryResolver interface {
-	Campaigns(ctx context.Context, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int) ([]types.Campaign, error)
+	Campaigns(ctx context.Context, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) ([]types.Campaign, error)
 	CampaignByID(ctx context.Context, id string) (*types.Campaign, error)
 	SuggestedHeadlines(ctx context.Context) ([]string, error)
 	Changelog(ctx context.Context) ([]*changelog.Changelog, error)
-	UserCampaigns(ctx context.Context, address string) ([]*types.Campaign, error)
 	UserActivity(ctx context.Context, address string, campaignID *string, page *int, pageSize *int) ([]*types.Activity, error)
 	UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error)
 	UserTotalVolume(ctx context.Context, address string) (int, error)
@@ -630,7 +628,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Campaigns(childComplexity, args["category"].([]string), args["orderBy"].(*string), args["searchTerm"].(*string), args["page"].(*int), args["pageSize"].(*int)), true
+		return e.complexity.Query.Campaigns(childComplexity, args["category"].([]string), args["orderBy"].(*string), args["searchTerm"].(*string), args["page"].(*int), args["pageSize"].(*int), args["address"].(*string)), true
 
 	case "Query.changelog":
 		if e.complexity.Query.Changelog == nil {
@@ -657,18 +655,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.UserActivity(childComplexity, args["address"].(string), args["campaignId"].(*string), args["page"].(*int), args["pageSize"].(*int)), true
-
-	case "Query.userCampaigns":
-		if e.complexity.Query.UserCampaigns == nil {
-			break
-		}
-
-		args, err := ec.field_Query_userCampaigns_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.UserCampaigns(childComplexity, args["address"].(string)), true
 
 	case "Query.userParticipatedCampaigns":
 		if e.complexity.Query.UserParticipatedCampaigns == nil {
@@ -1163,6 +1149,15 @@ func (ec *executionContext) field_Query_campaigns_args(ctx context.Context, rawA
 		}
 	}
 	args["pageSize"] = arg4
+	var arg5 *string
+	if tmp, ok := rawArgs["address"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+		arg5, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["address"] = arg5
 	return args, nil
 }
 
@@ -1205,21 +1200,6 @@ func (ec *executionContext) field_Query_userActivity_args(ctx context.Context, r
 		}
 	}
 	args["pageSize"] = arg3
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_userCampaigns_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["address"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["address"] = arg0
 	return args, nil
 }
 
@@ -3701,7 +3681,7 @@ func (ec *executionContext) _Query_campaigns(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Campaigns(rctx, fc.Args["category"].([]string), fc.Args["orderBy"].(*string), fc.Args["searchTerm"].(*string), fc.Args["page"].(*int), fc.Args["pageSize"].(*int))
+		return ec.resolvers.Query().Campaigns(rctx, fc.Args["category"].([]string), fc.Args["orderBy"].(*string), fc.Args["searchTerm"].(*string), fc.Args["page"].(*int), fc.Args["pageSize"].(*int), fc.Args["address"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3976,105 +3956,6 @@ func (ec *executionContext) fieldContext_Query_changelog(_ context.Context, fiel
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Changelog", field.Name)
 		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_userCampaigns(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_userCampaigns(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().UserCampaigns(rctx, fc.Args["address"].(string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*types.Campaign)
-	fc.Result = res
-	return ec.marshalNCampaign2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_userCampaigns(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "name":
-				return ec.fieldContext_Campaign_name(ctx, field)
-			case "description":
-				return ec.fieldContext_Campaign_description(ctx, field)
-			case "picture":
-				return ec.fieldContext_Campaign_picture(ctx, field)
-			case "creator":
-				return ec.fieldContext_Campaign_creator(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Campaign_createdAt(ctx, field)
-			case "settlement":
-				return ec.fieldContext_Campaign_settlement(ctx, field)
-			case "oracleDescription":
-				return ec.fieldContext_Campaign_oracleDescription(ctx, field)
-			case "oracleUrls":
-				return ec.fieldContext_Campaign_oracleUrls(ctx, field)
-			case "identifier":
-				return ec.fieldContext_Campaign_identifier(ctx, field)
-			case "poolAddress":
-				return ec.fieldContext_Campaign_poolAddress(ctx, field)
-			case "outcomes":
-				return ec.fieldContext_Campaign_outcomes(ctx, field)
-			case "starting":
-				return ec.fieldContext_Campaign_starting(ctx, field)
-			case "ending":
-				return ec.fieldContext_Campaign_ending(ctx, field)
-			case "x":
-				return ec.fieldContext_Campaign_x(ctx, field)
-			case "telegram":
-				return ec.fieldContext_Campaign_telegram(ctx, field)
-			case "web":
-				return ec.fieldContext_Campaign_web(ctx, field)
-			case "winner":
-				return ec.fieldContext_Campaign_winner(ctx, field)
-			case "totalVolume":
-				return ec.fieldContext_Campaign_totalVolume(ctx, field)
-			case "investmentAmounts":
-				return ec.fieldContext_Campaign_investmentAmounts(ctx, field)
-			case "banners":
-				return ec.fieldContext_Campaign_banners(ctx, field)
-			case "categories":
-				return ec.fieldContext_Campaign_categories(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_userCampaigns_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
 	}
 	return fc, nil
 }
@@ -7804,28 +7685,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "userCampaigns":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_userCampaigns(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "userActivity":
 			field := field
 
@@ -8440,44 +8299,6 @@ func (ec *executionContext) marshalNCampaign2ᚕgithubᚗcomᚋfluidityᚑmoney�
 			return graphql.Null
 		}
 	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNCampaign2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx context.Context, sel ast.SelectionSet, v []*types.Campaign) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
 
 	return ret
 }

@@ -595,7 +595,7 @@ func (r *positionResolver) Content(ctx context.Context, obj *types.Position) (*t
 }
 
 // Campaigns is the resolver for the campaigns field.
-func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int) ([]types.Campaign, error) {
+func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
 	if r.F.Is(features.FeatureGraphqlMockGraph) {
 		campaigns = MockGraphCampaigns()
@@ -604,6 +604,10 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	query := r.DB.Table("ninelives_campaigns_1").
 		Where("shown = TRUE").
 		Select("*")
+	if address != nil {
+		*address = strings.ToLower(*address)
+		query = query.Where("content->>'creator' = ?", *address)
+	}
 	if len(category) > 0 {
 		jsonCategories, err := json.Marshal(category)
 		if err != nil {
@@ -717,11 +721,6 @@ func (r *queryResolver) Changelog(ctx context.Context) ([]*changelog.Changelog, 
 		xs[i] = &x
 	}
 	return xs, nil
-}
-
-// UserCampaigns is the resolver for the userCampaigns field.
-func (r *queryResolver) UserCampaigns(ctx context.Context, address string) ([]*types.Campaign, error) {
-	panic(fmt.Errorf("not implemented: UserCampaigns - userCampaigns"))
 }
 
 // UserActivity is the resolver for the userActivity field.

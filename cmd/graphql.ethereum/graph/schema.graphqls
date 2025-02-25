@@ -3,7 +3,7 @@ type Query {
   """
   Campaign List that can be filtered according to categories
   """
-  campaigns(category: [String!], orderBy: String, searchTerm: String, page: Int, pageSize: Int): [Campaign!]!
+  campaigns(category: [String!], orderBy: String, searchTerm: String, page: Int, pageSize: Int, address: String): [Campaign!]!
 
   """
   Get a campaign by its ID. May or may not exist.
@@ -19,11 +19,6 @@ type Query {
   Any new changelog items that have come up recently.
   """
   changelog: [Changelog]!
-
-  """
-  Returns user's created campaigns
-  """
-  userCampaigns(address: String!): [Campaign]!
 
   """
   Returns user's buy and sell activities
