@@ -85,14 +85,6 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.changelog<_$Scalars>>;
   /**
    *
-   * Select the `userCampaigns` field on the `Query` object. Its type is `Campaign` (a `OutputObject` kind of type).
-   *
-   */
-  userCampaigns?:
-    | Query.userCampaigns<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Query.userCampaigns<_$Scalars>>;
-  /**
-   *
    * Select the `userActivity` field on the `Query` object. Its type is `Activity` (a `OutputObject` kind of type).
    *
    */
@@ -176,6 +168,7 @@ export namespace Query {
     searchTerm?: string | undefined | null;
     page?: number | undefined | null;
     pageSize?: number | undefined | null;
+    address?: string | undefined | null;
   }
 
   // --- expanded ---
@@ -288,45 +281,6 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<changelog$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type userCampaigns<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = userCampaigns$SelectionSet<_$Scalars>;
-
-  export interface userCampaigns$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$Campaign<_$Scalars> {
-    /**
-     * Arguments for `userCampaigns` field. All arguments are required so you must include this.
-     */
-    $: userCampaigns$Arguments<_$Scalars>;
-  }
-
-  export interface userCampaigns$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    address: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `userCampaigns` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type userCampaigns$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<userCampaigns$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 

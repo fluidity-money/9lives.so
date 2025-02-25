@@ -32,7 +32,6 @@ export namespace Schema {
       campaignById: Query.campaignById;
       suggestedHeadlines: Query.suggestedHeadlines;
       changelog: Query.changelog;
-      userCampaigns: Query.userCampaigns;
       userActivity: Query.userActivity;
       userParticipatedCampaigns: Query.userParticipatedCampaigns;
       userTotalVolume: Query.userTotalVolume;
@@ -86,6 +85,12 @@ export namespace Schema {
           inlineType: [0];
           namedType: $$NamedTypes.$$Int;
         };
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
       };
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$Campaign;
@@ -126,23 +131,6 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Changelog;
-    }
-
-    /**
-     * Returns user's created campaigns
-     */
-    export interface userCampaigns extends $.OutputField {
-      name: "userCampaigns";
-      arguments: {
-        address: {
-          kind: "InputField";
-          name: "address";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [1, [0]];
-      namedType: $$NamedTypes.$$Campaign;
     }
 
     /**

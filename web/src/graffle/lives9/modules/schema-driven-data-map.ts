@@ -292,6 +292,10 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: Int,
           it: [0],
         },
+        address: {
+          nt: String,
+          it: [0],
+        },
       },
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
@@ -307,15 +311,6 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     suggestedHeadlines: {},
     changelog: {
       // nt: Changelog, <-- Assigned later to avoid potential circular dependency.
-    },
-    userCampaigns: {
-      a: {
-        address: {
-          nt: String,
-          it: [1],
-        },
-      },
-      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
     userActivity: {
       a: {
@@ -504,7 +499,6 @@ Outcome.f[`share`]!.nt = Share;
 Query.f[`campaigns`]!.nt = Campaign;
 Query.f[`campaignById`]!.nt = Campaign;
 Query.f[`changelog`]!.nt = Changelog;
-Query.f[`userCampaigns`]!.nt = Campaign;
 Query.f[`userActivity`]!.nt = Activity;
 Query.f[`userParticipatedCampaigns`]!.nt = Position;
 

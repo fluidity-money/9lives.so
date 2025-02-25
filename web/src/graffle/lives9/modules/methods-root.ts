@@ -122,28 +122,6 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Returns user's created campaigns
-   */
-  userCampaigns: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Query.userCampaigns<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationQuery<
-            { userCampaigns: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "userCampaigns"
-        >
-    >
-  >;
-  /**
    * Returns user's buy and sell activities
    */
   userActivity: $$Utilities.ClientTransports.PreflightCheck<
