@@ -149,7 +149,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
       const allowanceTx = prepareContractCall({
         contract: config.contracts.fusdc,
         method: "allowance",
-        params: [account.address, config.contracts.buyHelper.address],
+        params: [account.address, config.contracts.infra.address],
       });
       const allowance = (await simulateTransaction({
         transaction: allowanceTx,
@@ -159,7 +159,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
         const approveTx = prepareContractCall({
           contract: config.contracts.fusdc,
           method: "approve",
-          params: [config.contracts.buyHelper.address, amount],
+          params: [config.contracts.infra.address, amount],
         });
         await sendTransaction({
           transaction: approveTx,
