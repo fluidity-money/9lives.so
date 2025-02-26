@@ -1,9 +1,14 @@
+import { usePathname } from "next/navigation";
 import Modal from "../themed/modal";
 import DegenModeList from "./degenModeList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function DegenModeMobileWrapper() {
   const [isDegenMobileOpen, setIsDegenMobileOpen] = useState(false);
+  const pathname = usePathname();
+  useEffect(() => {
+    setIsDegenMobileOpen(false);
+  }, [pathname]);
   return (
     <>
       <button

@@ -1,13 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../themed/modal";
 import DegenModeList from "./degenModeList";
+import { usePathname } from "next/navigation";
 
 export default function DegenModeFloatingButton() {
   const [isDegenMobileOpen, setIsDegenMobileOpen] = useState(false);
   function handleClick() {
     setIsDegenMobileOpen(true);
   }
+  const pathname = usePathname();
+  useEffect(() => {
+    setIsDegenMobileOpen(false);
+  }, [pathname]);
   return (
     <>
       <button
