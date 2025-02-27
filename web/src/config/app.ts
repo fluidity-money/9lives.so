@@ -32,7 +32,7 @@ const infraMarketStateColors: Record<InfraMarketState, string> = {
   [InfraMarketState.Callable]: "bg-9yellow",
   [InfraMarketState.Closable]: "bg-9green",
   [InfraMarketState.Whinging]: "bg-9purple",
-  [InfraMarketState.Predicting]: "bg-9lightBlue",
+  [InfraMarketState.Predicting]: "bg-9blueLight",
   [InfraMarketState.Revealing]: "bg-9green",
   [InfraMarketState.Declarable]: "bg-9green",
   [InfraMarketState.Sweeping]: "bg-9green",
