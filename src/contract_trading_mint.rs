@@ -169,7 +169,6 @@ impl StorageTrading {
             let o = self.outcome_list.get(i).unwrap();
             let outcome_shares = self.outcome_shares.get(o);
             let value_raw = value.unsigned_abs();
-            dbg!(outcome_shares, value_raw, value);
             self.outcome_shares.setter(o).set(if value.is_negative() {
                 c!(outcome_shares
                     .checked_sub(value_raw)
