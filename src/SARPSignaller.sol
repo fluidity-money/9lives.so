@@ -3,17 +3,6 @@ pragma solidity 0.8.20;
 
 import "./IEvents.sol";
 
-/// @dev Bond that's taken from users who request SARP's settlement
-///      of a market.
-uint256 constant SARP_BOND = 100000;
-
-/// @dev Fee taken by SARP for ongoing management purposes.
-uint256 constant SARP_FEE = (100 * SARP_BOND) / 1000;
-
-/// @dev Refund fee that's paid back to the user if their request
-///      resulted in a settled state.
-uint256 constant SARP_REFUND = SARP_BOND - SARP_FEE;
-
 interface IERC20 {
     function transferFrom(address, address, uint256) external;
     function transfer(address, uint256) external;
@@ -48,7 +37,6 @@ contract SARPSignaller is IEvents {
      *         from the user to escrow here for redemption.
      */
     function request(address _trading, address _recipient) external {
-        FUSDC.transferFrom(msg.sender, address(this), SARP_BOND);
         uint256 t = ticketCount++;
         tickets[t].addr = _recipient;
         emit Requested(_trading, t);
@@ -64,7 +52,6 @@ contract SARPSignaller is IEvents {
         require(msg.sender == SARP, "only sarp");
         require(!tickets[_ticket].repaid, "already repaid");
         tickets[_ticket].repaid = true;
-        FUSDC.transfer(tickets[_ticket].addr, SARP_REFUND);
         emit Concluded(_ticket, _note);
     }
 }

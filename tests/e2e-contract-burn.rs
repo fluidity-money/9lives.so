@@ -87,6 +87,8 @@ proptest! {
                         FixedBytes::<32>::ZERO
                     )
                 );
+                let estimated = c.estimate_cost(outcome_a, share_amt).unwrap();
+                dbg!(estimated);
                 assert_eq!(
                     fusdc_mint_amt,
                     should_spend!(share_addr, { msg_sender() => share_amt },
@@ -94,7 +96,7 @@ proptest! {
                             fusdc_mint_amt,
                             c.burn_permit_7045_A_604(
                                 outcome_a,
-                                share_amt,
+                                estimated,
                                 IVAN,
                                 U256::ZERO,
                                 0,
@@ -104,7 +106,9 @@ proptest! {
                         ))
                     )
                 );
+                dbg!("WTF I DID IT");
             }
         }
+        lib9lives::host::clear_storage()
     }
 }
