@@ -14,6 +14,12 @@ use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
+#[cfg(target_arch = "wasm32")]
+use alloc::collections::HashMap;
+
+#[cfg(not(target_arch = "wasm32"))]
+use std::collections::HashMap;
+
 #[cfg(feature = "trading-backend-dpm")]
 use crate::decimal::fusdc_decimal_to_u256;
 
@@ -49,6 +55,35 @@ impl StorageTrading {
             I256::from_le_bytes(value.to_le_bytes::<32>()),
             recipient,
         )
+    }
+
+    pub fn estimate_cost(&self, outcome: FixedBytes<8>, amt: U256) -> R<U256> {
+        let amt = amt.checked_div(SHARE_DECIMALS_EXP).ok_or(Error::CheckedDivOverflow)?;
+        let product_before = (0..self.outcome_list.len()).fold(U256::from(1), |acc, o| {
+            acc * self.outcome_shares.get(self.outcome_list.get(o).unwrap())
+        });
+        dbg!(product_before);
+        let new_shares = (0..self.outcome_list.len())
+            .map(|o| (o, {
+                let o = self.outcome_list.get(0).unwrap();
+                let shares = self.outcome_shares.get(o);
+                if o == outcome {
+                    shares - amt
+                } else {
+                    shares
+                }
+            }))
+            .collect::<HashMap<_, _>>();
+            dbg!(&new_shares);
+        let inv_n = SCALING_FACTOR / U256::from(new_shares.len());
+        dbg!(inv_n);
+        let product_after = new_shares.into_iter().fold(U256::from(1), |acc, (_, x)| acc * x);
+        dbg!(product_after);
+        let liquidity_before = c!(product_before.checked_pow(inv_n).ok_or(Error::CheckedPowOverflow));
+        dbg!(liquidity_before);
+        let liquidity_after = c!(product_after.checked_pow(inv_n).ok_or(Error::CheckedPowOverflow));
+        dbg!(liquidity_after);
+        liquidity_before.checked_sub(liquidity_after).ok_or(Error::CheckedSubOverflow)
     }
 
     #[allow(non_snake_case)]
@@ -208,6 +243,7 @@ impl StorageTrading {
         .ok_or(Error::CheckedDivOverflow));
         self.outcome_shares.setter(outcome_id).set(shares);
         //self.user_shares = self.shares_before - self.shares[outcome]
+        dbg!(shares_before, shares);
         shares_before
             .checked_sub(shares)
             .ok_or(Error::CheckedSubOverflow)

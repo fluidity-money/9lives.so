@@ -186,5 +186,5 @@ interface IInfraMarket {
      * @notice Enable or disable the contract.
      * @param status to set the contract to.
      */
-    function enable_contract(bool status) external returns (bool);
+    function enableContract(bool status) external returns (bool);
 }

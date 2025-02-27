@@ -46,12 +46,7 @@ unsafe fn store_word_u64(key: FixedBytes<32>, v: u64) {
 }
 
 pub fn test_block_timestamp_add_time(t: u64) {
-    unsafe {
-      store_word_u64(
-          STORAGE_ADD_TIME,
-          load_word_u64(STORAGE_ADD_TIME) + t
-        )
-    }
+    unsafe { store_word_u64(STORAGE_ADD_TIME, load_word_u64(STORAGE_ADD_TIME) + t) }
 }
 
 #[test]
@@ -240,18 +235,12 @@ macro_rules! storage_set_fields {
 
 #[macro_export]
 macro_rules! interactions_clear_after {
-    ( $($field:ident => $func:expr),+ $(,)? ) => {{
-        let x = (
-            $(
-                {
-                    $crate::host::set_msg_sender($field);
-                    let x = $func;
-                    $crate::host::set_msg_sender($crate::testing_addrs::MSG_SENDER);
-                    x
-                }
-            ),*
-        );
+    ( $($field:ident => $func:expr),+ $(,)? ) => {
+        $(
+            $crate::host::set_msg_sender($field);
+            { $func };
+            $crate::host::set_msg_sender($crate::testing_addrs::MSG_SENDER);
+        )+;
         $crate::host::clear_storage();
-        x
-    }}
+    }
 }
