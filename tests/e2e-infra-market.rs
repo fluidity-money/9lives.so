@@ -93,7 +93,7 @@ proptest! {
                     c.status(trading_addr).unwrap().0,
                 );
             }
-        }
+        };
     }
 
     #[test]
@@ -173,7 +173,7 @@ proptest! {
                     Error::CampaignWinnerSet
                 )
             }
-        }
+        };
     }
 
     #[test]
@@ -415,6 +415,6 @@ proptest! {
                     }
                 );
             }
-        }
+        };
     }
 }

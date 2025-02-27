@@ -461,6 +461,15 @@ pub enum Error {
     // This outcome was zero, and we want to prevent strange behaviour
     // at this point.
     OutcomeIsZero,
+
+    // A negative amount was used in the mint function when the DPM is in use.
+    NegativeAmountWhenDPM,
+
+    // Only the AMM can sell.
+    AMMOnly,
+
+    // Overflow when perfoming a checked negation.
+    CheckedNegOverflow,
 }
 
 #[cfg(any(

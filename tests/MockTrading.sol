@@ -73,6 +73,18 @@ contract MockTrading is INineLivesTrading {
         return value;
     }
 
+    function burnPermit7045A604(
+        bytes8 outcome,
+        uint256 fusdcAmount,
+        address recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (uint256) {
+        return 0;
+    }
+
     function quoteC0E17FC7(
         bytes8 /* outcome */,
         uint256 value

@@ -70,9 +70,14 @@ impl StorageTrading {
                 .setter(outcome_id)
                 .set(U256::from(1) * SHARE_DECIMALS_EXP);
             #[cfg(feature = "trading-backend-amm")]
-            self.outcome_shares
-                .setter(outcome_id)
-                .set(U256::from(outcome_len) * SHARE_DECIMALS_EXP);
+            {
+                self.outcome_shares
+                    .setter(outcome_id)
+                    .set(U256::from(outcome_len) * SHARE_DECIMALS_EXP);
+                self.outcome_total_shares
+                    .setter(outcome_id)
+                    .set(U256::from(outcome_len) * SHARE_DECIMALS_EXP);
+            }
             self.outcome_list.push(outcome_id);
         }
         // We assume that the sender is the factory.
@@ -106,6 +111,10 @@ impl StorageTrading {
 
     pub fn oracle(&self) -> R<Address> {
         Ok(self.oracle.get())
+    }
+
+    pub fn fusdc_addr(&self) -> R<Address> {
+        Ok(FUSDC_ADDR)
     }
 
     pub fn shutdown(&mut self) -> R<U256> {

@@ -65,4 +65,14 @@ contract BuyHelper2 {
         require(shares >= _minShareOut, "not enough shares");
         return shares;
     }
+
+    function burn(
+        address _tradingAddr,
+        bytes8 _outcome,
+        uint256 _maxShareOut,
+        uint256 _minShareOut,
+        uint256 _fusdcAmt
+    ) external returns (uint256) {
+
+    }
 }

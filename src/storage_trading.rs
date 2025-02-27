@@ -56,8 +56,11 @@ pub struct StorageTrading {
     /// AMM.
     pub global_shares: StorageU256,
 
-    /// Shares invested in a specific outome.
+    /// Shares available to buy in the pool.
     pub outcome_shares: StorageMap<FixedBytes<8>, StorageU256>,
+
+    /// Shares that're in the pool that have been bought.
+    pub outcome_total_shares: StorageMap<FixedBytes<8>, StorageU256>,
 
     /// Amount that was invested to seed this pool. Used as liquidity by the AMM.
     pub seed_invested: StorageU256,
@@ -77,6 +80,19 @@ pub struct StorageTrading {
     /// Whether the contract should extend the deadline by 3 hours if purchases are made under 3
     /// hours that pass the buffer requirement. This could be useful in a polling situation.
     pub should_buffer_time: StorageBool,
+
+    /// Operator account that's able to drain funds from this campaign once
+    /// it's concluded, as well as set the fee for SPN.
+    pub operator: StorageAddress,
+
+    /// The current mint fee for the creator.
+    pub fee_creator: StorageU256,
+
+    /// The current mint fee for the operator.
+    pub fee_operator: StorageU256,
+
+    /// The current mint fee for position holders (users) who participated in the campaign.
+    pub fee_minter: StorageU256,
 }
 
 #[cfg(feature = "testing")]

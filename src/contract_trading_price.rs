@@ -28,7 +28,7 @@ impl StorageTrading {
 
 impl StorageTrading {
     #[allow(unused)]
-    fn internal_dpm_price(&self, id: FixedBytes<8>) -> R<U256> {
+    pub fn internal_dpm_price(&self, id: FixedBytes<8>) -> R<U256> {
         if self.outcome_invested.get(id).is_zero() {
             return Ok(U256::ZERO);
         }
@@ -49,7 +49,7 @@ impl StorageTrading {
     }
 
     #[allow(unused)]
-    fn internal_amm_price(&self, id: FixedBytes<8>) -> R<U256> {
+    pub fn internal_amm_price(&self, id: FixedBytes<8>) -> R<U256> {
         let outcome_list_len = self.outcome_list.len();
         let mut price_weight_sum = U256::ZERO;
         let mut price_weight_ours = None;

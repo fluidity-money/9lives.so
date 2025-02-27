@@ -19,12 +19,7 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
 #[mutants::skip]
 #[panic_handler]
 fn panic(_: &core::panic::PanicInfo) -> ! {
-    // In lieu of using compiler features (we want to run this on stable
-    // Rust), we need to cause unreachable!
-    #[allow(unconditional_panic)]
-    let _ = 1 / 0;
-    // If somehow, the above is optimised out, this will run out of gas anyway.
-    loop {}
+    core::arch::wasm32::unreachable()
 }
 
 #[cfg(not(target_arch = "wasm32"))]

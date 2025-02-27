@@ -2,6 +2,7 @@
 
 #[macro_use]
 pub mod error;
+pub use error::panic_guard;
 
 pub mod decimal;
 pub mod maths;

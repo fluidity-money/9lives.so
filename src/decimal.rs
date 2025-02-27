@@ -9,6 +9,9 @@ use crate::{assert_or, error::*};
 /// Max decimal straight from rust_decimal documentation.
 pub const MAX_DECIMAL: u128 = 79_228_162_514_264_337_593_543_950_335;
 
+// Max decimal, but in uint256 form.
+pub const MAX_UINT256: U256 = U256::from_limbs([18446744073709551615, 4294967295, 0, 0]);
+
 pub(crate) fn u256_to_decimal(n: U256, decimals: u8) -> R<Decimal> {
     if n.is_zero() {
         return Ok(Decimal::ZERO);

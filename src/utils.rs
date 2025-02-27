@@ -240,12 +240,18 @@ macro_rules! storage_set_fields {
 
 #[macro_export]
 macro_rules! interactions_clear_after {
-    ( $($field:ident => $func:expr),+ $(,)? ) => {
-        $(
-            $crate::host::set_msg_sender($field);
-            { $func };
-            $crate::host::set_msg_sender($crate::testing_addrs::MSG_SENDER);
-        )+;
+    ( $($field:ident => $func:expr),+ $(,)? ) => {{
+        let x = (
+            $(
+                {
+                    $crate::host::set_msg_sender($field);
+                    let x = $func;
+                    $crate::host::set_msg_sender($crate::testing_addrs::MSG_SENDER);
+                    x
+                }
+            ),*
+        );
         $crate::host::clear_storage();
-    }
+        x
+    }}
 }

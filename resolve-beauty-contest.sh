@@ -3,6 +3,10 @@
 id="$1"
 recipient="$2"
 
+cat >/dev/null <<EOF
+$SPN_SUPERPOSITION_KEY
+EOF
+
 data="$(\
 	curl \
 		-H 'Content-Type: application/json' \

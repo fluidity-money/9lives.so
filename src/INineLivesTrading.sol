@@ -43,6 +43,19 @@ interface INineLivesTrading {
     ) external returns (uint256);
 
     /**
+     * @notice Burn some shares by inverting the AMM function using the fUSDC amount.
+     */
+    function burnPermit7045A604(
+        bytes8 outcome,
+        uint256 fusdcAmount,
+        address recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (uint256);
+
+    /**
      * @notice Quote function for testing the amount that could be minted.
      * @param outcome to test for
      * @param value to test spending for

@@ -29,11 +29,11 @@ class PredMarket:
 
         # Calculate PriceWeightOfAllOutcomes
         price_weight_of_all_outcomes = sum(outcome_price_weights)
-        
+
         # Calculate OutcomePrices
         for k in range(len(self.shares)):
             self.outcome_prices[k] = (outcome_price_weights[k] / price_weight_of_all_outcomes)
-        
+
         return self.outcome_prices
 
     def add_liquidity(self, amount):
@@ -41,12 +41,12 @@ class PredMarket:
         for i in range(len(self.shares)):
             self.shares[i] += amount
             self.total_shares[i] += amount
-        
+
         most_likely = self.shares.index(min(self.shares))
         least_likely = self.shares.index(max(self.shares))
 
         self.shares_before = self.shares[most_likely]
-        
+
         self.shares[most_likely] = self.shares[least_likely]*self.outcome_prices[least_likely]/self.outcome_prices[most_likely]
 
         product = 1
@@ -62,7 +62,7 @@ class PredMarket:
         # amount refers to the liquidity shares
         most_likely = self.shares.index(min(self.shares))
         least_likely = self.shares.index(max(self.shares))
-        
+
         liquiditysharesvalue = self.liquidity/(self.shares[least_likely])*amount
 
         for i in range(len(self.shares)):
@@ -77,61 +77,61 @@ class PredMarket:
             product *= self.shares[i]
 
         self.liquidity = pow(product,1/len(self.shares))
-        
+
         # return the difference to the LP
-        
+
         return self.shares
 
     def mintliquidityshares(self):
-        
+
         return self.liquidity_shares_before-self.liquidity
-        
+
     def buy(self, outcome, amount):
         # Update all shares with the purchase amount
         product = 1
-        
+
         for i in range(len(self.shares)):
             self.shares[i] += amount
             product *= self.shares[i]
             self.total_shares[i] += amount
-        
+
         self.shares_before = self.shares[outcome]
-        
+
         # Adjust the specified outcome's share to keep balance
         product /= self.shares[outcome]
         self.shares[outcome] = (self.liquidity ** self.outcomes) / product
-        
+
         self.total_liquidity[outcome] += amount
 
         # Update user position for this outcome
         self.user_positions[outcome] += amount
-        
+
         return self.shares
 
     def sell(self, outcome, amount):
         # Update all shares with the purchase amount
         product = 1
-        
+
         for i in range(len(self.shares)):
             self.shares[i] -= amount
             product *= self.shares[i]
             self.total_shares[i] -= amount
-        
+
         self.shares_before = self.shares[outcome]
-        
+
         # Adjust the specified outcome's share to keep balance
         product /= self.shares[outcome]
         self.shares[outcome] = (self.liquidity ** self.outcomes) / product
-        
+
         self.total_liquidity[outcome] -= amount
 
         # Update user position for this outcome
         self.user_positions[outcome] -= amount
-        
+
         return self.shares
 
     def mintusershares(self, outcome):
-        
+
         self.user_shares = self.shares_before - self.shares[outcome]
 
         return self.user_shares
