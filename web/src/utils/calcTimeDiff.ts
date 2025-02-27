@@ -89,3 +89,27 @@ export function calcTimePassed(endTime: number) {
   }
   return { text, unit };
 }
+// timeleft is seconds
+export function calcSecondsLeft(timeleft: number) {
+  if (0 >= timeleft)
+    return {
+      full: "Dispute ended.",
+      short: "Dispute ended.",
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+  const days = Math.floor(timeleft / (60 * 60 * 24));
+  const hours = Math.floor((timeleft % (60 * 60 * 24)) / (60 * 60));
+  const minutes = Math.floor((timeleft % (60 * 60)) / 60);
+  const seconds = Math.floor(timeleft % 60);
+  return {
+    full: `${days}D:${hours}H:${minutes}M:${seconds}S`,
+    short: `${days}D:${hours}H:${minutes}M`,
+    days,
+    hours,
+    minutes,
+    seconds,
+  };
+}

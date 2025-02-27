@@ -4,7 +4,7 @@ import Image from "next/image";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
 import Button from "./themed/button";
-import useCountdown from "@/hooks/useCountdown";
+import { useCountdownDiff } from "@/hooks/useCountdown";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import LinkIcon from "#/icons/link.svg";
 import useInfraMarket from "@/hooks/useInfraMarket";
 import config from "@/config";
 import CheckIcon from "#/icons/check-green.svg";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ProposeOutcome({
   title,
@@ -29,7 +30,7 @@ export default function ProposeOutcome({
 }) {
   const [infraState, setInfraState] = useState<InfraMarketState>();
   const [infraTimeLeft, setInfraTimeLeft] = useState<number>();
-  const timeLeft = useCountdown(infraTimeLeft ?? ending);
+  const timeLeft = useCountdownDiff(infraTimeLeft);
   const [inAction, setInAction] = useState(false);
   const [isProposed, setIsProposed] = useState(false);
   const [txHash, setTxHash] = useState<string>("");
@@ -52,13 +53,18 @@ export default function ProposeOutcome({
       setInAction(false);
     }
   }
+  const { data: infraStatus } = useQuery({
+    queryKey: ["infraStatus", tradingAddr],
+    queryFn: async () => {
+      return await getStatus();
+    },
+  });
   useEffect(() => {
-    (async () => {
-      const response = await getStatus();
-      setInfraState(response?.status);
-      setInfraTimeLeft(response?.timeRemained);
-    })();
-  }, [getStatus]);
+    if (infraStatus) {
+      setInfraState(infraStatus?.status);
+      setInfraTimeLeft(infraStatus?.timeRemained);
+    }
+  }, [infraStatus]);
   if (isProposed)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
