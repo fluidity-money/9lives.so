@@ -35,6 +35,11 @@ type Query {
   Returns total volume of user's all buy and sell actions
   """
   userTotalVolume(address: String!): Int!
+
+  """
+  Returns active positions acitvity history
+  """
+  positionsHistory(outcomeIds:[String!]!): [Activity!]!
 }
 
 """

@@ -131,6 +131,7 @@ type ComplexityRoot struct {
 		CampaignByID              func(childComplexity int, id string) int
 		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) int
 		Changelog                 func(childComplexity int) int
+		PositionsHistory          func(childComplexity int, outcomeIds []string) int
 		SuggestedHeadlines        func(childComplexity int) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
 		UserParticipatedCampaigns func(childComplexity int, address string) int
@@ -199,6 +200,7 @@ type QueryResolver interface {
 	UserActivity(ctx context.Context, address string, campaignID *string, page *int, pageSize *int) ([]*types.Activity, error)
 	UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error)
 	UserTotalVolume(ctx context.Context, address string) (int, error)
+	PositionsHistory(ctx context.Context, outcomeIds []string) ([]types.Activity, error)
 }
 
 type executableSchema struct {
@@ -636,6 +638,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Changelog(childComplexity), true
+
+	case "Query.positionsHistory":
+		if e.complexity.Query.PositionsHistory == nil {
+			break
+		}
+
+		args, err := ec.field_Query_positionsHistory_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.PositionsHistory(childComplexity, args["outcomeIds"].([]string)), true
 
 	case "Query.suggestedHeadlines":
 		if e.complexity.Query.SuggestedHeadlines == nil {
@@ -1158,6 +1172,21 @@ func (ec *executionContext) field_Query_campaigns_args(ctx context.Context, rawA
 		}
 	}
 	args["address"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_positionsHistory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["outcomeIds"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outcomeIds"))
+		arg0, err = ec.unmarshalNString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["outcomeIds"] = arg0
 	return args, nil
 }
 
@@ -4159,6 +4188,93 @@ func (ec *executionContext) fieldContext_Query_userTotalVolume(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_userTotalVolume_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_positionsHistory(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_positionsHistory(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PositionsHistory(rctx, fc.Args["outcomeIds"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]types.Activity)
+	fc.Result = res
+	return ec.marshalNActivity2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐActivityᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_positionsHistory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "txHash":
+				return ec.fieldContext_Activity_txHash(ctx, field)
+			case "recipient":
+				return ec.fieldContext_Activity_recipient(ctx, field)
+			case "poolAddress":
+				return ec.fieldContext_Activity_poolAddress(ctx, field)
+			case "fromAmount":
+				return ec.fieldContext_Activity_fromAmount(ctx, field)
+			case "fromSymbol":
+				return ec.fieldContext_Activity_fromSymbol(ctx, field)
+			case "toAmount":
+				return ec.fieldContext_Activity_toAmount(ctx, field)
+			case "toSymbol":
+				return ec.fieldContext_Activity_toSymbol(ctx, field)
+			case "type":
+				return ec.fieldContext_Activity_type(ctx, field)
+			case "outcomeId":
+				return ec.fieldContext_Activity_outcomeId(ctx, field)
+			case "outcomeName":
+				return ec.fieldContext_Activity_outcomeName(ctx, field)
+			case "outcomePic":
+				return ec.fieldContext_Activity_outcomePic(ctx, field)
+			case "campaignName":
+				return ec.fieldContext_Activity_campaignName(ctx, field)
+			case "campaignId":
+				return ec.fieldContext_Activity_campaignId(ctx, field)
+			case "totalVolume":
+				return ec.fieldContext_Activity_totalVolume(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Activity_createdAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Activity", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_positionsHistory_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -7751,6 +7867,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "positionsHistory":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_positionsHistory(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -8185,6 +8323,54 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
+
+func (ec *executionContext) marshalNActivity2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐActivity(ctx context.Context, sel ast.SelectionSet, v types.Activity) graphql.Marshaler {
+	return ec._Activity(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNActivity2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐActivityᚄ(ctx context.Context, sel ast.SelectionSet, v []types.Activity) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNActivity2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐActivity(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
 
 func (ec *executionContext) marshalNActivity2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐActivity(ctx context.Context, sel ast.SelectionSet, v []*types.Activity) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
