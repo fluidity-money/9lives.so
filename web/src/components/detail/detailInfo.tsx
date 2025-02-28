@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import LinkIcon from "#/icons/link.svg";
 import ProposeOutcomeButton from "../proposeOutcomeButton";
+import ResolveButton from "../aiResolveButton";
 
 export default function DetailInfo({ data }: { data: Campaign }) {
   const settlementDescMap: Record<SettlementType, string> = {
@@ -54,6 +55,9 @@ export default function DetailInfo({ data }: { data: Campaign }) {
                 outcomes={data.outcomes}
                 tradingAddr={data.poolAddress}
               />
+            ) : null}
+            {data.settlement === "AI" ? (
+              <ResolveButton tradingAddr={data.poolAddress} />
             ) : null}
           </div>
           <div className="ml-5 flex flex-col gap-2.5">
