@@ -620,16 +620,17 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	}
 	if orderBy == nil {
 		query = query.Order("total_volume DESC")
+	} else if *orderBy == "ended" {
+		query = query.Where("content->>'winner' IS NOT NULL").Order("content->>'ending' DESC")
 	} else {
+		query = query.Where("content->>'winner' IS NULL")
 		switch *orderBy {
 		case "newest":
 			query = query.Order("created_at DESC")
 		case "volume":
 			query = query.Order("total_volume DESC")
 		case "ending":
-			query = query.Order("content->>'ending' ASC").Where("content->>'winner' IS NULL")
-		case "ended":
-			query = query.Order("content->>'ending' DESC").Where("content->>'winner' IS NOT NULL")
+			query = query.Order("content->>'ending' ASC")
 		default:
 			return nil, fmt.Errorf("invalid orderBy value")
 		}
