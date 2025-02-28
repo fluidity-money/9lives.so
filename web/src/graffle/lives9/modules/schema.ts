@@ -35,6 +35,7 @@ export namespace Schema {
       userActivity: Query.userActivity;
       userParticipatedCampaigns: Query.userParticipatedCampaigns;
       userTotalVolume: Query.userTotalVolume;
+      positionsHistory: Query.positionsHistory;
     };
   }
 
@@ -201,6 +202,23 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Returns active positions acitvity history
+     */
+    export interface positionsHistory extends $.OutputField {
+      name: "positionsHistory";
+      arguments: {
+        outcomeIds: {
+          kind: "InputField";
+          name: "outcomeIds";
+          inlineType: [1, [1]];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$Activity;
     }
   }
 

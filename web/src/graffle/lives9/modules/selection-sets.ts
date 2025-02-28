@@ -109,6 +109,14 @@ export interface Query<
   userTotalVolume?:
     | Query.userTotalVolume<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.userTotalVolume<_$Scalars>>;
+  /**
+   *
+   * Select the `positionsHistory` field on the `Query` object. Its type is `Activity` (a `OutputObject` kind of type).
+   *
+   */
+  positionsHistory?:
+    | Query.positionsHistory<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.positionsHistory<_$Scalars>>;
 
   /**
    *
@@ -400,6 +408,45 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<userTotalVolume$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type positionsHistory<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = positionsHistory$SelectionSet<_$Scalars>;
+
+  export interface positionsHistory$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Activity<_$Scalars> {
+    /**
+     * Arguments for `positionsHistory` field. All arguments are required so you must include this.
+     */
+    $: positionsHistory$Arguments<_$Scalars>;
+  }
+
+  export interface positionsHistory$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    outcomeIds: Array<string | undefined | null>;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `positionsHistory` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type positionsHistory$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<positionsHistory$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

@@ -350,6 +350,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    positionsHistory: {
+      a: {
+        outcomeIds: {
+          nt: String,
+          it: [1, [1]],
+        },
+      },
+      // nt: Activity, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -501,6 +510,7 @@ Query.f[`campaignById`]!.nt = Campaign;
 Query.f[`changelog`]!.nt = Changelog;
 Query.f[`userActivity`]!.nt = Activity;
 Query.f[`userParticipatedCampaigns`]!.nt = Position;
+Query.f[`positionsHistory`]!.nt = Activity;
 
 //
 //
