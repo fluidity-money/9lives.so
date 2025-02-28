@@ -6,6 +6,8 @@ import ActivityRow from "./activityRow";
 interface ActivityBodyProps {
   campaignId?: string;
 }
+const bodyStyles = "min-h-24 bg-9gray";
+
 export default function ActivityBody({ campaignId }: ActivityBodyProps) {
   const account = useActiveAccount();
   const {
@@ -18,22 +20,27 @@ export default function ActivityBody({ campaignId }: ActivityBodyProps) {
 
   if (isLoading)
     return (
-      <tbody>
-        <Placeholder title="Loading..." />
+      <tbody className={bodyStyles}>
+        <Placeholder title="Loading..." colSpan={6} />
       </tbody>
     );
   if (isError)
     return (
-      <tbody>
-        <Placeholder title="Whoops, error!" subtitle={error.message} />
+      <tbody className={bodyStyles}>
+        <Placeholder
+          title="Whoops, error!"
+          subtitle={error.message}
+          colSpan={6}
+        />
       </tbody>
     );
   if (data?.length === 0)
     return (
-      <tbody>
+      <tbody className={bodyStyles}>
         <Placeholder
           title="Nothing yet."
           subtitle="Start Growing Your Portfolio."
+          colSpan={6}
         />
       </tbody>
     );
