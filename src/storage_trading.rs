@@ -77,8 +77,9 @@ pub struct StorageTrading {
     /// The outcome that was chosen to win by the oracle.
     pub winner: StorageFixedBytes<8>,
 
-    /// Whether the contract should extend the deadline by 3 hours if purchases are made under 3
-    /// hours that pass the buffer requirement. This could be useful in a polling situation.
+    /// Whether the contract should extend the deadline by 3 hours if
+    /// purchases are made under 3 hours that pass the buffer requirement.
+    /// This could be useful in a polling situation.
     pub should_buffer_time: StorageBool,
 
     /// Operator account that's able to drain funds from this campaign once
@@ -91,7 +92,8 @@ pub struct StorageTrading {
     /// The current mint fee for the operator.
     pub fee_operator: StorageU256,
 
-    /// The current mint fee for position holders (users) who participated in the campaign.
+    /// The current mint fee for position holders (users) who participated
+    /// in the campaign.
     pub fee_minter: StorageU256,
 }
 

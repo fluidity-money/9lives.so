@@ -114,14 +114,20 @@ class PredMarket:
 
         for i in range(len(self.shares)):
             self.shares[i] -= amount
+            print(f"amount: {amount}")
+            print(f"self.shares[{i}] = {self.shares[i]}", self.shares[i])
             product *= self.shares[i]
+            print(f"product invocation: {i}, product: {product}")
             self.total_shares[i] -= amount
 
         self.shares_before = self.shares[outcome]
 
         # Adjust the specified outcome's share to keep balance
         product /= self.shares[outcome]
+
+        print("product in sell", product)
         self.shares[outcome] = (self.liquidity ** self.outcomes) / product
+        print("outcome shares", self.shares[outcome])
 
         self.total_liquidity[outcome] -= amount
 
@@ -148,7 +154,7 @@ class PredMarket:
 
 if __name__ == "__main__":
     # Example usage
-    market = PredMarket(liquidity=1000, outcomes=4)
+    market = PredMarket(liquidity=2, outcomes=2)
 
     # Initial prices
     print("Initial Shares:", market.shares)
@@ -156,7 +162,7 @@ if __name__ == "__main__":
     print("Initial Liquidity:", market.total_liquidity)
 
     # Execute a buy order
-    market.buy(outcome=0, amount=300)
+    market.buy(outcome=0, amount=99)
     print("Shares after first buy:", market.shares)
     print("Outcome Prices after first buy:", market.get_outcome_prices())
     print("Liquidity after first buy:", market.total_liquidity)
@@ -165,22 +171,4 @@ if __name__ == "__main__":
     print(market.total_shares)
     print(market.user_positions)
 
-    # Add liquidity
-    market.add_liquidity(1000)
-    print("Shares after adding liquidity:", market.shares)
-    print("Outcome Prices after adding liquidity:", market.get_outcome_prices())
-    print("Liquidity:", market.total_liquidity)
-    print("Shares purchased by the user:", market.mintusershares(outcome=0))
-    print("Liquidity shares minted:", market.mintliquidityshares())
-    print(market.total_shares)
-
-    # Remove liquidity
-    market.remove_liquidity(500)
-    print("Shares after removing liquidity:", market.shares)
-    print("Outcome Prices after removing liquidity:", market.get_outcome_prices())
-    print("Liquidity:", market.total_liquidity)
-    print(market.total_shares)
-    print(market.liquidity)
-
-    # Resolve the market
-    print(market.resolution(market.total_liquidity, market.total_shares, winning_outcome = 0))
+    print("i hate you cunt", market.sell(outcome=0, amount=1))

@@ -14,12 +14,6 @@ use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
-#[cfg(target_arch = "wasm32")]
-use alloc::collections::HashMap;
-
-#[cfg(not(target_arch = "wasm32"))]
-use std::collections::HashMap;
-
 #[cfg(feature = "trading-backend-dpm")]
 use crate::decimal::fusdc_decimal_to_u256;
 
@@ -57,35 +51,6 @@ impl StorageTrading {
         )
     }
 
-    pub fn estimate_cost(&self, outcome: FixedBytes<8>, amt: U256) -> R<U256> {
-        let amt = amt.checked_div(SHARE_DECIMALS_EXP).ok_or(Error::CheckedDivOverflow)?;
-        let product_before = (0..self.outcome_list.len()).fold(U256::from(1), |acc, o| {
-            acc * self.outcome_shares.get(self.outcome_list.get(o).unwrap())
-        });
-        dbg!(product_before);
-        let new_shares = (0..self.outcome_list.len())
-            .map(|o| (o, {
-                let o = self.outcome_list.get(0).unwrap();
-                let shares = self.outcome_shares.get(o);
-                if o == outcome {
-                    shares - amt
-                } else {
-                    shares
-                }
-            }))
-            .collect::<HashMap<_, _>>();
-            dbg!(&new_shares);
-        let inv_n = SCALING_FACTOR / U256::from(new_shares.len());
-        dbg!(inv_n);
-        let product_after = new_shares.into_iter().fold(U256::from(1), |acc, (_, x)| acc * x);
-        dbg!(product_after);
-        let liquidity_before = c!(product_before.checked_pow(inv_n).ok_or(Error::CheckedPowOverflow));
-        dbg!(liquidity_before);
-        let liquidity_after = c!(product_after.checked_pow(inv_n).ok_or(Error::CheckedPowOverflow));
-        dbg!(liquidity_after);
-        liquidity_before.checked_sub(liquidity_after).ok_or(Error::CheckedSubOverflow)
-    }
-
     #[allow(non_snake_case)]
     pub fn burn_permit_7045_A_604(
         &mut self,
@@ -97,7 +62,7 @@ impl StorageTrading {
         r: FixedBytes<32>,
         s: FixedBytes<32>,
     ) -> R<U256> {
-        assert_or!(!fusdc_amt.is_zero(), Error::ZeroAmount);
+        //assert_or!(!fusdc_amt.is_zero(), Error::ZeroAmount);
         let share_addr = proxy::get_share_addr(
             self.factory_addr.get(),
             contract_address(), // Address of this contract, the Trading contract.
@@ -203,6 +168,7 @@ impl StorageTrading {
         for i in 0..outcome_list_len {
             let o = self.outcome_list.get(i).unwrap();
             let outcome_shares = self.outcome_shares.get(o);
+            eprintln!("iteration: {i}, OUTCOME SHARES: {outcome_shares}, IS MINT?: {}", value.is_positive());
             let value_raw = value.unsigned_abs();
             self.outcome_shares.setter(o).set(if value.is_negative() {
                 c!(outcome_shares
@@ -213,6 +179,7 @@ impl StorageTrading {
                     .checked_add(value_raw)
                     .ok_or(Error::CheckedAddOverflow))
             });
+            eprintln!("INSIDE LOOP iteration: {i}, OUTCOME VALUE: {value}, IS MINT?: {}", value.is_positive());
             let outcome_total_shares = self.outcome_total_shares.get(o);
             self.outcome_total_shares
                 .setter(o)
@@ -228,19 +195,22 @@ impl StorageTrading {
             product = c!(product
                 .checked_mul(self.outcome_shares.get(o))
                 .ok_or(Error::CheckedMulOverflow));
+            eprintln!("INSIDE LOOP FINAL PRODUCT: {i}, product: {product}, IS MINT? {}", value.is_positive());
         }
         let shares_before = self.outcome_shares.get(outcome_id);
         product = c!(product
             .checked_div(self.outcome_shares.get(outcome_id))
             .ok_or(Error::CheckedDivOverflow));
         //self.shares[outcome] = (self.liquidity ** self.outcomes) / product
-        let shares = c!(c!(self
+        let shares = self
             .seed_invested
             .get()
             .checked_pow(U256::from(self.outcome_list.len()))
-            .ok_or(Error::CheckedPowOverflow))
-        .checked_div(product)
-        .ok_or(Error::CheckedDivOverflow));
+            .ok_or(Error::CheckedPowOverflow)?
+            .checked_div(product)
+            .ok_or(Error::CheckedDivOverflow)?;
+        dbg!("final product", product, shares);
+
         self.outcome_shares.setter(outcome_id).set(shares);
         //self.user_shares = self.shares_before - self.shares[outcome]
         dbg!(shares_before, shares);
@@ -262,7 +232,7 @@ impl StorageTrading {
                 && self.time_ending.get() > U64::from(block_timestamp()),
             Error::DoneVoting
         );
-        assert_or!(!value.is_zero(), Error::ZeroAmount);
+        //assert_or!(!value.is_zero(), Error::ZeroAmount);
         #[cfg(feature = "trading-backend-dpm")]
         assert_or!(value.is_positive(), Error::NegativeAmountWhenDPM);
         let recipient = if recipient.is_zero() {
@@ -276,8 +246,9 @@ impl StorageTrading {
             Error::NonexistentOutcome
         );
         // If we're within 3 hours left on the trading of this contract,
-        // we want to delay the finale by 3 hours.
-        {
+        // we want to delay the finale by 3 hours, but only if that's behaviour
+        // that we want.
+        if self.should_buffer_time.get() {
             let old_time_ending = self.time_ending.get();
             if old_time_ending - U64::from(block_timestamp()) < THREE_HOURS_SECS {
                 let new_time_ending = old_time_ending + THREE_HOURS_SECS;

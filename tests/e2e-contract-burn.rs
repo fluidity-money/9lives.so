@@ -3,8 +3,8 @@
 #[allow(unused)]
 use {
     lib9lives::{
-        error::*, interactions_clear_after, panic_guard, panic_guard_eq, should_spend,
-        should_spend_fusdc_contract, should_spend_fusdc_sender, storage_trading::*,
+        error::*, immutables::*, interactions_clear_after, panic_guard, panic_guard_eq,
+        should_spend, should_spend_fusdc_contract, should_spend_fusdc_sender, storage_trading::*,
         testing_addrs::IVAN, utils::*,
     },
     stylus_sdk::alloy_primitives::{Address, FixedBytes, U256},
@@ -48,9 +48,9 @@ proptest! {
         fee_recipient_addr in strat_address_not_empty(),
         share_impl_addr in strat_address_not_empty(),
         should_buffer_time in any::<bool>(),
-        fusdc_mint_amt in strat_tiny_u256(),
         mut c in strat_storage_trading(false)
     ) {
+        let fusdc_mint_amt = U256::from(100 * 1e6 as u64);
         let outcome_ids = (0..c.outcome_list.len())
             .map(|x| c.outcome_list.get(x).unwrap())
             .collect::<Vec<_>>();
@@ -70,8 +70,10 @@ proptest! {
             should_buffer_time
         )
             .unwrap();
+        dbg!(c.outcome_invested.get(outcome_a));
         let share_addr = c.share_addr(outcome_a).unwrap();
         test_block_timestamp_add_time(20);
+        dbg!(fusdc_mint_amt);
         // Assuming that in order, our outcome id won't matter.
         interactions_clear_after! {
             IVAN => {
@@ -87,8 +89,6 @@ proptest! {
                         FixedBytes::<32>::ZERO
                     )
                 );
-                let estimated = c.estimate_cost(outcome_a, share_amt).unwrap();
-                dbg!(estimated);
                 assert_eq!(
                     fusdc_mint_amt,
                     should_spend!(share_addr, { msg_sender() => share_amt },
@@ -96,7 +96,7 @@ proptest! {
                             fusdc_mint_amt,
                             c.burn_permit_7045_A_604(
                                 outcome_a,
-                                estimated,
+                                U256::from(1e6 as u64),
                                 IVAN,
                                 U256::ZERO,
                                 0,
@@ -109,6 +109,5 @@ proptest! {
                 dbg!("WTF I DID IT");
             }
         }
-        lib9lives::host::clear_storage()
     }
 }

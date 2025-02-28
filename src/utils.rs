@@ -4,7 +4,7 @@ use stylus_sdk::alloy_primitives::Address;
 
 // We need these for our testing helper functions.
 #[allow(unused)]
-use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256, I256};
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 use proptest::prelude::*;
@@ -130,6 +130,10 @@ pub enum Uintsize {
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub fn strat_tiny_u256() -> impl proptest::prelude::Strategy<Value = U256> {
     (0..1_000_000).prop_map(|x| U256::from(x))
+}
+
+pub fn strat_tiny_i256() -> impl proptest::prelude::Strategy<Value = I256> {
+    (-1_000_000..1_000_000).prop_map(|x: i32| I256::from_dec_str(&x.to_string()).unwrap())
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
