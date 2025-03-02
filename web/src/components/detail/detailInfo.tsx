@@ -56,7 +56,7 @@ export default function DetailInfo({ data }: { data: Campaign }) {
                 tradingAddr={data.poolAddress}
               />
             ) : null}
-            {data.settlement === "AI" ? (
+            {data.settlement === "AI" && !data.winner ? (
               <ResolveButton tradingAddr={data.poolAddress} />
             ) : null}
           </div>
