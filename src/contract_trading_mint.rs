@@ -165,7 +165,6 @@ impl StorageTrading {
         for i in 0..outcome_list_len {
             let o = self.outcome_list.get(i).unwrap();
             let outcome_shares = self.outcome_shares.get(o);
-            eprintln!("iteration: {i}, OUTCOME SHARES: {outcome_shares}, IS MINT?: {}", value.is_positive());
             let value_raw = value.unsigned_abs();
             self.outcome_shares.setter(o).set(c!(outcome_shares
                 .checked_add(value_raw)
@@ -179,7 +178,6 @@ impl StorageTrading {
             product = c!(product
                 .checked_mul(self.outcome_shares.get(o))
                 .ok_or(Error::CheckedMulOverflow));
-            eprintln!("INSIDE LOOP FINAL PRODUCT: {i}, product: {product}, IS MINT? {}", value.is_positive());
         }
         let shares_before = self.outcome_shares.get(outcome_id);
         product = c!(product

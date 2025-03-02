@@ -48,9 +48,9 @@ proptest! {
         fee_recipient_addr in strat_address_not_empty(),
         share_impl_addr in strat_address_not_empty(),
         should_buffer_time in any::<bool>(),
+        fusdc_mint_amt in strat_tiny_u256(),
         mut c in strat_storage_trading(false)
     ) {
-        let fusdc_mint_amt = U256::from(100 * 1e6 as u64);
         let outcome_ids = (0..c.outcome_list.len())
             .map(|x| c.outcome_list.get(x).unwrap())
             .collect::<Vec<_>>();
