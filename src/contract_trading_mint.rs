@@ -19,12 +19,6 @@ use crate::decimal::fusdc_decimal_to_u256;
 
 use rust_decimal::Decimal;
 
-#[cfg(target_arch = "wasm32")]
-use alloc::collections::HashMap;
-
-#[cfg(not(target_arch = "wasm32"))]
-use std::collections::HashMap;
-
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
@@ -159,22 +153,41 @@ impl StorageTrading {
         share_decimal_to_u256(c!(maths::dpm_shares(m_1, m_2, n_1, n_2, m)))
     }
 
-    fn internal_amm_buy(&mut self, outcome_id: FixedBytes<8>, value: I256) -> R<U256> {
+    /// Calculate the AMM amount of shares you would receive. Sets the
+    /// shares for each outcome in the outcomes list during its operation.
+    #[allow(unused)]
+    fn internal_amm_mint(&mut self, outcome_id: FixedBytes<8>, value: I256) -> R<U256> {
         let mut product = U256::from(1);
         let outcome_list_len = self.outcome_list.len();
+        /*
+        for i in range(len(self.shares)):
+            self.shares[i] += amount
+            product = c!(product.checked_mul(self.shares[i]).ok_or(Error::CheckedMulOverflow));
+            self.total_shares[i] += amount
+        */
         for i in 0..outcome_list_len {
             let o = self.outcome_list.get(i).unwrap();
             let outcome_shares = self.outcome_shares.get(o);
             let value_raw = value.unsigned_abs();
-            self.outcome_shares.setter(o).set(c!(outcome_shares
-                .checked_add(value_raw)
-                .ok_or(Error::CheckedAddOverflow)));
+            // It's okay for us to use wrapping math, since this should become
+            // positive in the end.
+            self.outcome_shares.setter(o).set(if value.is_negative() {
+                outcome_shares.wrapping_sub(value_raw)
+            } else {
+                c!(outcome_shares
+                    .checked_add(value_raw)
+                    .ok_or(Error::CheckedAddOverflow))
+            });
             let outcome_total_shares = self.outcome_total_shares.get(o);
             self.outcome_total_shares
                 .setter(o)
-                .set(c!(outcome_total_shares
-                    .checked_add(value_raw)
-                    .ok_or(Error::CheckedAddOverflow)));
+                .set(if value.is_negative() {
+                    outcome_total_shares.wrapping_sub(value_raw)
+                } else {
+                    c!(outcome_total_shares
+                        .checked_add(value_raw)
+                        .ok_or(Error::CheckedAddOverflow))
+                });
             product = c!(product
                 .checked_mul(self.outcome_shares.get(o))
                 .ok_or(Error::CheckedMulOverflow));
@@ -191,85 +204,10 @@ impl StorageTrading {
             .ok_or(Error::CheckedPowOverflow)?
             .checked_div(product)
             .ok_or(Error::CheckedDivOverflow)?;
-        self.outcome_shares.setter(outcome_id).set(shares);
-        shares_before
-            .checked_sub(shares)
-            .ok_or(Error::CheckedSubOverflow)
-    }
 
-    fn internal_amm_sell(&mut self, outcome_id: FixedBytes<8>, value: I256) -> R<U256> {
-        let mut product = U256::from(1);
-        let outcome_list_len = self.outcome_list.len();
-        let mut outcome_shares_shadow = HashMap::new();
-        let mut outcome_total_shares_shadow = HashMap::new();
-        for i in 0..outcome_list_len {
-            let o = self.outcome_list.get(i).unwrap();
-            let outcome_shares = self.outcome_shares.get(o);
-            let outcome_total_shares = self.outcome_total_shares.get(o);
-            // Value is negative, so adding it should be fine.
-            outcome_shares_shadow.insert(
-                &outcome_id,
-                c!(I256::try_from(outcome_shares).map_err(|_| Error::CheckedSubOverflow)) + value,
-            );
-            outcome_total_shares_shadow.insert(
-                &outcome_id,
-                c!(I256::try_from(outcome_total_shares).map_err(|_| Error::CheckedSubOverflow))
-                    + value,
-            );
-            product = c!(product
-                .checked_mul(self.outcome_shares.get(o))
-                .ok_or(Error::CheckedMulOverflow));
-        }
-        let shares_before = outcome_shares_shadow.get(&outcome_id).unwrap();
-        product = c!(product
-            .checked_div(self.outcome_shares.get(outcome_id))
-            .ok_or(Error::CheckedDivOverflow));
-        //self.shares[outcome] = (self.liquidity ** self.outcomes) / product
-        let shares = self
-            .seed_invested
-            .get()
-            .checked_pow(U256::from(self.outcome_list.len()))
-            .ok_or(Error::CheckedPowOverflow)?
-            .checked_div(product)
-            .ok_or(Error::CheckedDivOverflow)?;
-        // Start to compute the result, which we'll return later.
-        let result = c!(shares_before
-            .checked_sub(c!(I256::try_from(shares).map_err(|_| Error::CheckedConvOverflow)))
-            .ok_or(Error::CheckedSubOverflow));
-        // If the AMM is behaving correctly, this should not be negative at this stage.
-        for ((o, outcome_shares), (_, outcome_total_shares)) in outcome_shares_shadow
-            .into_iter()
-            .zip(outcome_total_shares_shadow)
-        {
-            if *o == outcome_id {
-                continue;
-            }
-            if outcome_shares.is_negative() || outcome_total_shares.is_negative() {
-                return Err(Error::CheckedSubOverflow);
-            }
-            self.outcome_shares
-                .setter(*o)
-                .set(outcome_shares.unsigned_abs());
-            self.outcome_total_shares
-                .setter(*o)
-                .set(outcome_total_shares.unsigned_abs());
-        }
         self.outcome_shares.setter(outcome_id).set(shares);
-        if result.is_negative() {
-            return Err(Error::CheckedSubOverflow)
-        }
-        Ok(result.unsigned_abs())
-    }
-
-    /// Calculate the AMM amount of shares you would receive. Sets the
-    /// shares for each outcome in the outcomes list during its operation.
-    #[allow(unused)]
-    fn internal_amm_adjust(&mut self, outcome_id: FixedBytes<8>, value: I256) -> R<U256> {
-        if value.is_positive() {
-            self.internal_amm_buy(outcome_id, value)
-        } else {
-            self.internal_amm_sell(outcome_id, value)
-        }
+        //self.user_shares = self.shares_before - self.shares[outcome]
+        Ok(shares_before.wrapping_sub(shares))
     }
 
     fn internal_adjust(
@@ -354,7 +292,7 @@ impl StorageTrading {
         // We take the difference between the shares that already existed, and ours
         // now, to get the correct number.
         #[cfg(not(feature = "trading-backend-dpm"))]
-        let shares = c!(self.internal_amm_adjust(outcome_id, value));
+        let shares = c!(self.internal_amm_mint(outcome_id, value));
         // If the amount is positive, then this is a mint event. We're going to
         // return them the shares.
         if value.is_positive() {
