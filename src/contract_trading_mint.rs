@@ -96,6 +96,22 @@ impl StorageTrading {
         }
     }
 
+    pub fn add_liquidity_permit(
+        &mut self,
+        fusdc: U256,
+        recipient: Address,
+        deadline: U256,
+        v: u8,
+        r: FixedBytes<32>,
+        s: FixedBytes<32>,
+    ) -> R<Vec<U256>> {
+        // Add liquidity to every outcome, AMM only.
+        #[cfg(feature = "trading-backend-dpm")]
+        return Err(Error::AMMOnly);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        self.internal_add_liquidity_permit(fusdc, recipient, deadline, v, r, s)
+    }
+
     #[allow(non_snake_case)]
     pub fn payoff_91_F_A_8_C_2_E(
         &mut self,
@@ -368,6 +384,80 @@ impl StorageTrading {
             let fusdc = self.global_invested.get() / self.outcome_total_shares.get(outcome_id);
             Ok(fusdc * share_bal)
         }
+    }
+
+    pub fn internal_add_liquidity_permit(
+        &mut self,
+        value: U256,
+        recipient: Address,
+        deadline: U256,
+        v: u8,
+        r: FixedBytes<32>,
+        s: FixedBytes<32>,
+    ) -> R<Vec<U256>> {
+        assert_or!(!value.is_zero(), Error::ZeroAmount);
+        if deadline.is_zero() {
+            c!(fusdc_call::take_from_sender(value));
+        } else {
+            c!(fusdc_call::take_from_sender_permit(
+                value, deadline, v, r, s
+            ))
+        }
+        let mut greatest_shares_id = self.outcome_list.get(0).unwrap();
+        let mut greatest_shares_amt = U256::ZERO;
+        let mut lowest_shares_id = self.outcome_list.get(0).unwrap();
+        let mut lowest_shares_amt = U256::MAX;
+        for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
+            let shares = self.outcome_shares.get(o);
+            if shares > greatest_shares_amt {
+                greatest_shares_id = o;
+                greatest_shares_amt = shares;
+            }
+            if shares < lowest_shares_amt {
+                lowest_shares_id = o;
+                lowest_shares_amt = shares;
+            }
+        }
+        let least_likely_price = self.internal_amm_price(greatest_shares_id)?;
+        let most_likely_price = self.internal_amm_price(lowest_shares_id)?;
+        for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
+            let x = self.outcome_shares.get(o);
+            self.outcome_shares
+                .setter(o)
+                .set(c!(x.checked_add(x).ok_or(Error::CheckedAddOverflow)));
+            let x = self.outcome_total_shares.get(o);
+            self.outcome_total_shares
+                .setter(o)
+                .set(c!(x.checked_add(x).ok_or(Error::CheckedAddOverflow)));
+        }
+        //self.shares[most_likely] = self.shares[least_likely]*self.outcome_prices[least_likely]/self.outcome_prices[most_likely]
+        {
+            let x = self
+                .outcome_shares
+                .get(greatest_shares_id)
+                .checked_mul(
+                    least_likely_price
+                        .checked_div(most_likely_price)
+                        .ok_or(Error::CheckedDivOverflow)?,
+                )
+                .ok_or(Error::CheckedMulOverflow)?;
+            self.outcome_shares.setter(lowest_shares_id).set(x);
+        }
+        let product = (0..self.outcome_list.len())
+            .map(|x| self.outcome_shares.get(self.outcome_list.get(x).unwrap()))
+            .try_fold(U256::ZERO, |acc, x| {
+                acc.checked_mul(x).ok_or(Error::CheckedMulOverflow)
+            })?;
+        self.seed_invested
+            .set(maths::rooti(product, self.outcome_list.len() as u32));
+        (0..self.outcome_list.len())
+            .map(|o| {
+                let o = self.outcome_list.get(o).unwrap();
+                let shares = self.outcome_shares.get(o);
+                // TODO send shares.
+                Ok(shares)
+            })
+            .collect::<Result<Vec<_>, _>>()
     }
 }
 
