@@ -70,10 +70,8 @@ proptest! {
             should_buffer_time
         )
             .unwrap();
-        dbg!(c.outcome_invested.get(outcome_a));
         let share_addr = c.share_addr(outcome_a).unwrap();
         test_block_timestamp_add_time(20);
-        dbg!(fusdc_mint_amt);
         // Assuming that in order, our outcome id won't matter.
         interactions_clear_after! {
             IVAN => {
@@ -96,7 +94,7 @@ proptest! {
                             fusdc_mint_amt,
                             c.burn_permit_7045_A_604(
                                 outcome_a,
-                                U256::from(1e6 as u64),
+                                fusdc_mint_amt,
                                 IVAN,
                                 U256::ZERO,
                                 0,
@@ -106,7 +104,6 @@ proptest! {
                         ))
                     )
                 );
-                dbg!("WTF I DID IT");
             }
         }
     }

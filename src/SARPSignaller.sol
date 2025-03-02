@@ -3,11 +3,6 @@ pragma solidity 0.8.20;
 
 import "./IEvents.sol";
 
-interface IERC20 {
-    function transferFrom(address, address, uint256) external;
-    function transfer(address, uint256) external;
-}
-
 /**
  * @notice SARPSignaller is a on-chain system with a bond that allows a user to formally
  *         request conclusion of a market with SARP. This is done so as an alternative
@@ -16,7 +11,6 @@ interface IERC20 {
 contract SARPSignaller is IEvents {
     struct Ticket {
         address addr;
-        bool repaid;
     }
 
     mapping(uint256 => Ticket) public tickets;
@@ -25,11 +19,9 @@ contract SARPSignaller is IEvents {
     uint256 public feeCollection;
 
     address immutable SARP;
-    IERC20 immutable FUSDC;
 
-    constructor(address _sarp, IERC20 _fusdc) {
+    constructor(address _sarp) {
         SARP = _sarp;
-        FUSDC = _fusdc;
     }
 
     /**
@@ -50,8 +42,6 @@ contract SARPSignaller is IEvents {
      */
     function conclude(uint256 _ticket, bytes32 _note) external {
         require(msg.sender == SARP, "only sarp");
-        require(!tickets[_ticket].repaid, "already repaid");
-        tickets[_ticket].repaid = true;
         emit Concluded(_ticket, _note);
     }
 }

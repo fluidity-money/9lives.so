@@ -171,4 +171,4 @@ if __name__ == "__main__":
     print(market.total_shares)
     print(market.user_positions)
 
-    print("i hate you cunt", market.sell(outcome=0, amount=1))
+    print("market sell out", market.sell(outcome=0, amount=1))

@@ -470,6 +470,9 @@ pub enum Error {
 
     // Overflow when perfoming a checked negation.
     CheckedNegOverflow,
+
+    // Overflow took place when we tried to convert to a signed equivalent.
+    CheckedConvOverflow,
 }
 
 #[cfg(any(
