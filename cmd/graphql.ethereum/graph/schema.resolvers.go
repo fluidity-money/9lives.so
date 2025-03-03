@@ -681,7 +681,7 @@ campaign_investments AS (
     SELECT
         campaign_id,
         JSON_AGG(
-            JSON_BUILD_OBJECT('id', CONCAT('0x', outcome_id), 'usdc', sum_from_amount, 'share', sum_from_amount)
+            JSON_BUILD_OBJECT('id', CONCAT('0x', outcome_id), 'usdc', sum_from_amount, 'share', sum_to_amount)
         ) AS investment_amounts,
         SUM(summed_amounts.sum_from_amount) AS total_volume
     FROM
