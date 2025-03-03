@@ -46,7 +46,7 @@ export default function ProposeOutcome({
     if (!action) return;
     try {
       setInAction(true);
-      const txHash = await action(selectedOutcome, account);
+      const txHash = await action(selectedOutcome, account, tradingAddr);
       setTxHash(txHash);
       setIsProposed(true);
     } finally {
