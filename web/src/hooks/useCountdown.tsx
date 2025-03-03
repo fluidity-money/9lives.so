@@ -16,13 +16,16 @@ export function useCountdownDiff(leftSeconds?: number) {
   const [time, setTime] = useState("Loading...");
   useEffect(() => {
     const timer = setInterval(() => {
-      leftSeconds && set_leftSeconds((ls) => (ls ? ls - 1 : leftSeconds - 1));
+      leftSeconds !== undefined &&
+        set_leftSeconds((ls) => (ls ? ls - 1 : leftSeconds - 1));
     }, 1000);
     return () => clearInterval(timer);
   }, [leftSeconds]);
 
   useEffect(() => {
-    _leftSeconds && setTime(calcSecondsLeft(_leftSeconds).full);
+    if (Number(_leftSeconds) <= 0) {
+      setTime("Ended");
+    } else if (_leftSeconds) setTime(calcSecondsLeft(_leftSeconds).full);
   }, [_leftSeconds]);
 
   return time;
