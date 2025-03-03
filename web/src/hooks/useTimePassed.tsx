@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 export default function useTimePassed(endTime: number) {
   const [timeLeft, setTimeLeft] = useState(calcTimePassed(endTime).text);
   useEffect(() => {
-    const { text, unit } = calcTimePassed(endTime);
     const timer = setInterval(() => {
-      setTimeLeft(text);
-    }, unit);
+      setTimeLeft(calcTimePassed(endTime).text);
+    }, 1000);
     return () => clearInterval(timer);
   }, [endTime]);
   return timeLeft;
