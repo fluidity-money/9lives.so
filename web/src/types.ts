@@ -6,6 +6,7 @@ import {
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
+import formatFusdc from "./utils/formatFusdc";
 
 export interface CampaignFilters {
   category?: typeof config.categories;
@@ -160,12 +161,13 @@ export class ActionFromBuysAndSells implements Action {
       (this.campaignName = response.campaign_content.name),
       (this.timestamp = response.created_by),
       (this.campaignPic = response.campaign_content.picture),
-      (this.campaignVol = (response.total_volume / 1e6).toFixed(2)),
-      (this.actionValue = (
-        (response.from_symbol === "FUSDC"
+      (this.campaignVol = formatFusdc(response.total_volume + 2e6, 2)),
+      (this.actionValue = formatFusdc(
+        response.from_symbol === "FUSDC"
           ? response.from_amount
-          : response.to_amount) / 1e6
-      ).toFixed(2)),
+          : response.to_amount,
+        2,
+      )),
       (this.outcomeName = response.campaign_content.outcomes.find(
         (o) => o.identifier === `0x${response.outcome_id}`,
       )?.name);
