@@ -3,17 +3,14 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { prepareContractCall, sendTransaction } from "thirdweb";
 import { Account } from "thirdweb/wallets";
-import useConnectWallet from "./useConnectWallet";
 
 export default function useSarpSignaller(tradingAddr: `0x${string}`) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { connect } = useConnectWallet();
-  const request = async (account?: Account) =>
+  const request = async (account: Account) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account) return connect();
           setIsLoading(true);
           const requestTx = prepareContractCall({
             contract: config.contracts.sarpSignaller,
