@@ -25,15 +25,15 @@ const useClaim = ({
   const claim = async (
     account: Account,
     outcomes: Outcome[],
-    accountShare?: number,
+    accountShare?: string,
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!accountShare || isNaN(accountShare))
+          if (!accountShare || isNaN(Number(accountShare)))
             throw new Error("Invalid winning shares");
           const shares = toUnits(
-            accountShare.toString(),
+            accountShare,
             config.contracts.decimals.shares,
           );
           const shareContract = getContract({

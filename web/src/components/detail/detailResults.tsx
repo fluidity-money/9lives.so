@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import formatFusdc from "@/utils/formatFusdc";
-import useChances from "@/hooks/useChances";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
 
@@ -32,49 +31,45 @@ export default function DetailResults({ data }: DetailResultsProps) {
   const winner = data.outcomes.find(
     (item) => item.identifier === data.winner,
   )! as CampaignDetail["outcomes"][number];
-
+  const accountShares = positionData?.find(
+    (p) => p.id === data.winner,
+  )?.balance;
+  const totalSharesOfWinner =
+    data.investmentAmounts.find((i) => i.id === data.winner)?.share ?? 0;
+  const totalShares = data.investmentAmounts.reduce(
+    (acc, v) => acc + v.share,
+    0,
+  );
   const { claim } = useClaim({
     shareAddr: winner.share.address,
     tradingAddr: data.poolAddress,
     outcomeId: winner.identifier,
   });
-  const chances = useChances({
-    investmentAmounts: data.investmentAmounts,
-    totalVolume: data.totalVolume,
-    outcomeIds: data.outcomes.map((o) => o.identifier),
-  });
-  const winnerChance = chances.find((o) => o.id === winner.identifier)?.chance;
-  const winnerShares = data?.investmentAmounts.find(
-    (ia) => ia.id === winner.identifier,
-  )?.share;
-  const avgPrice =
-    Number(data.totalVolume ?? 2e6) / Number(winnerShares ?? 1e6);
-  const accountShares = positionData?.reduce((acc, item) => {
-    if (item.id === winner.identifier) {
-      acc += isNaN(Number(item.balance)) ? 0 : Number(item.balance);
-    }
-    return acc;
-  }, 0);
+  const totalVolumeOfWinner =
+    data.investmentAmounts.find((ia) => ia.id === data.winner)?.usdc ?? 0;
+  const winnerChance = (totalVolumeOfWinner / data.totalVolume) * 100;
+  const avgPrice = data.totalVolume / totalSharesOfWinner;
+  const userReward = accountShares ? +accountShares * avgPrice : 0;
   const rewardBreakdown = [
     {
       title: "Your Shares",
-      value: `${accountShares}`,
+      value: `${accountShares ?? 0}`,
     },
     {
       title: "Total Investment",
-      value: `$${formatFusdc(data.totalVolume)}`,
+      value: `$${formatFusdc(data.totalVolume, 2)}`,
     },
     {
       title: "Total Shares of The Winner",
-      value: formatFusdc(winnerShares ?? 0),
+      value: formatFusdc(totalSharesOfWinner, 2),
     },
     {
       title: "Avg. Price/Share",
-      value: `$${avgPrice.toFixed(3)}`,
+      value: `$${avgPrice.toFixed(2)}`,
     },
   ];
   const noClaim =
-    account && accountShares !== undefined && !(accountShares > 0);
+    account && accountShares !== undefined && !(Number(accountShares) > 0);
   async function handleClaim() {
     if (!account) return connect();
     try {
@@ -155,33 +150,29 @@ export default function DetailResults({ data }: DetailResultsProps) {
           <span className="font-chicago uppercase">Claimable Rewards</span>
           <div className="flex items-center gap-1">
             <span className="font-chicago text-2xl">
-              $
-              {account
-                ? accountShares
-                  ? (accountShares * avgPrice).toFixed(3)
-                  : 0
-                : "?"}
+              ${account ? userReward.toFixed(2) : "?"}
             </span>
             <Image src={SparkleImg} alt="" width={23} className="h-auto" />
           </div>
         </div>
       </div>
-      {minimized ? null : (
-        <div className="flex flex-col gap-4 bg-9gray p-5 text-xs shadow-9orderSummary">
-          <span className="font-chicago uppercase">Reward Breakdown</span>
-          <ul className="flex flex-col gap-1 text-gray-500">
-            {rewardBreakdown.map((item) => (
-              <li
-                className="flex items-center justify-between"
-                key={item.title}
-              >
-                <strong>{item.title}</strong>
-                <span>{item.value}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div
+        className={combineClass(
+          "flex-col gap-4 bg-9gray p-5 text-xs shadow-9orderSummary md:flex",
+          minimized && "hidden",
+        )}
+      >
+        <span className="font-chicago uppercase">Reward Breakdown</span>
+        <ul className="flex flex-col gap-1 text-gray-500">
+          {rewardBreakdown.map((item) => (
+            <li className="flex items-center justify-between" key={item.title}>
+              <strong>{item.title}</strong>
+              <span>{item.value}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <Button
         disabled={noClaim || isConnecting || isClaiming}
         title={
