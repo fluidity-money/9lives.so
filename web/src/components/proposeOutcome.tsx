@@ -169,22 +169,15 @@ export default function ProposeOutcome({
             </Field>
           </div>
         ) : null}
-        {infraState && infraState > InfraMarketState.Predicting ? (
+        <div className="flex flex-col gap-1">
           <p className="text-center text-xs font-bold text-9black">
-            Go back to detail page of the campaign and claim your rewards.
+            Your proposed outcome will be utilised in 9lives&apos; oracle.
           </p>
-        ) : (
-          <div className="flex flex-col gap-1">
-            <p className="text-center text-xs font-bold text-9black">
-              Your proposed outcome will be utilised in 9lives&apos; oracle.
-            </p>
-            <p className="text-center text-xs text-9black/50">
-              By participating in this outcome proposal, you agree to lock-up
-              your staked $ARB tokens until 1 week after the market&apos;s end
-              date.
-            </p>
-          </div>
-        )}
+          <p className="text-center text-xs text-9black/50">
+            By participating in this outcome proposal, you agree to lock-up your
+            staked $ARB tokens until 1 week after the market&apos;s end date.
+          </p>
+        </div>
         {infraState === InfraMarketState.Predicting ? (
           <p className="inline-block bg-9yellow px-5 py-1 text-xs font-bold">
             Participating in more outcome proposals result in higher potential

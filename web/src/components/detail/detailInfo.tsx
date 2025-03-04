@@ -48,7 +48,7 @@ export default function DetailInfo({ data }: { data: Campaign }) {
           </div>
           <div className="flex items-center gap-4">
             <h5 className="font-chicago text-sm">Links & Resources</h5>{" "}
-            {data.settlement === "ORACLE" ? (
+            {data.settlement === "ORACLE" && !data.winner ? (
               <ProposeOutcomeButton
                 title={data.name}
                 ending={data.ending}
