@@ -612,6 +612,58 @@ async fn main() -> Result<(), Error> {
     linker.func_wrap("vm_hooks", "block_timestamp", |_: Caller<_>| -> i64 {
         *TIMESTAMP.get().unwrap()
     })?;
+    linker.func_wrap("vm_hooks", "block_number", |_: Caller<_>| -> u64 {
+        *BLOCK.get().unwrap()
+    })?;
+    linker.func_wrap("vm_hooks", "block_basefee", |_: Caller<_>, ptr: i32| {})?;
+    linker.func_wrap(
+        "vm_hooks",
+        "block_coinbase",
+        |_: Caller<_>, dst_ptr: i32| {},
+    )?;
+    linker.func_wrap("vm_hooks", "block_gas_limit", |_: Caller<_>| -> u64 { 0 })?;
+    linker.func_wrap("vm_hooks", "evm_gas_left", |_: Caller<_>| -> u64 {
+        u64::MAX
+    })?;
+    linker.func_wrap("vm_hooks", "evm_ink_left", |_: Caller<_>| -> u64 {
+        u64::MAX
+    })?;
+    linker.func_wrap(
+        "vm_hooks",
+        "account_balance",
+        |_: Caller<_>, addr_ptr: i32, dest_ptr: i32| {},
+    )?;
+    linker.func_wrap(
+        "vm_hooks",
+        "account_code",
+        |_: Caller<_>, address_ptr: i32, offset: u32, size: u32, dest_ptr: i32| -> u32 { 0 },
+    )?;
+    linker.func_wrap(
+        "vm_hooks",
+        "account_code_size",
+        |_: Caller<_>, addr_ptr: i32| -> u32 { 0 },
+    )?;
+    linker.func_wrap(
+        "vm_hooks",
+        "account_codehash",
+        |_: Caller<_>, addr_ptr: i32, dest_ptr: i32| {},
+    )?;
+    linker.func_wrap("vm_hooks", "tx_ink_price", |_: Caller<_>| -> u32 { 0 })?;
+    linker.func_wrap("vm_hooks", "tx_gas_price", |_: Caller<_>, dst_ptr: i32| {})?;
+    linker.func_wrap(
+        "vm_hooks",
+        "tx_origin",
+        |mut caller: Caller<_>, ptr: i32| {
+            let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+            unsafe {
+                std::ptr::copy(
+                    SENDER.get().unwrap().as_slice().as_ptr(),
+                    mem.data_ptr(&mut caller).offset(ptr as isize),
+                    20,
+                );
+            }
+        },
+    )?;
     linker.func_wrap(
         "vm_hooks",
         "delegate_call_contract",
