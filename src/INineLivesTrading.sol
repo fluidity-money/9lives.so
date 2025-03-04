@@ -48,11 +48,7 @@ interface INineLivesTrading {
     function burnPermit7045A604(
         bytes8 outcome,
         uint256 fusdcAmount,
-        address recipient,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
+        address recipient
     ) external returns (uint256);
 
     /**

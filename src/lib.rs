@@ -2,6 +2,8 @@
 
 #[macro_use]
 pub mod error;
+
+#[cfg(not(target_arch = "wasm32"))]
 pub use error::panic_guard;
 
 pub mod decimal;

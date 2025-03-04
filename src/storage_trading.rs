@@ -63,7 +63,7 @@ pub struct StorageTrading {
     pub outcome_total_shares: StorageMap<FixedBytes<8>, StorageU256>,
 
     /// Amount that was invested to seed this pool. Used as liquidity by the AMM.
-    pub seed_invested: StorageU256,
+    pub amm_liquidity: StorageU256,
 
     /// Global amount invested to this pool of the native asset.
     pub global_invested: StorageU256,
@@ -86,15 +86,15 @@ pub struct StorageTrading {
     /// it's concluded, as well as set the fee for SPN.
     pub operator: StorageAddress,
 
-    /// The current mint fee for the creator.
+    /// The current mint fee for the creator. Defaults to 2 for 0.2%.
     pub fee_creator: StorageU256,
 
-    /// The current mint fee for the operator.
-    pub fee_operator: StorageU256,
-
     /// The current mint fee for position holders (users) who participated
-    /// in the campaign.
+    /// in the campaign. Defaults to 8, for 0.8%.
     pub fee_minter: StorageU256,
+
+    /// The fee for LPs to the market. Defaults to 3, for 0.2%.
+    pub fee_lp: StorageU256,
 }
 
 #[cfg(feature = "testing")]
@@ -120,7 +120,7 @@ impl std::fmt::Debug for StorageTrading {
             self.oracle,
             self.share_impl,
             self.global_shares,
-            self.seed_invested,
+            self.amm_liquidity,
             self.global_invested,
             self.winner,
             self.should_buffer_time
@@ -156,7 +156,7 @@ pub fn strat_storage_trading(
         any::<bool>(),
     )
         .prop_flat_map(
-            move |(oracle, share_impl, seed_invested, outcomes, should_buffer_time)| {
+            move |(oracle, share_impl, amm_liquidity, outcomes, should_buffer_time)| {
                 (
                     strat_large_u256().no_shrink(),
                     any::<bool>(),
@@ -190,7 +190,7 @@ pub fn strat_storage_trading(
                                 time_ending,
                                 oracle,
                                 share_impl,
-                                seed_invested,
+                                amm_liquidity,
                                 should_buffer_time
                             });
                             // Set this using the outcomes vec so we can be internally consistent.

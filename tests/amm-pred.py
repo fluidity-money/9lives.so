@@ -154,7 +154,7 @@ class PredMarket:
 
 if __name__ == "__main__":
     # Example usage
-    market = PredMarket(liquidity=2, outcomes=2)
+    market = PredMarket(liquidity=9, outcomes=6)
 
     # Initial prices
     print("Initial Shares:", market.shares)
@@ -171,4 +171,19 @@ if __name__ == "__main__":
     print(market.total_shares)
     print(market.user_positions)
 
-    print("market sell out", market.sell(outcome=0, amount=1))
+    print("All shares:", market.shares)
+    market.add_liquidity(1000)
+    print("Shares after adding liquidity:", market.shares)
+    print("Outcome Prices after adding liquidity:", market.get_outcome_prices())
+    print("Liquidity:", market.total_liquidity)
+    print("Shares purchased by the user:", market.mintusershares(outcome=0))
+    print("Liquidity shares minted:", market.mintliquidityshares())
+    print(market.total_shares)
+
+    # Remove liquidity
+    market.remove_liquidity(500)
+    print("Shares after removing liquidity:", market.shares)
+    print("Outcome Prices after removing liquidity:", market.get_outcome_prices())
+    print("Liquidity:", market.total_liquidity)
+    print(market.total_shares)
+    print(market.liquidity)

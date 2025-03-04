@@ -87,7 +87,7 @@ contract BuyHelper {
         return _mint(_id, fusdc, _outcome, _minShareOut);
     }
 
-    function mintSetupInfra(
+    function mintSetupAI(
         FactoryOutcome[] calldata _outcomes,
         uint64 _timeEnding,
         bytes32 _documentation,
@@ -97,14 +97,13 @@ contract BuyHelper {
         uint256 _minShareOut,
         uint256 _amount
     ) external payable returns (uint256) {
-        // Sets up the contract given using the infra market, deducts fees
+        // Sets up the contract given using the AI resolver, deducts fees
         // needed, then tries to mint shares the normal way.
         uint256 fusdc = _swapInAsset(address(_asset), _amount);
-        uint256 incentiveAmt = (_outcomes.length * 1e6) + INCENTIVE_INFRA_MARKET;
+        uint256 incentiveAmt = (_outcomes.length * 1e6);
         require(fusdc > incentiveAmt);
-        _asset.approve(address(HELPER), incentiveAmt);
-        HELPER.createWithInfraMarket(_outcomes, _timeEnding, _documentation, _feeRecipient);
         fusdc -= incentiveAmt;
+        HELPER.createWithAI(_outcomes, _timeEnding, _documentation, _feeRecipient);
         return _mint(_outcome, fusdc, _outcome, _minShareOut);
     }
 }

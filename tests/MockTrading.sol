@@ -74,14 +74,11 @@ contract MockTrading is INineLivesTrading {
     }
 
     function burnPermit7045A604(
-        bytes8 outcome,
-        uint256 fusdcAmount,
-        address recipient,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
+        bytes8 /* outcome */,
+        uint256 /* fusdcAmount */,
+        address /* recipient */
     ) external returns (uint256) {
+        ++counter_;
         return 0;
     }
 
@@ -120,9 +117,9 @@ contract MockTrading is INineLivesTrading {
     }
 
     function payoffQuote1FA6DC28(
-        bytes8 outcome,
+        bytes8 /* outcome */,
         uint256 amount
-    ) external view returns (uint256) {
+    ) external pure returns (uint256) {
         return amount;
     }
 

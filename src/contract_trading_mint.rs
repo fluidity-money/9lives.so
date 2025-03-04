@@ -19,6 +19,9 @@ use crate::decimal::fusdc_decimal_to_u256;
 
 use rust_decimal::Decimal;
 
+#[cfg(target_arch = "wasm32")]
+use alloc::vec::Vec;
+
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
@@ -104,12 +107,36 @@ impl StorageTrading {
         v: u8,
         r: FixedBytes<32>,
         s: FixedBytes<32>,
-    ) -> R<Vec<U256>> {
+    ) -> R<Vec<(FixedBytes<8>, U256)>> {
+        assert_or!(!fusdc.is_zero(), Error::ZeroAmount);
+        if deadline.is_zero() {
+            c!(fusdc_call::take_from_sender(fusdc));
+        } else {
+            c!(fusdc_call::take_from_sender_permit(
+                fusdc, deadline, v, r, s
+            ))
+        }
         // Add liquidity to every outcome, AMM only.
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        self.internal_add_liquidity_permit(fusdc, recipient, deadline, v, r, s)
+        {
+            let shares = self.internal_add_liquidity_permit(fusdc)?;
+            for (outcome_id, value) in shares.iter() {
+                // Send the user their shares from each outcome they LP'd.
+                c!(share_call::mint(
+                    recipient,
+                    proxy::get_share_addr(
+                        self.factory_addr.get(),
+                        contract_address(), // Address of this contract, the Trading contract.
+                        self.share_impl.get(),
+                        *outcome_id,
+                    ),
+                    *value
+                ));
+            }
+            Ok(shares)
+        }
     }
 
     #[allow(non_snake_case)]
@@ -214,13 +241,12 @@ impl StorageTrading {
             .ok_or(Error::CheckedDivOverflow));
         //self.shares[outcome] = (self.liquidity ** self.outcomes) / product
         let shares = self
-            .seed_invested
+            .amm_liquidity
             .get()
             .checked_pow(U256::from(self.outcome_list.len()))
             .ok_or(Error::CheckedPowOverflow)?
             .checked_div(product)
             .ok_or(Error::CheckedDivOverflow)?;
-
         self.outcome_shares.setter(outcome_id).set(shares);
         //self.user_shares = self.shares_before - self.shares[outcome]
         Ok(shares_before.wrapping_sub(shares))
@@ -386,29 +412,18 @@ impl StorageTrading {
         }
     }
 
-    pub fn internal_add_liquidity_permit(
-        &mut self,
-        value: U256,
-        recipient: Address,
-        deadline: U256,
-        v: u8,
-        r: FixedBytes<32>,
-        s: FixedBytes<32>,
-    ) -> R<Vec<U256>> {
-        assert_or!(!value.is_zero(), Error::ZeroAmount);
-        if deadline.is_zero() {
-            c!(fusdc_call::take_from_sender(value));
-        } else {
-            c!(fusdc_call::take_from_sender_permit(
-                value, deadline, v, r, s
-            ))
-        }
+    pub fn internal_add_liquidity_permit(&mut self, value: U256) -> R<Vec<(FixedBytes<8>, U256)>> {
         let mut greatest_shares_id = self.outcome_list.get(0).unwrap();
         let mut greatest_shares_amt = U256::ZERO;
         let mut lowest_shares_id = self.outcome_list.get(0).unwrap();
         let mut lowest_shares_amt = U256::MAX;
         for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
-            let shares = self.outcome_shares.get(o);
+            let shares = self
+                .outcome_shares
+                .get(o)
+                .checked_add(value)
+                .ok_or(Error::CheckedAddOverflow)?;
+            self.outcome_shares.setter(o).set(shares);
             if shares > greatest_shares_amt {
                 greatest_shares_id = o;
                 greatest_shares_amt = shares;
@@ -448,16 +463,57 @@ impl StorageTrading {
             .try_fold(U256::ZERO, |acc, x| {
                 acc.checked_mul(x).ok_or(Error::CheckedMulOverflow)
             })?;
-        self.seed_invested
+        self.amm_liquidity
             .set(maths::rooti(product, self.outcome_list.len() as u32));
+        // Start to send out the shares that we minted, as well as return the identifiers of what we sent.
         (0..self.outcome_list.len())
             .map(|o| {
-                let o = self.outcome_list.get(o).unwrap();
-                let shares = self.outcome_shares.get(o);
-                // TODO send shares.
-                Ok(shares)
+                let outcome_id = self.outcome_list.get(o).unwrap();
+                Ok((outcome_id, value))
             })
             .collect::<Result<Vec<_>, _>>()
+    }
+
+    pub fn internal_remove_liquidity(
+        &mut self,
+        value: U256,
+        recipient: Address,
+    ) -> R<Vec<(FixedBytes<8>, U256)>> {
+        // The most likely is the outcome with the least amount of shares.
+        let mut most_likely_shares_id = self.outcome_list.get(0).unwrap();
+        let mut most_likely_shares_amt = U256::ZERO;
+        // The least likely is the outcome with the most amount of shares.
+        let mut least_likely_shares_id = self.outcome_list.get(0).unwrap();
+        let mut least_likely_shares_amt = U256::MAX;
+        for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
+            let shares = self.outcome_shares.get(o);
+            if shares > least_likely_shares_amt {
+                least_likely_shares_id = o;
+                most_likely_shares_amt = shares;
+            }
+            if shares < most_likely_shares_amt {
+                most_likely_shares_id = o;
+                most_likely_shares_amt = shares;
+            }
+        }
+        let liquidity_shares_val = (self.amm_liquidity.get() / least_likely_shares_amt) * value;
+        let most_likely_price = c!(self.internal_amm_price(most_likely_shares_id));
+        for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
+            if o != most_likely_shares_id {
+                self.outcome_shares.setter(o).set(
+                    (most_likely_shares_amt * most_likely_price) / c!(self.internal_amm_price(o)),
+                );
+            }
+        }
+        let product = (0..self.outcome_list.len()).fold(U256::from(1), |product, x| {
+            product
+                * self
+                    .outcome_shares
+                    .get(self.outcome_list.get(x).unwrap())
+                    .unwrap()
+        });
+        self.amm_liquidity
+            .set(maths::rooti(product, self.outcome_list.len() as u32));
     }
 }
 
