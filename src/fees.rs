@@ -5,7 +5,7 @@ use stylus_sdk::alloy_primitives::U256;
 pub const FEE_SCALING: U256 = U256::from_limbs([1000, 0, 0, 0]);
 
 // 0.2% of all trading to buy shares goes to the creator of the contract.
-pub const FEE_CREATOR_MINT_PCT: U256 = U256::from_limbs([2, 0, 0, 0]);
+pub const DEFAULT_FEE_CREATOR_MINT_PCT: U256 = U256::from_limbs([2, 0, 0, 0]);
 
 // 0.8% of all trading to buy shares goes to SPN.
 pub const FEE_SPN_MINT_PCT: U256 = U256::from_limbs([8, 0, 0, 0]);

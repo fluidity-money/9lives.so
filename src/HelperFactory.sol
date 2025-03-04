@@ -49,7 +49,10 @@ contract HelperFactory {
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
         bytes32 documentation,
-        address feeRecipient
+        address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter
     ) internal returns (address) {
         require(timeEnding > block.timestamp, "time ending before timestamp");
         return FACTORY.newTrading09393DA8(
@@ -58,7 +61,10 @@ contract HelperFactory {
             uint64(block.timestamp + 1),
             timeEnding,
             documentation,
-            feeRecipient
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
         );
     }
 
@@ -70,7 +76,10 @@ contract HelperFactory {
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
         bytes32 documentation,
-        address feeRecipient
+        address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter
     ) public returns (address tradingAddr) {
         // We need to take the base incentive amount for transfers.
         FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6) + INCENTIVE_INFRA_MARKET);
@@ -79,7 +88,10 @@ contract HelperFactory {
             outcomes,
             timeEnding,
             documentation,
-            feeRecipient
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
         );
     }
 
@@ -90,6 +102,9 @@ contract HelperFactory {
         uint64 timeEnding,
         bytes32 documentation,
         address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter,
         uint256 deadline,
         uint8 v,
         bytes32 r,
@@ -98,14 +113,25 @@ contract HelperFactory {
         // We need to take some money from the sender for all the setup costs we're expecting.
         // This should be the (number of outcomes * 1e6) + (2.2 * 1e6)
         FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6) + 2200000, deadline, v, r, s);
-        return createWithInfraMarket(outcomes, timeEnding, documentation, feeRecipient);
+        return createWithInfraMarket(
+            outcomes,
+            timeEnding,
+            documentation,
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
+        );
     }
 
     function createWithBeautyContest(
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
         bytes32 documentation,
-        address feeRecipient
+        address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter
     ) public returns (address tradingAddr) {
         // No extra fluff work is needed to support this.
         FUSDC.transferFrom(
@@ -113,7 +139,16 @@ contract HelperFactory {
             address(this),
             (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
         );
-        return create(BEAUTY_CONTEST, outcomes, timeEnding, documentation, feeRecipient);
+        return create(
+            BEAUTY_CONTEST,
+            outcomes,
+            timeEnding,
+            documentation,
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
+        );
     }
 
     function createWithBeautyContestPermit(
@@ -121,6 +156,9 @@ contract HelperFactory {
         uint64 timeEnding,
         bytes32 documentation,
         address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter,
         uint256 deadline,
         uint8 v,
         bytes32 r,
@@ -135,14 +173,25 @@ contract HelperFactory {
             r,
             s
         );
-        return createWithBeautyContest(outcomes, timeEnding, documentation, feeRecipient);
+        return createWithBeautyContest(
+            outcomes,
+            timeEnding,
+            documentation,
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
+        );
     }
 
     function createWithAI(
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
         bytes32 documentation,
-        address feeRecipient
+        address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter
     ) public returns (address tradingAddr) {
         // No extra fluff work is needed to support this.
         FUSDC.transferFrom(
@@ -150,7 +199,16 @@ contract HelperFactory {
             address(this),
             (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
         );
-        return create(SARP_AI, outcomes, timeEnding, documentation, feeRecipient);
+        return create(
+            SARP_AI,
+            outcomes,
+            timeEnding,
+            documentation,
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
+        );
     }
 
     function createWithAIPermit(
@@ -158,6 +216,9 @@ contract HelperFactory {
         uint64 timeEnding,
         bytes32 documentation,
         address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter,
         uint256 deadline,
         uint8 v,
         bytes32 r,
@@ -172,7 +233,15 @@ contract HelperFactory {
             r,
             s
         );
-        return createWithAI(outcomes, timeEnding, documentation, feeRecipient);
+        return createWithAI(
+            outcomes,
+            timeEnding,
+            documentation,
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
+        );
     }
 
     /// @dev It doesn't make sense to use this. It's better to do the
@@ -183,14 +252,26 @@ contract HelperFactory {
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
         bytes32 documentation,
-        address feeRecipient
+        address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter
     ) public returns (address tradingAddr) {
         FUSDC.transferFrom(
             msg.sender,
             address(this),
             (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
         );
-        return create(oracle, outcomes, timeEnding, documentation, feeRecipient);
+        return create(
+            oracle,
+            outcomes,
+            timeEnding,
+            documentation,
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
+        );
     }
 
     /// @dev Read the developer comment for createWithCustom.
@@ -200,6 +281,9 @@ contract HelperFactory {
         uint64 timeEnding,
         bytes32 documentation,
         address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter,
         uint256 deadline,
         uint8 v,
         bytes32 r,
@@ -214,6 +298,15 @@ contract HelperFactory {
             r,
             s
         );
-        return createWithCustom(oracle, outcomes, timeEnding, documentation, feeRecipient);
+        return createWithCustom(
+            oracle,
+            outcomes,
+            timeEnding,
+            documentation,
+            feeRecipient,
+            feeCreator,
+            feeLp,
+            feeMinter
+        );
     }
 }

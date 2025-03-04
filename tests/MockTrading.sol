@@ -31,11 +31,14 @@ contract MockTrading is INineLivesTrading {
     function ctor(
         bytes8[] memory outcomes,
         address _oracle,
-        uint256 _timeStart,
-        uint256 _timeEnding,
+        uint64 _timeStart,
+        uint64 _timeEnding,
         address _feeRecipient,
         address /* _shareImpl */,
-        bool /* _shouldExtend */
+        bool /* _shouldExtend */,
+        uint64 /* _feeCreator */,
+        uint64 /* _feeMinter */,
+        uint64 /* _feeLp */
     ) external {
         require(timeStart_ == 0, "already created");
         // We track some things to set up to prevent abuse in testing, but we don't
@@ -130,6 +133,18 @@ contract MockTrading is INineLivesTrading {
         bytes8 winner
     ) {
         return (100, 10_000, 19291, bytes8(uint64(1)));
+    }
+
+    function escape() external {
+        ++counter_;
+    }
+
+    function timeEnding() external pure returns (uint64) {
+        return 0;
+    }
+
+    function timeStart() external pure returns (uint64) {
+        return 0;
     }
 
     function isDpm() external pure returns (bool) {

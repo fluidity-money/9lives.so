@@ -92,6 +92,9 @@ contract BuyHelper {
         uint64 _timeEnding,
         bytes32 _documentation,
         address _feeRecipient,
+        uint64 _feeCreator,
+        uint64 _feeLp,
+        uint64 _feeMinter,
         IERC20 _asset,
         bytes8 _outcome,
         uint256 _minShareOut,
@@ -103,7 +106,15 @@ contract BuyHelper {
         uint256 incentiveAmt = (_outcomes.length * 1e6);
         require(fusdc > incentiveAmt);
         fusdc -= incentiveAmt;
-        HELPER.createWithAI(_outcomes, _timeEnding, _documentation, _feeRecipient);
+        HELPER.createWithAI(
+            _outcomes,
+            _timeEnding,
+            _documentation,
+            _feeRecipient,
+            _feeCreator,
+            _feeLp,
+            _feeMinter
+        );
         return _mint(_outcome, fusdc, _outcome, _minShareOut);
     }
 }

@@ -31,6 +31,9 @@ impl StorageFactory {
         time_ending: u64,
         documentation: FixedBytes<32>,
         fee_recipient: Address,
+        fee_creator: u64,
+        fee_lp: u64,
+        fee_minter: u64,
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
@@ -136,6 +139,9 @@ impl StorageFactory {
             fee_recipient,
             self.share_impl.get(),
             false, // By default, this is the behaviour right now. (TODO)
+            fee_creator,
+            fee_lp,
+            fee_minter,
         )?;
 
         // If the infra market wasn't chosen, then we assume that the caller has done

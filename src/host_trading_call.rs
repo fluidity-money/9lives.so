@@ -7,7 +7,7 @@ use crate::error::Error;
 
 #[allow(clippy::too_many_arguments)]
 pub fn ctor(
-    _contract: Address,
+    _addr: Address,
     _outcomes: Vec<FixedBytes<8>>,
     _oracle: Address,
     _time_start: u64,
@@ -15,6 +15,9 @@ pub fn ctor(
     _fee_recipient: Address,
     _share_impl: Address,
     _should_buffer_time: bool,
+    _fee_creator: u64,
+    _fee_lp: u64,
+    _fee_minter: u64,
 ) -> Result<(), Error> {
     Ok(())
 }

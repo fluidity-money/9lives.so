@@ -473,6 +473,9 @@ pub enum Error {
 
     // Overflow took place when we tried to convert to a signed equivalent.
     CheckedConvOverflow,
+
+    // Creator tried to provide more than a 10% fee.
+    ExcessiveFee,
 }
 
 #[cfg(any(

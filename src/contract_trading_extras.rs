@@ -31,6 +31,9 @@ impl StorageTrading {
         fee_recipient: Address,
         share_impl: Address,
         should_buffer_time: bool,
+        fee_creator: u64,
+        fee_minter: u64,
+        fee_lp: u64,
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // Make sure that the user hasn't given us any zero values, or the end
@@ -38,6 +41,11 @@ impl StorageTrading {
         assert_or!(
             time_ending >= block_timestamp() && !share_impl.is_zero(),
             Error::BadTradingCtor
+        );
+        // We don't allow the fees to exceed 10% (100).
+        assert_or!(
+            fee_creator < 100 && fee_minter < 100 && fee_lp < 100,
+            Error::ExcessiveFee
         );
         // We assume that the caller already supplied the liquidity to
         // us, and we set them as the factory.
@@ -94,6 +102,9 @@ impl StorageTrading {
         self.time_ending.set(U64::from(time_ending));
         self.oracle.set(oracle);
         self.should_buffer_time.set(should_buffer_time);
+        self.fee_creator.set(U256::from(fee_creator));
+        self.fee_minter.set(U256::from(fee_minter));
+        self.fee_lp.set(U256::from(fee_lp));
         Ok(())
     }
 
@@ -150,6 +161,13 @@ impl StorageTrading {
             self.global_invested.get(),
             self.winner.get(),
         ))
+    }
+
+    pub fn escape(&mut self) -> R<()> {
+        let oracle_addr = self.oracle.get();
+        assert_or!(msg_sender() == oracle_addr, Error::NotOracle);
+        self.is_escaped.set(true);
+        Ok(())
     }
 
     pub fn global_shares(&self) -> R<U256> {
@@ -218,6 +236,9 @@ fn test_cant_recreate() {
             Address::ZERO,
             crate::testing_addrs::SHARE,
             false,
+            0,
+            0,
+            0,
         )
         .unwrap();
         assert_eq!(
@@ -233,6 +254,9 @@ fn test_cant_recreate() {
                 Address::ZERO,
                 Address::ZERO,
                 false,
+                0,
+                0,
+                0,
             )
             .unwrap_err()
         )

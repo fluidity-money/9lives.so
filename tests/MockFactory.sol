@@ -30,14 +30,28 @@ contract MockFactory is INineLivesFactory {
         uint64 _timeStart,
         uint64 _timeEnding,
         bytes32 /* _documentation */,
-        address _feeRecipient
+        address _feeRecipient,
+        uint64 /* feeCreator */,
+        uint64 /* feeLp */,
+        uint64 /* feeMinter */
     ) external returns (address) {
         MockTrading t = new MockTrading(ADDR_FUSDC, ADDR_SHARE);
         bytes8[] memory outcomes = new bytes8[](_outcomes.length);
         for (uint i = 0; i < _outcomes.length; ++i) {
             outcomes[i] = _outcomes[i].identifier;
         }
-        t.ctor(outcomes, _oracle,_timeStart, _timeEnding, _feeRecipient, address(0), false);
+        t.ctor(
+            outcomes,
+            _oracle,
+            _timeStart,
+            _timeEnding,
+            _feeRecipient,
+            address(0),
+            false,
+            0,
+            0,
+            0
+        );
         return address(t);
     }
 

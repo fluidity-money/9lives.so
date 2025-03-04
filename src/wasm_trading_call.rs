@@ -11,22 +11,8 @@ use crate::{
     error::Error,
 };
 
-sol! {
-    function ctor(
-        bytes8[] outcomes,
-        address oracle,
-        uint64 timeStart,
-        uint64 timeEnding,
-        address feeRecipient,
-        address shareImpl,
-        bool shouldBufferTime
-    );
-    function decide(bytes8 winner);
-    function globalShares();
-    function details(bytes8 outcome);
-    function escape();
-    function timeEnding();
-}
+sol!("./src/INineLivesTrading.sol");
+use INineLivesTrading::*;
 
 #[allow(clippy::too_many_arguments)]
 pub fn ctor(
@@ -38,6 +24,9 @@ pub fn ctor(
     fee_recipient: Address,
     share_impl: Address,
     should_buffer_time: bool,
+    fee_creator: u64,
+    fee_lp: u64,
+    fee_minter: u64,
 ) -> Result<(), Error> {
     let a = ctorCall {
         outcomes,
@@ -47,6 +36,9 @@ pub fn ctor(
         feeRecipient: fee_recipient,
         shareImpl: share_impl,
         shouldBufferTime: should_buffer_time,
+        feeCreator: fee_creator,
+        feeLp: fee_lp,
+        feeMinter: fee_minter,
     }
     .abi_encode();
     RawCall::new().call(addr, &a).map_err(Error::TradingError)?;
@@ -54,7 +46,7 @@ pub fn ctor(
 }
 
 pub fn decide(addr: Address, winner: FixedBytes<8>) -> Result<U256, Error> {
-    let a = decideCall { winner }.abi_encode();
+    let a = decideCall { outcome: winner }.abi_encode();
     let b = RawCall::new().call(addr, &a).map_err(Error::TradingError)?;
     unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
@@ -74,7 +66,7 @@ pub fn details(
         .call(
             addr,
             &detailsCall {
-                outcome: outcome_id,
+                outcomeId: outcome_id,
             }
             .abi_encode(),
         )

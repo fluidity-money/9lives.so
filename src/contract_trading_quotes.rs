@@ -68,7 +68,7 @@ impl StorageTrading {
             .ok_or(Error::CheckedDivOverflow));
         //self.shares[outcome] = (self.liquidity ** self.outcomes) / product
         let shares = c!(c!(self
-            .seed_invested
+            .amm_liquidity
             .get()
             .checked_pow(U256::from(self.outcome_list.len()))
             .ok_or(Error::CheckedPowOverflow))

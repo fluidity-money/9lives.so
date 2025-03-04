@@ -23,7 +23,10 @@ interface INineLivesFactory {
      * @param timeEnding to end this contract at. This should be in the future.
      * @param documentation keccak'd hash of the information that makes up the description
      * for infrastructure markets. This is sent out there.
-     * @param feeRecipient to send fees earned from the 10% commission to.
+     * @param feeRecipient to send fees earned from the creator commission to.
+     * @param feeCreator pct to take as fees for the creator given.
+     * @param feeLp pct to take as fees for LPs who use the add/remove liquidity features.
+     * @param feeMinter pct to take as fees for users using the mint function.
      * @return tradingAddr address of the newly created Trading contract deployment.
      */
     function newTrading09393DA8(
@@ -32,7 +35,10 @@ interface INineLivesFactory {
         uint64 timeStart,
         uint64 timeEnding,
         bytes32 documentation,
-        address feeRecipient
+        address feeRecipient,
+        uint64 feeCreator,
+        uint64 feeLp,
+        uint64 feeMinter
     ) external returns (address tradingAddr);
 
     /**

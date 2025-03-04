@@ -296,12 +296,14 @@ impl StorageTrading {
         // We only send the creator some money when mints take place.
         let value = if value.is_positive() {
             // Here we do some fee adjustment to send the fee recipient their money.
-            let fee_for_creator = (value_raw * FEE_CREATOR_MINT_PCT) / FEE_SCALING;
+            let fee_for_creator = (value_raw * self.fee_creator.get()) / FEE_SCALING;
             c!(fusdc_call::transfer(
                 self.fee_recipient.get(),
                 fee_for_creator
             ));
-            // Collect some fees for the team (for moderation reasons for screening).
+            // Take some fees, and add them to the pot for moderation reasons.
+            unimplemented!(); // TODO
+            // Collect some fees for the team (for moderation reasons).
             let fee_for_team = (value_raw * FEE_SPN_MINT_PCT) / FEE_SCALING;
             c!(fusdc_call::transfer(DAO_ADDR, fee_for_team));
             let new_val = value_raw - fee_for_creator - fee_for_team;
@@ -506,11 +508,7 @@ impl StorageTrading {
             }
         }
         let product = (0..self.outcome_list.len()).fold(U256::from(1), |product, x| {
-            product
-                * self
-                    .outcome_shares
-                    .get(self.outcome_list.get(x).unwrap())
-                    .unwrap()
+            product * self.outcome_shares.get(self.outcome_list.get(x).unwrap())
         });
         self.amm_liquidity
             .set(maths::rooti(product, self.outcome_list.len() as u32));

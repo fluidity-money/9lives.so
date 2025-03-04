@@ -12,15 +12,21 @@ interface INineLivesTrading {
      * @param shouldBufferTime to extend time by 3 hours for every purchase within a 3
      * hour window. If this is enabled, the contract will enforce purchases to exceed
      * $10 if they are taking place within 3 hours of the contract's scheduled end time.
+     * @param feeCreator to take as the default fee from every mint for the creator of this contract.
+     * @param feeMinter to take as the fee that we give to minters.
+     * @param feeLp to take as a fee for the market makers who used the add/remove features.
      */
     function ctor(
         bytes8[] memory outcomes,
         address oracle,
-        uint256 timeStart,
-        uint256 timeEnding,
+        uint64 timeStart,
+        uint64 timeEnding,
         address feeRecipient,
         address shareImpl,
-        bool shouldBufferTime
+        bool shouldBufferTime,
+        uint64 feeCreator,
+        uint64 feeMinter,
+        uint64 feeLp
     ) external;
 
     /**
@@ -114,6 +120,8 @@ interface INineLivesTrading {
         bytes8 winner
     );
 
+    function escape() external;
+
     /// @notice is this trading contract running the DPM?
     function isDpm() external view returns (bool);
 
@@ -124,6 +132,10 @@ interface INineLivesTrading {
      * @notice Invested amount of fusdc in the betting pool.
      */
     function invested() external view returns (uint256);
+
+    function timeEnding() external view returns (uint64);
+
+    function timeStart() external view returns (uint64);
 
     /**
      * @notice get a share address using the identifier given instead of an online check.
