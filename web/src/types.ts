@@ -161,7 +161,7 @@ export class ActionFromBuysAndSells implements Action {
       (this.campaignName = response.campaign_content.name),
       (this.timestamp = response.created_by),
       (this.campaignPic = response.campaign_content.picture),
-      (this.campaignVol = formatFusdc(response.total_volume + 2e6, 2)),
+      (this.campaignVol = formatFusdc(response.total_volume, 2)),
       (this.actionValue = formatFusdc(
         response.from_symbol === "FUSDC"
           ? response.from_amount

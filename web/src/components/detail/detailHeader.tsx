@@ -75,7 +75,7 @@ export default function DetailHeader({
               Total Campaign Vol:
             </span>
             <span className="font-chicago text-xl">
-              $ {formatFusdc(data.totalVolume + 2e6, 2)}
+              $ {formatFusdc(data.totalVolume, 2)}
             </span>
           </div>
         )}

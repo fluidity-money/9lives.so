@@ -14,12 +14,9 @@ export default function useChances({
     const investedOutcome = investmentAmounts.find((i) => i.id === oId);
     return {
       id: oId,
-      chance:
-        (Number((investedOutcome?.usdc ?? 0) + 1e6) /
-          Number(totalVolume + 2e6)) *
-        100,
-      investedAmount: formatFusdc((investedOutcome?.usdc ?? 0) + 1e6, 2),
-      share: formatFusdc((investedOutcome?.share ?? 0) + 1e6, 2),
+      chance: Number((investedOutcome?.usdc ?? 0) / Number(totalVolume)) * 100,
+      investedAmount: formatFusdc(investedOutcome?.usdc ?? 0, 2),
+      share: formatFusdc(investedOutcome?.share ?? 0, 2),
     };
   });
 }
