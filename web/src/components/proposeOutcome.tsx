@@ -37,7 +37,11 @@ export default function ProposeOutcome({
   const [selectedOutcome, setSelectedOutcome] = useState<`0x${string}`>(
     outcomes[0].identifier,
   );
-  const { action, getStatus } = useInfraMarket({ tradingAddr, infraState });
+  const { action, getStatus } = useInfraMarket({
+    tradingAddr,
+    infraState,
+    outcomes,
+  });
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const zeroByte8 = "0x0000000000000000";
@@ -46,7 +50,7 @@ export default function ProposeOutcome({
     if (!action) return;
     try {
       setInAction(true);
-      const txHash = await action(selectedOutcome, account, tradingAddr);
+      const txHash = await action(selectedOutcome, account);
       setTxHash(txHash);
       setIsProposed(true);
     } finally {

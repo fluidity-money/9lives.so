@@ -5,7 +5,7 @@ import {
 } from "thirdweb";
 import appConfig from "@/config";
 import { Account } from "thirdweb/wallets";
-import { InfraMarketState } from "@/types";
+import { InfraMarketState, Outcome } from "@/types";
 import toast from "react-hot-toast";
 import config from "@/config";
 import { generateCommit } from "@/utils/generateCommit";
@@ -13,6 +13,7 @@ import { randomValue4Uint8 } from "@/utils/generateId";
 interface InfraMarketProps {
   tradingAddr: `0x${string}`;
   infraState?: InfraMarketState;
+  outcomes: Outcome[];
 }
 export default function useInfraMarket(props: InfraMarketProps) {
   const statusTx = prepareContractCall({
@@ -81,17 +82,12 @@ export default function useInfraMarket(props: InfraMarketProps) {
         error: "Failed to whinge.",
       },
     );
-  const predict = (
-    outcomeId: `0x${string}`,
-    account: Account,
-    traddingAddr?: string,
-  ) =>
+  const predict = (outcomeId: `0x${string}`, account: Account) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
-          if (!traddingAddr) throw new Error("Missing trading address");
           const seed = randomValue4Uint8();
-          const commitHash = generateCommit(traddingAddr, outcomeId, seed);
+          const commitHash = generateCommit(props.tradingAddr, outcomeId, seed);
           const predictTx = prepareContractCall({
             contract: appConfig.contracts.infra,
             method: "predict",
@@ -112,14 +108,14 @@ export default function useInfraMarket(props: InfraMarketProps) {
         error: "Failed to predict outcome.",
       },
     );
-  const close = (outcomeId: `0x${string}`, account: Account) =>
+  const close = (_: any, account: Account) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
           const revealTx = prepareContractCall({
             contract: appConfig.contracts.infra,
             method: "close",
-            params: [props.tradingAddr, outcomeId],
+            params: [props.tradingAddr, account.address],
           });
           const receipt = await sendTransaction({
             transaction: revealTx,
@@ -136,31 +132,46 @@ export default function useInfraMarket(props: InfraMarketProps) {
         error: "Failed to reveal outcome.",
       },
     );
-
+  const declare = (_: any, account: Account) =>
+    toast.promise<string>(
+      new Promise(async (res, rej) => {
+        try {
+          const outcomeIds = props.outcomes.map((o) => o.identifier);
+          const revealTx = prepareContractCall({
+            contract: appConfig.contracts.infra,
+            method: "declare",
+            params: [props.tradingAddr, outcomeIds, account.address],
+          });
+          const receipt = await sendTransaction({
+            transaction: revealTx,
+            account,
+          });
+          res(receipt.transactionHash);
+        } catch (error) {
+          rej(error);
+        }
+      }),
+      {
+        loading: "Declaring winner...",
+        success: "Declared successfully!",
+        error: "Failed to declare.",
+      },
+    );
   const actionMap: Record<
     InfraMarketState,
-    | ((
-        outcomeId: `0x${string}`,
-        account: Account,
-        traddingAddr?: string,
-      ) => Promise<string>)
-    | null
+    ((outcomeId: `0x${string}`, account: Account) => Promise<string>) | null
   > = {
     [InfraMarketState.Callable]: call,
     [InfraMarketState.Closable]: close,
     [InfraMarketState.Whinging]: whinge,
     [InfraMarketState.Predicting]: predict,
     [InfraMarketState.Revealing]: null,
-    [InfraMarketState.Declarable]: null,
+    [InfraMarketState.Declarable]: declare,
     [InfraMarketState.Sweeping]: null,
     [InfraMarketState.Closed]: null,
     [InfraMarketState.Loading]: null,
   } as const;
-  const currentAction = async (
-    outcomeId: `0x${string}`,
-    account: Account,
-    traddingAddr?: string,
-  ) => {
+  const currentAction = async (outcomeId: `0x${string}`, account: Account) => {
     const amount =
       config.infraMarket.fees[props.infraState ?? InfraMarketState.Loading];
     if (amount > BigInt(0)) {
@@ -187,7 +198,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
     }
     const action = actionMap[props.infraState ?? InfraMarketState.Loading];
     if (action) {
-      return action(outcomeId, account, traddingAddr);
+      return action(outcomeId, account);
     }
     throw new Error("No valid action available for the current state.");
   };
