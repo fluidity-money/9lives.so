@@ -13,6 +13,16 @@ interface IERC20 {
     function approve(address recipient, uint256 amount) external;
 }
 
+struct AiCreationDetails {
+    FactoryOutcome[] outcomes;
+    uint64 timeEnding;
+    bytes32 documentation;
+    address feeRecipient;
+    uint64 feeCreator;
+    uint64 feeLp;
+    uint64 feeMinter;
+}
+
 contract BuyHelper {
     INineLivesFactory immutable FACTORY;
     ILongtail immutable LONGTAIL;
@@ -88,13 +98,7 @@ contract BuyHelper {
     }
 
     function mintSetupAI(
-        FactoryOutcome[] calldata _outcomes,
-        uint64 _timeEnding,
-        bytes32 _documentation,
-        address _feeRecipient,
-        uint64 _feeCreator,
-        uint64 _feeLp,
-        uint64 _feeMinter,
+        AiCreationDetails calldata d,
         IERC20 _asset,
         bytes8 _outcome,
         uint256 _minShareOut,
@@ -102,18 +106,16 @@ contract BuyHelper {
     ) external payable returns (uint256) {
         // Sets up the contract given using the AI resolver, deducts fees
         // needed, then tries to mint shares the normal way.
-        uint256 fusdc = _swapInAsset(address(_asset), _amount);
-        uint256 incentiveAmt = (_outcomes.length * 1e6);
-        require(fusdc > incentiveAmt);
-        fusdc -= incentiveAmt;
+        // SAFETY: This should underflow if there isn't enough here.
+        uint256 fusdc = _swapInAsset(address(_asset), _amount) - (d.outcomes.length * 1e6);
         HELPER.createWithAI(
-            _outcomes,
-            _timeEnding,
-            _documentation,
-            _feeRecipient,
-            _feeCreator,
-            _feeLp,
-            _feeMinter
+            d.outcomes,
+            d.timeEnding,
+            d.documentation,
+            d.feeRecipient,
+            d.feeCreator,
+            d.feeLp,
+            d.feeMinter
         );
         return _mint(_outcome, fusdc, _outcome, _minShareOut);
     }

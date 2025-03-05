@@ -22,6 +22,16 @@ uint256 constant INCENTIVE_AMT_MODERATION = 1e6;
 
 uint256 constant INCENTIVE_INFRA_MARKET = 2200000;
 
+struct CreationDetails {
+    FactoryOutcome[] outcomes;
+    uint64 timeEnding;
+    bytes32 documentation;
+    address feeRecipient;
+    uint64 feeCreator;
+    uint64 feeLp;
+    uint64 feeMinter;
+}
+
 contract HelperFactory {
     IERC20Permit immutable FUSDC;
     INineLivesFactory immutable FACTORY;
@@ -98,13 +108,7 @@ contract HelperFactory {
     // Create a campaign with an infra market, doing all the setup legwork that's needed
     // with approvals stemming from a single signature.
     function createWithInfraMarketPermit(
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter,
+        CreationDetails calldata d,
         uint256 deadline,
         uint8 v,
         bytes32 r,
@@ -112,15 +116,15 @@ contract HelperFactory {
     ) external returns (address tradingAddr) {
         // We need to take some money from the sender for all the setup costs we're expecting.
         // This should be the (number of outcomes * 1e6) + (2.2 * 1e6)
-        FUSDC.permit(msg.sender, address(this), (outcomes.length * 1e6) + 2200000, deadline, v, r, s);
+        FUSDC.permit(msg.sender, address(this), (d.outcomes.length * 1e6) + 2200000, deadline, v, r, s);
         return createWithInfraMarket(
-            outcomes,
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
+            d.outcomes,
+            d.timeEnding,
+            d.documentation,
+            d.feeRecipient,
+            d.feeCreator,
+            d.feeLp,
+            d.feeMinter
         );
     }
 
@@ -152,13 +156,7 @@ contract HelperFactory {
     }
 
     function createWithBeautyContestPermit(
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter,
+        CreationDetails calldata d,
         uint256 deadline,
         uint8 v,
         bytes32 r,
@@ -167,20 +165,20 @@ contract HelperFactory {
         FUSDC.permit(
             msg.sender,
             address(this),
-            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
+            (d.outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
             deadline,
             v,
             r,
             s
         );
         return createWithBeautyContest(
-            outcomes,
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
+            d.outcomes,
+            d.timeEnding,
+            d.documentation,
+            d.feeRecipient,
+            d.feeCreator,
+            d.feeLp,
+            d.feeMinter
         );
     }
 
@@ -212,13 +210,7 @@ contract HelperFactory {
     }
 
     function createWithAIPermit(
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter,
+        CreationDetails calldata d,
         uint256 deadline,
         uint8 v,
         bytes32 r,
@@ -227,20 +219,20 @@ contract HelperFactory {
         FUSDC.permit(
             msg.sender,
             address(this),
-            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
+            (d.outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
             deadline,
             v,
             r,
             s
         );
         return createWithAI(
-            outcomes,
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
+            d.outcomes,
+            d.timeEnding,
+            d.documentation,
+            d.feeRecipient,
+            d.feeCreator,
+            d.feeLp,
+            d.feeMinter
         );
     }
 
@@ -276,14 +268,8 @@ contract HelperFactory {
 
     /// @dev Read the developer comment for createWithCustom.
     function createWithCustomPermit(
+        CreationDetails calldata d,
         address oracle,
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter,
         uint256 deadline,
         uint8 v,
         bytes32 r,
@@ -292,7 +278,7 @@ contract HelperFactory {
         FUSDC.permit(
             msg.sender,
             address(this),
-            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
+            (d.outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
             deadline,
             v,
             r,
@@ -300,13 +286,13 @@ contract HelperFactory {
         );
         return createWithCustom(
             oracle,
-            outcomes,
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
+            d.outcomes,
+            d.timeEnding,
+            d.documentation,
+            d.feeRecipient,
+            d.feeCreator,
+            d.feeLp,
+            d.feeMinter
         );
     }
 }
