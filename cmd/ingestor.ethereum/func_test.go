@@ -9,9 +9,14 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	ethCommon "github.com/ethereum/go-ethereum/common"
+	ethTypes "github.com/ethereum/go-ethereum/core/types"
 )
+
+func TestTopicsAreOkay(t *testing.T) {
+	var z [32]byte
+	assert.NotContains(t, z[:], FilterTopics)
+}
 
 func TestSharesMinted(t *testing.T) {
 	s := strings.NewReader(`{
@@ -55,5 +60,50 @@ func TestSharesMinted(t *testing.T) {
 			wasRun = true
 			return nil
 		})
+	assert.True(t, wasRun)
+}
+
+func TestOutcomeDecided(t *testing.T) {
+	s := strings.NewReader(`{
+	"address": "0xc515931083dda1edba5bb4e0555b83c7a84a22c7",
+	"blockHash": "0x4c59198fc91af68c6663bf96b8f4d72a95ca2360c5da0beb6aad7b092de2c47e",
+	"blockNumber": "0xf28b9",
+	"data": "0x",
+	"logIndex": "0x0",
+	"removed": false,
+	"topics": [
+		"0x346cb28308c5aa92dbbc3370b3e3f02f23b4feb3ed394ac97cdf989c092ba46c",
+		"0x6d53a60a1a325a2f000000000000000000000000000000000000000000000000",
+		"0x0000000000000000000000009d73847f1edc930d2a2ee801aeadb4c4567f18e1"
+	],
+	"transactionHash": "0xc0fe3856a3e5c2c1ab1920139a63c71c1f1ea7639e86f1d87721d3d6246a9581",
+	"transactionIndex": "0x1"
+}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+
+	_, err := handleLogCallback(
+		factoryAddr,
+		factoryAddr, // Actually the infra market
+		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "ninelives_events_outcome_decided", table, "table not equal")
+			_, ok := a.(*events.EventOutcomeDecided)
+			assert.Truef(t, ok, "EventOutcomeDecided type coercion not true")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
 	assert.True(t, wasRun)
 }

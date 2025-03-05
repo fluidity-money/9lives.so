@@ -16,7 +16,7 @@ import (
 //go:embed abi-events.json
 var abiB []byte
 
-var abi, _ = ethAbi.JSON(bytes.NewReader(abiB))
+var abi, abiErr = ethAbi.JSON(bytes.NewReader(abiB))
 
 var (
 	TopicNewTrading2     = abi.Events["NewTrading2"].ID
@@ -271,4 +271,10 @@ func hashToAddr(h ethCommon.Hash) events.Address {
 
 func hashToNumber(h ethCommon.Hash) events.Number {
 	return events.NumberFromBig(h.Big())
+}
+
+func init() {
+	if abiErr != nil {
+		panic(abiErr)
+	}
 }
