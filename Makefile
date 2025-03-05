@@ -26,7 +26,6 @@ RELEASE_WASM_OPT_9LIVES := \
 OUT_SHARE := out/Share.sol/Share.json
 
 build: \
-	${OUT_SHARE} \
 	contract-factory-1 \
 	contract-factory-2 \
 	contract-trading-dpm-mint \

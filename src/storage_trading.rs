@@ -99,7 +99,7 @@ pub struct StorageTrading {
     /// An insane situation has taken place, and escaping took place. This is set
     /// if the developers are able to retrieve the money. This is only possible
     /// to be set by the oracle.
-    pub escaped: StorageBool,
+    pub is_escaped: StorageBool,
 }
 
 #[cfg(feature = "testing")]

@@ -47,7 +47,7 @@ struct Args {
         default_value = "0x0000000000000000000000000000000000000002"
     )]
     addr: String,
-    #[arg(short, long, default_value = "http://localhost:9999")]
+    #[arg(short, long, default_value = "https://rpc.superposition.so")]
     url: String,
 
     #[arg(short, long, group = "action")]

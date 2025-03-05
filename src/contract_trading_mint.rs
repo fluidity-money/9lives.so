@@ -302,7 +302,7 @@ impl StorageTrading {
                 fee_for_creator
             ));
             // Take some fees, and add them to the pot for moderation reasons.
-            unimplemented!(); // TODO
+            // TODO
             // Collect some fees for the team (for moderation reasons).
             let fee_for_team = (value_raw * FEE_SPN_MINT_PCT) / FEE_SCALING;
             c!(fusdc_call::transfer(DAO_ADDR, fee_for_team));
@@ -502,9 +502,10 @@ impl StorageTrading {
         let most_likely_price = c!(self.internal_amm_price(most_likely_shares_id));
         for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
             if o != most_likely_shares_id {
-                self.outcome_shares.setter(o).set(
-                    (most_likely_shares_amt * most_likely_price) / c!(self.internal_amm_price(o)),
-                );
+                let price = c!(self.internal_amm_price(o));
+                self.outcome_shares
+                    .setter(o)
+                    .set((most_likely_shares_amt * most_likely_price) / price);
             }
         }
         let product = (0..self.outcome_list.len()).fold(U256::from(1), |product, x| {
@@ -512,6 +513,7 @@ impl StorageTrading {
         });
         self.amm_liquidity
             .set(maths::rooti(product, self.outcome_list.len() as u32));
+        unimplemented!()
     }
 }
 

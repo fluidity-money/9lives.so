@@ -154,7 +154,7 @@ class PredMarket:
 
 if __name__ == "__main__":
     # Example usage
-    market = PredMarket(liquidity=9, outcomes=6)
+    market = PredMarket(liquidity=9, outcomes=9)
 
     # Initial prices
     print("Initial Shares:", market.shares)
