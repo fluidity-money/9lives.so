@@ -44,6 +44,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
     shareAddr: winner.share.address,
     tradingAddr: data.poolAddress,
     outcomeId: winner.identifier,
+    outcomeIds: data.outcomes.map((o) => o.identifier),
   });
   const totalVolumeOfWinner =
     data.investmentAmounts.find((ia) => ia.id === data.winner)?.usdc ?? 0;

@@ -15,10 +15,12 @@ const useClaim = ({
   shareAddr,
   tradingAddr,
   outcomeId,
+  outcomeIds,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
+  outcomeIds: string[];
 }) => {
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);
@@ -69,6 +71,9 @@ const useClaim = ({
           removePosition(outcomeId);
           queryClient.invalidateQueries({
             queryKey: ["positions", tradingAddr, outcomes, account],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["positionHistory", outcomeIds],
           });
           track(EVENTS.CLAIM_REWARD, {
             wallet: account.address,

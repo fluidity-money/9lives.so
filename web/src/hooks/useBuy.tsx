@@ -113,25 +113,21 @@ const useBuy = ({
               account,
             });
           }
+          const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
             queryKey: ["positions", tradingAddr, outcomes, account],
           });
           queryClient.invalidateQueries({
-            queryKey: [
-              "sharePrices",
-              tradingAddr,
-              outcomes.map((o) => o.identifier),
-            ],
-          });
-          const outcomeIds = outcomes.map((o) => o.identifier);
-          queryClient.invalidateQueries({
-            queryKey: ["details", tradingAddr, outcomeIds],
+            queryKey: ["sharePrices", tradingAddr, outcomeIds],
           });
           queryClient.invalidateQueries({
             queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
           });
           queryClient.invalidateQueries({
             queryKey: ["campaign", campaignId],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["positionHistory", outcomeIds],
           });
           track(EVENTS.MINT, {
             wallet: account.address,
