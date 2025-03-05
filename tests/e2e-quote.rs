@@ -5,9 +5,8 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, U256};
 use lib9lives::{
     decimal::MAX_DECIMAL,
     error::Error,
-    host,
+    host, testing_addrs,
     utils::{block_timestamp, msg_sender},
-    testing_addrs,
 };
 
 use proptest::prelude::*;
@@ -29,7 +28,10 @@ proptest! {
                 block_timestamp() + 2,
                 msg_sender(), // Fee recipient.
                 testing_addrs::SHARE, // Share impl.
-                false
+                false,
+                0,
+                0,
+                0
             )
             .unwrap();
 

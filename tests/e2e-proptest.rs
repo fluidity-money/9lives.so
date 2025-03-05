@@ -30,6 +30,9 @@ fn test_factory_new_trading() {
                 block_timestamp() + 100,
                 FixedBytes::ZERO,
                 Address::ZERO,
+                0,
+                0,
+                0,
             )
         );
     })
