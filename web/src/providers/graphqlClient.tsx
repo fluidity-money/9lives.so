@@ -233,3 +233,12 @@ export const requestUserActivities = ({
     poolAddress: true,
     txHash: true,
   });
+
+export const requestPositionHistory = (outcomeIds: string[]) =>
+  graph9Lives.query.positionsHistory({
+    $: { outcomeIds },
+    fromAmount: true,
+    toAmount: true,
+    outcomeId: true,
+    txHash: true,
+  });

@@ -5,6 +5,7 @@ import { useActiveAccount } from "thirdweb/react";
 import usePositions from "@/hooks/usePositions";
 import useSharePrices from "@/hooks/useSharePrices";
 import PositionRow from "./positionRow";
+import usePositionHistory from "@/hooks/usePositionsHistory";
 
 export function Placeholder({
   title,
@@ -33,7 +34,12 @@ export default function PositionsGroup({
   campaignName,
 }: PositionsProps) {
   const account = useActiveAccount();
-  const { isLoading, isError, error, data } = usePositions({
+  const {
+    isLoading,
+    isError,
+    error,
+    data: positions,
+  } = usePositions({
     tradingAddr,
     outcomes,
     account,
@@ -42,11 +48,14 @@ export default function PositionsGroup({
     tradingAddr,
     outcomeIds: outcomes.map((o) => o.identifier),
   });
+  const { data: positionsHistory } = usePositionHistory(
+    positions?.map((p) => p.id),
+  );
 
   if (isLoading) return <Placeholder title="Loading..." />;
   if (isError)
     return <Placeholder title="Whoops, error!" subtitle={error.message} />;
-  if (data?.length === 0)
+  if (positions?.length === 0)
     return (
       <Placeholder
         title="Nothing yet."
@@ -56,11 +65,12 @@ export default function PositionsGroup({
 
   return (
     <>
-      {data?.map((item, idx) => (
+      {positions?.map((item, idx) => (
         <PositionRow
           key={idx}
           data={{ ...item, campaignName }}
           price={sharePrices?.find((o) => o.id === item.id)?.price}
+          history={positionsHistory?.filter((p) => p.id === item.id)}
         />
       ))}
     </>
