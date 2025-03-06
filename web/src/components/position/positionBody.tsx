@@ -1,5 +1,6 @@
 import { PositionsProps } from "@/types";
-import PositionsGroup, { Placeholder } from "./positionGroup";
+import PositionsGroup from "./positionGroup";
+import Placeholder from "../tablePlaceholder";
 const bodyStyles = "min-h-24 bg-9gray";
 
 export default function PositionBody({

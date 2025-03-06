@@ -45,7 +45,7 @@ export default function ActivityBody({ campaignId }: ActivityBodyProps) {
       </tbody>
     );
   return (
-    <tbody>
+    <tbody className={bodyStyles}>
       {data?.map((item, idx) => (
         <ActivityRow displayCampaignName={!campaignId} key={idx} data={item} />
       ))}

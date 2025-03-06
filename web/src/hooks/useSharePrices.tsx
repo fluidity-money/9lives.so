@@ -36,7 +36,7 @@ export default function useSharePrices({
       );
       return res.map((price, idx) => ({
         id: outcomeIds[idx],
-        price: price ? formatFusdc(Number(price), 2) : "",
+        price: price ? formatFusdc(Number(price), 2) : "0.00",
       }));
     },
   });

@@ -48,9 +48,15 @@ export default function PositionRow({
           <div className="flex flex-col gap-1 p-1">
             {data.campaignName ? (
               <p className="font-chicago text-xs font-bold">
-                {data.campaignName}
+                {data.campaignName}{" "}
+                {price === "0.00" && (
+                  <span className="bg-9yellow p-0.5 font-geneva text-[10px] uppercase tracking-wide">
+                    Concluded
+                  </span>
+                )}
               </p>
             ) : null}
+
             <p className="font-geneva text-xs uppercase tracking-wide text-[#808080]">
               {data.name}
             </p>

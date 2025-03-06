@@ -3,6 +3,7 @@ import {
   requestLeaderboard,
   requestAchievments,
   requestCampaignById,
+  requestUserClaims,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -245,4 +246,8 @@ export type PositionsProps = {
 
 export type Activity = NonNullable<
   Awaited<ReturnType<typeof requestUserActivities>>[number]
+>;
+
+export type ClaimedRewards = NonNullable<
+  Awaited<ReturnType<typeof requestUserClaims>>[number]
 >;
