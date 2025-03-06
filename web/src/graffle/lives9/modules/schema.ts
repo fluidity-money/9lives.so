@@ -36,6 +36,7 @@ export namespace Schema {
       userParticipatedCampaigns: Query.userParticipatedCampaigns;
       userTotalVolume: Query.userTotalVolume;
       positionsHistory: Query.positionsHistory;
+      userClaims: Query.userClaims;
     };
   }
 
@@ -219,6 +220,29 @@ export namespace Schema {
       };
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$Activity;
+    }
+
+    /**
+     * Return user's claim rewards details
+     */
+    export interface userClaims extends $.OutputField {
+      name: "userClaims";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        campaignId: {
+          kind: "InputField";
+          name: "campaignId";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$Claim;
     }
   }
 
@@ -560,6 +584,72 @@ export namespace Schema {
   //
   //
   //
+
+  //                                               Claim
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * User reward claims as a winner of a prediction market
+   */
+  export interface Claim extends $.OutputObject {
+    name: "Claim";
+    fields: {
+      __typename: Claim.__typename;
+      sharesSpent: Claim.sharesSpent;
+      fusdcReceived: Claim.fusdcReceived;
+      winner: Claim.winner;
+      content: Claim.content;
+      createdAt: Claim.createdAt;
+    };
+  }
+
+  export namespace Claim {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Claim";
+      };
+    }
+
+    export interface sharesSpent extends $.OutputField {
+      name: "sharesSpent";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface fusdcReceived extends $.OutputField {
+      name: "fusdcReceived";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface winner extends $.OutputField {
+      name: "winner";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface content extends $.OutputField {
+      name: "content";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Campaign;
+    }
+
+    export interface createdAt extends $.OutputField {
+      name: "createdAt";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+  }
 
   //                                              Position
   // --------------------------------------------------------------------------------------------------
@@ -1583,6 +1673,7 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$Claim = Claim;
     export type $$Position = Position;
     export type $$Campaign = Campaign;
     export type $$InvestmentAmounts = InvestmentAmounts;
@@ -1635,6 +1726,7 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    Claim: Schema.Claim;
     Position: Schema.Position;
     Campaign: Schema.Campaign;
     InvestmentAmounts: Schema.InvestmentAmounts;
@@ -1645,6 +1737,7 @@ export interface Schema<
     Activity: Schema.Activity;
   };
   objects: {
+    Claim: Schema.Claim;
     Position: Schema.Position;
     Campaign: Schema.Campaign;
     InvestmentAmounts: Schema.InvestmentAmounts;

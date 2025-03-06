@@ -57,6 +57,12 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
+  export type Claim<$SelectionSet extends $$SelectionSets.Claim> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["Claim"]
+    >;
   export type Position<$SelectionSet extends $$SelectionSets.Position> =
     InferResult.OutputObjectLike<
       $SelectionSet,
