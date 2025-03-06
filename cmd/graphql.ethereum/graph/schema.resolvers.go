@@ -619,7 +619,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		query = query.Where("name_to_search ILIKE ?", "%"+*searchTerm+"%")
 	}
 	if orderBy == nil {
-		query = query.Order("total_volume DESC")
+		query = query.Order("total_volume DESC").Where("content->>'winner' IS NULL")
 	} else if *orderBy == "ended" {
 		query = query.Where("content->>'winner' IS NOT NULL").Order("content->>'ending' DESC")
 	} else {
