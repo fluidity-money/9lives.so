@@ -144,7 +144,7 @@ export default function CreateCampaignForm() {
         //     ? z.string().startsWith("0x").min(42)
         //     : z.undefined(),
       }),
-    [outcomeType, outcomeschema, settlementType],
+    [outcomeType, outcomeschema, pictureSchema, settlementType],
   );
   type FormData = z.infer<typeof formSchema>;
   const {

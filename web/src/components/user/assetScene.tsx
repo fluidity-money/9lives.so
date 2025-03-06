@@ -20,7 +20,7 @@ export default function AssetScene({
 }: AssetSceneProps) {
   return (
     <TabGroup className={"flex-1"}>
-      <TabList className="flex-items flex">
+      <TabList className="flex items-center">
         <Tab as={Fragment}>
           {(props) => <TabButton title="My Positions" {...props} />}
         </Tab>

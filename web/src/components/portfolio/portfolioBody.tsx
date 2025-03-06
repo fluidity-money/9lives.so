@@ -14,7 +14,7 @@ export default function PortfolioBody() {
   const reset = usePortfolioStore((s) => s.reset);
   useEffect(() => {
     if (!account) reset();
-  }, [account]);
+  }, [account, reset]);
   const positionGrops =
     participatedCampaigns?.map(
       (pc) =>

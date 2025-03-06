@@ -70,7 +70,7 @@ export default function PortfolioHeader() {
           </div>
         </div>
       </div>
-      <div className="rouded-[3px] flex flex-col items-center justify-between gap-4 border border-9black bg-9gray p-5 font-chicago shadow-9orderSummary md:flex-row">
+      <div className="flex flex-col items-center justify-between gap-4 rounded-[3px] border border-9black bg-9gray p-5 font-chicago shadow-9orderSummary md:flex-row">
         <div className="flex items-center gap-5">
           <div className="flex flex-col gap-1">
             <span className="text-xs">My Available Cash</span>

@@ -33,7 +33,7 @@ export default function PositionRow({
         value: Number(price) * Number(data.balance),
       });
     }
-  }, [price, data.id, data.balance]);
+  }, [price, data.id, data.balance, addPosition]);
   return (
     <>
       <tr>
