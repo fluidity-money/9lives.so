@@ -242,3 +242,22 @@ export const requestPositionHistory = (outcomeIds: string[]) =>
     outcomeId: true,
     txHash: true,
   });
+
+export const requestUserClaims = (address: string, campaignId?: string) =>
+  graph9Lives.query.userClaims({
+    $: { address, campaignId },
+    fusdcReceived: true,
+    sharesSpent: true,
+    winner: true,
+    createdAt: true,
+    content: {
+      identifier: true,
+      name: true,
+      picture: true,
+      outcomes: {
+        identifier: true,
+        name: true,
+        picture: true,
+      },
+    },
+  });
