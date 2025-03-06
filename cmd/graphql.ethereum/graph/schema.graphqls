@@ -40,6 +40,26 @@ type Query {
   Returns active positions acitvity history
   """
   positionsHistory(outcomeIds:[String!]!): [Activity!]!
+
+  """
+  Return user's claim rewards details
+  """
+  userClaims(address:String!, campaignId:String): [Claim]!
+}
+
+"""
+User reward claims as a winner of a prediction market
+"""
+type Claim {
+  sharesSpent: String!
+
+  fusdcReceived: String!
+
+  winner: String!
+
+  content: Campaign!
+
+  createdAt: Int!
 }
 
 """

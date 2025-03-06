@@ -275,6 +275,29 @@ func (r *changelogResolver) HTML(ctx context.Context, obj *changelog.Changelog) 
 	return obj.HtmlContent, nil
 }
 
+// Content is the resolver for the content field.
+func (r *claimResolver) Content(ctx context.Context, obj *types.Claim) (*types.Campaign, error) {
+	var campaign types.Campaign
+	if obj == nil {
+		return nil, fmt.Errorf("Claim is nil")
+	}
+	campaign = types.Campaign{
+		ID:        obj.ID,
+		Content:   obj.Content,
+		CreatedAt: time.Unix(int64(obj.Content.Starting), 0),
+		UpdatedAt: time.Unix(int64(obj.Content.Starting), 0),
+	}
+	return &campaign, nil
+}
+
+// CreatedAt is the resolver for the createdAt field.
+func (r *claimResolver) CreatedAt(ctx context.Context, obj *types.Claim) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("claim is nil")
+	}
+	return int(obj.CreatedAt.Unix()), nil
+}
+
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
@@ -813,6 +836,29 @@ func (r *queryResolver) PositionsHistory(ctx context.Context, outcomeIds []strin
 	return activities, nil
 }
 
+// UserClaims is the resolver for the userClaims field.
+func (r *queryResolver) UserClaims(ctx context.Context, address string, campaignID *string) ([]*types.Claim, error) {
+	var claims []*types.Claim
+	address = strings.ToLower(address)
+	query := r.DB.Raw(`select nc.id, nepa.shares_spent, nepa.fusdc_received, nepa.created_by as created_at, nc.content, concat('0x', nepa.identifier) as winner
+	from ninelives_events_payoff_activated nepa
+	left join ninelives_campaigns_1 nc 
+	on nepa.emitter_addr = nc."content"->>'poolAddress'
+	where nepa.recipient = ?`, address)
+	if campaignID != nil {
+		query = query.Where("nc.id = ?", *campaignID)
+	}
+	err := query.Scan(&claims).Error
+	if err != nil {
+		slog.Error("Error getting reward claims from database",
+			"error", err,
+			"outcomeIds", campaignID,
+		)
+		return nil, fmt.Errorf("error getting reward claims from database: %w", err)
+	}
+	return claims, nil
+}
+
 // Activity returns ActivityResolver implementation.
 func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
 
@@ -821,6 +867,9 @@ func (r *Resolver) Campaign() CampaignResolver { return &campaignResolver{r} }
 
 // Changelog returns ChangelogResolver implementation.
 func (r *Resolver) Changelog() ChangelogResolver { return &changelogResolver{r} }
+
+// Claim returns ClaimResolver implementation.
+func (r *Resolver) Claim() ClaimResolver { return &claimResolver{r} }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
@@ -834,6 +883,7 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 type activityResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
 type changelogResolver struct{ *Resolver }
+type claimResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type positionResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

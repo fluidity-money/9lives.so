@@ -164,6 +164,20 @@ type (
 
 		Content CampaignContent `json:"content"`
 	}
+
+	Claim struct {
+		ID string `json:"id"`
+
+		SharesSpent string `json:"sharesSpent"`
+
+		FusdcReceived string `json:"fusdcReceived"`
+
+		Content CampaignContent `json:"content"`
+
+		Winner string `json:"winner"`
+
+		CreatedAt time.Time `json:"createdAt"`
+	}
 )
 
 const (
