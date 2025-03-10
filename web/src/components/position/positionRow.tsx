@@ -27,9 +27,13 @@ export default function PositionRow({
 }) {
   const [showHistory, setShowHistory] = useState(false);
   const historicalValue = history?.reduce((acc, v) => acc + v.usdc, 0) ?? 0;
+  const averageShareCost = +formatFusdc(historicalValue, 6) / +data.balance;
   const addPosition = usePortfolioStore((s) => s.addPositionValue);
   const PnL =
     Number(data.balance) * Number(price) - +formatFusdc(historicalValue, 6);
+  const percentageChange = Math.abs(
+    (PnL / +formatFusdc(historicalValue, 6)) * 100,
+  ).toFixed(2);
   useEffect(() => {
     if (price && data.id && data.balance) {
       addPosition({
@@ -118,21 +122,28 @@ export default function PositionRow({
           <span className="font-chicago text-xs">${price}</span>
         </td>
         <td>
-          <span className="font-chicago text-xs">
-            {data.balance}{" "}
-            <span
-              className={combineClass(
-                "p-0.5",
-                data.name === "Yes"
-                  ? "bg-9green"
-                  : data.name === "No"
-                    ? "bg-9red"
-                    : "bg-9gray",
-              )}
-            >
-              {data.name}
+          <div className="flex flex-col gap-1">
+            <span className="font-chicago text-xs">
+              {data.balance}{" "}
+              <span
+                className={combineClass(
+                  "p-0.5",
+                  data.name === "Yes"
+                    ? "bg-9green"
+                    : data.name === "No"
+                      ? "bg-9red"
+                      : "bg-9gray",
+                )}
+              >
+                {data.name}
+              </span>
             </span>
-          </span>
+            {history && history.length > 0 ? (
+              <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                AVG ${averageShareCost.toFixed(2)}/Share
+              </span>
+            ) : null}
+          </div>
         </td>
         <td>
           <div className="flex flex-col gap-1">
@@ -150,23 +161,36 @@ export default function PositionRow({
           {data.winner === data.id ? (
             <Button title="Claim Reward" intent={"yes"} />
           ) : historicalValue ? (
-            <span
-              className={combineClass(
-                "p-0.5 font-chicago text-xs",
-                PnL >= 0 ? "bg-9green" : "bg-9red",
-              )}
-            >
-              {PnL >= 0 ? "+" : "-"} ${Math.abs(PnL).toFixed(2)}
-            </span>
+            <div className="flex flex-col gap-1">
+              <span
+                className={combineClass(
+                  "self-start p-0.5 font-chicago text-xs",
+                  PnL >= 0 ? "bg-9green" : "bg-9red",
+                )}
+              >
+                {PnL >= 0 ? "+" : "-"} ${Math.abs(PnL).toFixed(2)}
+              </span>
+              <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                {PnL >= 0 ? "+" : "-"}
+                {percentageChange}
+                {"%"}
+              </span>
+            </div>
           ) : null}
         </td>
       </tr>
       {showHistory &&
         history?.map((h) => {
+          const PnL =
+            +formatFusdc(h.share, 6) * Number(price ?? 0) -
+            +formatFusdc(h.usdc, 6);
+          const percentageChange = Math.abs(
+            (PnL / +formatFusdc(h.usdc, 6)) * 100,
+          ).toFixed(2);
           return (
             <tr key={h.txHash} className="bg-[#DDDDDD]">
               <td>
-                <span className="pl-2 font-geneva text-xs uppercase tracking-wide text-[#808080]">
+                <span className="pl-2 font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
                   BUY tx
                 </span>
               </td>
@@ -198,9 +222,20 @@ export default function PositionRow({
                 </span>
               </td>
               <td>
-                <span className="font-chicago text-xs"></span>
+                <span
+                  className={combineClass(
+                    "p-0.5 font-chicago text-xs",
+                    PnL >= 0 ? "bg-9green" : "bg-9red",
+                  )}
+                >
+                  {PnL >= 0 ? "+" : "-"} ${Math.abs(PnL).toFixed(2)}
+                </span>
+                <span className="ml-1 font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                  {PnL >= 0 ? "+" : "-"}
+                  {percentageChange}
+                  {"%"}
+                </span>
               </td>
-              <td></td>
             </tr>
           );
         })}
