@@ -86,6 +86,18 @@ interface IInfraMarket {
     function epochNumber(address trading) external view returns (uint256 epochNo);
 
     /**
+     * @param Get the preferred whinger of the infra market given.
+     * @param trading contract to get the amount for.
+     */
+    function whingerPreferredWinner(address trading) external view returns (bytes8);
+
+    /**
+     * @param Get the caller preferred outcome of the infra market given.
+     * @param trading contract to get the amount for.
+     */
+    function callerPreferredOutcome(address trading) external view returns (bytes8);
+
+    /**
      * @notice Reveal a previously made commitment. Should be done in the revealing
      *         period (two days after the first whinge, for two days).
      * @param tradingAddr to use as the place for the commitments to be tracked.

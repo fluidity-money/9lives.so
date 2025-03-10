@@ -49,7 +49,10 @@ proptest! {
         share_impl_addr in strat_address_not_empty(),
         should_buffer_time in any::<bool>(),
         fusdc_mint_amt in strat_tiny_u256(),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        fee_creator in 0u64..100,
+        fee_minter in 0u64..100,
+        fee_lp in 0u64..100
     ) {
         let outcome_ids = (0..c.outcome_list.len())
             .map(|x| c.outcome_list.get(x).unwrap())
@@ -67,7 +70,10 @@ proptest! {
             block_timestamp() + 100,
             fee_recipient_addr,
             share_impl_addr,
-            should_buffer_time
+            should_buffer_time,
+            fee_creator,
+            fee_minter,
+            fee_lp,
         )
             .unwrap();
         let share_addr = c.share_addr(outcome_a).unwrap();

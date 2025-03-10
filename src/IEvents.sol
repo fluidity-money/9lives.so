@@ -94,6 +94,12 @@ interface IEvents {
         uint256 bal
     );
 
+    event Whinged(
+        address indexed trading,
+        bytes8 indexed preferredOutcome,
+        address indexed whinger
+    );
+
      /// @notice CampaignEscaped, because a campaign is in an
      /// indeterminate state! The DAO may be needed to step in.
     event CampaignEscaped(address indexed tradingAddr);

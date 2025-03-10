@@ -284,6 +284,11 @@ impl StorageInfraMarket {
         e.campaign_who_whinged.set(bond_recipient);
         e.campaign_when_whinged.set(U64::from(block_timestamp()));
         e.campaign_whinger_preferred_winner.set(preferred_outcome);
+        evm::log(events::Whinged {
+            trading: trading_addr,
+            preferredOutcome: preferred_outcome,
+            whinger: msg_sender(),
+        });
         Ok(BOND_FOR_WHINGE)
     }
 
@@ -334,7 +339,9 @@ impl StorageInfraMarket {
             }
             // If the winner was called, but no-one whinged, and we're outside two days,
             // then we're callable.
-            _ if time_since_called > TWO_DAYS && !has_whinged && !is_winner_set => (InfraMarketState::Closable, 0),
+            _ if time_since_called > TWO_DAYS && !has_whinged && !is_winner_set => {
+                (InfraMarketState::Closable, 0)
+            }
             // If the winner was declared, two days has passed, and we're in a state where
             // no-one whinged, then we need to assume we were closed.
             _ if time_since_called > TWO_DAYS && !has_whinged => (InfraMarketState::Closed, 0),
@@ -440,6 +447,18 @@ impl StorageInfraMarket {
 
     pub fn epoch_number(&self, trading_addr: Address) -> R<U256> {
         Ok(self.cur_epochs.get(trading_addr))
+    }
+
+    pub fn whinger_preferred_winner(&self, trading_addr: Address) -> R<FixedBytes<8>> {
+        let epochs = self.epochs.getter(trading_addr);
+        let e = epochs.getter(self.cur_epochs.get(trading_addr));
+        Ok(e.campaign_whinger_preferred_winner.get())
+    }
+
+    pub fn caller_preferred_outcome(&self, trading_addr: Address) -> R<FixedBytes<8>> {
+        let epochs = self.epochs.getter(trading_addr);
+        let e = epochs.getter(self.cur_epochs.get(trading_addr));
+        Ok(e.campaign_what_called.get())
     }
 
     pub fn reveal(
@@ -656,7 +675,7 @@ impl StorageInfraMarket {
             // connected to let them know that there was a winner.
             trading_call::decide(trading_addr, voting_power_winner)?;
         }
-        evm::log(events::Declared{
+        evm::log(events::Declared {
             trading: trading_addr,
             winningOutcome: voting_power_winner,
             feeRecipient: fee_recipient,

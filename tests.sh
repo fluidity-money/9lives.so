@@ -2,8 +2,8 @@
 
 #make solidity
 
-#cargo test --features testing,trading-backend-dpm -- test_e2e_dpm_should_not_be_able_to_burn $@
-cargo test --features testing,trading-backend-amm -- test_e2e_amm_burning $@
+cargo test --features testing,trading-backend-dpm $@
+cargo test --features testing,trading-backend-amm $@
 #cargo mutants --features testing,trading-backend-dpm $@
 
 if ! [ -z "$SPN_TEST_NO_JS" ]; then

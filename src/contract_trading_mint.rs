@@ -65,17 +65,17 @@ impl StorageTrading {
         r: FixedBytes<32>,
         s: FixedBytes<32>,
     ) -> R<U256> {
-        //assert_or!(!fusdc_amt.is_zero(), Error::ZeroAmount);
-        let share_addr = proxy::get_share_addr(
-            self.factory_addr.get(),
-            contract_address(), // Address of this contract, the Trading contract.
-            self.share_impl.get(),
-            outcome,
-        );
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg_attr(feature = "trading-backend-dpm", allow(unreachable_code))]
         {
+            //assert_or!(!fusdc_amt.is_zero(), Error::ZeroAmount);
+            let share_addr = proxy::get_share_addr(
+                self.factory_addr.get(),
+                contract_address(), // Address of this contract, the Trading contract.
+                self.share_impl.get(),
+                outcome,
+            );
             // No risk of overflow here, since there won't be that amount of shares
             // in circulation.
             let share_amt = self.internal_adjust(
@@ -96,46 +96,6 @@ impl StorageTrading {
                 ));
             }
             Ok(share_amt)
-        }
-    }
-
-    pub fn add_liquidity_permit(
-        &mut self,
-        fusdc: U256,
-        recipient: Address,
-        deadline: U256,
-        v: u8,
-        r: FixedBytes<32>,
-        s: FixedBytes<32>,
-    ) -> R<Vec<(FixedBytes<8>, U256)>> {
-        assert_or!(!fusdc.is_zero(), Error::ZeroAmount);
-        if deadline.is_zero() {
-            c!(fusdc_call::take_from_sender(fusdc));
-        } else {
-            c!(fusdc_call::take_from_sender_permit(
-                fusdc, deadline, v, r, s
-            ))
-        }
-        // Add liquidity to every outcome, AMM only.
-        #[cfg(feature = "trading-backend-dpm")]
-        return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        {
-            let shares = self.internal_add_liquidity_permit(fusdc)?;
-            for (outcome_id, value) in shares.iter() {
-                // Send the user their shares from each outcome they LP'd.
-                c!(share_call::mint(
-                    recipient,
-                    proxy::get_share_addr(
-                        self.factory_addr.get(),
-                        contract_address(), // Address of this contract, the Trading contract.
-                        self.share_impl.get(),
-                        *outcome_id,
-                    ),
-                    *value
-                ));
-            }
-            Ok(shares)
         }
     }
 
@@ -412,108 +372,6 @@ impl StorageTrading {
             let fusdc = self.global_invested.get() / self.outcome_total_shares.get(outcome_id);
             Ok(fusdc * share_bal)
         }
-    }
-
-    pub fn internal_add_liquidity_permit(&mut self, value: U256) -> R<Vec<(FixedBytes<8>, U256)>> {
-        let mut greatest_shares_id = self.outcome_list.get(0).unwrap();
-        let mut greatest_shares_amt = U256::ZERO;
-        let mut lowest_shares_id = self.outcome_list.get(0).unwrap();
-        let mut lowest_shares_amt = U256::MAX;
-        for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
-            let shares = self
-                .outcome_shares
-                .get(o)
-                .checked_add(value)
-                .ok_or(Error::CheckedAddOverflow)?;
-            self.outcome_shares.setter(o).set(shares);
-            if shares > greatest_shares_amt {
-                greatest_shares_id = o;
-                greatest_shares_amt = shares;
-            }
-            if shares < lowest_shares_amt {
-                lowest_shares_id = o;
-                lowest_shares_amt = shares;
-            }
-        }
-        let least_likely_price = self.internal_amm_price(greatest_shares_id)?;
-        let most_likely_price = self.internal_amm_price(lowest_shares_id)?;
-        for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
-            let x = self.outcome_shares.get(o);
-            self.outcome_shares
-                .setter(o)
-                .set(c!(x.checked_add(x).ok_or(Error::CheckedAddOverflow)));
-            let x = self.outcome_total_shares.get(o);
-            self.outcome_total_shares
-                .setter(o)
-                .set(c!(x.checked_add(x).ok_or(Error::CheckedAddOverflow)));
-        }
-        //self.shares[most_likely] = self.shares[least_likely]*self.outcome_prices[least_likely]/self.outcome_prices[most_likely]
-        {
-            let x = self
-                .outcome_shares
-                .get(greatest_shares_id)
-                .checked_mul(
-                    least_likely_price
-                        .checked_div(most_likely_price)
-                        .ok_or(Error::CheckedDivOverflow)?,
-                )
-                .ok_or(Error::CheckedMulOverflow)?;
-            self.outcome_shares.setter(lowest_shares_id).set(x);
-        }
-        let product = (0..self.outcome_list.len())
-            .map(|x| self.outcome_shares.get(self.outcome_list.get(x).unwrap()))
-            .try_fold(U256::ZERO, |acc, x| {
-                acc.checked_mul(x).ok_or(Error::CheckedMulOverflow)
-            })?;
-        self.amm_liquidity
-            .set(maths::rooti(product, self.outcome_list.len() as u32));
-        // Start to send out the shares that we minted, as well as return the identifiers of what we sent.
-        (0..self.outcome_list.len())
-            .map(|o| {
-                let outcome_id = self.outcome_list.get(o).unwrap();
-                Ok((outcome_id, value))
-            })
-            .collect::<Result<Vec<_>, _>>()
-    }
-
-    pub fn internal_remove_liquidity(
-        &mut self,
-        value: U256,
-        recipient: Address,
-    ) -> R<Vec<(FixedBytes<8>, U256)>> {
-        // The most likely is the outcome with the least amount of shares.
-        let mut most_likely_shares_id = self.outcome_list.get(0).unwrap();
-        let mut most_likely_shares_amt = U256::ZERO;
-        // The least likely is the outcome with the most amount of shares.
-        let mut least_likely_shares_id = self.outcome_list.get(0).unwrap();
-        let mut least_likely_shares_amt = U256::MAX;
-        for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
-            let shares = self.outcome_shares.get(o);
-            if shares > least_likely_shares_amt {
-                least_likely_shares_id = o;
-                most_likely_shares_amt = shares;
-            }
-            if shares < most_likely_shares_amt {
-                most_likely_shares_id = o;
-                most_likely_shares_amt = shares;
-            }
-        }
-        let liquidity_shares_val = (self.amm_liquidity.get() / least_likely_shares_amt) * value;
-        let most_likely_price = c!(self.internal_amm_price(most_likely_shares_id));
-        for o in (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap()) {
-            if o != most_likely_shares_id {
-                let price = c!(self.internal_amm_price(o));
-                self.outcome_shares
-                    .setter(o)
-                    .set((most_likely_shares_amt * most_likely_price) / price);
-            }
-        }
-        let product = (0..self.outcome_list.len()).fold(U256::from(1), |product, x| {
-            product * self.outcome_shares.get(self.outcome_list.get(x).unwrap())
-        });
-        self.amm_liquidity
-            .set(maths::rooti(product, self.outcome_list.len() as u32));
-        unimplemented!()
     }
 }
 

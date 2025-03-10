@@ -63,7 +63,10 @@ proptest! {
             any::<u8>(), any::<u8>(), any::<u8>(), any::<u8>(),
         ],
         outcome_winner in prop_oneof![Just(Outcome::Outcome1), Just(Outcome::Outcome2)],
-        purchase_int_1 in strat_action_amount_purchasing(1000)
+        purchase_int_1 in strat_action_amount_purchasing(1000),
+        fee_creator in 0u64..100,
+        fee_minter in 0u64..100,
+        fee_lp in 0u64..100
     ) {
         if outcome_1_id == outcome_2_id {
             return Err(TestCaseError::reject("outcome ids duplicated"));
@@ -84,7 +87,10 @@ proptest! {
                 block_timestamp() + 2,
                 msg_sender(),
                 Address::ZERO,
-                false
+                false,
+                fee_creator,
+                fee_minter,
+                fee_lp
             )
                 .unwrap();
             let mut fusdc_vested = U256::ZERO;

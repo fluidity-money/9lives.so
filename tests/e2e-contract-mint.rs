@@ -6,12 +6,12 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256};
 #[allow(unused)]
 use lib9lives::{
     erc20_call,
+    fees::*,
     host::{ts_add_time, with_contract},
     immutables::{DAO_ADDR, FUSDC_ADDR},
-    should_spend_fusdc_sender, strat_storage_trading, testing_addrs,
+    interactions_clear_after, should_spend_fusdc_sender, strat_storage_trading, testing_addrs,
+    testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_fixed_bytes, strat_tiny_u256},
-    interactions_clear_after,
-    testing_addrs::*
 };
 
 use proptest::proptest;
@@ -31,6 +31,9 @@ fn test_e2e_mint_dpm() {
             DAO_ADDR,             // The fee recipient.
             testing_addrs::SHARE, // The share impl.
             false,
+            DEFAULT_FEE_CREATOR_MINT_PCT,
+            0,
+            0,
         )
         .unwrap();
         // Check if the shares were correctly set.
@@ -73,6 +76,9 @@ fn test_e2e_mint_amm() {
             DAO_ADDR,             // The fee recipient.
             testing_addrs::SHARE, // The share impl.
             false,
+            DEFAULT_FEE_CREATOR_MINT_PCT,
+            0,
+            0,
         )
         .unwrap();
         for (i, outcome_id) in outcomes.iter().enumerate() {
@@ -186,7 +192,10 @@ proptest! {
         outcome_2 in strat_fixed_bytes::<8>(),
         mint_value in strat_tiny_u256(),
         secs_since in 1..100_000_000u64,
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        fee_creator in 0u64..100,
+        fee_minter in 0u64..100,
+        fee_lp in 0u64..100
     ) {
         c.created.set(false);
         c.is_shutdown.set(false);
@@ -198,6 +207,9 @@ proptest! {
             DAO_ADDR,  // The fee recipient.
             testing_addrs::SHARE, // The share implementation
             false,
+            fee_creator,
+            fee_minter,
+            fee_lp,
         )
         .unwrap();
         ts_add_time(secs_since);
@@ -208,7 +220,7 @@ proptest! {
             U256::ZERO,
             0,
             FixedBytes::<32>::ZERO,
-            FixedBytes::<32>::ZERO
+            FixedBytes::<32>::ZERO,
          ));
     }
 
