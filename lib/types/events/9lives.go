@@ -109,6 +109,14 @@ type (
 		Bal      Number  `json:"bal"`
 	}
 
+	EventWhinged struct {
+		Event
+
+		TradingAddr      Address `json:"trading_addr"`
+		PreferredOutcome Bytes   `json:"preferred_outcome"`
+		Whinger     Address `json:"whinger"`
+	}
+
 	EventCampaignEscaped struct {
 		Event
 
@@ -118,9 +126,9 @@ type (
 	EventDeclared struct {
 		Event
 
-		TradingAddr Address `json:"trading_addr"`
-		WinningOutcome Bytes `json:"winning_outcome"`
-		FeeRecipient Address `json:"fee_recipient"`
+		TradingAddr    Address `json:"trading_addr"`
+		WinningOutcome Bytes   `json:"winning_outcome"`
+		FeeRecipient   Address `json:"fee_recipient"`
 	}
 
 	EventLockedUp struct {

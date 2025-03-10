@@ -19,26 +19,27 @@ var abiB []byte
 var abi, abiErr = ethAbi.JSON(bytes.NewReader(abiB))
 
 var (
-	TopicNewTrading2     = abi.Events["NewTrading2"].ID
-	TopicOutcomeCreated  = abi.Events["OutcomeCreated"].ID
-	TopicOutcomeDecided  = abi.Events["OutcomeDecided"].ID
-	TopicSharesMinted    = abi.Events["SharesMinted"].ID
-	TopicPayoffActivated = abi.Events["PayoffActivated"].ID
-	TopicDeadlineExtension = abi.Events["DeadlineExtension"].ID
-	TopicMarketCreated2 = abi.Events["MarketCreated2"].ID
-	TopicCallMade = abi.Events["CallMade"].ID
-	TopicInfraMarketClosed = abi.Events["InfraMarketClosed"].ID
+	TopicNewTrading2         = abi.Events["NewTrading2"].ID
+	TopicOutcomeCreated      = abi.Events["OutcomeCreated"].ID
+	TopicOutcomeDecided      = abi.Events["OutcomeDecided"].ID
+	TopicSharesMinted        = abi.Events["SharesMinted"].ID
+	TopicPayoffActivated     = abi.Events["PayoffActivated"].ID
+	TopicDeadlineExtension   = abi.Events["DeadlineExtension"].ID
+	TopicMarketCreated2      = abi.Events["MarketCreated2"].ID
+	TopicCallMade            = abi.Events["CallMade"].ID
+	TopicInfraMarketClosed   = abi.Events["InfraMarketClosed"].ID
 	TopicDAOMoneyDistributed = abi.Events["DAOMoneyDistributed"].ID
-	TopicCommitted = abi.Events["Committed"].ID
-	TopicCommitmentRevealed = abi.Events["CommitmentRevealed"].ID
-	TopicCampaignEscaped = abi.Events["CampaignEscaped"].ID
-	TopicLockedUp = abi.Events["LockedUp"].ID
-	TopicDeclared = abi.Events["Declared"].ID
-	TopicWithdrew = abi.Events["Withdrew"].ID
-	TopicSlashed = abi.Events["Slashed"].ID
-	TopicFrozen = abi.Events["Frozen"].ID
-	TopicRequested = abi.Events["Requested"].ID
-	TopicConcluded = abi.Events["Concluded"].ID
+	TopicCommitted           = abi.Events["Committed"].ID
+	TopicCommitmentRevealed  = abi.Events["CommitmentRevealed"].ID
+	TopicWhinged             = abi.Events["Whinged"].ID
+	TopicCampaignEscaped     = abi.Events["CampaignEscaped"].ID
+	TopicLockedUp            = abi.Events["LockedUp"].ID
+	TopicDeclared            = abi.Events["Declared"].ID
+	TopicWithdrew            = abi.Events["Withdrew"].ID
+	TopicSlashed             = abi.Events["Slashed"].ID
+	TopicFrozen              = abi.Events["Frozen"].ID
+	TopicRequested           = abi.Events["Requested"].ID
+	TopicConcluded           = abi.Events["Concluded"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
@@ -149,8 +150,8 @@ func UnpackMarketCreated2(topic1, topic2, topic3 ethCommon.Hash, d []byte) (*eve
 
 func UnpackCallMade(topic1, topic2, topic3 ethCommon.Hash) (*events.EventCallMade, error) {
 	return &events.EventCallMade{
-		TradingAddr: hashToAddr(topic1),
-		Winner:      hashToBytes8(topic2),
+		TradingAddr:        hashToAddr(topic1),
+		Winner:             hashToBytes8(topic2),
 		IncentiveRecipient: hashToAddr(topic3),
 	}, nil
 }
@@ -200,6 +201,14 @@ func UnpackCommitmentRevealed(topic1, topic2, topic3 ethCommon.Hash, b []byte) (
 	}, nil
 }
 
+func UnpackWhinged(topic1, topic2, topic3 ethCommon.Hash) (*events.EventWhinged, error) {
+	return &events.EventWhinged{
+		TradingAddr:      hashToAddr(topic1),
+		PreferredOutcome: hashToBytes32(topic2),
+		Whinger:          hashToAddr(topic3),
+	}, nil
+}
+
 func UnpackCampaignEscaped(topic1 ethCommon.Hash) (*events.EventCampaignEscaped, error) {
 	return &events.EventCampaignEscaped{
 		TradingAddr: hashToAddr(topic1),
@@ -208,9 +217,9 @@ func UnpackCampaignEscaped(topic1 ethCommon.Hash) (*events.EventCampaignEscaped,
 
 func UnpackDeclared(topic1, topic2, topic3 ethCommon.Hash) (*events.EventDeclared, error) {
 	return &events.EventDeclared{
-		TradingAddr: hashToAddr(topic1),
+		TradingAddr:    hashToAddr(topic1),
 		WinningOutcome: hashToBytes8(topic2),
-		FeeRecipient: hashToAddr(topic3),
+		FeeRecipient:   hashToAddr(topic3),
 	}, nil
 }
 
@@ -246,7 +255,7 @@ func UnpackFrozen(topic1, topic2 ethCommon.Hash) (*events.EventFrozen, error) {
 func UnpackRequested(topic1, topic2 ethCommon.Hash) (*events.EventRequested, error) {
 	return &events.EventRequested{
 		Trading: hashToAddr(topic1),
-		Ticket: hashToNumber(topic2),
+		Ticket:  hashToNumber(topic2),
 	}, nil
 }
 

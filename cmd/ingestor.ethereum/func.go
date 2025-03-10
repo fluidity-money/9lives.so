@@ -38,6 +38,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicDAOMoneyDistributed,
 	events.TopicCommitted,
 	events.TopicCommitmentRevealed,
+	events.TopicWhinged,
 	events.TopicCampaignEscaped,
 	events.TopicLockedUp,
 	events.TopicWithdrew,
@@ -305,6 +306,10 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		a, err = events.UnpackCommitmentRevealed(topic1, topic2, topic3, data)
 		table = "ninelives_events_commitment_revealed"
 		logEvent("CommitmentRevealed")
+	case events.TopicWhinged:
+		a, err = events.UnpackWhinged(topic1, topic2, topic3)
+		table = "ninelives_events_whinged"
+		logEvent("Whinged")
 	case events.TopicCampaignEscaped:
 		a, err = events.UnpackCampaignEscaped(topic1)
 		table = "ninelives_events_campaign_escaped"

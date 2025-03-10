@@ -49,6 +49,14 @@ contract MockCallInfraMarket is IInfraMarket {
         states[tradingAddr] = InfraMarketState.Predicting;
     }
 
+    function callerPreferredOutcome(address) external pure returns (bytes8) {
+        return bytes8(0);
+    }
+
+    function whingerPreferredWinner(address) external pure returns (bytes8) {
+        return bytes8(0);
+    }
+
     function curOutcomeVestedArb(
         address /* tradingAddr */,
         bytes8 /* outcome */

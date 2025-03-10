@@ -553,6 +553,31 @@
 	},
 	{
 		"type": "event",
+		"name": "Whinged",
+		"inputs": [
+			{
+				"name": "trading",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "preferredOutcome",
+				"type": "bytes8",
+				"indexed": true,
+				"internalType": "bytes8"
+			},
+			{
+				"name": "whinger",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
 		"name": "Withdrew",
 		"inputs": [
 			{
