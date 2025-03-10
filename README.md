@@ -248,7 +248,7 @@ generate these, run `./print-error-table.sh`.
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0xE307205f1558aCE077EADb57DD9e1D4cFf4D3CC8` |
 | Buy helper2                   | `0x98E5fEe28CB760A9a97391F319536175700D7524` |
-| SARP Signaller                | `0xa0Dc021Cbf8fe4062533D3Ee126Cc1a6Ab43C90d` |
+| SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 
 ### Superposition testnet
 
@@ -279,3 +279,4 @@ generate these, run `./print-error-table.sh`.
 | Beauty contest proxy          | `0x29397730776b3d39ad06a9184b9e0d915dcc84ae` |
 | Sarp AI Resolver              | `0x0000000000000000000000000000000000000000` |
 | Buy helper2                   | `0xcd790242f355380dFAa8f0E98843691264143f04` |
+| SARP Signaller                | `0x2137B4C506f0d7eF2A562B02Be9110a4a3A93bC9` |
