@@ -26,9 +26,10 @@ export default function PositionsGroup({
     outcomes,
     account,
   });
+  const outcomeIds = outcomes.map((o) => o.identifier);
   const { data: sharePrices } = useSharePrices({
     tradingAddr,
-    outcomeIds: outcomes.map((o) => o.identifier),
+    outcomeIds,
   });
   const { data: positionsHistory } = usePositionHistory(
     positions?.map((p) => p.id),
@@ -52,6 +53,8 @@ export default function PositionsGroup({
           data={{ ...item, campaignName, campaignId, winner }}
           price={sharePrices?.find((o) => o.id === item.id)?.price}
           history={positionsHistory?.filter((p) => p.id === item.id)}
+          tradingAddr={tradingAddr}
+          outcomes={outcomes}
         />
       ))}
     </>

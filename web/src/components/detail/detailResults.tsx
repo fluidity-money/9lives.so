@@ -44,7 +44,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
     shareAddr: winner.share.address,
     tradingAddr: data.poolAddress,
     outcomeId: winner.identifier,
-    outcomeIds: data.outcomes.map((o) => o.identifier),
+    outcomes: data.outcomes,
   });
   const totalVolumeOfWinner =
     data.investmentAmounts.find((ia) => ia.id === data.winner)?.usdc ?? 0;
@@ -75,7 +75,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
     if (!account) return connect();
     try {
       setIsClaiming(true);
-      await claim(account, data.outcomes, accountShares);
+      await claim(account, accountShares);
     } finally {
       setIsClaiming(false);
     }

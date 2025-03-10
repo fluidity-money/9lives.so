@@ -7,10 +7,16 @@ import { usePortfolioStore } from "@/stores/portfolioStore";
 import formatFusdc from "@/utils/formatFusdc";
 import Button from "../themed/button";
 import DownCaret from "#/icons/down-caret.svg";
+import useClaim from "@/hooks/useClaim";
+import { useActiveAccount } from "thirdweb/react";
+import { Outcome } from "@/types";
+import useConnectWallet from "@/hooks/useConnectWallet";
 export default function PositionRow({
   data,
   price,
   history,
+  tradingAddr,
+  outcomes,
 }: {
   data: {
     id: `0x${string}`;
@@ -24,7 +30,18 @@ export default function PositionRow({
   };
   price?: string;
   history?: { usdc: number; share: number; id: string; txHash: string }[];
+  outcomes: Outcome[];
+  tradingAddr: `0x${string}`;
 }) {
+  const account = useActiveAccount();
+  const { claim } = useClaim({
+    shareAddr: data.shareAddress,
+    outcomeId: data.id,
+    tradingAddr,
+    outcomes,
+  });
+  const { connect } = useConnectWallet();
+  const [isClaiming, setIsClaiming] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const historicalValue = history?.reduce((acc, v) => acc + v.usdc, 0) ?? 0;
   const averageShareCost = +formatFusdc(historicalValue, 6) / +data.balance;
@@ -42,6 +59,15 @@ export default function PositionRow({
       });
     }
   }, [price, data.id, data.balance, addPosition]);
+  async function handleClaim() {
+    if (!account) return connect();
+    try {
+      setIsClaiming(true);
+      await claim(account, data.balance);
+    } finally {
+      setIsClaiming(false);
+    }
+  }
   return (
     <>
       <tr>
@@ -75,12 +101,12 @@ export default function PositionRow({
                     </span>
                   )}
                   {data.winner && data.winner === data.id && (
-                    <span className="font-notmal ml-1 bg-9green p-0.5 font-geneva text-[10px] uppercase tracking-wide">
+                    <span className="ml-1 bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
                       Winner
                     </span>
                   )}
                   {data.winner && data.winner !== data.id && (
-                    <span className="font-notmal ml-1 bg-9red p-0.5 font-geneva text-[10px] uppercase tracking-wide">
+                    <span className="ml-1 bg-9red p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
                       Defeated
                     </span>
                   )}
@@ -159,7 +185,12 @@ export default function PositionRow({
         </td>
         <td>
           {data.winner === data.id ? (
-            <Button title="Claim Reward" intent={"yes"} />
+            <Button
+              title={isClaiming ? "Claiming..." : "Claim Reward"}
+              intent={"yes"}
+              onClick={handleClaim}
+              disabled={isClaiming}
+            />
           ) : historicalValue ? (
             <div className="flex flex-col gap-1">
               <span

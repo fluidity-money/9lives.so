@@ -15,20 +15,16 @@ const useClaim = ({
   shareAddr,
   tradingAddr,
   outcomeId,
-  outcomeIds,
+  outcomes,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
-  outcomeIds: string[];
+  outcomes: Outcome[];
 }) => {
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);
-  const claim = async (
-    account: Account,
-    outcomes: Outcome[],
-    accountShare?: string,
-  ) =>
+  const claim = async (account: Account, accountShare?: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -68,6 +64,7 @@ const useClaim = ({
             transaction: claimTx,
             account,
           });
+          const outcomeIds = outcomes.map((outcome) => outcome.identifier);
           removePosition(outcomeId);
           queryClient.invalidateQueries({
             queryKey: ["positions", tradingAddr, outcomes, account],
