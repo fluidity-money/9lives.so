@@ -190,6 +190,7 @@ export const requestUserParticipated = (address: string) =>
       name: true,
       picture: true,
       poolAddress: true,
+      winner: true,
       outcomes: {
         name: true,
         identifier: true,

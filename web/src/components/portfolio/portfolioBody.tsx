@@ -20,7 +20,9 @@ export default function PortfolioBody() {
       (pc) =>
         ({
           campaignName: pc?.content?.name,
+          campaignId: pc?.campaignId,
           tradingAddr: pc?.content?.poolAddress,
+          winner: pc?.content?.winner,
           outcomes: pc?.content?.outcomes,
         }) as PositionsProps,
     ) ?? [];

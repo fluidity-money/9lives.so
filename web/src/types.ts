@@ -240,8 +240,10 @@ class OutcomeDto implements Outcome {
 }
 export type PositionsProps = {
   campaignName?: string;
+  campaignId?: string;
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
+  winner?: string;
 };
 
 export type Activity = NonNullable<

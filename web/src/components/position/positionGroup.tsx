@@ -12,6 +12,8 @@ export default function PositionsGroup({
   tradingAddr,
   outcomes,
   campaignName,
+  campaignId,
+  winner,
 }: PositionsProps) {
   const account = useActiveAccount();
   const {
@@ -42,13 +44,12 @@ export default function PositionsGroup({
         subtitle="Start Growing Your Portfolio."
       />
     );
-
   return (
     <>
       {positions?.map((item, idx) => (
         <PositionRow
           key={idx}
-          data={{ ...item, campaignName }}
+          data={{ ...item, campaignName, campaignId, winner }}
           price={sharePrices?.find((o) => o.id === item.id)?.price}
           history={positionsHistory?.filter((p) => p.id === item.id)}
         />

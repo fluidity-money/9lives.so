@@ -26,6 +26,8 @@ export default function PositionBody({
             tradingAddr={group.tradingAddr}
             outcomes={group.outcomes}
             campaignName={group.campaignName}
+            campaignId={group.campaignId}
+            winner={group.winner}
           />
         ))
       )}
