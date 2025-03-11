@@ -20,7 +20,9 @@ export const usePortfolioStore = create<PortfolioStore>()((set) => ({
     set(({ positions }) => {
       let updated = false;
       const _positions = positions.map((p) =>
-        p.outcomeId === outcomeId ? ((updated = true), { ...p, value }) : p,
+        p.outcomeId === outcomeId
+          ? ((updated = true), { ...p, value, PnL })
+          : p,
       );
       if (!updated) _positions.push({ outcomeId, value, PnL });
       const positionsValue = _positions.reduce((acc, v) => acc + v.value, 0);
