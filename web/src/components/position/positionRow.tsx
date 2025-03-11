@@ -11,6 +11,7 @@ import useClaim from "@/hooks/useClaim";
 import { useActiveAccount } from "thirdweb/react";
 import { Outcome } from "@/types";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import { requestCampaignById } from "@/providers/graphqlClient";
 export default function PositionRow({
   data,
   price,
@@ -51,15 +52,45 @@ export default function PositionRow({
   const percentageChange = Math.abs(
     (PnL / +formatFusdc(historicalValue, 6)) * 100,
   ).toFixed(2);
+  const isWinner = data.winner && data.winner === data.id;
   useEffect(() => {
-    if (price && data.id && data.balance) {
-      addPosition({
-        outcomeId: data.id,
-        value: Number(price) * Number(data.balance),
-        PnL,
-      });
+    if (price && data.id && data.balance && data.campaignId) {
+      (async function (campaignId: string) {
+        try {
+          if (isWinner && historicalValue) {
+            const campaign = await requestCampaignById(campaignId);
+            if (!campaign) return;
+            const totalSharesOfWinner =
+              campaign.investmentAmounts.find((i) => i?.id === data.winner)
+                ?.share ?? 0;
+            const avgPrice = campaign.totalVolume / totalSharesOfWinner;
+            const reward = data.balance ? +data.balance * avgPrice : 0;
+            addPosition({
+              outcomeId: data.id,
+              value: Number(price) * Number(data.balance),
+              PnL: reward - +formatFusdc(historicalValue, 2),
+            });
+          } else {
+            addPosition({
+              outcomeId: data.id,
+              value: Number(price) * Number(data.balance),
+              PnL,
+            });
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      })(data.campaignId);
     }
-  }, [price, data.id, data.balance, addPosition]);
+  }, [
+    price,
+    data.id,
+    data.balance,
+    handleTotalPnL,
+    data.campaignId,
+    isWinner,
+    historicalValue,
+  ]);
   async function handleClaim() {
     if (!account) return connect();
     try {
@@ -101,7 +132,7 @@ export default function PositionRow({
                       Concluded
                     </span>
                   )}
-                  {data.winner && data.winner === data.id && (
+                  {isWinner && (
                     <span className="ml-1 bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
                       Winner
                     </span>
