@@ -86,8 +86,10 @@ export default function PositionRow({
     price,
     data.id,
     data.balance,
-    handleTotalPnL,
+    PnL,
+    addPosition,
     data.campaignId,
+    data.winner,
     isWinner,
     historicalValue,
   ]);
