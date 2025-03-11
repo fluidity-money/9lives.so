@@ -13,6 +13,7 @@ import { EVENTS, track } from "@/utils/analytics";
 import useAchievmentCount from "@/hooks/useAchievementCount";
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import useTotalVolume from "@/hooks/useTotalVolume";
+import { combineClass } from "@/utils/combineClass";
 
 export default function PortfolioHeader() {
   const account = useActiveAccount();
@@ -26,6 +27,7 @@ export default function PortfolioHeader() {
   const { connect } = useConnectWallet();
   const { data: achievmentCount } = useAchievmentCount(account?.address);
   const positionsValue = usePortfolioStore((s) => s.positionsValue);
+  const PnL = usePortfolioStore((s) => s.totalPnL);
   const { data: totalVolume } = useTotalVolume(account?.address);
   return (
     <div className="flex flex-col gap-4">
@@ -98,7 +100,14 @@ export default function PortfolioHeader() {
         <div className="flex gap-4 md:gap-[70px]">
           <div className="flex flex-col gap-1">
             <span className="text-xs">PnL</span>
-            <span className="text-[#808080] md:text-xl">Coming Soon</span>
+            <span
+              className={combineClass(
+                PnL >= 0 ? "text-[#64b650]" : "text-[#fd7878]",
+                "md:text-2xl",
+              )}
+            >
+              ${PnL.toFixed(2)}
+            </span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs">Volume</span>

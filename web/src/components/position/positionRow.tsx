@@ -56,6 +56,7 @@ export default function PositionRow({
       addPosition({
         outcomeId: data.id,
         value: Number(price) * Number(data.balance),
+        PnL,
       });
     }
   }, [price, data.id, data.balance, addPosition]);
