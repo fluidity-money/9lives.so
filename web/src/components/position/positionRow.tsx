@@ -54,29 +54,45 @@ export default function PositionRow({
   ).toFixed(2);
   const isWinner = data.winner && data.winner === data.id;
   useEffect(() => {
-    if (price && data.id && data.balance && data.campaignId) {
+    if (price && data.id && data.balance && data.campaignId && !isWinner) {
+      addPosition({
+        outcomeId: data.id,
+        value: Number(price) * Number(data.balance),
+        PnL,
+      });
+    }
+  }, [
+    price,
+    data.id,
+    data.balance,
+    PnL,
+    addPosition,
+    data.campaignId,
+    isWinner,
+  ]);
+  useEffect(() => {
+    if (
+      price &&
+      data.id &&
+      data.balance &&
+      data.campaignId &&
+      isWinner &&
+      historicalValue
+    ) {
       (async function (campaignId: string) {
         try {
-          if (isWinner && historicalValue) {
-            const campaign = await requestCampaignById(campaignId);
-            if (!campaign) return;
-            const totalSharesOfWinner =
-              campaign.investmentAmounts.find((i) => i?.id === data.winner)
-                ?.share ?? 0;
-            const avgPrice = campaign.totalVolume / totalSharesOfWinner;
-            const reward = data.balance ? +data.balance * avgPrice : 0;
-            addPosition({
-              outcomeId: data.id,
-              value: Number(price) * Number(data.balance),
-              PnL: reward - +formatFusdc(historicalValue, 2),
-            });
-          } else {
-            addPosition({
-              outcomeId: data.id,
-              value: Number(price) * Number(data.balance),
-              PnL,
-            });
-          }
+          const campaign = await requestCampaignById(campaignId);
+          if (!campaign) return;
+          const totalSharesOfWinner =
+            campaign.investmentAmounts.find((i) => i?.id === data.id)?.share ??
+            0;
+          const avgPrice = campaign.totalVolume / totalSharesOfWinner;
+          const reward = data.balance ? +data.balance * avgPrice : 0;
+          addPosition({
+            outcomeId: data.id,
+            value: Number(price) * Number(data.balance),
+            PnL: reward - +formatFusdc(historicalValue, 2),
+          });
         } catch (error) {
           console.error(error);
         }
@@ -86,10 +102,8 @@ export default function PositionRow({
     price,
     data.id,
     data.balance,
-    PnL,
     addPosition,
     data.campaignId,
-    data.winner,
     isWinner,
     historicalValue,
   ]);
