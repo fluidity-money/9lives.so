@@ -14,6 +14,7 @@ import useConnectWallet from "@/hooks/useConnectWallet";
 import { requestCampaignById } from "@/providers/graphqlClient";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
+import UsdIcon from "#/icons/usd.svg";
 export default function PositionRow({
   data,
   price,
@@ -57,6 +58,7 @@ export default function PositionRow({
     (PnL / +formatFusdc(historicalValue, 6)) * 100,
   ).toFixed(2);
   const isWinner = data.winner && data.winner === data.id;
+  const [reward, setReward] = useState<number>();
   useEffect(() => {
     if (price && data.id && data.balance && data.campaignId && !isWinner) {
       addPosition({
@@ -92,9 +94,10 @@ export default function PositionRow({
             0;
           const avgPrice = campaign.totalVolume / totalSharesOfWinner;
           const reward = data.balance ? +data.balance * avgPrice : 0;
+          setReward(reward);
           addPosition({
             outcomeId: data.id,
-            value: Number(price) * Number(data.balance),
+            value: reward,
             PnL: reward - +formatFusdc(historicalValue, 2),
           });
         } catch (error) {
@@ -124,96 +127,98 @@ export default function PositionRow({
     <>
       <tr>
         <td
-          className="flex cursor-pointer items-center justify-between bg-[#DDDDDD] p-2"
           onClick={() => setShowHistory(!showHistory)}
+          className="cursor-pointer bg-[#DDDDDD] align-baseline"
         >
-          <div className="flex items-center gap-2">
-            {!detailPage &&
-            (data.outcomePic ||
-              (!data.outcomePic &&
-                (data.name === "Yes" || data.name === "No"))) ? (
-              <Image
-                src={
-                  !data.outcomePic
-                    ? data.name === "Yes"
-                      ? YesOutcomeImg
-                      : NoOutcomeImg
-                    : data.outcomePic
-                }
-                alt={data.name + "_" + data.campaignName}
-                width={40}
-                height={40}
-                className="size-10 self-start border border-9black bg-9layer"
-              />
-            ) : null}
-            <div className="flex flex-col gap-1">
-              {data.campaignName ? (
-                <p className="font-chicago text-xs font-bold">
+          <div className="flex items-center justify-between p-2">
+            <div className="flex items-center gap-2">
+              {!detailPage &&
+              (data.outcomePic ||
+                (!data.outcomePic &&
+                  (data.name === "Yes" || data.name === "No"))) ? (
+                <Image
+                  src={
+                    !data.outcomePic
+                      ? data.name === "Yes"
+                        ? YesOutcomeImg
+                        : NoOutcomeImg
+                      : data.outcomePic
+                  }
+                  alt={data.name + "_" + data.campaignName}
+                  width={40}
+                  height={40}
+                  className="size-10 self-start border border-9black bg-9layer"
+                />
+              ) : null}
+              <div className="flex flex-col gap-1">
+                {data.campaignName ? (
+                  <p className="font-chicago text-xs font-bold">
+                    <Link
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className="underline"
+                      href={`/campaign/${data.campaignId}`}
+                    >
+                      {data.campaignName}
+                    </Link>{" "}
+                    {data.winner && (
+                      <span className="bg-9yellow p-0.5 font-geneva text-[10px] uppercase tracking-wide">
+                        Concluded
+                      </span>
+                    )}
+                    {isWinner && (
+                      <span className="ml-1 bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
+                        Winner
+                      </span>
+                    )}
+                    {data.winner && data.winner !== data.id && (
+                      <span className="ml-1 bg-9red p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
+                        Defeated
+                      </span>
+                    )}
+                  </p>
+                ) : null}
+                <p
+                  className={combineClass(
+                    "self-start px-1 py-0.5 font-geneva text-xs uppercase tracking-wide text-9black",
+                    data.name === "Yes"
+                      ? "bg-9green"
+                      : data.name === "No"
+                        ? "bg-9red"
+                        : "bg-9layer",
+                  )}
+                >
+                  {data.name}
+                </p>
+                <div className="flex items-center gap-1">
+                  {data.campaignId ? (
+                    <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                      Share Addr:
+                    </span>
+                  ) : null}
                   <Link
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    className="underline"
-                    href={`/campaign/${data.campaignId}`}
+                    href={`${config.chains.currentChain.blockExplorers![0].url}/token/${data.shareAddress}`}
+                    target="_blank"
+                    className="inline self-start"
                   >
-                    {data.campaignName}
-                  </Link>{" "}
-                  {data.winner && (
-                    <span className="bg-9yellow p-0.5 font-geneva text-[10px] uppercase tracking-wide">
-                      Concluded
+                    <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080] underline">
+                      {data.shareAddress.slice(0, 4)}...
+                      {data.shareAddress.slice(-4)}
                     </span>
-                  )}
-                  {isWinner && (
-                    <span className="ml-1 bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
-                      Winner
-                    </span>
-                  )}
-                  {data.winner && data.winner !== data.id && (
-                    <span className="ml-1 bg-9red p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
-                      Defeated
-                    </span>
-                  )}
-                </p>
-              ) : null}
-              <p
-                className={combineClass(
-                  "self-start px-1 py-0.5 font-geneva text-xs uppercase tracking-wide text-9black",
-                  data.name === "Yes"
-                    ? "bg-9green"
-                    : data.name === "No"
-                      ? "bg-9red"
-                      : "bg-9layer",
-                )}
-              >
-                {data.name}
-              </p>
-              <div className="flex items-center gap-1">
-                {data.campaignId ? (
-                  <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
-                    Share Addr:
-                  </span>
-                ) : null}
-                <Link
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  href={`${config.chains.currentChain.blockExplorers![0].url}/token/${data.shareAddress}`}
-                  target="_blank"
-                  className="inline self-start"
-                >
-                  <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080] underline">
-                    {data.shareAddress.slice(0, 4)}...
-                    {data.shareAddress.slice(-4)}
-                  </span>
-                </Link>
+                  </Link>
+                </div>
               </div>
             </div>
+            <Image
+              src={DownCaret}
+              alt=""
+              className={combineClass("size-4", showHistory && "rotate-180")}
+            />
           </div>
-          <Image
-            src={DownCaret}
-            alt=""
-            className={combineClass("size-4", showHistory && "rotate-180")}
-          />
         </td>
         <td className="pl-2">
           <span className="font-chicago text-xs">${price}</span>
@@ -244,24 +249,58 @@ export default function PositionRow({
         </td>
         <td>
           <div className="flex flex-col gap-1">
-            <span className="font-chicago text-xs">
-              {price
-                ? "$" + (Number(data.balance) * Number(price)).toFixed(2)
-                : "?"}
-            </span>
+            {isWinner && reward ? (
+              <span className="font-chicago text-xs">${reward.toFixed(2)}</span>
+            ) : (
+              <span className="font-chicago text-xs">
+                {price
+                  ? "$" + (Number(data.balance) * Number(price)).toFixed(2)
+                  : "?"}
+              </span>
+            )}
             <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
               COST ${formatFusdc(historicalValue, 2)}
             </span>
           </div>
         </td>
         <td>
-          {data.winner === data.id ? (
-            <Button
-              title={isClaiming ? "Claiming..." : "Claim Reward"}
-              intent={"yes"}
-              onClick={handleClaim}
-              disabled={isClaiming}
-            />
+          {isWinner && reward ? (
+            <div className="flex flex-col gap-2 py-2 pr-2">
+              <span
+                className={combineClass(
+                  "self-start p-0.5 font-chicago text-xs",
+                  reward - +formatFusdc(historicalValue, 2) >= 0
+                    ? "bg-9green"
+                    : "bg-9red",
+                )}
+              >
+                {reward - +formatFusdc(historicalValue, 2) >= 0 ? "+" : "-"} $
+                {Math.abs(reward - +formatFusdc(historicalValue, 2)).toFixed(2)}
+              </span>
+              <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                {reward - +formatFusdc(historicalValue, 2) >= 0 ? "+" : "-"}
+                {Math.abs(
+                  (reward -
+                    +formatFusdc(historicalValue, 2) /
+                      +formatFusdc(historicalValue, 6)) *
+                    100,
+                ).toFixed(2)}
+                {"%"}
+              </span>
+              <div className="flex items-center gap-1 self-start bg-9yellow p-0.5">
+                <Image src={UsdIcon} alt="" width={20} />
+                <span className="font-chicago text-xs">
+                  {" "}
+                  ${reward.toFixed(2)}
+                </span>
+              </div>
+              <Button
+                title={isClaiming ? "Claiming..." : "Claim Reward"}
+                intent={"yes"}
+                onClick={handleClaim}
+                disabled={isClaiming}
+              />
+            </div>
           ) : historicalValue ? (
             <div className="flex flex-col gap-1">
               <span
