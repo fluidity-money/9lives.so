@@ -211,6 +211,12 @@ export namespace Schema {
     export interface positionsHistory extends $.OutputField {
       name: "positionsHistory";
       arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
         outcomeIds: {
           kind: "InputField";
           name: "outcomeIds";

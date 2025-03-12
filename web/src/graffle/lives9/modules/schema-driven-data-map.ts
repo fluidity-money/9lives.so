@@ -364,6 +364,10 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     },
     positionsHistory: {
       a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
         outcomeIds: {
           nt: String,
           it: [1, [1]],

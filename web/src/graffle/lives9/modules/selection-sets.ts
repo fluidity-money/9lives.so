@@ -439,6 +439,7 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
+    address: string;
     outcomeIds: Array<string | undefined | null>;
   }
 
