@@ -822,6 +822,7 @@ func (r *queryResolver) PositionsHistory(ctx context.Context, address string, ou
 		// remove hex prefix
 		outcomes[i] = outcomeIds[i][2:]
 	}
+	address = strings.ToLower(address)
 	err := r.DB.Table("ninelives_buys_and_sells_1").Select("*",
 		"created_by AS created_at",
 		"transaction_hash AS tx_hash",
