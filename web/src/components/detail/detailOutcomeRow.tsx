@@ -62,7 +62,10 @@ export default function DetailOutcomeRow({
                 alt=""
                 width={20}
                 className={combineClass(
-                  data.picture && "absolute inset-x-0 -top-2 mx-auto h-auto",
+                  data.picture ||
+                    (!data.picture &&
+                      isYesNo &&
+                      "absolute inset-x-0 -top-2 mx-auto h-auto"),
                 )}
                 src={CrownImg}
               />
