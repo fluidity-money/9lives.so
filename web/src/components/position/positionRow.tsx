@@ -12,12 +12,15 @@ import { useActiveAccount } from "thirdweb/react";
 import { Outcome } from "@/types";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { requestCampaignById } from "@/providers/graphqlClient";
+import YesOutcomeImg from "#/images/yes-outcome.svg";
+import NoOutcomeImg from "#/images/no-outcome.svg";
 export default function PositionRow({
   data,
   price,
   history,
   tradingAddr,
   outcomes,
+  detailPage,
 }: {
   data: {
     id: `0x${string}`;
@@ -29,6 +32,7 @@ export default function PositionRow({
     outcomePic?: string;
     winner?: string;
   };
+  detailPage?: boolean;
   price?: string;
   history?: { usdc: number; share: number; id: string; txHash: string }[];
   outcomes: Outcome[];
@@ -123,12 +127,23 @@ export default function PositionRow({
           className="flex cursor-pointer items-center justify-between bg-[#DDDDDD] p-2"
           onClick={() => setShowHistory(!showHistory)}
         >
-          <div className="flex items-center gap-4">
-            {data.outcomePic ? (
+          <div className="flex items-center gap-2">
+            {!detailPage &&
+            (data.outcomePic ||
+              (!data.outcomePic &&
+                (data.name === "Yes" || data.name === "No"))) ? (
               <Image
-                src={data.outcomePic}
+                src={
+                  !data.outcomePic
+                    ? data.name === "Yes"
+                      ? YesOutcomeImg
+                      : NoOutcomeImg
+                    : data.outcomePic
+                }
                 alt={data.name + "_" + data.campaignName}
-                className="size-10 border border-9black"
+                width={40}
+                height={40}
+                className="size-10 self-start border border-9black bg-9layer"
               />
             ) : null}
             <div className="flex flex-col gap-1">
@@ -160,8 +175,16 @@ export default function PositionRow({
                   )}
                 </p>
               ) : null}
-
-              <p className="font-geneva text-xs uppercase tracking-wide text-[#808080]">
+              <p
+                className={combineClass(
+                  "self-start px-1 py-0.5 font-geneva text-xs uppercase tracking-wide text-9black",
+                  data.name === "Yes"
+                    ? "bg-9green"
+                    : data.name === "No"
+                      ? "bg-9red"
+                      : "bg-9layer",
+                )}
+              >
                 {data.name}
               </p>
               <div className="flex items-center gap-1">

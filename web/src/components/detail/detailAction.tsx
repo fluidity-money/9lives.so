@@ -175,7 +175,7 @@ export default function DetailCall2Action({
             minimized && "flex-col md:flex-row",
           )}
         >
-          {outcome.picture ? (
+          {outcome.picture || (!outcome.picture && data.isYesNo) ? (
             <div
               className={combineClass(
                 !data.isYesNo && "size-10 overflow-hidden rounded-full",

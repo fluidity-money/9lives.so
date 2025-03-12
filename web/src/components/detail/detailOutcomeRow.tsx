@@ -67,7 +67,7 @@ export default function DetailOutcomeRow({
                 src={CrownImg}
               />
             )}
-            {data.picture ? (
+            {!!data.picture || (!data.picture && isYesNo) ? (
               <Image
                 width={40}
                 height={40}

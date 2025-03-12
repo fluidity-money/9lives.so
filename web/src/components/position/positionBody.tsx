@@ -6,9 +6,11 @@ const bodyStyles = "min-h-24 bg-9gray";
 export default function PositionBody({
   positionGroups,
   areGroupsLoading,
+  detailPage,
 }: {
   positionGroups: PositionsProps[];
   areGroupsLoading?: boolean;
+  detailPage?: boolean;
 }) {
   return (
     <tbody className={bodyStyles}>
@@ -22,6 +24,7 @@ export default function PositionBody({
       ) : (
         positionGroups.map((group) => (
           <PositionsGroup
+            detailPage={detailPage}
             key={group.tradingAddr}
             tradingAddr={group.tradingAddr}
             outcomes={group.outcomes}

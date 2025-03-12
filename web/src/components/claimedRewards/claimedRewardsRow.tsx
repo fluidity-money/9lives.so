@@ -17,6 +17,8 @@ export default function PositionRow({ data }: { data: ClaimedRewards | null }) {
         <div className="flex items-center">
           {data.content.picture ? (
             <Image
+              width={40}
+              height={40}
               src={data.content.picture}
               alt={data.content.name}
               className="size-10 border border-9black"

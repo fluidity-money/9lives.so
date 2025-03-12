@@ -14,7 +14,8 @@ export default function PositionsGroup({
   campaignName,
   campaignId,
   winner,
-}: PositionsProps) {
+  detailPage,
+}: PositionsProps & { detailPage?: boolean }) {
   const account = useActiveAccount();
   const {
     isLoading,
@@ -35,10 +36,22 @@ export default function PositionsGroup({
     positions?.map((p) => p.id),
   );
 
-  if (isLoading) return <Placeholder title="Loading..." />;
+  if (isLoading)
+    return (
+      <Placeholder
+        title="Loading..."
+        height={!detailPage ? "min-h-20" : undefined}
+      />
+    );
   if (isError)
-    return <Placeholder title="Whoops, error!" subtitle={error.message} />;
-  if (positions?.length === 0)
+    return (
+      <Placeholder
+        title="Whoops, error!"
+        subtitle={error.message}
+        height={!detailPage ? "min-h-20" : undefined}
+      />
+    );
+  if (detailPage && positions?.length === 0)
     return (
       <Placeholder
         title="Nothing yet."
@@ -55,6 +68,7 @@ export default function PositionsGroup({
           history={positionsHistory?.filter((p) => p.id === item.id)}
           tradingAddr={tradingAddr}
           outcomes={outcomes}
+          detailPage={detailPage}
         />
       ))}
     </>

@@ -4,9 +4,11 @@ import PositionsBody from "./positionBody";
 export default function PositionTable({
   positionGroups,
   areGroupsLoading,
+  detailPage,
 }: {
   positionGroups: PositionsProps[];
   areGroupsLoading?: boolean;
+  detailPage?: boolean;
 }) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
@@ -24,6 +26,7 @@ export default function PositionTable({
         </tr>
       </thead>
       <PositionsBody
+        detailPage={detailPage}
         positionGroups={positionGroups}
         areGroupsLoading={areGroupsLoading}
       />

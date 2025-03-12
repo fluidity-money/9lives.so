@@ -20,7 +20,7 @@ export default function AssetScene({
   detailPage = false,
 }: AssetSceneProps) {
   return (
-    <TabGroup className={"flex-1"}>
+    <TabGroup className={"mb-10 flex-1"}>
       <TabList className="flex items-center">
         <Tab as={Fragment}>
           {(props) => <TabButton title="My Positions" {...props} />}
@@ -41,6 +41,7 @@ export default function AssetScene({
         <TabPanel>
           <ShadowCard className="rounded-tl-none p-3 md:p-5">
             <PositionTable
+              detailPage={detailPage}
               positionGroups={positionGrops}
               areGroupsLoading={areGroupsLoading}
             />
