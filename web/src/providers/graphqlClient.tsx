@@ -235,9 +235,9 @@ export const requestUserActivities = ({
     txHash: true,
   });
 
-export const requestPositionHistory = (outcomeIds: string[]) =>
+export const requestPositionHistory = (address: string, outcomeIds: string[]) =>
   graph9Lives.query.positionsHistory({
-    $: { outcomeIds },
+    $: { outcomeIds, address },
     fromAmount: true,
     toAmount: true,
     outcomeId: true,

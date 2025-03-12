@@ -33,6 +33,7 @@ export default function PositionsGroup({
     outcomeIds,
   });
   const { data: positionsHistory } = usePositionHistory(
+    account?.address,
     positions?.map((p) => p.id),
   );
 
