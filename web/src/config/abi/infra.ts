@@ -30,6 +30,25 @@ const infraAbi = [
   },
   {
     type: "function",
+    name: "callerPreferredOutcome",
+    inputs: [
+      {
+        name: "trading",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "capture",
     inputs: [
       {
@@ -77,6 +96,63 @@ const infraAbi = [
   },
   {
     type: "function",
+    name: "ctor",
+    inputs: [
+      {
+        name: "operator",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "emergencyCouncil",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "lockup",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "lockedArbToken",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "factory",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "curOutcomeVestedArb",
+    inputs: [
+      {
+        name: "trading",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "declare",
     inputs: [
       {
@@ -106,7 +182,7 @@ const infraAbi = [
   },
   {
     type: "function",
-    name: "enable_contract",
+    name: "enableContract",
     inputs: [
       {
         name: "status",
@@ -122,6 +198,44 @@ const infraAbi = [
       },
     ],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "endTs",
+    inputs: [
+      {
+        name: "trading",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "epochNumber",
+    inputs: [
+      {
+        name: "trading",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "epochNo",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -218,6 +332,25 @@ const infraAbi = [
   },
   {
     type: "function",
+    name: "startTs",
+    inputs: [
+      {
+        name: "trading",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "status",
     inputs: [
       {
@@ -302,6 +435,25 @@ const infraAbi = [
       },
     ],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "whingerPreferredWinner",
+    inputs: [
+      {
+        name: "trading",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
