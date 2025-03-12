@@ -280,9 +280,8 @@ export default function PositionRow({
               <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
                 {reward - +formatFusdc(historicalValue, 2) >= 0 ? "+" : "-"}
                 {Math.abs(
-                  (reward -
-                    +formatFusdc(historicalValue, 2) /
-                      +formatFusdc(historicalValue, 6)) *
+                  ((reward - +formatFusdc(historicalValue, 2)) /
+                    +formatFusdc(historicalValue, 6)) *
                     100,
                 ).toFixed(2)}
                 {"%"}
