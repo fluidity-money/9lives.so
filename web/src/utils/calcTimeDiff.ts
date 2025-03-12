@@ -57,10 +57,7 @@ export function calcTimeLeft(endTime: number) {
 }
 // endTime in calcTimePassed is a milisecond timestamp
 export function calcTimePassed(endTime: number) {
-  const differenceInMs =
-    Date.now() -
-    new Date(endTime).getTime() +
-    new Date().getTimezoneOffset() * 60 * 1000;
+  let differenceInMs = Date.now() - new Date(endTime).getTime();
   let text = "";
   let unit = 1000;
   switch (true) {

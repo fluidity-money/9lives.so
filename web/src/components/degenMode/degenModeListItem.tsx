@@ -5,7 +5,10 @@ import { combineClass } from "@/utils/combineClass";
 import Image from "next/image";
 import Link from "next/link";
 export default function DegenModeListItem({ data }: { data: Action }) {
-  const timePassed = useTimePassed(new Date(data.timestamp).getTime());
+  const timePassed = useTimePassed(
+    new Date(data.timestamp).getTime() -
+      new Date().getTimezoneOffset() * 60 * 1000,
+  );
   const typeColorBgClass =
     data.type === "buy"
       ? "bg-9green"
