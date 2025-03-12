@@ -815,7 +815,7 @@ func (r *queryResolver) UserTotalVolume(ctx context.Context, address string) (in
 }
 
 // PositionsHistory is the resolver for the positionsHistory field.
-func (r *queryResolver) PositionsHistory(ctx context.Context, outcomeIds []string) ([]types.Activity, error) {
+func (r *queryResolver) PositionsHistory(ctx context.Context, address string, outcomeIds []string) ([]types.Activity, error) {
 	var activities []types.Activity
 	outcomes := make([]string, len(outcomeIds))
 	for i := range outcomeIds {
@@ -825,7 +825,7 @@ func (r *queryResolver) PositionsHistory(ctx context.Context, outcomeIds []strin
 	err := r.DB.Table("ninelives_buys_and_sells_1").Select("*",
 		"created_by AS created_at",
 		"transaction_hash AS tx_hash",
-		"emitter_addr AS pool_address").Where("outcome_id IN ?", outcomes).Scan(&activities).Error
+		"emitter_addr AS pool_address").Where("recipient = ?", address).Where("outcome_id IN ?", outcomes).Scan(&activities).Error
 	if err != nil {
 		slog.Error("Error getting activities from database for the outcome ids",
 			"error", err,

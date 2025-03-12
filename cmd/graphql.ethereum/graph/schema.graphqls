@@ -39,7 +39,7 @@ type Query {
   """
   Returns active positions acitvity history
   """
-  positionsHistory(outcomeIds:[String!]!): [Activity!]!
+  positionsHistory(address:String!, outcomeIds:[String!]!): [Activity!]!
 
   """
   Return user's claim rewards details

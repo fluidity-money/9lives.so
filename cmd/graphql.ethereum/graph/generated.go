@@ -140,7 +140,7 @@ type ComplexityRoot struct {
 		CampaignByID              func(childComplexity int, id string) int
 		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) int
 		Changelog                 func(childComplexity int) int
-		PositionsHistory          func(childComplexity int, outcomeIds []string) int
+		PositionsHistory          func(childComplexity int, address string, outcomeIds []string) int
 		SuggestedHeadlines        func(childComplexity int) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
 		UserClaims                func(childComplexity int, address string, campaignID *string) int
@@ -214,7 +214,7 @@ type QueryResolver interface {
 	UserActivity(ctx context.Context, address string, campaignID *string, page *int, pageSize *int) ([]*types.Activity, error)
 	UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error)
 	UserTotalVolume(ctx context.Context, address string) (int, error)
-	PositionsHistory(ctx context.Context, outcomeIds []string) ([]types.Activity, error)
+	PositionsHistory(ctx context.Context, address string, outcomeIds []string) ([]types.Activity, error)
 	UserClaims(ctx context.Context, address string, campaignID *string) ([]*types.Claim, error)
 }
 
@@ -699,7 +699,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.PositionsHistory(childComplexity, args["outcomeIds"].([]string)), true
+		return e.complexity.Query.PositionsHistory(childComplexity, args["address"].(string), args["outcomeIds"].([]string)), true
 
 	case "Query.suggestedHeadlines":
 		if e.complexity.Query.SuggestedHeadlines == nil {
@@ -1240,15 +1240,24 @@ func (ec *executionContext) field_Query_campaigns_args(ctx context.Context, rawA
 func (ec *executionContext) field_Query_positionsHistory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []string
-	if tmp, ok := rawArgs["outcomeIds"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outcomeIds"))
-		arg0, err = ec.unmarshalNString2ᚕstringᚄ(ctx, tmp)
+	var arg0 string
+	if tmp, ok := rawArgs["address"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["outcomeIds"] = arg0
+	args["address"] = arg0
+	var arg1 []string
+	if tmp, ok := rawArgs["outcomeIds"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outcomeIds"))
+		arg1, err = ec.unmarshalNString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["outcomeIds"] = arg1
 	return args, nil
 }
 
@@ -4558,7 +4567,7 @@ func (ec *executionContext) _Query_positionsHistory(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().PositionsHistory(rctx, fc.Args["outcomeIds"].([]string))
+		return ec.resolvers.Query().PositionsHistory(rctx, fc.Args["address"].(string), fc.Args["outcomeIds"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
