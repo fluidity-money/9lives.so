@@ -165,6 +165,18 @@ type (
 		Content CampaignContent `json:"content"`
 	}
 
+	Settings struct {
+		Notification bool `json:"notification"`
+	}
+
+	Profile struct {
+		WalletAddress string `json:"walletAddress"`
+
+		Email string `json:"email"`
+
+		Settings Settings `json:"settings" gorm:"type:jsonb"`
+	}
+
 	Claim struct {
 		ID string `json:"id"`
 

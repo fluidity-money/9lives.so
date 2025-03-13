@@ -45,6 +45,21 @@ type Query {
   Return user's claim rewards details
   """
   userClaims(address:String!, campaignId:String): [Claim]!
+
+  userProfile(address:String!): Profile
+}
+type Settings {
+  """
+  Multiple settings can be added here
+  """
+  notification: Boolean
+}
+type Profile {
+  walletAddress: String!
+
+  email: String!
+
+  settings: Settings
 }
 
 """
@@ -269,6 +284,8 @@ type Mutation {
       """
       v: String
   ): Boolean
+
+  synchProfile(walletAddress: String!, email: String!): Boolean
 }
 
 """

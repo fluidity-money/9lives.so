@@ -594,6 +594,28 @@ func (r *mutationResolver) RevealCommitment2(ctx context.Context, tradingAddr *s
 	panic(fmt.Errorf("not implemented: RevealCommitment2 - revealCommitment2"))
 }
 
+// SynchProfile is the resolver for the synchProfile field.
+func (r *mutationResolver) SynchProfile(ctx context.Context, walletAddress string, email string) (*bool, error) {
+	var profile = types.Profile{
+		WalletAddress: walletAddress,
+		Email:         email,
+		Settings: types.Settings{
+			Notification: true,
+		},
+	}
+	var res bool
+	err := r.DB.Table("ninelives_users_1").Create(&profile).Error
+	if err != nil {
+		res = false
+		slog.Error("Error synching profile",
+			"wallet address", walletAddress,
+			"email", email)
+		return &res, fmt.Errorf("error synching profile")
+	}
+	res = true
+	return &res, nil
+}
+
 // OutcomeIds is the resolver for the outcomeIds field.
 func (r *positionResolver) OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error) {
 	if obj == nil {
@@ -858,6 +880,20 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 		return nil, fmt.Errorf("error getting reward claims from database: %w", err)
 	}
 	return claims, nil
+}
+
+// UserProfile is the resolver for the userProfile field.
+func (r *queryResolver) UserProfile(ctx context.Context, address string) (*types.Profile, error) {
+	var profile types.Profile
+	err := r.DB.Table("ninelives_users_1").Where("wallet_address is ?", address).Scan(&profile).Error
+	if err != nil {
+		slog.Error("Error getting profile from database",
+			"error", err,
+			"wallet address", address,
+		)
+		return nil, fmt.Errorf("error getting profile from database: %w", err)
+	}
+	return &profile, nil
 }
 
 // Activity returns ActivityResolver implementation.
