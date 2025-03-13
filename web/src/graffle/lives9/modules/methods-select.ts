@@ -20,6 +20,8 @@ import type * as $$Utilities from "graffle/utilities-for-generated";
 export interface $MethodsSelect {
   Query: Query;
   Mutation: Mutation;
+  Settings: Settings;
+  Profile: Profile;
   Claim: Claim;
   Position: Position;
   Campaign: Campaign;
@@ -74,6 +76,18 @@ export interface Mutation {
 //
 //
 //
+
+export interface Settings {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Settings>,
+  ): $SelectionSet;
+}
+
+export interface Profile {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Profile>,
+  ): $SelectionSet;
+}
 
 export interface Claim {
   <$SelectionSet>(

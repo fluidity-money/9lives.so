@@ -114,6 +114,22 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 
+const Settings: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    notification: {},
+  },
+};
+
+const Profile: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    walletAddress: {},
+    email: {},
+    settings: {
+      // nt: Settings, <-- Assigned later to avoid potential circular dependency.
+    },
+  },
+};
+
 const Claim: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     sharesSpent: {},
@@ -388,6 +404,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Claim, <-- Assigned later to avoid potential circular dependency.
     },
+    userProfile: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: Profile, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -509,6 +534,18 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    synchProfile: {
+      a: {
+        walletAddress: {
+          nt: String,
+          it: [1],
+        },
+        email: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 
@@ -529,6 +566,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 //
 
+Profile.f[`settings`]!.nt = Settings;
 Claim.f[`content`]!.nt = Campaign;
 Position.f[`content`]!.nt = Campaign;
 Campaign.f[`creator`]!.nt = Wallet;
@@ -542,6 +580,7 @@ Query.f[`userActivity`]!.nt = Activity;
 Query.f[`userParticipatedCampaigns`]!.nt = Position;
 Query.f[`positionsHistory`]!.nt = Activity;
 Query.f[`userClaims`]!.nt = Claim;
+Query.f[`userProfile`]!.nt = Profile;
 
 //
 //
@@ -574,6 +613,8 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     SettlementType,
     ActivityType,
     OutcomeInput,
+    Settings,
+    Profile,
     Claim,
     Position,
     Campaign,

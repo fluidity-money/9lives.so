@@ -232,6 +232,26 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+
+  userProfile: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.userProfile<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { userProfile: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "userProfile"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
@@ -340,6 +360,26 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
             $$Schema.Schema<$Context["scalars"]>
           >,
           "revealCommitment2"
+        >
+    >
+  >;
+
+  synchProfile: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.synchProfile<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { synchProfile: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "synchProfile"
         >
     >
   >;

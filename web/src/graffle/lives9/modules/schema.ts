@@ -37,6 +37,7 @@ export namespace Schema {
       userTotalVolume: Query.userTotalVolume;
       positionsHistory: Query.positionsHistory;
       userClaims: Query.userClaims;
+      userProfile: Query.userProfile;
     };
   }
 
@@ -250,6 +251,20 @@ export namespace Schema {
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Claim;
     }
+
+    export interface userProfile extends $.OutputField {
+      name: "userProfile";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Profile;
+    }
   }
 
   //                                              Mutation
@@ -263,6 +278,7 @@ export namespace Schema {
       explainCampaign: Mutation.explainCampaign;
       revealCommitment: Mutation.revealCommitment;
       revealCommitment2: Mutation.revealCommitment2;
+      synchProfile: Mutation.synchProfile;
     };
   }
 
@@ -573,6 +589,26 @@ export namespace Schema {
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;
     }
+
+    export interface synchProfile extends $.OutputField {
+      name: "synchProfile";
+      arguments: {
+        walletAddress: {
+          kind: "InputField";
+          name: "walletAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        email: {
+          kind: "InputField";
+          name: "email";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
+    }
   }
 
   //
@@ -590,6 +626,87 @@ export namespace Schema {
   //
   //
   //
+
+  //                                              Settings
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface Settings extends $.OutputObject {
+    name: "Settings";
+    fields: {
+      __typename: Settings.__typename;
+      notification: Settings.notification;
+    };
+  }
+
+  export namespace Settings {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Settings";
+      };
+    }
+
+    /**
+     * Multiple settings can be added here
+     */
+    export interface notification extends $.OutputField {
+      name: "notification";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+  }
+
+  //                                              Profile
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface Profile extends $.OutputObject {
+    name: "Profile";
+    fields: {
+      __typename: Profile.__typename;
+      walletAddress: Profile.walletAddress;
+      email: Profile.email;
+      settings: Profile.settings;
+    };
+  }
+
+  export namespace Profile {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Profile";
+      };
+    }
+
+    export interface walletAddress extends $.OutputField {
+      name: "walletAddress";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface email extends $.OutputField {
+      name: "email";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface settings extends $.OutputField {
+      name: "settings";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Settings;
+    }
+  }
 
   //                                               Claim
   // --------------------------------------------------------------------------------------------------
@@ -1679,6 +1796,8 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$Settings = Settings;
+    export type $$Profile = Profile;
     export type $$Claim = Claim;
     export type $$Position = Position;
     export type $$Campaign = Campaign;
@@ -1732,6 +1851,8 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    Settings: Schema.Settings;
+    Profile: Schema.Profile;
     Claim: Schema.Claim;
     Position: Schema.Position;
     Campaign: Schema.Campaign;
@@ -1743,6 +1864,8 @@ export interface Schema<
     Activity: Schema.Activity;
   };
   objects: {
+    Settings: Schema.Settings;
+    Profile: Schema.Profile;
     Claim: Schema.Claim;
     Position: Schema.Position;
     Campaign: Schema.Campaign;

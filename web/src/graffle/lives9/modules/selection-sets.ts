@@ -125,6 +125,14 @@ export interface Query<
   userClaims?:
     | Query.userClaims<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.userClaims<_$Scalars>>;
+  /**
+   *
+   * Select the `userProfile` field on the `Query` object. Its type is `Profile` (a `OutputObject` kind of type).
+   *
+   */
+  userProfile?:
+    | Query.userProfile<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.userProfile<_$Scalars>>;
 
   /**
    *
@@ -496,6 +504,45 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<userClaims$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type userProfile<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = userProfile$SelectionSet<_$Scalars>;
+
+  export interface userProfile$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Profile<_$Scalars> {
+    /**
+     * Arguments for `userProfile` field. All arguments are required so you must include this.
+     */
+    $: userProfile$Arguments<_$Scalars>;
+  }
+
+  export interface userProfile$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    address: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `userProfile` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type userProfile$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<userProfile$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -532,6 +579,14 @@ export interface Mutation<
   revealCommitment2?:
     | Mutation.revealCommitment2$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.revealCommitment2<_$Scalars>>;
+  /**
+   *
+   * Select the `synchProfile` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  synchProfile?:
+    | Mutation.synchProfile<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.synchProfile<_$Scalars>>;
 
   /**
    *
@@ -806,6 +861,45 @@ export namespace Mutation {
     | $Select.Indicator.NoArgsIndicator
     | revealCommitment2$SelectionSet<_$Scalars>
   >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type synchProfile<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = synchProfile$SelectionSet<_$Scalars>;
+
+  export interface synchProfile$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `synchProfile` field. All arguments are required so you must include this.
+     */
+    $: synchProfile$Arguments<_$Scalars>;
+  }
+
+  export interface synchProfile$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    walletAddress: string;
+    email: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `synchProfile` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type synchProfile$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<synchProfile$SelectionSet<_$Scalars>>;
 }
 
 //
@@ -902,6 +996,237 @@ export interface OutcomeInput<
 //
 //
 //
+
+//                                              Settings
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface Settings<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `notification` field on the `Settings` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  notification?:
+    | Settings.notification$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Settings.notification<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | Settings$FragmentInline<_$Scalars>
+    | Settings$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface Settings$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends Settings<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace Settings {
+  export type notification<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | notification$SelectionSet<_$Scalars>;
+
+  export interface notification$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `notification` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type notification$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | notification$SelectionSet<_$Scalars>
+  >;
+}
+
+//                                              Profile
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface Profile<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `walletAddress` field on the `Profile` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  walletAddress?:
+    | Profile.walletAddress$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Profile.walletAddress<_$Scalars>>;
+  /**
+   *
+   * Select the `email` field on the `Profile` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  email?:
+    | Profile.email$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Profile.email<_$Scalars>>;
+  /**
+   *
+   * Select the `settings` field on the `Profile` object. Its type is `Settings` (a `OutputObject` kind of type).
+   *
+   */
+  settings?:
+    | Profile.settings$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Profile.settings<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?: Profile$FragmentInline<_$Scalars> | Profile$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface Profile$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends Profile<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace Profile {
+  export type walletAddress<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | walletAddress$SelectionSet<_$Scalars>;
+
+  export interface walletAddress$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `walletAddress` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type walletAddress$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | walletAddress$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type email<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | email$SelectionSet<_$Scalars>;
+
+  export interface email$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `email` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type email$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | email$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type settings<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = settings$SelectionSet<_$Scalars>;
+
+  export interface settings$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Settings<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `settings` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type settings$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<settings$SelectionSet<_$Scalars>>;
+}
 
 //                                               Claim
 // --------------------------------------------------------------------------------------------------
@@ -3405,6 +3730,14 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = OutcomeInput<_$Scalars>;
+  export type $Settings<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = Settings<_$Scalars>;
+  export type $Profile<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = Profile<_$Scalars>;
   export type $Claim<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
