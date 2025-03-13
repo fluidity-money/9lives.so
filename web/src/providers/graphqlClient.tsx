@@ -262,3 +262,14 @@ export const requestUserClaims = (address: string, campaignId?: string) =>
       },
     },
   });
+
+export const requestProfile = (address: string) =>
+  graph9Lives.query.userProfile({
+    $: { address },
+    email: true,
+  });
+
+export const synchProfile = (address: string, email: string) =>
+  graph9Lives.mutation.synchProfile({
+    $: { walletAddress: address, email },
+  });
