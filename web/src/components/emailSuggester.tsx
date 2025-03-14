@@ -13,7 +13,7 @@ import ErrorInfo from "./themed/errorInfo";
 import { combineClass } from "@/utils/combineClass";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export default function EmailSuggestor() {
+export default function EmailSuggester() {
   const [isOpen, setIsOpen] = useState(false);
   const account = useActiveAccount();
   const {
@@ -62,6 +62,9 @@ export default function EmailSuggestor() {
         <p className="text-center font-chicago font-normal text-9black">
           Enter your email to get updates on your campaigns, 9Lives portfolio,
           and the latest market news—straight to your inbox.
+        </p>
+        <p className="text-center font-chicago font-normal text-9black">
+          Also get an exclusive achievement!
         </p>
         <Input
           {...register("email")}
