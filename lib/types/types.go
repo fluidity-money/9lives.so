@@ -174,7 +174,7 @@ type (
 
 		Email string `json:"email"`
 
-		Settings Settings `json:"settings" gorm:"type:jsonb"`
+		Settings Settings `json:"settings" gorm:"serializer:json"`
 	}
 
 	Claim struct {

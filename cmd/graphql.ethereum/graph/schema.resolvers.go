@@ -885,6 +885,7 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 // UserProfile is the resolver for the userProfile field.
 func (r *queryResolver) UserProfile(ctx context.Context, address string) (*types.Profile, error) {
 	address = strings.ToLower(address)
+
 	var profile types.Profile
 	err := r.DB.Table("ninelives_users_1").Where("wallet_address = ?", address).Scan(&profile).Error
 	if err != nil {
