@@ -13,6 +13,7 @@ import ErrorInfo from "./themed/errorInfo";
 import { combineClass } from "@/utils/combineClass";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { track } from "@/utils/analytics";
+import posthog from "posthog-js";
 
 export default function EmailSuggester() {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,10 +61,15 @@ export default function EmailSuggester() {
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen} title="Never Miss an Update!">
       <div className="flex flex-col items-center gap-4">
-        <h2 className="font-chicago text-2xl text-9black">Stay in the Loop!</h2>
+        <h2 className="font-chicago text-2xl text-9black">
+          {posthog.getFeatureFlag("email-subscription-conversion-1") === "test"
+            ? "Never Miss an Update!"
+            : "Stay in the Loop!"}
+        </h2>
         <p className="text-center font-chicago font-normal text-9black">
-          Enter your email to get updates on your campaigns, 9Lives portfolio,
-          and the latest market news—straight to your inbox.
+          {posthog.getFeatureFlag("email-subscription-conversion-1") === "test"
+            ? "Add your email to receive notifications on your campaigns, 9Lives portfolio, and important news."
+            : "Enter your email to get updates on your campaigns, 9Lives portfolio, and the latest market news—straight to your inbox."}
         </p>
         <p className="text-center font-chicago font-normal text-9black">
           Also get an exclusive achievement!
