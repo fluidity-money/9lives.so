@@ -597,7 +597,7 @@ func (r *mutationResolver) RevealCommitment2(ctx context.Context, tradingAddr *s
 // SynchProfile is the resolver for the synchProfile field.
 func (r *mutationResolver) SynchProfile(ctx context.Context, walletAddress string, email string) (*bool, error) {
 	var profile = types.Profile{
-		WalletAddress: walletAddress,
+		WalletAddress: strings.ToLower(walletAddress),
 		Email:         email,
 		Settings: types.Settings{
 			Notification: true,
