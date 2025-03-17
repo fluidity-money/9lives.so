@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import ErrorInfo from "./themed/errorInfo";
 import { combineClass } from "@/utils/combineClass";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { track } from "@/utils/analytics";
 
 export default function EmailSuggester() {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,6 +46,7 @@ export default function EmailSuggester() {
     if (isSuccess) {
       setIsOpen(false);
       refetch();
+      track("email_sub");
     }
   }, [isSuccess]);
   useEffect(() => {
