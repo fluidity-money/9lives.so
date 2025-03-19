@@ -19,9 +19,6 @@ use crate::decimal::fusdc_decimal_to_u256;
 
 use rust_decimal::Decimal;
 
-#[cfg(target_arch = "wasm32")]
-use alloc::vec::Vec;
-
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
