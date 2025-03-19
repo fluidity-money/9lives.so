@@ -42,7 +42,7 @@ contract Share is
         __ERC20Permit_init(newName);
     }
 
-    function _spendAllowance(
+    /*function _spendAllowance(
         address owner,
         address spender,
         uint256 value
@@ -58,7 +58,7 @@ contract Share is
                 _approve(owner, spender, currentAllowance - value, false);
             }
         }
-    }
+    }*/
 
     function decimals() public override pure returns (uint8) {
         return 6;

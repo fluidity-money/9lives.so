@@ -30,6 +30,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicOutcomeCreated,
 	events.TopicOutcomeDecided,
 	events.TopicSharesMinted,
+	events.TopicSharesBurned,
 	events.TopicPayoffActivated,
 	events.TopicDeadlineExtension,
 	events.TopicMarketCreated2,
@@ -271,6 +272,11 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		a, err = events.UnpackSharesMinted(topic1, topic2, topic3, data)
 		table = "ninelives_events_shares_minted"
 		logEvent("SharesMinted")
+		fromTrading = true
+	case events.TopicSharesBurned:
+		a, err = events.UnpackSharesBurned(topic1, topic2, topic3, data)
+		table = "ninelives_events_shares_burned"
+		logEvent("SharesBurned")
 		fromTrading = true
 	case events.TopicPayoffActivated:
 		a, err = events.UnpackPayoffActivated(topic1, topic2, topic3, data)

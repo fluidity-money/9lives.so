@@ -38,6 +38,14 @@ interface IEvents {
         uint256 fusdcSpent
     );
 
+    event SharesBurned(
+        bytes8 indexed identifier,
+        uint256 indexed shareAmount,
+        address indexed spender,
+        address recipient,
+        uint256 fusdcReturned
+    );
+
     event PayoffActivated(
         bytes8 indexed identifier,
         uint256 indexed sharesSpent,

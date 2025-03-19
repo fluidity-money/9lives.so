@@ -343,13 +343,13 @@ impl StorageTrading {
                 .checked_sub(value_raw)
                 .ok_or(Error::CheckedSubOverflow)));
 
-            /* evm::log(events::SharesBurned {
+            evm::log(events::SharesBurned {
                 identifier: outcome_id,
                 shareAmount: shares,
                 spender: msg_sender(),
                 recipient,
-                fusdcSpent: value_raw,
-            }); */
+                fusdcReturned: value_raw,
+            });
 
             fusdc_call::transfer(recipient, value_raw)?;
 

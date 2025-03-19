@@ -23,6 +23,7 @@ var (
 	TopicOutcomeCreated      = abi.Events["OutcomeCreated"].ID
 	TopicOutcomeDecided      = abi.Events["OutcomeDecided"].ID
 	TopicSharesMinted        = abi.Events["SharesMinted"].ID
+	TopicSharesBurned        = abi.Events["SharesBurned"].ID
 	TopicPayoffActivated     = abi.Events["PayoffActivated"].ID
 	TopicDeadlineExtension   = abi.Events["DeadlineExtension"].ID
 	TopicMarketCreated2      = abi.Events["MarketCreated2"].ID
@@ -94,6 +95,28 @@ func UnpackSharesMinted(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*event
 		Spender:     hashToAddr(topic3),
 		Recipient:   events.AddressFromString(recipient.String()),
 		FusdcSpent:  events.NumberFromBig(fusdcSpent),
+	}, nil
+}
+
+func UnpackSharesBurned(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventSharesBurned, error) {
+	i, err := abi.Unpack("SharesBurned", b)
+	if err != nil {
+		return nil, err
+	}
+	recipient, ok := i[0].(ethCommon.Address)
+	if !ok {
+		return nil, fmt.Errorf("bad recipient: %T", i[0])
+	}
+	fusdcReturned, ok := i[1].(*big.Int)
+	if !ok {
+		return nil, fmt.Errorf("bad fusdc returned: %T", i[1])
+	}
+	return &events.EventSharesBurned{
+		Identifier:  hashToBytes8(topic1),
+		ShareAmount: hashToNumber(topic2),
+		Spender:     hashToAddr(topic3),
+		Recipient:   events.AddressFromString(recipient.String()),
+		FusdcReturned:  events.NumberFromBig(fusdcReturned),
 	}, nil
 }
 

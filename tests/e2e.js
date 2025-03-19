@@ -59,10 +59,14 @@ describe("End to end tests", async () => {
   const fusdcAddress = await shareDeploy.getAddress();
   const fusdc = new Contract(fusdcAddress, TestERC20.abi, signer);
 
+  console.log("fusdc:", fusdc);
+
   const stakedArbDeploy = await erc20Factory.deploy();
   await stakedArbDeploy.waitForDeployment();
   const stakedArbAddress = await stakedArbDeploy.getAddress();
   const stakedArb = new Contract(stakedArbAddress, TestERC20.abi, signer);
+
+  console.log("stakedArb:", stakedArb);
 
   // Deploy a mocked out Longtail.
 
@@ -74,6 +78,8 @@ describe("End to end tests", async () => {
   const longtailDeploy = await longtailFactory.deploy();
   await longtailDeploy.waitForDeployment();
   const longtailAddress = await longtailDeploy.getAddress();
+
+  console.log("longtailAddress:", longtailAddress);
 
   const deployStr = execSync(
     "./build-and-deploy.sh",
@@ -95,8 +101,10 @@ describe("End to end tests", async () => {
     },
   );
 
+  console.log("deployStr:", deployStr);
+
   const {
-    lockupProxy: lockupProxyAddr,
+    lockupProxyImpl: lockupProxyAddr,
     factoryProxy: factoryProxyAddr,
     optimisticInfraMarketImplementation: infraMarketImplAddr,
     tradingDpmExtrasImplementation,
@@ -112,13 +120,19 @@ describe("End to end tests", async () => {
     }
   })();
 
+  console.log("JSON.parse(deployStr):", JSON.parse(deployStr));
+
   const lockup = new Contract(lockupProxyAddr, Lockup.abi, signer);
+
+  console.log("lockup:", lockup);
 
   const lockedArbToken = new Contract(
     await lockup.tokenAddr(),
     LockupToken.abi,
     signer
   );
+
+  console.log("lockedArbToken:", lockedArbToken);
 
   const lockedArbTokenAddr = await lockedArbToken.getAddress();
 
@@ -146,6 +160,8 @@ describe("End to end tests", async () => {
     infraMarketImplAddr,
     infraMarketTestingAddr
   );
+
+  console.log("infraMarketProxy:", infraMarketProxy);
 
   await infraMarketProxy.waitForDeployment();
 
@@ -252,6 +268,9 @@ describe("End to end tests", async () => {
     MaxU64, // Time end
     documentationHash,
     defaultAccountAddr, // Fee recipient
+    0,
+    0,
+    0,
   );
   await (await helperFactory.createWithCustom(
     defaultAccountAddr, // Custom oracle
@@ -259,6 +278,9 @@ describe("End to end tests", async () => {
     MaxU64, // Time end
     documentationHash,
     defaultAccountAddr, // Fee recipient
+    0,
+    0,
+    0,
   )).wait();
 
   const trading = new Contract(tradingAddr, Trading.abi, signer);

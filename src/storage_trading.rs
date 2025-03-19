@@ -26,9 +26,9 @@ pub struct StorageTrading {
     /// The address of the factory.
     pub factory_addr: StorageAddress,
 
-    /// Outcome was determined! It should be impossible to mint, only to burn.
-    /// This is the timestamp the locking took place. If it's 0, then we haven't
-    /// decided the outcome yet.
+    /// Outcome was determined! It should be impossible to mint/burn, only to
+    /// trigger payoff. This is the timestamp the locking took place. If it's
+    /// 0, then we haven't decided the outcome yet.
     pub when_decided: StorageU64,
 
     /// Was this contract shut down? This is called once the deadline has

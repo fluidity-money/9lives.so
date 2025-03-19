@@ -41,6 +41,16 @@ type (
 		FusdcSpent  Number  `json:"fusdc_spent"`
 	}
 
+	EventSharesBurned struct {
+		Event
+
+		Identifier  Bytes   `json:"identifier"`
+		ShareAmount Number  `json:"share_amount"`
+		Spender     Address `json:"spender"`
+		Recipient   Address `json:"recipient"`
+		FusdcReturned  Number  `json:"fusdc_spent"`
+	}
+
 	EventPayoffActivated struct {
 		Event
 

@@ -130,7 +130,7 @@ impl StorageFactory {
             });
         }
 
-        trading_call::ctor(
+        /* trading_call::ctor(
             trading_addr,
             outcome_ids,
             oracle,
@@ -138,11 +138,11 @@ impl StorageFactory {
             time_ending,
             fee_recipient,
             self.share_impl.get(),
-            false, // By default, this is the behaviour right now. (TODO)
+            false,
             fee_creator,
             fee_lp,
             fee_minter,
-        )?;
+        )?; */
 
         // If the infra market wasn't chosen, then we assume that the caller has done
         // some setup work to ensure that this is fine. The caller should be very

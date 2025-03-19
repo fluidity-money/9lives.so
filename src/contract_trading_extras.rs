@@ -32,8 +32,8 @@ impl StorageTrading {
         share_impl: Address,
         should_buffer_time: bool,
         fee_creator: u64,
-        fee_minter: u64,
         fee_lp: u64,
+        fee_minter: u64,
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // Make sure that the user hasn't given us any zero values, or the end
