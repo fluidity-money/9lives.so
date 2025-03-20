@@ -23,7 +23,7 @@ impl StorageFactory {
     // as much as the amount that the pool was made for. For now, we take the
     // default winner as the first outcome that was supplied to this function.
     #[allow(non_snake_case)]
-    pub fn new_trading_09393_D_A_8(
+    pub fn new_trading_90_C_25562(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,

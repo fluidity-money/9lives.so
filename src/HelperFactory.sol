@@ -65,7 +65,7 @@ contract HelperFactory {
         uint64 feeMinter
     ) internal returns (address) {
         require(timeEnding > block.timestamp, "time ending before timestamp");
-        return FACTORY.newTrading09393DA8(
+        return FACTORY.newTrading90C25562(
             outcomes,
             oracle,
             uint64(block.timestamp + 1),
