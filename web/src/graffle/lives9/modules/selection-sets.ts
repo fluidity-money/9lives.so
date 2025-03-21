@@ -569,7 +569,7 @@ export interface Mutation<
    *
    */
   revealCommitment?:
-    | Mutation.revealCommitment$Expanded<_$Scalars>
+    | Mutation.revealCommitment<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.revealCommitment<_$Scalars>>;
   /**
    *
@@ -577,7 +577,7 @@ export interface Mutation<
    *
    */
   revealCommitment2?:
-    | Mutation.revealCommitment2$Expanded<_$Scalars>
+    | Mutation.revealCommitment2<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.revealCommitment2<_$Scalars>>;
   /**
    *
@@ -726,18 +726,16 @@ export namespace Mutation {
   export type revealCommitment<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $Select.Indicator.NoArgsIndicator
-    | revealCommitment$SelectionSet<_$Scalars>;
+  > = revealCommitment$SelectionSet<_$Scalars>;
 
   export interface revealCommitment$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `revealCommitment` field. No arguments are required so you may omit this.
+     * Arguments for `revealCommitment` field. All arguments are required so you must include this.
      */
-    $?: revealCommitment$Arguments<_$Scalars>;
+    $: revealCommitment$Arguments<_$Scalars>;
   }
 
   export interface revealCommitment$Arguments<
@@ -749,23 +747,23 @@ export namespace Mutation {
      * commitment for. This information will be kept until the contract goes into a state
      * of being able to be predicted (after the whinge is picked up on).
      */
-    tradingAddr?: string | undefined | null;
+    tradingAddr: string;
     /**
      * The sender's address. This is needed to simulate and then send the call. If someone
      * were to abuse this permissionless process, the degraded form would be the frontend
      * needing to be prompted for a signature before accepting submissions. The backend
      * will deduplicate this once the time has begun.
      */
-    sender?: string | undefined | null;
+    sender: string;
     /**
      * The seed that's in use for this commitment. This is a large number, so this is in
      * base10 as a string, which is handled with Go.
      */
-    seed?: string | undefined | null;
+    seed: string;
     /**
      * The preferred outcome, hex identified, preceded with 0x.
      */
-    preferredOutcome?: string | undefined | null;
+    preferredOutcome: string;
   }
 
   // --- expanded ---
@@ -780,27 +778,23 @@ export namespace Mutation {
   export type revealCommitment$Expanded<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | revealCommitment$SelectionSet<_$Scalars>
-  >;
+  > = $$Utilities.Simplify<revealCommitment$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type revealCommitment2<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $Select.Indicator.NoArgsIndicator
-    | revealCommitment2$SelectionSet<_$Scalars>;
+  > = revealCommitment2$SelectionSet<_$Scalars>;
 
   export interface revealCommitment2$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `revealCommitment2` field. No arguments are required so you may omit this.
+     * Arguments for `revealCommitment2` field. All arguments are required so you must include this.
      */
-    $?: revealCommitment2$Arguments<_$Scalars>;
+    $: revealCommitment2$Arguments<_$Scalars>;
   }
 
   export interface revealCommitment2$Arguments<
@@ -812,37 +806,37 @@ export namespace Mutation {
      * commitment for. This information will be kept until the contract goes into a state
      * of being able to be predicted (after the whinge is picked up on).
      */
-    tradingAddr?: string | undefined | null;
+    tradingAddr: string;
     /**
      * The sender's address. This is needed to simulate and then send the call. If someone
      * were to abuse this permissionless process, the degraded form would be the frontend
      * needing to be prompted for a signature before accepting submissions. The backend
      * will deduplicate this once the time has begun.
      */
-    sender?: string | undefined | null;
+    sender: string;
     /**
      * The seed that's in use for this commitment. This is a large number, so this is in
      * base10 as a string, which is handled with Go.
      */
-    seed?: string | undefined | null;
+    seed: string;
     /**
      * The preferred outcome, hex identified, preceded with 0x.
      */
-    preferredOutcome?: string | undefined | null;
+    preferredOutcome: string;
     /**
      * The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
      * prefix.
      */
-    rr?: string | undefined | null;
+    rr: string;
     /**
      * The signature proof, derived from the private key and hash of this submission
      * concenated left to right. Hex encoded, with the 0x prefix.
      */
-    s?: string | undefined | null;
+    s: string;
     /**
      * The recovery ID (27) for the private key used for this signature. A Int.
      */
-    v?: string | undefined | null;
+    v: string;
   }
 
   // --- expanded ---
@@ -857,10 +851,7 @@ export namespace Mutation {
   export type revealCommitment2$Expanded<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    | $Select.Indicator.NoArgsIndicator
-    | revealCommitment2$SelectionSet<_$Scalars>
-  >;
+  > = $$Utilities.Simplify<revealCommitment2$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 

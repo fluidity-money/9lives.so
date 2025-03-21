@@ -486,19 +486,19 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       a: {
         tradingAddr: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         sender: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         seed: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         preferredOutcome: {
           nt: String,
-          it: [0],
+          it: [1],
         },
       },
     },
@@ -506,31 +506,31 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       a: {
         tradingAddr: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         sender: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         seed: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         preferredOutcome: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         rr: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         s: {
           nt: String,
-          it: [0],
+          it: [1],
         },
         v: {
           nt: String,
-          it: [0],
+          it: [1],
         },
       },
     },

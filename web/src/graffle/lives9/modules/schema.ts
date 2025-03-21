@@ -464,7 +464,7 @@ export namespace Schema {
         tradingAddr: {
           kind: "InputField";
           name: "tradingAddr";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -476,7 +476,7 @@ export namespace Schema {
         sender: {
           kind: "InputField";
           name: "sender";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -486,7 +486,7 @@ export namespace Schema {
         seed: {
           kind: "InputField";
           name: "seed";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -495,7 +495,7 @@ export namespace Schema {
         preferredOutcome: {
           kind: "InputField";
           name: "preferredOutcome";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
       };
@@ -522,7 +522,7 @@ export namespace Schema {
         tradingAddr: {
           kind: "InputField";
           name: "tradingAddr";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -534,7 +534,7 @@ export namespace Schema {
         sender: {
           kind: "InputField";
           name: "sender";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -544,7 +544,7 @@ export namespace Schema {
         seed: {
           kind: "InputField";
           name: "seed";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -553,7 +553,7 @@ export namespace Schema {
         preferredOutcome: {
           kind: "InputField";
           name: "preferredOutcome";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -563,7 +563,7 @@ export namespace Schema {
         rr: {
           kind: "InputField";
           name: "rr";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -573,7 +573,7 @@ export namespace Schema {
         s: {
           kind: "InputField";
           name: "s";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
         /**
@@ -582,7 +582,7 @@ export namespace Schema {
         v: {
           kind: "InputField";
           name: "v";
-          inlineType: [0];
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
       };

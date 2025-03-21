@@ -320,7 +320,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   revealCommitment: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
-      selectionSet?: $$Utilities.Exact<
+      selectionSet: $$Utilities.Exact<
         $SelectionSet,
         $$SelectionSets.Mutation.revealCommitment<$Context["scalars"]>
       >,
@@ -347,7 +347,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   revealCommitment2: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
-      selectionSet?: $$Utilities.Exact<
+      selectionSet: $$Utilities.Exact<
         $SelectionSet,
         $$SelectionSets.Mutation.revealCommitment2<$Context["scalars"]>
       >,
