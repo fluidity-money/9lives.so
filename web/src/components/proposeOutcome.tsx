@@ -34,14 +34,17 @@ export default function ProposeOutcome({
   const [inAction, setInAction] = useState(false);
   const [isProposed, setIsProposed] = useState(false);
   const [txHash, setTxHash] = useState<string>("");
+  const [propesedOutcome, setPropesedOutcome] = useState<string>();
+  const [disputedOutcome, setDisputedOutcome] = useState<string>();
   const [selectedOutcome, setSelectedOutcome] = useState<`0x${string}`>(
     outcomes[0].identifier,
   );
-  const { action, getStatus } = useInfraMarket({
-    tradingAddr,
-    infraState,
-    outcomes,
-  });
+  const { action, getStatus, getProposedOutcome, getDisputedOutcome } =
+    useInfraMarket({
+      tradingAddr,
+      infraState,
+      outcomes,
+    });
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const zeroByte8 = "0x0000000000000000";
@@ -69,6 +72,21 @@ export default function ProposeOutcome({
       setInfraTimeLeft(infraStatus?.timeRemained);
     }
   }, [infraStatus]);
+  useEffect(() => {
+    if (infraState === InfraMarketState.Whinging && propesedOutcome) {
+      setSelectedOutcome(
+        outcomes.find((o) => o.identifier !== propesedOutcome)!.identifier,
+      );
+    }
+  }, [infraStatus, propesedOutcome, outcomes]);
+  useEffect(() => {
+    (async function () {
+      const proposed = await getProposedOutcome();
+      const disputed = await getDisputedOutcome();
+      setPropesedOutcome(proposed);
+      setDisputedOutcome(disputed);
+    })();
+  }, []);
   if (isProposed)
     return (
       <div className="flex flex-col items-center justify-center gap-4">
@@ -124,13 +142,25 @@ export default function ProposeOutcome({
             "bg-9yellow px-1 py-0.5 font-geneva text-xs uppercase text-9black"
           }
         >
-          Time left to dispute: {timeLeft}
+          Time left for action: {timeLeft}
         </span>
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
-        <span className="font-geneva text-xs uppercase text-9black">
-          Status:
-        </span>
+        {propesedOutcome && !!BigInt(propesedOutcome) ? (
+          <h6 className="font-geneva text-xs uppercase text-9black">
+            Outcome{" "}
+            {outcomes.find((o) => o.identifier === propesedOutcome)?.name ??
+              propesedOutcome}{" "}
+            is proposed as a winner
+          </h6>
+        ) : null}
+        {disputedOutcome && !!BigInt(disputedOutcome) ? (
+          <h6 className="font-geneva text-xs uppercase text-9black">
+            Disputed with:{" "}
+            {outcomes.find((o) => o.identifier === disputedOutcome)?.name ??
+              disputedOutcome}
+          </h6>
+        ) : null}
         <h5
           className={combineClass(
             config.infraMarket.colors[infraState ?? InfraMarketState.Loading],
@@ -153,14 +183,25 @@ export default function ProposeOutcome({
                     "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
                   )}
                 >
-                  {outcomes.map((outcome) => (
-                    <option key={outcome.identifier} value={outcome.identifier}>
-                      {outcome.name}
-                    </option>
-                  ))}
-                  {infraState === InfraMarketState.Predicting && (
-                    <option value={zeroByte8}>Unsure</option>
-                  )}
+                  {outcomes
+                    .filter((o) =>
+                      InfraMarketState.Whinging === infraState &&
+                      o.identifier === propesedOutcome
+                        ? false
+                        : true,
+                    )
+                    .map((outcome) => (
+                      <option
+                        key={outcome.identifier}
+                        value={outcome.identifier}
+                      >
+                        {outcome.name}
+                      </option>
+                    ))}
+                  {infraState === InfraMarketState.Predicting ||
+                    (infraState === InfraMarketState.Whinging && (
+                      <option value={zeroByte8}>Unsure</option>
+                    ))}
                 </Select>
                 <Image
                   alt=""
@@ -175,8 +216,18 @@ export default function ProposeOutcome({
         ) : null}
         <div className="flex flex-col gap-1">
           <p className="text-center text-xs font-bold text-9black">
-            Your proposed outcome will be utilised in 9lives&apos; oracle.
+            Your proposed outcome will be utilised in 9lives&apos; oracle. If
+            proposed outcome as a winner is not disputed, after 2 days it can be
+            closed as a winner. If it is disputed, the winner can be declared
+            after 4 days based on the staked ARB.
           </p>
+          <Link
+            href={"https://arbinframarkets.xyz/"}
+            target="_blank"
+            className="mx-auto text-xs text-9black underline"
+          >
+            Learn more about how the oracle works
+          </Link>
           {infraState &&
           infraState > InfraMarketState.Whinging &&
           infraState <= InfraMarketState.Sweeping ? (

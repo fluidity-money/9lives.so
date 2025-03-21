@@ -21,6 +21,16 @@ export default function useInfraMarket(props: InfraMarketProps) {
     method: "status",
     params: [props.tradingAddr],
   });
+  const proposedOutcomeTx = prepareContractCall({
+    contract: appConfig.contracts.infra,
+    method: "callerPreferredOutcome",
+    params: [props.tradingAddr],
+  });
+  const disputedOutcomeTx = prepareContractCall({
+    contract: appConfig.contracts.infra,
+    method: "whingerPreferredWinner",
+    params: [props.tradingAddr],
+  });
   const getStatus = async () => {
     try {
       const [status, timeRemained] = (await simulateTransaction({
@@ -30,6 +40,26 @@ export default function useInfraMarket(props: InfraMarketProps) {
         status,
         timeRemained: Number(timeRemained), //time remained returns in seconds
       };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const getProposedOutcome = async () => {
+    try {
+      const outcome = (await simulateTransaction({
+        transaction: proposedOutcomeTx,
+      })) as string;
+      return outcome;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const getDisputedOutcome = async () => {
+    try {
+      const outcome = (await simulateTransaction({
+        transaction: disputedOutcomeTx,
+      })) as string;
+      return outcome;
     } catch (error) {
       console.error(error);
     }
@@ -202,5 +232,10 @@ export default function useInfraMarket(props: InfraMarketProps) {
     }
     throw new Error("No valid action available for the current state.");
   };
-  return { getStatus, action: currentAction };
+  return {
+    getStatus,
+    getProposedOutcome,
+    getDisputedOutcome,
+    action: currentAction,
+  };
 }

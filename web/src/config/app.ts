@@ -18,10 +18,10 @@ const metadata = {
   ],
 };
 const infraMarketStateTitles: Record<InfraMarketState, string> = {
-  [InfraMarketState.Callable]: "Callable",
+  [InfraMarketState.Callable]: "Propose an outcome as a winner",
   [InfraMarketState.Closable]: "Close and collect rewards",
-  [InfraMarketState.Whinging]: "In Dispute",
-  [InfraMarketState.Predicting]: "Prediction stage",
+  [InfraMarketState.Whinging]: "Dispute this proposal",
+  [InfraMarketState.Predicting]: "Lock ARB to Secure Your Proposal",
   [InfraMarketState.Revealing]: "Claimable for yield",
   [InfraMarketState.Declarable]: "Claimable for yield",
   [InfraMarketState.Sweeping]: "Claimable for yield",

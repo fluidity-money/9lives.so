@@ -27,7 +27,7 @@ export default function ProposeOutcomeButton({
       <Modal
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
-        title="Choose a Proposed Outcome"
+        title="Propose A Winner"
       >
         <ProposeOutcome
           title={title}
