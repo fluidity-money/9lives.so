@@ -6,9 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"regexp"
 	"strings"
 	"time"
 )
+
+var reAddr = regexp.MustCompile("/^0x[a-fA-F0-9]{40}$/")
 
 type Bytes struct {
 	b []byte
@@ -61,6 +64,13 @@ func (b Bytes) Value() (sqlDriver.Value, error) {
 
 func AddressFromString(s string) Address {
 	return Address(strings.ToLower(s))
+}
+func MaybeAddressFromString(s string) (*Address, error) {
+	if reAddr.MatchString(s) {
+		return nil, fmt.Errorf("match string: %#v", s)
+	}
+	x := AddressFromString(s)
+	return &x, nil
 }
 func (a Address) String() string {
 	return strings.ToLower(string(a))

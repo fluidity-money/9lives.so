@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math/big"
 	"net/url"
 	"strings"
 	"time"
@@ -24,6 +25,8 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/banners"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
+	commitment_reveal "github.com/fluidity-money/9lives.so/lib/types/commitment-reveal"
+	"github.com/fluidity-money/9lives.so/lib/types/events"
 	"gorm.io/gorm"
 )
 
@@ -585,12 +588,75 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 }
 
 // RevealCommitment is the resolver for the revealCommitment field.
-func (r *mutationResolver) RevealCommitment(ctx context.Context, tradingAddr *string, sender *string, seed *string, preferredOutcome *string) (*bool, error) {
-	panic(fmt.Errorf("not implemented: RevealCommitment - revealCommitment"))
+func (r *mutationResolver) RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error) {
+	if tradingAddr == "" || sender == "" || seed == "" || preferredOutcome == "" {
+		return nil, fmt.Errorf("field not set")
+	}
+	// Currently, since no-one's using this functionality, we're
+	// being uber permissive with the insertion.
+	tradingAddr_, err := events.MaybeAddressFromString(tradingAddr)
+	if err != nil {
+		slog.Error("Trading addr from string",
+			"err", err,
+			"trading addr", tradingAddr,
+			"sender", sender,
+			"seed", seed,
+		)
+		return nil, fmt.Errorf("trading addr from string")
+	}
+	sender_, err := events.MaybeAddressFromString(sender)
+	if err != nil {
+		slog.Error("Sender addr from string",
+			"err", err,
+			"trading addr", tradingAddr,
+			"sender", sender,
+			"seed", seed,
+		)
+		return nil, fmt.Errorf("sender addr from string")
+	}
+	seed_, ok := new(big.Int).SetString(seed, 10)
+	if !ok {
+		slog.Error("Seed conversion didn't happen",
+			"err", err,
+			"trading addr", tradingAddr,
+			"sender", sender,
+			"seed", seed,
+		)
+		return nil, fmt.Errorf("seed error converting")
+	}
+	preferredOutcome_, err := events.BytesFromHex(strings.TrimPrefix(preferredOutcome, "0x"))
+	if err != nil {
+		slog.Error("Bad preferred outcome bytes coercion",
+			"err", err,
+			"trading addr", tradingAddr,
+			"sender", sender,
+			"seed", seed,
+		)
+		return nil, fmt.Errorf("outcome bytes coercion")
+	}
+	err = r.DB.Table("ninelives_revealed_commitments_1").
+		Create(&commitment_reveal.CommitmentReveal{
+			TradingAddr:      *tradingAddr_,
+			Sender:           *sender_,
+			Seed:             events.NumberFromBig(seed_),
+			PreferredOutcome: *preferredOutcome_,
+		}).
+		Error
+	if err != nil {
+		slog.Error("Failed to insert revealed commitment",
+			"err", err,
+			"trading addr", tradingAddr,
+			"sender", sender,
+			"seed", seed,
+		)
+		return nil, fmt.Errorf("insert campaign error")
+	}
+	y := true
+	return &y, nil
 }
 
 // RevealCommitment2 is the resolver for the revealCommitment2 field.
-func (r *mutationResolver) RevealCommitment2(ctx context.Context, tradingAddr *string, sender *string, seed *string, preferredOutcome *string, rr *string, s *string, v *string) (*bool, error) {
+func (r *mutationResolver) RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error) {
 	panic(fmt.Errorf("not implemented: RevealCommitment2 - revealCommitment2"))
 }
 
@@ -805,7 +871,7 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 	err := r.DB.Raw(`
 	SELECT campaign_id, json_agg(DISTINCT outcome_id) AS outcome_ids, campaign_content AS content
 	FROM ninelives_buys_and_sells_1
-	WHERE recipient = ? and campaign_id is not null 
+	WHERE recipient = ? and campaign_id is not null
 	GROUP BY campaign_id, campaign_content;
 	`, address).Scan(&positions).Error
 	if err != nil {
@@ -865,7 +931,7 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	address = strings.ToLower(address)
 	query := r.DB.Raw(`select nc.id, nepa.shares_spent, nepa.fusdc_received, nepa.created_by as created_at, nc.content, concat('0x', nepa.identifier) as winner
 	from ninelives_events_payoff_activated nepa
-	left join ninelives_campaigns_1 nc 
+	left join ninelives_campaigns_1 nc
 	on nepa.emitter_addr = nc."content"->>'poolAddress'
 	where nepa.recipient = ?`, address)
 	if campaignID != nil {

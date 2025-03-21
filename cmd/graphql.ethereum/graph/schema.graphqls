@@ -210,7 +210,7 @@ type Mutation {
       commitment for. This information will be kept until the contract goes into a state
       of being able to be predicted (after the whinge is picked up on).
       """
-      tradingAddr: String,
+      tradingAddr: String!,
 
       """
       The sender's address. This is needed to simulate and then send the call. If someone
@@ -218,18 +218,18 @@ type Mutation {
       needing to be prompted for a signature before accepting submissions. The backend
       will deduplicate this once the time has begun.
       """
-      sender: String,
+      sender: String!,
 
       """
       The seed that's in use for this commitment. This is a large number, so this is in
       base10 as a string, which is handled with Go.
       """
-      seed: String,
+      seed: String!,
 
       """
       The preferred outcome, hex identified, preceded with 0x.
       """
-      preferredOutcome: String,
+      preferredOutcome: String!,
   ): Boolean
 
   """
@@ -246,7 +246,7 @@ type Mutation {
       commitment for. This information will be kept until the contract goes into a state
       of being able to be predicted (after the whinge is picked up on).
       """
-      tradingAddr: String,
+      tradingAddr: String!,
 
       """
       The sender's address. This is needed to simulate and then send the call. If someone
@@ -254,35 +254,35 @@ type Mutation {
       needing to be prompted for a signature before accepting submissions. The backend
       will deduplicate this once the time has begun.
       """
-      sender: String,
+      sender: String!,
 
       """
       The seed that's in use for this commitment. This is a large number, so this is in
       base10 as a string, which is handled with Go.
       """
-      seed: String,
+      seed: String!,
 
       """
       The preferred outcome, hex identified, preceded with 0x.
       """
-      preferredOutcome: String,
+      preferredOutcome: String!,
 
       """
       The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
       prefix.
       """
-      rr: String,
+      rr: String!,
 
       """
       The signature proof, derived from the private key and hash of this submission
       concenated left to right. Hex encoded, with the 0x prefix.
       """
-      s: String,
+      s: String!,
 
       """
       The recovery ID (27) for the private key used for this signature. A Int.
       """
-      v: String
+      v: String!
   ): Boolean
 
   synchProfile(walletAddress: String!, email: String!): Boolean
@@ -555,7 +555,7 @@ type Activity {
   Transaction hash of the activity.
   """
   txHash: String!
-  
+
   """
   Address of the recipient involved in the activity.
   """
