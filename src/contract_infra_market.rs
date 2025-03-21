@@ -274,8 +274,6 @@ impl StorageInfraMarket {
             e.campaign_what_called.get() != preferred_outcome,
             Error::CantWhingeCalled
         );
-        // We only allow the inconclusive statement to be made in the predict path.
-        assert_or!(!preferred_outcome.is_zero(), Error::PreferredOutcomeIsZero);
         assert_or!(
             e.campaign_who_whinged.get().is_zero(),
             Error::AlreadyWhinged
