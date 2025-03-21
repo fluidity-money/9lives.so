@@ -158,7 +158,7 @@ CREATE TABLE ninelives_events_frozen(
 	emitter_addr ADDRESS NOT NULL,
 
 	victim ADDRESS NOT NULL,
-	recipient TIMESTAMP NOT NULL
+	until TIMESTAMP NOT NULL
 );
 
 CREATE INDEX ON ninelives_events_frozen(victim);

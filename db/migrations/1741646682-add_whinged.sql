@@ -9,7 +9,7 @@ CREATE TABLE ninelives_events_whinged(
 	emitter_addr ADDRESS NOT NULL,
 
 	trading_addr ADDRESS NOT NULL,
-	preferred_outcome BYTES8 NOT NULL,
+	preferred_outcome BYTES32 NOT NULL,
 	whinger ADDRESS NOT NULL
 );
 
