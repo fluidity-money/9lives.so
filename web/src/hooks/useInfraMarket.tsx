@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import config from "@/config";
 import { generateCommit } from "@/utils/generateCommit";
 import { randomValue4Uint8 } from "@/utils/generateId";
+import { storeCommitment } from "@/providers/graphqlClient";
 interface InfraMarketProps {
   tradingAddr: `0x${string}`;
   infraState?: InfraMarketState;
@@ -117,6 +118,12 @@ export default function useInfraMarket(props: InfraMarketProps) {
       new Promise(async (res, rej) => {
         try {
           const seed = randomValue4Uint8();
+          await storeCommitment({
+            tradingAddr: props.tradingAddr,
+            seed: seed.toString(),
+            preferredOutcome: outcomeId,
+            sender: account.address,
+          });
           const commitHash = generateCommit(props.tradingAddr, outcomeId, seed);
           const predictTx = prepareContractCall({
             contract: appConfig.contracts.infra,

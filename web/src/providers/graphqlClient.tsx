@@ -273,3 +273,18 @@ export const synchProfile = (address: string, email: string) =>
   graph9Lives.mutation.synchProfile({
     $: { walletAddress: address, email },
   });
+
+export const storeCommitment = ({
+  tradingAddr,
+  seed,
+  sender,
+  preferredOutcome,
+}: {
+  tradingAddr: string;
+  seed: string;
+  sender: string;
+  preferredOutcome: string;
+}) =>
+  graph9Lives.mutation.revealCommitment({
+    $: { tradingAddr, seed, sender, preferredOutcome },
+  });
