@@ -30,7 +30,11 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
   ref,
 ) {
   return (
-    <button className="relative flex shrink-0" ref={ref} {...props}>
+    <button
+      className="relative flex shrink-0 overflow-y-hidden"
+      ref={ref}
+      {...props}
+    >
       <Image
         src={
           selected ? Leftborder : watchlist ? LeftborderSparkle : LeftborderIdle
