@@ -18,7 +18,7 @@ keccak-const = "0.2.0"
 maplit = "1.0.2"
 reqwest = { version = "0.12.8", features = ["blocking"] }
 tiny-keccak = { version = "2.0.0", features = ["sha3"] }
-tokio = { version = "1.41.1", features = ["full"] }
+tokio = { version = "1.43.1", features = ["full"] }
 url = "2.5.3"
 wasmtime = { version = "25.0.1", features = ["runtime", "cranelift"] }
 alloy-rpc-types-eth = "^0.6"
