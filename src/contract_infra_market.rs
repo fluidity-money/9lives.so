@@ -831,6 +831,18 @@ impl StorageInfraMarket {
         });
         Ok(())
     }
+
+    pub fn drain_dao_incentive(&mut self, recipient: Address) -> R<U256> {
+        assert_or!(msg_sender() == self.operator.get(), Error::NotOperator);
+        let dao_money = self.dao_money.get();
+        fusdc_call::transfer(recipient, dao_money)?;
+        self.dao_money.set(U256::ZERO);
+        evm::log(events::DAOMoneyDistributed {
+            amount: dao_money,
+            recipient,
+        });
+        Ok(dao_money)
+    }
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
