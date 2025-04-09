@@ -76,7 +76,7 @@ export default function CreateCampaignFormSettlmentSource({
     <Field className={fieldClass}>
       <Label text="Select Settlement Source" required />
       <TabGroup
-        defaultIndex={1}
+        defaultIndex={3}
         onChange={(idx) => {
           switch (idx) {
             case 0:
@@ -107,13 +107,14 @@ export default function CreateCampaignFormSettlmentSource({
               />
             )}
           </Tab>
-          <Tab as={Fragment}>
+          <Tab disabled as={Fragment}>
             {(props) => (
               <TabIconButton
                 title="Oracle"
                 activeIcon={GlobeActiveIcon}
                 inactiveIcon={GlobeInactiveIcon}
                 {...props}
+                className="opacity-30"
               />
             )}
           </Tab>

@@ -63,8 +63,7 @@ export default function CreateCampaignForm() {
   const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
     (string | undefined)[]
   >([]);
-  const [settlementType, setSettlementType] =
-    useState<SettlementType>("ORACLE");
+  const [settlementType, setSettlementType] = useState<SettlementType>("AI");
   const pictureSchema = z
     .custom<File | FileList>(
       (file) => {
