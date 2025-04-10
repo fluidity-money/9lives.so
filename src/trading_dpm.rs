@@ -1,18 +1,16 @@
-
 use crate::{
+    decimal::{
+        fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal,
+        MAX_UINT256,
+    },
     error::*,
     events,
-    immutables::*,
-    utils::{block_timestamp, msg_sender},
-
-    decimal::{fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal, MAX_UINT256},
-    error::*,
     fees::*,
     fusdc_call,
     immutables::*,
     maths, proxy, share_call,
+    storage_trading::*,
     utils::{block_timestamp, contract_address, msg_sender},
-    decimal::fusdc_decimal_to_u256
 };
 
 use stylus_sdk::{
@@ -160,7 +158,7 @@ impl StorageTrading {
         let share_bal = U256::min(share_call::balance_of(share_addr, msg_sender())?, amt);
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg_sender(), share_bal)?;
-        let fusdc = self.internal_payoff(outcome_id, share_bal)?;
+        let fusdc = self.internal_dpm_simulate_payoff(outcome_id, share_bal)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
             sharesSpent: share_bal,
@@ -293,12 +291,15 @@ impl StorageTrading {
         Ok(shares)
     }
 
-    fn internal_payoff(&self, outcome_id: FixedBytes<8>, share_bal: U256) -> R<U256> {
+    pub fn internal_dpm_simulate_payoff(
+        &self,
+        outcome_id: FixedBytes<8>,
+        share_bal: U256,
+    ) -> R<U256> {
         fusdc_decimal_to_u256(maths::dpm_payoff(
             share_u256_to_decimal(share_bal)?,
             share_u256_to_decimal(self.outcome_shares.get(outcome_id))?,
             fusdc_u256_to_decimal(self.global_invested.get())?,
         )?)
     }
-
 }

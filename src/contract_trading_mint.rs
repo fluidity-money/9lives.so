@@ -1,22 +1,6 @@
-use stylus_sdk::{
-    alloy_primitives::{aliases::*, *},
-    evm,
-};
+use stylus_sdk::alloy_primitives::{aliases::*, *};
 
-use crate::{
-    decimal::{fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal, MAX_UINT256},
-    error::*,
-    events,
-    fees::*,
-    fusdc_call,
-    immutables::*,
-    maths, proxy, share_call,
-    utils::{block_timestamp, contract_address, msg_sender},
-};
-
-use crate::decimal::fusdc_decimal_to_u256;
-
-use rust_decimal::Decimal;
+use crate::error::*;
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
@@ -35,7 +19,7 @@ impl StorageTrading {
         r: FixedBytes<32>,
         s: FixedBytes<32>,
     ) -> R<U256> {
-        self.internal_dpm_mint_permit(outcome, vaule, recipient, deadline, v, r, s)
+        self.internal_dpm_mint_permit(outcome, value, recipient, deadline, v, r, s)
     }
 
     #[allow(non_snake_case)]
@@ -46,11 +30,6 @@ impl StorageTrading {
         recipient: Address,
     ) -> R<U256> {
         self.internal_dpm_payoff(outcome_id, amt, recipient)
-    }
-
-    #[allow(non_snake_case)]
-    pub fn payoff_quote_1_F_A_6_D_C_28(&self, outcome_id: FixedBytes<8>, amt: U256) -> R<U256> {
-        self.internal_dpm_payoff(outcome_id, amt)
     }
 }
 
