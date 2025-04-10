@@ -1,14 +1,12 @@
-use stylus_sdk::{alloy_primitives::*, evm};
+use stylus_sdk::{alloy_primitives::*, };
 
 use crate::{
     error::*,
-    events, factory_call,
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
-#[cfg(target_arch = "wasm32")]
 use alloc::vec::Vec;
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
@@ -35,77 +33,18 @@ impl StorageTrading {
         fee_lp: u64,
         fee_minter: u64,
     ) -> R<()> {
-        assert_or!(!self.created.get(), Error::AlreadyConstructed);
-        // Make sure that the user hasn't given us any zero values, or the end
-        // date isn't in the past, in places that don't make sense!
-        assert_or!(
-            time_ending >= block_timestamp() && !share_impl.is_zero() && time_ending > time_start,
-            Error::BadTradingCtor
-        );
-        // We don't allow the fees to exceed 10% (100).
-        assert_or!(
-            fee_creator < 100 && fee_minter < 100 && fee_lp < 100,
-            Error::ExcessiveFee
-        );
-        // We assume that the caller already supplied the liquidity to
-        // us, and we set them as the factory.
-        let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;
-        self.global_invested.set(seed_liquidity);
-        self.amm_liquidity.set(seed_liquidity);
-        let outcomes_len: i64 = outcomes.len().try_into().unwrap();
-        self.global_shares
-            .set(U256::from(outcomes_len) * SHARE_DECIMALS_EXP);
-        // Start to go through each outcome, and seed it with its initial amount.
-        // And set each slot in the storage with the outcome id for Longtail
-        // later.
-        unsafe {
-            // We don't need to reset this, but it's useful for testing, and
-            // is presumably pretty cheap.
-            self.outcome_list.set_len(0);
-        }
-        #[cfg(feature = "trading-backend-amm")]
-        let outcome_len = outcomes.len();
-        for outcome_id in outcomes {
-            // This isn't a precaution that we actually need, but there may be weird
-            // behaviour with this being possible (ie, payoff before the end date).
-            assert_or!(!outcome_id.is_zero(), Error::OutcomeIsZero);
-            // We always set this to 1 now.
-            self.outcome_invested
-                .setter(outcome_id)
-                .set(SHARE_DECIMALS_EXP);
-            #[cfg(feature = "trading-backend-dpm")]
-            self.outcome_shares
-                .setter(outcome_id)
-                .set(U256::from(1) * SHARE_DECIMALS_EXP);
-            #[cfg(feature = "trading-backend-amm")]
-            {
-                self.outcome_shares
-                    .setter(outcome_id)
-                    .set(U256::from(outcome_len) * SHARE_DECIMALS_EXP);
-                self.outcome_total_shares
-                    .setter(outcome_id)
-                    .set(U256::from(outcome_len) * SHARE_DECIMALS_EXP);
-            }
-            self.outcome_list.push(outcome_id);
-        }
-        // We assume that the sender is the factory.
-        self.created.set(true);
-        self.factory_addr.set(msg_sender());
-        self.share_impl.set(share_impl);
-        // If the fee recipient is zero, then we set it to the DAO address.
-        self.fee_recipient.set(if fee_recipient.is_zero() {
-            DAO_ADDR
-        } else {
-            fee_recipient
-        });
-        self.time_start.set(U64::from(time_start));
-        self.time_ending.set(U64::from(time_ending));
-        self.oracle.set(oracle);
-        self.should_buffer_time.set(should_buffer_time);
-        self.fee_creator.set(U256::from(fee_creator));
-        self.fee_minter.set(U256::from(fee_minter));
-        self.fee_lp.set(U256::from(fee_lp));
-        Ok(())
+        self.internal_dpm_ctor(
+            outcomes,
+            oracle,
+            time_start,
+            time_ending,
+            fee_recipient,
+            share_impl,
+            should_buffer_time,
+            fee_creator,
+            fee_lp,
+            fee_minter,
+        )
     }
 
     pub fn is_shutdown(&self) -> R<bool> {
@@ -137,21 +76,7 @@ impl StorageTrading {
     }
 
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> R<U256> {
-        let oracle_addr = self.oracle.get();
-        assert_or!(msg_sender() == oracle_addr, Error::NotOracle);
-        assert_or!(self.when_decided.get().is_zero(), Error::NotTradingContract);
-        // Set the outcome that's winning as the winner!
-        self.winner.set(outcome);
-        self.when_decided.set(U64::from(block_timestamp()));
-        evm::log(events::OutcomeDecided {
-            identifier: outcome,
-            oracle: oracle_addr,
-        });
-        // We call shutdown in the event this wasn't called in the past.
-        if !self.is_shutdown.get() {
-            self.internal_shutdown()?;
-        }
-        Ok(U256::ZERO)
+        self.internal_dpm_decide(outcome)
     }
 
     pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
@@ -175,14 +100,7 @@ impl StorageTrading {
     }
 
     pub fn is_dpm(&self) -> R<bool> {
-        #[cfg(feature = "trading-backend-dpm")]
-        {
-            Ok(true)
-        }
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        {
-            Ok(false)
-        }
+        Ok(true)
     }
 
     #[mutants::skip]
@@ -202,21 +120,6 @@ impl StorageTrading {
             self.share_impl.get(),
             outcome,
         ))
-    }
-}
-
-impl StorageTrading {
-    fn internal_shutdown(&mut self) -> R<U256> {
-        // Notify Longtail to pause trading on every outcome pool.
-        assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
-        factory_call::disable_shares(
-            self.factory_addr.get(),
-            &(0..self.outcome_list.len())
-                .map(|i| self.outcome_list.get(i).unwrap())
-                .collect::<Vec<_>>(),
-        )?;
-        self.is_shutdown.set(true);
-        Ok(U256::ZERO)
     }
 }
 

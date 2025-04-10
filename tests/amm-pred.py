@@ -14,7 +14,7 @@ class PredMarketNew:
 
         self.total_shares = [liquidity] * outcomes
 
-		# Track the total outcome shares a user own
+        # Track the total outcome shares a user own
         self.user_outcome_shares = [0] * outcomes
         self.user_liquidity_shares = 0
         self.user_wallet_usd = 0
