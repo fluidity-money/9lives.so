@@ -26,7 +26,10 @@ impl StorageTrading {
                 value, deadline, v, r, s
             ))
         }
-        self.internal_dpm_mint_permit(outcome, value, recipient)
+        #[cfg(feature = "trading-backend-dpm")]
+        return self.internal_dpm_mint(outcome, value, recipient);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_mint(outcome, value, recipient);
     }
 
     #[allow(non_snake_case)]

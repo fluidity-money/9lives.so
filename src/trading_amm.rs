@@ -197,4 +197,48 @@ impl StorageTrading {
         }
         Ok(liquidity_shares_val)
     }
+
+    pub fn internal_amm_buy(
+        &mut self,
+        outcome_id: FixedBytes<8>,
+        amount: U256,
+        recipient: Address,
+    ) -> R<U256> {
+        self.require_not_done_predicting()?;
+        self.internal_amm_get_prices();
+        for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
+            {
+                let shares = self.amm_shares.get(outcome_id) + amount;
+                self.amm_shares.setter(outcome_id).set(shares);
+            }
+            {
+                let total_shares = self.amm_total_shares.get(outcome_id) + amount;
+                self.amm_total_shares.setter(outcome_id).set(total_shares);
+            }
+        }
+        let our_previous_shares = self.amm_shares.get(outcome_id);
+        let product = self
+            .outcome_ids_iter()
+            .filter(|x| *x != outcome_id)
+            .map(|x| self.amm_shares.get(x))
+            .product::<U256>();
+        self.amm_shares.setter(outcome_id).set(
+            self.amm_liquidity
+                .get()
+                .pow(U256::from(self.outcome_list.len()))
+                / product,
+        );
+        let shares = our_previous_shares - self.amm_shares.get(outcome_id);
+        c!(share_call::mint(
+            proxy::get_share_addr(
+                self.factory_addr.get(),
+                contract_address(),
+                self.share_impl.get(),
+                outcome_id,
+            ),
+            recipient,
+            shares
+        ));
+        Ok(shares)
+    }
 }

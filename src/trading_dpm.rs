@@ -71,7 +71,7 @@ impl StorageTrading {
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn internal_dpm_mint_permit(
+    pub fn internal_dpm_mint(
         &mut self,
         outcome_id: FixedBytes<8>,
         value: U256,
@@ -125,7 +125,7 @@ impl StorageTrading {
         // allow negative numbers with any code that touches the DPM.
         let shares = {
             let shares_before = self.dpm_outcome_shares.get(outcome_id);
-            let shares = c!(self.internal_dpm_mint(outcome_id, value));
+            let shares = c!(self.internal_calc_dpm_mint(outcome_id, value));
             self.dpm_outcome_shares.setter(outcome_id).set(c!(shares_before
                 .checked_add(shares)
                 .ok_or(Error::CheckedAddOverflow)));
@@ -204,7 +204,7 @@ impl StorageTrading {
 
     // Shares returned by the DPM. Does not set any state.
     #[allow(unused)]
-    fn internal_dpm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
+    fn internal_calc_dpm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let n_1 = self.dpm_outcome_shares.get(outcome_id);
         let dpm_outcome_invested = self.dpm_outcome_invested.get(outcome_id);
         let m = c!(fusdc_u256_to_decimal(value));
