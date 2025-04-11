@@ -79,6 +79,7 @@ pub mod contract_factory_2;
 pub mod storage_factory;
 
 mod trading_private;
+mod trading_amm;
 mod trading_dpm;
 
 pub mod contract_trading;

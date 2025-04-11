@@ -37,8 +37,8 @@ fn test_e2e_mint_dpm() {
         )
         .unwrap();
         // Check if the shares were correctly set.
-        assert_eq!(c.outcome_shares.get(outcome_1), U256::from(1e6));
-        assert_eq!(c.outcome_shares.get(outcome_2), U256::from(1e6));
+        assert_eq!(c.dpm_outcome_shares.get(outcome_1), U256::from(1e6));
+        assert_eq!(c.dpm_outcome_shares.get(outcome_2), U256::from(1e6));
         // To the contract after fee taking, this will be 5.7.
         let value = U256::from(1e6) * U256::from(6);
         // Take 0.8% from the amount (this is the fee).

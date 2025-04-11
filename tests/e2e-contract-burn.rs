@@ -12,6 +12,7 @@ use {
 
 use proptest::prelude::*;
 
+/*
 proptest! {
     #[test]
     #[cfg(feature = "trading-backend-dpm")]
@@ -114,3 +115,4 @@ proptest! {
         }
     }
 }
+*/

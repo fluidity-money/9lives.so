@@ -15,11 +15,10 @@ impl StorageTrading {
         if !self.when_decided.is_zero() {
             return Ok(U256::ZERO);
         }
-        assert_or!(
-            self.outcome_shares.get(outcome_id) > U256::ZERO,
-            Error::NonexistentOutcome
-        );
-        self.internal_dpm_quote(outcome_id, value)
+        #[cfg(feature = "trading-backend-dpm")]
+        return self.internal_dpm_quote(outcome_id, value);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        unimplemented!()
     }
 }
 
@@ -27,13 +26,17 @@ impl StorageTrading {
     #[allow(unused)]
     #[mutants::skip]
     fn internal_dpm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
-        let m_1 = c!(fusdc_u256_to_decimal(self.outcome_invested.get(outcome_id)));
-        let n_1 = self.outcome_shares.get(outcome_id);
-        let n_2 = self.global_shares.get() - n_1;
+        assert_or!(
+            self.dpm_outcome_shares.get(outcome_id) > U256::ZERO,
+            Error::NonexistentOutcome
+        );
+        let m_1 = c!(fusdc_u256_to_decimal(self.dpm_outcome_invested.get(outcome_id)));
+        let n_1 = self.dpm_outcome_shares.get(outcome_id);
+        let n_2 = self.dpm_global_shares.get() - n_1;
         let n_1 = c!(share_u256_to_decimal(n_1));
         let n_2 = c!(share_u256_to_decimal(n_2));
         let m_2 = c!(fusdc_u256_to_decimal(
-            self.global_invested.get() - self.outcome_invested.get(outcome_id),
+            self.dpm_global_invested.get() - self.dpm_outcome_invested.get(outcome_id),
         ));
         Ok(c!(share_decimal_to_u256(c!(maths::dpm_shares(
             m_1,

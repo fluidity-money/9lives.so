@@ -82,6 +82,7 @@ pub fn dpm_payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error
 
 pub fn rooti(x: U256, n: u32) -> U256 {
     // We need this because Alloy uses floating points code for this.
+    // Newton's method.
     if x.is_zero() {
         return U256::ZERO;
     }
@@ -100,6 +101,13 @@ pub fn rooti(x: U256, n: u32) -> U256 {
         y -= U256::from(1);
     }
     y
+}
+
+pub fn pow_frac(x: U256, y: u32, z: u32) -> U256 {
+    if x.is_zero() {
+        return U256::ZERO;
+    }
+    rooti(x.pow(U256::from(y)), z)
 }
 
 #[test]
@@ -129,4 +137,10 @@ fn test_shares_edge_1() {
         .unwrap(),
         dec!(49545632.553194709597488661811)
     )
+}
+
+#[test]
+fn test_pow_frac() {
+    dbg!(pow_frac(U256::from(100), 1, 5));
+    panic!("shit")
 }

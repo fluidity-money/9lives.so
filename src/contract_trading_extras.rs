@@ -1,4 +1,4 @@
-use stylus_sdk::{alloy_primitives::*, };
+use stylus_sdk::alloy_primitives::*;
 
 use crate::{
     error::*,
@@ -33,18 +33,44 @@ impl StorageTrading {
         fee_lp: u64,
         fee_minter: u64,
     ) -> R<()> {
-        self.internal_dpm_ctor(
-            outcomes,
-            oracle,
-            time_start,
-            time_ending,
-            fee_recipient,
-            share_impl,
-            should_buffer_time,
-            fee_creator,
-            fee_lp,
-            fee_minter,
-        )
+        assert_or!(!self.created.get(), Error::AlreadyConstructed);
+        // Make sure that the user hasn't given us any zero values, or the end
+        // date isn't in the past, in places that don't make sense!
+        assert_or!(
+            time_ending >= block_timestamp() && !share_impl.is_zero() && time_ending > time_start,
+            Error::BadTradingCtor
+        );
+        // We don't allow the fees to exceed 10% (100).
+        assert_or!(
+            fee_creator < 100 && fee_minter < 100 && fee_lp < 100,
+            Error::ExcessiveFee
+        );
+        unsafe {
+            // We don't need to reset this, but it's useful for testing, and
+            // is presumably pretty cheap.
+            self.outcome_list.set_len(0);
+        }
+        // We assume that the sender is the factory.
+        self.created.set(true);
+        self.factory_addr.set(msg_sender());
+        self.share_impl.set(share_impl);
+        // If the fee recipient is zero, then we set it to the DAO address.
+        self.fee_recipient.set(if fee_recipient.is_zero() {
+            DAO_ADDR
+        } else {
+            fee_recipient
+        });
+        self.time_start.set(U64::from(time_start));
+        self.time_ending.set(U64::from(time_ending));
+        self.oracle.set(oracle);
+        self.should_buffer_time.set(should_buffer_time);
+        self.fee_creator.set(U256::from(fee_creator));
+        self.fee_minter.set(U256::from(fee_minter));
+        self.fee_lp.set(U256::from(fee_lp));
+        #[cfg(feature = "trading-backend-dpm")]
+        return self.internal_dpm_ctor(outcomes);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_ctor(outcomes);
     }
 
     pub fn is_shutdown(&self) -> R<bool> {
@@ -80,12 +106,15 @@ impl StorageTrading {
     }
 
     pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
-        Ok((
-            self.outcome_shares.get(outcome_id),
-            self.outcome_invested.get(outcome_id),
-            self.global_invested.get(),
+        #[cfg(feature = "trading-backend-dpm")]
+        return Ok((
+            self.dpm_outcome_shares.get(outcome_id),
+            self.dpm_outcome_invested.get(outcome_id),
+            self.dpm_global_invested.get(),
             self.winner.get(),
-        ))
+        ));
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        unimplemented!()
     }
 
     pub fn escape(&mut self) -> R<()> {
@@ -96,7 +125,10 @@ impl StorageTrading {
     }
 
     pub fn global_shares(&self) -> R<U256> {
-        Ok(self.global_shares.get())
+        #[cfg(feature = "trading-backend-dpm")]
+        return Ok(self.dpm_global_shares.get());
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        unimplemented!()
     }
 
     pub fn is_dpm(&self) -> R<bool> {
@@ -110,7 +142,10 @@ impl StorageTrading {
 
     #[mutants::skip]
     pub fn invested(&self) -> R<U256> {
-        Ok(self.global_invested.get())
+        #[cfg(feature = "trading-backend-dpm")]
+        return Ok(self.dpm_global_invested.get());
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        unimplemented!()
     }
 
     pub fn share_addr(&self, outcome: FixedBytes<8>) -> R<Address> {

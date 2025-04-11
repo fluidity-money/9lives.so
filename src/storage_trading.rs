@@ -1,15 +1,5 @@
-use stylus_sdk::{alloy_primitives::*, storage::*};
+use stylus_sdk::{alloy_primitives::*, storage::*, prelude::*};
 
-#[cfg_attr(
-    any(
-        feature = "contract-trading-mint",
-        feature = "contract-trading-extras",
-        feature = "contract-trading-quotes",
-        feature = "contract-trading-price",
-        feature = "testing"
-    ),
-    stylus_sdk::prelude::storage
-)]
 #[cfg_attr(
     any(
         feature = "contract-trading-mint",
@@ -19,6 +9,7 @@ use stylus_sdk::{alloy_primitives::*, storage::*};
     ),
     stylus_sdk::prelude::entrypoint
 )]
+#[storage]
 pub struct StorageTrading {
     /// Was this contract created?
     pub created: StorageBool,
@@ -52,25 +43,6 @@ pub struct StorageTrading {
     /// during the construction of this.
     pub share_impl: StorageAddress,
 
-    /// Shares invested in every outcome cumulatively. NOT IN USE BY THE
-    /// AMM.
-    pub global_shares: StorageU256,
-
-    /// Shares available to buy in the pool.
-    pub outcome_shares: StorageMap<FixedBytes<8>, StorageU256>,
-
-    /// Shares that're in the pool that have been bought.
-    pub outcome_total_shares: StorageMap<FixedBytes<8>, StorageU256>,
-
-    /// Amount that was invested to seed this pool. Used as liquidity by the AMM.
-    pub amm_liquidity: StorageU256,
-
-    /// Global amount invested to this pool of the native asset.
-    pub global_invested: StorageU256,
-
-    /// The amount invested in a specific outcome.
-    pub outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
-
     /// Outcomes tracked to be disabled with Longtail once a winner is found.
     pub outcome_list: StorageVec<StorageFixedBytes<8>>,
 
@@ -96,10 +68,41 @@ pub struct StorageTrading {
     /// The fee for LPs to the market. Defaults to 3, for 0.2%.
     pub fee_lp: StorageU256,
 
-    /// An insane situation has taken place, and escaping took place. This is set
+    /// An insane situation has taken place, and escaping has happened. This is set
     /// if the developers are able to retrieve the money. This is only possible
     /// to be set by the oracle.
     pub is_escaped: StorageBool,
+
+    /* ~~~~~~~~~~ DPM USED ~~~~~~~~~~ */
+
+    /// Shares invested in every outcome cumulatively.
+    pub dpm_global_shares: StorageU256,
+
+    /// Shares available to buy in the pool.
+    pub dpm_outcome_shares: StorageMap<FixedBytes<8>, StorageU256>,
+
+    /// Global amount invested to this pool of the native asset.
+    pub dpm_global_invested: StorageU256,
+
+    /// The amount invested in a specific outcome.
+    pub dpm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
+
+    /* ~~~~~~~~~~ AMM USED ~~~~~~~~~~ */
+
+    pub amm_liquidity: StorageU256,
+
+    pub amm_outcome_prices: StorageMap<FixedBytes<8>, StorageU256>,
+
+    pub amm_shares: StorageMap<FixedBytes<8>, StorageU256>,
+
+    pub amm_total_shares: StorageMap<FixedBytes<8>, StorageU256>,
+}
+
+// Storage accessors to simplify lookup.
+impl StorageTrading {
+    pub fn outcome_ids_iter(&self) -> impl Iterator<Item = FixedBytes<8>> + '_ {
+        (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap())
+    }
 }
 
 #[cfg(feature = "testing")]
@@ -124,9 +127,9 @@ impl std::fmt::Debug for StorageTrading {
             self.time_ending,
             self.oracle,
             self.share_impl,
-            self.global_shares,
+            self.dpm_global_shares,
             self.amm_liquidity,
-            self.global_invested,
+            self.dpm_global_invested,
             self.winner,
             self.should_buffer_time
         )
@@ -144,7 +147,6 @@ pub fn strat_storage_trading(
         },
     };
     use proptest::prelude::*;
-
     (
         strat_address(),
         strat_address(),
@@ -202,19 +204,19 @@ pub fn strat_storage_trading(
                             // We don't enforce consistency with the seed invested argument. That
                             // might warrant more fine-grained use of this storage (and functions
                             // associated).
-                            let mut global_invested = U256::ZERO;
-                            let mut global_shares = U256::ZERO;
-                            for (outcome_id, outcome_shares, outcome_invested) in &outcomes {
-                                c.outcome_invested
+                            let mut dpm_global_invested = U256::ZERO;
+                            let mut dpm_global_shares = U256::ZERO;
+                            for (outcome_id, dpm_outcome_shares, dpm_outcome_invested) in &outcomes {
+                                c.dpm_outcome_invested
                                     .setter(*outcome_id)
-                                    .set(*outcome_invested);
-                                c.outcome_shares.setter(*outcome_id).set(*outcome_shares);
-                                global_invested += outcome_invested;
-                                global_shares += outcome_shares;
+                                    .set(*dpm_outcome_invested);
+                                c.dpm_outcome_shares.setter(*outcome_id).set(*dpm_outcome_shares);
+                                dpm_global_invested += dpm_outcome_invested;
+                                dpm_global_shares += dpm_outcome_shares;
                                 c.outcome_list.push(*outcome_id);
                             }
-                            c.global_shares.set(global_shares);
-                            c.global_invested.set(global_invested);
+                            c.dpm_global_shares.set(dpm_global_shares);
+                            c.dpm_global_invested.set(dpm_global_invested);
                             if should_set_winner {
                                 let i = (rng.next_u64() % outcomes.len() as u64) as usize;
                                 c.winner.set(outcomes[i].0);
