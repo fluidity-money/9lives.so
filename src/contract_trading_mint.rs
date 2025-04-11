@@ -56,7 +56,10 @@ impl StorageTrading {
         amt: U256,
         recipient: Address,
     ) -> R<U256> {
-        self.internal_dpm_payoff(outcome_id, amt, recipient)
+        #[cfg(feature = "trading-backend-dpm")]
+        return self.internal_dpm_payoff(outcome_id, amt, recipient);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_payoff(outcome_id, amt, recipient);
     }
 
     pub fn add_liquidity_permit(

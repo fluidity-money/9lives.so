@@ -479,6 +479,9 @@ pub enum Error {
 
     // Caller does not have the liquidity to redeem!
     NotEnoughLiquidity,
+
+    // Winner was not decided!
+    NotDecided,
 }
 
 #[cfg(any(

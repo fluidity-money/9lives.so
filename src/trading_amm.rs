@@ -285,4 +285,20 @@ impl StorageTrading {
         ));
         Ok(shares)
     }
+
+    // Activate the resolution function to trigger a AMM payoff if the market is concluded.
+    pub fn internal_amm_payoff(&mut self, share_amt: Address, recipient: Address) -> R<U256> {
+        assert_or!(self.winner.get() == outcome_id, Error::NotWinner);
+        let share_addr = proxy::get_share_addr(
+            self.factory_addr.get(),
+            contract_address(), // Address of this contract, the Trading contract.
+            self.share_impl.get(),
+            outcome_id,
+        );
+        let share_bal = U256::min(share_call::balance_of(share_addr, msg_sender())?, amt);
+        assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
+        share_call::burn(share_addr, msg_sender(), share_bal)?;
+        fusdc_call::transfer(share_bal, recipient)?;
+        Ok(share_bal)
+    }
 }
