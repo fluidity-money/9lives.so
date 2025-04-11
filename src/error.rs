@@ -476,6 +476,9 @@ pub enum Error {
 
     // Creator tried to provide more than a 10% fee.
     ExcessiveFee,
+
+    // Caller does not have the liquidity to redeem!
+    NotEnoughLiquidity,
 }
 
 #[cfg(any(

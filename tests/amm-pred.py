@@ -125,8 +125,6 @@ class PredMarketNew:
         # Update self.outcome_prices to the latest price
         self.get_outcome_prices()
 
-        previous_liquidity = self.liquidity
-
         # amount refers to the liquidity shares
         most_likely = self.shares.index(min(self.shares))
         # It is possible to have more than one outcome shares with the same min shares. (e.g., OutA=100, OutB=100, OutC=200, OutD=300)

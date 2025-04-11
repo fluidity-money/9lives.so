@@ -96,6 +96,9 @@ pub struct StorageTrading {
     pub amm_shares: StorageMap<FixedBytes<8>, StorageU256>,
 
     pub amm_total_shares: StorageMap<FixedBytes<8>, StorageU256>,
+
+    /// The amount of shares a user has, simply a map here for now.
+    pub amm_user_liquidity_shares: StorageMap<Address, StorageU256>,
 }
 
 // Storage accessors to simplify lookup.
