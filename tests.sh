@@ -2,8 +2,8 @@
 
 make solidity
 
-cargo test --features testing,trading-backend-dpm $@
-#cargo test --features testing,trading-backend-amm $@
+#cargo test --features testing,trading-backend-dpm $@
+cargo test --features testing,trading-backend-amm $@
 #cargo mutants --features testing,trading-backend-dpm $@
 
 if ! [ -z "$SPN_TEST_NO_JS" ]; then

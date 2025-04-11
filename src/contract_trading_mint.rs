@@ -19,6 +19,7 @@ impl StorageTrading {
         r: FixedBytes<32>,
         s: FixedBytes<32>,
     ) -> R<U256> {
+        self.require_not_done_predicting()?;
         if deadline.is_zero() {
             c!(fusdc_call::take_from_sender(value));
         } else {
@@ -30,6 +31,22 @@ impl StorageTrading {
         return self.internal_dpm_mint(outcome, value, recipient);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_mint(outcome, value, recipient);
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    #[allow(non_snake_case)]
+    pub fn burn_permit(
+        &mut self,
+        _outcome: FixedBytes<8>,
+        fusdc_amount: U256,
+        recipient: Address,
+    ) -> R<U256> {
+        self.require_not_done_predicting()?;
+        fusdc_call::transfer(recipient, fusdc_amount)?;
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!();
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_burn(_outcome, fusdc_amount);
     }
 
     #[allow(non_snake_case)]

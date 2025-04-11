@@ -47,7 +47,6 @@ impl StorageTrading {
     }
 
     pub fn internal_amm_add_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
-        self.require_not_done_predicting()?;
         self.internal_amm_get_prices();
         let prev_liquidity = self.amm_liquidity.get();
         for id in self.outcome_ids_iter().collect::<Vec<_>>() {
@@ -116,7 +115,6 @@ impl StorageTrading {
     }
 
     pub fn internal_amm_remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
-        self.require_not_done_predicting()?;
         self.internal_amm_get_prices();
         let (least_likely_amt, least_likely_outcome_id) = self
             .outcome_ids_iter()
@@ -198,13 +196,12 @@ impl StorageTrading {
         Ok(liquidity_shares_val)
     }
 
-    pub fn internal_amm_buy(
+    pub fn internal_amm_mint(
         &mut self,
         outcome_id: FixedBytes<8>,
         amount: U256,
         recipient: Address,
     ) -> R<U256> {
-        self.require_not_done_predicting()?;
         self.internal_amm_get_prices();
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
@@ -216,7 +213,7 @@ impl StorageTrading {
                 self.amm_total_shares.setter(outcome_id).set(total_shares);
             }
         }
-        let our_previous_shares = self.amm_shares.get(outcome_id);
+        let outcome_previous_shares = self.amm_shares.get(outcome_id);
         let product = self
             .outcome_ids_iter()
             .filter(|x| *x != outcome_id)
@@ -228,7 +225,7 @@ impl StorageTrading {
                 .pow(U256::from(self.outcome_list.len()))
                 / product,
         );
-        let shares = our_previous_shares - self.amm_shares.get(outcome_id);
+        let shares = outcome_previous_shares - self.amm_shares.get(outcome_id);
         c!(share_call::mint(
             proxy::get_share_addr(
                 self.factory_addr.get(),
@@ -237,6 +234,53 @@ impl StorageTrading {
                 outcome_id,
             ),
             recipient,
+            shares
+        ));
+        Ok(shares)
+    }
+
+    // Sell the amount of shares, using the USD amount, returning the shares
+    // sold. Does the transferring.
+    pub fn internal_amm_burn(&mut self, outcome_id: FixedBytes<8>, fusdc_amount: U256) -> R<U256> {
+        for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
+            {
+                let shares = self
+                    .amm_shares
+                    .get(outcome_id)
+                    .checked_sub(fusdc_amount)
+                    .ok_or(Error::CheckedSubOverflow)?;
+                self.amm_shares.setter(outcome_id).set(shares);
+            }
+            {
+                let total_shares = self
+                    .amm_total_shares
+                    .get(outcome_id)
+                    .checked_sub(fusdc_amount)
+                    .ok_or(Error::CheckedSubOverflow)?;
+                self.amm_total_shares.setter(outcome_id).set(total_shares);
+            }
+        }
+        let outcome_previous_shares = self.amm_shares.get(outcome_id);
+        let product = self
+            .outcome_ids_iter()
+            .filter(|x| *x != outcome_id)
+            .map(|x| self.amm_shares.get(x))
+            .product::<U256>();
+        self.amm_shares.setter(outcome_id).set(
+            self.amm_liquidity
+                .get()
+                .pow(U256::from(self.outcome_list.len()))
+                / product,
+        );
+        let shares = self.amm_shares.get(outcome_id) - outcome_previous_shares;
+        c!(share_call::burn(
+            proxy::get_share_addr(
+                self.factory_addr.get(),
+                contract_address(),
+                self.share_impl.get(),
+                outcome_id,
+            ),
+            msg_sender(),
             shares
         ));
         Ok(shares)

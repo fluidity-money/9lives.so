@@ -78,8 +78,6 @@ impl StorageTrading {
         recipient: Address,
     ) -> R<U256> {
         assert_or!(value < MAX_UINT256, Error::U256TooLarge);
-        // Ensure that we're not complete, and that the time hasn't expired.
-        self.require_not_done_predicting()?;
         assert_or!(!value.is_zero(), Error::ZeroAmount);
         let recipient = if recipient.is_zero() {
             msg_sender()
