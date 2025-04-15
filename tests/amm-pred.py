@@ -98,8 +98,10 @@ class PredMarketNew:
             self.total_shares[i] += amount
 
         previous_shares = self.shares.copy()
+        print(f"prev shares: {previous_shares}")
 
         least_likely = self.shares.index(max(self.shares))
+        print(f"least likely amt: {max(self.shares)}")
         # It is possible to have more than one outcome shares with the same max shares. (e.g., OutA=100, OutB=100, OutC=200, OutD=300)
         least_likely_indices = [i for i, s in enumerate(self.shares) if s == max(self.shares)]
 
@@ -111,6 +113,7 @@ class PredMarketNew:
         product = math.prod(self.shares)
         print(f"product: {product}")
         self.liquidity = pow(product, 1/len(self.shares))
+        print(f"self.liquidity = {self.liquidity}, prev_liquidity: {prev_liquidity}")
 
         # Record the no. of liquidity shares user received
         self.user_liquidity_shares += (self.liquidity - previous_liquidity)
@@ -720,9 +723,9 @@ def simulate_market_14():
     assert market.pool_wallet_usd == 0
 
 if __name__ == "__main__":
-    simulate_market_1()
-    exit(0)
+    #simulate_market_1()
     simulate_market_2()
+    exit(0)
     simulate_market_3()
     simulate_market_4()
     simulate_market_5()

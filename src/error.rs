@@ -51,6 +51,24 @@ macro_rules! c {
     };
 }
 
+#[macro_export]
+macro_rules! assert_eq_u_down {
+    ($left:expr, $right:expr $(,)?) => {{
+        let diff = if $left > $right {
+            $left - $right
+        } else {
+            $right - $left
+        };
+        let tol = stylus_sdk::alloy_primitives::U256::from(1e5 as u64);
+        if diff > tol {
+            panic!(
+                "{} != {}, diff {}, tol {} or over",
+                $left, $right, diff, tol
+            );
+        }
+    }};
+}
+
 err_pre!(ERR_LONGTAIL_PREAMBLE, 0x00);
 err_pre!(ERR_ERC20_TRANSFER_PREAMBLE, 0x01);
 err_pre!(ERR_SHARE_PREAMBLE, 0x02);

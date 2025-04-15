@@ -1,4 +1,6 @@
-use crate::{error::*, immutables::*, maths, proxy, share_call, storage_trading::*, utils::*, fusdc_call};
+use crate::{
+    error::*, fusdc_call, immutables::*, maths, proxy, share_call, storage_trading::*, utils::*,
+};
 
 use stylus_sdk::alloy_primitives::*;
 
@@ -55,41 +57,39 @@ impl StorageTrading {
                 .setter(id)
                 .set(x.checked_add(amount).ok_or(Error::CheckedAddOverflow)?);
         }
-        let unscaled_prev_shares = self
+        let prev_shares = self
             .outcome_ids_iter()
             .map(|x| self.amm_shares.get(x))
             .collect::<Vec<_>>();
-        // There should always be an answer here! We don't allow someone to set
-        // up with no outcomes.
-        let (unscaled_least_likely_amt, least_likely_outcome_id) = self
+        let (least_likely_amt, least_likely_outcome_id) = self
             .outcome_ids_iter()
             .fold(None, |acc, id| {
                 let unscaled_shares = self.amm_shares.get(id);
-                if let Some((unscaled_max_shares, _)) = acc {
-                    if unscaled_shares < unscaled_max_shares {
+                if let Some((max_shares, _)) = acc {
+                    if unscaled_shares < max_shares {
                         return acc;
                     }
                 }
                 Some((unscaled_shares, id))
             })
             .unwrap();
-        // Recompute shares to preserve price ratios. This is not inclusive of least indices!
+        let least_likely_ids: Vec<_> = self
+            .outcome_ids_iter()
+            .filter(|&id| self.amm_shares.get(id) == least_likely_amt)
+            .collect();
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
-            if self.amm_shares.get(outcome_id) == unscaled_least_likely_amt {
+            if least_likely_ids.contains(&outcome_id) {
                 continue;
             }
             //(amm_shares[least_likely_outcome_id] * amm_outcome_prices[least_likely_outcome_id]) / amm_outcome_prices[outcome_id]
-            //FIXME
-            let unscaled_new_shares = self
+            let new_shares = self
                 .amm_shares
                 .get(least_likely_outcome_id)
                 .checked_mul(self.amm_outcome_prices.get(least_likely_outcome_id))
                 .ok_or(Error::CheckedMulOverflow)?
                 .checked_div(self.amm_outcome_prices.get(outcome_id))
-                .ok_or(Error::CheckedDivOverflow)?
-                .checked_div(SCALING_FACTOR)
                 .ok_or(Error::CheckedDivOverflow)?;
-            self.amm_shares.setter(outcome_id).set(unscaled_new_shares);
+            self.amm_shares.setter(outcome_id).set(new_shares);
         }
         let product = self
             .outcome_ids_iter()
@@ -100,11 +100,11 @@ impl StorageTrading {
         // Time to mint the user some shares. For now, we're going to simply bump
         // their balance.
         {
-            let add_user_liq = self
+            let add_user_liq = c!(self
                 .amm_liquidity
                 .get()
                 .checked_sub(prev_liquidity)
-                .ok_or(Error::CheckedSubOverflow)?;
+                .ok_or(Error::CheckedSubOverflow));
             let user_liq_shares = self.amm_user_liquidity_shares.get(recipient);
             self.amm_user_liquidity_shares.setter(recipient).set(
                 user_liq_shares
@@ -113,8 +113,7 @@ impl StorageTrading {
             );
         }
         for (i, outcome_id) in self.outcome_ids_iter().enumerate() {
-            let unscaled_outcome_shares_received =
-                unscaled_prev_shares[i] - self.amm_shares.get(outcome_id);
+            let outcome_shares_received = prev_shares[i] - self.amm_shares.get(outcome_id);
             c!(share_call::mint(
                 proxy::get_share_addr(
                     self.factory_addr.get(),
@@ -123,10 +122,99 @@ impl StorageTrading {
                     outcome_id,
                 ),
                 recipient,
-                unscaled_outcome_shares_received
+                outcome_shares_received
             ));
         }
         Ok(amount)
+    }
+
+    pub fn internal_amm_remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
+        self.internal_amm_get_prices();
+        let (least_likely_amt, least_likely_outcome_id) = self
+            .outcome_ids_iter()
+            .fold(None, |acc, id| {
+                let unscaled_shares = self.amm_shares.get(id);
+                if let Some((max_shares, _)) = acc {
+                    if unscaled_shares < max_shares {
+                        return acc;
+                    }
+                }
+                Some((unscaled_shares, id))
+            })
+            .unwrap();
+        let (_, most_likely_outcome_id) = self
+            .outcome_ids_iter()
+            .fold(None, |acc, id| {
+                let shares = self.amm_shares.get(id);
+                if let Some((max_shares, _)) = acc {
+                    if shares > max_shares {
+                        return acc;
+                    }
+                }
+                Some((shares, id))
+            })
+            .unwrap();
+        let least_likely_ids: Vec<_> = self
+            .outcome_ids_iter()
+            .filter(|&id| self.amm_shares.get(id) == least_likely_amt)
+            .collect();
+        // This is the amount of fUSDC to return to the end user.
+        let liquidity_shares_val =
+            self.amm_liquidity.get() / self.amm_shares.get(most_likely_outcome_id) * amount;
+        for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
+            if least_likely_ids.contains(&outcome_id) {
+                continue;
+            }
+            {
+                let shares = self.amm_shares.get(outcome_id) - liquidity_shares_val;
+                self.amm_shares.setter(outcome_id).set(shares);
+            }
+            {
+                let total_shares = self.amm_total_shares.get(outcome_id) - liquidity_shares_val;
+                self.amm_total_shares.setter(outcome_id).set(total_shares);
+            }
+        }
+        let prev_shares = self
+            .outcome_ids_iter()
+            .map(|x| self.amm_shares.get(x))
+            .collect::<Vec<_>>();
+        // Recompute shares to preserve price ratios. This is not inclusive of least indices!
+        for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
+            if self.amm_shares.get(outcome_id) == least_likely_amt {
+                continue;
+            }
+            let new_shares = (self.amm_shares.get(most_likely_outcome_id)
+                * self.amm_outcome_prices.get(most_likely_outcome_id))
+                / self.amm_outcome_prices.get(outcome_id);
+            self.amm_shares.setter(outcome_id).set(new_shares);
+        }
+        let product = self
+            .outcome_ids_iter()
+            .map(|x| self.amm_shares.get(x))
+            .product();
+        self.amm_liquidity
+            .set(maths::rooti(product, self.outcome_list.len() as u32));
+        {
+            let user_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
+            self.amm_user_liquidity_shares
+                .setter(msg_sender())
+                .set(user_liq_shares - amount);
+        }
+        for (i, outcome_id) in self.outcome_ids_iter().enumerate() {
+            let outcome_shares_received = prev_shares[i] - self.amm_shares.get(outcome_id);
+            // TODO: should this be the burn function instead?
+            c!(share_call::mint(
+                proxy::get_share_addr(
+                    self.factory_addr.get(),
+                    contract_address(),
+                    self.share_impl.get(),
+                    outcome_id,
+                ),
+                recipient,
+                outcome_shares_received
+            ));
+        }
+        Ok(liquidity_shares_val)
     }
 
     // Sell the amount of shares, using the USD amount, returning the shares
@@ -134,19 +222,19 @@ impl StorageTrading {
     pub fn internal_amm_burn(&mut self, outcome_id: FixedBytes<8>, fusdc_amount: U256) -> R<U256> {
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
-                let shares = self
+                let shares = c!(self
                     .amm_shares
                     .get(outcome_id)
                     .checked_sub(fusdc_amount)
-                    .ok_or(Error::CheckedSubOverflow)?;
+                    .ok_or(Error::CheckedSubOverflow));
                 self.amm_shares.setter(outcome_id).set(shares);
             }
             {
-                let total_shares = self
+                let total_shares = c!(self
                     .amm_total_shares
                     .get(outcome_id)
                     .checked_sub(fusdc_amount)
-                    .ok_or(Error::CheckedSubOverflow)?;
+                    .ok_or(Error::CheckedSubOverflow));
                 self.amm_total_shares.setter(outcome_id).set(total_shares);
             }
         }
@@ -195,5 +283,16 @@ impl StorageTrading {
         share_call::burn(share_addr, msg_sender(), share_bal)?;
         fusdc_call::transfer(recipient, share_bal)?;
         Ok(share_bal)
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl StorageTrading {
+    pub fn test_set_outcome_shares(&mut self, liquidity: u64, new_shares: &[(FixedBytes<8>, u64)]) {
+        self.amm_liquidity.set(U256::from(liquidity));
+        for (id, x) in new_shares {
+            self.amm_shares.setter(*id).set(U256::from(*x));
+        }
+        self.internal_amm_get_prices();
     }
 }
