@@ -28,7 +28,6 @@ impl StorageTrading {
         // us, and we set them as the factory.
         let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;
         self.dpm_global_invested.set(seed_liquidity);
-        self.amm_liquidity.set(seed_liquidity);
         let outcomes_len: i64 = outcomes.len().try_into().unwrap();
         self.dpm_global_shares
             .set(U256::from(outcomes_len) * SHARE_DECIMALS_EXP);

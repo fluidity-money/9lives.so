@@ -149,7 +149,7 @@ pub const FUSDC_DECIMALS_EXP: U256 = U256::from_limbs([1000000, 0, 0, 0]);
 pub const SHARE_DECIMALS: u8 = 6;
 
 // Share decimals (1e6) that are in an exp-able form.
-pub const SHARE_DECIMALS_EXP: U256 = U256::from_limbs([1000000, 0, 0, 0]);
+pub const SHARE_DECIMALS_EXP: U256 = U256::from_limbs([1e6 as u64, 0, 0, 0]);
 
 // Staked ARB decimals for convinient use.
 pub const STAKED_ARB_DECIMALS: u8 = 18;

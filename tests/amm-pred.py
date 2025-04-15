@@ -70,11 +70,14 @@ class PredMarketNew:
         # Calculate PriceWeightOfAllOutcomes
         price_weight_of_all_outcomes = sum(outcome_price_weights)
 
+        print(f"price weight of all outcomes: {price_weight_of_all_outcomes}")
+
         # price_weight_of_all_outcomes can be zero if no liquidity is added yet. Prevent division by zero error
         if price_weight_of_all_outcomes > 0:
             # Calculate OutcomePrices
             for k in range(len(self.shares)):
                 self.outcome_prices[k] = (outcome_price_weights[k] / price_weight_of_all_outcomes)
+                print(f"outcome prices: {self.outcome_prices[k]}")
 
         return self.outcome_prices
 
@@ -87,6 +90,7 @@ class PredMarketNew:
         self.get_outcome_prices()
 
         previous_liquidity = self.liquidity
+        print(f"previous liquidity: {previous_liquidity}")
 
         # mints liquidity shares for a user
         for i in range(len(self.shares)):
@@ -105,6 +109,7 @@ class PredMarketNew:
                 self.shares[i] = (self.shares[least_likely] * self.outcome_prices[least_likely]) / self.outcome_prices[i]
 
         product = math.prod(self.shares)
+        print(f"product: {product}")
         self.liquidity = pow(product, 1/len(self.shares))
 
         # Record the no. of liquidity shares user received
@@ -716,6 +721,7 @@ def simulate_market_14():
 
 if __name__ == "__main__":
     simulate_market_1()
+    exit(0)
     simulate_market_2()
     simulate_market_3()
     simulate_market_4()

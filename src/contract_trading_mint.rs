@@ -1,6 +1,6 @@
 use stylus_sdk::alloy_primitives::{aliases::*, *};
 
-use crate::{error::*, fusdc_call, utils::msg_sender};
+use crate::{error::*, fusdc_call};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
@@ -30,7 +30,8 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_mint(outcome, value, recipient);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_mint(outcome, value, recipient);
+        unimplemented!();
+        //return self.internal_amm_mint(outcome, value, recipient);
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -46,7 +47,8 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_burn(_outcome, fusdc_amount);
+        unimplemented!();
+        //return self.internal_amm_burn(_outcome, fusdc_amount);
     }
 
     #[allow(non_snake_case)]
@@ -59,7 +61,8 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_payoff(outcome_id, amt, recipient);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_payoff(outcome_id, amt, recipient);
+        unimplemented!()
+        //return self.internal_amm_payoff(outcome_id, amt, recipient);
     }
 
     pub fn add_liquidity_permit(
@@ -82,13 +85,15 @@ impl StorageTrading {
     }
 
     pub fn remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
+        unimplemented!();
+    /*
         assert_or!(
-            self.amm_user_liquidity_shares.get(msg_sender()) >= amount,
+            self.amm_unscaled_user_liquidity_shares.get(msg_sender()) >= amount,
             Error::NotEnoughLiquidity
         );
         let fusdc_amt = self.internal_amm_remove_liquidity(amount, recipient)?;
         fusdc_call::transfer(recipient, fusdc_amt)?;
-        Ok(fusdc_amt)
+        Ok(fusdc_amt) */
     }
 }
 
