@@ -141,7 +141,7 @@ class PredMarketNew:
         least_likely = self.shares.index(max(self.shares))
 
         # "amount" is the number of liquidity shares the user give back to the pool
-        liquiditysharesvalue = self.liquidity / self.shares[least_likely] * amount
+        liquiditysharesvalue = (self.shares[most_likely] * amount) / self.liquidity
         self.transfer_from_pool_to_user(liquiditysharesvalue)
 
         for i in range(len(self.shares)):
