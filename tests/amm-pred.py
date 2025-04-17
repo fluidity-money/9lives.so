@@ -6,11 +6,14 @@ import numpy as np
 import pytest
 
 class PredMarketNew:
-    def __init__(self, liquidity, outcomes):
+    def __init__(self, liquidity, outcomes, fees = 0.02):
         self.liquidity = liquidity
         self.outcomes = outcomes
         self.outcome_prices = [0] * outcomes
         self.shares = [liquidity] * outcomes
+        self.fees = fees # e.g. 2% would be 0.02
+        self.fees_collected = 0 # total collected fees for this market
+
 
         self.total_shares = [liquidity] * outcomes
 
@@ -23,6 +26,12 @@ class PredMarketNew:
         self.winning_outcome = None
         self.resolved = False
 
+
+    def collectfees(self, amount):
+        self.fees_collected += amount
+
+    def claimfees(self):
+        self.user_wallet_usd += self.fees_collected/self.liquidity*self.user_liquidity_shares
 
     def transfer_from_user_to_pool(self, amount):
         if amount < 0:
@@ -172,6 +181,9 @@ class PredMarketNew:
 
     def buy(self, outcome, amount): # audit - "amount" is in USD
         self.only_when_market_not_resolved()
+        fee_taken = amount*self.fees
+        amount -= fee_taken
+        self.collectfees(fee_taken)
         self.transfer_from_user_to_pool(amount)
 
         # Update all shares with the purchase amount
