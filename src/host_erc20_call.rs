@@ -14,6 +14,9 @@ use crate::{
 thread_local! {
     static BALANCES: RefCell<HashMap<Address, HashMap<Address, U256>>> =
         RefCell::new(HashMap::new());
+
+    static ERC20_WAS_USED: RefCell<HashMap<(Address, Address), bool>> =
+        RefCell::new(HashMap::new());
 }
 
 #[macro_export]
@@ -85,6 +88,12 @@ macro_rules! should_spend_staked_arb_contract {
     }
 }
 
+fn track_used(addr: Address, holder: Address) {
+    ERC20_WAS_USED.with(|h| {
+        h.borrow_mut().insert((addr, holder), true);
+    });
+}
+
 pub fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
     BALANCES.with(|b| {
         let mut b = b.borrow_mut();
@@ -101,6 +110,10 @@ pub fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
         };
         b.insert(recipient, amt.wrapping_add(existing_bal));
     });
+}
+
+pub fn test_reset_tracked_used() {
+    ERC20_WAS_USED.with(|h| h.borrow_mut().clear());
 }
 
 pub fn test_reset_bal(addr: Address, recipient: Address) {
@@ -139,6 +152,10 @@ fn rename_amt(a: Address, v: U256) -> String {
     }
 }
 
+fn was_erc20_spent(token: Address, spender: Address) -> bool {
+    ERC20_WAS_USED.with(|h| *h.borrow().get(&(token, spender)).unwrap_or(&false))
+}
+
 // Test that each of theses addresses should spend the amounts given,
 // returning ERC20 Transfer Error if they fail to return to 0 balance at
 // the end of this function. It will hygienically (and perhaps, wastefully)
@@ -151,11 +168,13 @@ pub fn should_spend<T>(
     for (r, amt) in spenders.clone() {
         test_give_tokens(addr, r, amt)
     }
+    test_reset_tracked_used();
     let x = f();
     // Wipe the balances of the spenders.
     for k in spenders.keys() {
         test_reset_bal(addr, *k);
     }
+    // Wipe the tracking of the touched ERC20.
     let v = x?;
     for (k, v) in spenders {
         let b = balance_of(addr, k).unwrap();
@@ -171,7 +190,19 @@ pub fn should_spend<T>(
                 .into(),
             ));
         }
+        if !was_erc20_spent(addr, k) {
+            return Err(Error::ERC20ErrorTransfer(
+                addr,
+                format!(
+                    "spending token {} with spender {} was not spent",
+                    rename_addr(addr),
+                    rename_addr(k)
+                )
+                .into(),
+            ));
+        }
     }
+    test_reset_tracked_used();
     Ok(v)
 }
 
@@ -184,14 +215,16 @@ pub fn transfer_from(
     BALANCES
         .with(|b| -> Result<(), U256> {
             let mut b = b.borrow_mut();
-            let b = b.get_mut(&addr).ok_or(U256::ZERO)?;
-            let x = b.get(&spender).ok_or(U256::ZERO)?;
-            if *x >= amount {
-                let _ = b.insert(spender, x - amount);
-                Ok(())
-            } else {
-                Err(*x)
+            if !spender.is_zero() {
+                let b = b.get_mut(&addr).ok_or(U256::ZERO)?;
+                let x = b.get(&spender).ok_or(U256::ZERO)?;
+                if *x >= amount {
+                    let _ = b.insert(spender, x - amount);
+                } else {
+                    return Err(*x);
+                }
             }
+            Ok(())
         })
         .map_err(|cur_bal| {
             Error::ERC20ErrorTransfer(
@@ -207,6 +240,9 @@ pub fn transfer_from(
             )
         })?;
     test_give_tokens(addr, recipient, amount);
+    // We need to also check that the spender interacted with this token.
+    track_used(addr, spender);
+    track_used(addr, recipient);
     Ok(())
 }
 
@@ -216,16 +252,16 @@ pub fn transfer(addr: Address, recipient: Address, value: U256) -> Result<(), Er
 
 #[allow(clippy::too_many_arguments)]
 pub fn permit(
-    _addr: Address,
-    _owner: Address,
-    _spender: Address,
-    _value: U256,
+    addr: Address,
+    owner: Address,
+    spender: Address,
+    value: U256,
     _deadline: U256,
     _v: u8,
     _r: FixedBytes<32>,
     _s: FixedBytes<32>,
 ) -> Result<(), Error> {
-    Ok(())
+    transfer_from(addr, spender, owner, value)
 }
 
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
