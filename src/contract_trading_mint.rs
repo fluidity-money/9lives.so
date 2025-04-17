@@ -86,6 +86,7 @@ impl StorageTrading {
 
     pub fn remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
         self.require_not_done_predicting()?;
+        assert_or!(!amount.is_zero(), Error::ZeroShares);
         assert_or!(
             self.amm_user_liquidity_shares.get(msg_sender()) >= amount,
             Error::NotEnoughLiquidity
