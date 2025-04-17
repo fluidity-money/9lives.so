@@ -73,6 +73,7 @@ impl StorageTrading {
         r: FixedBytes<32>,
         s: FixedBytes<32>,
     ) -> R<U256> {
+        self.require_not_done_predicting()?;
         if deadline.is_zero() {
             c!(fusdc_call::take_from_sender(amount));
         } else {
@@ -84,6 +85,7 @@ impl StorageTrading {
     }
 
     pub fn remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
+        self.require_not_done_predicting()?;
         assert_or!(
             self.amm_user_liquidity_shares.get(msg_sender()) >= amount,
             Error::NotEnoughLiquidity

@@ -20,7 +20,7 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
         outcomes.to_vec(),
         msg_sender(),
         block_timestamp() + 1,
-        block_timestamp() + 2,
+        block_timestamp() + 10,
         DAO_ADDR,
         SHARE,
         false,
@@ -280,6 +280,17 @@ proptest! {
         setup_contract(&mut c, &[outcome_a, outcome_b]);
         interactions_clear_after! {
             IVAN => {
+                let amt_usd = U256::from(1294e6 as u64);
+                c.mint_permit_E_90275_A_B(
+                    outcome_a,
+                    amt_usd,
+                    msg_sender(),
+                    U256::ZERO,
+                    0,
+                    FixedBytes::<32>::ZERO,
+                    FixedBytes::<32>::ZERO
+                )
+                    .unwrap();
             }
         }
     }
