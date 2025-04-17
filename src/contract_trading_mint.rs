@@ -1,6 +1,6 @@
 use stylus_sdk::alloy_primitives::{aliases::*, *};
 
-use crate::{error::*, fusdc_call};
+use crate::{error::*, fusdc_call, utils::msg_sender};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
@@ -85,15 +85,13 @@ impl StorageTrading {
     }
 
     pub fn remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
-        unimplemented!();
-    /*
         assert_or!(
-            self.amm_unscaled_user_liquidity_shares.get(msg_sender()) >= amount,
+            self.amm_user_liquidity_shares.get(msg_sender()) >= amount,
             Error::NotEnoughLiquidity
         );
         let fusdc_amt = self.internal_amm_remove_liquidity(amount, recipient)?;
         fusdc_call::transfer(recipient, fusdc_amt)?;
-        Ok(fusdc_amt) */
+        Ok(fusdc_amt)
     }
 }
 

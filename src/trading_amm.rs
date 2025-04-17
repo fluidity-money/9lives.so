@@ -64,13 +64,13 @@ impl StorageTrading {
         let (least_likely_amt, least_likely_outcome_id) = self
             .outcome_ids_iter()
             .fold(None, |acc, id| {
-                let unscaled_shares = self.amm_shares.get(id);
+                let shares = self.amm_shares.get(id);
                 if let Some((max_shares, _)) = acc {
-                    if unscaled_shares < max_shares {
+                    if shares < max_shares {
                         return acc;
                     }
                 }
-                Some((unscaled_shares, id))
+                Some((shares, id))
             })
             .unwrap();
         let least_likely_ids: Vec<_> = self
@@ -130,16 +130,16 @@ impl StorageTrading {
 
     pub fn internal_amm_remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
         self.internal_amm_get_prices();
-        let (least_likely_amt, least_likely_outcome_id) = self
+        let (least_likely_amt, _) = self
             .outcome_ids_iter()
             .fold(None, |acc, id| {
-                let unscaled_shares = self.amm_shares.get(id);
+                let shares = self.amm_shares.get(id);
                 if let Some((max_shares, _)) = acc {
-                    if unscaled_shares < max_shares {
+                    if shares < max_shares {
                         return acc;
                     }
                 }
-                Some((unscaled_shares, id))
+                Some((shares, id))
             })
             .unwrap();
         let (_, most_likely_outcome_id) = self

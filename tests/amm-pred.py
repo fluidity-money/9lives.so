@@ -118,11 +118,13 @@ class PredMarketNew:
         for i in range(len(self.shares)):
             if i not in least_likely_indices:
                 self.shares[i] = (self.shares[least_likely] * self.outcome_prices[least_likely]) / self.outcome_prices[i]
+                print(f"new shares[{i}]: {self.shares[i]}")
 
         product = math.prod(self.shares)
+        print(f"shares: {self.shares}")
         print(f"product: {product}")
         self.liquidity = pow(product, 1/len(self.shares))
-        print(f"self.liquidity = {self.liquidity}, prev_liquidity: {prev_liquidity}")
+        print(f"self.liquidity = {self.liquidity}, prev_liquidity: {previous_liquidity}")
 
         # Record the no. of liquidity shares user received
         self.user_liquidity_shares += (self.liquidity - previous_liquidity)
@@ -740,9 +742,9 @@ def simulate_market_14():
 
 if __name__ == "__main__":
     #simulate_market_1()
-    simulate_market_2()
-    exit(0)
+    #simulate_market_2()
     simulate_market_3()
+    exit(0)
     simulate_market_4()
     simulate_market_5()
     simulate_market_6()
