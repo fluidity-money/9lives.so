@@ -206,6 +206,10 @@ class PredMarketNew:
     def sell(self, outcome, amount):
         self.only_when_market_not_resolved()
 
+        fee_taken = amount*self.fees
+        amount -= fee_taken
+        self.collectfees(fee_taken)
+        
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
             self.shares[i] -= amount
