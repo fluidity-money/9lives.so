@@ -220,6 +220,7 @@ impl StorageTrading {
     // Sell the amount of shares, using the USD amount, returning the shares
     // sold. Does the transferring.
     pub fn internal_amm_burn(&mut self, outcome_id: FixedBytes<8>, fusdc_amount: U256) -> R<U256> {
+        self.internal_amm_get_prices();
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
@@ -250,7 +251,11 @@ impl StorageTrading {
                 .pow(U256::from(self.outcome_list.len()))
                 / product,
         );
-        let shares = self.amm_shares.get(outcome_id) - outcome_previous_shares;
+        let shares = c!(self
+            .amm_shares
+            .get(outcome_id)
+            .checked_sub(outcome_previous_shares)
+            .ok_or(Error::CheckedSubOverflow));
         c!(share_call::burn(
             proxy::get_share_addr(
                 self.factory_addr.get(),
@@ -283,6 +288,57 @@ impl StorageTrading {
         share_call::burn(share_addr, msg_sender(), share_bal)?;
         fusdc_call::transfer(recipient, share_bal)?;
         Ok(share_bal)
+    }
+
+    pub fn internal_amm_mint(
+        &mut self,
+        outcome_id: FixedBytes<8>,
+        usd_amt: U256,
+        recipient: Address,
+    ) -> R<U256> {
+        for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
+            {
+                let shares = self.amm_shares.get(outcome_id);
+                self.amm_shares.setter(outcome_id).set(
+                    shares
+                        .checked_add(usd_amt)
+                        .ok_or(Error::CheckedAddOverflow)?,
+                );
+            }
+            {
+                let total_shares = self.amm_total_shares.get(outcome_id);
+                self.amm_total_shares.setter(outcome_id).set(
+                    total_shares
+                        .checked_add(usd_amt)
+                        .ok_or(Error::CheckedAddOverflow)?,
+                );
+            }
+        }
+        let outcome_previous_shares = self.amm_shares.get(outcome_id);
+        let product = self
+            .outcome_ids_iter()
+            .filter(|id| *id != outcome_id)
+            .map(|x| self.amm_shares.get(x))
+            .product::<U256>();
+        self.amm_shares.setter(outcome_id).set(
+            maths::rooti(self.amm_liquidity.get(), self.outcome_list.len() as u32)
+                .checked_div(product)
+                .ok_or(Error::CheckedDivOverflow)?,
+        );
+        let shares = c!(outcome_previous_shares
+            .checked_sub(self.amm_shares.get(outcome_id))
+            .ok_or(Error::CheckedSubOverflow));
+        c!(share_call::mint(
+            proxy::get_share_addr(
+                self.factory_addr.get(),
+                contract_address(),
+                self.share_impl.get(),
+                outcome_id,
+            ),
+            msg_sender(),
+            shares
+        ));
+        Ok(shares)
     }
 }
 

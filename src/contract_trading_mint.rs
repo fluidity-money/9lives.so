@@ -30,8 +30,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_mint(outcome, value, recipient);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        unimplemented!();
-        //return self.internal_amm_mint(outcome, value, recipient);
+        return self.internal_amm_mint(outcome, value, recipient);
     }
 
     #[allow(clippy::too_many_arguments)]

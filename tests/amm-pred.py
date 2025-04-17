@@ -161,6 +161,7 @@ class PredMarketNew:
 
 
         previous_shares = self.shares.copy()
+        print(f"previous shares: {previous_shares}")
 
         for i in range(len(self.shares)):
             if i not in most_likely_indices:
@@ -211,7 +212,7 @@ class PredMarketNew:
         fee_taken = amount*self.fees
         amount -= fee_taken
         self.collectfees(fee_taken)
-        
+
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
             self.shares[i] -= amount
@@ -743,9 +744,9 @@ def simulate_market_14():
 if __name__ == "__main__":
     #simulate_market_1()
     #simulate_market_2()
-    simulate_market_3()
-    exit(0)
+    #simulate_market_3()
     simulate_market_4()
+    exit(0)
     simulate_market_5()
     simulate_market_6()
     simulate_market_7()
