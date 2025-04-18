@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-make solidity
+#make solidity
 
 #cargo test --features testing,trading-backend-dpm $@
 cargo test --features testing,trading-backend-amm $@

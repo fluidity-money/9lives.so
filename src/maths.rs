@@ -1,11 +1,8 @@
-
 use stylus_sdk::alloy_primitives::U256;
 
 use rust_decimal::{Decimal, MathematicalOps};
 
-use crate::{
-    error::Error,
-};
+use crate::error::Error;
 
 macro_rules! add {
     ($x:expr, $y:expr) => {
@@ -103,6 +100,21 @@ pub fn rooti(x: U256, n: u32) -> U256 {
         y -= U256::from(1);
     }
     y
+}
+
+pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<U256, Error> {
+    if denom_and_rem == U256::ZERO {
+        return Err(Error::BadDenominator);
+    }
+    let mut mul_and_quo = a.widening_mul::<256, 4, 512, 8>(b);
+    unsafe {
+        ruint::algorithms::div(mul_and_quo.as_limbs_mut(), denom_and_rem.as_limbs_mut());
+    }
+    let limbs = mul_and_quo.into_limbs();
+    if limbs[4..] != [0_u64; 4] {
+        return Err(Error::BadDenominator);
+    }
+    Ok(U256::from_limbs_slice(&limbs[0..4]))
 }
 
 #[test]

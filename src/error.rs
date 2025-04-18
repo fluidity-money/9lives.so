@@ -497,6 +497,9 @@ pub enum Error {
 
     // Winner was not decided!
     NotDecided,
+
+    // Someone called the muldiv function with a bad demoninator.
+    BadDenominator,
 }
 
 #[cfg(any(

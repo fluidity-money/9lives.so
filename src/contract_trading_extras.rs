@@ -105,7 +105,7 @@ impl StorageTrading {
         self.internal_dpm_decide(outcome)
     }
 
-    pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
+    pub fn details(&self, _outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
         #[cfg(feature = "trading-backend-dpm")]
         return Ok((
             self.dpm_outcome_shares.get(outcome_id),

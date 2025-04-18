@@ -39,10 +39,6 @@ env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
 // from the creator).
 env_addr!(DAO_ADDR, "SPN_DAO_ADDR", DAO);
 
-// Scaled amount to use for drawing down funds on request based on a
-// percentage.
-pub const SCALING_FACTOR: U256 = U256::from_limbs([1e12 as u64, 0, 0, 0]);
-
 // Scaling amount for checking if a bad predictor went above 50% in their
 // incorrect bets relative ot the winning outcome.
 pub const FIFTY_PCT_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
