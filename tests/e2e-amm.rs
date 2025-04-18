@@ -4,7 +4,7 @@
     not(target_arch = "wasm32")
 ))]
 
-use stylus_sdk::alloy_primitives::{U64, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{FixedBytes, U256, U64};
 
 use lib9lives::{
     assert_eq_u, assert_eq_u_down, immutables::*, interactions_clear_after, should_spend,
@@ -302,30 +302,28 @@ proptest! {
                 );
                 should_spend!(
                     c.share_addr(outcome_a).unwrap(),
-                    { CONTRACT => U256::from(387), },
+                    { ZERO_FOR_MINT_ADDR => U256::from(387), },
                     {
                         let buy_amt = U256::from(294e6);
                         should_spend_fusdc_sender!(
                             buy_amt,
                             {
-                                assert_eq!(
-                                    U256::from(773e6 as u64),
-                                    c.mint_permit_E_90275_A_B(
-                                        outcome_a,
-                                        buy_amt,
-                                        msg_sender(),
-                                        U256::ZERO,
-                                        0,
-                                        FixedBytes::ZERO,
-                                        FixedBytes::ZERO
-                                    ).unwrap()
-                                );
+                                c.mint_permit_E_90275_A_B(
+                                    outcome_a,
+                                    buy_amt,
+                                    msg_sender(),
+                                    U256::ZERO,
+                                    0,
+                                    FixedBytes::ZERO,
+                                    FixedBytes::ZERO
+                                ).unwrap();
+                                assert_eq_u!(772797527, c.amm_shares.get(outcome_a));
                                 Ok(())
                             }
                         );
                         Ok(())
                     }
-                );
+                )
             }
         }
     }

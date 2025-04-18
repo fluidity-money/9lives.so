@@ -176,11 +176,12 @@ impl StorageTrading {
             if most_likely_ids.contains(&outcome_id) {
                 continue;
             }
-            self.amm_shares.setter(outcome_id).set(c!(maths::mul_div(
+            let s = c!(maths::mul_div(
                 self.amm_shares.get(most_likely_outcome_id),
                 self.amm_outcome_prices.get(most_likely_outcome_id),
                 self.amm_outcome_prices.get(outcome_id)
-            )));
+            ));
+            self.amm_shares.setter(outcome_id).set(s);
         }
         let product = self
             .outcome_ids_iter()
@@ -299,11 +300,6 @@ impl StorageTrading {
                         .checked_add(usd_amt)
                         .ok_or(Error::CheckedAddOverflow)?,
                 );
-                dbg!(
-                    "setting shares",
-                    shares,
-                    self.outcome_ids_iter().position(|x| *x == outcome_id)
-                );
             }
             {
                 let total_shares = self.amm_total_shares.get(outcome_id);
@@ -311,11 +307,6 @@ impl StorageTrading {
                     total_shares
                         .checked_add(usd_amt)
                         .ok_or(Error::CheckedAddOverflow)?,
-                );
-                dbg!(
-                    "setting total shares",
-                    total_shares,
-                    self.outcome_ids_iter().position(|x| *x == outcome_id)
                 );
             }
         }
@@ -325,16 +316,25 @@ impl StorageTrading {
             .filter(|id| *id != outcome_id)
             .map(|x| self.amm_shares.get(x))
             .product::<U256>();
-        self.amm_shares.setter(outcome_id).set(c!(maths::mul_div(
+        self.amm_shares.setter(outcome_id).set(
             self.amm_liquidity
                 .get()
-                .pow(U256::from(self.outcome_list.len())),
-            product,
-            SHARE_DECIMALS_EXP
-        )));
+                .pow(U256::from(self.outcome_list.len()))
+                / product,
+        );
         let shares = c!(outcome_previous_shares
             .checked_sub(self.amm_shares.get(outcome_id))
             .ok_or(Error::CheckedSubOverflow));
+        dbg!(
+            "calling mint on",
+            proxy::get_share_addr(
+                self.factory_addr.get(),
+                contract_address(),
+                self.share_impl.get(),
+                outcome_id,
+            ),
+            recipient
+        );
         c!(share_call::mint(
             proxy::get_share_addr(
                 self.factory_addr.get(),

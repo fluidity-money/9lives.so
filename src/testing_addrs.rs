@@ -24,6 +24,7 @@ defaults! {
     SHARE,
     LOCKUP_CONTRACT,
     LOCKUP_TOKEN,
+    ZERO_FOR_MINT_ADDR,
 
     IVAN,
     ERIK,
@@ -33,7 +34,7 @@ defaults! {
     YOEL
 }
 
-pub const TESTING_ADDRS: [Address; 15] = [
+pub const TESTING_ADDRS: [Address; 16] = [
     MSG_SENDER,
     CONTRACT,
     FUSDC,
@@ -43,6 +44,10 @@ pub const TESTING_ADDRS: [Address; 15] = [
     SHARE,
     LOCKUP_CONTRACT,
     LOCKUP_TOKEN,
+    // This is used to denominate a mint/burn that's taken place, and is
+    // treated specially by the transfer functions.
+    ZERO_FOR_MINT_ADDR,
+
     IVAN,
     ERIK,
     ELI,

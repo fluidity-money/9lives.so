@@ -112,8 +112,8 @@ pub fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
     });
 }
 
-pub fn test_reset_tracked_used() {
-    ERC20_WAS_USED.with(|h| h.borrow_mut().clear());
+pub fn test_reset_tracked_used(addr: Address, spender: Address) {
+    ERC20_WAS_USED.with(|h| h.borrow_mut().insert((addr, spender), false));
 }
 
 pub fn test_reset_bal(addr: Address, recipient: Address) {
@@ -152,7 +152,7 @@ fn rename_amt(a: Address, v: U256) -> String {
     }
 }
 
-fn was_erc20_spent(token: Address, spender: Address) -> bool {
+pub fn was_erc20_spent(token: Address, spender: Address) -> bool {
     ERC20_WAS_USED.with(|h| *h.borrow().get(&(token, spender)).unwrap_or(&false))
 }
 
@@ -168,13 +168,15 @@ pub fn should_spend<T>(
     for (r, amt) in spenders.clone() {
         test_give_tokens(addr, r, amt)
     }
-    test_reset_tracked_used();
-    let x = f();
-    // Wipe the balances of the spenders.
     for k in spenders.keys() {
+        // Wipe the tracking of the touched ERC20.
+        test_reset_tracked_used(addr, *k);
+    }
+    let x = f();
+    for k in spenders.keys() {
+        // Wipe the balances of the spenders.
         test_reset_bal(addr, *k);
     }
-    // Wipe the tracking of the touched ERC20.
     let v = x?;
     for (k, v) in spenders {
         let b = balance_of(addr, k).unwrap();
@@ -202,7 +204,6 @@ pub fn should_spend<T>(
             ));
         }
     }
-    test_reset_tracked_used();
     Ok(v)
 }
 
@@ -215,7 +216,7 @@ pub fn transfer_from(
     BALANCES
         .with(|b| -> Result<(), U256> {
             let mut b = b.borrow_mut();
-            if !spender.is_zero() {
+            if spender != testing_addrs::ZERO_FOR_MINT_ADDR {
                 let b = b.get_mut(&addr).ok_or(U256::ZERO)?;
                 let x = b.get(&spender).ok_or(U256::ZERO)?;
                 if *x >= amount {
