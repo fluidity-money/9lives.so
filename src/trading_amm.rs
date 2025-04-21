@@ -240,7 +240,6 @@ impl StorageTrading {
     // Sell the amount of shares, using the USD amount, returning the shares
     // sold. Does the transferring.
     pub fn internal_amm_burn(&mut self, outcome_id: FixedBytes<8>, fusdc_amount: U256) -> R<U256> {
-        self.internal_amm_get_prices()?;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
@@ -316,7 +315,6 @@ impl StorageTrading {
         usd_amt: U256,
         recipient: Address,
     ) -> R<U256> {
-        self.internal_amm_get_prices()?;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = self.amm_shares.get(outcome_id);

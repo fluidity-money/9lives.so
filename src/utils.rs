@@ -242,7 +242,7 @@ macro_rules! interactions_clear_after {
                 $crate::host::clear_storage();
             }
         }
-        let _guard = ClearAfter;
+        let _guard = CleanupRaii;
         $(
             $crate::host::set_msg_sender($field);
             $func;

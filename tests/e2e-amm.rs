@@ -388,6 +388,7 @@ proptest! {
                         c.burn_permit(outcome_a, U256::from(buy_amt), msg_sender())
                     )
                 );
+                dbg!(&before_outcome_prices, &before_shares, c.outcome_ids_iter().map(|x| c.amm_outcome_prices.get(x)).collect::<Vec<_>>(), c.outcome_ids_iter().map(|x| c.amm_shares.get(x)).collect::<Vec<_>>());
                 for (i, (price1, price2)) in before_outcome_prices
                     .iter()
                     .zip(c.outcome_ids_iter().map(|x| c.amm_outcome_prices.get(x)))
