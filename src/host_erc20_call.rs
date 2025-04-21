@@ -148,7 +148,13 @@ fn rename_amt(a: Address, v: U256) -> String {
         testing_addrs::STAKED_ARB => {
             format!("ARB{}", safe_print(v, immutables::STAKED_ARB_DECIMALS))
         }
-        _ => format!("unknown token amt {}", v),
+        v => {
+            if let Some(v) = crate::host::get_addr_expl(v) {
+                v
+            } else {
+                format!("unknown token ({a}) amt {v}")
+            }
+        }
     }
 }
 
@@ -215,15 +221,16 @@ pub fn transfer_from(
 ) -> Result<(), Error> {
     BALANCES
         .with(|b| -> Result<(), U256> {
+            if spender == testing_addrs::ZERO_FOR_MINT_ADDR {
+                return Ok(())
+            }
             let mut b = b.borrow_mut();
-            if spender != testing_addrs::ZERO_FOR_MINT_ADDR {
-                let b = b.get_mut(&addr).ok_or(U256::ZERO)?;
-                let x = b.get(&spender).ok_or(U256::ZERO)?;
-                if *x >= amount {
-                    let _ = b.insert(spender, x - amount);
-                } else {
-                    return Err(*x);
-                }
+            let b = b.get_mut(&addr).ok_or(U256::ZERO)?;
+            let x = b.get(&spender).ok_or(U256::ZERO)?;
+            if *x >= amount {
+                let _ = b.insert(spender, x - amount);
+            } else {
+                return Err(*x);
             }
             Ok(())
         })
@@ -233,7 +240,7 @@ pub fn transfer_from(
                 format!(
                     "{} sending {} to {}: bal was {}",
                     rename_addr(spender),
-                    rename_amt(addr, amount),
+                    amount,
                     rename_addr(recipient),
                     rename_amt(addr, cur_bal)
                 )

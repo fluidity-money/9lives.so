@@ -520,13 +520,20 @@ pub(crate) fn rename_addr(v: Address) -> String {
             testing_addrs::SHARE => "share".to_string(),
             testing_addrs::LOCKUP_CONTRACT => "lockup contract".to_string(),
             testing_addrs::LOCKUP_TOKEN => "lockup token".to_string(),
+            testing_addrs::ZERO_FOR_MINT_ADDR => "mint addr".to_string(),
             testing_addrs::IVAN => "ivan".to_string(),
             testing_addrs::ERIK => "erik".to_string(),
             testing_addrs::ELI => "eli".to_string(),
             testing_addrs::OGOUS => "ogous".to_string(),
             testing_addrs::PAXIA => "paxia".to_string(),
             testing_addrs::YOEL => "yoel".to_string(),
-            _ => v.to_string(),
+            _ => {
+                #[cfg(not(target_arch = "wasm32"))]
+                if let Some(v) = crate::host::get_addr_expl(v) {
+                    return v;
+                };
+                v.to_string()
+            }
         }
     }
 }

@@ -233,7 +233,9 @@ class PredMarketNew:
         self.shares[outcome] = pow(self.liquidity, self.outcomes) / product
 
         # Outcome shares transferred from user to pool
-        self.user_outcome_shares[outcome] -= (self.shares[outcome] - previous_shares[outcome])
+        shares_burned = self.shares[outcome] - previous_shares[outcome]
+        print(f"shares burned: {shares_burned}")
+        self.user_outcome_shares[outcome] -= shares_burned
 
         self.transfer_from_pool_to_user(amount)
 
@@ -800,10 +802,10 @@ if __name__ == "__main__":
     #simulate_market_3()
     #simulate_market_4()
     #simulate_market_5()
-    simulate_market_6()
-    exit(0)
-    simulate_market_7()
+    #simulate_market_6()
+    #simulate_market_7()
     simulate_market_8()
+    exit(0)
     simulate_market_9()
     simulate_market_10()
     simulate_market_11()

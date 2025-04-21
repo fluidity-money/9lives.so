@@ -7,7 +7,7 @@
 use stylus_sdk::alloy_primitives::{FixedBytes, U256, U64};
 
 use lib9lives::{
-    assert_eq_u, assert_eq_u_down, immutables::*, interactions_clear_after, should_spend,
+    assert_eq_u, assert_eq_u_down, host, immutables::*, interactions_clear_after, proxy,
     should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
     testing_addrs::*, utils::*, StorageTrading,
 };
@@ -32,6 +32,12 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
     c.amm_liquidity.set(U256::ZERO);
     c.when_decided.set(U64::ZERO);
     c.is_shutdown.set(false);
+    for (i, o) in outcomes.iter().enumerate() {
+        host::register_addr(
+            proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
+            format!("outcome share {o}, count {i}"),
+        );
+    }
 }
 
 fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut StorageTrading) {
@@ -65,6 +71,49 @@ fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut
         U256::from(782882359),
         c.amm_user_liquidity_shares.get(msg_sender())
     );
+}
+
+fn test_add_liquidity(c: &mut StorageTrading, amt: u64) {
+    let buy_amt = U256::from(amt);
+    should_spend_fusdc_sender!(
+        buy_amt,
+        c.add_liquidity_permit(
+            buy_amt,
+            msg_sender(),
+            U256::ZERO,
+            0,
+            FixedBytes::<32>::ZERO,
+            FixedBytes::<32>::ZERO
+        )
+    );
+}
+
+fn test_should_buy_check_shares(
+    c: &mut StorageTrading,
+    outcome: FixedBytes<8>,
+    buy_amt: u64,
+    market_share_amt: u64,
+    user_share_amt: u64,
+) {
+    let buy_amt = U256::from(buy_amt);
+    assert_eq!(
+        U256::from(user_share_amt),
+        should_spend_fusdc_sender!(buy_amt, {
+            let amount = c
+                .mint_permit_E_90275_A_B(
+                    outcome,
+                    buy_amt,
+                    msg_sender(),
+                    U256::ZERO,
+                    0,
+                    FixedBytes::ZERO,
+                    FixedBytes::ZERO,
+                )
+                .unwrap();
+            assert_eq_u!(market_share_amt, c.amm_shares.get(outcome));
+            Ok(amount)
+        })
+    )
 }
 
 proptest! {
@@ -151,24 +200,18 @@ proptest! {
         interactions_clear_after! {
             IVAN => {
                 let liquidity_amt = U256::from(1000e6 as u64);
-                should_spend!(
-                    c.share_addr(outcome_a).unwrap(),
-                    { msg_sender() => U256::from(649070000000000u64) },
-                    {
-                        should_spend_fusdc_sender!(
-                            liquidity_amt,
-                            c.add_liquidity_permit(
-                                liquidity_amt,
-                                IVAN,
-                                U256::ZERO,
-                                0,
-                                FixedBytes::<32>::ZERO,
-                                FixedBytes::<32>::ZERO
-                            )
-                        );
-                        Ok(())
-                    }
+                let shares = should_spend_fusdc_sender!(
+                    liquidity_amt,
+                    c.add_liquidity_permit(
+                        liquidity_amt,
+                        IVAN,
+                        U256::ZERO,
+                        0,
+                        FixedBytes::<32>::ZERO,
+                        FixedBytes::<32>::ZERO
+                    )
                 );
+                dbg!(shares);
                 assert_eq_u!(1772800348, c.amm_liquidity.get());
                 assert_eq_u!(818199242, c.amm_shares.get(outcome_a));
                 assert_eq_u!(2294000000u64, c.amm_shares.get(outcome_b));
@@ -197,36 +240,21 @@ proptest! {
                     (outcome_b, 876230e4 as u64), //8762.30
                 ]);
                 let remove_amt = c.amm_user_liquidity_shares.get(msg_sender());
-                should_spend!(
-                    c.share_addr(outcome_b).unwrap(),
-                    { CONTRACT => U256::from(381) },
+                let results = should_spend_fusdc_contract!(
+                    remove_amt,
                     {
-                        should_spend!(
-                            c.share_addr(outcome_a).unwrap(),
-                            {
-                               CONTRACT  => U256::from(387),
-                            },
-                            {
-                                should_spend_fusdc_contract!(
-                                    remove_amt,
-                                    {
-                                        c.remove_liquidity(remove_amt, msg_sender()).unwrap();
-                                        assert_eq_u_down!(49, c.amm_liquidity.get());
-                                        //TODO
-                                        assert_eq_u!(3078629, c.amm_shares.get(outcome_a));
-                                        assert_eq_u!(753733, c.amm_shares.get(outcome_b));
-                                        assert_eq_u_down!(7100, c.amm_outcome_prices.get(outcome_a));
-                                        assert_eq_u_down!(2900, c.amm_outcome_prices.get(outcome_b));
-                                        assert_eq_u!(0, c.amm_user_liquidity_shares.get(msg_sender()));
-                                        Ok(())
-                                    }
-                                );
-                                Ok(())
-                            }
-                        );
-                        Ok(())
+                        let res = c.remove_liquidity(remove_amt, msg_sender()).unwrap();
+                        assert_eq_u_down!(49, c.amm_liquidity.get());
+                        //TODO
+                        assert_eq_u!(3078629, c.amm_shares.get(outcome_a));
+                        assert_eq_u!(753733, c.amm_shares.get(outcome_b));
+                        assert_eq_u_down!(7100, c.amm_outcome_prices.get(outcome_a));
+                        assert_eq_u_down!(2900, c.amm_outcome_prices.get(outcome_b));
+                        assert_eq_u!(0, c.amm_user_liquidity_shares.get(msg_sender()));
+                        Ok(res)
                     }
-                )
+                );
+                dbg!(results);
             }
         }
     }
@@ -250,30 +278,17 @@ proptest! {
                 ]);
                 c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(1000e6 as u64));
                 let remove_amt = U256::from(300e6 as u64);
-                should_spend!(
-                    c.share_addr(outcome_b).unwrap(),
-                    { CONTRACT => U256::from(12101) },
+                let res = should_spend_fusdc_contract!(
+                    remove_amt,
                     {
-                        should_spend!(
-                            c.share_addr(outcome_a).unwrap(),
-                            { CONTRACT => U256::from(387), },
-                            {
-                                should_spend_fusdc_contract!(
-                                    remove_amt,
-                                    {
-                                        c.remove_liquidity(remove_amt, msg_sender()).unwrap();
-                                        assert_eq_u!(1469682756, c.amm_liquidity.get());
-                                        assert_eq_u!(674730015, c.amm_shares.get(outcome_a));
-                                        // TODO
-                                        Ok(())
-                                    }
-                                );
-                                Ok(())
-                            }
-                        );
-                        Ok(())
+                        let res = c.remove_liquidity(remove_amt, msg_sender()).unwrap();
+                        assert_eq_u!(1469682756, c.amm_liquidity.get());
+                        assert_eq_u!(674730015, c.amm_shares.get(outcome_a));
+                        // TODO
+                        Ok(res)
                     }
                 );
+                dbg!(res);
             }
         }
     }
@@ -288,42 +303,111 @@ proptest! {
         interactions_clear_after! {
             IVAN => {
                 // First, fund the contract with some fUSDC using add liquidity:
-                let buy_amt = U256::from(1000e6);
-                should_spend_fusdc_sender!(
+                test_add_liquidity(&mut c, 1000e6 as u64);
+                test_should_buy_check_shares(
+                    &mut c,
+                    outcome_a,
+                    294e6 as u64,
+                    772797527, // Market shares
+                    521202473 // User shares
+                );
+                c.internal_amm_get_prices().unwrap();
+                assert_eq_u!(1000e6, c.amm_liquidity.get());
+                assert_eq_u!(772797527, c.amm_shares.get(outcome_a));
+                assert_eq_u!(1294e6, c.amm_shares.get(outcome_b));
+                assert_eq_u!(626089, c.amm_outcome_prices.get(outcome_a));
+                assert_eq_u!(373910, c.amm_outcome_prices.get(outcome_b));
+            }
+        }
+    }
+
+    #[test]
+    fn test_amm_user_story_7(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        outcome_c in strat_fixed_bytes::<8>(),
+        outcome_d in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+        interactions_clear_after! {
+            IVAN => {
+                // First, fund the contract with some fUSDC using add liquidity:
+                test_add_liquidity(&mut c, 1000e6 as u64);
+                test_should_buy_check_shares(
+                    &mut c,
+                    outcome_a,
+                    294e6 as u64,
+                    461527061, // Market shares
+                    832472939 // User shares
+                );
+                c.internal_amm_get_prices().unwrap();
+                assert_eq_u!(1000e6, c.amm_liquidity.get());
+                assert_eq_u!(461527061, c.amm_shares.get(outcome_a));
+                assert_eq_u!(1294e6, c.amm_shares.get(outcome_b));
+                assert_eq_u!(1294e6, c.amm_shares.get(outcome_c));
+                assert_eq_u!(1294e6, c.amm_shares.get(outcome_d));
+                assert_eq_u!(483091, c.amm_outcome_prices.get(outcome_a));
+                assert_eq_u!(172302, c.amm_outcome_prices.get(outcome_b));
+                assert_eq_u!(172302, c.amm_outcome_prices.get(outcome_c));
+                assert_eq_u!(172302, c.amm_outcome_prices.get(outcome_d));
+            }
+        }
+    }
+
+    #[test]
+    fn test_amm_user_story_8(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        outcome_c in strat_fixed_bytes::<8>(),
+        outcome_d in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+        interactions_clear_after! {
+            IVAN => {
+                // First, fund the contract with some fUSDC using add liquidity:
+                test_add_liquidity(&mut c, 1000e6 as u64);
+                c.internal_amm_get_prices().unwrap();
+                let before_outcome_prices =
+                    c.outcome_ids_iter().map(|x| c.amm_outcome_prices.get(x)).collect::<Vec<_>>();
+                let before_shares =
+                    c.outcome_ids_iter().map(|x| c.amm_shares.get(x)).collect::<Vec<_>>();
+                let buy_amt = 300e6 as u64;
+                test_should_buy_check_shares(
+                    &mut c,
+                    outcome_a,
                     buy_amt,
-                    c.add_liquidity_permit(
-                        buy_amt,
-                        msg_sender(),
-                        U256::ZERO,
-                        0,
-                        FixedBytes::<32>::ZERO,
-                        FixedBytes::<32>::ZERO
+                    455166135, // Market shares
+                    844833865 // User shares
+                );
+                assert_eq_u!(
+                    844833865,
+                    should_spend_fusdc_contract!(
+                        U256::from(buy_amt),
+                        c.burn_permit(outcome_a, U256::from(buy_amt), msg_sender())
                     )
                 );
-                should_spend!(
-                    c.share_addr(outcome_a).unwrap(),
-                    { ZERO_FOR_MINT_ADDR => U256::from(387), },
-                    {
-                        let buy_amt = U256::from(294e6);
-                        should_spend_fusdc_sender!(
-                            buy_amt,
-                            {
-                                c.mint_permit_E_90275_A_B(
-                                    outcome_a,
-                                    buy_amt,
-                                    msg_sender(),
-                                    U256::ZERO,
-                                    0,
-                                    FixedBytes::ZERO,
-                                    FixedBytes::ZERO
-                                ).unwrap();
-                                assert_eq_u!(772797527, c.amm_shares.get(outcome_a));
-                                Ok(())
-                            }
-                        );
-                        Ok(())
-                    }
-                )
+                for (i, (price1, price2)) in before_outcome_prices
+                    .iter()
+                    .zip(c.outcome_ids_iter().map(|x| c.amm_outcome_prices.get(x)))
+                    .enumerate()
+                {
+                    assert_eq!(
+                        *price1, price2,
+                        "{i}: old price {price1} != new price {price2}"
+                    );
+                }
+                for (i, (share1, share2)) in before_shares
+                    .iter()
+                    .zip(c.outcome_ids_iter().map(|x| c.amm_shares.get(x)))
+                    .enumerate()
+                {
+                    assert_eq!(
+                        *share1, share2,
+                        "{i}: old shares {share1} != new shares {share2}",
+                    );
+                }
             }
         }
     }

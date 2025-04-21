@@ -46,8 +46,8 @@ pub fn get_trading_addr(
     Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
 
-// Get the share address, using the address of the deployed Trading
-// contract, and the id associated with the winning outcome.
+/// Get the share address, using the address of the deployed Trading
+/// contract, and the id associated with the winning outcome.
 pub fn get_share_addr(
     factory_addr: Address,
     trading_addr: Address,
@@ -61,7 +61,8 @@ pub fn get_share_addr(
     // Leaving some spacing so that we can have an empty part of the word.
     b[21..53].copy_from_slice(erc20_id.as_slice());
     b[53..85].copy_from_slice(&erc20_proxy_hash(erc20_impl));
-    Address::from_slice(&crypto::keccak(b).as_slice()[12..])
+    let x = Address::from_slice(&crypto::keccak(b).as_slice()[12..]);
+    x
 }
 
 #[test]

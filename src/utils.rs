@@ -4,7 +4,7 @@ use stylus_sdk::alloy_primitives::Address;
 
 // We need these for our testing helper functions.
 #[allow(unused)]
-use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256, I256};
+use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, I256, U256};
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 use proptest::prelude::*;
@@ -236,11 +236,17 @@ macro_rules! storage_set_fields {
 #[macro_export]
 macro_rules! interactions_clear_after {
     ( $($field:ident => $func:expr),+ $(,)? ) => {
+        struct CleanupRaii;
+        impl Drop for CleanupRaii {
+            fn drop(&mut self) {
+                $crate::host::clear_storage();
+            }
+        }
+        let _guard = ClearAfter;
         $(
             $crate::host::set_msg_sender($field);
-            { $func };
+            $func;
             $crate::host::set_msg_sender($crate::testing_addrs::MSG_SENDER);
-        )+;
-        $crate::host::clear_storage();
+        )+
     }
 }

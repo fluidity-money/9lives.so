@@ -19,7 +19,7 @@ impl StorageTrading {
 
     // Internal rebalancing function to get and set the prices of each
     // amount.
-    fn internal_amm_get_prices(&mut self) -> R<()> {
+    pub fn internal_amm_get_prices(&mut self) -> R<()> {
         let weights: Vec<U256> = self
             .outcome_ids_iter()
             .map(|id| {
@@ -45,7 +45,11 @@ impl StorageTrading {
         Ok(())
     }
 
-    pub fn internal_amm_add_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
+    pub fn internal_amm_add_liquidity(
+        &mut self,
+        amount: U256,
+        recipient: Address,
+    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         self.internal_amm_get_prices()?;
         let prev_liquidity = self.amm_liquidity.get();
         for id in self.outcome_ids_iter().collect::<Vec<_>>() {
@@ -112,23 +116,36 @@ impl StorageTrading {
                     .ok_or(Error::CheckedAddOverflow)?,
             );
         }
-        for (i, outcome_id) in self.outcome_ids_iter().enumerate() {
-            let outcome_shares_received = prev_shares[i] - self.amm_shares.get(outcome_id);
-            c!(share_call::mint(
-                proxy::get_share_addr(
-                    self.factory_addr.get(),
-                    contract_address(),
-                    self.share_impl.get(),
-                    outcome_id,
-                ),
-                recipient,
-                outcome_shares_received
-            ));
-        }
-        Ok(amount)
+        let shares_received = self
+            .outcome_ids_iter()
+            .enumerate()
+            .map(|(i, outcome_id)| {
+                let outcome_shares_received = prev_shares[i]
+                    .checked_sub(self.amm_shares.get(outcome_id))
+                    .ok_or(Error::CheckedSubOverflow)?;
+                if !outcome_shares_received.is_zero() {
+                    share_call::mint(
+                        proxy::get_share_addr(
+                            self.factory_addr.get(),
+                            contract_address(),
+                            self.share_impl.get(),
+                            outcome_id,
+                        ),
+                        recipient,
+                        outcome_shares_received,
+                    )?;
+                }
+                Ok((outcome_id, outcome_shares_received))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok((amount, shares_received))
     }
 
-    pub fn internal_amm_remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
+    pub fn internal_amm_remove_liquidity(
+        &mut self,
+        amount: U256,
+        recipient: Address,
+    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         self.internal_amm_get_prices()?;
         let (most_likely_amt, most_likely_outcome_id) = self
             .outcome_ids_iter()
@@ -195,21 +212,29 @@ impl StorageTrading {
                 .setter(msg_sender())
                 .set(user_liq_shares - amount);
         }
-        for (i, outcome_id) in self.outcome_ids_iter().enumerate() {
-            let outcome_shares_received = prev_shares[i] - self.amm_shares.get(outcome_id);
-            // TODO: should this be the burn function instead?
-            c!(share_call::mint(
-                proxy::get_share_addr(
-                    self.factory_addr.get(),
-                    contract_address(),
-                    self.share_impl.get(),
-                    outcome_id,
-                ),
-                recipient,
-                outcome_shares_received
-            ));
-        }
-        Ok(liquidity_shares_val)
+        let shares_received = self
+            .outcome_ids_iter()
+            .enumerate()
+            .map(|(i, outcome_id)| {
+                let outcome_shares_received = prev_shares[i]
+                    .checked_sub(self.amm_shares.get(outcome_id))
+                    .ok_or(Error::CheckedSubOverflow)?;
+                if !outcome_shares_received.is_zero() {
+                    share_call::mint(
+                        proxy::get_share_addr(
+                            self.factory_addr.get(),
+                            contract_address(),
+                            self.share_impl.get(),
+                            outcome_id,
+                        ),
+                        recipient,
+                        outcome_shares_received,
+                    )?;
+                }
+                Ok((outcome_id, outcome_shares_received))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok((liquidity_shares_val, shares_received))
     }
 
     // Sell the amount of shares, using the USD amount, returning the shares
@@ -325,17 +350,7 @@ impl StorageTrading {
         let shares = c!(outcome_previous_shares
             .checked_sub(self.amm_shares.get(outcome_id))
             .ok_or(Error::CheckedSubOverflow));
-        dbg!(
-            "calling mint on",
-            proxy::get_share_addr(
-                self.factory_addr.get(),
-                contract_address(),
-                self.share_impl.get(),
-                outcome_id,
-            ),
-            recipient
-        );
-        c!(share_call::mint(
+        share_call::mint(
             proxy::get_share_addr(
                 self.factory_addr.get(),
                 contract_address(),
@@ -343,8 +358,8 @@ impl StorageTrading {
                 outcome_id,
             ),
             recipient,
-            shares
-        ));
+            shares,
+        )?;
         Ok(shares)
     }
 }

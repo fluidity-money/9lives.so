@@ -13,6 +13,8 @@ thread_local! {
     static STORAGE: RefCell<HashMap<Word, Word>> = RefCell::new(HashMap::new());
     static CUR_TIME: RefCell<u64> = const { RefCell::new(0) };
     static MSG_SENDER: RefCell<Address> = const { RefCell::new(testing_addrs::MSG_SENDER) };
+    static REGISTERED_ADDRESSES: RefCell<HashMap<Address, String>> =
+        RefCell::new(HashMap::new());
 }
 
 // Helpful memory of the contract address of the currently executing contract.
@@ -121,6 +123,14 @@ pub fn get_contract_address() -> Address {
 
 pub fn clear_storage() {
     STORAGE.with(|s| s.borrow_mut().clear());
+}
+
+pub fn get_addr_expl(addr: Address) -> Option<String> {
+    REGISTERED_ADDRESSES.with(|h| h.borrow().get(&addr).map(|x| x.clone()))
+}
+
+pub fn register_addr(addr: Address, expl: String) {
+    REGISTERED_ADDRESSES.with(|h| h.borrow_mut().insert(addr, expl));
 }
 
 #[allow(dead_code)]

@@ -46,8 +46,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
-        unimplemented!();
-        //return self.internal_amm_burn(_outcome, fusdc_amount);
+        return self.internal_amm_burn(_outcome, fusdc_amount);
     }
 
     #[allow(non_snake_case)]
@@ -72,7 +71,7 @@ impl StorageTrading {
         v: u8,
         r: FixedBytes<32>,
         s: FixedBytes<32>,
-    ) -> R<U256> {
+    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         self.require_not_done_predicting()?;
         if deadline.is_zero() {
             c!(fusdc_call::take_from_sender(amount));
@@ -84,16 +83,21 @@ impl StorageTrading {
         self.internal_amm_add_liquidity(amount, recipient)
     }
 
-    pub fn remove_liquidity(&mut self, amount: U256, recipient: Address) -> R<U256> {
+    pub fn remove_liquidity(
+        &mut self,
+        amount_liq: U256,
+        recipient: Address,
+    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         self.require_not_done_predicting()?;
-        assert_or!(!amount.is_zero(), Error::ZeroShares);
+        assert_or!(!amount_liq.is_zero(), Error::ZeroShares);
         assert_or!(
-            self.amm_user_liquidity_shares.get(msg_sender()) >= amount,
+            self.amm_user_liquidity_shares.get(msg_sender()) >= amount_liq,
             Error::NotEnoughLiquidity
         );
-        let fusdc_amt = self.internal_amm_remove_liquidity(amount, recipient)?;
+        let (fusdc_amt, shares_received) =
+            self.internal_amm_remove_liquidity(amount_liq, recipient)?;
         fusdc_call::transfer(recipient, fusdc_amt)?;
-        Ok(fusdc_amt)
+        Ok((fusdc_amt, shares_received))
     }
 }
 
