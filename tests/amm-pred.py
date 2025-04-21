@@ -588,7 +588,6 @@ def simulate_market_9():
     market.buy(0, 500)
     market.test_get_market_details()
     market.test_get_user_details()
-    return
 
     # Resolve the market - Winning == Outcome 0
     market.resolve_market(0)

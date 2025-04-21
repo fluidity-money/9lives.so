@@ -419,7 +419,8 @@ proptest! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b]);
                 // First, fund the contract with some fUSDC using add liquidity:
-                test_add_liquidity(&mut c, 1000e6 as u64);
+                let add_liq_amt = 1000e6 as u64;
+                test_add_liquidity(&mut c, add_liq_amt);
                 let user_shares = 833333334u64;
                 test_should_buy_check_shares(
                     &mut c,
@@ -428,6 +429,7 @@ proptest! {
                     666666666u64, // Market shares
                     user_shares // User shares
                 );
+                host::set_block_timestamp(1);
                 c.decide(outcome_a).unwrap();
                 should_spend_fusdc_contract!(
                     U256::from(user_shares),
@@ -436,6 +438,10 @@ proptest! {
                         U256::from(user_shares),
                         msg_sender()
                     )
+                );
+                should_spend_fusdc_contract!(
+                    U256::from(add_liq_amt),
+                    c.claim_liquidity(msg_sender())
                 );
             }
         }

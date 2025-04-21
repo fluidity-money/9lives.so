@@ -295,13 +295,15 @@ impl StorageTrading {
         let liq_price = self
             .amm_shares
             .get(self.winner.get())
+            .checked_mul(SHARE_DECIMALS_EXP)
+            .ok_or(Error::CheckedMulOverflow)?
             .checked_div(self.amm_liquidity.get())
             .ok_or(Error::CheckedDivOverflow)?;
-        let claimed_amt = sender_liq_shares
-            .checked_mul(liq_price)
-            .ok_or(Error::CheckedDivOverflow)?;
+        let claimed_amt = maths::mul_div(sender_liq_shares, liq_price, SHARE_DECIMALS_EXP)?;
         fusdc_call::transfer(recipient, claimed_amt)?;
-        self.amm_user_liquidity_shares.setter(msg_sender()).set(U256::ZERO);
+        self.amm_user_liquidity_shares
+            .setter(msg_sender())
+            .set(U256::ZERO);
         Ok(claimed_amt)
     }
 
