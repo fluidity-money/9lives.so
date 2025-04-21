@@ -288,6 +288,23 @@ impl StorageTrading {
         Ok(shares)
     }
 
+    pub fn internal_amm_claim_liquidity(&mut self, recipient: Address) -> R<U256> {
+        assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
+        let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
+        assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
+        let liq_price = self
+            .amm_shares
+            .get(self.winner.get())
+            .checked_div(self.amm_liquidity.get())
+            .ok_or(Error::CheckedDivOverflow)?;
+        let claimed_amt = sender_liq_shares
+            .checked_mul(liq_price)
+            .ok_or(Error::CheckedDivOverflow)?;
+        fusdc_call::transfer(recipient, claimed_amt)?;
+        self.amm_user_liquidity_shares.setter(msg_sender()).set(U256::ZERO);
+        Ok(claimed_amt)
+    }
+
     // Activate the resolution function to trigger a AMM payoff if the market is concluded.
     pub fn internal_amm_payoff(
         &mut self,

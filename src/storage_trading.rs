@@ -43,7 +43,7 @@ pub struct StorageTrading {
     /// during the construction of this.
     pub share_impl: StorageAddress,
 
-    /// Outcomes tracked to be disabled with Longtail once a winner is found.
+    /// Outcomes inside this contract, also used to shut down Longtail if needed.
     pub outcome_list: StorageVec<StorageFixedBytes<8>>,
 
     /// The outcome that was chosen to win by the oracle.

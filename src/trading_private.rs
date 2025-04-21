@@ -1,6 +1,12 @@
-use stylus_sdk::alloy_primitives::*;
+use stylus_sdk::{evm, alloy_primitives::*};
 
-use crate::{error::*, factory_call, storage_trading::*, utils::block_timestamp};
+use crate::{
+    error::*,
+    factory_call,
+    storage_trading::*,
+    events,
+    utils::{block_timestamp, msg_sender},
+};
 
 use alloc::vec::Vec;
 
@@ -24,5 +30,23 @@ impl StorageTrading {
             Error::DoneVoting
         );
         Ok(())
+    }
+
+    pub fn internal_decide(&mut self, outcome: FixedBytes<8>) -> R<U256> {
+        let oracle_addr = self.oracle.get();
+        assert_or!(msg_sender() == oracle_addr, Error::NotOracle);
+        assert_or!(self.when_decided.get().is_zero(), Error::NotTradingContract);
+        // Set the outcome that's winning as the winner!
+        self.winner.set(outcome);
+        self.when_decided.set(U64::from(block_timestamp()));
+        evm::log(events::OutcomeDecided {
+            identifier: outcome,
+            oracle: oracle_addr,
+        });
+        // We call shutdown in the event this wasn't called in the past.
+        if !self.is_shutdown.get() {
+            self.internal_shutdown()?;
+        }
+        Ok(U256::ZERO)
     }
 }

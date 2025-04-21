@@ -102,7 +102,7 @@ impl StorageTrading {
     }
 
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> R<U256> {
-        self.internal_dpm_decide(outcome)
+        self.internal_decide(outcome)
     }
 
     pub fn details(&self, _outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {

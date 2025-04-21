@@ -52,15 +52,14 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn payoff_91_F_A_8_C_2_E(
         &mut self,
-        _outcome_id: FixedBytes<8>,
-        _amt: U256,
-        _recipient: Address,
+        outcome_id: FixedBytes<8>,
+        amt: U256,
+        recipient: Address,
     ) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_payoff(outcome_id, amt, recipient);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        unimplemented!()
-        //return self.internal_amm_payoff(outcome_id, amt, recipient);
+        return self.internal_amm_payoff(outcome_id, amt, recipient);
     }
 
     pub fn add_liquidity_permit(
@@ -98,6 +97,13 @@ impl StorageTrading {
             self.internal_amm_remove_liquidity(amount_liq, recipient)?;
         fusdc_call::transfer(recipient, fusdc_amt)?;
         Ok((fusdc_amt, shares_received))
+    }
+
+    pub fn claim_liquidity(&mut self, recipient: Address) -> R<U256> {
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_claim_liquidity(recipient);
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!()
     }
 }
 

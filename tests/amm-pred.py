@@ -588,6 +588,7 @@ def simulate_market_9():
     market.buy(0, 500)
     market.test_get_market_details()
     market.test_get_user_details()
+    return
 
     # Resolve the market - Winning == Outcome 0
     market.resolve_market(0)
@@ -804,10 +805,10 @@ if __name__ == "__main__":
     #simulate_market_5()
     #simulate_market_6()
     #simulate_market_7()
-    simulate_market_8()
-    exit(0)
+    #simulate_market_8()
     simulate_market_9()
-    simulate_market_10()
+    exit(0)
+    #simulate_market_10()
     simulate_market_11()
     simulate_market_13()
     simulate_market_14()

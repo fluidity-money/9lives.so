@@ -58,14 +58,6 @@ macro_rules! assert_eq_u {
     }};
 }
 
-// Scale down the right side by 1e8, then compare the difference.
-#[macro_export]
-macro_rules! assert_eq_u_down {
-    ($left:expr, $right:expr $(,)?) => {{
-        $crate::assert_eq_u!($left, $right / U256::from(1e8 as u64));
-    }};
-}
-
 err_pre!(ERR_LONGTAIL_PREAMBLE, 0x00);
 err_pre!(ERR_ERC20_TRANSFER_PREAMBLE, 0x01);
 err_pre!(ERR_SHARE_PREAMBLE, 0x02);
@@ -492,7 +484,7 @@ pub enum Error {
     // Creator tried to provide more than a 10% fee.
     ExcessiveFee,
 
-    // Caller does not have the liquidity to redeem!
+    // Caller does not have the liquidity to redeem or claim!
     NotEnoughLiquidity,
 
     // Winner was not decided!

@@ -59,6 +59,14 @@ interface IEvents {
         uint64 indexed timeAfter
     );
 
+    event LiquidityAdded(
+
+    );
+
+    event LiquidityRemoved(
+
+    );
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);
