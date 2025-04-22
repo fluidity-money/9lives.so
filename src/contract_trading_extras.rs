@@ -5,6 +5,7 @@ use crate::{
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
+    fusdc_call
 };
 
 use alloc::vec::Vec;
@@ -71,6 +72,43 @@ impl StorageTrading {
         return self.internal_dpm_ctor(outcomes);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_ctor(outcomes);
+    }
+
+    pub fn add_liquidity_permit(
+        &mut self,
+        amount: U256,
+        recipient: Address,
+        deadline: U256,
+        v: u8,
+        r: FixedBytes<32>,
+        s: FixedBytes<32>,
+    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
+        self.require_not_done_predicting()?;
+        if deadline.is_zero() {
+            c!(fusdc_call::take_from_sender(amount));
+        } else {
+            c!(fusdc_call::take_from_sender_permit(
+                amount, deadline, v, r, s
+            ))
+        }
+        self.internal_amm_add_liquidity(amount, recipient)
+    }
+
+    pub fn remove_liquidity(
+        &mut self,
+        amount_liq: U256,
+        recipient: Address,
+    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
+        self.require_not_done_predicting()?;
+        assert_or!(!amount_liq.is_zero(), Error::ZeroShares);
+        assert_or!(
+            self.amm_user_liquidity_shares.get(msg_sender()) >= amount_liq,
+            Error::NotEnoughLiquidity
+        );
+        let (fusdc_amt, shares_received) =
+            self.internal_amm_remove_liquidity(amount_liq, recipient)?;
+        fusdc_call::transfer(recipient, fusdc_amt)?;
+        Ok((fusdc_amt, shares_received))
     }
 
     pub fn is_shutdown(&self) -> R<bool> {

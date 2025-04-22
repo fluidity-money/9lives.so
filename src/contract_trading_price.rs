@@ -17,4 +17,13 @@ impl StorageTrading {
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_price(id);
     }
+
+    #[allow(clippy::too_many_arguments)]
+    #[allow(non_snake_case)]
+    pub fn claim_liquidity_9_C_391_F_85(&mut self, _recipient: Address) -> R<U256> {
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_claim_liquidity(_recipient);
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!()
+    }
 }

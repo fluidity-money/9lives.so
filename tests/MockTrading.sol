@@ -76,7 +76,7 @@ contract MockTrading is INineLivesTrading {
         return value;
     }
 
-    function burnPermit7045A604(
+    function burn33CF4D4A(
         bytes8 /* outcome */,
         uint256 /* fusdcAmount */,
         address /* recipient */
