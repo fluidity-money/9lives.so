@@ -174,8 +174,11 @@ impl StorageTrading {
         unimplemented!()
     }
 
-    pub fn is_dpm(&self) -> R<bool> {
-        Ok(true)
+    pub fn is_dpm(&self) -> bool {
+        #[cfg(feature = "trading-backend-dpm")]
+        return true;
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return false;
     }
 
     #[mutants::skip]
