@@ -2,6 +2,8 @@ use stylus_sdk::alloy_primitives::{aliases::*, *};
 
 use crate::{error::*, fusdc_call, utils::msg_sender};
 
+use alloc::vec::Vec;
+
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
@@ -99,9 +101,9 @@ impl StorageTrading {
         Ok((fusdc_amt, shares_received))
     }
 
-    pub fn claim_liquidity(&mut self, recipient: Address) -> R<U256> {
+    pub fn claim_liquidity(&mut self, _recipient: Address) -> R<U256> {
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_claim_liquidity(recipient);
+        return self.internal_amm_claim_liquidity(_recipient);
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!()
     }

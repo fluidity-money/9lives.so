@@ -713,6 +713,7 @@ def simulate_market_13():
     # Verify that users receive Outcome Share A and B, but not C and D
     previous_user_outcome_shares = market.user_outcome_shares.copy()
     market.add_liquidity(500)
+
     assert (market.user_outcome_shares[0] - previous_user_outcome_shares[0]) > 0
     assert (market.user_outcome_shares[1] - previous_user_outcome_shares[1]) > 0
     assert (market.user_outcome_shares[2] - previous_user_outcome_shares[2]) == 0
@@ -805,10 +806,11 @@ if __name__ == "__main__":
     #simulate_market_6()
     #simulate_market_7()
     #simulate_market_8()
-    simulate_market_9()
-    exit(0)
+    #simulate_market_9()
     #simulate_market_10()
-    simulate_market_11()
+    #simulate_market_11()
+    #simulate_market_12()
     simulate_market_13()
+    exit(0)
     simulate_market_14()
     simulate_market_15()

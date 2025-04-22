@@ -105,7 +105,7 @@ impl StorageTrading {
         self.internal_decide(outcome)
     }
 
-    pub fn details(&self, _outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
+    pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
         #[cfg(feature = "trading-backend-dpm")]
         return Ok((
             self.dpm_outcome_shares.get(outcome_id),
@@ -114,7 +114,12 @@ impl StorageTrading {
             self.winner.get(),
         ));
         #[cfg(not(feature = "trading-backend-dpm"))]
-        unimplemented!()
+        return Ok((
+            self.amm_shares.get(outcome_id),
+            self.amm_total_shares.get(outcome_id),
+            self.amm_liquidity.get(),
+            self.winner.get()
+        ))
     }
 
     pub fn escape(&mut self) -> R<()> {
@@ -145,7 +150,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return Ok(self.dpm_global_invested.get());
         #[cfg(not(feature = "trading-backend-dpm"))]
-        unimplemented!()
+        return Ok(self.amm_liquidity.get())
     }
 
     pub fn share_addr(&self, outcome: FixedBytes<8>) -> R<Address> {

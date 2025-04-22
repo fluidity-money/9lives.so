@@ -268,7 +268,8 @@ impl StorageTrading {
             self.amm_liquidity
                 .get()
                 .pow(U256::from(self.outcome_list.len()))
-                / product,
+                .checked_div(product)
+                .ok_or(Error::CheckedDivOverflow)?,
         );
         let shares = c!(self
             .amm_shares
@@ -362,7 +363,8 @@ impl StorageTrading {
             self.amm_liquidity
                 .get()
                 .pow(U256::from(self.outcome_list.len()))
-                / product,
+                .checked_div(product)
+                .ok_or(Error::CheckedDivOverflow)?,
         );
         let shares = c!(outcome_previous_shares
             .checked_sub(self.amm_shares.get(outcome_id))
@@ -378,6 +380,35 @@ impl StorageTrading {
             shares,
         )?;
         Ok(shares)
+    }
+
+    // The same as the mint function, but shadows the tokens instead, and
+    // doesn't update anything.
+    pub fn internal_amm_quote(&self, outcome_id: FixedBytes<8>, usd_amt: U256) -> R<U256> {
+        let outcome_shares = self
+            .amm_shares
+            .get(outcome_id)
+            .checked_add(usd_amt)
+            .ok_or(Error::CheckedAddOverflow)?;
+        let product = self
+            .outcome_ids_iter()
+            .filter(|id| *id != outcome_id)
+            .map(|x| self.amm_shares.get(x))
+            .product::<U256>();
+        outcome_shares
+            .checked_sub(
+                self.amm_liquidity
+                    .get()
+                    .pow(U256::from(self.outcome_list.len()))
+                    .checked_div(product)
+                    .ok_or(Error::CheckedDivOverflow)?,
+            )
+            .ok_or(Error::CheckedSubOverflow)
+    }
+
+    pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {
+        self.internal_amm_get_prices()?;
+        Ok(self.amm_outcome_prices.get(outcome))
     }
 }
 
