@@ -7,7 +7,7 @@
 use stylus_sdk::alloy_primitives::{FixedBytes, U256, U64};
 
 use lib9lives::{
-    assert_eq_u, host, interactions_clear_after, proxy,
+    assert_eq_u, error::Error, host, interactions_clear_after, panic_guard, proxy,
     should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
     testing_addrs::*, utils::*, StorageTrading,
 };
@@ -437,6 +437,86 @@ proptest! {
                         outcome_a,
                         U256::from(user_shares),
                         msg_sender()
+                    )
+                );
+                should_spend_fusdc_contract!(
+                    U256::from(add_liq_amt),
+                    c.claim_liquidity(msg_sender())
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_amm_user_story_10(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                // First, fund the contract with some fUSDC using add liquidity:
+                let add_liq_amt = 1000e6 as u64;
+                test_add_liquidity(&mut c, add_liq_amt);
+                let user_shares = 833333334u64;
+                test_should_buy_check_shares(
+                    &mut c,
+                    outcome_a,
+                    500e6 as u64,
+                    666666666u64, // Market shares
+                    user_shares // User shares
+                );
+                host::set_block_timestamp(1);
+                c.decide(outcome_a).unwrap();
+                should_spend_fusdc_contract!(
+                    U256::from(user_shares),
+                    c.payoff_91_F_A_8_C_2_E(
+                        outcome_a,
+                        U256::from(user_shares),
+                        msg_sender()
+                    )
+                );
+                should_spend_fusdc_contract!(
+                    U256::from(add_liq_amt),
+                    c.claim_liquidity(msg_sender())
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_amm_user_story_11(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        outcome_c in strat_fixed_bytes::<8>(),
+        outcome_d in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                // First, fund the contract with some fUSDC using add liquidity:
+                let add_liq_amt = 1000e6 as u64;
+                test_add_liquidity(&mut c, add_liq_amt);
+                let user_shares = 621296297;
+                test_should_buy_check_shares(
+                    &mut c,
+                    outcome_a,
+                    200e6 as u64,
+                    578703703, // Market shares
+                    user_shares // User shares
+                );
+                host::set_block_timestamp(1);
+                c.decide(outcome_c).unwrap();
+                panic_guard(||
+                    assert_eq!(
+                        Error::NotWinner,
+                        c.payoff_91_F_A_8_C_2_E(
+                            outcome_a,
+                            U256::from(user_shares),
+                            msg_sender()
+                        ).unwrap_err()
                     )
                 );
                 should_spend_fusdc_contract!(

@@ -38,6 +38,7 @@ interface IEvents {
         uint256 fusdcSpent
     );
 
+    // SharesBurned in the context of someone using the AMM burn function.
     event SharesBurned(
         bytes8 indexed identifier,
         uint256 indexed shareAmount,
@@ -60,11 +61,13 @@ interface IEvents {
     );
 
     event LiquidityAdded(
-
+        uint256 indexed amount,
+        address indexed recipient
     );
 
     event LiquidityRemoved(
-
+        uint256 indexed amount,
+        address indexed recipient
     );
 
     /* INFRASTRUCTURE MARKET */
