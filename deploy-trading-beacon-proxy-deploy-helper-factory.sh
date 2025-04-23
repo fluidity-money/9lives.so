@@ -21,10 +21,21 @@ cast receipt \
 	--rpc-url="$SPN_SUPERPOSITION_URL" \
 	--json \
 	"$SPN_TRADING_BEACON_PROXY_HELPER_FACTORY_TX" \
-		| jq --arg v "$SPN_TRADING_BEACON_PROXY_HELPER_FACTORY_TX" '
-{
+		| jq \
+			--arg tx "$SPN_TRADING_BEACON_PROXY_HELPER_FACTORY_TX" \
+			--arg mint "$SPN_TRADING_AMM_MINT_IMPL_ADDR" \
+			--arg quotes "$SPN_TRADING_AMM_QUOTES_IMPL_ADDR" \
+			--arg price "$SPN_TRADING_AMM_PRICE_IMPL_ADDR" \
+			--arg extras "$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR" \
+			--arg admin "$SPN_PROXY_ADMIN" \
+'{
 	proxy_impl: ("0x"+(.logs[0].topics[1]|.[-40:])),
 	beacon: ("0x"+(.logs[0].topics[2]|.[-40:])),
-	transaction_hash: $v,
-	helper: .contractAddress
+	transaction_hash: $tx,
+	helper: .contractAddress,
+	mint: $mint,
+	quotes: $quotes,
+	price: $price,
+	extras: $extras,
+	admin: $admin
 }'

@@ -1,7 +1,6 @@
 #!/usr/bin/env -S bash -eu
 
-# Deploy a single AMM, without all the work, and ensure it's upgrade safe. Will also
-# deploy a share implementation if needed.
+# Deploy the trading contract one off helper contract.
 
 cat >/dev/null <<EOF
 $SPN_SUPERPOSITION_URL
