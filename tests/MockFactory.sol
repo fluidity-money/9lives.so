@@ -55,6 +55,10 @@ contract MockFactory is INineLivesFactory {
         return address(t);
     }
 
+    function isModerationFeeEnabled() external view returns (bool) {
+        return false;
+    }
+
     function getOwner(address) external pure returns (address) {
         return address(2);
     }

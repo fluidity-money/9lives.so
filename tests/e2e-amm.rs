@@ -462,7 +462,7 @@ proptest! {
                     c,
                     outcome_a,
                     500e6 as u64,
-                    668449197, // Market shares
+                    666666666, // Market shares
                     user_shares // User shares
                 );
                 host::set_block_timestamp(1);

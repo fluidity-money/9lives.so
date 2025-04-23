@@ -18,19 +18,22 @@ library StorageSlot {
 }
 
 contract TradingBeaconProxy {
-    constructor() {
-        StorageSlot.getAddressSlot(SLOT_BEACON).value = 0x9999999999999999999999999999999999999999;
+    ITradingBeacon immutable BEACON;
+
+    constructor(ITradingBeacon _impl) {
+        // Set the slot for EIP712 compatibility.
+        StorageSlot.getAddressSlot(SLOT_BEACON).value = address(_impl);
+        BEACON = _impl;
     }
 
     fallback() external {
         bool rc;
         bytes memory rd;
-        ITradingBeacon beacon = ITradingBeacon(0x9999999999999999999999999999999999999999);
         uint8 sel = uint8(msg.data[2]);
-        if (sel == 0) (rc, rd) = beacon.mint().delegatecall(msg.data);
-        else if (sel == 1) (rc, rd) = beacon.quotes().delegatecall(msg.data);
-        else if (sel == 2) (rc, rd) = beacon.price().delegatecall(msg.data);
-        else (rc, rd) = beacon.extras().delegatecall(msg.data);
+        if (sel == 0) (rc, rd) = BEACON.mint().delegatecall(msg.data);
+        else if (sel == 1) (rc, rd) = BEACON.quotes().delegatecall(msg.data);
+        else if (sel == 2) (rc, rd) = BEACON.price().delegatecall(msg.data);
+        else (rc, rd) = BEACON.extras().delegatecall(msg.data);
         if (rd.length > 0 && !rc) {
             /// @solidity memory-safe-assembly
             assembly {

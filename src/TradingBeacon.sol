@@ -4,11 +4,11 @@ pragma solidity 0.8.20;
 import "./ITradingBeacon.sol";
 
 contract TradingBeacon is ITradingBeacon {
+    address public admin;
     address public mint;
     address public quotes;
     address public price;
     address public extras;
-    address public admin;
 
     event NewAdmin(address indexed newAdmin);
     event UpgradedMint(address indexed impl);

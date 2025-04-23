@@ -65,7 +65,10 @@ pub struct StorageFactory {
     pub trading_addresses: StorageMap<FixedBytes<32>, StorageAddress>,
 
     /// Amounts claimable by the DAO for moderation operations.
-    pub dao_claimable: StorageU256
+    pub dao_claimable: StorageU256,
+
+    /// If set to true, every creation of a fee will take a small fee.
+    pub should_take_mod_fee: StorageBool,
 }
 
 #[cfg(feature = "testing")]

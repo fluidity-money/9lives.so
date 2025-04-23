@@ -32,6 +32,10 @@ struct CreationDetails {
     uint64 feeMinter;
 }
 
+/**
+ * @notice HelperFactory that assists in deploying different amounts, it does not take any fees
+ *        currently to reflect the new AMM model.
+ */
 contract HelperFactory {
     IERC20Permit immutable FUSDC;
     INineLivesFactory immutable FACTORY;
@@ -78,56 +82,6 @@ contract HelperFactory {
         );
     }
 
-    /**
-     * @notice Create with the Infra Market, transferring the amount needed for the
-     * oracle, as well as the Trading contract itself.
-     */
-    function createWithInfraMarket(
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter
-    ) public returns (address tradingAddr) {
-        // We need to take the base incentive amount for transfers.
-        FUSDC.transferFrom(msg.sender, address(this), (outcomes.length * 1e6) + INCENTIVE_INFRA_MARKET);
-        return create(
-            INFRA_MARKET,
-            outcomes,
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
-        );
-    }
-
-    // Create a campaign with an infra market, doing all the setup legwork that's needed
-    // with approvals stemming from a single signature.
-    function createWithInfraMarketPermit(
-        CreationDetails calldata d,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external returns (address tradingAddr) {
-        // We need to take some money from the sender for all the setup costs we're expecting.
-        // This should be the (number of outcomes * 1e6) + (2.2 * 1e6)
-        FUSDC.permit(msg.sender, address(this), (d.outcomes.length * 1e6) + 2200000, deadline, v, r, s);
-        return createWithInfraMarket(
-            d.outcomes,
-            d.timeEnding,
-            d.documentation,
-            d.feeRecipient,
-            d.feeCreator,
-            d.feeLp,
-            d.feeMinter
-        );
-    }
-
     function createWithBeautyContest(
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
@@ -137,12 +91,6 @@ contract HelperFactory {
         uint64 feeLp,
         uint64 feeMinter
     ) public returns (address tradingAddr) {
-        // No extra fluff work is needed to support this.
-        FUSDC.transferFrom(
-            msg.sender,
-            address(this),
-            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
-        );
         return create(
             BEAUTY_CONTEST,
             outcomes,
@@ -155,33 +103,6 @@ contract HelperFactory {
         );
     }
 
-    function createWithBeautyContestPermit(
-        CreationDetails calldata d,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external returns (address tradingAddr) {
-        FUSDC.permit(
-            msg.sender,
-            address(this),
-            (d.outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
-            deadline,
-            v,
-            r,
-            s
-        );
-        return createWithBeautyContest(
-            d.outcomes,
-            d.timeEnding,
-            d.documentation,
-            d.feeRecipient,
-            d.feeCreator,
-            d.feeLp,
-            d.feeMinter
-        );
-    }
-
     function createWithAI(
         FactoryOutcome[] calldata outcomes,
         uint64 timeEnding,
@@ -191,12 +112,6 @@ contract HelperFactory {
         uint64 feeLp,
         uint64 feeMinter
     ) public returns (address tradingAddr) {
-        // No extra fluff work is needed to support this.
-        FUSDC.transferFrom(
-            msg.sender,
-            address(this),
-            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
-        );
         return create(
             SARP_AI,
             outcomes,
@@ -206,33 +121,6 @@ contract HelperFactory {
             feeCreator,
             feeLp,
             feeMinter
-        );
-    }
-
-    function createWithAIPermit(
-        CreationDetails calldata d,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external returns (address tradingAddr) {
-        FUSDC.permit(
-            msg.sender,
-            address(this),
-            (d.outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
-            deadline,
-            v,
-            r,
-            s
-        );
-        return createWithAI(
-            d.outcomes,
-            d.timeEnding,
-            d.documentation,
-            d.feeRecipient,
-            d.feeCreator,
-            d.feeLp,
-            d.feeMinter
         );
     }
 
@@ -249,11 +137,6 @@ contract HelperFactory {
         uint64 feeLp,
         uint64 feeMinter
     ) public returns (address tradingAddr) {
-        FUSDC.transferFrom(
-            msg.sender,
-            address(this),
-            (outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION
-        );
         return create(
             oracle,
             outcomes,
@@ -263,36 +146,6 @@ contract HelperFactory {
             feeCreator,
             feeLp,
             feeMinter
-        );
-    }
-
-    /// @dev Read the developer comment for createWithCustom.
-    function createWithCustomPermit(
-        CreationDetails calldata d,
-        address oracle,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public returns (address tradingAddr) {
-        FUSDC.permit(
-            msg.sender,
-            address(this),
-            (d.outcomes.length * 1e6) + INCENTIVE_AMT_MODERATION,
-            deadline,
-            v,
-            r,
-            s
-        );
-        return createWithCustom(
-            oracle,
-            d.outcomes,
-            d.timeEnding,
-            d.documentation,
-            d.feeRecipient,
-            d.feeCreator,
-            d.feeLp,
-            d.feeMinter
         );
     }
 }

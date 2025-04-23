@@ -42,6 +42,11 @@ interface INineLivesFactory {
     ) external returns (address tradingAddr);
 
     /**
+     * @notice is the current fee that's taken for moderation reasons active?
+     */
+    function isModerationFeeEnabled() external view returns (bool);
+
+    /**
      * @notice gets the owner address from the trading contract address
      * @param addr is trading address to get the owner
      */

@@ -56,6 +56,10 @@ impl StorageFactory {
         Ok(self.operator.get())
     }
 
+    pub fn is_moderation_fee_enabled(&self) -> R<bool> {
+        Ok(self.should_take_mod_fee.get())
+    }
+
     pub fn dpm_trading_hash(&self) -> R<FixedBytes<32>> {
         Ok(FixedBytes::from_slice(&trading_proxy_hash(
             self.trading_dpm_extras_impl.get(),

@@ -1,5 +1,6 @@
 use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
+#[cfg(not(target_arch = "wasm32"))]
 use crate::utils::msg_sender;
 
 #[cfg_attr(

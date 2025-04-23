@@ -43,7 +43,8 @@ impl StorageFactory {
         let trading_id =
             proxy::create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
 
-        let backend_is_dpm = outcome_ids.len() == 2;
+        // For now, every backend will be the AMM form, until we have Longtail supported.
+        let backend_is_dpm = false;
         let backend_type = if backend_is_dpm {
             TradingBackendType::DPM as u8
         } else {
@@ -89,9 +90,19 @@ impl StorageFactory {
         let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
         fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
 
+        // This code is in a weird place, the UX no longer supports doing setup
+        // with the infra market, and it always assumes the AMM is in use now. In
+        // doing so, the fee accounting internally will always prefer to take no
+        // fees. The moderation fee can only be enabled with an upgrade.
+
         // Take the full amount to use as incentives for calling cranks.
+        let mod_fee = if self.should_take_mod_fee.get() {
+            INCENTIVE_AMT_MODERATION
+        } else {
+            U256::ZERO
+        };
         fusdc_call::take_from_sender(
-            INCENTIVE_AMT_MODERATION + {
+            mod_fee + {
                 if oracle == self.infra_market.get() {
                     // Make sure to take the amount that we need for the infra market.
                     INCENTIVE_AMT_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE
@@ -100,10 +111,11 @@ impl StorageFactory {
                 }
             },
         )?;
-
-        // Bump the amount that we need to track as a part of our operation revenue.
-        self.dao_claimable
-            .set(self.dao_claimable.get() + INCENTIVE_AMT_MODERATION);
+        if self.should_take_mod_fee.get() {
+            // Bump the amount that we need to track as a part of our operation revenue.
+            self.dao_claimable
+                .set(self.dao_claimable.get() + INCENTIVE_AMT_MODERATION);
+        }
 
         for (outcome_identifier, sqrt_price, outcome_name) in outcomes.iter() {
             let erc20_identifier =
