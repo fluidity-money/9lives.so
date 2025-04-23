@@ -383,7 +383,7 @@ proptest! {
                     844833865,
                     should_spend_fusdc_contract!(
                         U256::from(buy_amt),
-                        c.burn_permit(outcome_a, U256::from(buy_amt), msg_sender())
+                        c.burn_33_C_F_4_D_4_A(outcome_a, U256::from(buy_amt), msg_sender())
                     )
                 );
                 for (i, (price1, price2)) in before_outcome_prices
@@ -442,7 +442,7 @@ proptest! {
                 );
                 should_spend_fusdc_contract!(
                     U256::from(add_liq_amt),
-                    c.claim_liquidity(msg_sender())
+                    c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             }
         }
@@ -480,7 +480,7 @@ proptest! {
                 );
                 should_spend_fusdc_contract!(
                     U256::from(add_liq_amt),
-                    c.claim_liquidity(msg_sender())
+                    c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             }
         }
@@ -521,7 +521,7 @@ proptest! {
                 );
                 should_spend_fusdc_contract!(
                     U256::from(add_liq_amt),
-                    c.claim_liquidity(msg_sender())
+                    c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             }
         }

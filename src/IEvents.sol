@@ -61,13 +61,31 @@ interface IEvents {
     );
 
     event LiquidityAdded(
-        uint256 indexed amount,
+        uint256 indexed fusdcAmt,
         address indexed recipient
     );
 
+    event LiquidityAddedSharesSent(
+        bytes8 indexed share,
+        address indexed recipient,
+        uint256 indexed amount
+    );
+
     event LiquidityRemoved(
-        uint256 indexed amount,
-        address indexed recipient
+        uint256 indexed fusdcAmt,
+        address indexed recipient,
+        uint256 indexed liquidityAmt
+    );
+
+    event LiquidityRemovedSharesSent(
+        bytes8 indexed share,
+        address indexed recipient,
+        uint256 indexed amount
+    );
+
+    event LiquidityClaimed(
+        address indexed recipient,
+        uint256 indexed fusdcAmt
     );
 
     /* INFRASTRUCTURE MARKET */

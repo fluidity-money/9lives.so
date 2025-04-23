@@ -1,8 +1,9 @@
 use crate::{
-    error::*, fusdc_call, immutables::*, maths, proxy, share_call, storage_trading::*, utils::*,
+    error::*, events, fusdc_call, immutables::*, maths, proxy, share_call, storage_trading::*,
+    utils::*,
 };
 
-use stylus_sdk::alloy_primitives::*;
+use stylus_sdk::{alloy_primitives::*, evm};
 
 use alloc::vec::Vec;
 
@@ -134,10 +135,19 @@ impl StorageTrading {
                         recipient,
                         outcome_shares_received,
                     )?;
+                    evm::log(events::LiquidityAddedSharesSent {
+                        share: outcome_id,
+                        recipient,
+                        amount: outcome_shares_received,
+                    });
                 }
                 Ok((outcome_id, outcome_shares_received))
             })
             .collect::<Result<Vec<_>, _>>()?;
+        evm::log(events::LiquidityAdded {
+            fusdcAmt: amount,
+            recipient,
+        });
         Ok((amount, shares_received))
     }
 
@@ -230,16 +240,31 @@ impl StorageTrading {
                         recipient,
                         outcome_shares_received,
                     )?;
+                    evm::log(events::LiquidityRemovedSharesSent {
+                        share: outcome_id,
+                        recipient,
+                        amount: outcome_shares_received,
+                    });
                 }
                 Ok((outcome_id, outcome_shares_received))
             })
             .collect::<Result<Vec<_>, _>>()?;
+        evm::log(events::LiquidityRemoved {
+            fusdcAmt: amount,
+            recipient,
+            liquidityAmt: liquidity_shares_val,
+        });
         Ok((liquidity_shares_val, shares_received))
     }
 
     // Sell the amount of shares, using the USD amount, returning the shares
     // sold. Does the transferring.
-    pub fn internal_amm_burn(&mut self, outcome_id: FixedBytes<8>, fusdc_amount: U256) -> R<U256> {
+    pub fn internal_amm_burn(
+        &mut self,
+        outcome_id: FixedBytes<8>,
+        fusdc_amount: U256,
+        recipient: Address,
+    ) -> R<U256> {
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
@@ -286,6 +311,13 @@ impl StorageTrading {
             msg_sender(),
             shares
         ));
+        evm::log(events::SharesBurned {
+            identifier: outcome_id,
+            shareAmount: shares,
+            spender: msg_sender(),
+            recipient,
+            fusdcReturned: shares,
+        });
         Ok(shares)
     }
 
@@ -305,6 +337,10 @@ impl StorageTrading {
         self.amm_user_liquidity_shares
             .setter(msg_sender())
             .set(U256::ZERO);
+        evm::log(events::LiquidityClaimed {
+            recipient,
+            fusdcAmt: claimed_amt,
+        });
         Ok(claimed_amt)
     }
 
@@ -326,6 +362,13 @@ impl StorageTrading {
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg_sender(), share_bal)?;
         fusdc_call::transfer(recipient, share_bal)?;
+        evm::log(events::PayoffActivated {
+            identifier: outcome_id,
+            sharesSpent: share_bal,
+            spender: msg_sender(),
+            recipient,
+            fusdcReceived: share_bal,
+        });
         Ok(share_bal)
     }
 
@@ -379,6 +422,13 @@ impl StorageTrading {
             recipient,
             shares,
         )?;
+        evm::log(events::SharesMinted {
+            identifier: outcome_id,
+            shareAmount: shares,
+            spender: msg_sender(),
+            recipient,
+            fusdcSpent: usd_amt,
+        });
         Ok(shares)
     }
 

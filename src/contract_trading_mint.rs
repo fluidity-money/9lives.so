@@ -46,7 +46,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_burn(_outcome, fusdc_amount);
+        return self.internal_amm_burn(_outcome, fusdc_amount, recipient);
     }
 
     #[allow(non_snake_case)]
