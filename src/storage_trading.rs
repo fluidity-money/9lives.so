@@ -1,4 +1,6 @@
-use stylus_sdk::{alloy_primitives::*, storage::*, prelude::*};
+use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
+
+use crate::utils::msg_sender;
 
 #[cfg_attr(
     any(
@@ -74,7 +76,6 @@ pub struct StorageTrading {
     pub is_escaped: StorageBool,
 
     /* ~~~~~~~~~~ DPM USED ~~~~~~~~~~ */
-
     /// Shares invested in every outcome cumulatively.
     pub dpm_global_shares: StorageU256,
 
@@ -88,7 +89,6 @@ pub struct StorageTrading {
     pub dpm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /* ~~~~~~~~~~ AMM USED ~~~~~~~~~~ */
-
     pub amm_liquidity: StorageU256,
 
     pub amm_outcome_prices: StorageMap<FixedBytes<8>, StorageU256>,
@@ -120,7 +120,7 @@ impl std::fmt::Debug for StorageTrading {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         write!(
             f,
-            "StorageTrading {{ created: {:?}, factory addr: {:?}, when decided: {:?}, is shutdown: {:?}, fee recipient: {:?}, time start: {:?}, time ending: {:?}, oracle: {:?}, share impl: {:?}, global shares: {:?}, .., seed invested: {:?}, global invested: {:?}, .., winner: {:?}, should buffer time: {:?} }}",
+            "StorageTrading {{ created: {:?}, factory addr: {:?}, when decided: {:?}, is shutdown: {:?}, fee recipient: {:?}, time start: {:?}, time ending: {:?}, oracle: {:?}, share impl: {:?}, dpm global shares: {:?}, .., dpm seed invested: {:?}, dpm global invested: {:?}, .., winner: {:?}, should buffer time: {:?}, amm liquidity: {:?}, amm shares: {:?}, amm total shares: {:?}, amm sender user liquidity shares for msg sender: {:?} }}",
             self.created,
             self.factory_addr,
             self.when_decided,
@@ -134,7 +134,11 @@ impl std::fmt::Debug for StorageTrading {
             self.amm_liquidity,
             self.dpm_global_invested,
             self.winner,
-            self.should_buffer_time
+            self.should_buffer_time,
+            self.amm_liquidity,
+            self.outcome_ids_iter().map(|x| (x, self.amm_shares.get(x))).collect::<Vec<_>>(),
+            self.outcome_ids_iter().map(|x| (x, self.amm_total_shares.get(x))).collect::<Vec<_>>(),
+            (msg_sender(), self.amm_user_liquidity_shares.get(msg_sender()))
         )
     }
 }
@@ -209,11 +213,14 @@ pub fn strat_storage_trading(
                             // associated).
                             let mut dpm_global_invested = U256::ZERO;
                             let mut dpm_global_shares = U256::ZERO;
-                            for (outcome_id, dpm_outcome_shares, dpm_outcome_invested) in &outcomes {
+                            for (outcome_id, dpm_outcome_shares, dpm_outcome_invested) in &outcomes
+                            {
                                 c.dpm_outcome_invested
                                     .setter(*outcome_id)
                                     .set(*dpm_outcome_invested);
-                                c.dpm_outcome_shares.setter(*outcome_id).set(*dpm_outcome_shares);
+                                c.dpm_outcome_shares
+                                    .setter(*outcome_id)
+                                    .set(*dpm_outcome_shares);
                                 dpm_global_invested += dpm_outcome_invested;
                                 dpm_global_shares += dpm_outcome_shares;
                                 c.outcome_list.push(*outcome_id);

@@ -62,12 +62,12 @@ fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut
             FixedBytes::<32>::ZERO
         )
     );
-    assert_eq_u!(1882881997, c.amm_liquidity.get());
-    assert_eq_u!(1474071282u64, c.amm_shares.get(outcome_a));
+    assert_eq_u!(1882881998, c.amm_liquidity.get());
+    assert_eq_u!(1474071283, c.amm_shares.get(outcome_a));
     assert_eq_u!(2405070000u64, c.amm_shares.get(outcome_b));
     assert_eq_u!(620000, c.amm_outcome_prices.get(outcome_a));
     assert_eq_u!(379999, c.amm_outcome_prices.get(outcome_b));
-    assert_eq_u!(782881997, c.amm_user_liquidity_shares.get(msg_sender()));
+    assert_eq_u!(782881998, c.amm_user_liquidity_shares.get(msg_sender()));
 }
 
 fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedBytes<8>, U256)>) {
@@ -198,7 +198,7 @@ proptest! {
                     (outcome_d, 1294000000), //1294
                 ]);
                 let liquidity_amt = U256::from(1000e6 as u64);
-                let shares = should_spend_fusdc_sender!(
+                should_spend_fusdc_sender!(
                     liquidity_amt,
                     c.add_liquidity_permit(
                         liquidity_amt,
@@ -209,9 +209,8 @@ proptest! {
                         FixedBytes::<32>::ZERO
                     )
                 );
-                dbg!(shares);
-                assert_eq_u!(1772800379, c.amm_liquidity.get());
-                assert_eq_u!(818199300, c.amm_shares.get(outcome_a));
+                assert_eq_u!(1772800380, c.amm_liquidity.get());
+                assert_eq_u!(818199301, c.amm_shares.get(outcome_a));
                 assert_eq_u!(2294000000u64, c.amm_shares.get(outcome_b));
                 assert_eq_u!(2294000000u64, c.amm_shares.get(outcome_c));
                 assert_eq_u!(2294000000u64, c.amm_shares.get(outcome_d));
@@ -219,7 +218,7 @@ proptest! {
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_b));
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_c));
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_d));
-                assert_eq_u!(76968, c.amm_user_liquidity_shares.get(msg_sender()));
+                assert_eq_u!(772800380, c.amm_user_liquidity_shares.get(msg_sender()));
             },
         }
     }
@@ -238,21 +237,19 @@ proptest! {
                     (outcome_b, 876230e4 as u64), //8762.30
                 ]);
                 let remove_amt = c.amm_user_liquidity_shares.get(msg_sender());
-                let results = should_spend_fusdc_contract!(
+                should_spend_fusdc_contract!(
                     remove_amt,
                     {
                         let res = c.remove_liquidity(remove_amt, msg_sender()).unwrap();
-                        assert_eq_u!(4815769830u64, c.amm_liquidity.get());
-                        //TODO
-                        assert_eq_u!(3076908319u64, c.amm_shares.get(outcome_a));
-                        assert_eq_u!(7537318847u64, c.amm_shares.get(outcome_b));
+                        assert_eq_u!(4815769827u64, c.amm_liquidity.get());
+                        assert_eq_u!(3076908317u64, c.amm_shares.get(outcome_a));
+                        assert_eq_u!(7537318843u64, c.amm_shares.get(outcome_b));
                         assert_eq_u!(710114, c.amm_outcome_prices.get(outcome_a));
                         assert_eq_u!(289885, c.amm_outcome_prices.get(outcome_b));
                         assert_eq_u!(0, c.amm_user_liquidity_shares.get(msg_sender()));
                         Ok(res)
                     }
                 );
-                dbg!(results);
             }
         }
     }
@@ -280,8 +277,8 @@ proptest! {
                     remove_amt,
                     {
                         let res = c.remove_liquidity(remove_amt, msg_sender()).unwrap();
-                        assert_eq_u!(1469682744, c.amm_liquidity.get());
-                        assert_eq_u!(674730015, c.amm_shares.get(outcome_a));
+                        assert_eq_u!(1469682742, c.amm_liquidity.get());
+                        assert_eq_u!(674730014, c.amm_shares.get(outcome_a));
                         // TODO
                         Ok(res)
                     }
@@ -548,9 +545,8 @@ proptest! {
                     ],
                 );
                 c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(10e6 as u64));
-                // In the tests, this is 3535533, but we're going to allow this to be different slightly.
                 let (_, shares) = should_spend_fusdc_contract!(
-                    U256::from(3534955),
+                    U256::from(3535534),
                     c.remove_liquidity(U256::from(5e6 as u64), msg_sender())
                 );
                 for (i, (_, s)) in shares.into_iter().enumerate() {
@@ -558,7 +554,7 @@ proptest! {
                         assert_eq!(U256::ZERO, s, "{i} inconsistent, expected 0. is {s}");
                     }
                     if i == 2 || i == 3 {
-                        assert_eq!(U256::from(3535533), s, "{i} inconsistent, expected 3535533. is {s}");
+                        assert_eq!(U256::from(3534955), s, "{i} inconsistent, expected 3534955. is {s}");
                     }
                 }
             }
@@ -581,23 +577,23 @@ proptest! {
                     c,
                     outcome_a,
                     1000e6 as u64,
-                    1125e6 as u64,
+                    125e6 as u64,
                     1875e6 as u64
                 );
                 test_should_buy_check_shares!(
                     c,
                     outcome_b,
                     1000e6 as u64,
-                    0,
-                    0
+                    98765432,
+                    2901234568u64
                 );
-                let (_, shares) = test_add_liquidity(&mut c, 500e64 as u64);
+                let (_, shares) = test_add_liquidity(&mut c, 500e6 as u64);
                 for (i, (_, amt)) in shares.into_iter().enumerate() {
                     if i == 0 {
-                        assert_eq!(U256::from(2187500000u64), amt);
+                        assert_eq!(U256::from(312505749u64), amt);
                     }
                     if i == 1 {
-                        assert_eq!(U256::from(3384773662u64), amt);
+                        assert_eq!(U256::from(483540905), amt);
                     }
                     if i == 2 || i == 3 {
                         assert_eq!(U256::ZERO, amt);

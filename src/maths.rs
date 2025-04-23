@@ -102,7 +102,7 @@ pub fn rooti(x: U256, n: u32) -> U256 {
     y
 }
 
-pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<U256, Error> {
+pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<(U256, bool), Error> {
     if denom_and_rem == U256::ZERO {
         return Err(Error::BadDenominator);
     }
@@ -114,7 +114,21 @@ pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<U256, Error>
     if limbs[4..] != [0_u64; 4] {
         return Err(Error::BadDenominator);
     }
-    Ok(U256::from_limbs_slice(&limbs[0..4]))
+    let has_carry = denom_and_rem != U256::ZERO;
+    Ok((U256::from_limbs_slice(&limbs[0..4]), has_carry))
+}
+
+pub fn mul_div_round_up(a: U256, b: U256, denominator: U256) -> Result<U256, Error> {
+    let (result, rem) = mul_div(a, b, denominator)?;
+    if rem {
+        if result == U256::MAX {
+            Err(Error::MulDivIsU256Max)
+        } else {
+            Ok(result + U256::from(1))
+        }
+    } else {
+        Ok(result)
+    }
 }
 
 #[test]

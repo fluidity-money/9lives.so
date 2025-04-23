@@ -2,10 +2,10 @@ use stylus_sdk::alloy_primitives::*;
 
 use crate::{
     error::*,
+    fusdc_call,
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
-    fusdc_call
 };
 
 use alloc::vec::Vec;
@@ -76,39 +76,49 @@ impl StorageTrading {
 
     pub fn add_liquidity_permit(
         &mut self,
-        amount: U256,
-        recipient: Address,
-        deadline: U256,
-        v: u8,
-        r: FixedBytes<32>,
-        s: FixedBytes<32>,
+        _amount: U256,
+        _recipient: Address,
+        _deadline: U256,
+        _v: u8,
+        _r: FixedBytes<32>,
+        _s: FixedBytes<32>,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
-        self.require_not_done_predicting()?;
-        if deadline.is_zero() {
-            c!(fusdc_call::take_from_sender(amount));
-        } else {
-            c!(fusdc_call::take_from_sender_permit(
-                amount, deadline, v, r, s
-            ))
-        }
-        self.internal_amm_add_liquidity(amount, recipient)
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!();
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return {
+            self.require_not_done_predicting()?;
+            if _deadline.is_zero() {
+                c!(fusdc_call::take_from_sender(_amount));
+            } else {
+                c!(fusdc_call::take_from_sender_permit(
+                    _amount, _deadline, _v, _r, _s
+                ))
+            }
+            self.internal_amm_add_liquidity(_amount, _recipient)
+        };
     }
 
     pub fn remove_liquidity(
         &mut self,
-        amount_liq: U256,
-        recipient: Address,
+        _amount_liq: U256,
+        _recipient: Address,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
-        self.require_not_done_predicting()?;
-        assert_or!(!amount_liq.is_zero(), Error::ZeroShares);
-        assert_or!(
-            self.amm_user_liquidity_shares.get(msg_sender()) >= amount_liq,
-            Error::NotEnoughLiquidity
-        );
-        let (fusdc_amt, shares_received) =
-            self.internal_amm_remove_liquidity(amount_liq, recipient)?;
-        fusdc_call::transfer(recipient, fusdc_amt)?;
-        Ok((fusdc_amt, shares_received))
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!();
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return {
+            self.require_not_done_predicting()?;
+            assert_or!(!_amount_liq.is_zero(), Error::ZeroShares);
+            assert_or!(
+                self.amm_user_liquidity_shares.get(msg_sender()) >= _amount_liq,
+                Error::NotEnoughLiquidity
+            );
+            let (fusdc_amt, shares_received) =
+                self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
+            fusdc_call::transfer(_recipient, fusdc_amt)?;
+            Ok((fusdc_amt, shares_received))
+        };
     }
 
     pub fn is_shutdown(&self) -> R<bool> {
@@ -156,8 +166,8 @@ impl StorageTrading {
             self.amm_shares.get(outcome_id),
             self.amm_total_shares.get(outcome_id),
             self.amm_liquidity.get(),
-            self.winner.get()
-        ))
+            self.winner.get(),
+        ));
     }
 
     pub fn escape(&mut self) -> R<()> {
@@ -191,7 +201,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return Ok(self.dpm_global_invested.get());
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return Ok(self.amm_liquidity.get())
+        return Ok(self.amm_liquidity.get());
     }
 
     pub fn share_addr(&self, outcome: FixedBytes<8>) -> R<Address> {

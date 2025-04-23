@@ -118,7 +118,7 @@ class PredMarketNew:
         for i in range(len(self.shares)):
             if i not in least_likely_indices:
                 self.shares[i] = (self.shares[least_likely] * self.outcome_prices[least_likely]) / self.outcome_prices[i]
-                print(f"new shares[{i}]: {self.shares[i]}")
+                print(f"new global shares[{i}]: {self.shares[i]}")
 
         product = math.prod(self.shares)
         print(f"shares: {self.shares}")
@@ -135,6 +135,7 @@ class PredMarketNew:
             outcome_shares_received = previous_shares[i] - self.shares[i]
             # Update the outcome shares received
             self.user_outcome_shares[i] += outcome_shares_received
+            print(f"new user shares: {i}: {outcome_shares_received}")
 
         return self.shares
 
@@ -158,6 +159,7 @@ class PredMarketNew:
 
         for i in range(len(self.shares)):
             self.shares[i] -= liquiditysharesvalue
+            print(f"total shares before: {self.total_shares[i]} - {liquiditysharesvalue}")
             self.total_shares[i] -= liquiditysharesvalue
 
 
@@ -714,6 +716,10 @@ def simulate_market_13():
     previous_user_outcome_shares = market.user_outcome_shares.copy()
     market.add_liquidity(500)
 
+    print(f"market user shares 0: {market.user_outcome_shares[0]}")
+    print(f"market user shares 1: {market.user_outcome_shares[1]}")
+    print(f"market user shares 2: {market.user_outcome_shares[2]}")
+    print(f"market user shares 3: {market.user_outcome_shares[3]}")
     assert (market.user_outcome_shares[0] - previous_user_outcome_shares[0]) > 0
     assert (market.user_outcome_shares[1] - previous_user_outcome_shares[1]) > 0
     assert (market.user_outcome_shares[2] - previous_user_outcome_shares[2]) == 0
@@ -809,8 +815,8 @@ if __name__ == "__main__":
     #simulate_market_9()
     #simulate_market_10()
     #simulate_market_11()
-    #simulate_market_12()
-    simulate_market_13()
+    simulate_market_12()
+    #simulate_market_13()
     exit(0)
     simulate_market_14()
     simulate_market_15()

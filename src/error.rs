@@ -492,6 +492,9 @@ pub enum Error {
 
     // Someone called the muldiv function with a bad demoninator.
     BadDenominator,
+
+    // We hit the maximum uint256 for a muldiv operation!
+    MulDivIsU256Max,
 }
 
 #[cfg(any(
