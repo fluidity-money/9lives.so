@@ -77,7 +77,6 @@ pub struct StorageTrading {
     pub is_escaped: StorageBool,
 
     /* ~~~~~~~~~~ DPM ONLY ~~~~~~~~~~ */
-
     /// Shares invested in every outcome cumulatively.
     pub dpm_global_shares: StorageU256,
 
@@ -91,7 +90,6 @@ pub struct StorageTrading {
     pub dpm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /* ~~~~~~~~~~ AMM ONLY ~~~~~~~~~~ */
-
     pub amm_liquidity: StorageU256,
 
     pub amm_outcome_prices: StorageMap<FixedBytes<8>, StorageU256>,
@@ -123,6 +121,14 @@ impl StorageTrading {
 impl crate::host::StorageNew for StorageTrading {
     fn new(i: U256, v: u8) -> Self {
         unsafe { <Self as StorageType>::new(i, v) }
+    }
+}
+
+impl Default for StorageTrading {
+    /// Set up the storage for trading. It's on the caller to ensure the
+    /// state has been flushed correctly before use, if that's important.
+    fn default() -> StorageTrading {
+        unsafe { StorageTrading::new(U256::ZERO, 0) }
     }
 }
 

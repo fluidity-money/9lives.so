@@ -530,6 +530,7 @@ pub(crate) fn rename_addr(v: Address) -> String {
                 v.to_string()
             }
         };
+        #[cfg(not(all(feature = "testing", not(target_arch = "wasm32"))))]
         return v.to_string()
     }
 }

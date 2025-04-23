@@ -102,6 +102,147 @@ pub unsafe extern "C" fn storage_load_bytes32(key: *const u8, out: *mut u8) {
 #[no_mangle]
 pub unsafe extern "C" fn msg_sender(_ptr: *mut u8) {}
 
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn tx_gas_price(_gas_price: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn tx_ink_price() -> u32 {
+    0
+}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn tx_origin(_origin: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn pay_for_memory_grow(_pages: u16) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn read_args(_dest: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn account_balance(_address: *const u8, _dest: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn account_code(_address: *const u8, _offset: usize, _size: usize, _dest: *mut u8) -> usize { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn account_code_size(_address: *const u8) -> usize { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn account_codehash(_address: *const u8, _dest: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn block_basefee(_basefee: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn chainid() -> u64 { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn block_coinbase(_coinbase: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn block_gas_limit() -> u64 { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn block_number() -> u64 { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn call_contract(
+    _contract: *const u8,
+    _calldata: *const u8,
+    _calldata_len: usize,
+    _value: *const u8,
+    _gas: u64,
+    _return_data_len: *mut usize,
+) -> u8 { 1 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn contract_address(_address: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn create1(
+    _code: *const u8,
+    _code_len: usize,
+    _endowment: *const u8,
+    _contract: *mut u8,
+    _revert_data_len: *mut usize,
+) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn create2(
+    _code: *const u8,
+    _code_len: usize,
+    _endowment: *const u8,
+    _salt: *const u8,
+    _contract: *mut u8,
+    _revert_data_len: *mut usize,
+) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn delegate_call_contract(
+    _contract: *const u8,
+    _calldata: *const u8,
+    _calldata_len: usize,
+    _gas: u64,
+    _return_data_len: *mut usize,
+) -> u8 { 1 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn evm_gas_left() -> u64 { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn evm_ink_left() -> u64 { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn msg_reentrant() -> bool { false }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn msg_value(_value: *mut u8) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn read_return_data(_dest: *mut u8, _offset: usize, _size: usize) -> usize { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn write_result(_data: *const u8, _len: usize) {}
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn return_data_size() -> usize { 0 }
+
+#[no_mangle]
+#[cfg(not(target_arch = "wasm32"))]
+pub extern "C" fn static_call_contract(
+    _contract: *const u8,
+    _calldata: *const u8,
+    _calldata_len: usize,
+    _gas: u64,
+    _return_data_len: *mut usize,
+) -> u8 { 1 }
 pub fn get_msg_sender() -> Address {
     MSG_SENDER.with(|v| v.clone().into_inner())
 }
@@ -113,9 +254,6 @@ pub fn set_msg_sender(a: Address) {
 pub fn reset_msg_sender() {
     set_msg_sender(testing_addrs::MSG_SENDER)
 }
-
-#[no_mangle]
-pub unsafe extern "C" fn contract_address(_addr: *mut u8) {}
 
 pub fn get_contract_address() -> Address {
     CONTRACT_ADDRESS
