@@ -462,7 +462,7 @@ proptest! {
                     c,
                     outcome_a,
                     500e6 as u64,
-                    666666666u64, // Market shares
+                    668449197, // Market shares
                     user_shares // User shares
                 );
                 host::set_block_timestamp(1);
@@ -630,6 +630,39 @@ proptest! {
                     2099977326 // User shares
                 );
                 test_add_liquidity(&mut c, 500e6 as u64);
+                //TODO
+            }
+        }
+    }
+
+    #[test]
+    fn test_amm_user_story_15(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        outcome_c in strat_fixed_bytes::<8>(),
+        outcome_d in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                test_add_liquidity(&mut c, 100e6 as u64);
+                test_should_buy_check_shares!(
+                    c,
+                    outcome_a,
+                    1000e6 as u64,
+                    75131, // Market shares
+                    1099924869 // User shares
+                );
+                test_should_buy_check_shares!(
+                    c,
+                    outcome_b,
+                    1000e6 as u64,
+                    22674, // Market shares
+                    2099977326 // User shares
+                );
+                test_add_liquidity(&mut c, 500e6 as u64);
+                //TODO
             }
         }
     }

@@ -1,6 +1,6 @@
 use crate::{
-    error::*, events, fusdc_call, immutables::*, maths, proxy, share_call, storage_trading::*,
-    utils::*,
+    error::*, events, fees::*, fusdc_call, immutables::*, maths, proxy, share_call,
+    storage_trading::*, utils::*,
 };
 
 use stylus_sdk::{alloy_primitives::*, evm};
@@ -14,6 +14,7 @@ impl StorageTrading {
             // behaviour with this being possible (ie, payoff before the end date).
             assert_or!(!outcome_id.is_zero(), Error::OutcomeIsZero);
             self.outcome_list.push(outcome_id);
+            self.amm_outcome_exists.setter(outcome_id).set(true);
         }
         Ok(())
     }
@@ -324,13 +325,12 @@ impl StorageTrading {
         assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
-        let liq_price = self
-            .amm_shares
-            .get(self.winner.get())
-            .checked_mul(SHARE_DECIMALS_EXP)
-            .ok_or(Error::CheckedMulOverflow)?
-            .checked_div(self.amm_liquidity.get())
-            .ok_or(Error::CheckedDivOverflow)?;
+        let liq_price = maths::mul_div(
+            self.amm_shares.get(self.winner.get()),
+            SHARE_DECIMALS_EXP,
+            self.amm_liquidity.get(),
+        )?
+        .0;
         let claimed_amt = maths::mul_div(sender_liq_shares, liq_price, SHARE_DECIMALS_EXP)?.0;
         fusdc_call::transfer(recipient, claimed_amt)?;
         self.amm_user_liquidity_shares
@@ -341,6 +341,21 @@ impl StorageTrading {
             fusdcAmt: claimed_amt,
         });
         Ok(claimed_amt)
+    }
+
+    pub fn internal_amm_claim_lp_fees(&mut self, recipient: Address) -> R<U256> {
+        let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
+        assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
+        let fees = maths::mul_div(
+            self.amm_fees_earned_lps.get(),
+            SHARE_DECIMALS_EXP,
+            self.amm_liquidity.get(),
+        )?
+        .0
+        .checked_mul(sender_liq_shares)
+        .ok_or(Error::CheckedMulOverflow)?;
+        fusdc_call::transfer(recipient, fees)?;
+        Ok(fees)
     }
 
     // Activate the resolution function to trigger a AMM payoff if the market is concluded.
@@ -377,6 +392,30 @@ impl StorageTrading {
         usd_amt: U256,
         recipient: Address,
     ) -> R<U256> {
+        // Check if the outcome exists first!
+        assert_or!(
+            self.amm_outcome_exists.get(outcome_id),
+            Error::NonexistentOutcome
+        );
+        let fee_for_team = maths::mul_div(usd_amt, FEE_SPN_MINT_PCT, FEE_SCALING)?.0;
+        let fee_for_creator = maths::mul_div(usd_amt, self.fee_creator.get(), FEE_SCALING)?.0;
+        let fee_for_lp = maths::mul_div(usd_amt, self.fee_lp.get(), FEE_SCALING)?.0;
+        // It will never be the case that the fee exceeds the amount here, but
+        // this good programming regardless to check.
+        let usd_amt = usd_amt
+            .checked_sub(fee_for_creator)
+            .ok_or(Error::CheckedSubOverflow)?
+            .checked_sub(fee_for_team)
+            .ok_or(Error::CheckedSubOverflow)?
+            .checked_sub(fee_for_lp)
+            .ok_or(Error::CheckedSubOverflow)?;
+        {
+            let fees = self.amm_fees_earned_lps.get();
+            self.amm_fees_earned_lps.set(
+                fees.checked_add(fee_for_lp)
+                    .ok_or(Error::CheckedAddOverflow)?,
+            );
+        }
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = self.amm_shares.get(outcome_id);

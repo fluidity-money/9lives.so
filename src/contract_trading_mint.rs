@@ -1,6 +1,15 @@
-use stylus_sdk::alloy_primitives::{aliases::*, *};
+use stylus_sdk::{
+    alloy_primitives::{aliases::*, *},
+    evm,
+};
 
-use crate::{error::*, fusdc_call};
+use crate::{
+    decimal::MAX_UINT256,
+    error::*,
+    events, fusdc_call,
+    immutables::*,
+    utils::{block_timestamp, msg_sender},
+};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
@@ -26,6 +35,27 @@ impl StorageTrading {
             c!(fusdc_call::take_from_sender_permit(
                 value, deadline, v, r, s
             ))
+        }
+        assert_or!(value < MAX_UINT256, Error::U256TooLarge);
+        assert_or!(!value.is_zero(), Error::ZeroAmount);
+        let recipient = if recipient.is_zero() {
+            msg_sender()
+        } else {
+            recipient
+        };
+        // If we're within 3 hours left on the trading of this contract,
+        // we want to delay the finale by 3 hours, but only if that's behaviour
+        // that we want.
+        if self.should_buffer_time.get() {
+            let old_time_ending = self.time_ending.get();
+            if old_time_ending - U64::from(block_timestamp()) < THREE_HOURS_SECS {
+                let new_time_ending = old_time_ending + THREE_HOURS_SECS;
+                self.time_ending.set(U64::from(new_time_ending));
+                evm::log(events::DeadlineExtension {
+                    timeBefore: u64::from_le_bytes(old_time_ending.to_le_bytes()),
+                    timeAfter: u64::from_le_bytes(new_time_ending.to_le_bytes()),
+                });
+            }
         }
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_mint(outcome, value, recipient);

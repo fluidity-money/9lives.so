@@ -1,7 +1,6 @@
 use crate::{
     decimal::{
         fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal,
-        MAX_UINT256,
     },
     error::*,
     events,
@@ -10,7 +9,7 @@ use crate::{
     immutables::*,
     maths, proxy, share_call,
     storage_trading::*,
-    utils::{block_timestamp, contract_address, msg_sender},
+    utils::{contract_address, msg_sender},
 };
 
 use stylus_sdk::{
@@ -58,34 +57,13 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> R<U256> {
-        assert_or!(value < MAX_UINT256, Error::U256TooLarge);
-        assert_or!(!value.is_zero(), Error::ZeroAmount);
-        let recipient = if recipient.is_zero() {
-            msg_sender()
-        } else {
-            recipient
-        };
-        // Make sure that the outcome exists.
+        // Make sure that the outcome exists by checking if we set this up with some shares.
         assert_or!(
             self.dpm_outcome_shares.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
-        // If we're within 3 hours left on the trading of this contract,
-        // we want to delay the finale by 3 hours, but only if that's behaviour
-        // that we want.
-        if self.should_buffer_time.get() {
-            let old_time_ending = self.time_ending.get();
-            if old_time_ending - U64::from(block_timestamp()) < THREE_HOURS_SECS {
-                let new_time_ending = old_time_ending + THREE_HOURS_SECS;
-                self.time_ending.set(U64::from(new_time_ending));
-                evm::log(events::DeadlineExtension {
-                    timeBefore: u64::from_le_bytes(old_time_ending.to_le_bytes()),
-                    timeAfter: u64::from_le_bytes(new_time_ending.to_le_bytes()),
-                });
-            }
-        }
         // Here we do some fee adjustment to send the fee recipient their money.
-        let fee_for_creator = (value * self.fee_creator.get()) / FEE_SCALING;
+        let fee_for_creator = maths::mul_div(value, self.fee_creator.get(), FEE_SCALING)?.0;
         c!(fusdc_call::transfer(
             self.fee_recipient.get(),
             fee_for_creator
@@ -93,9 +71,13 @@ impl StorageTrading {
         // Take some fees, and add them to the pot for moderation reasons.
         // TODO
         // Collect some fees for the team (for moderation reasons).
-        let fee_for_team = (value * FEE_SPN_MINT_PCT) / FEE_SCALING;
+        let fee_for_team = maths::mul_div(value, FEE_SPN_MINT_PCT, FEE_SCALING)?.0;
         c!(fusdc_call::transfer(DAO_ADDR, fee_for_team));
-        let value = value - fee_for_creator - fee_for_team;
+        let value = value
+            .checked_sub(fee_for_creator)
+            .ok_or(Error::CheckedSubOverflow)?
+            .checked_sub(fee_for_team)
+            .ok_or(Error::CheckedSubOverflow)?;
         // Set the global amounts that were invested.
         let dpm_outcome_invested_before = self.dpm_outcome_invested.get(outcome_id);
         // We need to increase by the amount we allocate, the AMM should do that
@@ -105,9 +87,11 @@ impl StorageTrading {
         let shares = {
             let shares_before = self.dpm_outcome_shares.get(outcome_id);
             let shares = c!(self.internal_calc_dpm_mint(outcome_id, value));
-            self.dpm_outcome_shares.setter(outcome_id).set(c!(shares_before
-                .checked_add(shares)
-                .ok_or(Error::CheckedAddOverflow)));
+            self.dpm_outcome_shares
+                .setter(outcome_id)
+                .set(c!(shares_before
+                    .checked_add(shares)
+                    .ok_or(Error::CheckedAddOverflow)));
             self.dpm_global_shares.set(c!(self
                 .dpm_global_shares
                 .get()
@@ -146,7 +130,6 @@ impl StorageTrading {
         });
 
         Ok(shares)
-
     }
 
     #[allow(non_snake_case)]

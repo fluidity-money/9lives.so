@@ -75,7 +75,8 @@ pub struct StorageTrading {
     /// to be set by the oracle.
     pub is_escaped: StorageBool,
 
-    /* ~~~~~~~~~~ DPM USED ~~~~~~~~~~ */
+    /* ~~~~~~~~~~ DPM ONLY ~~~~~~~~~~ */
+
     /// Shares invested in every outcome cumulatively.
     pub dpm_global_shares: StorageU256,
 
@@ -88,7 +89,8 @@ pub struct StorageTrading {
     /// The amount invested in a specific outcome.
     pub dpm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
-    /* ~~~~~~~~~~ AMM USED ~~~~~~~~~~ */
+    /* ~~~~~~~~~~ AMM ONLY ~~~~~~~~~~ */
+
     pub amm_liquidity: StorageU256,
 
     pub amm_outcome_prices: StorageMap<FixedBytes<8>, StorageU256>,
@@ -99,6 +101,14 @@ pub struct StorageTrading {
 
     /// The amount of shares a user has, simply a map here for now.
     pub amm_user_liquidity_shares: StorageMap<Address, StorageU256>,
+
+    /// Fees collected by users that're entitled to the LPs.
+    pub amm_fees_earned_lps: StorageU256,
+
+    /// Since we use a system of addressing outcomes with a unique
+    /// identifier, we use this in the mint functions to check if the outcome
+    /// exists.
+    pub amm_outcome_exists: StorageMap<FixedBytes<8>, StorageBool>,
 }
 
 // Storage accessors to simplify lookup.

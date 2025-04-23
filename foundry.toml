@@ -4,3 +4,5 @@ out = "out"
 libs = ["foundry-libs"]
 test = "tests"
 via_ir = false
+optimizer = false # TODO
+optimizer_runs = 10

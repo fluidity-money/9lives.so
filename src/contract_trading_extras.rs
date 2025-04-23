@@ -121,6 +121,13 @@ impl StorageTrading {
         };
     }
 
+    pub fn claim_lp_fees(&mut self, recipient: Address) -> R<U256> {
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!();
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        self.internal_amm_claim_lp_fees(recipient)
+    }
+
     pub fn is_shutdown(&self) -> R<bool> {
         Ok(self.is_shutdown.get())
     }
