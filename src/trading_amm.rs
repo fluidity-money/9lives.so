@@ -262,15 +262,31 @@ impl StorageTrading {
     pub fn internal_amm_burn(
         &mut self,
         outcome_id: FixedBytes<8>,
-        fusdc_amount: U256,
+        usd_amt: U256,
         recipient: Address,
     ) -> R<U256> {
+        // Check if the outcome exists first! Nice safety precaution.
+        assert_or!(
+            self.amm_outcome_exists.get(outcome_id),
+            Error::NonexistentOutcome
+        );
+        let fee_for_creator = maths::mul_div(usd_amt, self.fee_creator.get(), FEE_SCALING)?.0;
+        c!(fusdc_call::transfer(
+            self.fee_recipient.get(),
+            fee_for_creator
+        ));
+        let fee_for_lp = maths::mul_div(usd_amt, self.fee_lp.get(), FEE_SCALING)?.0;
+        let usd_amt = usd_amt
+            .checked_sub(fee_for_creator)
+            .ok_or(Error::CheckedSubOverflow)?
+            .checked_sub(fee_for_lp)
+            .ok_or(Error::CheckedSubOverflow)?;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
                     .amm_shares
                     .get(outcome_id)
-                    .checked_sub(fusdc_amount)
+                    .checked_sub(usd_amt)
                     .ok_or(Error::CheckedSubOverflow));
                 self.amm_shares.setter(outcome_id).set(shares);
             }
@@ -278,7 +294,7 @@ impl StorageTrading {
                 let total_shares = c!(self
                     .amm_total_shares
                     .get(outcome_id)
-                    .checked_sub(fusdc_amount)
+                    .checked_sub(usd_amt)
                     .ok_or(Error::CheckedSubOverflow));
                 self.amm_total_shares.setter(outcome_id).set(total_shares);
             }
@@ -397,15 +413,16 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        let fee_for_team = maths::mul_div(usd_amt, FEE_SPN_MINT_PCT, FEE_SCALING)?.0;
         let fee_for_creator = maths::mul_div(usd_amt, self.fee_creator.get(), FEE_SCALING)?.0;
         let fee_for_lp = maths::mul_div(usd_amt, self.fee_lp.get(), FEE_SCALING)?.0;
+        c!(fusdc_call::transfer(
+            self.fee_recipient.get(),
+            fee_for_creator
+        ));
         // It will never be the case that the fee exceeds the amount here, but
         // this good programming regardless to check.
         let usd_amt = usd_amt
             .checked_sub(fee_for_creator)
-            .ok_or(Error::CheckedSubOverflow)?
-            .checked_sub(fee_for_team)
             .ok_or(Error::CheckedSubOverflow)?
             .checked_sub(fee_for_lp)
             .ok_or(Error::CheckedSubOverflow)?;
