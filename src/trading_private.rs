@@ -1,19 +1,21 @@
-use stylus_sdk::{evm, alloy_primitives::*};
+use stylus_sdk::{alloy_primitives::*, evm};
 
 use crate::{
     error::*,
-    factory_call,
-    storage_trading::*,
     events,
+    storage_trading::*,
     utils::{block_timestamp, msg_sender},
 };
 
-use alloc::vec::Vec;
+#[cfg(feature = "trading-backend-dpm")]
+use {alloc::vec::Vec, crate::factory_call};
 
 impl StorageTrading {
     pub fn internal_shutdown(&mut self) -> R<U256> {
         // Notify Longtail to pause trading on every outcome pool.
         assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
+        // We only do the shutdown if the backend is the DPM!
+        #[cfg(feature = "trading-backend-dpm")]
         factory_call::disable_shares(
             self.factory_addr.get(),
             &self.outcome_ids_iter().collect::<Vec<_>>(),

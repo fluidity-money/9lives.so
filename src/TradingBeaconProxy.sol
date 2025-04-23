@@ -17,22 +17,36 @@ library StorageSlot {
     }
 }
 
+/**
+ * @notice This is only useful for a very limited context, which is a limited run
+ *         "blessed" deployment that's inaccessible using the normal path of
+ *         addressing trading deployments. This could be useful for experimental
+ *         releases that need upgradeability.
+ */
 contract TradingBeaconProxy {
     ITradingBeacon immutable BEACON;
 
     constructor(ITradingBeacon _impl) {
-        // Set the slot for EIP712 compatibility.
-        StorageSlot.getAddressSlot(SLOT_BEACON).value = address(_impl);
         BEACON = _impl;
     }
 
+    /**
+     * @notice indicateProxy is an optional function to indicate the beacon address.
+     * @dev Let's hope we don't have a signature collision here.
+     */
+    function indicateProxy() external {
+        StorageSlot.getAddressSlot(SLOT_BEACON).value = address(BEACON);
+    }
+
     fallback() external {
+        // Set the slot for EIP712 compatibility. Always do this, even if it's a
+        // waste, so we don't depend on the platform setup context.
         bool rc;
         bytes memory rd;
         uint8 sel = uint8(msg.data[2]);
-        if (sel == 0) (rc, rd) = BEACON.mint().delegatecall(msg.data);
-        else if (sel == 1) (rc, rd) = BEACON.quotes().delegatecall(msg.data);
-        else if (sel == 2) (rc, rd) = BEACON.price().delegatecall(msg.data);
+        if (sel == 1) (rc, rd) = BEACON.mint().delegatecall(msg.data);
+        else if (sel == 2) (rc, rd) = BEACON.quotes().delegatecall(msg.data);
+        else if (sel == 3) (rc, rd) = BEACON.price().delegatecall(msg.data);
         else (rc, rd) = BEACON.extras().delegatecall(msg.data);
         if (rd.length > 0 && !rc) {
             /// @solidity memory-safe-assembly

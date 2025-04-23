@@ -9,8 +9,11 @@ use stylus_sdk::{
 #[cfg(target_arch = "wasm32")]
 use alloc::{string::String, vec::Vec};
 
+#[cfg(feature = "trading-backend-dpm")]
+use crate::amm_call;
+
 use crate::{
-    amm_call, error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy,
+    error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy,
     share_call, trading_call, utils::block_timestamp,
 };
 
@@ -117,7 +120,7 @@ impl StorageFactory {
                 .set(self.dao_claimable.get() + INCENTIVE_AMT_MODERATION);
         }
 
-        for (outcome_identifier, sqrt_price, outcome_name) in outcomes.iter() {
+        for (outcome_identifier, _sqrt_price, outcome_name) in outcomes.iter() {
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
@@ -128,10 +131,11 @@ impl StorageFactory {
 
             // Use the current AMM to create a pool of this share for
             // aftermarket trading. Longtail should revert if the sqrt
-            // price is bad.
+            // price is bad. This will not run if the backend is the AMM!
+            #[cfg(feature = "trading-backend-dpm")]
             amm_call::enable_pool(amm_call::create_pool(
                 erc20_addr,
-                *sqrt_price,
+                *_sqrt_price,
                 LONGTAIL_FEE,
             )?)?;
 

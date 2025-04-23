@@ -12,9 +12,10 @@ import "./ITradingBeacon.sol";
 // limited run releases. Uses the implementation of the proxy code that we use
 // in the huff format to build the proxy here.
 contract TradingBeaconProxyDeployHelperFactory {
-    ITradingBeacon immutable BEACON;
+    ITradingBeacon immutable public BEACON;
     TradingBeaconProxy immutable IMPL;
 
+    // With the way calldata works, this is the same as just passing the arguments.
     struct CreateArgs {
         bytes8[] outcomes;
         address oracle;
@@ -37,26 +38,50 @@ contract TradingBeaconProxyDeployHelperFactory {
     ) {
         BEACON = new TradingBeacon(_admin, _mint, _quotes, _price, _extras);
         // When someone asks for a new deployment of this, we simply copy the
-        // deployed code to a new location.
+        // deployed code to a new location. This is an issue since the proxy code won't
+        // include the slot set up, but this could be useful in a less general context
+        // where perhaps you don't want to do it properly, maybe for a limited run.
         IMPL = new TradingBeaconProxy(BEACON);
     }
 
-    function copyAddr(address _impl) public returns (address) {
-        // Solidity array concatenation formula that we use in the Rust code.
-        // Since the code will be amended to include the correct address during
-        // the deployment.
-        address ptr;
+    function clone(address _impl, bytes memory _args)
+        public
+        returns (address instance)
+    {
+        // Stolen from Solady https://github.com/Vectorized/solady/blob/4fbee81aaa714f8b5d331e3d2a02ddfb34c26b19/src/utils/LibClone.sol#L425C5-L499C6
+        /// @solidity memory-safe-assembly
         assembly {
-            let code := mload(0x40)
-            mstore(code, 0x602d5f8160095f39f35f5f365f5f37365f73)
-            mstore(add(code,0x12), shl(0x60, _impl))
-            mstore(add(code,0x26), 0x5af43d5f5f3e6029573d5ffd5b3d5ff3)
-            ptr :=  create(0, code, 0x36)
+            let m := mload(0x40)
+            let n := mload(_args)
+            pop(staticcall(gas(), 4, add(_args, 0x20), n, add(m, 0x43), n))
+            mstore(add(m, 0x23), 0x5af43d82803e903d91602b57fd5bf3)
+            mstore(add(m, 0x14), _impl)
+            mstore(m, add(0xfe61002d3d81600a3d39f3363d3d373d3d3d363d73, shl(136, n)))
+            // Do a out-of-gas revert if `n` is greater than `0xffff - 0x2d = 0xffd2`.
+            instance := create(0, add(m, add(0x0b, lt(n, 0xffd3))), add(n, 0x37))
+            if iszero(instance) {
+                mstore(0x00, 0x30116425) // `DeploymentFailed()`.
+                revert(0x1c, 0x04)
+            }
         }
-        require(ptr != address(0), "copy fail");
-        return ptr;
     }
 
-    function create(CreateArgs calldata _a) external {
+    function create(CreateArgs calldata _a) external returns (INineLivesTrading) {
+        address i = clone(address(IMPL), "");
+        TradingBeaconProxy(i).indicateProxy();
+        INineLivesTrading n = INineLivesTrading(i);
+        n.ctor(
+            _a.outcomes,
+            _a.oracle,
+            _a.timeStart,
+            _a.timeEnding,
+            _a.feeRecipient,
+            _a.shareImpl,
+            _a.shouldBufferTime,
+            _a.feeCreator,
+            _a.feeMinter,
+            _a.feeLp
+        );
+        return n;
     }
 }

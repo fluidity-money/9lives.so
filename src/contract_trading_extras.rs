@@ -2,7 +2,6 @@ use stylus_sdk::alloy_primitives::*;
 
 use crate::{
     error::*,
-    fusdc_call,
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
@@ -12,6 +11,9 @@ use alloc::vec::Vec;
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
+
+#[cfg(not(feature = "trading-backend-dpm"))]
+use crate::fusdc_call;
 
 #[cfg_attr(feature = "contract-trading-extras", stylus_sdk::prelude::public)]
 impl StorageTrading {
@@ -97,35 +99,6 @@ impl StorageTrading {
             }
             self.internal_amm_add_liquidity(_amount, _recipient)
         };
-    }
-
-    pub fn remove_liquidity(
-        &mut self,
-        _amount_liq: U256,
-        _recipient: Address,
-    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
-        #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        return {
-            self.require_not_done_predicting()?;
-            assert_or!(!_amount_liq.is_zero(), Error::ZeroShares);
-            assert_or!(
-                self.amm_user_liquidity_shares.get(msg_sender()) >= _amount_liq,
-                Error::NotEnoughLiquidity
-            );
-            let (fusdc_amt, shares_received) =
-                self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
-            fusdc_call::transfer(_recipient, fusdc_amt)?;
-            Ok((fusdc_amt, shares_received))
-        };
-    }
-
-    pub fn claim_lp_fees(&mut self, recipient: Address) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        self.internal_amm_claim_lp_fees(recipient)
     }
 
     pub fn is_shutdown(&self) -> R<bool> {

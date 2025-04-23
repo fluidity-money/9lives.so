@@ -1,16 +1,7 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # Simple script that builds and deploys the contracts for testnet.
 
-export \
-	SPN_SUPERPOSITION_URL=https://testnet-rpc.superposition.so \
-	SPN_LONGTAIL_ADDR=0xAe86141e3f1C9168cE6c948FDC884F2A5f45d7B6 \
-	SPN_FUSDC_ADDR=0xA8EA92c819463EFbEdDFB670FEfC881A480f0115 \
-	SPN_PROXY_ADMIN=0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5 \
-	SPN_EMERGENCY_COUNCIL=0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5 \
-	SPN_DAO_ADDR=0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5 \
-	SPN_SARP_AI=0x0000000000000000000000000000000000000000 \
-	SPN_STAKED_ARB_ADDR=0x36c116a8851869cf8a99b3Bda0Fad42453D32B99 \
-	SPN_WETH_ADDR=0x22b9fa698b68bBA071B513959794E9a47d19214c
+./build-testnet.sh
 
-./build-and-deploy.sh
+./deploy.sh
