@@ -29,6 +29,11 @@ contract TradingBeaconProxyDeployHelperFactory {
         uint64 feeLp;
     }
 
+    event DeploymentCompleted(
+        ITradingBeacon indexed beacon,
+        TradingBeaconProxy indexed impl
+    );
+
     constructor(
         address _admin,
         address _mint,
@@ -42,6 +47,7 @@ contract TradingBeaconProxyDeployHelperFactory {
         // include the slot set up, but this could be useful in a less general context
         // where perhaps you don't want to do it properly, maybe for a limited run.
         IMPL = new TradingBeaconProxy(BEACON);
+        emit DeploymentCompleted(BEACON, IMPL);
     }
 
     function clone(address _impl, bytes memory _args)
