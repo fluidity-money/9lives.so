@@ -21,7 +21,8 @@ library StorageSlot {
  * @notice This is only useful for a very limited context, which is a limited run
  *         "blessed" deployment that's inaccessible using the normal path of
  *         addressing trading deployments. This could be useful for experimental
- *         releases that need upgradeability.
+ *         releases that need upgradeability. The beacon also has a custom feature to
+ *         disable the running, useful for an experimental release.
  */
 contract TradingBeaconProxy {
     ITradingBeacon immutable BEACON;

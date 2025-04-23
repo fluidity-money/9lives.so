@@ -240,7 +240,7 @@ proptest! {
                 should_spend_fusdc_contract!(
                     remove_amt,
                     {
-                        let res = c.remove_liquidity(remove_amt, msg_sender()).unwrap();
+                        let res = c.remove_liquidity_3_C_857_A_15(remove_amt, msg_sender()).unwrap();
                         assert_eq_u!(4815769827u64, c.amm_liquidity.get());
                         assert_eq_u!(3076908317u64, c.amm_shares.get(outcome_a));
                         assert_eq_u!(7537318843u64, c.amm_shares.get(outcome_b));
@@ -276,7 +276,7 @@ proptest! {
                 let res = should_spend_fusdc_contract!(
                     remove_amt,
                     {
-                        let res = c.remove_liquidity(remove_amt, msg_sender()).unwrap();
+                        let res = c.remove_liquidity_3_C_857_A_15(remove_amt, msg_sender()).unwrap();
                         assert_eq_u!(1469682742, c.amm_liquidity.get());
                         assert_eq_u!(674730014, c.amm_shares.get(outcome_a));
                         // TODO
@@ -547,7 +547,7 @@ proptest! {
                 c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(10e6 as u64));
                 let (_, shares) = should_spend_fusdc_contract!(
                     U256::from(3535534),
-                    c.remove_liquidity(U256::from(5e6 as u64), msg_sender())
+                    c.remove_liquidity_3_C_857_A_15(U256::from(5e6 as u64), msg_sender())
                 );
                 for (i, (_, s)) in shares.into_iter().enumerate() {
                     if i == 0 || i == 1 {

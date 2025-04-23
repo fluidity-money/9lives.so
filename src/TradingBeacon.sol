@@ -30,6 +30,18 @@ contract TradingBeacon is ITradingBeacon {
         extras = _extrasImpl;
     }
 
+    /**
+     * @notice shutdown the contract by preventing it from servicing any delegatecalls. This
+     *         is useful in an emergency context.
+     */
+    function shutdown() external {
+        require(msg.sender == admin, "not admin");
+        mint = address(0);
+        quotes = address(0);
+        price = address(0);
+        extras = address(0);
+    }
+
     function changeAdmin(address _oldAdmin, address _newAdmin) external {
         require(msg.sender == admin, "not admin");
         require(admin == _oldAdmin, "admin inconsistent");
