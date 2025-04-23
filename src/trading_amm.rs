@@ -103,19 +103,17 @@ impl StorageTrading {
             .set(maths::rooti(product, self.outcome_list.len() as u32));
         // Time to mint the user some shares. For now, we're going to simply bump
         // their balance.
-        {
-            let add_user_liq = c!(self
-                .amm_liquidity
-                .get()
-                .checked_sub(prev_liquidity)
-                .ok_or(Error::CheckedSubOverflow));
+        let add_user_liq = c!(self
+            .amm_liquidity
+            .get()
+            .checked_sub(prev_liquidity)
+            .ok_or(Error::CheckedSubOverflow));
             let user_liq_shares = self.amm_user_liquidity_shares.get(recipient);
             self.amm_user_liquidity_shares.setter(recipient).set(
                 user_liq_shares
                     .checked_add(add_user_liq)
                     .ok_or(Error::CheckedAddOverflow)?,
             );
-        }
         let shares_received = self
             .outcome_ids_iter()
             .enumerate()
@@ -145,9 +143,10 @@ impl StorageTrading {
             .collect::<Result<Vec<_>, _>>()?;
         evm::log(events::LiquidityAdded {
             fusdcAmt: amount,
+            liquidityShares: add_user_liq,
             recipient,
         });
-        Ok((amount, shares_received))
+        Ok((add_user_liq, shares_received))
     }
 
     pub fn internal_amm_remove_liquidity(

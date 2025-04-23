@@ -507,7 +507,8 @@ pub(crate) fn rename_addr(v: Address) -> String {
     } else if v == contract_address() {
         "contract".to_string()
     } else {
-        match v {
+        #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+        return match v {
             immutables::FUSDC_ADDR => "fusdc contract".to_string(),
             immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
             immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
@@ -523,13 +524,13 @@ pub(crate) fn rename_addr(v: Address) -> String {
             testing_addrs::PAXIA => "paxia".to_string(),
             testing_addrs::YOEL => "yoel".to_string(),
             _ => {
-                #[cfg(not(target_arch = "wasm32"))]
                 if let Some(v) = crate::host::get_addr_expl(v) {
                     return v;
                 };
                 v.to_string()
             }
-        }
+        };
+        return v.to_string()
     }
 }
 
@@ -588,7 +589,7 @@ impl core::fmt::Debug for Error {
                 ),
                 Error::TradingUnableToUnpack(addr, b) => format!(
                     "trading unable to unpack from call to {addr}: {}",
-                    const_hex::encode(&b)
+                    const_hex::encode(b)
                 ),
                 _ => "".to_owned(),
             }
@@ -614,7 +615,7 @@ impl From<Error> for Vec<u8> {
             x
         }
         fn ext_general(b: &[&[u8]]) -> Vec<u8> {
-            ext(&[0x99, 0x09], &b)
+            ext(&[0x99, 0x09], b)
         }
 
         match v {

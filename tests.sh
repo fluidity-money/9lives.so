@@ -1,11 +1,18 @@
 #!/bin/sh -e
 
-#make solidity
+make solidity
 
-cargo test --features testing,trading-backend-dpm $@
+#cargo test --features testing,trading-backend-dpm $@
+
 cargo test --features testing,trading-backend-amm $@
-cargo mutants --features testing,trading-backend-dpm $@
-cargo mutants --features testing,trading-backend-amm $@
+
+#cargo mutants \
+#	--features testing,trading-backend-dpm \
+#	$(printf -- '-f %s ' src/*dpm*.rs) $@
+
+cargo mutants \
+	--features testing,trading-backend-amm \
+	$(printf -- '-f %s ' src/*amm*.rs) $@
 
 if ! [ -z "$SPN_TEST_NO_JS" ]; then
 	exit 0

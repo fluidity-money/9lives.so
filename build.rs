@@ -8,7 +8,7 @@ fn main() {
         .create(true)
         .append(true)
         .open(
-            &Path::new(&env::var_os("OUT_DIR").expect("OUT_DIR not available"))
+            Path::new(&env::var_os("OUT_DIR").expect("OUT_DIR not available"))
                 .join("environment.lst"),
         )
         .unwrap();

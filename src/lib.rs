@@ -3,7 +3,7 @@
 #[macro_use]
 pub mod error;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub use error::panic_guard;
 
 pub mod decimal;
@@ -19,7 +19,9 @@ pub use timing_infra_market::InfraMarketState;
 
 pub mod outcome;
 
+#[cfg(not(target_arch = "wasm32"))]
 pub mod host_proxy;
+
 pub mod proxy;
 pub mod wasm_proxy;
 
@@ -55,7 +57,9 @@ pub mod host_lockup_call;
 pub mod wasm_lockup_call;
 pub mod lockup_call;
 
+#[cfg(not(target_arch = "wasm32"))]
 pub mod host_nineliveslockedarb_call;
+
 pub mod nineliveslockedarb_call;
 pub mod wasm_nineliveslockedarb_call;
 

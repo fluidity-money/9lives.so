@@ -102,6 +102,12 @@ pub fn block_timestamp() -> u64 {
             0
         }
     };
+    #[cfg(not(target_arch = "wasm32"))]
+    return 0;
+    #[cfg(any(
+        all(feature = "testing", not(target_arch = "wasm32")),
+        target_arch = "wasm32"
+    ))]
     time
 }
 

@@ -646,23 +646,37 @@ proptest! {
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
-                test_add_liquidity(&mut c, 100e6 as u64);
+                test_add_liquidity(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
                     c,
                     outcome_a,
-                    1000e6 as u64,
-                    75131, // Market shares
-                    1099924869 // User shares
+                    300e6 as u64,
+                    455166135, // Market shares
+                    844833865 // User shares
                 );
-                test_should_buy_check_shares!(
-                    c,
-                    outcome_b,
-                    1000e6 as u64,
-                    22674, // Market shares
-                    2099977326 // User shares
+                let (shares, _) = test_add_liquidity(&mut c, 500e6 as u64);
+                assert_eq_u!(384615631, shares);
+                should_spend_fusdc_contract!(
+                    U256::from(455166379),
+                    c.remove_liquidity_3_C_857_A_15(shares, msg_sender())
                 );
-                test_add_liquidity(&mut c, 500e6 as u64);
-                //TODO
+                let remove_liq_amt = U256::from(1000e6 as u64);
+                c.amm_liquidity.set(remove_liq_amt);
+                should_spend_fusdc_contract!(
+                    U256::from(455166379),
+                    c.remove_liquidity_3_C_857_A_15(remove_liq_amt, msg_sender())
+                );
+                assert_eq!(U256::ZERO, c.amm_liquidity.get());
+                c.decide(outcome_a).unwrap();
+                let fusdc_amt = U256::from(1169769966);
+                should_spend_fusdc_contract!(
+                    fusdc_amt,
+                    c.payoff_91_F_A_8_C_2_E(
+                        outcome_a,
+                        fusdc_amt,
+                        msg_sender()
+                    )
+                )
             }
         }
     }

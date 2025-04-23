@@ -149,11 +149,11 @@ fn rename_amt(a: Address, v: U256) -> String {
             format!("ARB{}", safe_print(v, immutables::STAKED_ARB_DECIMALS))
         }
         v => {
+            #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
             if let Some(v) = crate::host::get_addr_expl(v) {
-                v
-            } else {
-                format!("unknown token ({a}) amt {v}")
+                return v;
             }
+            format!("unknown token ({a}) amt {v}")
         }
     }
 }
@@ -222,7 +222,7 @@ pub fn transfer_from(
     BALANCES
         .with(|b| -> Result<(), U256> {
             if spender == testing_addrs::ZERO_FOR_MINT_ADDR {
-                return Ok(())
+                return Ok(());
             }
             let mut b = b.borrow_mut();
             let b = b.get_mut(&addr).ok_or(U256::ZERO)?;
