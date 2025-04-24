@@ -90,7 +90,7 @@ impl StorageFactory {
         // send it to the trading contract, which assumes it has the money it's entitled to.
         // We don't need setup liquidity for the AMM!
 
-        if !backend_is_dpm {
+        if backend_is_dpm {
             let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
             fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
         }
@@ -106,16 +106,17 @@ impl StorageFactory {
         } else {
             U256::ZERO
         };
-        fusdc_call::take_from_sender(
-            mod_fee + {
-                if oracle == self.infra_market.get() {
-                    // Make sure to take the amount that we need for the infra market.
-                    INCENTIVE_AMT_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE
-                } else {
-                    U256::ZERO
-                }
-            },
-        )?;
+        let setup_fee = mod_fee + {
+            if oracle == self.infra_market.get() {
+                // Make sure to take the amount that we need for the infra market.
+                INCENTIVE_AMT_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE
+            } else {
+                U256::ZERO
+            }
+        };
+        if !setup_fee.is_zero() {
+            fusdc_call::take_from_sender(setup_fee)?;
+        }
         if self.should_take_mod_fee.get() {
             // Bump the amount that we need to track as a part of our operation revenue.
             self.dao_claimable
