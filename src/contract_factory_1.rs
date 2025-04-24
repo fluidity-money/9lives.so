@@ -13,8 +13,8 @@ use alloc::{string::String, vec::Vec};
 use crate::amm_call;
 
 use crate::{
-    error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy,
-    share_call, trading_call, utils::block_timestamp,
+    error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy, share_call,
+    trading_call, utils::block_timestamp,
 };
 
 pub use crate::storage_factory::*;
@@ -89,9 +89,12 @@ impl StorageFactory {
 
         // We take the amount that the user has allocated to the outcomes, and
         // send it to the trading contract, which assumes it has the money it's entitled to.
+        // We don't need setup liquidity for the AMM!
 
-        let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
-        fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
+        if !backend_is_dpm {
+            let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
+            fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
+        }
 
         // This code is in a weird place, the UX no longer supports doing setup
         // with the infra market, and it always assumes the AMM is in use now. In
