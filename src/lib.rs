@@ -54,8 +54,8 @@ pub mod host_factory_call;
 pub mod wasm_factory_call;
 
 pub mod host_lockup_call;
-pub mod wasm_lockup_call;
 pub mod lockup_call;
+pub mod wasm_lockup_call;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod host_nineliveslockedarb_call;
@@ -76,9 +76,9 @@ pub mod contract_factory_1;
 pub mod contract_factory_2;
 pub mod storage_factory;
 
-mod trading_private;
 mod trading_amm;
 mod trading_dpm;
+mod trading_private;
 
 pub mod contract_trading;
 pub mod contract_trading_extras;
@@ -97,6 +97,9 @@ pub mod storage_infra_market;
 pub mod contract_beauty_contest;
 pub mod storage_beauty_contest;
 
+#[cfg(not(target_arch = "wasm32"))]
+pub mod actions;
+
 pub use storage_factory::StorageFactory;
 
 #[cfg(feature = "contract-factory-1")]
@@ -106,10 +109,10 @@ pub use contract_factory_1::user_entrypoint;
 pub use contract_factory_2::user_entrypoint;
 
 // The following imports should all bring in user_entrypoint if the flag is enabled:
-pub use contract_trading::*;
-pub use contract_lockup::*;
-pub use contract_infra_market::*;
 pub use contract_beauty_contest::*;
+pub use contract_infra_market::*;
+pub use contract_lockup::*;
+pub use contract_trading::*;
 
 #[cfg(feature = "contract-infra-market-testing")]
 pub use contract_infra_market_testing::user_entrypoint;

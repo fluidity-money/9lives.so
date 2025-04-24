@@ -8,9 +8,9 @@ edition = "2021"
 cargo-fuzz = true
 
 [dependencies]
-arbitrary = { version = "1.4.1", features = ["derive"] }
 libfuzzer-sys = "0.4"
 stylus-sdk = "=0.6.0"
+alloy-primitives = { version = "=0.7.6", default-features = false, features = ["arbitrary"] }
 
 [dependencies.ninelives]
 path = ".."

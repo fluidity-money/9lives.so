@@ -58,9 +58,11 @@ map-macro = "0.3.0"
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 proptest = "1.5.0"
 getrandom = "0.2.15"
+arbitrary = { version = "1.4.1", features = ["derive"] }
+proptest-derive = "0.5.1"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
-alloy-primitives = { version = "0.7.6", features = ["getrandom"] }
+alloy-primitives = { version = "0.7.6", features = ["getrandom", "arbitrary"] }
 rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths", "proptest"] }
 prettytable-rs = "0.10.0"
 

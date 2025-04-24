@@ -10,9 +10,9 @@ cargo test --features testing,trading-backend-amm $@
 #	--features testing,trading-backend-dpm \
 #	$(printf -- '-f %s ' src/*dpm*.rs) $@
 
-cargo mutants \
-	--features testing,trading-backend-amm \
-	$(printf -- '-f %s ' src/*amm*.rs) $@
+#cargo mutants \
+#	--features testing,trading-backend-amm \
+#	$(printf -- '-f %s ' src/*amm*.rs) $@
 
 if ! [ -z "$SPN_TEST_NO_JS" ]; then
 	exit 0

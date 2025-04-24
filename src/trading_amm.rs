@@ -381,8 +381,8 @@ impl StorageTrading {
             return Ok(());
         }
         let user_claim = maths::mul_div(fee_weight, delta_liq, total_liq)?.0;
-        let prev = self.amm_user_fees_claimed.get(sender);
-        self.amm_user_fees_claimed.setter(sender).set(if is_add {
+        let prev = self.amm_fees_earned_lps.get(sender);
+        self.amm_fees_earned_lps.setter(sender).set(if is_add {
             prev.checked_add(user_claim)
                 .ok_or(Error::CheckedAddOverflow)?
         } else {
@@ -427,7 +427,7 @@ impl StorageTrading {
             self.amm_liquidity.get(),
         )?
         .0;
-        let claimed = self.amm_user_fees_claimed.get(msg_sender());
+        let claimed = self.amm_fees_earned_lps.get(msg_sender());
         let fees = entitled
             .checked_sub(claimed)
             .ok_or(Error::CheckedSubOverflow)?;
@@ -498,13 +498,6 @@ impl StorageTrading {
         let usd_amt = usd_amt
             .checked_sub(fee_cum)
             .ok_or(Error::CheckedSubOverflow)?;
-        {
-            let fees = self.amm_fees_earned_lps.get();
-            self.amm_fees_earned_lps.set(
-                fees.checked_add(fee_for_lp)
-                    .ok_or(Error::CheckedAddOverflow)?,
-            );
-        }
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = self.amm_shares.get(outcome_id);

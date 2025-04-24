@@ -40,7 +40,10 @@ impl StorageTrading {
         // Make sure that the user hasn't given us any zero values, or the end
         // date isn't in the past, in places that don't make sense!
         assert_or!(
-            time_ending >= block_timestamp() && !share_impl.is_zero() && time_ending > time_start,
+            time_ending >= block_timestamp()
+                && !share_impl.is_zero()
+                && time_ending > time_start
+                && outcomes.len() > 2,
             Error::BadTradingCtor
         );
         // We don't allow the fees to exceed 10% (100).

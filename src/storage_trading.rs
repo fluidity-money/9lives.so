@@ -101,14 +101,11 @@ pub struct StorageTrading {
     /// The amount of shares a user has, simply a map here for now.
     pub amm_user_liquidity_shares: StorageMap<Address, StorageU256>,
 
-    /// The amount of fees a user has claimed.
-    pub amm_user_fees_claimed: StorageMap<Address, StorageU256>,
-
     /// Weight recorded to avoid a dilution event for fees with new LPs.
     pub amm_fee_weight: StorageU256,
 
-    /// Fees collected by users that're entitled to the LPs.
-    pub amm_fees_earned_lps: StorageU256,
+    /// The amount of fees a user has claimed.
+    pub amm_fees_earned_lps: StorageMap<Address, StorageU256>,
 
     /// Since we use a system of addressing outcomes with a unique
     /// identifier, we use this in the mint functions to check if the outcome
