@@ -52,6 +52,7 @@ impl StorageTrading {
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         self.internal_amm_get_prices()?;
         let prev_liquidity = self.amm_liquidity.get();
+        let is_already_set_up = !prev_liquidity.is_zero();
         for id in self.outcome_ids_iter().collect::<Vec<_>>() {
             let x = self.amm_shares.get(id);
             // Add the unscaled amount to both of these storage values.
@@ -62,6 +63,9 @@ impl StorageTrading {
             self.amm_total_shares
                 .setter(id)
                 .set(x.checked_add(amount).ok_or(Error::CheckedAddOverflow)?);
+        }
+        if is_already_set_up {
+            self.rebalance_fees(recipient, amount, true)?;
         }
         let prev_shares = self
             .outcome_ids_iter()
@@ -155,6 +159,7 @@ impl StorageTrading {
         recipient: Address,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         self.internal_amm_get_prices()?;
+        let is_already_set_up = !self.amm_liquidity.get().is_zero();
         let (most_likely_amt, most_likely_outcome_id) = self
             .outcome_ids_iter()
             .fold(None, |acc, id| {
@@ -213,6 +218,9 @@ impl StorageTrading {
             .outcome_ids_iter()
             .map(|x| self.amm_shares.get(x))
             .product();
+        if is_already_set_up {
+            self.rebalance_fees(recipient, amount, false)?;
+        }
         self.amm_liquidity
             .set(maths::rooti(product, self.outcome_list.len() as u32));
         {
