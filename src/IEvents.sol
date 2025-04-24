@@ -89,6 +89,12 @@ interface IEvents {
         uint256 indexed fusdcAmt
     );
 
+    event LPFeesClaimed(
+        address indexed recipient,
+        uint256 indexed feesEarned,
+        uint256 indexed senderLiquidityShares
+    );
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

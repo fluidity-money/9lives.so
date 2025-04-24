@@ -108,12 +108,12 @@ impl StorageTrading {
             .get()
             .checked_sub(prev_liquidity)
             .ok_or(Error::CheckedSubOverflow));
-            let user_liq_shares = self.amm_user_liquidity_shares.get(recipient);
-            self.amm_user_liquidity_shares.setter(recipient).set(
-                user_liq_shares
-                    .checked_add(add_user_liq)
-                    .ok_or(Error::CheckedAddOverflow)?,
-            );
+        let user_liq_shares = self.amm_user_liquidity_shares.get(recipient);
+        self.amm_user_liquidity_shares.setter(recipient).set(
+            user_liq_shares
+                .checked_add(add_user_liq)
+                .ok_or(Error::CheckedAddOverflow)?,
+        );
         let shares_received = self
             .outcome_ids_iter()
             .enumerate()
@@ -370,6 +370,11 @@ impl StorageTrading {
         .checked_mul(sender_liq_shares)
         .ok_or(Error::CheckedMulOverflow)?;
         fusdc_call::transfer(recipient, fees)?;
+        evm::log(events::LPFeesClaimed {
+            recipient,
+            feesEarned: fees,
+            senderLiquidityShares: sender_liq_shares,
+        });
         Ok(fees)
     }
 
