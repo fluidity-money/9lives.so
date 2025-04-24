@@ -270,15 +270,20 @@ impl StorageTrading {
             Error::NonexistentOutcome
         );
         let fee_for_creator = maths::mul_div(usd_amt, self.fee_creator.get(), FEE_SCALING)?.0;
+        let fee_for_lp = maths::mul_div(usd_amt, self.fee_lp.get(), FEE_SCALING)?.0;
+        let fee_cum = fee_for_creator + fee_for_lp;
+        self.amm_fee_weight.set(
+            self.amm_fee_weight
+                .get()
+                .checked_add(fee_cum)
+                .ok_or(Error::CheckedAddOverflow)?,
+        );
         c!(fusdc_call::transfer(
             self.fee_recipient.get(),
             fee_for_creator
         ));
-        let fee_for_lp = maths::mul_div(usd_amt, self.fee_lp.get(), FEE_SCALING)?.0;
         let usd_amt = usd_amt
-            .checked_sub(fee_for_creator)
-            .ok_or(Error::CheckedSubOverflow)?
-            .checked_sub(fee_for_lp)
+            .checked_sub(fee_cum)
             .ok_or(Error::CheckedSubOverflow)?;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
@@ -337,38 +342,87 @@ impl StorageTrading {
     }
 
     pub fn internal_amm_claim_liquidity(&mut self, recipient: Address) -> R<U256> {
-        assert_or!(self.when_decided.get().is_zero(), Error::NotDecided);
+        assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
-        let liq_price = maths::mul_div(
-            self.amm_shares.get(self.winner.get()),
-            SHARE_DECIMALS_EXP,
-            self.amm_liquidity.get(),
-        )?
-        .0;
-        let claimed_amt = maths::mul_div(sender_liq_shares, liq_price, SHARE_DECIMALS_EXP)?.0;
+        let liq_price = self
+            .amm_shares
+            .get(self.winner.get())
+            .checked_div(self.amm_liquidity.get())
+            .ok_or(Error::CheckedDivOverflow)?;
+        let claimed_amt = sender_liq_shares
+            .checked_mul(liq_price)
+            .ok_or(Error::CheckedDivOverflow)?;
         fusdc_call::transfer(recipient, claimed_amt)?;
         self.amm_user_liquidity_shares
             .setter(msg_sender())
             .set(U256::ZERO);
-        evm::log(events::LiquidityClaimed {
-            recipient,
-            fusdcAmt: claimed_amt,
-        });
         Ok(claimed_amt)
+    }
+
+    /// Rebalance the calculated user fee weight.
+    pub fn rebalance_fees_sender(
+        &mut self,
+        sender: Address,
+        delta_liq: U256,
+        is_add: bool,
+    ) -> R<()> {
+        let total_liq = self.amm_liquidity.get();
+        let fee_weight = self.amm_fee_weight.get();
+        if total_liq.is_zero() || fee_weight.is_zero() {
+            return Ok(());
+        }
+        let user_claim = maths::mul_div(fee_weight, delta_liq, total_liq)?.0;
+        let prev = self.amm_user_fees_claimed.get(sender);
+        self.amm_user_fees_claimed.setter(sender).set(if is_add {
+            prev.checked_add(user_claim)
+                .ok_or(Error::CheckedAddOverflow)?
+        } else {
+            prev.checked_sub(user_claim)
+                .ok_or(Error::CheckedSubOverflow)?
+        });
+        Ok(())
+    }
+
+    /// Rebalance the calculated pool fee weight.
+    pub fn rebalance_fees_pool(&mut self, delta_liq: U256, is_add: bool) -> R<()> {
+        let total_liq = self.amm_liquidity.get();
+        let weight = self.amm_fee_weight.get();
+        if total_liq.is_zero() || weight.is_zero() {
+            return Ok(());
+        }
+        let adjustment = maths::mul_div(weight, delta_liq, total_liq)?.0;
+        let new_weight = if is_add {
+            weight
+                .checked_add(adjustment)
+                .ok_or(Error::CheckedAddOverflow)?
+        } else {
+            weight
+                .checked_sub(adjustment)
+                .ok_or(Error::CheckedSubOverflow)?
+        };
+        self.amm_fee_weight.set(new_weight);
+        Ok(())
+    }
+
+    pub fn rebalance_fees(&mut self, sender: Address, delta_liq: U256, is_add: bool) -> R<()> {
+        self.rebalance_fees_sender(sender, delta_liq, is_add)?;
+        self.rebalance_fees_pool(delta_liq, is_add)
     }
 
     pub fn internal_amm_claim_lp_fees(&mut self, recipient: Address) -> R<U256> {
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
-        let fees = maths::mul_div(
-            self.amm_fees_earned_lps.get(),
-            SHARE_DECIMALS_EXP,
+        let entitled = maths::mul_div(
+            self.amm_fee_weight.get(),
+            sender_liq_shares,
             self.amm_liquidity.get(),
         )?
-        .0
-        .checked_mul(sender_liq_shares)
-        .ok_or(Error::CheckedMulOverflow)?;
+        .0;
+        let claimed = self.amm_user_fees_claimed.get(msg_sender());
+        let fees = entitled
+            .checked_sub(claimed)
+            .ok_or(Error::CheckedSubOverflow)?;
         fusdc_call::transfer(recipient, fees)?;
         evm::log(events::LPFeesClaimed {
             recipient,
@@ -419,6 +473,14 @@ impl StorageTrading {
         );
         let fee_for_creator = maths::mul_div(usd_amt, self.fee_creator.get(), FEE_SCALING)?.0;
         let fee_for_lp = maths::mul_div(usd_amt, self.fee_lp.get(), FEE_SCALING)?.0;
+        let fee_cum = fee_for_creator + fee_for_lp;
+        // Increase the fee weight that we've collected some more.
+        self.amm_fee_weight.set(
+            self.amm_fee_weight
+                .get()
+                .checked_add(fee_cum)
+                .ok_or(Error::CheckedAddOverflow)?,
+        );
         c!(fusdc_call::transfer(
             self.fee_recipient.get(),
             fee_for_creator
@@ -426,9 +488,7 @@ impl StorageTrading {
         // It will never be the case that the fee exceeds the amount here, but
         // this good programming regardless to check.
         let usd_amt = usd_amt
-            .checked_sub(fee_for_creator)
-            .ok_or(Error::CheckedSubOverflow)?
-            .checked_sub(fee_for_lp)
+            .checked_sub(fee_cum)
             .ok_or(Error::CheckedSubOverflow)?;
         {
             let fees = self.amm_fees_earned_lps.get();
