@@ -9,7 +9,6 @@ use stylus_sdk::{
 #[cfg(target_arch = "wasm32")]
 use alloc::{string::String, vec::Vec};
 
-#[cfg(feature = "trading-backend-dpm")]
 use crate::amm_call;
 
 use crate::{
@@ -135,12 +134,13 @@ impl StorageFactory {
             // Use the current AMM to create a pool of this share for
             // aftermarket trading. Longtail should revert if the sqrt
             // price is bad. This will not run if the backend is the AMM!
-            #[cfg(feature = "trading-backend-dpm")]
-            amm_call::enable_pool(amm_call::create_pool(
-                erc20_addr,
-                *_sqrt_price,
-                LONGTAIL_FEE,
-            )?)?;
+            if backend_is_dpm {
+                amm_call::enable_pool(amm_call::create_pool(
+                    erc20_addr,
+                    *_sqrt_price,
+                    LONGTAIL_FEE,
+                )?)?;
+            }
 
             evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_id,
