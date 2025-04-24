@@ -7,10 +7,8 @@
 use stylus_sdk::alloy_primitives::{FixedBytes, U256, U64};
 
 use lib9lives::{
-    assert_eq_u, error::Error, host, interactions_clear_after, panic_guard, proxy,
-    should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
+    actions::strat_action, host, implement_action, proxy, strat_storage_trading,
     testing_addrs::*, utils::*, StorageTrading,
-    actions::strat_action
 };
 
 use proptest::prelude::*;
@@ -43,11 +41,14 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
 
 proptest! {
     #[test]
-    fn test_addlp_mint_mint_fee_collect_1(
+    fn test_amm_crazy_testing_1(
         outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2..100),
         mut c in strat_storage_trading(false),
-        actions in proptest::collection::vec(strat_action(), 1..1000)
+        actions in proptest::collection::vec((strat_address(), strat_action()), 1..1000)
     ) {
         setup_contract(&mut c, &outcomes);
+        for (sender, a) in actions {
+            implement_action!(c, sender, a);
+        }
     }
 }

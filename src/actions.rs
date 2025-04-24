@@ -2,6 +2,10 @@ use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use proptest::{prelude::*, prop_oneof};
 
+use proptest_derive::Arbitrary as P;
+
+use arbitrary::Arbitrary as A;
+
 // Actions for use in property testing/fuzzing.
 
 #[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
@@ -19,40 +23,39 @@ pub struct ActionCtor {
 }
 
 #[cfg(feature = "trading-backend-amm")]
-#[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
+#[derive(Clone, Debug, PartialEq, P, A)]
 pub struct ActionAddLiquidity {
     pub amount: U256,
-    pub deadline: U256,
 }
 
 #[cfg(feature = "trading-backend-amm")]
-#[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
+#[derive(Clone, Debug, PartialEq, P, A)]
 pub struct ActionRemoveLiquidity {
     pub amount: U256,
 }
 
-#[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
+#[derive(Clone, Debug, PartialEq, P, A)]
 pub struct ActionMint {
-    pub outcome_id: FixedBytes<8>,
+    pub outcome: FixedBytes<8>,
     pub usd_amt: U256,
 }
 
 #[cfg(feature = "trading-backend-amm")]
-#[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
+#[derive(Clone, Debug, PartialEq, P, A)]
 pub struct ActionBurn {
-    pub outcome_id: FixedBytes<8>,
+    pub outcome: FixedBytes<8>,
     pub usd_amt: U256,
 }
 
 #[cfg(feature = "trading-backend-amm")]
-#[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
+#[derive(Clone, Debug, PartialEq, P, A)]
 pub struct ActionClaimLiquidity {}
 
 #[cfg(feature = "trading-backend-amm")]
-#[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
+#[derive(Clone, Debug, PartialEq, P, A)]
 pub struct ActionClaimLpFees {}
 
-#[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
+#[derive(Clone, Debug, PartialEq, P, A)]
 pub enum Action {
     Ctor(ActionCtor),
     Mint(ActionMint),
@@ -84,4 +87,71 @@ pub fn strat_action() -> BoxedStrategy<Action> {
         any::<ActionClaimLpFees>().prop_map(Action::ClaimLpFees),
     ]
     .boxed()
+}
+
+// TODO: translate this into a structured return type with the effect of the below.
+#[macro_export]
+macro_rules! implement_action {
+    ($c:expr, $sender:expr, $action:expr) => {{
+        use stylus_sdk::alloy_primitives::U256;
+        use $crate::actions::Action;
+        match $action {
+            Action::Ctor(a) => {
+                $c.ctor(
+                    a.outcomes,
+                    a.oracle,
+                    a.time_start,
+                    a.time_ending,
+                    a.fee_recipient,
+                    a.share_impl,
+                    a.should_buffer_time,
+                    a.fee_creator,
+                    a.fee_lp,
+                    a.fee_minter,
+                )
+                .unwrap();
+            }
+            Action::Mint(a) => {
+                $c.mint_permit_E_90275_A_B(
+                    a.outcome,
+                    a.usd_amt,
+                    $sender,
+                    U256::ZERO,
+                    0,
+                    FixedBytes::<32>::ZERO,
+                    FixedBytes::<32>::ZERO,
+                )
+                .unwrap();
+            }
+            #[cfg(feature = "trading-backend-amm")]
+            Action::AddLiquidity(a) => {
+                $c.add_liquidity_permit(
+                    a.amount,
+                    $sender,
+                    U256::ZERO,
+                    0,
+                    FixedBytes::<32>::ZERO,
+                    FixedBytes::<32>::ZERO,
+                )
+                .unwrap();
+            }
+            #[cfg(feature = "trading-backend-amm")]
+            Action::RemoveLiquidity(a) => {
+                $c.remove_liquidity_3_C_857_A_15(a.amount, $sender).unwrap();
+            }
+            #[cfg(feature = "trading-backend-amm")]
+            Action::Burn(a) => {
+                $c.burn_33_C_F_4_D_4_A(a.outcome, a.usd_amt, $sender)
+                    .unwrap();
+            }
+            #[cfg(feature = "trading-backend-amm")]
+            Action::ClaimLiquidity(a) => {
+                $c.claim_liquidity_9_C_391_F_85($sender).unwrap();
+            }
+            #[cfg(feature = "trading-backend-amm")]
+            Action::ClaimLpFees(a) => {
+                $c.claim_lp_fees_66980_F_36($sender).unwrap();
+            }
+        };
+    }};
 }
