@@ -149,7 +149,7 @@ macro_rules! implement_action {
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::Burn(a) => {
-                $c.burn(a.outcome, a.usd_amt, U256::ZERO, $sender)
+                $c.burn_A_E_5853_F_A(a.outcome, a.usd_amt, U256::ZERO, $sender)
                     .unwrap();
             }
             #[cfg(feature = "trading-backend-amm")]

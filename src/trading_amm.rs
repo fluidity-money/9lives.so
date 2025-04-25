@@ -433,6 +433,8 @@ impl StorageTrading {
         let fees = entitled
             .checked_sub(claimed)
             .ok_or(Error::CheckedSubOverflow)?;
+        // Prevent people from double claiming.
+        self.amm_fees_earned_lps.setter(msg_sender()).set(fees);
         fusdc_call::transfer(recipient, fees)?;
         evm::log(events::LPFeesClaimed {
             recipient,

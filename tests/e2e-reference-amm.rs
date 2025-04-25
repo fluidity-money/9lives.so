@@ -380,7 +380,12 @@ proptest! {
                     844833865,
                     should_spend_fusdc_contract!(
                         U256::from(buy_amt),
-                        c.burn(outcome_a, U256::from(buy_amt), U256::ZERO, msg_sender())
+                        c.burn_A_E_5853_F_A(
+                            outcome_a,
+                            U256::from(buy_amt),
+                            U256::ZERO,
+                            msg_sender()
+                        )
                     )
                 );
                 for (i, (price1, price2)) in before_outcome_prices

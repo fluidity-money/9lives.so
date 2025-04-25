@@ -7,9 +7,8 @@
 use stylus_sdk::alloy_primitives::{FixedBytes, U256, U64};
 
 use lib9lives::{
-    actions::strat_action, host, implement_action, proxy, should_spend,
-    should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
-    testing_addrs::*, utils::*, StorageTrading, assert_eq_u
+    actions::strat_action, assert_eq_u, host, implement_action, proxy, should_spend_fusdc_contract,
+    should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
 };
 
 use proptest::prelude::*;
@@ -40,35 +39,6 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
     }
 }
 
-macro_rules! test_should_buy_check_shares {
-    ($c:ident, $outcome:expr, $buy_amt:expr, $market_share_amt:expr, $user_share_amt:expr) => {{
-        let buy_amt = U256::from($buy_amt);
-        assert_eq!(
-            U256::from($user_share_amt),
-            should_spend_fusdc_sender!(buy_amt, {
-                let amount = $c
-                    .mint_permit_E_90275_A_B(
-                        $outcome,
-                        buy_amt,
-                        msg_sender(),
-                        U256::ZERO,
-                        0,
-                        FixedBytes::ZERO,
-                        FixedBytes::ZERO,
-                    )
-                    .unwrap();
-                assert_eq!(
-                    U256::from($market_share_amt),
-                    $c.amm_shares.get($outcome),
-                    "market shares"
-                );
-                Ok(amount)
-            }),
-            "user shares"
-        )
-    }};
-}
-
 fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedBytes<8>, U256)>) {
     let buy_amt = U256::from(amt);
     should_spend_fusdc_sender!(
@@ -92,7 +62,7 @@ proptest! {
         mut c in strat_storage_trading(false)
     ) {
         setup_contract(&mut c, &[outcome_a, outcome_b]);
-        // 2% fee.
+        // 2% fee:
         let fee = 20;
         c.fee_lp.set(U256::from(fee));
         test_add_liquidity(&mut c, 1000e6 as u64);
@@ -114,8 +84,12 @@ proptest! {
                 )
             );
         }
-        assert_eq!(66200000, acc);
-        assert_eq_u!(acc, c.claim_liquidity_9_C_391_F_85(msg_sender()).unwrap());
+        assert_eq!(6200000, acc);
+        should_spend_fusdc_contract!(
+            U256::from(acc),
+            c.claim_lp_fees_66980_F_36(msg_sender())
+        );
+        assert_eq_u!(0, c.claim_lp_fees_66980_F_36(msg_sender()).unwrap());
     }
 
     #[test]
