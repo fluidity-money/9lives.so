@@ -96,7 +96,8 @@ impl StorageTrading {
                 self.amm_shares.get(least_likely_outcome_id),
                 self.amm_outcome_prices.get(least_likely_outcome_id),
                 self.amm_outcome_prices.get(outcome_id)
-            )).0;
+            ))
+            .0;
             self.amm_shares.setter(outcome_id).set(new_shares);
         }
         let product = self
@@ -181,7 +182,8 @@ impl StorageTrading {
             self.amm_shares.get(most_likely_outcome_id),
             amount,
             self.amm_liquidity.get()
-        )).0;
+        ))
+        .0;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
@@ -211,7 +213,8 @@ impl StorageTrading {
                 self.amm_shares.get(most_likely_outcome_id),
                 self.amm_outcome_prices.get(most_likely_outcome_id),
                 self.amm_outcome_prices.get(outcome_id)
-            )).0;
+            ))
+            .0;
             self.amm_shares.setter(outcome_id).set(s);
         }
         let product = self
@@ -278,8 +281,8 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        let fee_for_creator = maths::mul_div(usd_amt, self.fee_creator.get(), FEE_SCALING)?.0;
-        let fee_for_lp = maths::mul_div(usd_amt, self.fee_lp.get(), FEE_SCALING)?.0;
+        let fee_for_creator = maths::mul_div_round_up(usd_amt, self.fee_creator.get(), FEE_SCALING)?;
+        let fee_for_lp = maths::mul_div_round_up(usd_amt, self.fee_lp.get(), FEE_SCALING)?;
         let fee_cum = fee_for_creator + fee_for_lp;
         self.amm_fee_weight.set(
             self.amm_fee_weight
@@ -433,6 +436,7 @@ impl StorageTrading {
         let fees = entitled
             .checked_sub(claimed)
             .ok_or(Error::CheckedSubOverflow)?;
+        assert_or!(!fees.is_zero(), Error::NoFeesToClaim);
         // Prevent people from double claiming.
         self.amm_fees_earned_lps.setter(msg_sender()).set(fees);
         fusdc_call::transfer(recipient, fees)?;
@@ -483,8 +487,9 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        let fee_for_creator = maths::mul_div(usd_amt, self.fee_creator.get(), FEE_SCALING)?.0;
-        let fee_for_lp = maths::mul_div(usd_amt, self.fee_lp.get(), FEE_SCALING)?.0;
+        let fee_for_creator =
+            maths::mul_div_round_up(usd_amt, self.fee_creator.get(), FEE_SCALING)?;
+        let fee_for_lp = maths::mul_div_round_up(usd_amt, self.fee_lp.get(), FEE_SCALING)?;
         let fee_cum = fee_for_creator + fee_for_lp;
         // Increase the fee weight that we've collected some more.
         self.amm_fee_weight.set(

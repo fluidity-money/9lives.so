@@ -498,6 +498,9 @@ pub enum Error {
 
     // Not enough shares were burned by the burn function!
     NotEnoughSharesBurned,
+
+    // No fees are available to claim!
+    NoFeesToClaim,
 }
 
 #[cfg(any(

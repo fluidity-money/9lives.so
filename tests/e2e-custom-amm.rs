@@ -7,8 +7,9 @@
 use stylus_sdk::alloy_primitives::{FixedBytes, U256, U64};
 
 use lib9lives::{
-    actions::strat_action, assert_eq_u, host, implement_action, proxy, should_spend_fusdc_contract,
-    should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
+    actions::strat_action, error::Error, host, implement_action, panic_guard, proxy,
+    should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
+    testing_addrs::*, utils::*, StorageTrading, interactions_clear_after,
 };
 
 use proptest::prelude::*;
@@ -89,7 +90,60 @@ proptest! {
             U256::from(acc),
             c.claim_lp_fees_66980_F_36(msg_sender())
         );
-        assert_eq_u!(0, c.claim_lp_fees_66980_F_36(msg_sender()).unwrap());
+        panic_guard(|| {
+            assert_eq!(
+                Error::NoFeesToClaim,
+                c.claim_lp_fees_66980_F_36(msg_sender()).unwrap_err()
+            );
+        });
+    }
+
+    #[test]
+    fn test_amm_dilution_event_1(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        // Test that someone is not able to come in and claim from the pool after
+        // just LPing, and not being there from the outset in doing so.
+        let fee_take_amt = 20;
+        let amt = 100_000 * 1e6 as u64;
+        let fee = (amt * fee_take_amt) / 1000;
+        let amt = U256::from(amt);
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                c.fee_lp.set(U256::from(fee_take_amt));
+                test_add_liquidity(&mut c, 1000e6 as u64);
+                should_spend_fusdc_sender!(
+                    amt,
+                    c.mint_permit_E_90275_A_B(
+                        outcome_a,
+                        amt,
+                        msg_sender(),
+                        U256::ZERO,
+                        0,
+                        FixedBytes::ZERO,
+                        FixedBytes::ZERO,
+                    )
+                );
+            },
+            ERIK => {
+                test_add_liquidity(&mut c, 100_00e6 as u64);
+                panic_guard(|| {
+                    assert_eq!(
+                        Error::NoFeesToClaim,
+                        c.claim_lp_fees_66980_F_36(msg_sender()).unwrap_err()
+                    );
+                });
+            },
+            IVAN => {
+                should_spend_fusdc_contract!(
+                    U256::from(fee),
+                    c.claim_lp_fees_66980_F_36(msg_sender())
+                );
+            }
+        }
     }
 
     #[test]
