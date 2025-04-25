@@ -281,7 +281,8 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        let fee_for_creator = maths::mul_div_round_up(usd_amt, self.fee_creator.get(), FEE_SCALING)?;
+        let fee_for_creator =
+            maths::mul_div_round_up(usd_amt, self.fee_creator.get(), FEE_SCALING)?;
         let fee_for_lp = maths::mul_div_round_up(usd_amt, self.fee_lp.get(), FEE_SCALING)?;
         let fee_cum = fee_for_creator + fee_for_lp;
         self.amm_fee_weight.set(
@@ -381,17 +382,12 @@ impl StorageTrading {
         is_add: bool,
     ) -> R<()> {
         let total_liq = self.amm_liquidity.get();
-        let fee_weight = self.amm_fee_weight.get();
-        if total_liq.is_zero() || fee_weight.is_zero() {
-            return Ok(());
-        }
-        let user_claim = maths::mul_div(fee_weight, delta_liq, total_liq)?.0;
-        let prev = self.amm_fees_earned_lps.get(sender);
-        self.amm_fees_earned_lps.setter(sender).set(if is_add {
-            prev.checked_add(user_claim)
+        let prev = self.amm_lp_fees_claimed.get(sender);
+        self.amm_lp_fees_claimed.setter(sender).set(if is_add {
+            prev.checked_add(maths::mul_div(fee_weight, delta_liq, total_liq)?.0)
                 .ok_or(Error::CheckedAddOverflow)?
         } else {
-            prev.checked_sub(user_claim)
+            prev.checked_sub(maths::mul_div_round_up(fee_weight, delta_liq, total_liq)?)
                 .ok_or(Error::CheckedSubOverflow)?
         });
         Ok(())
@@ -432,13 +428,15 @@ impl StorageTrading {
             self.amm_liquidity.get(),
         )?
         .0;
-        let claimed = self.amm_fees_earned_lps.get(msg_sender());
+        let claimed = self.amm_lp_fees_claimed.get(msg_sender());
         let fees = entitled
             .checked_sub(claimed)
             .ok_or(Error::CheckedSubOverflow)?;
         assert_or!(!fees.is_zero(), Error::NoFeesToClaim);
         // Prevent people from double claiming.
-        self.amm_fees_earned_lps.setter(msg_sender()).set(fees);
+        self.amm_lp_fees_claimed
+            .setter(msg_sender())
+            .set(claimed.checked_add(fees).ok_or(Error::CheckedAddOverflow)?);
         fusdc_call::transfer(recipient, fees)?;
         evm::log(events::LPFeesClaimed {
             recipient,

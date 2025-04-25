@@ -147,6 +147,75 @@ proptest! {
     }
 
     #[test]
+    fn test_amm_dilution_event_2(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        // Test that someone can make a swap, and the existing LP is entitled to
+        // X fees, then a new LP only gets the fees from the next trade.
+        let fee_take_amt = 20;
+        let ivan_amt = 100_000 * 1e6 as u64;
+        let erik_amt = 2881e6 as u64;
+        let ivan_fee = (ivan_amt * fee_take_amt) / 1000;
+        let erik_fee = (erik_amt * fee_take_amt) / 1000;
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                c.fee_lp.set(U256::from(fee_take_amt));
+                test_add_liquidity(&mut c, 1000e6 as u64);
+                let amt = U256::from(ivan_amt);
+                should_spend_fusdc_sender!(
+                    amt,
+                    c.mint_permit_E_90275_A_B(
+                        outcome_a,
+                        amt,
+                        msg_sender(),
+                        U256::ZERO,
+                        0,
+                        FixedBytes::ZERO,
+                        FixedBytes::ZERO,
+                    )
+                );
+            },
+            ERIK => {
+                let erik_amt = U256::from(erik_amt);
+                test_add_liquidity(&mut c, 100_00e6 as u64);
+                panic_guard(|| {
+                    assert_eq!(
+                        Error::NoFeesToClaim,
+                        c.claim_lp_fees_66980_F_36(msg_sender()).unwrap_err()
+                    );
+                });
+                should_spend_fusdc_sender!(
+                    erik_amt,
+                    c.mint_permit_E_90275_A_B(
+                        outcome_a,
+                        erik_amt,
+                        msg_sender(),
+                        U256::ZERO,
+                        0,
+                        FixedBytes::ZERO,
+                        FixedBytes::ZERO,
+                    )
+                );
+            },
+            IVAN => {
+                should_spend_fusdc_contract!(
+                    U256::from(ivan_fee),
+                    c.claim_lp_fees_66980_F_36(msg_sender())
+                );
+            },
+            ERIK => {
+                should_spend_fusdc_contract!(
+                    U256::from(erik_fee),
+                    c.claim_lp_fees_66980_F_36(msg_sender())
+                );
+            }
+        }
+    }
+
+    #[test]
     fn test_amm_crazy_testing_1(
         outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2..100),
         mut c in strat_storage_trading(false),

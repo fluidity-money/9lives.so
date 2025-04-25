@@ -77,6 +77,7 @@ pub struct StorageTrading {
     pub is_escaped: StorageBool,
 
     /* ~~~~~~~~~~ DPM ONLY ~~~~~~~~~~ */
+
     /// Shares invested in every outcome cumulatively.
     pub dpm_global_shares: StorageU256,
 
@@ -90,6 +91,7 @@ pub struct StorageTrading {
     pub dpm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /* ~~~~~~~~~~ AMM ONLY ~~~~~~~~~~ */
+
     pub amm_liquidity: StorageU256,
 
     pub amm_outcome_prices: StorageMap<FixedBytes<8>, StorageU256>,
@@ -105,7 +107,7 @@ pub struct StorageTrading {
     pub amm_fee_weight: StorageU256,
 
     /// The amount of fees a user has claimed.
-    pub amm_fees_earned_lps: StorageMap<Address, StorageU256>,
+    pub amm_lp_fees_claimed: StorageMap<Address, StorageU256>,
 
     /// Since we use a system of addressing outcomes with a unique
     /// identifier, we use this in the mint functions to check if the outcome
