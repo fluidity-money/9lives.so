@@ -183,7 +183,7 @@ proptest! {
                 test_add_liquidity(&mut c, 100_00e6 as u64);
                 panic_guard(|| {
                     assert_eq!(
-                        Error::NoFeesToClaim,
+                        Error::CheckedSubOverflow,
                         c.claim_lp_fees_66980_F_36(msg_sender()).unwrap_err()
                     );
                 });

@@ -382,6 +382,7 @@ impl StorageTrading {
         is_add: bool,
     ) -> R<()> {
         let total_liq = self.amm_liquidity.get();
+        let fee_weight = self.amm_fee_weight.get();
         let prev = self.amm_lp_fees_claimed.get(sender);
         self.amm_lp_fees_claimed.setter(sender).set(if is_add {
             prev.checked_add(maths::mul_div(fee_weight, delta_liq, total_liq)?.0)
