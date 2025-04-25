@@ -65,7 +65,7 @@ impl StorageTrading {
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn burn(
+    pub fn burn_A_E_5853_F_A(
         &mut self,
         _outcome: FixedBytes<8>,
         fusdc_amount: U256,

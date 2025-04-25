@@ -194,6 +194,8 @@ class PredMarketNew:
 
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
+            print(f"shares before update in buy for outcome {i}: {self.shares[i]}")
+            print(f"shares before update in buy for outcome {i}: {self.total_shares[i]}")
             self.shares[i] += amount
             self.total_shares[i] += amount
 
@@ -210,7 +212,11 @@ class PredMarketNew:
 
         # Outcome shares transferred from pool to user
         self.user_outcome_shares[outcome] += (previous_shares[outcome] - self.shares[outcome])
+        print(f"previous_shares[outcome]: {previous_shares[outcome]}")
+        print(f"amount: {amount}")
+        print(f"self.shares[outcome]: {self.shares[outcome]}")
         print(f"previous_shares[{outcome}] = {previous_shares[outcome]}")
+        print(f"previous_shares[outcome] - self.shares[outcome]: {previous_shares[outcome] - self.shares[outcome]}")
         print(f"self.shares[{outcome}] = {self.shares[outcome]}")
 
         return self.shares
@@ -803,6 +809,26 @@ def simulate_market_15():
     assert market.user_wallet_usd == 1800 # User should get back all 1800 USD
     assert market.pool_wallet_usd == 0 # Pool should be empty (0 USD)
 
+def test_fee_collection_sum():
+    # Setup
+    market = PredMarketNew(liquidity=1000, outcomes=2, fees=0.02)  # 2% fee
+    market.user_wallet_usd = 1000  # Give user initial funds
+
+    # Track individual fee events
+    expected_fees = 0
+
+    # Action: Execute multiple trades
+    trade_amounts = [50, 75, 100, 25, 60]
+
+    for amount in trade_amounts:
+        fee = amount * market.fees
+        expected_fees += fee
+        market.buy(outcome=0, amount=amount)
+
+    # Assertions
+    assert math.isclose(market.fees_collected, expected_fees), "Total fees don't match sum of individual fees"
+    print(expected_fees);
+
 if __name__ == "__main__":
     #simulate_market_1()
     #simulate_market_2()
@@ -818,4 +844,6 @@ if __name__ == "__main__":
     #simulate_market_12()
     #simulate_market_13()
     #simulate_market_14()
-    simulate_market_15()
+    #simulate_market_15()
+    #test_value_conservation()
+    test_fee_collection_sum()

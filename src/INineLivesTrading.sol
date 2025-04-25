@@ -43,9 +43,10 @@ interface INineLivesTrading {
     ) external returns (uint256);
 
     /// @notice Burn some shares by inverting the AMM function using the fUSDC amount.
-    function burn33CF4D4A(
+    function burnAE5853FA(
         bytes8 outcome,
         uint256 fusdcAmount,
+        uint256 minShares,
         address recipient
     ) external returns (uint256);
 

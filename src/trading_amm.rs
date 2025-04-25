@@ -531,9 +531,9 @@ impl StorageTrading {
                 .checked_div(product)
                 .ok_or(Error::CheckedDivOverflow)?,
         );
-        let shares = c!(outcome_previous_shares
+        let shares = outcome_previous_shares
             .checked_sub(self.amm_shares.get(outcome_id))
-            .ok_or(Error::CheckedSubOverflow));
+            .ok_or(Error::CheckedSubOverflow)?;
         share_call::mint(
             proxy::get_share_addr(
                 self.factory_addr.get(),

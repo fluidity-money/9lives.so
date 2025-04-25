@@ -76,9 +76,10 @@ contract MockTrading is INineLivesTrading {
         return value;
     }
 
-    function burn33CF4D4A(
+    function burnAE5853FA(
         bytes8 /* outcome */,
         uint256 /* fusdcAmount */,
+        uint256 /* minShares */,
         address /* recipient */
     ) external returns (uint256) {
         ++counter_;
