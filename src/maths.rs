@@ -118,18 +118,6 @@ pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<(U256, bool)
     Ok((U256::from_limbs_slice(&limbs[0..4]), has_carry))
 }
 
-pub fn mul_div_round_up(a: U256, b: U256, denominator: U256) -> Result<U256, Error> {
-    let (result, rem) = mul_div(a, b, denominator)?;
-    if rem {
-        if result == U256::MAX {
-            Err(Error::MulDivIsU256Max)
-        } else {
-            Ok(result + U256::from(1))
-        }
-    } else {
-        Ok(result)
-    }
-}
 
 #[test]
 fn test_price_single() {

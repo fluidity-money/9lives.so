@@ -89,6 +89,14 @@ pub fn strat_action() -> BoxedStrategy<Action> {
     .boxed()
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct ActionEffect {
+    pub shares_received: Vec<(FixedBytes<8>, U256)>,
+    pub fusdc_received: U256,
+    pub fusdc_spent: U256,
+    pub outcome_winner: Option<FixedBytes<8>>,
+}
+
 // TODO: translate this into a structured return type with the effect of the below.
 #[macro_export]
 macro_rules! implement_action {
@@ -141,7 +149,7 @@ macro_rules! implement_action {
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::Burn(a) => {
-                $c.burn_33_C_F_4_D_4_A(a.outcome, a.usd_amt, $sender)
+                $c.burn(a.outcome, a.usd_amt, U256::ZERO, $sender)
                     .unwrap();
             }
             #[cfg(feature = "trading-backend-amm")]

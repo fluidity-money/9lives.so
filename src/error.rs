@@ -495,6 +495,9 @@ pub enum Error {
 
     // We hit the maximum uint256 for a muldiv operation!
     MulDivIsU256Max,
+
+    // Not enough shares were burned by the burn function!
+    NotEnoughSharesBurned,
 }
 
 #[cfg(any(

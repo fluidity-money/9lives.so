@@ -65,10 +65,11 @@ impl StorageTrading {
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn burn_33_C_F_4_D_4_A(
+    pub fn burn(
         &mut self,
         _outcome: FixedBytes<8>,
         fusdc_amount: U256,
+        min_shares: U256,
         recipient: Address,
     ) -> R<U256> {
         self.require_not_done_predicting()?;
@@ -76,7 +77,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_burn(_outcome, fusdc_amount, recipient);
+        return self.internal_amm_burn(_outcome, fusdc_amount, min_shares, recipient);
     }
 
     #[allow(non_snake_case)]

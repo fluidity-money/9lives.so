@@ -92,11 +92,11 @@ impl StorageTrading {
                 continue;
             }
             //(amm_shares[least_likely_outcome_id] * amm_outcome_prices[least_likely_outcome_id]) / amm_outcome_prices[outcome_id]
-            let new_shares = c!(maths::mul_div_round_up(
+            let new_shares = c!(maths::mul_div(
                 self.amm_shares.get(least_likely_outcome_id),
                 self.amm_outcome_prices.get(least_likely_outcome_id),
                 self.amm_outcome_prices.get(outcome_id)
-            ));
+            )).0;
             self.amm_shares.setter(outcome_id).set(new_shares);
         }
         let product = self
@@ -177,11 +177,11 @@ impl StorageTrading {
             .filter(|&id| self.amm_shares.get(id) == most_likely_amt)
             .collect();
         // This is the amount of fUSDC to return to the end user.
-        let liquidity_shares_val = c!(maths::mul_div_round_up(
+        let liquidity_shares_val = c!(maths::mul_div(
             self.amm_shares.get(most_likely_outcome_id),
             amount,
             self.amm_liquidity.get()
-        ));
+        )).0;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
@@ -207,11 +207,11 @@ impl StorageTrading {
             if most_likely_ids.contains(&outcome_id) {
                 continue;
             }
-            let s = c!(maths::mul_div_round_up(
+            let s = c!(maths::mul_div(
                 self.amm_shares.get(most_likely_outcome_id),
                 self.amm_outcome_prices.get(most_likely_outcome_id),
                 self.amm_outcome_prices.get(outcome_id)
-            ));
+            )).0;
             self.amm_shares.setter(outcome_id).set(s);
         }
         let product = self
@@ -234,7 +234,7 @@ impl StorageTrading {
             .enumerate()
             .map(|(i, outcome_id)| {
                 let outcome_shares_received = prev_shares[i]
-                    .checked_sub(self.amm_shares.get(outcome_id))
+                    .checked_sub(prev_shares[i])
                     .ok_or(Error::CheckedSubOverflow)?;
                 if !outcome_shares_received.is_zero() {
                     share_call::mint(
@@ -270,6 +270,7 @@ impl StorageTrading {
         &mut self,
         outcome_id: FixedBytes<8>,
         usd_amt: U256,
+        min_shares: U256,
         recipient: Address,
     ) -> R<U256> {
         // Check if the outcome exists first! Nice safety precaution.
@@ -329,6 +330,7 @@ impl StorageTrading {
             .get(outcome_id)
             .checked_sub(outcome_previous_shares)
             .ok_or(Error::CheckedSubOverflow));
+        assert_or!(shares >= min_shares, Error::NotEnoughSharesBurned);
         c!(share_call::burn(
             proxy::get_share_addr(
                 self.factory_addr.get(),
