@@ -3,8 +3,8 @@ import {
   prepareContractCall,
   sendTransaction,
   simulateTransaction,
+  ZERO_ADDRESS,
 } from "thirdweb";
-import { keccak256, toUtf8Bytes } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -24,12 +24,15 @@ const approveHelperTx = prepareContractCall({
   params: [clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR, HelperApprovalAmount],
 });
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
-type FunctionNames = ExtractNames<(typeof helperAbi)[number]>;
+type Create =
+  // | "createWithInfraMarket"
+  "createWithAI" | "createWithBeautyContest";
+type FunctionNames = ExtractNames<(typeof helperAbi)[number]> & Create;
 const settlementFunctionMap: Record<
-  Exclude<SettlementType, "CONTRACT">,
+  Exclude<SettlementType, "CONTRACT" | "ORACLE">,
   FunctionNames
 > = {
-  ORACLE: "createWithInfraMarket",
+  // ORACLE: "createWithInfraMarket",
   AI: "createWithAI",
   POLL: "createWithBeautyContest",
 };
@@ -87,18 +90,29 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             let hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
             if (input.settlementType === "CONTRACT")
               throw new Error("Contract settlement is not supported yet");
-            if (input.settlementType === "ORACLE" && input.oracleDescription) {
-              const descBytes = toUtf8Bytes(input.oracleDescription);
-              hashedDocumentation = keccak256(descBytes) as `0x${string}`;
-            }
+            if (input.settlementType === "ORACLE")
+              throw new Error("ORACLE settlement is not supported yet");
+            // if (input.settlementType === "ORACLE" && input.oracleDescription) {
+            //   const descBytes = toUtf8Bytes(input.oracleDescription);
+            //   hashedDocumentation = keccak256(descBytes) as `0x${string}`;
+            // }
             const createTx = prepareContractCall({
               contract: config.contracts.helperFactory,
               method: settlementFunctionMap[input.settlementType],
               params: [
-                creationList, // outcomes
-                BigInt(Math.floor(new Date(input.ending).getTime() / 1000)), // time ending in seconds timestamp
-                hashedDocumentation, // documentation (settlement description)
-                account.address, // fee recipient
+                {
+                  oracle: ZERO_ADDRESS,
+                  outcomes: creationList,
+                  timeEnding: BigInt(
+                    Math.floor(new Date(input.ending).getTime() / 1000),
+                  ),
+                  documentation: hashedDocumentation,
+                  feeRecipient: account.address,
+                  feeCreator: BigInt(0),
+                  feeLp: BigInt(0),
+                  feeMinter: BigInt(0),
+                  feeReferrer: BigInt(0),
+                },
               ],
             });
             const allowanceHelperTx = prepareContractCall({

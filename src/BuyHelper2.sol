@@ -7,7 +7,12 @@ import "./ILongtail.sol";
 import "./IWETH10.sol";
 
 interface IERC20 {
-    function transferFrom(address sender, address recipient, uint256 value) external;
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 value
+    ) external;
+
     function approve(address recipient, uint256 amount) external;
     function balanceOf(address spender) external view returns (uint256);
     function transfer(address spender, uint256 amount) external;
@@ -54,7 +59,7 @@ contract BuyHelper2 {
         }
         uint256 fusdc;
         if (_asset != address(FUSDC)) {
-            (int256 amount0,) = LONGTAIL.swapIn32502CA71(_asset, _amount, 0);
+            (int256 amount0, ) = LONGTAIL.swapIn32502CA71(_asset, _amount, 0);
             fusdc = uint256(amount0);
         } else {
             fusdc = _amount;

@@ -239,8 +239,8 @@ class OutcomeDto implements Outcome {
   }
 }
 export type PositionsProps = {
-  campaignName?: string;
-  campaignId?: string;
+  campaignName: string;
+  campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   winner?: string;

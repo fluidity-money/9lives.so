@@ -1,42 +1,103 @@
 const tradingAbi = [
   {
     type: "function",
+    name: "burnAE5853FA",
+    inputs: [
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "fusdcAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "ctor",
     inputs: [
       {
-        name: "outcomes",
-        type: "bytes8[]",
-        internalType: "bytes8[]",
-      },
-      {
-        name: "oracle",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "timeStart",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "timeEnding",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "feeRecipient",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "shareImpl",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "shouldBufferTime",
-        type: "bool",
-        internalType: "bool",
+        name: "ctorArgs",
+        type: "tuple",
+        internalType: "struct CtorArgs",
+        components: [
+          {
+            name: "outcomes",
+            type: "bytes8[]",
+            internalType: "bytes8[]",
+          },
+          {
+            name: "oracle",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "timeStart",
+            type: "uint64",
+            internalType: "uint64",
+          },
+          {
+            name: "timeEnding",
+            type: "uint64",
+            internalType: "uint64",
+          },
+          {
+            name: "feeRecipient",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "shareImpl",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "shouldBufferTime",
+            type: "bool",
+            internalType: "bool",
+          },
+          {
+            name: "feeCreator",
+            type: "uint64",
+            internalType: "uint64",
+          },
+          {
+            name: "feeMinter",
+            type: "uint64",
+            internalType: "uint64",
+          },
+          {
+            name: "feeLp",
+            type: "uint64",
+            internalType: "uint64",
+          },
+          {
+            name: "feeReferrer",
+            type: "uint64",
+            internalType: "uint64",
+          },
+        ],
       },
     ],
     outputs: [],
@@ -91,6 +152,13 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "escape",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "globalShares",
     inputs: [],
     outputs: [
@@ -130,7 +198,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "mintPermitE90275AB",
+    name: "mintPermit243EEC56",
     inputs: [
       {
         name: "outcome",
@@ -141,6 +209,11 @@ const tradingAbi = [
         name: "value",
         type: "uint256",
         internalType: "uint256",
+      },
+      {
+        name: "referrer",
+        type: "address",
+        internalType: "address",
       },
       {
         name: "recipient",
@@ -221,6 +294,30 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "payoffQuote1FA6DC28",
+    inputs: [
+      {
+        name: "outcomeId",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "priceA827ED27",
     inputs: [
       {
@@ -293,6 +390,32 @@ const tradingAbi = [
       },
     ],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "timeEnding",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "timeStart",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
   },
 ] as const;
 

@@ -85,7 +85,12 @@ export default function DetailWrapper({
         )}
         <AssetScene
           positionGrops={[
-            { tradingAddr: data.poolAddress, outcomes: data.outcomes },
+            {
+              tradingAddr: data.poolAddress,
+              outcomes: data.outcomes,
+              campaignId: data.identifier,
+              campaignName: data.name,
+            },
           ]}
           campaignId={data.identifier}
           detailPage={true}

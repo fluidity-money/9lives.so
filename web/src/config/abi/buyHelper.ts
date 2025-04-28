@@ -27,6 +27,45 @@ const buyHelperAbi = [
   },
   {
     type: "function",
+    name: "burn",
+    inputs: [
+      {
+        name: "_tradingAddr",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "_outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "_maxShareOut",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "_minShareOut",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "_fusdcAmt",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "mint",
     inputs: [
       {
