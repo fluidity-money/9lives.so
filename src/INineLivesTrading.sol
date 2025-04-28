@@ -103,7 +103,7 @@ interface INineLivesTrading {
     /// @param outcomeId to collect the payoff for.
     /// @param amount of share to use for receiving the payoff.
     /// @param recipient to send the winnings to.
-    function payoff91FA8C2E(
+    function payoff85D8DFC9(
         bytes8 outcomeId,
         uint256 amount,
         address recipient

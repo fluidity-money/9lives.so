@@ -117,19 +117,6 @@ impl StorageTrading {
             );
         }
     }
-
-    #[allow(non_snake_case)]
-    pub fn payoff_91_F_A_8_C_2_E(
-        &mut self,
-        outcome_id: FixedBytes<8>,
-        amt: U256,
-        recipient: Address,
-    ) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
-        return self.internal_dpm_payoff(outcome_id, amt, recipient);
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_payoff(outcome_id, amt, recipient);
-    }
 }
 
 #[cfg(feature = "testing")]

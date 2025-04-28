@@ -49,6 +49,19 @@ impl StorageTrading {
         });
         Ok(owed)
     }
+
+    #[allow(non_snake_case)]
+    pub fn payoff_8_5_D_8_D_F_C_9(
+        &mut self,
+        outcome_id: FixedBytes<8>,
+        amt: U256,
+        recipient: Address,
+    ) -> R<U256> {
+        #[cfg(feature = "trading-backend-dpm")]
+        return self.internal_dpm_payoff(outcome_id, amt, recipient);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_payoff(outcome_id, amt, recipient);
+    }
 }
 
 impl StorageTrading {

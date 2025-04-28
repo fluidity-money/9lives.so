@@ -132,7 +132,7 @@ contract MockTrading is INineLivesTrading {
         calledOutcome_ = outcome;
     }
 
-    function payoff91FA8C2E(
+    function payoff85D8DFC9(
         bytes8 outcome,
         uint256 amount,
         address recipient
