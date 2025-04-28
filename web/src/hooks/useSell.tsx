@@ -53,7 +53,7 @@ const useSell = ({
           const allowanceTx = prepareContractCall({
             contract: shareContract,
             method: "allowance",
-            params: [config.contracts.buyHelper.address, balance],
+            params: [account.address, config.contracts.buyHelper.address],
           });
           const allowance = await simulateTransaction({
             transaction: allowanceTx,
