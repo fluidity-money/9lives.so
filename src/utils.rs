@@ -107,6 +107,7 @@ pub fn block_timestamp() -> u64 {
     return 0;
     #[cfg(any(
         all(feature = "testing", not(target_arch = "wasm32")),
+        feature = "e2e-adjust-time",
         target_arch = "wasm32"
     ))]
     #[allow(unreachable_code)]

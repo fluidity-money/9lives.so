@@ -10,6 +10,8 @@ use crate::{
     utils::{block_timestamp, msg_sender},
 };
 
+use alloc::vec::Vec;
+
 #[cfg(feature = "trading-backend-dpm")]
 use {crate::factory_call, alloc::vec::Vec};
 
