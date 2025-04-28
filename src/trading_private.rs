@@ -13,7 +13,7 @@ use crate::{
 use alloc::vec::Vec;
 
 #[cfg(feature = "trading-backend-dpm")]
-use {crate::factory_call, alloc::vec::Vec};
+use crate::factory_call;
 
 impl StorageTrading {
     pub fn internal_ctor(
