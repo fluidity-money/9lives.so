@@ -3,6 +3,7 @@ import {
   getContract,
   prepareContractCall,
   sendTransaction,
+  simulateTransaction,
   toUnits,
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
@@ -38,17 +39,37 @@ const useSell = ({
             client: config.thirdweb.client,
             chain: config.chains.currentChain,
           });
-          const approveTx = prepareContractCall({
+          const balanceOfTx = prepareContractCall({
             contract: shareContract,
-            method: "approve",
-            params: [config.contracts.buyHelper.address, MaxUint256],
+            method: "balanceOf",
+            params: [account?.address],
           });
-          await sendTransaction({
-            transaction: approveTx,
+          const balance = await simulateTransaction({
+            transaction: balanceOfTx,
             account,
           });
-          const minShareOut = BigInt(12500000);
-          const maxShareOut = BigInt(12500000);
+          const minShareOut = balance;
+          const maxShareOut = balance;
+          const allowanceTx = prepareContractCall({
+            contract: shareContract,
+            method: "allowance",
+            params: [config.contracts.buyHelper.address, balance],
+          });
+          const allowance = await simulateTransaction({
+            transaction: allowanceTx,
+            account,
+          });
+          if (balance > allowance) {
+            const approveTx = prepareContractCall({
+              contract: shareContract,
+              method: "approve",
+              params: [config.contracts.buyHelper.address, balance],
+            });
+            await sendTransaction({
+              transaction: approveTx,
+              account,
+            });
+          }
           const burnTx = prepareContractCall({
             contract: config.contracts.buyHelper,
             method: "burn",
