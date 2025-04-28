@@ -24,7 +24,7 @@ contract MockFactory is INineLivesFactory {
         address /* operator */
     ) external {}
 
-    function newTrading90C25562(
+    function newTrading320E32E9(
         FactoryOutcome[] memory _outcomes,
         address _oracle,
         uint64 _timeStart,

@@ -1,5 +1,5 @@
 use crate::{
-    error::*, events, fees::*, fusdc_call, immutables::*, maths, proxy, share_call,
+    error::*, events, fusdc_call, immutables::*, maths, proxy, share_call,
     storage_trading::*, utils::*,
 };
 
@@ -281,23 +281,6 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        let fee_for_creator =
-            maths::mul_div_round_up(usd_amt, self.fee_creator.get(), FEE_SCALING)?;
-        let fee_for_lp = maths::mul_div_round_up(usd_amt, self.fee_lp.get(), FEE_SCALING)?;
-        let fee_cum = fee_for_creator + fee_for_lp;
-        self.amm_fee_weight.set(
-            self.amm_fee_weight
-                .get()
-                .checked_add(fee_cum)
-                .ok_or(Error::CheckedAddOverflow)?,
-        );
-        c!(fusdc_call::transfer(
-            self.fee_recipient.get(),
-            fee_for_creator
-        ));
-        let usd_amt = usd_amt
-            .checked_sub(fee_cum)
-            .ok_or(Error::CheckedSubOverflow)?;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
@@ -479,7 +462,6 @@ impl StorageTrading {
         &mut self,
         outcome_id: FixedBytes<8>,
         usd_amt: U256,
-        referrer: Address,
         recipient: Address,
     ) -> R<U256> {
         // Check if the outcome exists first!
@@ -487,27 +469,6 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        let fee_for_creator =
-            maths::mul_div_round_up(usd_amt, self.fee_creator.get(), FEE_SCALING)?;
-        let fee_for_lp = maths::mul_div_round_up(usd_amt, self.fee_lp.get(), FEE_SCALING)?;
-        let fee_for_referrer = if !referrer.is_zero() {
-            maths::mul_div_round_up(usd_amt, self.fee_referrer.get(), FEE_SCALING)?
-        } else {
-            U256::ZERO
-        };
-        let fee_cum = fee_for_creator + fee_for_lp + fee_for_referrer;
-        // Increase the fee weight that we've collected some more.
-        self.amm_fee_weight.set(
-            self.amm_fee_weight
-                .get()
-                .checked_add(fee_cum)
-                .ok_or(Error::CheckedAddOverflow)?,
-        );
-        // It will never be the case that the fee exceeds the amount here, but
-        // this good programming regardless to check.
-        let usd_amt = usd_amt
-            .checked_sub(fee_cum)
-            .ok_or(Error::CheckedSubOverflow)?;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = self.amm_shares.get(outcome_id);

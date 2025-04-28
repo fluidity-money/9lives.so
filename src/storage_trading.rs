@@ -29,7 +29,7 @@ pub struct StorageTrading {
     /// expired to pause trading.
     pub is_shutdown: StorageBool,
 
-    /// The fee recipient of funds.
+    /// The fee recipient of funds, aka the creator from the contract's perspective.
     pub fee_recipient: StorageAddress,
 
     /// When the time of trading is possible for this.

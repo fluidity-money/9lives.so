@@ -2,13 +2,15 @@ use stylus_sdk::{alloy_primitives::*, evm};
 
 use crate::{
     error::*,
+    maths,
+    fees::FEE_SCALING,
     events,
     storage_trading::*,
     utils::{block_timestamp, msg_sender},
 };
 
 #[cfg(feature = "trading-backend-dpm")]
-use {alloc::vec::Vec, crate::factory_call};
+use {crate::factory_call, alloc::vec::Vec};
 
 impl StorageTrading {
     pub fn internal_shutdown(&mut self) -> R<U256> {
@@ -50,5 +52,48 @@ impl StorageTrading {
             self.internal_shutdown()?;
         }
         Ok(U256::ZERO)
+    }
+
+    /// Calculate and set fees where possible, including the AMM fee weight
+    /// if we're a AMM. Returns the amount remaining.
+    pub fn calculate_and_set_fees(&mut self, value: U256, referrer: Address) -> R<U256> {
+        let fee_for_creator = maths::mul_div_round_up(value, self.fee_creator.get(), FEE_SCALING)?;
+        let fee_for_lp = maths::mul_div_round_up(value, self.fee_lp.get(), FEE_SCALING)?;
+        let fee_for_referrer = if !referrer.is_zero() {
+            maths::mul_div_round_up(value, self.fee_referrer.get(), FEE_SCALING)?
+        } else {
+            U256::ZERO
+        };
+        let fee_cum = fee_for_creator + fee_for_lp + fee_for_referrer;
+        // Start to allocate some fees to the creator and to the referrer.
+        if !fee_for_creator.is_zero() {
+            let fees_so_far = self.fees_owed.get(self.fee_recipient.get());
+            self.fees_owed.setter(self.fee_recipient.get()).set(
+                fees_so_far
+                    .checked_add(fee_for_creator)
+                    .ok_or(Error::CheckedAddOverflow)?,
+            );
+        }
+        if !fee_for_referrer.is_zero() {
+            let fees_so_far = self.fees_owed.get(referrer);
+            self.fees_owed.setter(referrer).set(
+                fees_so_far
+                    .checked_add(fee_for_referrer)
+                    .ok_or(Error::CheckedAddOverflow)?,
+            );
+        }
+        #[cfg(feature = "trading-backend-amm")]
+        self.amm_fee_weight.set(
+            self.amm_fee_weight
+                .get()
+                .checked_add(fee_cum)
+                .ok_or(Error::CheckedAddOverflow)?,
+        );
+        // It will never be the case that the fee exceeds the amount here, but
+        // this good programming regardless to check.
+        let value = value
+            .checked_sub(fee_cum)
+            .ok_or(Error::CheckedSubOverflow)?;
+        Ok(value)
     }
 }

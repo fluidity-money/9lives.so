@@ -4,7 +4,6 @@ use crate::{
     },
     error::*,
     events,
-    fees::*,
     fusdc_call,
     immutables::*,
     maths, proxy, share_call,
@@ -62,22 +61,6 @@ impl StorageTrading {
             self.dpm_outcome_shares.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
-        // Here we do some fee adjustment to send the fee recipient their money.
-        let fee_for_creator = maths::mul_div(value, self.fee_creator.get(), FEE_SCALING)?.0;
-        c!(fusdc_call::transfer(
-            self.fee_recipient.get(),
-            fee_for_creator
-        ));
-        // Take some fees, and add them to the pot for moderation reasons.
-        // TODO
-        // Collect some fees for the team (for moderation reasons).
-        let fee_for_team = maths::mul_div(value, FEE_SPN_MINT_PCT, FEE_SCALING)?.0;
-        c!(fusdc_call::transfer(DAO_ADDR, fee_for_team));
-        let value = value
-            .checked_sub(fee_for_creator)
-            .ok_or(Error::CheckedSubOverflow)?
-            .checked_sub(fee_for_team)
-            .ok_or(Error::CheckedSubOverflow)?;
         // Set the global amounts that were invested.
         let dpm_outcome_invested_before = self.dpm_outcome_invested.get(outcome_id);
         // We need to increase by the amount we allocate, the AMM should do that

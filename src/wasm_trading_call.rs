@@ -27,18 +27,22 @@ pub fn ctor(
     fee_creator: u64,
     fee_lp: u64,
     fee_minter: u64,
+    fee_referrer: u64
 ) -> Result<(), Error> {
     let a = ctorCall {
-        outcomes,
-        oracle,
-        timeStart: time_start,
-        timeEnding: time_ending,
-        feeRecipient: fee_recipient,
-        shareImpl: share_impl,
-        shouldBufferTime: should_buffer_time,
-        feeCreator: fee_creator,
-        feeLp: fee_lp,
-        feeMinter: fee_minter,
+        ctorArgs: CtorArgs {
+            outcomes,
+            oracle,
+            timeStart: time_start,
+            timeEnding: time_ending,
+            feeRecipient: fee_recipient,
+            shareImpl: share_impl,
+            shouldBufferTime: should_buffer_time,
+            feeCreator: fee_creator,
+            feeLp: fee_lp,
+            feeMinter: fee_minter,
+            feeReferrer: fee_referrer
+        },
     }
     .abi_encode();
     RawCall::new().call(addr, &a).map_err(Error::TradingError)?;
