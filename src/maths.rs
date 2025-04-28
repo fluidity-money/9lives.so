@@ -176,8 +176,10 @@ mod proptesting {
             y in strat_medium_u256(),
             z in strat_medium_u256()
         ) {
+            let c = x.checked_mul(y).unwrap().checked_div(z);
+            prop_assume!(c.is_some());
             assert_eq!(
-                x.checked_mul(y).unwrap().checked_div(z).unwrap(),
+                c.unwrap(),
                 mul_div(x, y, z).unwrap().0
             );
             assert!({

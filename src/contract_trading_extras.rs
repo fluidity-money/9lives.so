@@ -234,12 +234,7 @@ fn test_cant_recreate() {
 mod proptesting {
     use super::*;
 
-    use crate::{
-        strat_storage_trading,
-        utils::{strat_fixed_bytes, strat_address_not_empty, strat_tiny_u256},
-    };
-
-    use stylus_sdk::alloy_primitives::U256;
+    use crate::{strat_storage_trading, utils::strat_fixed_bytes};
 
     use proptest::prelude::*;
 
