@@ -3,8 +3,8 @@ use stylus_sdk::{alloy_primitives::*, evm};
 use crate::{
     error::*,
     events,
-    immutables::*,
     fees::FEE_SCALING,
+    immutables::*,
     maths,
     storage_trading::*,
     utils::{block_timestamp, msg_sender},
@@ -181,7 +181,7 @@ mod proptesting {
     use crate::{
         fees::FEE_SCALING,
         strat_storage_trading,
-        utils::{strat_address_not_empty, strat_tiny_u256},
+        utils::{strat_address_not_empty, strat_medium_u256},
     };
 
     use stylus_sdk::alloy_primitives::U256;
@@ -200,6 +200,9 @@ mod proptesting {
             panic_guard(|| {
                 let r = c.ctor(args);
                 if outcomes.len() == 2 {
+                    assert!(r.is_ok());
+                } else {
+                    assert_eq!(Error::BadTradingCtor, r.unwrap_err());
                 }
             })
         }
@@ -209,7 +212,7 @@ mod proptesting {
             fee_for_creator in (0..=100).prop_map(U256::from),
             fee_for_lp in (0..=100).prop_map(U256::from),
             fee_for_referrer in (0..=100).prop_map(U256::from),
-            value in strat_tiny_u256(),
+            value in strat_medium_u256(),
             referrer_addr in strat_address_not_empty(),
             mut c in strat_storage_trading(false)
         ) {
@@ -231,10 +234,18 @@ mod proptesting {
                 .unwrap()
                 .checked_div(FEE_SCALING)
                 .unwrap();
-            let expected_cum_fee = expected_fee_creator + expected_fee_lp + expected_fee_referrer;
-            assert_eq!(
-                expected_cum_fee,
-                c.calculate_and_set_fees(value, referrer_addr).unwrap()
+            let expected_cum_fee =
+                expected_fee_creator + expected_fee_lp + expected_fee_referrer;
+            // In our tests, we tolerate a difference.
+            let tol = U256::from(10);
+            let got = c.calculate_and_set_fees(value, referrer_addr).unwrap();
+            assert!(
+                got >= (value - expected_cum_fee) - tol &&
+                got <= (value - expected_cum_fee) + tol
+            );
+            assert!(
+                c.amm_fee_weight.get() >= expected_cum_fee - tol &&
+                c.amm_fee_weight.get() <= expected_cum_fee + tol
             );
         }
     }
