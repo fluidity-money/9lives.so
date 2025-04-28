@@ -456,9 +456,10 @@ proptest! {
                 );
                 host::set_block_timestamp(1);
                 c.decide(outcome_a).unwrap();
+                assert_eq!(U64::from(1), c.when_decided.get());
                 should_spend_fusdc_contract!(
                     U256::from(user_shares),
-                    c.payoff_91_F_A_8_C_2_E(
+                    c.payoff_8_5_D_8_D_F_C_9(
                         outcome_a,
                         U256::from(user_shares),
                         msg_sender()
@@ -494,9 +495,10 @@ proptest! {
                 );
                 host::set_block_timestamp(1);
                 c.decide(outcome_a).unwrap();
+                assert_eq!(U64::from(1), c.when_decided.get());
                 should_spend_fusdc_contract!(
                     U256::from(user_shares),
-                    c.payoff_91_F_A_8_C_2_E(
+                    c.payoff_8_5_D_8_D_F_C_9(
                         outcome_a,
                         U256::from(user_shares),
                         msg_sender()
@@ -536,7 +538,7 @@ proptest! {
                 panic_guard(||
                     assert_eq!(
                         Error::NotWinner,
-                        c.payoff_91_F_A_8_C_2_E(
+                        c.payoff_8_5_D_8_D_F_C_9(
                             outcome_a,
                             U256::from(user_shares),
                             msg_sender()
@@ -698,7 +700,7 @@ proptest! {
                 let fusdc_amt = U256::from(1169769966);
                 should_spend_fusdc_contract!(
                     fusdc_amt,
-                    c.payoff_91_F_A_8_C_2_E(
+                    c.payoff_8_5_D_8_D_F_C_9(
                         outcome_a,
                         fusdc_amt,
                         msg_sender()

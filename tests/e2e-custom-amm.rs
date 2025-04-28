@@ -33,6 +33,7 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
     c.amm_liquidity.set(U256::ZERO);
     c.when_decided.set(U64::ZERO);
     c.is_shutdown.set(false);
+    c.winner.set(FixedBytes::<8>::ZERO);
     for (i, o) in outcomes.iter().enumerate() {
         host::register_addr(
             proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
@@ -241,14 +242,25 @@ proptest! {
     #[test]
     fn test_amm_access_control_okay_1(
         outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2..100),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        rand_word in strat_large_u256()
     ) {
         setup_contract(&mut c, &outcomes);
         panic_guard(|| {
-            // A user should not be able to claim amounts from a campaign that hasn't ended.
-
+            // A user should not be able to use payoff with a campaign that hasn't ended.
+            assert_eq!(
+                Error::NotWinner,
+                c.payoff_8_5_D_8_D_F_C_9(
+                    outcomes[0],
+                    rand_word,
+                    msg_sender()
+                ).unwrap_err()
+            );
             // A user should not be able to claim liquidity from a campaign that hasn't ended.
-
+            assert_eq!(
+                Error::NotDecided,
+                c.claim_liquidity_9_C_391_F_85(msg_sender()).unwrap_err()
+            );
             // A user should not be able to add, remove, or mint liquidity for a
             // campaign that has ended.
         })

@@ -14,7 +14,7 @@ exit 0
 
 cargo mutants \
 	--features testing,trading-backend-amm \
-	$(printf -- '-f %s ' src/*amm*.rs) $@
+	$(printf -- '-f %s ' src/*amm*.rs)
 
 if ! [ -z "$SPN_TEST_NO_JS" ]; then
 	exit 0

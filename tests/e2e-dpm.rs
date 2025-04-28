@@ -1,12 +1,16 @@
-#![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+#![cfg(all(
+    feature = "testing",
+    not(target_arch = "wasm32"),
+    feature = "trading-backend-dpm"
+))]
 
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use lib9lives::{
     host,
+    immutables::FUSDC_ADDR,
     should_spend,
     utils::{block_timestamp, msg_sender},
-    immutables::FUSDC_ADDR
 };
 
 #[test]
@@ -25,7 +29,7 @@ fn test_factory_new_trading() {
                     (id, U256::from(1e6), String::new()),
                     (id2, U256::from(1e6), String::new()),
                 ],
-                msg_sender(), // This is needed to have the same as the infra market until our scaffolding is better.
+                msg_sender(), // This is needed to have the same as the infra market.
                 block_timestamp(),
                 block_timestamp() + 100,
                 FixedBytes::ZERO,

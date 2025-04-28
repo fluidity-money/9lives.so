@@ -48,14 +48,14 @@ clause that could be "no" if a user were to try to estimate the price of somethi
 - [X] Mainnet is supported as well. Mainnet has disclosure that funds are locked up until the election is over.
 - Achievements and portfolio page is supported. Some socialfi elements.
     1. [ ] Users can choose their favourite achievements to display in a minified form next to their Meow Domain.
-    2. [ ] Meow domains is supported in the UI.
+    2. [X] Meow domains is supported in the UI.
 - [X] Collect payoff from the campaign ending in the frontend.
 - [X] Custom fee collection and pool configuration supported (use beauty contest with fixed date, many outcomes if they want)
 - Anyone can create pools. Custom display of pools a la Ebay customisation.
     1. [X] A fixed fee is sent to creator of when shares are created.
     2. [X] Behind the scenes deferring to the AMM model if more than two outcomes.
-    3. [ ] Customise the UI of the frontpage for the info
-    4. [ ] Stack ranking is done for automated updating of frontpage
+    3. [X] Customise the UI of the frontpage for the info
+    4. [X] Stack ranking is done for automated updating of frontpage
     5. [ ] Campaign report functionality. Images are screened automatically for bad content with CSAM
     6. [ ] API to update campaign by the original sender
     9. [ ] Custom embed when sharing URL

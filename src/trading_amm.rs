@@ -339,7 +339,7 @@ impl StorageTrading {
     }
 
     pub fn internal_amm_claim_liquidity(&mut self, recipient: Address) -> R<U256> {
-        assert_or!(self.when_decided.get().is_zero(), Error::NotDecided);
+        assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
         let liq_price = self
