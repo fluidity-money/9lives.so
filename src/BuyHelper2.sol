@@ -9,6 +9,8 @@ import "./IWETH10.sol";
 interface IERC20 {
     function transferFrom(address sender, address recipient, uint256 value) external;
     function approve(address recipient, uint256 amount) external;
+    function balanceOf(address spender) external view returns (uint256);
+    function transfer(address spender, uint256 amount) external;
 }
 
 contract BuyHelper2 {
@@ -77,8 +79,11 @@ contract BuyHelper2 {
     ) external returns (uint256) {
         // In the normal router, this should be possible to get offline.
         INineLivesTrading tradingAddr = INineLivesTrading(_tradingAddr);
-        address shareAddr = tradingAddr.shareAddr(_outcome);
-        IERC20(shareAddr).transferFrom(msg.sender, address(this), _maxShareOut);
-        return tradingAddr.burnAE5853FA(_outcome, _fusdcAmt, _minShareOut, msg.sender);
+        IERC20 shareAddr = IERC20(tradingAddr.shareAddr(_outcome));
+        shareAddr.transferFrom(msg.sender, address(this), _maxShareOut);
+        uint burned = tradingAddr.burnAE5853FA(_outcome, _fusdcAmt, _minShareOut, msg.sender);
+        uint256 toSend = shareAddr.balanceOf(address(this));
+        if (toSend > 0) shareAddr.transfer(msg.sender, toSend);
+        return burned;
     }
 }
