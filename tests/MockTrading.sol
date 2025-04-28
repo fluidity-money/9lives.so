@@ -84,6 +84,14 @@ contract MockTrading is INineLivesTrading {
         return value;
     }
 
+    function quoteBurn8DBDCAC7(
+        bytes8 outcome,
+        uint256 fusdcValue
+    ) external returns (uint256) {
+        ++counter_;
+        return fusdcValue;
+    }
+
     function claimAddressFees70938D8(
         address /* recipient */
     ) external returns (uint256) {

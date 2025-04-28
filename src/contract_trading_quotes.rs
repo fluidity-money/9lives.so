@@ -26,6 +26,17 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
+    pub fn quote_burn_8_D_B_D_C_A_C_7(&self, _outcome_id: FixedBytes<8>, _value: U256) -> R<U256> {
+        if !self.when_decided.is_zero() {
+            return Ok(U256::ZERO);
+        }
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!();
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_quote_burn(_outcome_id, _value);
+    }
+
+    #[allow(non_snake_case)]
     pub fn claim_address_fees_70938_D_8_B(&mut self, recipient: Address) -> R<U256> {
         let owed = self.fees_owed_addresses.get(msg_sender());
         fusdc_call::transfer(recipient, owed)?;

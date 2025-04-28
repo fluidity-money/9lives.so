@@ -58,10 +58,15 @@ interface INineLivesTrading {
 
     /// @notice Quote function for testing the amount that could be minted.
     /// @param outcome to test for
-    /// @param value to test spending for
+    /// @param fusdcValue to test spending for
     function quoteC0E17FC7(
         bytes8 outcome,
-        uint256 value
+        uint256 fusdcValue
+    ) external returns (uint256);
+
+    function quoteBurn8DBDCAC7(
+        bytes8 outcome,
+        uint256 fusdcValue
     ) external returns (uint256);
 
     /// @notice Claim fees owed to a specific address, perhaps after they've
