@@ -128,6 +128,7 @@ macro_rules! test_should_burn_shares {
     ($c:expr, $outcome:expr, $buy_amt:expr, $expect_usd:expr) => {{
         let buy_amt = U256::from($buy_amt);
         let expect_usd = U256::from($expect_usd);
+        dbg!($c.internal_amm_estimate_burn($outcome, buy_amt).unwrap(), expect_usd, buy_amt);
         assert_eq!(
             expect_usd,
             $c.internal_amm_quote_burn($outcome, buy_amt).unwrap()

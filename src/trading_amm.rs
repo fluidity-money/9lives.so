@@ -606,9 +606,18 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        // Gradually increase the amount of fUSDC that we burn until we've burned
-        // all the shares we want, then report the USD amount that was needed.
-        unimplemented!()
+        let mut lo = U256::ZERO;
+        let mut hi = self.amm_shares.get(outcome_id);
+        for _ in 0..256 {
+            let mid = (lo + hi) >> 1;
+            let burned = self.internal_amm_quote_burn(outcome_id, mid)?;
+            if burned < shares_target {
+                lo = mid + U256::from(1);
+            } else {
+                hi = mid;
+            }
+        }
+        Ok(hi) // ~fUSDC needed
     }
 
     pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {
