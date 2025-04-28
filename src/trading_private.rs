@@ -117,7 +117,6 @@ impl StorageTrading {
     /// if we're a AMM. Returns the amount remaining.
     pub fn calculate_and_set_fees(&mut self, value: U256, referrer: Address) -> R<U256> {
         let fee_for_creator = maths::mul_div_round_up(value, self.fee_creator.get(), FEE_SCALING)?;
-        dbg!(fee_for_creator, value, self.fee_creator.get(), FEE_SCALING);
         let fee_for_lp = maths::mul_div_round_up(value, self.fee_lp.get(), FEE_SCALING)?;
         let fee_for_referrer = if !referrer.is_zero() {
             maths::mul_div_round_up(value, self.fee_referrer.get(), FEE_SCALING)?
