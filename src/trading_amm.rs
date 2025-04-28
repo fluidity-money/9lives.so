@@ -608,7 +608,7 @@ impl StorageTrading {
         );
         let mut lo = U256::ZERO;
         let mut hi = self.amm_shares.get(outcome_id);
-        for _ in 0..256 {
+        for _ in 0..1000 {
             let mid = (lo + hi) >> 1;
             let burned = self.internal_amm_quote_burn(outcome_id, mid)?;
             if burned < shares_target {
@@ -617,7 +617,7 @@ impl StorageTrading {
                 hi = mid;
             }
         }
-        Ok(hi) // ~fUSDC needed
+        Ok(hi)
     }
 
     pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {

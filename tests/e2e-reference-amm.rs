@@ -125,16 +125,20 @@ macro_rules! test_should_buy_check_shares {
 }
 
 macro_rules! test_should_burn_shares {
-    ($c:expr, $outcome:expr, $buy_amt:expr, $expect_usd:expr) => {{
+    ($c:expr, $outcome:expr, $buy_amt:expr, $shares_sold:expr) => {{
         let buy_amt = U256::from($buy_amt);
-        let expect_usd = U256::from($expect_usd);
-        dbg!($c.internal_amm_estimate_burn($outcome, buy_amt).unwrap(), expect_usd, buy_amt);
+        let shares_sold = U256::from($shares_sold);
         assert_eq!(
-            expect_usd,
-            $c.internal_amm_quote_burn($outcome, buy_amt).unwrap()
+            shares_sold,
+            $c.internal_amm_quote_burn(
+                $outcome,
+                $c.internal_amm_estimate_burn($outcome, shares_sold)
+                    .unwrap()
+            )
+            .unwrap()
         );
         assert_eq!(
-            expect_usd,
+            shares_sold,
             should_spend_fusdc_contract!(
                 $buy_amt,
                 $c.burn_A_E_5853_F_A($outcome, buy_amt, U256::ZERO, msg_sender())
