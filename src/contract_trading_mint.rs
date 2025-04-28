@@ -18,10 +18,11 @@ pub use crate::storage_trading::*;
 impl StorageTrading {
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn mint_permit_E_90275_A_B(
+    pub fn mint_permit_243_E_E_C_56(
         &mut self,
         outcome: FixedBytes<8>,
         value: U256,
+        referrer: Address,
         recipient: Address,
         deadline: U256,
         v: u8,

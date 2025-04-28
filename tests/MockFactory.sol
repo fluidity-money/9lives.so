@@ -33,29 +33,31 @@ contract MockFactory is INineLivesFactory {
         address _feeRecipient,
         uint64 /* feeCreator */,
         uint64 /* feeLp */,
-        uint64 /* feeMinter */
+        uint64 /* feeMinter */,
+        uint64 /* feeReferrer */
     ) external returns (address) {
         MockTrading t = new MockTrading(ADDR_FUSDC, ADDR_SHARE);
         bytes8[] memory outcomes = new bytes8[](_outcomes.length);
         for (uint i = 0; i < _outcomes.length; ++i) {
             outcomes[i] = _outcomes[i].identifier;
         }
-        t.ctor(
-            outcomes,
-            _oracle,
-            _timeStart,
-            _timeEnding,
-            _feeRecipient,
-            address(0),
-            false,
-            0,
-            0,
-            0
-        );
+        t.ctor(CtorArgs({
+            outcomes: outcomes,
+            oracle: _oracle,
+            timeStart: _timeStart,
+            timeEnding: _timeEnding,
+            feeRecipient: _feeRecipient,
+            shareImpl: address(0),
+            shouldBufferTime: false,
+            feeCreator: 0,
+            feeMinter: 0,
+            feeLp: 0,
+            feeReferrer: 0
+        }));
         return address(t);
     }
 
-    function isModerationFeeEnabled() external view returns (bool) {
+    function isModerationFeeEnabled() external pure returns (bool) {
         return false;
     }
 

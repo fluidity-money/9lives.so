@@ -21,6 +21,7 @@ struct AiCreationDetails {
     uint64 feeCreator;
     uint64 feeLp;
     uint64 feeMinter;
+    uint64 feeReferrer;
 }
 
 contract BuyHelper {
@@ -52,16 +53,18 @@ contract BuyHelper {
         bytes32 _id,
         uint256 _fusdc,
         bytes8 _outcome,
-        uint256 _minShareOut
+        uint256 _minShareOut,
+        address _referrer
     ) internal returns (uint256) {
         // We don't explicitly guard for the amount out, since the minimum shares
         // out should protect us from abuse.
         address tradingAddr = FACTORY.getTradingAddr(_id);
         require(tradingAddr != address(0), "trading addr not found");
         FUSDC.approve(tradingAddr, _fusdc);
-        uint256 shares = INineLivesTrading(tradingAddr).mintPermitE90275AB(
+        uint256 shares = INineLivesTrading(tradingAddr).mintPermit243EEC56(
             _outcome,
             _fusdc,
+            _referrer,
             msg.sender,
             0,
             0,
@@ -91,10 +94,11 @@ contract BuyHelper {
         address _asset,
         bytes8 _outcome,
         uint256 _minShareOut,
-        uint256 _amount
+        uint256 _amount,
+        address _referrer
     ) external payable returns (uint256) {
         uint256 fusdc = _swapInAsset(_asset, _amount);
-        return _mint(_id, fusdc, _outcome, _minShareOut);
+        return _mint(_id, fusdc, _outcome, _minShareOut, _referrer);
     }
 
     function mintSetupAI(
@@ -102,21 +106,24 @@ contract BuyHelper {
         IERC20 _asset,
         bytes8 _outcome,
         uint256 _minShareOut,
-        uint256 _amount
+        uint256 _amount,
+        address _referrer
     ) external payable returns (uint256) {
         // Sets up the contract given using the AI resolver, deducts fees
         // needed, then tries to mint shares the normal way.
         // SAFETY: This should underflow if there isn't enough here.
         uint256 fusdc = _swapInAsset(address(_asset), _amount) - (d.outcomes.length * 1e6);
-        HELPER.createWithAI(
-            d.outcomes,
-            d.timeEnding,
-            d.documentation,
-            d.feeRecipient,
-            d.feeCreator,
-            d.feeLp,
-            d.feeMinter
-        );
-        return _mint(_outcome, fusdc, _outcome, _minShareOut);
+        HELPER.createWithAI(CreateArgs({
+            oracle: address(0),
+            outcomes: d.outcomes,
+            timeEnding: d.timeEnding,
+            documentation: d.documentation,
+            feeRecipient: d.feeRecipient,
+            feeCreator: d.feeCreator,
+            feeLp: d.feeLp,
+            feeMinter: d.feeMinter,
+            feeReferrer: d.feeReferrer
+        }));
+        return _mint(_outcome, fusdc, _outcome, _minShareOut, _referrer);
     }
 }

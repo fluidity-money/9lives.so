@@ -35,6 +35,7 @@ impl StorageTrading {
         fee_creator: u64,
         fee_lp: u64,
         fee_minter: u64,
+        fee_referrer: u64
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // Make sure that the user hasn't given us any zero values, or the end
@@ -48,7 +49,7 @@ impl StorageTrading {
         );
         // We don't allow the fees to exceed 10% (100).
         assert_or!(
-            fee_creator < 100 && fee_minter < 100 && fee_lp < 100,
+            fee_creator < 100 && fee_minter < 100 && fee_lp < 100 && fee_referrer < 100,
             Error::ExcessiveFee
         );
         unsafe {
@@ -73,6 +74,7 @@ impl StorageTrading {
         self.fee_creator.set(U256::from(fee_creator));
         self.fee_minter.set(U256::from(fee_minter));
         self.fee_lp.set(U256::from(fee_lp));
+        self.fee_referrer.set(U256::from(fee_referrer));
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_ctor(outcomes);
         #[cfg(not(feature = "trading-backend-dpm"))]

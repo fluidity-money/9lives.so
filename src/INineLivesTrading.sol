@@ -1,40 +1,46 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+/// @param outcomes to use to use as betting outcomes in this contract.
+/// @param oracle to use as the resolver for this contract.
+/// @param timeStart to begin this contract by.
+/// @param timeEnding to end this contract by.
+/// @param feeRecipient to send fees earned from trading.
+/// @param shouldBufferTime to extend time by 3 hours for every purchase within a 3
+/// hour window. If this is enabled, the contract will enforce purchases to exceed
+/// $10 if they are taking place within 3 hours of the contract's scheduled end time.
+/// @param feeCreator to take as the default fee from every mint for the creator of this contract.
+/// @param feeMinter to take as the fee that we give to minters.
+/// @param feeLp to take as a fee for the market makers who used the add/remove features.
+/// @param feeReferrer to take and distribute to a referrer for a allocation.
+struct CtorArgs {
+    bytes8[] outcomes;
+    address oracle;
+    uint64 timeStart;
+    uint64 timeEnding;
+    address feeRecipient;
+    address shareImpl;
+    bool shouldBufferTime;
+    uint64 feeCreator;
+    uint64 feeMinter;
+    uint64 feeLp;
+    uint64 feeReferrer;
+}
+
 interface INineLivesTrading {
     /// @notice ctor to set the values for this contract.
-    /// @param outcomes to use to use as betting outcomes in this contract.
-    /// @param oracle to use as the resolver for this contract.
-    /// @param timeStart to begin this contract by.
-    /// @param timeEnding to end this contract by.
-    /// @param feeRecipient to send fees earned from trading.
-    /// @param shouldBufferTime to extend time by 3 hours for every purchase within a 3
-    /// hour window. If this is enabled, the contract will enforce purchases to exceed
-    /// $10 if they are taking place within 3 hours of the contract's scheduled end time.
-    /// @param feeCreator to take as the default fee from every mint for the creator of this contract.
-    /// @param feeMinter to take as the fee that we give to minters.
-    /// @param feeLp to take as a fee for the market makers who used the add/remove features.
-    function ctor(
-        bytes8[] memory outcomes,
-        address oracle,
-        uint64 timeStart,
-        uint64 timeEnding,
-        address feeRecipient,
-        address shareImpl,
-        bool shouldBufferTime,
-        uint64 feeCreator,
-        uint64 feeMinter,
-        uint64 feeLp
-    ) external;
+    /// @param ctorArgs to use during creation of the setup.
+    function ctor(CtorArgs calldata ctorArgs) external;
 
     /// @notice oracle that's in use in this trading contract.
     function oracle() external view returns (address);
 
     /// @notice Mint some shares in exchange for fUSDC. Optionally branches to permit or a
     /// classic approval based on the deadline argument (if set to 0, assumes approval)
-    function mintPermitE90275AB(
+    function mintPermit243EEC56(
         bytes8 outcome,
         uint256 value,
+        address referrer,
         address recipient,
         uint256 deadline,
         uint8 v,

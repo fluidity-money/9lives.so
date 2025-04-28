@@ -71,6 +71,13 @@ pub struct StorageTrading {
     /// The fee for LPs to the market. Defaults to 3, for 0.2%.
     pub fee_lp: StorageU256,
 
+    /// The fees owed to referrers of minters and burners.
+    pub fee_referrer: StorageU256,
+
+    /// Fees owed to specific users that received a simple cash amount.
+    /// Could be the owner, or a referrer.
+    pub fees_owed: StorageMap<Address, StorageU256>,
+
     /// An insane situation has taken place, and escaping has happened. This is set
     /// if the developers are able to retrieve the money. This is only possible
     /// to be set by the oracle.

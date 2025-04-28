@@ -38,7 +38,8 @@ interface INineLivesFactory {
         address feeRecipient,
         uint64 feeCreator,
         uint64 feeLp,
-        uint64 feeMinter
+        uint64 feeMinter,
+        uint64 feeReferrer
     ) external returns (address tradingAddr);
 
     /**

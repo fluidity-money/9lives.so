@@ -31,7 +31,8 @@ defaults! {
     ELI,
     OGOUS,
     PAXIA,
-    YOEL
+    YOEL,
+    MARKO
 }
 
 pub const TESTING_ADDRS: [Address; 16] = [

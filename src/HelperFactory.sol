@@ -22,7 +22,8 @@ uint256 constant INCENTIVE_AMT_MODERATION = 1e6;
 
 uint256 constant INCENTIVE_INFRA_MARKET = 2200000;
 
-struct CreationDetails {
+struct CreateArgs {
+    address oracle;
     FactoryOutcome[] outcomes;
     uint64 timeEnding;
     bytes32 documentation;
@@ -30,6 +31,7 @@ struct CreationDetails {
     uint64 feeCreator;
     uint64 feeLp;
     uint64 feeMinter;
+    uint64 feeReferrer;
 }
 
 /**
@@ -58,94 +60,35 @@ contract HelperFactory {
         FUSDC.approve(address(_factory), type(uint256).max);
     }
 
-    function create(
-        address oracle,
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter
-    ) internal returns (address) {
-        require(timeEnding > block.timestamp, "time ending before timestamp");
+    /// Create a new campaign, ignoring the CreateArgs oracle argument.
+    function create(address _oracle, CreateArgs calldata _a) internal returns (address) {
+        require(_a.timeEnding > block.timestamp, "time ending before timestamp");
         return FACTORY.newTrading90C25562(
-            outcomes,
-            oracle,
+            _a.outcomes,
+            _oracle,
             uint64(block.timestamp + 1),
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
+            _a.timeEnding,
+            _a.documentation,
+            _a.feeRecipient,
+            _a.feeCreator,
+            _a.feeLp,
+            _a.feeMinter,
+            _a.feeReferrer
         );
     }
 
-    function createWithBeautyContest(
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter
-    ) public returns (address tradingAddr) {
-        return create(
-            BEAUTY_CONTEST,
-            outcomes,
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
-        );
+    function createWithBeautyContest(CreateArgs calldata _a) public returns (address tradingAddr) {
+        return create(BEAUTY_CONTEST, _a);
     }
 
-    function createWithAI(
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter
-    ) public returns (address tradingAddr) {
-        return create(
-            SARP_AI,
-            outcomes,
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
-        );
+    function createWithAI(CreateArgs calldata _a) public returns (address tradingAddr) {
+        return create(SARP_AI, _a);
     }
 
     /// @dev It doesn't make sense to use this. It's better to do the
     /// setup work yourself with the factory, this is left for convinience
     /// reasons. It transfers some fUSDC to the contract for setup.
-    function createWithCustom(
-        address oracle,
-        FactoryOutcome[] calldata outcomes,
-        uint64 timeEnding,
-        bytes32 documentation,
-        address feeRecipient,
-        uint64 feeCreator,
-        uint64 feeLp,
-        uint64 feeMinter
-    ) public returns (address tradingAddr) {
-        return create(
-            oracle,
-            outcomes,
-            timeEnding,
-            documentation,
-            feeRecipient,
-            feeCreator,
-            feeLp,
-            feeMinter
-        );
+    function createWithCustom(CreateArgs calldata _a) public returns (address tradingAddr) {
+        return create(_a.oracle, _a);
     }
 }

@@ -479,6 +479,7 @@ impl StorageTrading {
         &mut self,
         outcome_id: FixedBytes<8>,
         usd_amt: U256,
+        referrer: Address,
         recipient: Address,
     ) -> R<U256> {
         // Check if the outcome exists first!
@@ -489,7 +490,12 @@ impl StorageTrading {
         let fee_for_creator =
             maths::mul_div_round_up(usd_amt, self.fee_creator.get(), FEE_SCALING)?;
         let fee_for_lp = maths::mul_div_round_up(usd_amt, self.fee_lp.get(), FEE_SCALING)?;
-        let fee_cum = fee_for_creator + fee_for_lp;
+        let fee_for_referrer = if !referrer.is_zero() {
+            maths::mul_div_round_up(usd_amt, self.fee_referrer.get(), FEE_SCALING)?
+        } else {
+            U256::ZERO
+        };
+        let fee_cum = fee_for_creator + fee_for_lp + fee_for_referrer;
         // Increase the fee weight that we've collected some more.
         self.amm_fee_weight.set(
             self.amm_fee_weight
@@ -497,10 +503,6 @@ impl StorageTrading {
                 .checked_add(fee_cum)
                 .ok_or(Error::CheckedAddOverflow)?,
         );
-        c!(fusdc_call::transfer(
-            self.fee_recipient.get(),
-            fee_for_creator
-        ));
         // It will never be the case that the fee exceeds the amount here, but
         // this good programming regardless to check.
         let usd_amt = usd_amt

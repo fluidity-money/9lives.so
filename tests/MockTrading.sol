@@ -28,41 +28,31 @@ contract MockTrading is INineLivesTrading {
         SHARE_ADDR = IERC20(_shareAddr);
     }
 
-    function ctor(
-        bytes8[] memory outcomes,
-        address _oracle,
-        uint64 _timeStart,
-        uint64 _timeEnding,
-        address _feeRecipient,
-        address /* _shareImpl */,
-        bool /* _shouldExtend */,
-        uint64 /* _feeCreator */,
-        uint64 /* _feeMinter */,
-        uint64 /* _feeLp */
-    ) external {
+    function ctor(CtorArgs calldata _a) external {
         require(timeStart_ == 0, "already created");
         // We track some things to set up to prevent abuse in testing, but we don't
         // track the oracles that were created.
-        for (uint i = 0; i < outcomes.length; ++i) {
-            shares_[outcomes[i]] = new Share();
-            shares_[outcomes[i]].ctor("", address(this));
+        for (uint i = 0; i < _a.outcomes.length; ++i) {
+            shares_[_a.outcomes[i]] = new Share();
+            shares_[_a.outcomes[i]].ctor("", address(this));
         }
-        oracle_ = _oracle;
-        timeStart_ = _timeStart;
+        oracle_ = _a.oracle;
+        timeStart_ = _a.timeStart;
         require(timeStart_ > block.timestamp, "start in the past");
-        timeEnding_ = _timeEnding;
+        timeEnding_ = _a.timeEnding;
         require(timeEnding_ > block.timestamp, "ending in the past");
         require(timeEnding_ > timeStart_, "starting in the past");
-        feeRecipient_ = _feeRecipient;
+        feeRecipient_ = _a.feeRecipient;
     }
 
     function oracle() external view returns (address) {
         return oracle_;
     }
 
-    function mintPermitE90275AB(
+    function mintPermit243EEC56(
         bytes8 outcome,
         uint256 value,
+        address /* referrer */,
         address recipient,
         uint256 /* deadline */,
         uint8 /* v */,

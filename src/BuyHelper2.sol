@@ -38,7 +38,8 @@ contract BuyHelper2 {
         address _asset,
         bytes8 _outcome,
         uint256 _minShareOut,
-        uint256 _amount
+        uint256 _amount,
+        address _referrer
     ) external payable returns (uint256) {
         if (_asset != address(0)) {
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
@@ -53,9 +54,10 @@ contract BuyHelper2 {
             fusdc = _amount;
         }
         FUSDC.approve(_tradingAddr, fusdc);
-        uint256 shares = INineLivesTrading(_tradingAddr).mintPermitE90275AB(
+        uint256 shares = INineLivesTrading(_tradingAddr).mintPermit243EEC56(
             _outcome,
             fusdc,
+            _referrer,
             msg.sender,
             0,
             0,

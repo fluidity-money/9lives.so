@@ -27,6 +27,7 @@ contract TradingBeaconProxyDeployHelperFactory {
         uint64 feeCreator;
         uint64 feeMinter;
         uint64 feeLp;
+        uint64 feeReferrer;
     }
 
     event DeploymentCompleted(
@@ -76,18 +77,19 @@ contract TradingBeaconProxyDeployHelperFactory {
         address i = clone(address(IMPL), "");
         TradingBeaconProxy(i).indicateProxy();
         INineLivesTrading n = INineLivesTrading(i);
-        n.ctor(
-            _a.outcomes,
-            _a.oracle,
-            _a.timeStart,
-            _a.timeEnding,
-            _a.feeRecipient,
-            _a.shareImpl,
-            _a.shouldBufferTime,
-            _a.feeCreator,
-            _a.feeMinter,
-            _a.feeLp
-        );
+        n.ctor(CtorArgs({
+            outcomes: _a.outcomes,
+            oracle: _a.oracle,
+            timeStart: _a.timeStart,
+            timeEnding: _a.timeEnding,
+            feeRecipient: _a.feeRecipient,
+            shareImpl: _a.shareImpl,
+            shouldBufferTime: _a.shouldBufferTime,
+            feeCreator: _a.feeCreator,
+            feeMinter: _a.feeMinter,
+            feeLp: _a.feeLp,
+            feeReferrer: _a.feeReferrer
+        }));
         return n;
     }
 }
