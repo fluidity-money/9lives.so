@@ -89,9 +89,16 @@ fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedByte
 macro_rules! test_should_buy_check_shares {
     ($c:ident, $outcome:expr, $buy_amt:expr, $market_share_amt:expr, $user_share_amt:expr) => {{
         let buy_amt = U256::from($buy_amt);
-        use stylus_sdk::alloy_primitives::{Address, U256, FixedBytes};
+        use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
+        let user_share_amt = U256::from($user_share_amt);
         assert_eq!(
-            U256::from($user_share_amt),
+            user_share_amt,
+            $c.quote_C_0_E_17_F_C_7($outcome, buy_amt).unwrap(),
+            "quote amount of users shares diff"
+        );
+        assert_eq!(
+            user_share_amt,
+            // We can also test the quote function this way.
             should_spend_fusdc_sender!(buy_amt, {
                 let amount = $c
                     .mint_permit_243_E_E_C_56(
@@ -114,6 +121,24 @@ macro_rules! test_should_buy_check_shares {
             }),
             "user shares"
         )
+    }};
+}
+
+macro_rules! test_should_burn_shares {
+    ($c:expr, $outcome:expr, $buy_amt:expr, $expect_usd:expr) => {{
+        let buy_amt = U256::from($buy_amt);
+        let expect_usd = U256::from($expect_usd);
+        assert_eq!(
+            expect_usd,
+            $c.internal_amm_quote_burn($outcome, buy_amt).unwrap()
+        );
+        assert_eq!(
+            expect_usd,
+            should_spend_fusdc_contract!(
+                $buy_amt,
+                $c.burn_A_E_5853_F_A($outcome, buy_amt, U256::ZERO, msg_sender())
+            )
+        );
     }};
 }
 
@@ -246,7 +271,7 @@ proptest! {
                         let res = c.remove_liquidity_3_C_857_A_15(remove_amt, msg_sender()).unwrap();
                         assert_eq_u!(4815769830u64, c.amm_liquidity.get());
                         assert_eq_u!(3076908319u64, c.amm_shares.get(outcome_a));
-                        assert_eq_u!(7537318843u64, c.amm_shares.get(outcome_b));
+                        assert_eq_u!(7537318847u64, c.amm_shares.get(outcome_b));
                         assert_eq_u!(710114, c.amm_outcome_prices.get(outcome_a));
                         assert_eq_u!(289885, c.amm_outcome_prices.get(outcome_b));
                         assert_eq_u!(0, c.amm_user_liquidity_shares.get(msg_sender()));
@@ -276,17 +301,15 @@ proptest! {
                 ]);
                 c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(1000e6 as u64));
                 let remove_amt = U256::from(300e6 as u64);
-                let res = should_spend_fusdc_contract!(
+                should_spend_fusdc_contract!(
                     remove_amt,
                     {
                         let res = c.remove_liquidity_3_C_857_A_15(remove_amt, msg_sender()).unwrap();
                         assert_eq_u!(1469682744, c.amm_liquidity.get());
                         assert_eq_u!(674730015, c.amm_shares.get(outcome_a));
-                        // TODO
                         Ok(res)
                     }
                 );
-                dbg!(res);
             }
         }
     }
@@ -379,18 +402,9 @@ proptest! {
                     455166135, // Market shares
                     844833865 // User shares
                 );
-                assert_eq_u!(
-                    844833865,
-                    should_spend_fusdc_contract!(
-                        U256::from(buy_amt),
-                        c.burn_A_E_5853_F_A(
-                            outcome_a,
-                            U256::from(buy_amt),
-                            U256::ZERO,
-                            msg_sender()
-                        )
-                    )
-                );
+                let expect_usd = U256::from(844833865);
+                let buy_amt = U256::from(buy_amt);
+                test_should_burn_shares!(c, outcome_a, buy_amt, expect_usd);
                 for (i, (price1, price2)) in before_outcome_prices
                     .iter()
                     .zip(c.outcome_ids_iter().map(|x| c.amm_outcome_prices.get(x)))

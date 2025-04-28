@@ -22,7 +22,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_quote(outcome_id, value);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_quote(outcome_id, value);
+        return self.internal_amm_quote_mint(outcome_id, value);
     }
 
     #[allow(non_snake_case)]

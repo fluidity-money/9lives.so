@@ -525,32 +525,90 @@ impl StorageTrading {
 
     // The same as the mint function, but shadows the tokens instead, and
     // doesn't update anything.
-    pub fn internal_amm_quote(&self, outcome_id: FixedBytes<8>, usd_amt: U256) -> R<U256> {
+    pub fn internal_amm_quote_mint(&self, outcome_id: FixedBytes<8>, usd_amt: U256) -> R<U256> {
+        assert_or!(
+            self.amm_outcome_exists.get(outcome_id),
+            Error::NonexistentOutcome
+        );
+        let shares_tmp = self
+            .outcome_ids_iter()
+            .map(|id| {
+                let added = self
+                    .amm_shares
+                    .get(id)
+                    .checked_add(usd_amt)
+                    .ok_or(Error::CheckedAddOverflow)?;
+                Ok((id, added))
+            })
+            .collect::<R<Vec<_>>>()?;
+        let product = shares_tmp
+            .iter()
+            .filter(|(id, _)| *id != outcome_id)
+            .map(|(_, s)| *s)
+            .product::<U256>();
         let n = U256::from(self.outcome_list.len());
-        let bumped_prod = self
+        let target = self
+            .amm_liquidity
+            .get()
+            .pow(n)
+            .checked_div(product)
+            .ok_or(Error::CheckedDivOverflow)?;
+        let current = shares_tmp
+            .iter()
+            .find(|(id, _)| *id == outcome_id)
+            .unwrap()
+            .1;
+        let minted = current
+            .checked_sub(target)
+            .ok_or(Error::CheckedSubOverflow)?;
+        Ok(minted)
+    }
+
+    pub fn internal_amm_quote_burn(&self, outcome_id: FixedBytes<8>, usd_amt: U256) -> R<U256> {
+        assert_or!(
+            self.amm_outcome_exists.get(outcome_id),
+            Error::NonexistentOutcome
+        );
+        let prev_after = c!(self
+            .amm_shares
+            .get(outcome_id)
+            .checked_sub(usd_amt)
+            .ok_or(Error::CheckedSubOverflow));
+        let product = self
             .outcome_ids_iter()
             .filter(|id| *id != outcome_id)
             .map(|id| {
                 self.amm_shares
                     .get(id)
-                    .checked_add(usd_amt)
-                    .ok_or(Error::CheckedAddOverflow)
+                    .checked_sub(usd_amt)
+                    .ok_or(Error::CheckedSubOverflow)
             })
-            .collect::<Result<Vec<_>, _>>()?
-            .into_iter()
-            .product::<U256>();
-
-        let new_outcome_shares = self
+            .collect::<R<Vec<_>>>()?
+            .iter()
+            .product();
+        let new_shares = c!(self
             .amm_liquidity
             .get()
-            .pow(n)
-            .checked_div(bumped_prod)
-            .ok_or(Error::CheckedDivOverflow)?;
+            .pow(U256::from(self.outcome_list.len()))
+            .checked_div(product)
+            .ok_or(Error::CheckedDivOverflow));
+        Ok(c!(new_shares
+            .checked_sub(prev_after)
+            .ok_or(Error::CheckedSubOverflow)))
+    }
 
-        self.amm_shares
-            .get(outcome_id)
-            .checked_sub(new_outcome_shares)
-            .ok_or(Error::CheckedSubOverflow)
+    pub fn internal_amm_estimate_burn(
+        &self,
+        outcome_id: FixedBytes<8>,
+        shares_target: U256,
+    ) -> R<U256> {
+        assert_or!(
+            self.amm_outcome_exists.get(outcome_id),
+            Error::NonexistentOutcome
+        );
+        // Gradually increase the amount of fUSDC that we burn until we've burned
+        // all the shares we want, then report the USD amount that was needed.
+        unimplemented!()
     }
 
     pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {

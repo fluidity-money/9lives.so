@@ -237,4 +237,20 @@ proptest! {
             implement_action!(c, sender, a);
         }
     }
+
+    #[test]
+    fn test_amm_access_control_okay_1(
+        outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2..100),
+        mut c in strat_storage_trading(false)
+    ) {
+        setup_contract(&mut c, &outcomes);
+        panic_guard(|| {
+            // A user should not be able to claim amounts from a campaign that hasn't ended.
+
+            // A user should not be able to claim liquidity from a campaign that hasn't ended.
+
+            // A user should not be able to add, remove, or mint liquidity for a
+            // campaign that has ended.
+        })
+    }
 }
