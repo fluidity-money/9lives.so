@@ -172,7 +172,7 @@ fn test_is_dpm() {
 #[test]
 #[cfg(feature = "trading-backend-amm")]
 fn test_is_amm() {
-    assert!(StorageTrading::default().is_dpm());
+    assert!(!StorageTrading::default().is_dpm());
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
