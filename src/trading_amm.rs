@@ -1,6 +1,6 @@
 use crate::{
-    error::*, events, fusdc_call, immutables::*, maths, proxy, share_call,
-    storage_trading::*, utils::*,
+    error::*, events, fusdc_call, immutables::*, maths, proxy, share_call, storage_trading::*,
+    utils::*,
 };
 
 use stylus_sdk::{alloy_primitives::*, evm};
@@ -526,24 +526,30 @@ impl StorageTrading {
     // The same as the mint function, but shadows the tokens instead, and
     // doesn't update anything.
     pub fn internal_amm_quote(&self, outcome_id: FixedBytes<8>, usd_amt: U256) -> R<U256> {
-        let outcome_shares = self
-            .amm_shares
-            .get(outcome_id)
-            .checked_add(usd_amt)
-            .ok_or(Error::CheckedAddOverflow)?;
-        let product = self
+        let n = U256::from(self.outcome_list.len());
+        let bumped_prod = self
             .outcome_ids_iter()
             .filter(|id| *id != outcome_id)
-            .map(|x| self.amm_shares.get(x))
+            .map(|id| {
+                self.amm_shares
+                    .get(id)
+                    .checked_add(usd_amt)
+                    .ok_or(Error::CheckedAddOverflow)
+            })
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
             .product::<U256>();
-        outcome_shares
-            .checked_sub(
-                self.amm_liquidity
-                    .get()
-                    .pow(U256::from(self.outcome_list.len()))
-                    .checked_div(product)
-                    .ok_or(Error::CheckedDivOverflow)?,
-            )
+
+        let new_outcome_shares = self
+            .amm_liquidity
+            .get()
+            .pow(n)
+            .checked_div(bumped_prod)
+            .ok_or(Error::CheckedDivOverflow)?;
+
+        self.amm_shares
+            .get(outcome_id)
+            .checked_sub(new_outcome_shares)
             .ok_or(Error::CheckedSubOverflow)
     }
 
