@@ -22,20 +22,37 @@ impl StorageTrading {
     // should have the approval done beforehand with its own
     // estimation of the address based on the CREATE2 process.
     // Does not prevent a user from submitting the same outcome twice!
+    // Unfortunately, the signature is like this because Solidity runs
+    // out of stack space, and we need to pass in explicitly a struct
+    // here to circumvent that, which alters the signature.
     #[allow(clippy::too_many_arguments)]
     pub fn ctor(
         &mut self,
-        outcomes: Vec<FixedBytes<8>>,
-        oracle: Address,
-        time_start: u64,
-        time_ending: u64,
-        fee_recipient: Address,
-        share_impl: Address,
-        should_buffer_time: bool,
-        fee_creator: u64,
-        fee_lp: u64,
-        fee_minter: u64,
-        fee_referrer: u64
+        (
+            outcomes,
+            oracle,
+            time_start,
+            time_ending,
+            fee_recipient,
+            share_impl,
+            should_buffer_time,
+            fee_creator,
+            fee_lp,
+            fee_minter,
+            fee_referrer,
+        ): (
+            Vec<FixedBytes<8>>,
+            Address,
+            u64,
+            u64,
+            Address,
+            Address,
+            bool,
+            u64,
+            u64,
+            u64,
+            u64,
+        ),
     ) -> R<()> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // Make sure that the user hasn't given us any zero values, or the end
