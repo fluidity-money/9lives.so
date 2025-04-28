@@ -84,6 +84,13 @@ contract MockTrading is INineLivesTrading {
         return value;
     }
 
+    function claimAddressFees70938D8(
+        address /* recipient */
+    ) external returns (uint256) {
+        ++counter_;
+        return counter_;
+    }
+
     function priceA827ED27(bytes8 /* outcome */) external returns (uint256) {
         ++counter_;
         return uint256(keccak256(abi.encodePacked(block.timestamp)));

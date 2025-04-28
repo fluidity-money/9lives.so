@@ -64,6 +64,11 @@ interface INineLivesTrading {
         uint256 value
     ) external returns (uint256);
 
+    /// @notice Claim fees owed to a specific address, perhaps after they've
+    ///        been doing referrals.
+    /// @param recipient to send the rewards to.
+    function claimAddressFees70938D8(address recipient) external returns (uint256);
+
     /// @notice Get the price of an outcome in fUSDC.
     /// @param outcome to test for
     function priceA827ED27(bytes8 outcome) external returns (uint256);

@@ -95,6 +95,11 @@ interface IEvents {
         uint256 indexed senderLiquidityShares
     );
 
+    event AddressFeesClaimed(
+        address indexed recipient,
+        uint256 indexed amount
+    );
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

@@ -1,9 +1,13 @@
-use stylus_sdk::alloy_primitives::{aliases::*, *};
+use stylus_sdk::{
+    alloy_primitives::{aliases::*, *},
+    evm,
+};
 
 use crate::{
     decimal::{fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal},
     error::*,
-    maths,
+    events, fusdc_call, maths,
+    utils::msg_sender,
 };
 
 pub use crate::storage_trading::*;
@@ -20,6 +24,20 @@ impl StorageTrading {
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_quote(outcome_id, value);
     }
+
+    #[allow(non_snake_case)]
+    pub fn claim_address_fees_70938_D_8_B(&mut self, recipient: Address) -> R<U256> {
+        let owed = self.fees_owed_addresses.get(msg_sender());
+        fusdc_call::transfer(recipient, owed)?;
+        self.fees_owed_addresses
+            .setter(msg_sender())
+            .set(U256::ZERO);
+        evm::log(events::AddressFeesClaimed {
+            recipient,
+            amount: owed,
+        });
+        Ok(owed)
+    }
 }
 
 impl StorageTrading {
@@ -30,7 +48,9 @@ impl StorageTrading {
             self.dpm_outcome_shares.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
-        let m_1 = c!(fusdc_u256_to_decimal(self.dpm_outcome_invested.get(outcome_id)));
+        let m_1 = c!(fusdc_u256_to_decimal(
+            self.dpm_outcome_invested.get(outcome_id)
+        ));
         let n_1 = self.dpm_outcome_shares.get(outcome_id);
         let n_2 = self.dpm_global_shares.get() - n_1;
         let n_1 = c!(share_u256_to_decimal(n_1));

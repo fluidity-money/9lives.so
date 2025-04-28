@@ -76,7 +76,7 @@ pub struct StorageTrading {
 
     /// Fees owed to specific users that received a simple cash amount.
     /// Could be the owner, or a referrer.
-    pub fees_owed: StorageMap<Address, StorageU256>,
+    pub fees_owed_addresses: StorageMap<Address, StorageU256>,
 
     /// An insane situation has taken place, and escaping has happened. This is set
     /// if the developers are able to retrieve the money. This is only possible

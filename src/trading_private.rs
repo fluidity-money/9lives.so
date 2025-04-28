@@ -67,16 +67,16 @@ impl StorageTrading {
         let fee_cum = fee_for_creator + fee_for_lp + fee_for_referrer;
         // Start to allocate some fees to the creator and to the referrer.
         if !fee_for_creator.is_zero() {
-            let fees_so_far = self.fees_owed.get(self.fee_recipient.get());
-            self.fees_owed.setter(self.fee_recipient.get()).set(
+            let fees_so_far = self.fees_owed_addresses.get(self.fee_recipient.get());
+            self.fees_owed_addresses.setter(self.fee_recipient.get()).set(
                 fees_so_far
                     .checked_add(fee_for_creator)
                     .ok_or(Error::CheckedAddOverflow)?,
             );
         }
         if !fee_for_referrer.is_zero() {
-            let fees_so_far = self.fees_owed.get(referrer);
-            self.fees_owed.setter(referrer).set(
+            let fees_so_far = self.fees_owed_addresses.get(referrer);
+            self.fees_owed_addresses.setter(referrer).set(
                 fees_so_far
                     .checked_add(fee_for_referrer)
                     .ok_or(Error::CheckedAddOverflow)?,

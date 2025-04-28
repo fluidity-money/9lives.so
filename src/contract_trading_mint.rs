@@ -58,6 +58,7 @@ impl StorageTrading {
                 });
             }
         }
+        // Set the fees, including the AMM helper ones.
         let value = self.calculate_and_set_fees(value, referrer)?;
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_mint(outcome, value, recipient);
