@@ -66,6 +66,8 @@ impl StorageTrading {
         return self.internal_amm_mint(outcome, value, recipient);
     }
 
+    /// Burn, preventing us from blowing past and below the amounts given.
+    /// Used by burn by shares as well.
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn burn_A_E_5853_F_A(
@@ -81,6 +83,39 @@ impl StorageTrading {
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_burn(_outcome, fusdc_amount, _min_shares, recipient);
+    }
+
+    #[allow(non_snake_case)]
+    pub fn estimate_burn_F_F_C_E_B_F_F_5(&self, _outcome: FixedBytes<8>, _shares: U256) -> R<U256> {
+        if !self.when_decided.is_zero() {
+            return Ok(U256::ZERO);
+        }
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!();
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return self.internal_amm_estimate_burn(_outcome, _shares);
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    #[allow(non_snake_case)]
+    pub fn burn_by_shares_7306_A_4_B_9(
+        &mut self,
+        _outcome: FixedBytes<8>,
+        _max_shares: U256,
+        _min_shares: U256,
+        _recipient: Address,
+    ) -> R<U256> {
+        #[cfg(feature = "trading-backend-dpm")]
+        unimplemented!();
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        {
+            return self.burn_A_E_5853_F_A(
+                _outcome,
+                self.internal_amm_estimate_burn(_outcome, _max_shares)?,
+                _min_shares,
+                _recipient,
+            );
+        }
     }
 
     #[allow(non_snake_case)]

@@ -74,14 +74,13 @@ contract BuyHelper2 {
         address _tradingAddr,
         bytes8 _outcome,
         uint256 _maxShareOut,
-        uint256 _minShareOut,
-        uint256 _fusdcAmt
+        uint256 _minShareOut
     ) external returns (uint256) {
         // In the normal router, this should be possible to get offline.
         INineLivesTrading tradingAddr = INineLivesTrading(_tradingAddr);
         IERC20 shareAddr = IERC20(tradingAddr.shareAddr(_outcome));
         shareAddr.transferFrom(msg.sender, address(this), _maxShareOut);
-        uint burned = tradingAddr.burnAE5853FA(_outcome, _fusdcAmt, _minShareOut, msg.sender);
+        uint burned = tradingAddr.burnByShares7306A4B9(_outcome, _maxShareOut, _minShareOut, msg.sender);
         uint256 toSend = shareAddr.balanceOf(address(this));
         if (toSend > 0) shareAddr.transfer(msg.sender, toSend);
         return burned;

@@ -76,6 +76,16 @@ contract MockTrading is INineLivesTrading {
         return 0;
     }
 
+    function burnByShares7306A4B9(
+        bytes8 outcome,
+        uint256 shareAmount,
+        uint256 minShares,
+        address recipient
+    ) external returns (uint256) {
+        ++counter_;
+        return 0;
+    }
+
     function quoteC0E17FC7(
         bytes8 /* outcome */,
         uint256 value
@@ -85,11 +95,18 @@ contract MockTrading is INineLivesTrading {
     }
 
     function quoteBurn8DBDCAC7(
-        bytes8 outcome,
+        bytes8 /* outcome */,
         uint256 fusdcValue
     ) external returns (uint256) {
         ++counter_;
         return fusdcValue;
+    }
+
+    function estimateBurnFFCEBFF5(
+        bytes8 /* outcome */,
+        uint256 shares
+    ) external view returns (uint256) {
+        return shares;
     }
 
     function claimAddressFees70938D8(

@@ -56,6 +56,13 @@ interface INineLivesTrading {
         address recipient
     ) external returns (uint256);
 
+    function burnByShares7306A4B9(
+        bytes8 outcome,
+        uint256 shareAmount,
+        uint256 minShares,
+        address recipient
+    ) external returns (uint256);
+
     /// @notice Quote function for testing the amount that could be minted.
     /// @param outcome to test for
     /// @param fusdcValue to test spending for
@@ -68,6 +75,11 @@ interface INineLivesTrading {
         bytes8 outcome,
         uint256 fusdcValue
     ) external returns (uint256);
+
+    function estimateBurnFFCEBFF5(
+        bytes8 outcome,
+        uint256 shares
+    ) external view returns (uint256 estimatedFusdc);
 
     /// @notice Claim fees owed to a specific address, perhaps after they've
     ///        been doing referrals.
