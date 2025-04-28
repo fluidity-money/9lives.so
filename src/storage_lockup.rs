@@ -39,17 +39,14 @@ pub fn strat_storage_lockup() -> impl proptest::prelude::Strategy<Value = Storag
     // We hope that the random storage offset protects us in the
     // test invocations so we don't need to do special setup
     // work.
-    use crate::{
-        storage_set_fields,
-        utils::{strat_address, strat_large_u256},
-    };
+    use crate::{storage_set_fields, utils::strat_large_u256};
     use proptest::prelude::*;
     (
         strat_large_u256().no_shrink(), // Storage offset
         any::<bool>(),
         any::<bool>(),
-        strat_address(),
-        strat_address(),
+        any::<Address>(),
+        any::<Address>(),
     )
         .prop_map(|(i, created, enabled, operator, token_addr)| {
             storage_set_fields!(StorageLockup, i, {

@@ -850,7 +850,7 @@ mod test {
     use super::*;
     use crate::{
         error::panic_guard,
-        utils::{strat_address, strat_fixed_bytes, strat_small_u256},
+        utils::{strat_fixed_bytes, strat_small_u256},
     };
     use proptest::prelude::*;
     proptest! {
@@ -867,29 +867,29 @@ mod test {
         #[test]
         fn test_infra_operator_pause_no_run(
             mut c in strat_storage_infra_market(),
-            register_trading_addr in strat_address(),
+            register_trading_addr in any::<Address>(),
             register_desc in strat_fixed_bytes::<32>(),
             register_launch_ts in any::<u64>(),
             register_call_deadline in any::<u64>(),
-            call_trading_addr in strat_address(),
+            call_trading_addr in any::<Address>(),
             call_winner in strat_fixed_bytes::<8>(),
-            call_incentive_recipient in strat_address(),
-            close_trading_addr in strat_address(),
-            close_trading_recipient in strat_address(),
-            whinge_trading_addr in strat_address(),
+            call_incentive_recipient in any::<Address>(),
+            close_trading_addr in any::<Address>(),
+            close_trading_recipient in any::<Address>(),
+            whinge_trading_addr in any::<Address>(),
             whinge_preferred_outcome in strat_fixed_bytes::<8>(),
-            whinge_bond_recipient in strat_address(),
-            predict_trading_addr in strat_address(),
+            whinge_bond_recipient in any::<Address>(),
+            predict_trading_addr in any::<Address>(),
             predict_commit in strat_fixed_bytes::<32>(),
-            reveal_committer_addr in strat_address(),
-            reveal_trading_addr in strat_address(),
+            reveal_committer_addr in any::<Address>(),
+            reveal_trading_addr in any::<Address>(),
             reveal_outcome in strat_fixed_bytes::<8>(),
             reveal_seed in strat_small_u256(),
             _sweep_outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 0..8),
-            sweep_trading_addr in strat_address(),
-            sweep_victim_addr in strat_address(),
-            sweep_fee_recipient_addr in strat_address(),
-            escape_trading_addr in strat_address()
+            sweep_trading_addr in any::<Address>(),
+            sweep_victim_addr in any::<Address>(),
+            sweep_fee_recipient_addr in any::<Address>(),
+            escape_trading_addr in any::<Address>()
         ) {
             c.operator.set(msg_sender());
             c.enable_contract(false).unwrap();

@@ -28,7 +28,7 @@ macro_rules! should_spend {
     ) => {
         $crate::host_erc20_call::should_spend(
             $addr,
-            map_macro::hash_map! { $( $key => $value ),* },
+            map_macro::hash_map! { $( $key => U256::from($value) ),* },
             || { $func }
         ).unwrap()
     };

@@ -5,3 +5,4 @@
 # It is recommended to check this file in to source control so that
 # everyone who runs the test benefits from these saved cases.
 cc 1f4fc1305d84477bc1a8c74b9887a5f22d3cacc76dff3b55e187e7b50b1d4bc4 # shrinks to shares = 0.0, outcome_money = 0.0, outcome_shares = 0.0, other_shares = 0.0
+cc 6e12cd4ecbc8ce489f56dd09de1143248f8c258806acf25383c5420d78db7482 # shrinks to x = 1379475916790195980660033093073234420120165835180, y = 649956256309462094574008535163455935427852313864, z = 1295521389259895137148512538242939076637277795800

@@ -181,6 +181,10 @@ class PredMarketNew:
             outcome_shares_received = previous_shares[i] - self.shares[i]
             # Update the outcome shares received
             self.user_outcome_shares[i] += outcome_shares_received
+            print(f"burning token shares received: {i}: {outcome_shares_received}")
+            if outcome_shares_received > 0:
+                print("shit")
+                exit(1)
 
         return self.shares
 
@@ -845,9 +849,8 @@ if __name__ == "__main__":
     #simulate_market_9()
     #simulate_market_10()
     #simulate_market_11()
-    simulate_market_12()
-    exit(0)
+    #simulate_market_12()
     #simulate_market_13()
     #simulate_market_14()
-    #simulate_market_15()
-    #test_value_conservation()
+    simulate_market_15()
+    test_value_conservation()

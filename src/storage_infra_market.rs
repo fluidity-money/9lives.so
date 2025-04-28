@@ -168,18 +168,18 @@ pub fn strat_storage_infra_market() -> impl proptest::prelude::Strategy<Value = 
 {
     use crate::{
         storage_set_fields,
-        utils::{strat_address, strat_large_u256},
+        utils::{strat_large_u256},
     };
     use proptest::prelude::*;
     (
         strat_large_u256().no_shrink(), // Storage offset
         any::<bool>(),
         any::<bool>(),
-        strat_address(),
+        any::<Address>(),
         strat_large_u256(),
-        strat_address(),
-        strat_address(),
-        strat_address(),
+        any::<Address>(),
+        any::<Address>(),
+        any::<Address>(),
     )
         .prop_map(
             |(

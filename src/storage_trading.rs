@@ -84,7 +84,6 @@ pub struct StorageTrading {
     pub is_escaped: StorageBool,
 
     /* ~~~~~~~~~~ DPM ONLY ~~~~~~~~~~ */
-
     /// Shares invested in every outcome cumulatively.
     pub dpm_global_shares: StorageU256,
 
@@ -98,7 +97,6 @@ pub struct StorageTrading {
     pub dpm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /* ~~~~~~~~~~ AMM ONLY ~~~~~~~~~~ */
-
     pub amm_liquidity: StorageU256,
 
     pub amm_outcome_prices: StorageMap<FixedBytes<8>, StorageU256>,
@@ -178,19 +176,17 @@ pub fn strat_storage_trading(
 ) -> impl proptest::prelude::Strategy<Value = StorageTrading> {
     use crate::{
         storage_set_fields,
-        utils::{
-            strat_address, strat_fixed_bytes, strat_large_u256, strat_small_u256, strat_tiny_u256,
-        },
+        utils::{strat_large_u256, strat_small_u256, strat_tiny_u256},
     };
     use proptest::prelude::*;
     (
-        strat_address(),
-        strat_address(),
+        any::<Address>(),
+        any::<Address>(),
         strat_small_u256(),
         // We only test two outcomes for now.
         proptest::collection::vec(
             (
-                strat_fixed_bytes::<8>(),
+                any::<FixedBytes<8>>(),
                 strat_tiny_u256(),
                 strat_tiny_u256(),
             ),
@@ -203,10 +199,10 @@ pub fn strat_storage_trading(
                 (
                     strat_large_u256().no_shrink(),
                     any::<bool>(),
-                    strat_address(),
+                    any::<Address>(),
                     any::<u64>(),
                     any::<bool>(),
-                    strat_address(),
+                    any::<Address>(),
                     any::<u64>(),
                     any::<u64>(),
                 )

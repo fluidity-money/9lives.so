@@ -13,7 +13,12 @@ pub use crate::storage_lockup::*;
 
 #[cfg_attr(feature = "contract-lockup", stylus_sdk::prelude::public)]
 impl StorageLockup {
-    pub fn ctor(&mut self, token_impl: Address, infra_market: Address, operator_addr: Address) -> Result<(), Error> {
+    pub fn ctor(
+        &mut self,
+        token_impl: Address,
+        infra_market: Address,
+        operator_addr: Address,
+    ) -> Result<(), Error> {
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         let token =
             proxy::deploy_proxy(token_impl).map_err(|_| Error::NinelivesLockedArbCreateError)?;
@@ -128,10 +133,7 @@ impl StorageLockup {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod test {
     use super::*;
-    use crate::{
-        error::panic_guard,
-        utils::{strat_address, strat_small_u256},
-    };
+    use crate::{error::panic_guard, utils::strat_small_u256};
     use proptest::prelude::*;
     proptest! {
         #[test]
@@ -148,12 +150,12 @@ mod test {
         fn test_lockup_operator_pause_no_run(
             mut c in strat_storage_lockup(),
             lockup_amt in strat_small_u256(),
-            lockup_recipient in strat_address(),
+            lockup_recipient in any::<Address>(),
             withdraw_amt in strat_small_u256(),
-            withdraw_recipient in strat_address(),
-            slash_victim in strat_address(),
+            withdraw_recipient in any::<Address>(),
+            slash_victim in any::<Address>(),
             slash_amt in strat_small_u256(),
-            slash_recipient in strat_address()
+            slash_recipient in any::<Address>()
         ) {
             c.operator.set(msg_sender());
             c.enable_contract(false).unwrap();

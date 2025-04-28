@@ -231,7 +231,7 @@ proptest! {
     fn test_amm_crazy_testing_1(
         outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2..100),
         mut c in strat_storage_trading(false),
-        actions in proptest::collection::vec((strat_address(), strat_action()), 1..1000)
+        actions in proptest::collection::vec((any::<Address>(), strat_action()), 1..1000)
     ) {
         setup_contract(&mut c, &outcomes);
         for (sender, a) in actions {

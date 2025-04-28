@@ -15,6 +15,22 @@ pub use crate::storage_trading::*;
 #[cfg(not(feature = "trading-backend-dpm"))]
 use crate::fusdc_call;
 
+// Arguments for the ctor function. In a tuple form for Solidity
+// calldata, and for a Default trait impl later.
+pub type CtorArgs = (
+    Vec<FixedBytes<8>>, // [0] Outcomes
+    Address,            // [1] Oracle
+    u64,                // [2] Time start
+    u64,                // [3] Time ending
+    Address,            // [4] Fee recipient
+    Address,            // [5] Share implementation
+    bool,               // [6] Should buffer time?
+    u64,                // [7] Fee for creator
+    u64,                // [8] Fee for LP
+    u64,                // [9] Fee for minter
+    u64,                // [10] Fee for referrer
+);
+
 #[cfg_attr(feature = "contract-trading-extras", stylus_sdk::prelude::public)]
 impl StorageTrading {
     // Seeds the pool with the first outcome. Assumes msg.sender is
@@ -26,76 +42,8 @@ impl StorageTrading {
     // out of stack space, and we need to pass in explicitly a struct
     // here to circumvent that, which alters the signature.
     #[allow(clippy::too_many_arguments)]
-    pub fn ctor(
-        &mut self,
-        (
-            outcomes,
-            oracle,
-            time_start,
-            time_ending,
-            fee_recipient,
-            share_impl,
-            should_buffer_time,
-            fee_creator,
-            fee_lp,
-            fee_minter,
-            fee_referrer,
-        ): (
-            Vec<FixedBytes<8>>,
-            Address,
-            u64,
-            u64,
-            Address,
-            Address,
-            bool,
-            u64,
-            u64,
-            u64,
-            u64,
-        ),
-    ) -> R<()> {
-        assert_or!(!self.created.get(), Error::AlreadyConstructed);
-        // Make sure that the user hasn't given us any zero values, or the end
-        // date isn't in the past, in places that don't make sense!
-        assert_or!(
-            time_ending >= block_timestamp()
-                && !share_impl.is_zero()
-                && time_ending > time_start
-                && outcomes.len() >= 2,
-            Error::BadTradingCtor
-        );
-        // We don't allow the fees to exceed 10% (100).
-        assert_or!(
-            fee_creator < 100 && fee_minter < 100 && fee_lp < 100 && fee_referrer < 100,
-            Error::ExcessiveFee
-        );
-        unsafe {
-            // We don't need to reset this, but it's useful for testing, and
-            // is presumably pretty cheap.
-            self.outcome_list.set_len(0);
-        }
-        // We assume that the sender is the factory.
-        self.created.set(true);
-        self.factory_addr.set(msg_sender());
-        self.share_impl.set(share_impl);
-        // If the fee recipient is zero, then we set it to the DAO address.
-        self.fee_recipient.set(if fee_recipient.is_zero() {
-            DAO_ADDR
-        } else {
-            fee_recipient
-        });
-        self.time_start.set(U64::from(time_start));
-        self.time_ending.set(U64::from(time_ending));
-        self.oracle.set(oracle);
-        self.should_buffer_time.set(should_buffer_time);
-        self.fee_creator.set(U256::from(fee_creator));
-        self.fee_minter.set(U256::from(fee_minter));
-        self.fee_lp.set(U256::from(fee_lp));
-        self.fee_referrer.set(U256::from(fee_referrer));
-        #[cfg(feature = "trading-backend-dpm")]
-        return self.internal_dpm_ctor(outcomes);
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_ctor(outcomes);
+    pub fn ctor(&mut self, a: CtorArgs) -> R<()> {
+        self.internal_ctor(a.0, a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8, a.9, a.10)
     }
 
     pub fn add_liquidity_permit(
@@ -216,6 +164,25 @@ impl StorageTrading {
     }
 }
 
+/// Default for CtorArgs, which is useful for defining simple tests on the
+/// ctor function behaving correctly with certain inputs.
+#[cfg(test)]
+fn default_ctor_args() -> CtorArgs {
+    (
+        vec![],
+        Address::ZERO,
+        0,
+        0,
+        Address::ZERO,
+        Address::ZERO,
+        false,
+        0,
+        0,
+        0,
+        0,
+    )
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn test_cant_recreate() {
@@ -259,4 +226,56 @@ fn test_cant_recreate() {
             .unwrap_err()
         )
     });
+}
+
+// Property testing that takes advantage of the tuple type to simplify
+// doing setup.
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod proptesting {
+    use super::*;
+
+    use crate::{
+        strat_storage_trading,
+        utils::{strat_fixed_bytes, strat_address_not_empty, strat_tiny_u256},
+    };
+
+    use stylus_sdk::alloy_primitives::U256;
+
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_fee_addition_cant_be_excessive(
+            outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2),
+            share_impl in any::<Address>(),
+            fee_for_creator in 100u64..,
+            fee_for_lp in 100u64..,
+            fee_for_referrer in 100u64..,
+            mut c in strat_storage_trading(false)
+        ) {
+             c.created.set(false);
+            let mut a = default_ctor_args();
+            a.5 = share_impl;
+            a.3 = 100;
+            a.0 = outcomes;
+            // Let's hope that's enough to be passing!
+            a.7 = fee_for_creator;
+            panic_guard(||
+                assert_eq!(Error::ExcessiveFee, c.ctor(a.clone()).unwrap_err())
+            );
+            a.7 = 0;
+            a.8= fee_for_lp;
+            panic_guard(||
+                assert_eq!(Error::ExcessiveFee, c.ctor(a.clone()).unwrap_err())
+            );
+            a.8 = 0;
+            a.10 = fee_for_referrer;
+            panic_guard(||
+                assert_eq!(Error::ExcessiveFee, c.ctor(a.clone()).unwrap_err())
+            );
+            a.10 = 0;
+            // Make sure that we can actually construct under normal circumstances!
+            c.ctor(a).unwrap()
+        }
+    }
 }

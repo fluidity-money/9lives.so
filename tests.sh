@@ -6,15 +6,13 @@ make solidity
 
 cargo test --features testing,trading-backend-amm $@
 
-exit 0
-
 #cargo mutants \
 #	--features testing,trading-backend-dpm \
 #	$(printf -- '-f %s ' src/*dpm*.rs) $@
 
 cargo mutants \
 	--features testing,trading-backend-amm \
-	$(printf -- '-f %s ' src/*amm*.rs)
+	$(printf -- '-f %s ' src/*amm*.rs src/*trading*.rs)
 
 if ! [ -z "$SPN_TEST_NO_JS" ]; then
 	exit 0

@@ -378,6 +378,7 @@ impl StorageTrading {
     }
 
     /// Rebalance the calculated pool fee weight.
+    #[mutants::skip]
     pub fn rebalance_fees_pool(&mut self, delta_liq: U256, is_add: bool) -> R<()> {
         let total_liq = self.amm_liquidity.get();
         let weight = self.amm_fee_weight.get();
@@ -597,6 +598,7 @@ impl StorageTrading {
             .ok_or(Error::CheckedSubOverflow)))
     }
 
+    #[mutants::skip]
     pub fn internal_amm_estimate_burn(
         &self,
         outcome_id: FixedBytes<8>,

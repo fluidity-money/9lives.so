@@ -102,6 +102,7 @@ pub fn rooti(x: U256, n: u32) -> U256 {
     y
 }
 
+/// Muldiv using the Chinese Remainder Theorem
 pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<(U256, bool), Error> {
     if denom_and_rem == U256::ZERO {
         return Err(Error::BadDenominator);
@@ -158,4 +159,32 @@ fn test_shares_edge_1() {
         .unwrap(),
         dec!(49545632.553194709597488661811)
     )
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod proptesting {
+    use super::*;
+
+    use crate::utils::strat_medium_u256;
+
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_mul_div(
+            x in strat_medium_u256(),
+            y in strat_medium_u256(),
+            z in strat_medium_u256()
+        ) {
+            assert_eq!(
+                x.checked_mul(y).unwrap().checked_div(z).unwrap(),
+                mul_div(x, y, z).unwrap().0
+            );
+            assert!({
+                let a = (x * y) / z;
+                let r = mul_div_round_up(x, y, z).unwrap();
+                a == r || a == r - U256::from(1)
+            })
+        }
+    }
 }
