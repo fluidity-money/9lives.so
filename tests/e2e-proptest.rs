@@ -20,7 +20,7 @@ fn test_factory_new_trading() {
         should_spend!(
             FUSDC_ADDR,
             {msg_sender() => setup_cost},
-            c.new_trading_90_C_25562(
+            c.new_trading_320_E_32_E_9(
                 vec![
                     (id, U256::from(1e6), String::new()),
                     (id2, U256::from(1e6), String::new()),
@@ -30,6 +30,7 @@ fn test_factory_new_trading() {
                 block_timestamp() + 100,
                 FixedBytes::ZERO,
                 Address::ZERO,
+                0,
                 0,
                 0,
                 0,

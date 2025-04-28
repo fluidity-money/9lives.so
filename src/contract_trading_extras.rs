@@ -221,7 +221,7 @@ impl StorageTrading {
 fn test_cant_recreate() {
     use stylus_sdk::alloy_primitives::fixed_bytes;
     crate::host::with_contract::<_, StorageTrading, _>(|c| {
-        c.ctor(
+        c.ctor((
             vec![
                 fixed_bytes!("0541d76af67ad076"),
                 fixed_bytes!("0541d76af67ad077"),
@@ -235,11 +235,12 @@ fn test_cant_recreate() {
             0,
             0,
             0,
-        )
+            0,
+        ))
         .unwrap();
         assert_eq!(
             Error::AlreadyConstructed,
-            c.ctor(
+            c.ctor((
                 vec![
                     fixed_bytes!("0541d76af67ad076"),
                     fixed_bytes!("0541d76af67ad077"),
@@ -253,7 +254,8 @@ fn test_cant_recreate() {
                 0,
                 0,
                 0,
-            )
+                0,
+            ))
             .unwrap_err()
         )
     });

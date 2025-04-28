@@ -86,7 +86,7 @@ proptest! {
         )
         .unwrap();
         ts_add_time(secs_since);
-        should_spend_fusdc_sender!(mint_value, c.mint_permit_E_90275_A_B(
+        should_spend_fusdc_sender!(mint_value, c.mint_permit_243_E_E_C_56(
             outcome_1,
             mint_value,
             msg_sender(),

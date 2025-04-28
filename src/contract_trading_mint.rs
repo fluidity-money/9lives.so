@@ -106,9 +106,10 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> R<U256> {
-        self.mint_permit_E_90275_A_B(
+        self.mint_permit_243_E_E_C_56(
             outcome,
             value,
+            Address::ZERO,
             recipient,
             U256::ZERO,
             0,

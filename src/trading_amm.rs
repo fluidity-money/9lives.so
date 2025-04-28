@@ -237,7 +237,7 @@ impl StorageTrading {
             .enumerate()
             .map(|(i, outcome_id)| {
                 let outcome_shares_received = prev_shares[i]
-                    .checked_sub(prev_shares[i])
+                    .checked_sub(self.amm_shares.get(outcome_id))
                     .ok_or(Error::CheckedSubOverflow)?;
                 if !outcome_shares_received.is_zero() {
                     share_call::mint(

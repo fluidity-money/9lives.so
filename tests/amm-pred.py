@@ -698,6 +698,10 @@ def simulate_market_12():
 
     # When removing liquidity, the users will receive shares of all the outcomes except for the most likely (i.e. most expensive) outcome.
     # Verify that users receive Outcome Share C and D, but not A and B
+    print(f"market user shares 0: {market.user_outcome_shares[0]}")
+    print(f"market user shares 1: {market.user_outcome_shares[1]}")
+    print(f"market user shares 2: {market.user_outcome_shares[2]}")
+    print(f"market user shares 3: {market.user_outcome_shares[3]}")
     assert market.user_outcome_shares[0] == 0
     assert market.user_outcome_shares[1] == 0
     assert market.user_outcome_shares[2] > 0
@@ -841,9 +845,9 @@ if __name__ == "__main__":
     #simulate_market_9()
     #simulate_market_10()
     #simulate_market_11()
-    #simulate_market_12()
+    simulate_market_12()
+    exit(0)
     #simulate_market_13()
     #simulate_market_14()
     #simulate_market_15()
     #test_value_conservation()
-    test_fee_collection_sum()

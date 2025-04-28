@@ -20,6 +20,7 @@ pub struct ActionCtor {
     pub fee_creator: u64,
     pub fee_lp: u64,
     pub fee_minter: u64,
+    pub fee_referrer: u64,
 }
 
 #[cfg(feature = "trading-backend-amm")]
@@ -37,6 +38,7 @@ pub struct ActionRemoveLiquidity {
 #[derive(Clone, Debug, PartialEq, P, A)]
 pub struct ActionMint {
     pub outcome: FixedBytes<8>,
+    pub referrer: Address,
     pub usd_amt: U256,
 }
 
@@ -102,10 +104,10 @@ pub struct ActionEffect {
 macro_rules! implement_action {
     ($c:expr, $sender:expr, $action:expr) => {{
         use stylus_sdk::alloy_primitives::U256;
-        use $crate::actions::Action;
+        use $crate::{should_spend_fusdc_sender, actions::Action};
         match $action {
             Action::Ctor(a) => {
-                $c.ctor(
+                $c.ctor((
                     a.outcomes,
                     a.oracle,
                     a.time_start,
@@ -116,41 +118,52 @@ macro_rules! implement_action {
                     a.fee_creator,
                     a.fee_lp,
                     a.fee_minter,
-                )
+                    a.fee_referrer,
+                ))
                 .unwrap();
             }
             Action::Mint(a) => {
-                $c.mint_permit_E_90275_A_B(
-                    a.outcome,
+                should_spend_fusdc_sender!(
                     a.usd_amt,
-                    $sender,
-                    U256::ZERO,
-                    0,
-                    FixedBytes::<32>::ZERO,
-                    FixedBytes::<32>::ZERO,
-                )
-                .unwrap();
+                    $c.mint_permit_243_E_E_C_56(
+                        a.outcome,
+                        a.usd_amt,
+                        a.referrer,
+                        $sender,
+                        U256::ZERO,
+                        0,
+                        FixedBytes::<32>::ZERO,
+                        FixedBytes::<32>::ZERO,
+                    )
+                );
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::AddLiquidity(a) => {
-                $c.add_liquidity_permit(
+                should_spend_fusdc_sender!(
                     a.amount,
-                    $sender,
-                    U256::ZERO,
-                    0,
-                    FixedBytes::<32>::ZERO,
-                    FixedBytes::<32>::ZERO,
-                )
-                .unwrap();
+                    $c.add_liquidity_permit(
+                        a.amount,
+                        $sender,
+                        U256::ZERO,
+                        0,
+                        FixedBytes::<32>::ZERO,
+                        FixedBytes::<32>::ZERO,
+                    )
+                );
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::RemoveLiquidity(a) => {
-                $c.remove_liquidity_3_C_857_A_15(a.amount, $sender).unwrap();
+                should_spend_fusdc_sender!(
+                    a.amount,
+                    $c.remove_liquidity_3_C_857_A_15(a.amount, $sender)
+                );
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::Burn(a) => {
-                $c.burn_A_E_5853_F_A(a.outcome, a.usd_amt, U256::ZERO, $sender)
-                    .unwrap();
+                should_spend_fusdc_sender!(
+                    a.usd_amt,
+                    $c.burn_A_E_5853_F_A(a.outcome, a.usd_amt, U256::ZERO, $sender)
+                );
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::ClaimLiquidity(a) => {
