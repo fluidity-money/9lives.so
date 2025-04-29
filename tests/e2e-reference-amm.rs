@@ -497,12 +497,12 @@ proptest! {
                 // First, fund the contract with some fUSDC using add liquidity:
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity(&mut c, add_liq_amt);
-                let user_shares = 833333334u64;
+                let user_shares = 833333333u64;
                 test_should_buy_check_shares!(
                     c,
                     outcome_a,
                     500e6 as u64,
-                    666666666, // Market shares
+                    666666667, // Market shares
                     user_shares // User shares
                 );
                 host::set_block_timestamp(1);
@@ -537,7 +537,7 @@ proptest! {
                 setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity(&mut c, add_liq_amt);
-                let user_shares = 621296297;
+                let user_shares = 621296296;
                 test_should_buy_check_shares!(
                     c,
                     outcome_a,
@@ -626,7 +626,7 @@ proptest! {
                     outcome_b,
                     1000e6 as u64,
                     98765432,
-                    2901234568u64
+                    2901234567u64
                 );
                 let (_, shares) = test_add_liquidity(&mut c, 500e6 as u64);
                 for (i, (_, amt)) in shares.into_iter().enumerate() {
@@ -661,7 +661,7 @@ proptest! {
                     outcome_a,
                     1000e6 as u64,
                     75131, // Market shares
-                    1099924869 // User shares
+                    1099924868 // User shares
                 );
                 test_should_buy_check_shares!(
                     c,
@@ -699,7 +699,7 @@ proptest! {
                     outcome_a,
                     300e6 as u64,
                     455166135, // Market shares
-                    844833865 // User shares
+                    844833864 // User shares
                 );
                 let sender_outcome_a_bal = U256::from(1169769517);
                 let (shares, _) = should_spend!(
