@@ -273,13 +273,13 @@ proptest! {
         mut c in strat_storage_trading(false)
     ) {
         setup_contract(&mut c, &[outcome_a, outcome_b]);
-        // (A) test_add_liquidity(&mut c, 1000e6 as u64);
-        let mint_amt = U256::from(20e6 as u64);
+        let liq = 20e6 as u64;
+        test_add_liquidity(&mut c, liq);
         let shares = should_spend_fusdc_sender!(
-            mint_amt,
+            liq,
             c.mint_permit_243_E_E_C_56(
                 outcome_a,
-                mint_amt,
+                U256::from(liq),
                 Address::ZERO,
                 msg_sender(),
                 U256::ZERO,
@@ -288,6 +288,11 @@ proptest! {
                 FixedBytes::ZERO,
             )
         );
+        should_spend_fusdc_contract!(
+            liq,
+            c.remove_liquidity_3_C_857_A_15(U256::from(liq), msg_sender())
+        );
+        test_add_liquidity(&mut c, liq);
         // (B) test_add_liquidity(&mut c, 1000e6 as u64);
         let burn_amt = U256::from(1e6 as u64);
         should_spend_fusdc_contract!(
