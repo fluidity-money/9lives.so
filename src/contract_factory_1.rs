@@ -36,7 +36,7 @@ impl StorageFactory {
         fee_creator: u64,
         fee_lp: u64,
         fee_minter: u64,
-        fee_referrer: u64
+        fee_referrer: u64,
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
@@ -163,7 +163,7 @@ impl StorageFactory {
             fee_creator,
             fee_lp,
             fee_minter,
-            fee_referrer
+            fee_referrer,
         )?;
 
         // If the infra market wasn't chosen, then we assume that the caller has done

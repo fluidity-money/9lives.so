@@ -186,20 +186,19 @@ impl StorageTrading {
         }
         // TODO: we don't do anything with this -- yet.
         let _ = fee_for_minter;
-        {
-            let x = self.amm_fees_collected_weighted.get();
+        self.amm_fees_collected_weighted.set(
             self.amm_fees_collected_weighted
-                .set(x.checked_add(fee_for_lp).ok_or(Error::CheckedAddOverflow)?);
-        }
+                .get()
+                .checked_add(fee_for_lp)
+                .ok_or(Error::CheckedAddOverflow)?,
+        );
         {
             let fees_so_far = self.fees_owed_addresses.get(DAO_ADDR);
-            self.fees_owed_addresses
-                .setter(self.fee_recipient.get())
-                .set(
-                    fees_so_far
-                        .checked_add(fee_for_protocol)
-                        .ok_or(Error::CheckedAddOverflow)?,
-                );
+            self.fees_owed_addresses.setter(DAO_ADDR).set(
+                fees_so_far
+                    .checked_add(fee_for_protocol)
+                    .ok_or(Error::CheckedAddOverflow)?,
+            );
         }
         if !fee_for_referrer.is_zero() {
             let fees_so_far = self.fees_owed_addresses.get(referrer);

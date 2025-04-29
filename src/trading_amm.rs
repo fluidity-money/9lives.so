@@ -269,14 +269,16 @@ impl StorageTrading {
         Ok((liquidity_shares_val, lp_fees_earned, shares_received))
     }
 
-    // Sell the amount of shares, using the USD amount, returning the shares
-    // sold. Does the transferring.
+    /// Sell the amount of shares, using the USD amount, returning the shares
+    /// sold, and the amount of fUSDC to return to the user. Expects the caller
+    /// to do the selling.
     pub fn internal_amm_burn(
         &mut self,
         outcome_id: FixedBytes<8>,
         usd_amt: U256,
-        min_shares: U256
-    ) -> R<U256> {
+        min_shares: U256,
+        referrer: Address,
+    ) -> R<(U256, U256)> {
         assert_or!(
             !self.amm_liquidity.get().is_zero(),
             Error::NotEnoughLiquidity
@@ -287,12 +289,15 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
+        let fee = self.calculate_and_set_fees(usd_amt, referrer)?;
+        let usd_amt_added_fee = usd_amt.checked_add(fee).ok_or(Error::CheckedAddOverflow)?;
+        let usd_amt_no_fee = usd_amt.checked_sub(fee).ok_or(Error::CheckedSubOverflow)?;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
                     .amm_shares
                     .get(outcome_id)
-                    .checked_sub(usd_amt)
+                    .checked_sub(usd_amt_added_fee)
                     .ok_or(Error::CheckedSubOverflow));
                 self.amm_shares.setter(outcome_id).set(shares);
             }
@@ -300,7 +305,7 @@ impl StorageTrading {
                 let total_shares = c!(self
                     .amm_total_shares
                     .get(outcome_id)
-                    .checked_sub(usd_amt)
+                    .checked_sub(usd_amt_added_fee)
                     .ok_or(Error::CheckedSubOverflow));
                 self.amm_total_shares.setter(outcome_id).set(total_shares);
             }
@@ -334,7 +339,7 @@ impl StorageTrading {
             msg_sender(),
             burned_shares
         ));
-        Ok(burned_shares)
+        Ok((burned_shares, usd_amt_no_fee))
     }
 
     pub fn internal_amm_claim_liquidity(&mut self, recipient: Address) -> R<U256> {

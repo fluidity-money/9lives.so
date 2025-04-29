@@ -45,7 +45,7 @@ pub fn unpack_u256(data: &[u8]) -> Option<U256> {
 }
 
 pub fn unpack_u64(data: &[u8]) -> Option<u64> {
-    data[32-8..].try_into().ok().map(u64::from_be_bytes)
+    data[32 - 8..].try_into().ok().map(u64::from_be_bytes)
 }
 
 #[test]

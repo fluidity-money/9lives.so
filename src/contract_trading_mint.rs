@@ -85,17 +85,15 @@ impl StorageTrading {
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
         {
-            let burned_shares = self.internal_amm_burn(_outcome, fusdc_amount, _min_shares)?;
-            let fusdc_amount = fusdc_amount
-                .checked_sub(self.calculate_and_set_fees(fusdc_amount, referrer)?)
-                .ok_or(Error::CheckedSubOverflow)?;
-            fusdc_call::transfer(recipient, fusdc_amount)?;
+            let (burned_shares, fusdc_to_return) =
+                self.internal_amm_burn(_outcome, fusdc_amount, _min_shares, referrer)?;
+            fusdc_call::transfer(recipient, fusdc_to_return)?;
             evm::log(events::SharesBurned {
                 identifier: _outcome,
                 shareAmount: burned_shares,
                 spender: msg_sender(),
                 recipient,
-                fusdcReturned: fusdc_amount,
+                fusdcReturned: fusdc_to_return,
             });
             Ok(burned_shares)
         }

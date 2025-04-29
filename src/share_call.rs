@@ -1,7 +1,9 @@
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
-use stylus_sdk::alloy_primitives::{FixedBytes, Address, U256};
-
-use crate::{error::Error, utils::{msg_sender, contract_address}};
+use crate::{
+    error::Error,
+    utils::{contract_address, msg_sender},
+};
 
 pub use crate::erc20_call::{permit, transfer_from};
 

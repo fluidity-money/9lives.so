@@ -1,5 +1,3 @@
-
-
 use stylus_sdk::{
     alloy_primitives::{Address, FixedBytes},
     alloy_sol_types::{sol, SolCall},

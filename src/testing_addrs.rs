@@ -1,4 +1,3 @@
-
 use stylus_sdk::alloy_primitives::Address;
 
 macro_rules! defaults {
@@ -48,11 +47,10 @@ pub const TESTING_ADDRS: [Address; 16] = [
     // This is used to denominate a mint/burn that's taken place, and is
     // treated specially by the transfer functions.
     ZERO_FOR_MINT_ADDR,
-
     IVAN,
     ERIK,
     ELI,
     OGOUS,
     PAXIA,
-    YOEL
+    YOEL,
 ];

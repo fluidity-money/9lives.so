@@ -38,6 +38,7 @@ class PredMarketNew:
 
     def collect_fees(self, amount):
         print("Collecting fee of: ", amount)
+        print(f"fee collected weighted: {self.fees_collected_weighted}")
         self.fees_collected_weighted += amount
         self.fees_collected_usd += amount
 
@@ -205,6 +206,8 @@ class PredMarketNew:
 
         # Fee collection logic
         fee = self.fees * amount
+        print(f"fees inside a buy: {fee}")
+
         self.collect_fees(fee)
         self.pool_wallet_usd -= fee # A portion of the "amount" transfer into the pool belong to the fee address. Thus, it must be transfer from the pool to fee address.
         amount_without_fee = amount - fee # Deduct the fee from the amount
@@ -260,6 +263,7 @@ class PredMarketNew:
         print(f"user deducted shares: {user_deducted_by}")
 
         self.transfer_from_pool_to_user(amount, user)
+        print(f"fees inside doing a sell: {fee}")
         self.collect_fees(fee)
         self.pool_wallet_usd -= fee # The fee computed must be transfer from the pool to fee address.
 
@@ -316,9 +320,11 @@ class PredMarketNew:
 
         self.user_wallet_usd[user] += amount_not_claimed
         self.fees_claimed[user] += amount_not_claimed # This ensure that user cannot double-claim the fee
+        print(f"amount not claimed user is getting as fee: {amount_not_claimed}")
 
     def rebalanceFee(self, liquidity_shares, user, operation):
         fee_weight = (liquidity_shares * self.fees_collected_weighted) / self.liquidity
+        print(f"fee weight: {fee_weight}")
         print(f"{user} - rebalanceFee: ({liquidity_shares} * {self.fees_collected_weighted}) / {self.liquidity} = {(liquidity_shares * self.fees_collected_weighted) / self.liquidity}")
 
         if (operation == "add"):
@@ -946,6 +952,7 @@ def simulate_market_17():
     market.test_get_user_details(CHARLES)
     assert market.user_wallet_usd[CHARLES] == 100 # Charles should receive 100 USD after selling
     target_fee_colected = 10 + (100 * 0.02)/0.98
+    print(f"target fee collected: {target_fee_colected}")
     assert market.fees_collected_weighted == target_fee_colected # Earlier collected 10 USD + 2.040816326530612 USD collected from selling
 
     half_of_target_fee_colected = target_fee_colected / 2
@@ -1111,8 +1118,7 @@ def simulate_market_19():
 
 
 if __name__ == "__main__":
-    simulate_market_16()
-    exit(0)
     simulate_market_17()
+    exit(0)
     simulate_market_18()
     simulate_market_19()

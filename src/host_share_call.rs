@@ -2,9 +2,7 @@ use stylus_sdk::alloy_primitives::{Address, U256};
 
 use alloc::string::String;
 
-use crate::{
-    erc20_call, error::Error, testing_addrs::ZERO_FOR_MINT_ADDR,
-};
+use crate::{erc20_call, error::Error, testing_addrs::ZERO_FOR_MINT_ADDR};
 
 // Construct the ERC20 with the description in bytes provided, and an
 // admin that can mint more tokens on request.

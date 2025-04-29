@@ -19,6 +19,10 @@ thread_local! {
         RefCell::new(HashMap::new());
 }
 
+pub fn cleanup() {
+    BALANCES.with(|b| b.borrow_mut().clear());
+}
+
 #[macro_export]
 macro_rules! should_spend {
     (
@@ -134,6 +138,19 @@ macro_rules! give_then_reset_token {
     };
 }
 
+// Just burn some tokens, useful for fee accounting.
+pub fn burn(addr: Address, spender: Address, amt: U256) {
+    BALANCES
+        .with(|b| -> Option<()> {
+            let p = b.borrow().get(&addr)?.get(&spender)?.clone();
+            *b.borrow_mut().get_mut(&addr)?.get_mut(&spender)? = p
+                .checked_sub(amt)
+                .expect("failed to burn token {addr} for spender {spender}, {amt}, has {p}");
+            Some(())
+        })
+        .expect("went to burn {addr} for spender {spender}, no bal")
+}
+
 fn safe_print(x: U256, d: u8) -> String {
     match x {
         U256::MAX => "max".to_string(),
@@ -179,10 +196,6 @@ pub fn should_spend<T>(
         test_reset_tracked_used(addr, *k);
     }
     let x = f();
-    for k in spenders.keys() {
-        // Wipe the balances of the spenders.
-        test_reset_bal(addr, *k);
-    }
     let v = x?;
     for (k, v) in spenders {
         let b = balance_of(addr, k).unwrap();
@@ -209,6 +222,8 @@ pub fn should_spend<T>(
                 .into(),
             ));
         }
+        // Wipe the balances of the spender.
+        test_reset_bal(addr, k);
     }
     Ok(v)
 }

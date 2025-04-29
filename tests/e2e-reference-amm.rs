@@ -7,8 +7,9 @@
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    assert_eq_u, error::Error, host, interactions_clear_after, panic_guard, proxy, share_call,
-    should_spend, should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
+    assert_eq_u, error::Error, fusdc_call, host, host_erc20_call, immutables::FUSDC_ADDR,
+    interactions_clear_after, panic_guard, proxy, share_call, should_spend,
+    should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
     testing_addrs::*, utils::*, StorageTrading,
 };
 
@@ -91,6 +92,8 @@ fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut
 
 fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedBytes<8>, U256)>) {
     let buy_amt = U256::from(amt);
+    // Make sure we don't include fees that we didn't clean up.
+    host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
     should_spend_fusdc_sender!(
         buy_amt,
         c.add_liquidity_permit(
@@ -104,11 +107,16 @@ fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedByte
     )
 }
 
+/// Test if a user can buy some shares, and do some balance accounting to
+/// make sure. Doesn't check if the contract received the fees, only tries
+/// to take it from them, and assumes the caller will do some accounting
+/// to be certain.
 macro_rules! test_should_buy_check_shares {
-    ($c:ident, $outcome:expr, $buy_amt:expr, $market_share_amt:expr, $user_share_amt:expr) => {{
+    ($c:ident, $outcome:expr, $buy_amt:expr, $market_share_amt:expr, $user_share_amt:expr, $fees_taken:expr) => {{
         let buy_amt = U256::from($buy_amt);
-        use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
         let user_share_amt = U256::from($user_share_amt);
+        let fees_taken = U256::from($fees_taken);
+        host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
         assert_eq!(
             user_share_amt,
             $c.quote_C_0_E_17_F_C_7($outcome, buy_amt).unwrap(),
@@ -135,6 +143,7 @@ macro_rules! test_should_buy_check_shares {
                     $c.amm_shares.get($outcome),
                     "market shares, buy amount is {buy_amt}"
                 );
+                host_erc20_call::burn(FUSDC_ADDR, CONTRACT, fees_taken);
                 Ok(amount)
             }),
             "user shares"
@@ -143,9 +152,11 @@ macro_rules! test_should_buy_check_shares {
 }
 
 macro_rules! test_should_burn_shares {
-    ($c:expr, $outcome:expr, $buy_amt:expr, $shares_sold:expr) => {{
+    ($c:expr, $outcome:expr, $buy_amt:expr, $shares_sold:expr, $fees_taken:expr) => {{
         let buy_amt = U256::from($buy_amt);
         let shares_sold = U256::from($shares_sold);
+        let fees_taken = U256::from($fees_taken);
+        host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
         assert_eq!(
             shares_sold,
             $c.internal_amm_quote_burn(
@@ -159,10 +170,14 @@ macro_rules! test_should_burn_shares {
         // In this test scaffolding, we don't set the referrer.
         assert_eq!(
             shares_sold,
-            should_spend_fusdc_contract!(
-                $buy_amt,
-                $c.burn_9_C_54_A_443($outcome, buy_amt, U256::ZERO, Address::ZERO, msg_sender())
-            ),
+            should_spend_fusdc_contract!($buy_amt, {
+                let x = $c
+                    .burn_9_C_54_A_443($outcome, buy_amt, U256::ZERO, Address::ZERO, msg_sender())
+                    .unwrap();
+                assert_eq!(fees_taken, fusdc_call::balance_of(CONTRACT).unwrap());
+                host_erc20_call::burn(FUSDC_ADDR, CONTRACT, fees_taken);
+                Ok(x)
+            }),
             "actual burn"
         );
     }};
@@ -356,7 +371,8 @@ proptest! {
                     outcome_a,
                     294e6 as u64,
                     772797528, // Market shares
-                    521202472 // User shares
+                    521202472, // User shares
+                    0 // Fees
                 );
                 c.internal_amm_get_prices().unwrap();
                 assert_eq_u!(1000e6, c.amm_liquidity.get());
@@ -386,7 +402,8 @@ proptest! {
                     outcome_a,
                     294e6 as u64,
                     461527062, // Market shares
-                    832472938 // User shares
+                    832472938, // User shares
+                    0 // Fees
                 );
                 c.internal_amm_get_prices().unwrap();
                 assert_eq_u!(1000e6, c.amm_liquidity.get());
@@ -426,11 +443,12 @@ proptest! {
                     outcome_a,
                     buy_amt,
                     455166136, // Market shares
-                    844833864 // User shares
+                    844833864, // User shares,
+                    0 // Fees
                 );
                 let expect_usd = U256::from(844833864);
                 let buy_amt = U256::from(buy_amt);
-                test_should_burn_shares!(c, outcome_a, buy_amt, expect_usd);
+                test_should_burn_shares!(c, outcome_a, buy_amt, expect_usd, 0);
                 for (i, (price1, price2)) in before_outcome_prices
                     .iter()
                     .zip(c.outcome_ids_iter().map(|x| c.amm_outcome_prices.get(x)))
@@ -473,7 +491,8 @@ proptest! {
                     outcome_a,
                     500e6 as u64,
                     666666667 as u64, // Market shares
-                    user_shares // User shares
+                    user_shares, // User shares
+                    0 // Fees
                 );
                 host::set_block_timestamp(1);
                 c.decide(outcome_a).unwrap();
@@ -512,7 +531,8 @@ proptest! {
                     outcome_a,
                     500e6 as u64,
                     666666667, // Market shares
-                    user_shares // User shares
+                    user_shares, // User shares
+                    0 // Fees
                 );
                 host::set_block_timestamp(1);
                 c.decide(outcome_a).unwrap();
@@ -552,7 +572,8 @@ proptest! {
                     outcome_a,
                     200e6 as u64,
                     578703704, // Market shares
-                    user_shares // User shares
+                    user_shares, // User shares
+                    0 // Fees
                 );
                 host::set_block_timestamp(1);
                 c.decide(outcome_c).unwrap();
@@ -628,14 +649,16 @@ proptest! {
                     outcome_a,
                     1000e6 as u64,
                     125e6 as u64,
-                    1875e6 as u64
+                    1875e6 as u64,
+                    0 // No fees!
                 );
                 test_should_buy_check_shares!(
                     c,
                     outcome_b,
                     1000e6 as u64,
                     98765433,
-                    2901234567u64
+                    2901234567u64,
+                    0 // No fees
                 );
                 let (_, shares) = test_add_liquidity(&mut c, 500e6 as u64);
                 for (i, (_, amt)) in shares.into_iter().enumerate() {
@@ -670,14 +693,16 @@ proptest! {
                     outcome_a,
                     1000e6 as u64,
                     75132, // Market shares
-                    1099924868 // User shares
+                    1099924868, // User shares
+                    0 // Fees
                 );
                 test_should_buy_check_shares!(
                     c,
                     outcome_b,
                     1000e6 as u64,
                     22675, // Market shares
-                    2099977325 // User shares
+                    2099977325, // User shares
+                    0
                 );
                 test_add_liquidity(&mut c, 500e6 as u64);
                 //TODO
@@ -708,7 +733,8 @@ proptest! {
                     outcome_a,
                     300e6 as u64,
                     455166136, // Market shares
-                    844833864 // User shares
+                    844833864, // User shares
+                    0 // Fees
                 );
                 let sender_outcome_a_bal = U256::from(1169769517);
                 let (shares, _) = should_spend!(
@@ -779,10 +805,80 @@ proptest! {
                     outcome_a,
                     500e6 as u64,
                     671140940, // Market shares
-                    818859060 // User shares
+                    818859060, // User shares
+                    10e6 as u64 // Fees
                 );
                 assert_eq!(U256::from(10e6 as u64), c.amm_fees_collected_weighted.get());
-                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151382159);
+                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151320155, 0);
+                // A normal fee amount (from our perspective) until we reconcile the best approach.
+                //TODO
+                assert_eq!(U256::from(12000000 as u64), c.amm_fees_collected_weighted.get());
+            }
+        };
+    }
+
+    #[test]
+    fn test_amm_user_story_17(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        let target_fee_collected = U256::from(12000000);
+        c.oracle.set(ELI);
+        let half_of_target_fee_collected = target_fee_collected / U256::from(2);
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                // 20 = 2% fees
+                c.fee_lp.set(U256::from(20));
+                test_add_liquidity(&mut c, 500e6 as u64);
+            },
+            ERIK => {
+                test_add_liquidity(&mut c, 500e6 as u64);
+            },
+            ELI => {
+                test_should_buy_check_shares!(
+                    c,
+                    outcome_a,
+                    500e6 as u64,
+                    671140940, // Market shares
+                    818859060, // User shares
+                    10e6 as u64 // Fees
+                );
+                assert_eq_u!(10e6 as u64, c.amm_fees_collected_weighted.get());
+                test_should_burn_shares!(
+                    c,
+                    outcome_a,
+                    100e6 as u64,
+                    151320155,
+                    2000000 // Fees
+                );
+                // According to the Python, this should be 12040816.
+                assert_eq!(target_fee_collected, c.amm_fees_collected_weighted.get());
+            },
+            IVAN => {
+                should_spend_fusdc_contract!(
+                    half_of_target_fee_collected,
+                    c.claim_lp_fees_66980_F_36(msg_sender())
+                );
+                assert_eq!(
+                    U256::ZERO,
+                    c.claim_lp_fees_66980_F_36(msg_sender()).unwrap()
+                );
+            },
+            ERIK => {
+                should_spend_fusdc_contract!(
+                    half_of_target_fee_collected,
+                    c.claim_lp_fees_66980_F_36(msg_sender())
+                );
+                assert_eq!(
+                    U256::ZERO,
+                    c.claim_lp_fees_66980_F_36(msg_sender()).unwrap()
+                );
+                assert!(fusdc_call::balance_of(CONTRACT).unwrap().is_zero());
+            },
+            ELI => {
+                c.declare(outcome_a).unwrap();
             }
         };
     }

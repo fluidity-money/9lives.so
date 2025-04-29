@@ -134,7 +134,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return Ok(self.dpm_global_shares.get());
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return Ok(self.amm_liquidity.get())
+        return Ok(self.amm_liquidity.get());
     }
 
     pub fn is_dpm(&self) -> bool {
@@ -171,7 +171,7 @@ impl StorageTrading {
             self.fee_creator.get(),
             self.fee_minter.get(),
             self.fee_lp.get(),
-            self.fee_referrer.get()
+            self.fee_referrer.get(),
         ))
     }
 }

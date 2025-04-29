@@ -166,10 +166,7 @@ impl std::fmt::Debug for StorageInfraMarket {
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub fn strat_storage_infra_market() -> impl proptest::prelude::Strategy<Value = StorageInfraMarket>
 {
-    use crate::{
-        storage_set_fields,
-        utils::{strat_large_u256},
-    };
+    use crate::{storage_set_fields, utils::strat_large_u256};
     use proptest::prelude::*;
     (
         strat_large_u256().no_shrink(), // Storage offset

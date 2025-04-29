@@ -1,5 +1,3 @@
-
-
 use stylus_sdk::alloy_primitives::{Address, U256};
 
 use crate::error::Error;

@@ -130,11 +130,20 @@ pub extern "C" fn account_balance(_address: *const u8, _dest: *mut u8) {}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn account_code(_address: *const u8, _offset: usize, _size: usize, _dest: *mut u8) -> usize { 0 }
+pub extern "C" fn account_code(
+    _address: *const u8,
+    _offset: usize,
+    _size: usize,
+    _dest: *mut u8,
+) -> usize {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn account_code_size(_address: *const u8) -> usize { 0 }
+pub extern "C" fn account_code_size(_address: *const u8) -> usize {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -146,7 +155,9 @@ pub extern "C" fn block_basefee(_basefee: *mut u8) {}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn chainid() -> u64 { 0 }
+pub extern "C" fn chainid() -> u64 {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -154,11 +165,15 @@ pub extern "C" fn block_coinbase(_coinbase: *mut u8) {}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn block_gas_limit() -> u64 { 0 }
+pub extern "C" fn block_gas_limit() -> u64 {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn block_number() -> u64 { 0 }
+pub extern "C" fn block_number() -> u64 {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -169,7 +184,9 @@ pub extern "C" fn call_contract(
     _value: *const u8,
     _gas: u64,
     _return_data_len: *mut usize,
-) -> u8 { 1 }
+) -> u8 {
+    1
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -183,7 +200,8 @@ pub extern "C" fn create1(
     _endowment: *const u8,
     _contract: *mut u8,
     _revert_data_len: *mut usize,
-) {}
+) {
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -194,7 +212,8 @@ pub extern "C" fn create2(
     _salt: *const u8,
     _contract: *mut u8,
     _revert_data_len: *mut usize,
-) {}
+) {
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -204,19 +223,27 @@ pub extern "C" fn delegate_call_contract(
     _calldata_len: usize,
     _gas: u64,
     _return_data_len: *mut usize,
-) -> u8 { 1 }
+) -> u8 {
+    1
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn evm_gas_left() -> u64 { 0 }
+pub extern "C" fn evm_gas_left() -> u64 {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn evm_ink_left() -> u64 { 0 }
+pub extern "C" fn evm_ink_left() -> u64 {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn msg_reentrant() -> bool { false }
+pub extern "C" fn msg_reentrant() -> bool {
+    false
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -224,7 +251,9 @@ pub extern "C" fn msg_value(_value: *mut u8) {}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn read_return_data(_dest: *mut u8, _offset: usize, _size: usize) -> usize { 0 }
+pub extern "C" fn read_return_data(_dest: *mut u8, _offset: usize, _size: usize) -> usize {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -232,7 +261,9 @@ pub extern "C" fn write_result(_data: *const u8, _len: usize) {}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
-pub extern "C" fn return_data_size() -> usize { 0 }
+pub extern "C" fn return_data_size() -> usize {
+    0
+}
 
 #[no_mangle]
 #[cfg(not(target_arch = "wasm32"))]
@@ -242,7 +273,9 @@ pub extern "C" fn static_call_contract(
     _calldata_len: usize,
     _gas: u64,
     _return_data_len: *mut usize,
-) -> u8 { 1 }
+) -> u8 {
+    1
+}
 pub fn get_msg_sender() -> Address {
     MSG_SENDER.with(|v| v.clone().into_inner())
 }

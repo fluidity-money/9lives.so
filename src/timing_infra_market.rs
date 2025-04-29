@@ -23,7 +23,7 @@ pub enum InfraMarketState {
     Revealing,
     Declarable,
     Sweeping,
-    Closed
+    Closed,
 }
 
 impl From<InfraMarketState> for u8 {

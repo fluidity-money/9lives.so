@@ -27,7 +27,7 @@ pub fn ctor(
     fee_creator: u64,
     fee_lp: u64,
     fee_minter: u64,
-    fee_referrer: u64
+    fee_referrer: u64,
 ) -> Result<(), Error> {
     let a = ctorCall {
         ctorArgs: CtorArgs {
@@ -41,7 +41,7 @@ pub fn ctor(
             feeCreator: fee_creator,
             feeLp: fee_lp,
             feeMinter: fee_minter,
-            feeReferrer: fee_referrer
+            feeReferrer: fee_referrer,
         },
     }
     .abi_encode();

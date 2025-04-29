@@ -1,5 +1,3 @@
-
-
 #[cfg_attr(
     any(feature = "contract-beauty-contest", feature = "testing"),
     stylus_sdk::prelude::storage

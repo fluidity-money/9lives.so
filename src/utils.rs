@@ -244,6 +244,9 @@ macro_rules! interactions_clear_after {
         impl Drop for CleanupRaii {
             fn drop(&mut self) {
                 $crate::host::clear_storage();
+                // In an ideal world, this wouldn't be needed. But we do it here for
+                // hygiene and understanding reasons.
+                $crate::host_erc20_call::cleanup();
             }
         }
         let _guard = CleanupRaii;

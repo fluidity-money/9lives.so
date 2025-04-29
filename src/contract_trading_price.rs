@@ -2,7 +2,7 @@ use stylus_sdk::alloy_primitives::{aliases::*, *};
 
 use crate::error::*;
 
-pub use crate::{utils::msg_sender, storage_trading::*};
+pub use crate::{storage_trading::*, utils::msg_sender};
 
 use alloc::vec::Vec;
 
