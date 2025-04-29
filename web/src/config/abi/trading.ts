@@ -1,6 +1,67 @@
 const tradingAbi = [
   {
     type: "function",
+    name: "addLiquidityPermit",
+    inputs: [
+      {
+        name: "liquidity",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "v",
+        type: "uint8",
+        internalType: "uint8",
+      },
+      {
+        name: "r",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "s",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "userLiquidity",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "liquidityAdded",
+        type: "tuple[]",
+        internalType: "struct INineLivesTrading.UserLiqAdded[]",
+        components: [
+          {
+            name: "outcome",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
+          {
+            name: "sharesReceived",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "burnAE5853FA",
     inputs: [
       {
@@ -18,6 +79,59 @@ const tradingAbi = [
         type: "uint256",
         internalType: "uint256",
       },
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "burnByShares7306A4B9",
+    inputs: [
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "shareAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "claimAddressFees70938D8",
+    inputs: [
       {
         name: "recipient",
         type: "address",
@@ -159,6 +273,30 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "estimateBurnFFCEBFF5",
+    inputs: [
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "shares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "estimatedFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "globalShares",
     inputs: [],
     outputs: [
@@ -265,7 +403,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "payoff91FA8C2E",
+    name: "payoff85D8DFC9",
     inputs: [
       {
         name: "outcomeId",
@@ -337,7 +475,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "quoteC0E17FC7",
+    name: "quoteBurn8DBDCAC7",
     inputs: [
       {
         name: "outcome",
@@ -345,7 +483,7 @@ const tradingAbi = [
         internalType: "bytes8",
       },
       {
-        name: "value",
+        name: "fusdcValue",
         type: "uint256",
         internalType: "uint256",
       },
@@ -355,6 +493,71 @@ const tradingAbi = [
         name: "",
         type: "uint256",
         internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "quoteC0E17FC7",
+    inputs: [
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "fusdcValue",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "removeLiquidity3C857A15",
+    inputs: [
+      {
+        name: "liquidity",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "fusdcAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "liquidityRemoved",
+        type: "tuple[]",
+        internalType: "struct INineLivesTrading.UserLiqRemoved[]",
+        components: [
+          {
+            name: "outcome",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
+          {
+            name: "sharesReceived",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
       },
     ],
     stateMutability: "nonpayable",
