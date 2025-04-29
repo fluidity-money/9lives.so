@@ -36,7 +36,7 @@ env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR", LONGTAIL);
 env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
 
 // Address of the team fee recipient from the Trading contract (different
-// from the creator).
+// from the creator). Used as the moderation fee recipient.
 env_addr!(DAO_ADDR, "SPN_DAO_ADDR", DAO);
 
 // Scaling amount for checking if a bad predictor went above 50% in their

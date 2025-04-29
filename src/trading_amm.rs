@@ -508,6 +508,8 @@ impl StorageTrading {
             .filter(|id| *id != outcome_id)
             .map(|x| self.amm_shares.get(x))
             .product::<U256>();
+        // We don't think that pow_ceil will be an issue with overflowing due to
+        // the characteristics of the model.
         self.amm_shares.setter(outcome_id).set(
             self.amm_liquidity
                 .get()

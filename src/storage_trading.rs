@@ -61,14 +61,14 @@ pub struct StorageTrading {
     /// it's concluded, as well as set the fee for SPN.
     pub operator: StorageAddress,
 
-    /// The current mint fee for the creator. Defaults to 2 for 0.2%.
+    /// The current mint fee for the creator. 2 = 0.2%.
     pub fee_creator: StorageU256,
 
     /// The current mint fee for position holders (users) who participated
-    /// in the campaign. Defaults to 8, for 0.8%.
+    /// in the campaign. 8 = 0.8%.
     pub fee_minter: StorageU256,
 
-    /// The fee for LPs to the market. Defaults to 3, for 0.2%.
+    /// The fee for LPs to the market. 3 = 0.3%.
     pub fee_lp: StorageU256,
 
     /// The fees owed to referrers of minters and burners.
@@ -84,6 +84,7 @@ pub struct StorageTrading {
     pub is_escaped: StorageBool,
 
     /* ~~~~~~~~~~ DPM ONLY ~~~~~~~~~~ */
+
     /// Shares invested in every outcome cumulatively.
     pub dpm_global_shares: StorageU256,
 
@@ -97,6 +98,7 @@ pub struct StorageTrading {
     pub dpm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /* ~~~~~~~~~~ AMM ONLY ~~~~~~~~~~ */
+
     pub amm_liquidity: StorageU256,
 
     pub amm_outcome_prices: StorageMap<FixedBytes<8>, StorageU256>,
@@ -111,7 +113,7 @@ pub struct StorageTrading {
     /// Weight recorded to avoid a dilution event for fees with new LPs.
     pub amm_fee_weight: StorageU256,
 
-    /// The amount of fees a user has claimed.
+    /// The amount of LP fees a user has claimed.
     pub amm_lp_fees_claimed: StorageMap<Address, StorageU256>,
 
     /// Since we use a system of addressing outcomes with a unique

@@ -174,4 +174,6 @@ interface INineLivesTrading {
 
     /// @notice get a share address using the identifier given instead of an online check.
     function shareAddr(bytes8 outcomeId) external view returns (address);
+
+    function userLiquidityShares(address spender) external view returns (uint256);
 }

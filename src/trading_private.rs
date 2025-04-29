@@ -3,7 +3,7 @@ use stylus_sdk::{alloy_primitives::*, evm};
 use crate::{
     error::*,
     events,
-    fees::FEE_SCALING,
+    fees::{FEE_SCALING, FEE_SPN_MINT_PCT},
     immutables::*,
     maths,
     storage_trading::*,
@@ -119,13 +119,25 @@ impl StorageTrading {
     /// if we're a AMM. Returns the amount remaining.
     pub fn calculate_and_set_fees(&mut self, value: U256, referrer: Address) -> R<U256> {
         let fee_for_creator = maths::mul_div_round_up(value, self.fee_creator.get(), FEE_SCALING)?;
+        let fee_for_minter = maths::mul_div_round_up(value, self.fee_minter.get(), FEE_SCALING)?;
         let fee_for_lp = maths::mul_div_round_up(value, self.fee_lp.get(), FEE_SCALING)?;
         let fee_for_referrer = if !referrer.is_zero() {
             maths::mul_div_round_up(value, self.fee_referrer.get(), FEE_SCALING)?
         } else {
             U256::ZERO
         };
-        // fee_for_creator + fee_for_lp + fee_for_referrer
+        let fee_protocol = maths::mul_div_round_up(value, FEE_SPN_MINT_PCT, FEE_SCALING)?;
+        if !fee_protocol.is_zero() {
+            let fees_so_far = self.fees_owed_addresses.get(DAO_ADDR);
+            self.fees_owed_addresses
+                .setter(self.fee_recipient.get())
+                .set(
+                    fees_so_far
+                        .checked_add(fee_protocol)
+                        .ok_or(Error::CheckedAddOverflow)?,
+                );
+        }
+        // fee_for_creator + fee_for_minter +  fee_for_lp + fee_for_referrer + fee_for_protocol
         let fee_cum = fee_for_creator
             .checked_add(fee_for_lp)
             .and_then(|x| fee_for_referrer.checked_add(x))

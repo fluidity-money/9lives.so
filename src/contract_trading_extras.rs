@@ -59,7 +59,6 @@ impl StorageTrading {
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
         return {
-            self.require_not_done_predicting()?;
             if _deadline.is_zero() {
                 c!(fusdc_call::take_from_sender(_amount));
             } else {
@@ -89,6 +88,10 @@ impl StorageTrading {
 
     pub fn fusdc_addr(&self) -> R<Address> {
         Ok(FUSDC_ADDR)
+    }
+
+    pub fn user_liquidity_shares(&self, addr: Address) -> R<U256> {
+        Ok(self.amm_user_liquidity_shares.get(addr))
     }
 
     pub fn shutdown(&mut self) -> R<U256> {

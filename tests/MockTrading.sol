@@ -211,4 +211,8 @@ contract MockTrading is INineLivesTrading {
     function shareAddr(bytes8 outcome) external view returns (address) {
         return address(shares_[outcome]);
     }
+
+    function userLiquidityShares(address spender) external view returns (uint256) {
+        return uint256(keccak256(abi.encodePacked(spender)));
+    }
 }

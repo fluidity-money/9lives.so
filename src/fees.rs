@@ -4,11 +4,6 @@ use stylus_sdk::alloy_primitives::U256;
 // the mint fee amount.
 pub const FEE_SCALING: U256 = U256::from_limbs([1000, 0, 0, 0]);
 
-pub const DEFAULT_FEE_CREATOR_MINT_PCT: u64 = 2;
-
-// 0.2% of all trading to buy shares goes to the creator of the contract.
-pub const DEFAULT_FEE_CREATOR_MINT_PCT_U: U256 = U256::from_limbs([DEFAULT_FEE_CREATOR_MINT_PCT, 0, 0, 0]);
-
 // 0.8% of all trading to buy shares goes to SPN.
 pub const FEE_SPN_MINT_PCT: U256 = U256::from_limbs([8, 0, 0, 0]);
 
