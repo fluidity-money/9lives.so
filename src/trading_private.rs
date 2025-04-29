@@ -126,21 +126,27 @@ impl StorageTrading {
         } else {
             U256::ZERO
         };
-        let fee_protocol = maths::mul_div_round_up(value, FEE_SPN_MINT_PCT, FEE_SCALING)?;
-        if !fee_protocol.is_zero() {
+        let fee_for_protocol = if !self.is_protocol_fee_disabled.get() {
+            maths::mul_div_round_up(value, FEE_SPN_MINT_PCT, FEE_SCALING)?
+        } else {
+            U256::ZERO
+        };
+        {
             let fees_so_far = self.fees_owed_addresses.get(DAO_ADDR);
             self.fees_owed_addresses
                 .setter(self.fee_recipient.get())
                 .set(
                     fees_so_far
-                        .checked_add(fee_protocol)
+                        .checked_add(fee_for_protocol)
                         .ok_or(Error::CheckedAddOverflow)?,
                 );
         }
         // fee_for_creator + fee_for_minter +  fee_for_lp + fee_for_referrer + fee_for_protocol
         let fee_cum = fee_for_creator
-            .checked_add(fee_for_lp)
+            .checked_add(fee_for_minter)
+            .and_then(|x| fee_for_lp.checked_add(x))
             .and_then(|x| fee_for_referrer.checked_add(x))
+            .and_then(|x| fee_for_protocol.checked_add(x))
             .ok_or(Error::CheckedAddOverflow)?;
         // Start to allocate some fees to the creator and to the referrer.
         if !fee_for_creator.is_zero() {
@@ -192,7 +198,7 @@ fn test_is_amm() {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod proptesting {
     use crate::{
-        fees::FEE_SCALING,
+        fees::{FEE_SCALING, FEE_SPN_MINT_PCT},
         strat_storage_trading,
         utils::{strat_address_not_empty, strat_medium_u256},
     };
@@ -223,6 +229,7 @@ mod proptesting {
         #[test]
         fn test_fee_addition_ok(
             fee_for_creator in (0..=100).prop_map(U256::from),
+            fee_for_minter in (0..=100).prop_map(U256::from),
             fee_for_lp in (0..=100).prop_map(U256::from),
             fee_for_referrer in (0..=100).prop_map(U256::from),
             value in strat_medium_u256(),
@@ -230,9 +237,16 @@ mod proptesting {
             mut c in strat_storage_trading(false)
         ) {
             c.fee_creator.set(fee_for_creator);
+            c.fee_minter.set(fee_for_minter);
             c.fee_lp.set(fee_for_lp);
             c.fee_referrer.set(fee_for_referrer);
+            c.is_protocol_fee_disabled.set(false);
             let expected_fee_creator = fee_for_creator
+                .checked_mul(value)
+                .unwrap()
+                .checked_div(FEE_SCALING)
+                .unwrap();
+            let expected_fee_minter = fee_for_minter
                 .checked_mul(value)
                 .unwrap()
                 .checked_div(FEE_SCALING)
@@ -247,8 +261,17 @@ mod proptesting {
                 .unwrap()
                 .checked_div(FEE_SCALING)
                 .unwrap();
+            let expected_fee_protocol = FEE_SPN_MINT_PCT
+                .checked_mul(value)
+                .unwrap()
+                .checked_div(FEE_SCALING)
+                .unwrap();
             let expected_cum_fee =
-                expected_fee_creator + expected_fee_lp + expected_fee_referrer;
+                expected_fee_creator +
+                expected_fee_minter +
+                expected_fee_lp +
+                expected_fee_referrer +
+                expected_fee_protocol;
             // In our tests, we tolerate a difference.
             let tol = U256::from(10);
             let got = c.calculate_and_set_fees(value, referrer_addr).unwrap();

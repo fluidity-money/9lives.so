@@ -16,6 +16,7 @@ use proptest::prelude::*;
 
 fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
     c.created.set(false);
+    c.is_protocol_fee_disabled.set(true);
     c.ctor((
         outcomes.to_vec(),
         msg_sender(),

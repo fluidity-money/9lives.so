@@ -83,6 +83,9 @@ pub struct StorageTrading {
     /// to be set by the oracle.
     pub is_escaped: StorageBool,
 
+    /// Is the protocol fee disabled? This will only ever be set in testing.
+    pub is_protocol_fee_disabled: StorageBool,
+
     /* ~~~~~~~~~~ DPM ONLY ~~~~~~~~~~ */
 
     /// Shares invested in every outcome cumulatively.
