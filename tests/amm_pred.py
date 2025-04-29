@@ -1,58 +1,66 @@
 #!/usr/bin/env python3
 
 import math
-from tabulate import tabulate
-import numpy as np
-import pytest
+from tabulate import tabulate # pip3 install tabulate
+import numpy as np # pip3 install numpy
+import pytest # pip3 install pytest
+import copy
 
 class PredMarketNew:
-    def __init__(self, liquidity, outcomes, fees = 0):
+    def __init__(self, liquidity, outcomes, fees=0.00):
         self.liquidity = liquidity
         self.outcomes = outcomes
         self.outcome_prices = [0] * outcomes
         self.shares = [liquidity] * outcomes
-        self.fees = fees # e.g. 2% would be 0.02
-        self.fees_collected = 0 # total collected fees for this market
-
 
         self.total_shares = [liquidity] * outcomes
 
-        # Track the total outcome shares a user own
-        self.user_outcome_shares = [0] * outcomes
-        self.user_liquidity_shares = 0
-        self.user_wallet_usd = 0
+		# Track the total outcome shares a user own
+        self.user_outcome_shares = {}
+        self.user_liquidity_shares = {}
+        self.user_wallet_usd = {}
         self.pool_wallet_usd = 0
 
         self.winning_outcome = None
         self.resolved = False
 
+        self.fees = fees
+        self.fees_collected_weighted = 0
+        self.fees_collected_usd = 0
+        self.fees_claimed = {}
 
-    def collectfees(self, amount):
-        self.fees_collected += amount
+    def add_user(self, *users):
+        for user in users:
+            self.user_outcome_shares[user] = [0] * self.outcomes
+            self.user_liquidity_shares[user] = 0
+            self.user_wallet_usd[user] = 0
+            self.fees_claimed[user] = 0
 
-    def claimfees(self):
-        self.user_wallet_usd += self.fees_collected/self.liquidity*self.user_liquidity_shares
+    def collect_fees(self, amount):
+        print("Collecting fee of: ", amount)
+        self.fees_collected_weighted += amount
+        self.fees_collected_usd += amount
 
-    def transfer_from_user_to_pool(self, amount):
+    def transfer_from_user_to_pool(self, amount, user):
         if amount < 0:
             raise ValueError("Amount must be non-negative")
 
-        self.user_wallet_usd -= amount
+        self.user_wallet_usd[user] -= amount
         self.pool_wallet_usd += amount
 
         # Wallet balance can never be negative
-        if self.user_wallet_usd < 0 or self.pool_wallet_usd < 0:
+        if self.user_wallet_usd[user] < 0 or self.pool_wallet_usd < 0:
             raise ArithmeticError("Underflow error: result is negative")
 
-    def transfer_from_pool_to_user(self, amount):
+    def transfer_from_pool_to_user(self, amount, user):
         if amount < 0:
             raise ValueError("Amount must be non-negative")
 
-        self.user_wallet_usd += amount
+        self.user_wallet_usd[user] += amount
         self.pool_wallet_usd -= amount
 
         # Wallet balance can never be negative
-        if self.user_wallet_usd < 0 or self.pool_wallet_usd < 0:
+        if self.user_wallet_usd[user] < 0 or self.pool_wallet_usd < 0:
             raise ArithmeticError("Underflow error: result is negative")
 
     def get_user_positions(self):
@@ -79,27 +87,23 @@ class PredMarketNew:
         # Calculate PriceWeightOfAllOutcomes
         price_weight_of_all_outcomes = sum(outcome_price_weights)
 
-        print(f"price weight of all outcomes: {price_weight_of_all_outcomes}")
-
         # price_weight_of_all_outcomes can be zero if no liquidity is added yet. Prevent division by zero error
         if price_weight_of_all_outcomes > 0:
             # Calculate OutcomePrices
             for k in range(len(self.shares)):
                 self.outcome_prices[k] = (outcome_price_weights[k] / price_weight_of_all_outcomes)
-                print(f"outcome prices: {self.outcome_prices[k]}")
 
         return self.outcome_prices
 
     # "amount" is the amount of USD added
-    def add_liquidity(self, amount):
+    def add_liquidity(self, amount, user):
         self.only_when_market_not_resolved()
-        self.transfer_from_user_to_pool(amount)
+        self.transfer_from_user_to_pool(amount, user)
 
         # Update self.outcome_prices to the latest price
         self.get_outcome_prices()
 
         previous_liquidity = self.liquidity
-        print(f"previous liquidity: {previous_liquidity}")
 
         # mints liquidity shares for a user
         for i in range(len(self.shares)):
@@ -107,10 +111,8 @@ class PredMarketNew:
             self.total_shares[i] += amount
 
         previous_shares = self.shares.copy()
-        print(f"prev shares: {previous_shares}")
 
         least_likely = self.shares.index(max(self.shares))
-        print(f"least likely amt: {max(self.shares)}")
         # It is possible to have more than one outcome shares with the same max shares. (e.g., OutA=100, OutB=100, OutC=200, OutD=300)
         least_likely_indices = [i for i, s in enumerate(self.shares) if s == max(self.shares)]
 
@@ -118,93 +120,99 @@ class PredMarketNew:
         for i in range(len(self.shares)):
             if i not in least_likely_indices:
                 self.shares[i] = (self.shares[least_likely] * self.outcome_prices[least_likely]) / self.outcome_prices[i]
-                print(f"new global shares[{i}]: {self.shares[i]}")
 
         product = math.prod(self.shares)
-        print(f"shares: {self.shares}")
-        print(f"product: {product}")
-        self.liquidity = pow(product, 1/len(self.shares))
-        print(f"self.liquidity = {self.liquidity}, prev_liquidity: {previous_liquidity}")
-        print(f"shares post computation: {self.shares}")
+        new_liquidity = pow(product, 1/len(self.shares))
+
+        liquidity_shares_minted = (new_liquidity - previous_liquidity)
+
+        # Don't need to rebalance if the liquidity shares is zero
+        if (self.liquidity > 0):
+            self.rebalanceFee(liquidity_shares_minted, user, "add")
+
+        self.liquidity = new_liquidity
 
         # Record the no. of liquidity shares user received
-        self.user_liquidity_shares += (self.liquidity - previous_liquidity)
+        self.user_liquidity_shares[user] += liquidity_shares_minted
 
         # During add liquidity, users will receive all the outcome shares except for the least likely
         for i in range(len(self.shares)):
             outcome_shares_received = previous_shares[i] - self.shares[i]
             # Update the outcome shares received
-            self.user_outcome_shares[i] += outcome_shares_received
-            print(f"new user shares: {i}: {outcome_shares_received}")
+            self.user_outcome_shares[user][i] += outcome_shares_received
 
         return self.shares
 
      # "amount" is the number of liquidity shares the user give back to the pool
-    def remove_liquidity(self, amount):
+    def remove_liquidity(self, amount, user):
         self.only_when_market_not_resolved()
 
         # Update self.outcome_prices to the latest price
         self.get_outcome_prices()
+
+        # Claim fee before removing the user's liquidity shares. Otherwise, those fee will be lost
+        self.claim_fee(user)
+
+        # Rebalance the weighted fee
+        self.rebalanceFee(amount, user, "remove")
+
+        previous_liquidity = self.liquidity
 
         # amount refers to the liquidity shares
         most_likely = self.shares.index(min(self.shares))
         # It is possible to have more than one outcome shares with the same min shares. (e.g., OutA=100, OutB=100, OutC=200, OutD=300)
         most_likely_indices = [i for i, s in enumerate(self.shares) if s == min(self.shares)]
 
+        least_likely = self.shares.index(max(self.shares))
+
         # "amount" is the number of liquidity shares the user give back to the pool
+        # Incorrect: liquiditysharesvalue = self.liquidity / self.shares[least_likely] * amount
         liquiditysharesvalue = (self.shares[most_likely] * amount) / self.liquidity
-        print(f"amount: {amount}, self.shares[most_likely]: {self.shares[most_likely]}, most likely id: {most_likely}")
-        print(f"liquidity shares value: {liquiditysharesvalue}")
-        self.transfer_from_pool_to_user(liquiditysharesvalue)
+        print("liquiditysharesvalue = ", liquiditysharesvalue)
+        self.transfer_from_pool_to_user(liquiditysharesvalue, user)
 
         for i in range(len(self.shares)):
             self.shares[i] -= liquiditysharesvalue
-            print(f"total shares before: {self.total_shares[i]} - {liquiditysharesvalue}")
             self.total_shares[i] -= liquiditysharesvalue
 
-
         previous_shares = self.shares.copy()
-        print(f"previous shares: {previous_shares}")
 
         for i in range(len(self.shares)):
             if i not in most_likely_indices:
                 self.shares[i] = (self.shares[most_likely] * self.outcome_prices[most_likely]) / self.outcome_prices[i]
+                print("Removed self.shares[{}] = {}".format(i, self.shares[i]))
 
         product = math.prod(self.shares)
+
+        # Below math is same as "self.liquidity = self.liquidity - amount"
         self.liquidity = pow(product, 1/len(self.shares))
 
          # Deduct the number of liquidity shares the user give back to the pool.
-        self.user_liquidity_shares -= amount
+        self.user_liquidity_shares[user] -= amount
 
         # During remove liquidity, users will receive all the outcome shares except for the most likely
         for i in range(len(self.shares)):
             outcome_shares_received = previous_shares[i] - self.shares[i]
             # Update the outcome shares received
-            self.user_outcome_shares[i] += outcome_shares_received
-            print(f"burning token shares received: {i}: {outcome_shares_received}")
-            if outcome_shares_received > 0:
-                print("shit")
-                exit(1)
+            self.user_outcome_shares[user][i] += outcome_shares_received
 
         return self.shares
 
 
-    def buy(self, outcome, amount): # audit - "amount" is in USD
+    def buy(self, outcome, amount, user): # audit - "amount" is in USD
         self.only_when_market_not_resolved()
-        fee_taken = amount*self.fees
-        amount -= fee_taken
-        self.collectfees(fee_taken)
-        self.transfer_from_user_to_pool(amount)
+        self.transfer_from_user_to_pool(amount, user) # Transfer the USD to this pool
+
+        # Fee collection logic
+        fee = self.fees * amount
+        self.collect_fees(fee)
+        self.pool_wallet_usd -= fee # A portion of the "amount" transfer into the pool belong to the fee address. Thus, it must be transfer from the pool to fee address.
+        amount_without_fee = amount - fee # Deduct the fee from the amount
 
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
-            print(f"shares before update in buy for outcome {i}: {self.shares[i]}")
-            print(f"shares before update in buy for outcome {i}: {self.total_shares[i]}")
-            self.shares[i] += amount
-            self.total_shares[i] += amount
-
-        print(f"self.shares[{i}] += amount: {self.shares[0]}")
-        print(f"self.total_shares[{i}] += amount: {self.total_shares[i]}")
+            self.shares[i] += amount_without_fee
+            self.total_shares[i] += amount_without_fee
 
         previous_shares = self.shares.copy()
 
@@ -212,30 +220,29 @@ class PredMarketNew:
         product = math.prod([value for i, value in enumerate(self.shares) if i != outcome])
         # Adjust the specified outcome's share to keep balance
         self.shares[outcome] = pow(self.liquidity, self.outcomes) / product
-        print(f"self.shares[{outcome}] = {self.shares}")
 
         # Outcome shares transferred from pool to user
-        self.user_outcome_shares[outcome] += (previous_shares[outcome] - self.shares[outcome])
-        print(f"previous_shares[outcome]: {previous_shares[outcome]}")
-        print(f"amount: {amount}")
-        print(f"self.shares[outcome]: {self.shares[outcome]}")
-        print(f"previous_shares[{outcome}] = {previous_shares[outcome]}")
-        print(f"previous_shares[outcome] - self.shares[outcome]: {previous_shares[outcome] - self.shares[outcome]}")
-        print(f"self.shares[{outcome}] = {self.shares[outcome]}")
+        self.user_outcome_shares[user][outcome] += (previous_shares[outcome] - self.shares[outcome])
 
         return self.shares
 
-    def sell(self, outcome, amount):
+    def sell(self, outcome, amount, user):
         self.only_when_market_not_resolved()
 
-        fee_taken = amount*self.fees
-        amount -= fee_taken
-        self.collectfees(fee_taken)
+        # Fee Logic
+        # Assume the fee is 2% (0.02) and user wants to withdraw 100 USD (amount=100)
+        # Compute X where after charging 2% fee against X, the remaining X will be 100
+        # Formula to use: X = 100/(1 - fee) = 100/(1-0.02) = 100/0.98 = 102.04081632653062
+        # Charging 2% fee against 102.04081632653062. 102.04081632653062 - (102.04081632653062 * 0.02) = 100
+        # Formula for fee: amount/(1 - fee) - amount => re-arrange => (amount * fee) / (1 - fee)
+        fee = (amount * self.fees) / (1 - self.fees)
+        # Add fee to the amount
+        amount_with_fee = amount + fee
 
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
-            self.shares[i] -= amount
-            self.total_shares[i] -= amount
+            self.shares[i] -= amount_with_fee
+            self.total_shares[i] -= amount_with_fee
 
         previous_shares = self.shares.copy()
 
@@ -245,11 +252,15 @@ class PredMarketNew:
         self.shares[outcome] = pow(self.liquidity, self.outcomes) / product
 
         # Outcome shares transferred from user to pool
-        shares_burned = self.shares[outcome] - previous_shares[outcome]
-        print(f"shares burned: {shares_burned}, self.shares[{outcome}] = {self.shares[outcome]}, previous_shares[{outcome}] = {previous_shares[outcome]}")
-        self.user_outcome_shares[outcome] -= shares_burned
+        user_deducted_by = (self.shares[outcome] - previous_shares[outcome])
+        if user_deducted_by > self.user_outcome_shares[user][outcome]:
+            raise ArithmeticError("Insufficient shares to sell")
 
-        self.transfer_from_pool_to_user(amount)
+        self.user_outcome_shares[user][outcome] -= user_deducted_by
+
+        self.transfer_from_pool_to_user(amount, user)
+        self.collect_fees(fee)
+        self.pool_wallet_usd -= fee # The fee computed must be transfer from the pool to fee address.
 
         return self.shares
 
@@ -259,37 +270,64 @@ class PredMarketNew:
         self.resolved = True
 
     # "no_of_winning_outcome_shares" is the number of winning outcome shares the user holds.
-    def resolution(self, no_of_winning_outcome_shares):
+    def resolution(self, no_of_winning_outcome_shares, user):
         self.only_when_market_resolved()
 
-        if no_of_winning_outcome_shares > self.user_outcome_shares[self.winning_outcome]:
+        if no_of_winning_outcome_shares > self.user_outcome_shares[user][self.winning_outcome]:
             raise ArithmeticError("Insufficient winning outcome shares")
 
         payoff_per_share = 1
         winning_in_usd = no_of_winning_outcome_shares * payoff_per_share
 
-        self.transfer_from_pool_to_user(winning_in_usd)
+        self.transfer_from_pool_to_user(winning_in_usd, user)
 
         # Burn the user's claimed winning outcome shares to avoid double claim
-        self.user_outcome_shares[self.winning_outcome] -= no_of_winning_outcome_shares
+        self.user_outcome_shares[user][self.winning_outcome] -= no_of_winning_outcome_shares
 
         return winning_in_usd
 
-    def claim_liqudity(self, no_of_liquidity_shares):
+    def claim_liqudity(self, no_of_liquidity_shares, user):
         self.only_when_market_resolved()
 
-        if no_of_liquidity_shares > self.user_liquidity_shares:
+        if no_of_liquidity_shares > self.user_liquidity_shares[user]:
             raise ArithmeticError("Insufficient liquidity shares")
 
         liqudity_price = self.shares[self.winning_outcome] / self.liquidity
         claimed_amount = no_of_liquidity_shares * liqudity_price
 
-        self.transfer_from_pool_to_user(claimed_amount)
+        self.transfer_from_pool_to_user(claimed_amount, user)
 
         # Burn the user's claimed liquidity shares to avoid double claim
-        self.user_liquidity_shares -= no_of_liquidity_shares
+        self.user_liquidity_shares[user] -= no_of_liquidity_shares
 
         return claimed_amount
+
+    def claim_fee(self, user):
+        fee_entitled = (self.user_liquidity_shares[user] * self.fees_collected_weighted) / self.liquidity
+        print(f"{user} - claim_fee: ({self.user_liquidity_shares[user]} * {self.fees_collected_weighted}) / {self.liquidity} = {(self.user_liquidity_shares[user] * self.fees_collected_weighted) / self.liquidity}")
+
+        if (fee_entitled <= self.fees_claimed[user]):
+            return 0
+
+        amount_not_claimed = fee_entitled - self.fees_claimed[user]
+
+        self.fees_collected_usd -= amount_not_claimed
+
+        self.user_wallet_usd[user] += amount_not_claimed
+        self.fees_claimed[user] += amount_not_claimed # This ensure that user cannot double-claim the fee
+
+    def rebalanceFee(self, liquidity_shares, user, operation):
+        fee_weight = (liquidity_shares * self.fees_collected_weighted) / self.liquidity
+        print(f"{user} - rebalanceFee: ({liquidity_shares} * {self.fees_collected_weighted}) / {self.liquidity} = {(liquidity_shares * self.fees_collected_weighted) / self.liquidity}")
+
+        if (operation == "add"):
+            self.fees_collected_weighted += fee_weight
+            self.fees_claimed[user] += fee_weight
+        elif (operation == "remove"):
+            self.fees_collected_weighted -= fee_weight
+            self.fees_claimed[user] -= fee_weight
+        else:
+            raise ValueError("Invalid operation")
 
     def only_when_market_resolved(self):
         if not self.resolved:
@@ -317,21 +355,24 @@ class PredMarketNew:
         print(" === Market Details === ")
         print("Market Liquidty: ", self.liquidity)
         print("Pool Wallet (USD): ", self.pool_wallet_usd)
+        print("Fees Collected (Weighted): ", self.fees_collected_weighted)
+        print("Fees Balance in the Pool (USD): ", self.fees_collected_usd)
         print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
-    def test_get_user_details(self):
+    def test_get_user_details(self, user):
          # Get the outcome prices
         outcome_prices = self.get_outcome_prices()
 
          # Prepare the data to display in a table
         table_data = []
         for i in range(len(self.shares)):
-            table_data.append([f"Outcome {i}", self.user_outcome_shares[i], outcome_prices[i]])
+            table_data.append([f"Outcome {i}", self.user_outcome_shares[user][i], outcome_prices[i]])
 
         headers = ["Outcome", "Shares", "Price"]
-        print(" === User Details === ")
-        print("User Liquidty Share: ", self.user_liquidity_shares)
-        print("User Wallet (USD): ", self.user_wallet_usd)
+        print(f" === User Details ({user}) === ")
+        print("User Liquidty Share: ", self.user_liquidity_shares[user])
+        print("User Wallet (USD): ", self.user_wallet_usd[user])
+        print("User fee claimed (weighted): ", self.fees_claimed[user])
         print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
     def test_set_outcome_shares(self, liquidity, new_shares):
@@ -339,8 +380,8 @@ class PredMarketNew:
         self.shares = new_shares
         self.get_outcome_prices() # refresh the outcome prices based on updated outcome shares
 
-    def test_reset_user_liquidity_shares(self):
-        self.user_liquidity_shares = 0
+    def test_reset_user_liquidity_shares(self, user):
+        self.user_liquidity_shares[user] = 0
 
     def test_has_significant_change_in_outcome_prices(self, before_prices, threshold=0.0001):
         assert self.get_outcome_prices() == pytest.approx(before_prices, rel=0.0001)
@@ -351,17 +392,21 @@ class PredMarketNew:
  # Adding Liquidity to a binary outcome market (https://help.polkamarkets.com/how-polkamarkets-works/market-liquidity/adding-liquidity#d528195e8f1a449785f8c830bbc4493f)
 def simulate_market_1():
     market = PredMarketNew(liquidity=0, outcomes=2)
-    market.user_wallet_usd = 1100 # Fund Alice's wallet 1100 USD
-    market.add_liquidity(100)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
+    market.user_wallet_usd[ALICE] = 1100 # Fund Alice's wallet 1100 USD
+    market.add_liquidity(100, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Example 1: Adding liquidity to a market with equal outcome prices
     # Alice add liquidity of 1000 USDC
     before_outcome_prices = market.get_outcome_prices()
-    market.add_liquidity(1000)
+    market.add_liquidity(1000, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
     market.test_has_significant_change_in_outcome_prices(before_outcome_prices)
 
     # Verify that the end state is aligned with the scenario
@@ -370,7 +415,7 @@ def simulate_market_1():
     assert market.shares[1] == pytest.approx(1100, rel=0.03)
     assert market.outcome_prices[0] == pytest.approx(0.5, rel=0.03)
     assert market.outcome_prices[1] == pytest.approx(0.5, rel=0.03)
-    assert market.user_liquidity_shares == pytest.approx(1100, rel=0.03)
+    assert market.user_liquidity_shares[ALICE] == pytest.approx(1100, rel=0.03)
 
     return market
 
@@ -378,19 +423,22 @@ def simulate_market_1():
 def simulate_market_2():
     market = PredMarketNew(liquidity=0, outcomes=2)
 
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
     # Example 2: Adding liquidity to a market with unequal outcome prices
     market.pool_wallet_usd = 10000 # This is a testing value
     market.test_set_outcome_shares(1100, [861.17, 1405.07])
-    market.test_reset_user_liquidity_shares() # reset to zero
+    market.test_reset_user_liquidity_shares(ALICE) # reset to zero
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Bob add liquidity worth of 1000 USDC
     before_outcome_prices = market.get_outcome_prices()
-    market.user_wallet_usd = 1000
-    market.add_liquidity(1000)
+    market.user_wallet_usd[ALICE] = 1000
+    market.add_liquidity(1000, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details() # Polkamarket stated that the final user's liquidity share is ~882, which is incorrect. It should be ~782 instead because the result should be (1882 - 1100)
+    market.test_get_user_details(ALICE) # Polkamarket stated that the final user's liquidity share is ~882, which is incorrect. It should be ~782 instead because the result should be (1882 - 1100)
 
     # Add liquidity should not change the outcome prices
     market.test_has_significant_change_in_outcome_prices(before_outcome_prices)
@@ -401,8 +449,8 @@ def simulate_market_2():
     assert market.shares[1] == pytest.approx(2405.07, rel=0.03)
     assert market.outcome_prices[0] == pytest.approx(0.62, rel=0.03)
     assert market.outcome_prices[1] == pytest.approx(0.38, rel=0.03)
-    assert market.user_liquidity_shares == pytest.approx(782.88, rel=0.03)  # Polkamarket stated that the final user's liquidity share is ~882, which is incorrect. It should be ~782 instead because the result should be (1882 - 1100)
-    assert market.user_outcome_shares[0] == pytest.approx(387.10, rel=0.03)
+    assert market.user_liquidity_shares[ALICE] == pytest.approx(782.88, rel=0.03)  # Polkamarket stated that the final user's liquidity share is ~882, which is incorrect. It should be ~782 instead because the result should be (1882 - 1100)
+    assert market.user_outcome_shares[ALICE][0] == pytest.approx(387.10, rel=0.03)
 
     return market
 
@@ -411,18 +459,21 @@ def simulate_market_3():
     market = PredMarketNew(liquidity=0, outcomes=4)
     market.test_get_market_details()
 
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
     # Example 3
     market.pool_wallet_usd = 10000 # This is a testing value
     market.test_set_outcome_shares(1000, [461.53, 1294, 1294, 1294])
-    market.test_reset_user_liquidity_shares() # reset to zero
+    market.test_reset_user_liquidity_shares(ALICE) # reset to zero
     market.test_get_market_details()
 
     # Dylan decides to add 1000 USD
     before_outcome_prices = market.get_outcome_prices()
-    market.user_wallet_usd = 1000
-    market.add_liquidity(1000)
+    market.user_wallet_usd[ALICE] = 1000
+    market.add_liquidity(1000, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Add liquidity should not change the outcome prices
     market.test_has_significant_change_in_outcome_prices(before_outcome_prices)
@@ -437,8 +488,8 @@ def simulate_market_3():
     assert market.outcome_prices[1] == pytest.approx(0.17, rel=0.03)
     assert market.outcome_prices[2] == pytest.approx(0.17, rel=0.03)
     assert market.outcome_prices[3] == pytest.approx(0.17, rel=0.03)
-    assert market.user_liquidity_shares == pytest.approx(769.68, rel=0.03)
-    assert market.user_outcome_shares[0] == pytest.approx(649.07, rel=0.03)
+    assert market.user_liquidity_shares[ALICE] == pytest.approx(769.68, rel=0.03)
+    assert market.user_outcome_shares[ALICE][0] == pytest.approx(649.07, rel=0.03)
 
     return market
 
@@ -446,17 +497,19 @@ def simulate_market_3():
 def simulate_market_4():
     market = simulate_market_2()
 
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles" # market.add_user() already called in simulate_market_2() above
+
     # Nearing expiration date and market change
     market.pool_wallet_usd = 10000 # This is a testing value
     market.test_set_outcome_shares(5600, [3578.97, 8762.30])
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Bob give back all his ~782 liquidity shares
     before_outcome_prices = market.get_outcome_prices()
-    market.remove_liquidity(market.user_liquidity_shares)
+    market.remove_liquidity(market.user_liquidity_shares[ALICE], ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Remove liquidity must not lead to any change to the outcome prices
     market.test_has_significant_change_in_outcome_prices(before_outcome_prices)
@@ -467,9 +520,9 @@ def simulate_market_4():
     assert market.shares[1] == pytest.approx(7537.33, rel=0.03)
     assert market.outcome_prices[0] == pytest.approx(0.71, rel=0.03)
     assert market.outcome_prices[1] == pytest.approx(0.29, rel=0.03)
-    assert market.user_liquidity_shares == pytest.approx(0, rel=0.03)
-    assert market.user_outcome_shares[0] == pytest.approx(387.10, rel=0.03)
-    assert market.user_outcome_shares[1] == pytest.approx(724.63, rel=0.03)
+    assert market.user_liquidity_shares[ALICE] == pytest.approx(0, rel=0.03)
+    assert market.user_outcome_shares[ALICE][0] == pytest.approx(387.10, rel=0.03)
+    assert market.user_outcome_shares[ALICE][1] == pytest.approx(724.63, rel=0.03)
 
 
 # Removing liquidity from a multiple outcome market (https://help.polkamarkets.com/how-polkamarkets-works/market-liquidity/removing-liquidity#cd72f255bbd74ca4a0261f0cd6272030)
@@ -491,9 +544,7 @@ def simulate_market_5():
     market.test_has_significant_change_in_outcome_prices(before_outcome_prices)
 
     # Verify that the end state is aligned with the scenario
-    print(f"Makret liquidity: {market.liquidity}")
-    #assert market.liquidity == pytest.approx(1265.59, rel=0.03)
-    print(f"Market shares[0]: {market.shares[0]}")
+    assert market.liquidity == pytest.approx(1265.59, rel=0.03)
     assert market.shares[0] == pytest.approx(581.03, rel=0.03)
     assert market.shares[1] == pytest.approx(1640.55, rel=0.03)
     assert market.shares[2] == pytest.approx(1640.55, rel=0.03)
@@ -510,16 +561,19 @@ def simulate_market_5():
 # Buy - Binary Outcome Market (https://help.polkamarkets.com/how-polkamarkets-works/trading-and-price-calculation#11a1b917582f4bf991864b5b66d61a0c)
 def simulate_market_6():
     market = PredMarketNew(liquidity=0, outcomes=2)
-    market.user_wallet_usd = 1294
-    market.add_liquidity(1000)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
+    market.user_wallet_usd[ALICE] = 1294
+    market.add_liquidity(1000, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Bob buy 294 USD worth of Outcome A shares (index 0)
-    print(f"Shares before minting: {market.shares[0]}")
-    market.buy(0, 294)
+    market.buy(0, 294, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Verify that the end state is aligned with the scenario
     assert market.liquidity == pytest.approx(1000, rel=0.03)
@@ -527,21 +581,25 @@ def simulate_market_6():
     assert market.shares[1] == pytest.approx(1294, rel=0.03)
     assert market.outcome_prices[0] == pytest.approx(0.63, rel=0.03)
     assert market.outcome_prices[1] == pytest.approx(0.37, rel=0.03)
-    assert market.user_outcome_shares[0] == pytest.approx(521, rel=0.03)
+    assert market.user_outcome_shares[ALICE][0] == pytest.approx(521, rel=0.03)
 
 
 # Buy - Multiple Outcome Market (https://help.polkamarkets.com/how-polkamarkets-works/trading-and-price-calculation#1c3acda77f744efd8e2ad7dccb4b2f86)
 def simulate_market_7():
     market = PredMarketNew(liquidity=0, outcomes=4)
-    market.user_wallet_usd = 1294
-    market.add_liquidity(1000)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
+    market.user_wallet_usd[ALICE] = 1294
+    market.add_liquidity(1000, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Bob buy 294 USD worth of Outcome A shares (index 0)
-    market.buy(0, 294)
+    market.buy(0, 294, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Verify that the end state is aligned with the scenario
     assert market.liquidity == pytest.approx(1000, rel=0.03)
@@ -553,33 +611,37 @@ def simulate_market_7():
     assert market.outcome_prices[1] == pytest.approx(0.17, rel=0.03)
     assert market.outcome_prices[2] == pytest.approx(0.17, rel=0.03)
     assert market.outcome_prices[3] == pytest.approx(0.17, rel=0.03)
-    assert market.user_outcome_shares[0] == pytest.approx(832.47, rel=0.03)
+    assert market.user_outcome_shares[ALICE][0] == pytest.approx(832.47, rel=0.03)
 
 # Sell - Multiple Outcome Market
 def simulate_market_8():
     market = PredMarketNew(liquidity=0, outcomes=4)
-    market.user_wallet_usd = 1300
-    market.add_liquidity(1000)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
+    market.user_wallet_usd[ALICE] = 1300
+    market.add_liquidity(1000, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     before_outcome_prices = market.get_outcome_prices()
     before_shares = market.shares.copy()
 
     # Bob buy 300 USD worth of Outcome A shares (index 0)
-    market.buy(0, 300)
+    market.buy(0, 300, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
     # Bob's wallet should be 0 USD, while pool's wallet should be 1300 USD (1000 + 300)
-    assert market.user_wallet_usd == 0
+    assert market.user_wallet_usd[ALICE] == 0
     assert market.pool_wallet_usd == 1300
 
     # Bob sell 300 USD worth of Outcome A shares (index 0)
-    market.sell(0, 300)
+    market.sell(0, 300, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
     # Bob should receive 300 USD
-    assert market.user_wallet_usd == 300
+    assert market.user_wallet_usd[ALICE] == 300
 
     # If Bob buy and sell immediately, the state should revert back to the initial state. There should be no change to outcome share prices
     market.test_has_significant_change_in_outcome_prices(before_outcome_prices)
@@ -589,87 +651,99 @@ def simulate_market_8():
 # Simulate market resolution (Binary Outcome Market) after adding liquidity and buy
 def simulate_market_9():
     market = PredMarketNew(liquidity=0, outcomes=2)
-    market.test_get_market_details()
-    market.test_get_user_details()
 
-    market.user_wallet_usd = 1500
-    market.add_liquidity(1000)
-    market.test_get_market_details()
-    market.test_get_user_details()
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
 
-    market.buy(0, 500)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
+
+    market.user_wallet_usd[ALICE] = 1500
+    market.add_liquidity(1000, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+
+    market.buy(0, 500, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
 
     # Resolve the market - Winning == Outcome 0
     market.resolve_market(0)
 
     # User claim all their winning Outcome 0 shares
-    no_of_winning_outcome_shares = market.user_outcome_shares[0]
-    market.resolution(no_of_winning_outcome_shares)
+    no_of_winning_outcome_shares = market.user_outcome_shares[ALICE][0]
+    market.resolution(no_of_winning_outcome_shares, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
     # Verify user received the winning outcome shares (1:1 ratio)
-    assert market.user_wallet_usd == no_of_winning_outcome_shares
+    assert market.user_wallet_usd[ALICE] == no_of_winning_outcome_shares
 
     # User claim all their liquidity shares
-    market.claim_liqudity(market.user_liquidity_shares)
+    market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Users deposited 1500 USD to the pool. Verify that users received back 1500 USD after market resolution and the pool is empty after all claims are completed
-    assert market.user_wallet_usd == 1500
+    assert market.user_wallet_usd[ALICE] == 1500
     assert market.pool_wallet_usd == 0
 
 # Simulate market resolution (Multiple Outcome Market) after adding liquidity and buy
 def simulate_market_10():
     market = PredMarketNew(liquidity=0, outcomes=4)
-    market.test_get_market_details()
-    market.test_get_user_details()
 
-    market.user_wallet_usd = 1200
-    market.add_liquidity(1000)
-    market.test_get_market_details()
-    market.test_get_user_details()
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
 
-    market.buy(0, 200)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
+
+    market.user_wallet_usd[ALICE] = 1200
+    market.add_liquidity(1000, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+
+    market.buy(0, 200, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
 
     # Resolve the market - Winning == Outcome 0
     market.resolve_market(0)
 
     # User claim all their winning Outcome 0 shares
-    no_of_winning_outcome_shares = market.user_outcome_shares[0]
-    market.resolution(no_of_winning_outcome_shares)
+    no_of_winning_outcome_shares = market.user_outcome_shares[ALICE][0]
+    market.resolution(no_of_winning_outcome_shares, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
     # Verify user received the winning outcome shares (1:1 ratio)
-    assert market.user_wallet_usd == no_of_winning_outcome_shares
+    assert market.user_wallet_usd[ALICE] == no_of_winning_outcome_shares
 
     # User claim all their liquidity shares
-    market.claim_liqudity(market.user_liquidity_shares)
+    market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # Users deposited 1200 USD to the pool. Verify that users received back 1200 USD after market resolution and the pool is empty after all claims are completed
-    assert market.user_wallet_usd == 1200
+    assert market.user_wallet_usd[ALICE] == 1200
     assert market.pool_wallet_usd == 0
 
 # Simulate market resolution (Multiple Outcome Market) after adding liquidity and buy. Buyer lose, LP win all
 def simulate_market_11():
     market = PredMarketNew(liquidity=0, outcomes=4)
-    market.test_get_market_details()
-    market.test_get_user_details()
 
-    market.user_wallet_usd = 1200
-    market.add_liquidity(1000)
-    market.test_get_market_details()
-    market.test_get_user_details()
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
 
-    market.buy(0, 200)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
+
+    market.user_wallet_usd[ALICE] = 1200
+    market.add_liquidity(1000, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+
+    market.buy(0, 200, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
 
     # Resolve the market - Winning == Outcome 3
     market.resolve_market(3)
@@ -678,100 +752,101 @@ def simulate_market_11():
     pass
 
     # User claim all their liquidity shares
-    market.claim_liqudity(market.user_liquidity_shares)
+    market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # LP deposited 1200 USD to the pool. Verify that LP gets back all 1200 USD after market resolution and the pool is empty after all claims are completed
-    assert market.user_wallet_usd == 1200
+    assert market.user_wallet_usd[ALICE] == 1200
     assert market.pool_wallet_usd == 0
 
 # Simulate the "Multiple most likely (or least likely) outcomes were not correctly handled during add/remove liquidity - Instance 1" issue fix
 def simulate_market_12():
     market = PredMarketNew(liquidity=0, outcomes=4)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
     market.pool_wallet_usd = 10000 # This is a testing value
     market.test_set_outcome_shares(141.4213562, [100, 100, 200, 200])
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
-    market.user_wallet_usd = 0
-    market.user_liquidity_shares = 10
-    market.remove_liquidity(5)
+    market.user_wallet_usd[ALICE] = 0
+    market.user_liquidity_shares[ALICE] = 10
+    market.remove_liquidity(5, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # When removing liquidity, the users will receive shares of all the outcomes except for the most likely (i.e. most expensive) outcome.
     # Verify that users receive Outcome Share C and D, but not A and B
-    print(f"market user shares 0: {market.user_outcome_shares[0]}")
-    print(f"market user shares 1: {market.user_outcome_shares[1]}")
-    print(f"market user shares 2: {market.user_outcome_shares[2]}")
-    print(f"market user shares 3: {market.user_outcome_shares[3]}")
-    assert market.user_outcome_shares[0] == 0
-    assert market.user_outcome_shares[1] == 0
-    assert market.user_outcome_shares[2] > 0
-    assert market.user_outcome_shares[3] > 0
+    assert market.user_outcome_shares[ALICE][0] == 0
+    assert market.user_outcome_shares[ALICE][1] == 0
+    assert market.user_outcome_shares[ALICE][2] > 0
+    assert market.user_outcome_shares[ALICE][3] > 0
 
 # Simulate the "Multiple most likely (or least likely) outcomes were not correctly handled during add/remove liquidity - Instance 2" issue fix
 def simulate_market_13():
     market = PredMarketNew(liquidity=0, outcomes=4)
 
-    market.user_wallet_usd = 3500
-    market.add_liquidity(1000)
-    market.test_get_market_details()
-    market.test_get_user_details()
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
 
-    market.buy(0, 1000)
-    market.buy(1, 1000)
+    market.user_wallet_usd[ALICE] = 3500
+    market.add_liquidity(1000, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+
+    market.buy(0, 1000, ALICE)
+    market.buy(1, 1000, ALICE)
     market.test_get_market_details() # Outcome shares = [A=1125, B=98, C=3000, D=3000]
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # When adding liquidity, the users will receive shares of all the outcomes except for the least likely (i.e. least expensive) outcome.
     # Verify that users receive Outcome Share A and B, but not C and D
-    previous_user_outcome_shares = market.user_outcome_shares.copy()
-    market.add_liquidity(500)
-
-    print(f"market user shares 0: {market.user_outcome_shares[0]}")
-    print(f"market user shares 1: {market.user_outcome_shares[1]}")
-    print(f"market user shares 2: {market.user_outcome_shares[2]}")
-    print(f"market user shares 3: {market.user_outcome_shares[3]}")
-    assert (market.user_outcome_shares[0] - previous_user_outcome_shares[0]) > 0
-    assert (market.user_outcome_shares[1] - previous_user_outcome_shares[1]) > 0
-    assert (market.user_outcome_shares[2] - previous_user_outcome_shares[2]) == 0
-    assert (market.user_outcome_shares[3] - previous_user_outcome_shares[3]) == 0
+    previous_user_outcome_shares = copy.deepcopy(market.user_outcome_shares) # market.user_outcome_shares = {'Alice': [1875.0, 2901.2345679012346, 0, 0] ...}. A deep copy is needed here so that copies it copies the outer dict and also recursively copies all inner lists.
+    market.add_liquidity(500, ALICE)
+    assert (market.user_outcome_shares[ALICE][0] - previous_user_outcome_shares[ALICE][0]) > 0
+    assert (market.user_outcome_shares[ALICE][1] - previous_user_outcome_shares[ALICE][1]) > 0
+    assert (market.user_outcome_shares[ALICE][2] - previous_user_outcome_shares[ALICE][2]) == 0
+    assert (market.user_outcome_shares[ALICE][3] - previous_user_outcome_shares[ALICE][3]) == 0
 
 # Simulate the "Multiple most likely (or least likely) outcomes were not correctly handled during add/remove liquidity - Instance 2" issue fix
 # Also simulate market resolution
 def simulate_market_14():
     market = PredMarketNew(liquidity=0, outcomes=4)
 
-    market.user_wallet_usd = 3500
-    market.add_liquidity(1000)
-    market.test_get_market_details()
-    market.test_get_user_details()
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
 
-    market.buy(0, 1000)
-    market.buy(1, 1000)
+    market.user_wallet_usd[ALICE] = 3500
+    market.add_liquidity(1000, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+
+    market.buy(0, 1000, ALICE)
+    market.buy(1, 1000, ALICE)
     market.test_get_market_details() # Outcome shares = [A=1125, B=98, C=3000, D=3000]
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
     # When adding liquidity, the users will receive shares of all the outcomes except for the least likely (i.e. least expensive) outcome.
     # Verify that users receive Outcome Share A and B, but not C and D
-    previous_user_outcome_shares = market.user_outcome_shares.copy()
-    market.add_liquidity(500)
+    previous_user_outcome_shares = copy.deepcopy(market.user_outcome_shares)
+    market.add_liquidity(500, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
-    assert (market.user_outcome_shares[0] - previous_user_outcome_shares[0]) > 0
-    assert (market.user_outcome_shares[1] - previous_user_outcome_shares[1]) > 0
-    assert (market.user_outcome_shares[2] - previous_user_outcome_shares[2]) == 0
-    assert (market.user_outcome_shares[3] - previous_user_outcome_shares[3]) == 0
+    market.test_get_user_details(ALICE)
+    assert (market.user_outcome_shares[ALICE][0] - previous_user_outcome_shares[ALICE][0]) > 0
+    assert (market.user_outcome_shares[ALICE][1] - previous_user_outcome_shares[ALICE][1]) > 0
+    assert (market.user_outcome_shares[ALICE][2] - previous_user_outcome_shares[ALICE][2]) == 0
+    assert (market.user_outcome_shares[ALICE][3] - previous_user_outcome_shares[ALICE][3]) == 0
 
     market.resolve_market(0) # Resolve Outcome 0 as winner
-    market.claim_liqudity(market.user_liquidity_shares) # Claim all liquidity shares
-    market.resolution(market.user_outcome_shares[0]) # Claim all outcome 0 shares
+    market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE) # Claim all liquidity shares
+    market.resolution(market.user_outcome_shares[ALICE][0], ALICE) # Claim all outcome 0 shares
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
     # User should get back all 3500 USD, while pool should be empty (0 USD)
-    assert market.user_wallet_usd == 3500
+    assert market.user_wallet_usd[ALICE] == 3500
     assert market.pool_wallet_usd == 0
 
 # Simulate:
@@ -786,83 +861,269 @@ def simulate_market_14():
 def simulate_market_15():
     market = PredMarketNew(liquidity=0, outcomes=4)
 
-    market.user_wallet_usd = 1800
-    market.add_liquidity(1000) # User receive 1000 liquidity shares
-    market.test_get_market_details()
-    market.test_get_user_details()
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
 
-    market.buy(0, 300)
+    market.user_wallet_usd[ALICE] = 1800
+    market.add_liquidity(1000, ALICE) # User receive 1000 liquidity shares
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
-    market.add_liquidity(500) # User receive 384.6153846153845 liquidity shares
+    market.buy(0, 300, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
 
-    market.remove_liquidity(384.6153846153845)
+    market.add_liquidity(500, ALICE) # User receive 384.6153846153845 liquidity shares
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
+
+    market.remove_liquidity(384.6153846153845, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
     assert market.liquidity == 1000
 
-    market.remove_liquidity(1000)
+    market.remove_liquidity(1000, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
+    market.test_get_user_details(ALICE)
     assert market.liquidity == 0
 
     print("Market Resolved - Winner is Outcome 0")
     market.resolve_market(0) # Resolve Outcome 0 as winner
-    market.resolution(market.user_outcome_shares[0]) # Claim all outcome 0 shares
+    market.resolution(market.user_outcome_shares[ALICE][0], ALICE) # Claim all outcome 0 shares
     market.test_get_market_details()
-    market.test_get_user_details()
-    assert market.user_wallet_usd == 1800 # User should get back all 1800 USD
+    market.test_get_user_details(ALICE)
+    assert market.user_wallet_usd[ALICE] == 1800 # User should get back all 1800 USD
     assert market.pool_wallet_usd == 0 # Pool should be empty (0 USD)
 
-def test_fee_collection_sum():
-    # Setup
-    market = PredMarketNew(liquidity=1000, outcomes=2, fees=0.02)  # 2% fee
-    market.user_wallet_usd = 1000  # Give user initial funds
+# Simulate the "Fee Collection" feature during buy/sell
+def simulate_market_16():
+    market = PredMarketNew(liquidity=0, outcomes=2, fees=0.02)
 
-    # Track individual fee events
-    expected_fees = 0
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
 
-    # Action: Execute multiple trades
-    trade_amounts = [50, 75, 100, 25, 60]
+    market.user_wallet_usd[ALICE] = 2000
+    market.add_liquidity(1000, ALICE) # User receive 1000 liquidity shares
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
 
-    for amount in trade_amounts:
-        fee = amount * market.fees
-        expected_fees += fee
-        market.buy(outcome=0, amount=amount)
+    market.buy(0, 500, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+    assert market.fees_collected_weighted == 10 # 2% of 500 USD = 10 USD
 
-    # Assertions
-    assert math.isclose(market.fees_collected, expected_fees), "Total fees don't match sum of individual fees"
-    print(expected_fees);
+    market.sell(0, 100, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+    assert market.fees_collected_weighted == 10 + (100 * 0.02)/0.98 # Earlier collected 10 USD + 2.040816326530612 USD collected from selling
 
-def test_ogous():
-    market = PredMarketNew(liquidity=1000, outcomes=2, fees=0)
-    market.user_wallet_usd = 1000
-    market.buy(0, 20)
-    print(f"user outcome shares: {market.user_outcome_shares}")
-    print(f"shares: {market.shares}")
-    print(f"total shares: {market.total_shares}")
-    market.sell(0, 1)
-    print(f"shares after: {market.shares}")
-    print(f"total shares after: {market.total_shares}")
+# Simulate the "Fee Collection" feature during buy/sell + Also resolve the market to verify that it closed properly
+def simulate_market_17():
+    market = PredMarketNew(liquidity=0, outcomes=2, fees=0.02)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
+    market.user_wallet_usd[ALICE] = 500
+    market.user_wallet_usd[BOB] = 500
+    market.add_liquidity(500, ALICE) # Alice receive 1000 liquidity shares
+    market.add_liquidity(500, BOB) # Bob receive 1000 liquidity shares
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+    market.test_get_user_details(BOB)
+
+    market.user_wallet_usd[CHARLES] = 500
+    market.buy(0, 500, CHARLES)
+    market.test_get_market_details()
+    market.test_get_user_details(CHARLES)
+    assert market.fees_collected_weighted == 10 # 2% of 500 USD = 10 USD
+
+    market.sell(0, 100, CHARLES) # Charles wants to receive 100 USD. The sell functions will calculate the amount of shares to burn/sell to achieve (100 + fee) USD
+    market.test_get_market_details()
+    market.test_get_user_details(CHARLES)
+    assert market.user_wallet_usd[CHARLES] == 100 # Charles should receive 100 USD after selling
+    target_fee_colected = 10 + (100 * 0.02)/0.98
+    assert market.fees_collected_weighted == target_fee_colected # Earlier collected 10 USD + 2.040816326530612 USD collected from selling
+
+    half_of_target_fee_colected = target_fee_colected / 2
+    before_alice_wallet_usd = market.user_wallet_usd[ALICE]
+    market.claim_fee(ALICE)
+    market.test_get_user_details(ALICE)
+    fee_collected_alice = market.user_wallet_usd[ALICE] - before_alice_wallet_usd
+    assert fee_collected_alice == half_of_target_fee_colected
+
+    # Alice tries to claim fee again, the amount should be zero
+    assert market.claim_fee(ALICE) == 0
+
+    before_bob_wallet_usd = market.user_wallet_usd[BOB]
+    market.claim_fee(BOB)
+    market.test_get_user_details(BOB)
+    fee_collected_bob = market.user_wallet_usd[BOB] - before_bob_wallet_usd
+    assert fee_collected_bob == half_of_target_fee_colected
+
+    # Bob tries to claim fee again, the amount should be zero
+    assert market.claim_fee(BOB) == 0
+
+    # All fees residing in the pool should be already be claimed by now and should be 0
+    assert market.fees_collected_usd == 0
+
+    market.test_get_market_details()
+    print("Market Resolved - Winner is Outcome 0")
+    market.resolve_market(0) # Resolve Outcome 0 as winner
+
+    market.test_get_user_details(CHARLES)
+    before_charles_outcome_shares = market.user_outcome_shares[CHARLES][0]
+    before_charles_wallet_usd = market.user_wallet_usd[CHARLES]
+    market.resolution(market.user_outcome_shares[CHARLES][0], CHARLES) # Claim all outcome 0 shares
+    winning_amount_in_usd = market.user_wallet_usd[CHARLES] - before_charles_wallet_usd
+    # After resolution, 1 winning outcome share = 1 USD
+    # Verify user received the winning outcome shares (1:1 ratio)
+    assert winning_amount_in_usd == before_charles_outcome_shares
+
+    # The remaining winning outcome shares will be distributed pro-rated to the LPs
+    remaining_usd_in_pool = market.pool_wallet_usd
+
+    before_alice_wallet_usd = market.user_wallet_usd[ALICE]
+    market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE)
+    amount_usd_received_alice = market.user_wallet_usd[ALICE] - before_alice_wallet_usd
+    # Alice should receive half of the remaining USD in the pool since she has 50% of the total liquidity shares
+    assert amount_usd_received_alice == remaining_usd_in_pool / 2
+
+    market.claim_liqudity(market.user_liquidity_shares[BOB], BOB)
+
+    # Pool should be empty since all liquidity shares are claimed
+    assert market.pool_wallet_usd == 0
+
+# Simulate a scenario where malicious user (Charles) cannot steal fee earned by Alice & Bob by performing a large just-in-time liquidity provision
+def simulate_market_18():
+    market = PredMarketNew(liquidity=0, outcomes=4, fees=0.02)
+
+    ALICE, BOB, CHARLES, DAVID = "Alice", "Bob", "Charles", "David"
+    market.add_user(ALICE, BOB, CHARLES, DAVID)
+
+    market.user_wallet_usd[ALICE] = 500
+    market.user_wallet_usd[BOB] = 500
+    market.add_liquidity(500, ALICE) # Alice receive 1000 liquidity shares
+    market.add_liquidity(500, BOB) # Bob receive 1000 liquidity shares
+    market.test_get_market_details()
+
+    market.user_wallet_usd[DAVID] = 100
+    market.buy(0, 100, DAVID)
+    assert market.fees_collected_weighted == 2 # 2% of 100 USD = 2 USD fee collected
+    assert market.fees_collected_usd == 2 # 2 USD fee collected
+
+    market.test_get_market_details()
+    # Simulate big whale entering the market
+    market.user_wallet_usd[CHARLES] = 8000
+    market.add_liquidity(8000, CHARLES)
+    market.test_get_market_details()
+
+    before_charles_wallet_usd = market.user_wallet_usd[CHARLES]
+    market.claim_fee(CHARLES)
+    amount_usd_received_charles = market.user_wallet_usd[CHARLES] - before_charles_wallet_usd
+    # Due to rounding error, the "amount_usd_received_charles" will be a dust amount of 0.0000000000000017 USD, which will round down to zero in Solidity OR unprofitable to claim due to gas cost
+    assert amount_usd_received_charles == pytest.approx(0, abs=1e-12)
+
+    # Once the dust amount is claimed, the fees should be 0
+    assert market.claim_fee(CHARLES) == 0
+
+    market.test_get_market_details()
+
+    before_alice_wallet_usd = market.user_wallet_usd[ALICE]
+    market.claim_fee(ALICE)
+    amount_usd_received_alice = market.user_wallet_usd[ALICE] - before_alice_wallet_usd
+    assert amount_usd_received_alice == 1 # Alice should receive 1 USD after claiming the fee since she owns 50% of the total liquidity shares
+    assert market.claim_fee(ALICE) == 0 # Cannot claim fee again
+
+    before_bob_wallet_usd = market.user_wallet_usd[BOB]
+    market.claim_fee(BOB)
+    amount_usd_received_bob = market.user_wallet_usd[BOB] - before_bob_wallet_usd
+    assert amount_usd_received_bob == 1 # Bob should receive 1 USD after claiming the fee since he owns 50% of the total liquidity shares
+    assert market.claim_fee(BOB) == 0 # Cannot claim fee again
+
+    market.test_get_market_details()
+    print("Market Resolved - Winner is Outcome 0")
+    market.resolve_market(0) # Resolve Outcome 0 as winner
+
+    market.test_get_user_details(ALICE)
+    market.test_get_user_details(BOB)
+    market.test_get_user_details(CHARLES)
+    market.resolution(market.user_outcome_shares[CHARLES][0], CHARLES)
+
+    market.test_get_user_details(DAVID)
+    before_david_outcome_shares = market.user_outcome_shares[DAVID][0]
+    before_david_wallet_usd = market.user_wallet_usd[DAVID]
+    market.resolution(market.user_outcome_shares[DAVID][0], DAVID) # Claim all outcome 0 shares
+    winning_amount_in_usd = market.user_wallet_usd[DAVID] - before_david_wallet_usd
+    # After resolution, 1 winning outcome share = 1 USD
+    # Verify user received the winning outcome shares (1:1 ratio)
+    assert winning_amount_in_usd == before_david_outcome_shares
+
+    market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE)
+    market.claim_liqudity(market.user_liquidity_shares[BOB], BOB)
+    market.claim_liqudity(market.user_liquidity_shares[CHARLES], CHARLES)
+
+    market.test_get_market_details()
+    assert market.pool_wallet_usd == 0 # Pool should be empty (0 USD) after all liquidity shares are claimed + winning shares are claimed
+
+# Check that the remove liquidity does not affect the fee collection accounting logic
+def simulate_market_19():
+    market = PredMarketNew(liquidity=0, outcomes=4, fees=0.02)
+
+    ALICE, BOB, CHARLES, DAVID = "Alice", "Bob", "Charles", "David"
+    market.add_user(ALICE, BOB, CHARLES, DAVID)
+
+    market.user_wallet_usd[ALICE] = 500
+    market.user_wallet_usd[BOB] = 500
+    market.add_liquidity(500, ALICE) # Alice receive 1000 liquidity shares
+    market.add_liquidity(500, BOB) # Bob receive 1000 liquidity shares
+    market.test_get_market_details()
+
+    market.user_wallet_usd[DAVID] = 100
+    market.buy(0, 100, DAVID)
+    assert market.fees_collected_weighted == 2 # 2% of 100 USD = 2 USD fee collected
+    assert market.fees_collected_usd == 2 # 2 USD fee collected
+
+    assert market.pool_wallet_usd == 1000 + 98
+
+    market.test_get_market_details()
+    # Simulate big whale entering the market
+    market.user_wallet_usd[CHARLES] = 8000
+    market.add_liquidity(8000, CHARLES)
+    market.test_get_market_details()
+
+    market.test_get_user_details(ALICE)
+    market.remove_liquidity(250, ALICE) # This will automatically claim the fee of 1 USD that Alice is entitled to
+    market.test_get_user_details(ALICE)
+    assert market.fees_claimed[ALICE] == 0.5 # The fee claimed (weighted) should be reduced from 1 to 0.5 as Alice removed 50% of her total liquidity shares
+
+    assert market.claim_fee(ALICE) == 0
+
+    before_bob_wallet_usd = market.user_wallet_usd[BOB]
+    market.claim_fee(BOB)
+    amount_usd_received_bob = market.user_wallet_usd[BOB] - before_bob_wallet_usd
+    assert amount_usd_received_bob == 1 # Bob should receive 1 USD after claiming the fee since he owns 50% of the total liquidity shares when the fee of 2 USD was collected
+    assert market.fees_claimed[BOB] == 1
+    assert market.claim_fee(BOB) == 0
 
 
 if __name__ == "__main__":
-    #simulate_market_1()
-    #simulate_market_2()
-    #simulate_market_3()
-    #simulate_market_4()
-    #simulate_market_5()
-    #simulate_market_6()
-    #simulate_market_7()
-    #simulate_market_8()
-    #simulate_market_9()
-    #simulate_market_10()
-    #simulate_market_11()
-    #simulate_market_12()
-    #simulate_market_13()
-    #simulate_market_14()
-    #simulate_market_15()
-    test_ogous()
+    simulate_market_1()
+    simulate_market_2()
+    simulate_market_3()
+    simulate_market_4()
+    # simulate_market_5()
+    simulate_market_6()
+    simulate_market_7()
+    simulate_market_8()
+    simulate_market_9()
+    simulate_market_10()
+    simulate_market_11()
+    simulate_market_12()
+    simulate_market_13()
+    simulate_market_14()
+    simulate_market_15()
+    simulate_market_16()
+    simulate_market_17()
+    simulate_market_18()
+    simulate_market_19()
