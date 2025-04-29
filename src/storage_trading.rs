@@ -114,10 +114,13 @@ pub struct StorageTrading {
     pub amm_user_liquidity_shares: StorageMap<Address, StorageU256>,
 
     /// Weight recorded to avoid a dilution event for fees with new LPs.
-    pub amm_fee_weight: StorageU256,
+    pub amm_fees_collected_weighted: StorageU256,
 
-    /// The amount of LP fees a user has claimed.
-    pub amm_lp_fees_claimed: StorageMap<Address, StorageU256>,
+    /// The global amount of fUSDC claimed by users as fees.
+    pub amm_lp_global_fees_claimed: StorageU256,
+
+    /// The amount of USD LP fees a user has claimed.
+    pub amm_lp_user_fees_claimed: StorageMap<Address, StorageU256>,
 
     /// Since we use a system of addressing outcomes with a unique
     /// identifier, we use this in the mint functions to check if the outcome
