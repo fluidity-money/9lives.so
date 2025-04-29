@@ -29,10 +29,6 @@ const useSell = ({
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const amount = toUnits(
-            fusdc.toString(),
-            config.contracts.decimals.fusdc,
-          );
           const shareContract = getContract({
             abi: ERC20Abi,
             address: shareAddr,
@@ -73,7 +69,7 @@ const useSell = ({
           const burnTx = prepareContractCall({
             contract: config.contracts.buyHelper,
             method: "burn",
-            params: [tradingAddr, outcomeId, maxShareOut, minShareOut, amount],
+            params: [tradingAddr, outcomeId, maxShareOut, minShareOut],
           });
           await sendTransaction({
             transaction: burnTx,

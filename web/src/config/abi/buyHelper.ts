@@ -49,11 +49,6 @@ const buyHelperAbi = [
         type: "uint256",
         internalType: "uint256",
       },
-      {
-        name: "_fusdcAmt",
-        type: "uint256",
-        internalType: "uint256",
-      },
     ],
     outputs: [
       {
