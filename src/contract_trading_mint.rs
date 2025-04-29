@@ -108,14 +108,12 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
-        {
-            return self.burn_A_E_5853_F_A(
-                _outcome,
-                self.internal_amm_estimate_burn(_outcome, _max_shares)?,
-                _min_shares,
-                _recipient,
-            );
-        }
+        return self.burn_A_E_5853_F_A(
+            _outcome,
+            self.internal_amm_estimate_burn(_outcome, _max_shares)?,
+            _min_shares,
+            _recipient,
+        );
     }
 }
 

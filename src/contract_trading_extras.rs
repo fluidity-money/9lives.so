@@ -131,7 +131,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return Ok(self.dpm_global_shares.get());
         #[cfg(not(feature = "trading-backend-dpm"))]
-        unimplemented!()
+        return Ok(self.amm_liquidity.get())
     }
 
     pub fn is_dpm(&self) -> bool {

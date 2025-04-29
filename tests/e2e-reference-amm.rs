@@ -127,7 +127,7 @@ macro_rules! test_should_buy_check_shares {
                 assert_eq!(
                     U256::from($market_share_amt),
                     $c.amm_shares.get($outcome),
-                    "market shares"
+                    "market shares, buy amount is {buy_amt}"
                 );
                 Ok(amount)
             }),
@@ -346,12 +346,12 @@ proptest! {
                     c,
                     outcome_a,
                     294e6 as u64,
-                    772797527, // Market shares
-                    521202473 // User shares
+                    772797528, // Market shares
+                    521202472 // User shares
                 );
                 c.internal_amm_get_prices().unwrap();
                 assert_eq_u!(1000e6, c.amm_liquidity.get());
-                assert_eq_u!(772797527, c.amm_shares.get(outcome_a));
+                assert_eq_u!(772797528, c.amm_shares.get(outcome_a));
                 assert_eq_u!(1294e6, c.amm_shares.get(outcome_b));
                 assert_eq_u!(626089, c.amm_outcome_prices.get(outcome_a));
                 assert_eq_u!(373910, c.amm_outcome_prices.get(outcome_b));
@@ -376,12 +376,12 @@ proptest! {
                     c,
                     outcome_a,
                     294e6 as u64,
-                    461527061, // Market shares
-                    832472939 // User shares
+                    461527062, // Market shares
+                    832472938 // User shares
                 );
                 c.internal_amm_get_prices().unwrap();
                 assert_eq_u!(1000e6, c.amm_liquidity.get());
-                assert_eq_u!(461527061, c.amm_shares.get(outcome_a));
+                assert_eq_u!(461527062, c.amm_shares.get(outcome_a));
                 assert_eq_u!(1294e6, c.amm_shares.get(outcome_b));
                 assert_eq_u!(1294e6, c.amm_shares.get(outcome_c));
                 assert_eq_u!(1294e6, c.amm_shares.get(outcome_d));
@@ -416,7 +416,7 @@ proptest! {
                     c,
                     outcome_a,
                     buy_amt,
-                    455166135, // Market shares
+                    455166136, // Market shares
                     844833864 // User shares
                 );
                 let expect_usd = U256::from(844833864);
@@ -463,7 +463,7 @@ proptest! {
                     c,
                     outcome_a,
                     500e6 as u64,
-                    666666666u64, // Market shares
+                    666666667 as u64, // Market shares
                     user_shares // User shares
                 );
                 host::set_block_timestamp(1);
@@ -660,15 +660,15 @@ proptest! {
                     c,
                     outcome_a,
                     1000e6 as u64,
-                    75131, // Market shares
+                    75132, // Market shares
                     1099924868 // User shares
                 );
                 test_should_buy_check_shares!(
                     c,
                     outcome_b,
                     1000e6 as u64,
-                    22674, // Market shares
-                    2099977326 // User shares
+                    22675, // Market shares
+                    2099977325 // User shares
                 );
                 test_add_liquidity(&mut c, 500e6 as u64);
                 //TODO

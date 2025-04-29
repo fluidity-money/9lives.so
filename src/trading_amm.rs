@@ -22,7 +22,7 @@ impl StorageTrading {
     // Internal rebalancing function to get and set the prices of each
     // amount.
     pub fn internal_amm_get_prices(&mut self) -> R<()> {
-        let weights: Vec<U256> = self
+        let weights = self
             .outcome_ids_iter()
             .map(|id| {
                 self.outcome_ids_iter().fold(U256::from(1), |p, other| {
@@ -33,9 +33,9 @@ impl StorageTrading {
                     }
                 })
             })
-            .collect();
-        let total: U256 = weights.iter().copied().sum();
-        if total > U256::ZERO {
+            .collect::<Vec<_>>();
+        let total = weights.iter().copied().sum::<U256>();
+        if !total.is_zero() {
             for (i, id) in self.outcome_ids_iter().enumerate().collect::<Vec<_>>() {
                 self.amm_outcome_prices
                     .setter(id)
@@ -50,6 +50,7 @@ impl StorageTrading {
         amount: U256,
         recipient: Address,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
+        self.require_not_done_predicting()?;
         self.internal_amm_get_prices()?;
         let prev_liquidity = self.amm_liquidity.get();
         let is_already_set_up = !prev_liquidity.is_zero();
@@ -625,7 +626,7 @@ impl StorageTrading {
         );
         let mut lo = U256::ZERO;
         let mut hi = self.amm_shares.get(outcome_id);
-        for _ in 0..1000 {
+        for _ in 0..250 {
             let mid = (lo + hi) >> 1;
             let burned = self.internal_amm_quote_burn(outcome_id, mid)?;
             if burned < shares_target {
