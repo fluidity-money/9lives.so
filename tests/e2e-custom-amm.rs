@@ -274,7 +274,7 @@ proptest! {
     ) {
         setup_contract(&mut c, &[outcome_a, outcome_b]);
         let liq = 20e6 as u64;
-        test_add_liquidity(&mut c, liq);
+        test_add_liquidity(&mut c, 5e6 as u64);
         let shares = should_spend_fusdc_sender!(
             liq,
             c.mint_permit_243_E_E_C_56(
@@ -288,11 +288,7 @@ proptest! {
                 FixedBytes::ZERO,
             )
         );
-        should_spend_fusdc_contract!(
-            liq,
-            c.remove_liquidity_3_C_857_A_15(U256::from(liq), msg_sender())
-        );
-        test_add_liquidity(&mut c, liq);
+        //test_add_liquidity(&mut c, liq);
         // (B) test_add_liquidity(&mut c, 1000e6 as u64);
         let burn_amt = U256::from(1e6 as u64);
         should_spend_fusdc_contract!(

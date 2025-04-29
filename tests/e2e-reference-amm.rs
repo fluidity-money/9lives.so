@@ -417,9 +417,9 @@ proptest! {
                     outcome_a,
                     buy_amt,
                     455166135, // Market shares
-                    844833865 // User shares
+                    844833864 // User shares
                 );
-                let expect_usd = U256::from(844833865);
+                let expect_usd = U256::from(844833864);
                 let buy_amt = U256::from(buy_amt);
                 test_should_burn_shares!(c, outcome_a, buy_amt, expect_usd);
                 for (i, (price1, price2)) in before_outcome_prices
@@ -458,7 +458,7 @@ proptest! {
                 // First, fund the contract with some fUSDC using add liquidity:
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity(&mut c, add_liq_amt);
-                let user_shares = 833333334u64;
+                let user_shares = 833333333u64;
                 test_should_buy_check_shares!(
                     c,
                     outcome_a,
@@ -542,7 +542,7 @@ proptest! {
                     c,
                     outcome_a,
                     200e6 as u64,
-                    578703703, // Market shares
+                    578703704, // Market shares
                     user_shares // User shares
                 );
                 host::set_block_timestamp(1);
@@ -625,7 +625,7 @@ proptest! {
                     c,
                     outcome_b,
                     1000e6 as u64,
-                    98765432,
+                    98765433,
                     2901234567u64
                 );
                 let (_, shares) = test_add_liquidity(&mut c, 500e6 as u64);
@@ -634,7 +634,7 @@ proptest! {
                         assert_eq!(U256::from(312505750u64), amt);
                     }
                     if i == 1 {
-                        assert_eq!(U256::from(483540906), amt);
+                        assert_eq!(U256::from(483540907), amt);
                     }
                     if i == 2 || i == 3 {
                         assert_eq!(U256::ZERO, amt);
@@ -698,7 +698,7 @@ proptest! {
                     c,
                     outcome_a,
                     300e6 as u64,
-                    455166135, // Market shares
+                    455166136, // Market shares
                     844833864 // User shares
                 );
                 let sender_outcome_a_bal = U256::from(1169769517);

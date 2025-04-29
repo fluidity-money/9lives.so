@@ -161,7 +161,7 @@ impl StorageTrading {
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         self.internal_amm_get_prices()?;
         assert_or!(
-            self.amm_liquidity.get() >= amount,
+            !self.amm_liquidity.get().is_zero(),
             Error::NotEnoughLiquidity
         );
         let is_already_set_up = !self.amm_liquidity.get().is_zero();
@@ -280,6 +280,10 @@ impl StorageTrading {
         min_shares: U256,
         recipient: Address,
     ) -> R<U256> {
+        assert_or!(
+            !self.amm_liquidity.get().is_zero(),
+            Error::NotEnoughLiquidity
+        );
         assert_or!(!usd_amt.is_zero(), Error::ZeroAmount);
         // Check if the outcome exists first! Nice safety precaution.
         assert_or!(
@@ -476,7 +480,7 @@ impl StorageTrading {
             Error::NonexistentOutcome
         );
         assert_or!(
-            self.amm_liquidity.get() >= usd_amt,
+            !self.amm_liquidity.get().is_zero(),
             Error::NotEnoughLiquidity
         );
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
@@ -539,6 +543,10 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
+        assert_or!(
+            !self.amm_liquidity.get().is_zero(),
+            Error::NotEnoughLiquidity
+        );
         let shares_tmp = self
             .outcome_ids_iter()
             .map(|id| {
@@ -572,6 +580,10 @@ impl StorageTrading {
         assert_or!(
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
+        );
+        assert_or!(
+            !self.amm_liquidity.get().is_zero(),
+            Error::NotEnoughLiquidity
         );
         let prev_after = c!(self
             .amm_shares
