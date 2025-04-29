@@ -70,15 +70,17 @@ impl StorageTrading {
     /// Used by burn by shares as well.
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn burn_A_E_5853_F_A(
+    pub fn burn_9_C_54_A_443(
         &mut self,
         _outcome: FixedBytes<8>,
         fusdc_amount: U256,
         _min_shares: U256,
+        referrer: Address,
         recipient: Address,
     ) -> R<U256> {
         self.require_not_done_predicting()?;
         fusdc_call::transfer(recipient, fusdc_amount)?;
+        let fusdc_amount = self.calculate_and_set_fees(fusdc_amount, referrer)?;
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
@@ -98,20 +100,22 @@ impl StorageTrading {
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn burn_by_shares_7306_A_4_B_9(
+    pub fn burn_by_shares_9_F_3_C_B_274(
         &mut self,
         _outcome: FixedBytes<8>,
         _max_shares: U256,
         _min_shares: U256,
+        _referrer: Address,
         _recipient: Address,
     ) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.burn_A_E_5853_F_A(
+        return self.burn_9_C_54_A_443(
             _outcome,
             self.internal_amm_estimate_burn(_outcome, _max_shares)?,
             _min_shares,
+            _referrer,
             _recipient,
         );
     }

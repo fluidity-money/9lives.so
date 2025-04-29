@@ -148,14 +148,16 @@ macro_rules! test_should_burn_shares {
                 $c.internal_amm_estimate_burn($outcome, shares_sold)
                     .unwrap()
             )
-            .unwrap()
+            .unwrap(),
+            "quote burn"
         );
         assert_eq!(
             shares_sold,
             should_spend_fusdc_contract!(
                 $buy_amt,
                 $c.burn_A_E_5853_F_A($outcome, buy_amt, U256::ZERO, msg_sender())
-            )
+            ),
+            "actual burn"
         );
     }};
 }
@@ -752,5 +754,30 @@ proptest! {
                 )
             }
         }
+    }
+
+    #[test]
+    fn test_amm_user_story_16(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                // 20 = 2% fees
+                c.fee_lp.set(U256::from(20));
+                test_add_liquidity(&mut c, 1000e6 as u64);
+                test_should_buy_check_shares!(
+                    c,
+                    outcome_a,
+                    500e6 as u64,
+                    671140940, // Market shares
+                    818859060 // User shares
+                );
+                assert_eq!(U256::from(10e6 as u64), c.amm_fees_collected_weighted.get());
+                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151382159);
+            }
+        };
     }
 }

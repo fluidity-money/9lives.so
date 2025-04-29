@@ -549,6 +549,7 @@ impl StorageTrading {
             !self.amm_liquidity.get().is_zero(),
             Error::NotEnoughLiquidity
         );
+        let usd_amt = usd_amt - self.calculate_fees(usd_amt, false)?.0;
         let shares_tmp = self
             .outcome_ids_iter()
             .map(|id| {
@@ -587,6 +588,7 @@ impl StorageTrading {
             !self.amm_liquidity.get().is_zero(),
             Error::NotEnoughLiquidity
         );
+        let usd_amt = usd_amt - self.calculate_fees(usd_amt, false)?.0;
         let prev_after = c!(self
             .amm_shares
             .get(outcome_id)
@@ -627,7 +629,7 @@ impl StorageTrading {
         );
         let mut lo = U256::ZERO;
         let mut hi = self.amm_shares.get(outcome_id);
-        for _ in 0..250 {
+        for _ in 0..500 {
             let mid = (lo + hi) >> 1;
             let burned = self.internal_amm_quote_burn(outcome_id, mid)?;
             if burned < shares_target {

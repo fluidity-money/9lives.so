@@ -15,6 +15,15 @@ use alloc::vec::Vec;
 #[cfg(feature = "trading-backend-dpm")]
 use crate::factory_call;
 
+// CalcFees, determined by the contract state.
+pub struct CalcFees {
+    pub fee_for_creator: U256,
+    pub fee_for_minter: U256,
+    pub fee_for_lp: U256,
+    pub fee_for_referrer: U256,
+    pub fee_for_protocol: U256,
+}
+
 impl StorageTrading {
     pub fn internal_ctor(
         &mut self,
@@ -115,13 +124,13 @@ impl StorageTrading {
         Ok(U256::ZERO)
     }
 
-    /// Calculate and set fees where possible, including the AMM fee weight
-    /// if we're a AMM. Returns the amount remaining.
-    pub fn calculate_and_set_fees(&mut self, value: U256, referrer: Address) -> R<U256> {
+    /// Calculate fees based on the configuration in the pool, including
+    /// whether the action has a referrer.
+    pub fn calculate_fees(&self, value: U256, has_referrer: bool) -> R<(U256, CalcFees)> {
         let fee_for_creator = maths::mul_div_round_up(value, self.fee_creator.get(), FEE_SCALING)?;
         let fee_for_minter = maths::mul_div_round_up(value, self.fee_minter.get(), FEE_SCALING)?;
         let fee_for_lp = maths::mul_div_round_up(value, self.fee_lp.get(), FEE_SCALING)?;
-        let fee_for_referrer = if !referrer.is_zero() {
+        let fee_for_referrer = if has_referrer {
             maths::mul_div_round_up(value, self.fee_referrer.get(), FEE_SCALING)?
         } else {
             U256::ZERO
@@ -131,16 +140,6 @@ impl StorageTrading {
         } else {
             U256::ZERO
         };
-        {
-            let fees_so_far = self.fees_owed_addresses.get(DAO_ADDR);
-            self.fees_owed_addresses
-                .setter(self.fee_recipient.get())
-                .set(
-                    fees_so_far
-                        .checked_add(fee_for_protocol)
-                        .ok_or(Error::CheckedAddOverflow)?,
-                );
-        }
         // fee_for_creator + fee_for_minter +  fee_for_lp + fee_for_referrer + fee_for_protocol
         let fee_cum = fee_for_creator
             .checked_add(fee_for_minter)
@@ -148,11 +147,31 @@ impl StorageTrading {
             .and_then(|x| fee_for_referrer.checked_add(x))
             .and_then(|x| fee_for_protocol.checked_add(x))
             .ok_or(Error::CheckedAddOverflow)?;
-        {
-            let x = self.amm_fees_collected_weighted.get();
-            self.amm_fees_collected_weighted
-                .set(x.checked_add(fee_cum).ok_or(Error::CheckedAddOverflow)?);
-        }
+        Ok((
+            fee_cum,
+            CalcFees {
+                fee_for_creator,
+                fee_for_minter,
+                fee_for_lp,
+                fee_for_referrer,
+                fee_for_protocol,
+            },
+        ))
+    }
+
+    /// Calculate and set fees where possible, including the AMM fee weight
+    /// if we're a AMM. Returns the amount remaining.
+    pub fn calculate_and_set_fees(&mut self, value: U256, referrer: Address) -> R<U256> {
+        let (
+            fee_cum,
+            CalcFees {
+                fee_for_creator,
+                fee_for_minter,
+                fee_for_lp,
+                fee_for_referrer,
+                fee_for_protocol,
+            },
+        ) = self.calculate_fees(value, !referrer.is_zero())?;
         // Start to allocate some fees to the creator and to the referrer.
         if !fee_for_creator.is_zero() {
             let fees_so_far = self.fees_owed_addresses.get(self.fee_recipient.get());
@@ -161,6 +180,23 @@ impl StorageTrading {
                 .set(
                     fees_so_far
                         .checked_add(fee_for_creator)
+                        .ok_or(Error::CheckedAddOverflow)?,
+                );
+        }
+        // TODO: we don't do anything with this -- yet.
+        let _ = fee_for_minter;
+        {
+            let x = self.amm_fees_collected_weighted.get();
+            self.amm_fees_collected_weighted
+                .set(x.checked_add(fee_for_lp).ok_or(Error::CheckedAddOverflow)?);
+        }
+        {
+            let fees_so_far = self.fees_owed_addresses.get(DAO_ADDR);
+            self.fees_owed_addresses
+                .setter(self.fee_recipient.get())
+                .set(
+                    fees_so_far
+                        .checked_add(fee_for_protocol)
                         .ok_or(Error::CheckedAddOverflow)?,
                 );
         }
