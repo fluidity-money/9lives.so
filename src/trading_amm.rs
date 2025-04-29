@@ -507,8 +507,7 @@ impl StorageTrading {
             self.amm_liquidity
                 .get()
                 .pow(U256::from(self.outcome_list.len()))
-                .checked_div(product)
-                .ok_or(Error::CheckedDivOverflow)?,
+                .div_ceil(product),
         );
         let shares = outcome_previous_shares
             .checked_sub(self.amm_shares.get(outcome_id))
@@ -557,12 +556,7 @@ impl StorageTrading {
             .map(|(_, s)| *s)
             .product::<U256>();
         let n = U256::from(self.outcome_list.len());
-        let target = self
-            .amm_liquidity
-            .get()
-            .pow(n)
-            .checked_div(product)
-            .ok_or(Error::CheckedDivOverflow)?;
+        let target = self.amm_liquidity.get().pow(n).div_ceil(product);
         let current = shares_tmp
             .iter()
             .find(|(id, _)| *id == outcome_id)
