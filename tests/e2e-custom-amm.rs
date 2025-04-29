@@ -270,16 +270,17 @@ proptest! {
     fn test_amm_mint_and_burn(
         outcome_a in strat_fixed_bytes::<8>(),
         outcome_b in strat_fixed_bytes::<8>(),
+        add_liq in 1e6 as u64..100e6 as u64,
+        ogous_liq in 100e6 as u64..100_000e6 as u64,
         mut c in strat_storage_trading(false)
     ) {
         setup_contract(&mut c, &[outcome_a, outcome_b]);
-        let liq = 20e6 as u64;
-        test_add_liquidity(&mut c, 5e6 as u64);
+        test_add_liquidity(&mut c, add_liq);
         let shares = should_spend_fusdc_sender!(
-            liq,
+            ogous_liq,
             c.mint_permit_243_E_E_C_56(
                 outcome_a,
-                U256::from(liq),
+                U256::from(ogous_liq),
                 Address::ZERO,
                 msg_sender(),
                 U256::ZERO,
@@ -288,11 +289,10 @@ proptest! {
                 FixedBytes::ZERO,
             )
         );
-        //test_add_liquidity(&mut c, liq);
-        // (B) test_add_liquidity(&mut c, 1000e6 as u64);
-        let burn_amt = U256::from(1e6 as u64);
+        // We're aware of edge case behaviour where more than 10 million in a
+        // market like this will cause a sub overflow in the burn function.
         should_spend_fusdc_contract!(
-            burn_amt,
+            ogous_liq,
             c.burn_by_shares_7306_A_4_B_9(outcome_a, shares, U256::ZERO, msg_sender())
         );
     }
