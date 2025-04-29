@@ -165,6 +165,15 @@ impl StorageTrading {
             outcome,
         ))
     }
+
+    pub fn fees(&self) -> R<(U256, U256, U256, U256)> {
+        Ok((
+            self.fee_creator.get(),
+            self.fee_minter.get(),
+            self.fee_lp.get(),
+            self.fee_referrer.get()
+        ))
+    }
 }
 
 /// Default for CtorArgs, which is useful for defining simple tests on the

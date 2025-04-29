@@ -59,7 +59,9 @@ impl StorageTrading {
             }
         }
         // Set the fees, including the AMM helper ones.
-        let value = self.calculate_and_set_fees(value, referrer)?;
+        let value = value
+            .checked_sub(self.calculate_and_set_fees(value, referrer)?)
+            .ok_or(Error::CheckedSubOverflow)?;
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_mint(outcome, value, recipient);
         #[cfg(not(feature = "trading-backend-dpm"))]
@@ -79,12 +81,24 @@ impl StorageTrading {
         recipient: Address,
     ) -> R<U256> {
         self.require_not_done_predicting()?;
-        fusdc_call::transfer(recipient, fusdc_amount)?;
-        let fusdc_amount = self.calculate_and_set_fees(fusdc_amount, referrer)?;
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_burn(_outcome, fusdc_amount, _min_shares, recipient);
+        {
+            let burned_shares = self.internal_amm_burn(_outcome, fusdc_amount, _min_shares)?;
+            let fusdc_amount = fusdc_amount
+                .checked_sub(self.calculate_and_set_fees(fusdc_amount, referrer)?)
+                .ok_or(Error::CheckedSubOverflow)?;
+            fusdc_call::transfer(recipient, fusdc_amount)?;
+            evm::log(events::SharesBurned {
+                identifier: _outcome,
+                shareAmount: burned_shares,
+                spender: msg_sender(),
+                recipient,
+                fusdcReturned: fusdc_amount,
+            });
+            Ok(burned_shares)
+        }
     }
 
     #[allow(non_snake_case)]

@@ -16,6 +16,7 @@ use alloc::vec::Vec;
 use crate::factory_call;
 
 // CalcFees, determined by the contract state.
+#[derive(Debug, PartialEq, Clone)]
 pub struct CalcFees {
     pub fee_for_creator: U256,
     pub fee_for_minter: U256,
@@ -208,12 +209,7 @@ impl StorageTrading {
                     .ok_or(Error::CheckedAddOverflow)?,
             );
         }
-        // It will never be the case that the fee exceeds the amount here, but
-        // this good programming regardless to check.
-        let value = value
-            .checked_sub(fee_cum)
-            .ok_or(Error::CheckedSubOverflow)?;
-        Ok(value)
+        Ok(fee_cum)
     }
 }
 

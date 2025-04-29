@@ -4,7 +4,7 @@
     not(target_arch = "wasm32")
 ))]
 
-use stylus_sdk::alloy_primitives::{FixedBytes, U256, U64};
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
 
 use lib9lives::{
     assert_eq_u, error::Error, host, interactions_clear_after, panic_guard, proxy, share_call,
@@ -34,6 +34,11 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
     c.amm_liquidity.set(U256::ZERO);
     c.when_decided.set(U64::ZERO);
     c.is_shutdown.set(false);
+    // For our testing in this code, we explicitly disable these fees.
+    c.fee_creator.set(U256::ZERO);
+    c.fee_minter.set(U256::ZERO);
+    c.fee_lp.set(U256::ZERO);
+    c.fee_referrer.set(U256::ZERO);
     for (i, o) in outcomes.iter().enumerate() {
         host::register_addr(
             proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
@@ -151,11 +156,12 @@ macro_rules! test_should_burn_shares {
             .unwrap(),
             "quote burn"
         );
+        // In this test scaffolding, we don't set the referrer.
         assert_eq!(
             shares_sold,
             should_spend_fusdc_contract!(
                 $buy_amt,
-                $c.burn_A_E_5853_F_A($outcome, buy_amt, U256::ZERO, msg_sender())
+                $c.burn_9_C_54_A_443($outcome, buy_amt, U256::ZERO, Address::ZERO, msg_sender())
             ),
             "actual burn"
         );

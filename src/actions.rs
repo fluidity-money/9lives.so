@@ -46,6 +46,7 @@ pub struct ActionMint {
 #[derive(Clone, Debug, PartialEq, P, A)]
 pub struct ActionBurn {
     pub outcome: FixedBytes<8>,
+    pub referrer: Address,
     pub usd_amt: U256,
 }
 
@@ -104,7 +105,7 @@ pub struct ActionEffect {
 macro_rules! implement_action {
     ($c:expr, $sender:expr, $action:expr) => {{
         use stylus_sdk::alloy_primitives::U256;
-        use $crate::{should_spend_fusdc_sender, actions::Action};
+        use $crate::{actions::Action, should_spend_fusdc_sender};
         match $action {
             Action::Ctor(a) => {
                 $c.ctor((
@@ -162,7 +163,7 @@ macro_rules! implement_action {
             Action::Burn(a) => {
                 should_spend_fusdc_sender!(
                     a.usd_amt,
-                    $c.burn_A_E_5853_F_A(a.outcome, a.usd_amt, U256::ZERO, $sender)
+                    $c.burn_9_C_54_A_443(a.outcome, a.usd_amt, U256::ZERO, a.referrer, $sender)
                 );
             }
             #[cfg(feature = "trading-backend-amm")]

@@ -53,7 +53,6 @@ impl StorageTrading {
         self.require_not_done_predicting()?;
         self.internal_amm_get_prices()?;
         let prev_liquidity = self.amm_liquidity.get();
-        let is_already_set_up = !prev_liquidity.is_zero();
         for id in self.outcome_ids_iter().collect::<Vec<_>>() {
             let x = self.amm_shares.get(id);
             // Add the unscaled amount to both of these storage values.
@@ -65,7 +64,7 @@ impl StorageTrading {
                 .setter(id)
                 .set(x.checked_add(amount).ok_or(Error::CheckedAddOverflow)?);
         }
-        if is_already_set_up {
+        if !self.amm_liquidity.get().is_zero() {
             self.rebalance_fees(recipient, amount, true)?;
         }
         let prev_shares = self
@@ -146,7 +145,7 @@ impl StorageTrading {
                 }
                 Ok((outcome_id, outcome_shares_received))
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<R<Vec<_>>>()?;
         evm::log(events::LiquidityAdded {
             fusdcAmt: amount,
             liquidityShares: add_user_liq,
@@ -261,7 +260,7 @@ impl StorageTrading {
                 }
                 Ok((outcome_id, outcome_shares_received))
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<R<Vec<_>>>()?;
         evm::log(events::LiquidityRemoved {
             fusdcAmt: amount,
             recipient,
@@ -276,8 +275,7 @@ impl StorageTrading {
         &mut self,
         outcome_id: FixedBytes<8>,
         usd_amt: U256,
-        min_shares: U256,
-        recipient: Address,
+        min_shares: U256
     ) -> R<U256> {
         assert_or!(
             !self.amm_liquidity.get().is_zero(),
@@ -320,12 +318,12 @@ impl StorageTrading {
                 .checked_div(product)
                 .ok_or(Error::CheckedDivOverflow)?,
         );
-        let shares = c!(self
+        let burned_shares = c!(self
             .amm_shares
             .get(outcome_id)
             .checked_sub(outcome_previous_shares)
             .ok_or(Error::CheckedSubOverflow));
-        assert_or!(shares >= min_shares, Error::NotEnoughSharesBurned);
+        assert_or!(burned_shares >= min_shares, Error::NotEnoughSharesBurned);
         c!(share_call::burn(
             proxy::get_share_addr(
                 self.factory_addr.get(),
@@ -334,16 +332,9 @@ impl StorageTrading {
                 outcome_id,
             ),
             msg_sender(),
-            shares
+            burned_shares
         ));
-        evm::log(events::SharesBurned {
-            identifier: outcome_id,
-            shareAmount: shares,
-            spender: msg_sender(),
-            recipient,
-            fusdcReturned: shares,
-        });
-        Ok(shares)
+        Ok(burned_shares)
     }
 
     pub fn internal_amm_claim_liquidity(&mut self, recipient: Address) -> R<U256> {
@@ -366,12 +357,7 @@ impl StorageTrading {
     }
 
     /// Rebalance the calculated user fee weight.
-    pub fn rebalance_fees(
-        &mut self,
-        sender: Address,
-        delta_liq: U256,
-        is_add: bool,
-    ) -> R<()> {
+    pub fn rebalance_fees(&mut self, sender: Address, delta_liq: U256, is_add: bool) -> R<()> {
         let fee_weight = maths::mul_div_round_up(
             delta_liq,
             self.amm_fees_collected_weighted.get(),
@@ -425,7 +411,7 @@ impl StorageTrading {
             .checked_sub(claimed)
             .ok_or(Error::CheckedSubOverflow)?;
         if fees.is_zero() {
-            return Ok(U256::ZERO)
+            return Ok(U256::ZERO);
         }
         // Prevent people from double claiming.
         self.amm_lp_user_fees_claimed
@@ -546,7 +532,7 @@ impl StorageTrading {
             Error::NonexistentOutcome
         );
         if self.amm_liquidity.get().is_zero() {
-            return Ok(U256::ZERO)
+            return Ok(U256::ZERO);
         }
         let usd_amt = usd_amt - self.calculate_fees(usd_amt, false)?.0;
         let shares_tmp = self
@@ -583,11 +569,9 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        assert_or!(
-            !self.amm_liquidity.get().is_zero(),
-            Error::NotEnoughLiquidity
-        );
-        let usd_amt = usd_amt - self.calculate_fees(usd_amt, false)?.0;
+        if self.amm_liquidity.get().is_zero() {
+            return Ok(U256::ZERO);
+        }
         let prev_after = c!(self
             .amm_shares
             .get(outcome_id)
@@ -637,6 +621,7 @@ impl StorageTrading {
                 hi = mid;
             }
         }
+        // Return the shares to send to the frontend.
         Ok(hi)
     }
 

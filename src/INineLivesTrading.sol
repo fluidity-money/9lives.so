@@ -178,5 +178,15 @@ interface INineLivesTrading {
     /// @notice get a share address using the identifier given instead of an online check.
     function shareAddr(bytes8 outcomeId) external view returns (address);
 
+    struct Fees {
+        uint256 feeCreator;
+        uint256 feeMinter;
+        uint256 feeLp;
+        uint256 feeReferrer;
+    }
+
+    /// @notice fees currently set in the market. Scaled by FEE_SCALING.
+    function fees() external view returns (Fees memory);
+
     function userLiquidityShares(address spender) external view returns (uint256);
 }

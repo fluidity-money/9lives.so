@@ -290,9 +290,16 @@ proptest! {
         );
         // We're aware of edge case behaviour where more than 10 million in a
         // market like this will cause a sub overflow in the burn function.
+        // We don't work with referrers here!
         should_spend_fusdc_contract!(
             ogous_liq,
-            c.burn_by_shares_7306_A_4_B_9(outcome_a, shares, U256::ZERO, msg_sender())
+            c.burn_by_shares_9_F_3_C_B_274(
+                outcome_a,
+                shares,
+                U256::ZERO,
+                Address::ZERO,
+                msg_sender()
+            )
         );
     }
 }
