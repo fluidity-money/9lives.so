@@ -94,12 +94,10 @@ proptest! {
             U256::from(acc),
             c.claim_lp_fees_66980_F_36(msg_sender())
         );
-        panic_guard(|| {
-            assert_eq!(
-                Error::NoFeesToClaim,
-                c.claim_lp_fees_66980_F_36(msg_sender()).unwrap_err()
-            );
-        });
+        assert_eq!(
+            U256::ZERO,
+            c.claim_lp_fees_66980_F_36(msg_sender()).unwrap()
+        );
     }
 
     // FIXME

@@ -587,7 +587,7 @@ proptest! {
                     ],
                 );
                 c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(10e6 as u64));
-                let (_, shares) = should_spend_fusdc_contract!(
+                let (_, _, shares) = should_spend_fusdc_contract!(
                     U256::from(3535534),
                     c.remove_liquidity_3_C_857_A_15(U256::from(5e6 as u64), msg_sender())
                 );

@@ -159,13 +159,12 @@ impl StorageTrading {
         &mut self,
         amount: U256,
         recipient: Address,
-    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
+    ) -> R<(U256, U256, Vec<(FixedBytes<8>, U256)>)> {
         self.internal_amm_get_prices()?;
         assert_or!(
             !self.amm_liquidity.get().is_zero(),
             Error::NotEnoughLiquidity
         );
-        let is_already_set_up = !self.amm_liquidity.get().is_zero();
         let (most_likely_amt, most_likely_outcome_id) = self
             .outcome_ids_iter()
             .fold(None, |acc, id| {
@@ -226,9 +225,8 @@ impl StorageTrading {
             .outcome_ids_iter()
             .map(|x| self.amm_shares.get(x))
             .product();
-        if is_already_set_up {
-            self.rebalance_fees(recipient, amount, false)?;
-        }
+        let lp_fees_earned = self.internal_amm_claim_lp_fees(recipient)?;
+        self.rebalance_fees(recipient, amount, false)?;
         self.amm_liquidity
             .set(maths::rooti(product, self.outcome_list.len() as u32));
         {
@@ -269,7 +267,7 @@ impl StorageTrading {
             recipient,
             liquidityAmt: liquidity_shares_val,
         });
-        Ok((liquidity_shares_val, shares_received))
+        Ok((liquidity_shares_val, lp_fees_earned, shares_received))
     }
 
     // Sell the amount of shares, using the USD amount, returning the shares
@@ -368,68 +366,69 @@ impl StorageTrading {
     }
 
     /// Rebalance the calculated user fee weight.
-    pub fn rebalance_fees_sender(
+    pub fn rebalance_fees(
         &mut self,
         sender: Address,
         delta_liq: U256,
         is_add: bool,
     ) -> R<()> {
-        let total_liq = self.amm_liquidity.get();
-        let fee_weight = self.amm_fee_weight.get();
-        let prev = self.amm_lp_fees_claimed.get(sender);
-        self.amm_lp_fees_claimed.setter(sender).set(if is_add {
-            prev.checked_add(maths::mul_div(fee_weight, delta_liq, total_liq)?.0)
-                .ok_or(Error::CheckedAddOverflow)?
+        let fee_weight = maths::mul_div_round_up(
+            delta_liq,
+            self.amm_fees_collected_weighted.get(),
+            self.amm_liquidity.get(),
+        )?;
+        if is_add {
+            {
+                let x = self
+                    .amm_fees_collected_weighted
+                    .get()
+                    .checked_add(fee_weight)
+                    .ok_or(Error::CheckedAddOverflow)?;
+                self.amm_fees_collected_weighted.set(x);
+            }
+            {
+                let x = self.amm_lp_user_fees_claimed.get(sender);
+                self.amm_lp_user_fees_claimed
+                    .setter(sender)
+                    .set(x.checked_add(fee_weight).ok_or(Error::CheckedAddOverflow)?);
+            }
         } else {
-            prev.checked_sub(maths::mul_div_round_up(fee_weight, delta_liq, total_liq)?)
-                .ok_or(Error::CheckedSubOverflow)?
-        });
-        Ok(())
-    }
-
-    /// Rebalance the calculated pool fee weight.
-    #[mutants::skip]
-    pub fn rebalance_fees_pool(&mut self, delta_liq: U256, is_add: bool) -> R<()> {
-        let total_liq = self.amm_liquidity.get();
-        let weight = self.amm_fee_weight.get();
-        if total_liq.is_zero() || weight.is_zero() {
-            return Ok(());
+            {
+                let x = self
+                    .amm_fees_collected_weighted
+                    .get()
+                    .checked_sub(fee_weight)
+                    .ok_or(Error::CheckedAddOverflow)?;
+                self.amm_fees_collected_weighted.set(x);
+            }
+            {
+                let x = self.amm_lp_user_fees_claimed.get(sender);
+                self.amm_lp_user_fees_claimed
+                    .setter(sender)
+                    .set(x.checked_sub(fee_weight).ok_or(Error::CheckedAddOverflow)?);
+            }
         }
-        let adjustment = maths::mul_div(weight, delta_liq, total_liq)?.0;
-        let new_weight = if is_add {
-            weight
-                .checked_add(adjustment)
-                .ok_or(Error::CheckedAddOverflow)?
-        } else {
-            weight
-                .checked_sub(adjustment)
-                .ok_or(Error::CheckedSubOverflow)?
-        };
-        self.amm_fee_weight.set(new_weight);
         Ok(())
-    }
-
-    pub fn rebalance_fees(&mut self, sender: Address, delta_liq: U256, is_add: bool) -> R<()> {
-        self.rebalance_fees_sender(sender, delta_liq, is_add)?;
-        self.rebalance_fees_pool(delta_liq, is_add)
     }
 
     pub fn internal_amm_claim_lp_fees(&mut self, recipient: Address) -> R<U256> {
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
         let entitled = maths::mul_div(
-            self.amm_fee_weight.get(),
             sender_liq_shares,
+            self.amm_fees_collected_weighted.get(),
             self.amm_liquidity.get(),
         )?
         .0;
-        let claimed = self.amm_lp_fees_claimed.get(msg_sender());
+        let claimed = self.amm_lp_user_fees_claimed.get(msg_sender());
         let fees = entitled
             .checked_sub(claimed)
             .ok_or(Error::CheckedSubOverflow)?;
-        assert_or!(!fees.is_zero(), Error::NoFeesToClaim);
+        if fees.is_zero() {
+            return Ok(U256::ZERO)
+        }
         // Prevent people from double claiming.
-        self.amm_lp_fees_claimed
+        self.amm_lp_user_fees_claimed
             .setter(msg_sender())
             .set(claimed.checked_add(fees).ok_or(Error::CheckedAddOverflow)?);
         fusdc_call::transfer(recipient, fees)?;

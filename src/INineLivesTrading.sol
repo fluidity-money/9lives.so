@@ -108,6 +108,7 @@ interface INineLivesTrading {
         address recipient
     ) external returns (
         uint256 fusdcAmount,
+        uint256 lpFeesEarned,
         UserLiqRemoved[] memory liquidityRemoved
     );
 

@@ -148,6 +148,11 @@ impl StorageTrading {
             .and_then(|x| fee_for_referrer.checked_add(x))
             .and_then(|x| fee_for_protocol.checked_add(x))
             .ok_or(Error::CheckedAddOverflow)?;
+        {
+            let x = self.amm_fees_collected_weighted.get();
+            self.amm_fees_collected_weighted
+                .set(x.checked_add(fee_cum).ok_or(Error::CheckedAddOverflow)?);
+        }
         // Start to allocate some fees to the creator and to the referrer.
         if !fee_for_creator.is_zero() {
             let fees_so_far = self.fees_owed_addresses.get(self.fee_recipient.get());
@@ -167,13 +172,6 @@ impl StorageTrading {
                     .ok_or(Error::CheckedAddOverflow)?,
             );
         }
-        #[cfg(feature = "trading-backend-amm")]
-        self.amm_fee_weight.set(
-            self.amm_fee_weight
-                .get()
-                .checked_add(fee_cum)
-                .ok_or(Error::CheckedAddOverflow)?,
-        );
         // It will never be the case that the fee exceeds the amount here, but
         // this good programming regardless to check.
         let value = value
@@ -280,8 +278,8 @@ mod proptesting {
                 got <= (value - expected_cum_fee) + tol
             );
             assert!(
-                c.amm_fee_weight.get() >= expected_cum_fee - tol &&
-                c.amm_fee_weight.get() <= expected_cum_fee + tol
+                c.amm_fees_collected_weighted.get() >= expected_cum_fee - tol &&
+                c.amm_fees_collected_weighted.get() <= expected_cum_fee + tol
             );
         }
     }
