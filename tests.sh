@@ -6,6 +6,8 @@ make solidity
 
 cargo test --features testing,trading-backend-amm $@
 
+exit
+
 #cargo mutants \
 #	--features testing,trading-backend-dpm \
 #	$(printf -- '-f %s ' src/*dpm*.rs) $@

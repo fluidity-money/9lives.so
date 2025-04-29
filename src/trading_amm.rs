@@ -276,12 +276,14 @@ impl StorageTrading {
         min_shares: U256,
         recipient: Address,
     ) -> R<U256> {
+         assert_or!(!usd_amt.is_zero(), Error::ZeroAmount);
         // Check if the outcome exists first! Nice safety precaution.
         assert_or!(
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
+            dbg!(self.amm_shares.get(outcome_id), usd_amt);
             {
                 let shares = c!(self
                     .amm_shares

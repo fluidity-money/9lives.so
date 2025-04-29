@@ -246,7 +246,7 @@ class PredMarketNew:
 
         # Outcome shares transferred from user to pool
         shares_burned = self.shares[outcome] - previous_shares[outcome]
-        print(f"shares burned: {shares_burned}")
+        print(f"shares burned: {shares_burned}, self.shares[{outcome}] = {self.shares[outcome]}, previous_shares[{outcome}] = {previous_shares[outcome]}")
         self.user_outcome_shares[outcome] -= shares_burned
 
         self.transfer_from_pool_to_user(amount)
@@ -837,6 +837,18 @@ def test_fee_collection_sum():
     assert math.isclose(market.fees_collected, expected_fees), "Total fees don't match sum of individual fees"
     print(expected_fees);
 
+def test_ogous():
+    market = PredMarketNew(liquidity=1000, outcomes=2, fees=0)
+    market.user_wallet_usd = 1000
+    market.buy(0, 20)
+    print(f"user outcome shares: {market.user_outcome_shares}")
+    print(f"shares: {market.shares}")
+    print(f"total shares: {market.total_shares}")
+    market.sell(0, 1)
+    print(f"shares after: {market.shares}")
+    print(f"total shares after: {market.total_shares}")
+
+
 if __name__ == "__main__":
     #simulate_market_1()
     #simulate_market_2()
@@ -852,5 +864,5 @@ if __name__ == "__main__":
     #simulate_market_12()
     #simulate_market_13()
     #simulate_market_14()
-    simulate_market_15()
-    test_value_conservation()
+    #simulate_market_15()
+    test_ogous()
