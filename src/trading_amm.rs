@@ -545,10 +545,9 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        assert_or!(
-            !self.amm_liquidity.get().is_zero(),
-            Error::NotEnoughLiquidity
-        );
+        if self.amm_liquidity.get().is_zero() {
+            return Ok(U256::ZERO)
+        }
         let usd_amt = usd_amt - self.calculate_fees(usd_amt, false)?.0;
         let shares_tmp = self
             .outcome_ids_iter()
