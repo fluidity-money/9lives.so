@@ -15,14 +15,6 @@ import { useCampaignStore } from "@/stores/campaignStore";
 import clientEnv from "../config/clientEnv";
 import { generateCampaignId, generateOutcomeId } from "@/utils/generateId";
 import helperAbi from "@/config/abi/helperFactory";
-// HelperApprovalAmount taken by the contract for every deployment (in the current
-// two outcome DPM mode).
-const HelperApprovalAmount = BigInt(5000000);
-const approveHelperTx = prepareContractCall({
-  contract: config.contracts.fusdc,
-  method: "approve",
-  params: [clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR, HelperApprovalAmount],
-});
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type Create =
   // | "createWithInfraMarket"
@@ -43,7 +35,11 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
   const minOracleCreatePrice = BigInt(4e6);
   const minDefaultCreatePrice = BigInt(3e6);
-  const create = async (input: CampaignInput, account: Account) =>
+  const create = async (
+    input: CampaignInput,
+    account: Account,
+    seedLiquidity: number = 0,
+  ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -96,6 +92,34 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             //   const descBytes = toUtf8Bytes(input.oracleDescription);
             //   hashedDocumentation = keccak256(descBytes) as `0x${string}`;
             // }
+            if (seedLiquidity > 0) {
+              const allowanceHelperTx = prepareContractCall({
+                contract: config.contracts.fusdc,
+                method: "allowance",
+                params: [
+                  account.address,
+                  clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+                ],
+              });
+              const allowanceOfHelper = (await simulateTransaction({
+                transaction: allowanceHelperTx,
+                account,
+              })) as bigint;
+              if (allowanceOfHelper < BigInt(seedLiquidity)) {
+                const approveHelperTx = prepareContractCall({
+                  contract: config.contracts.fusdc,
+                  method: "approve",
+                  params: [
+                    clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+                    BigInt(seedLiquidity),
+                  ],
+                });
+                await sendTransaction({
+                  transaction: approveHelperTx,
+                  account,
+                });
+              }
+            }
             const createTx = prepareContractCall({
               contract: config.contracts.helperFactory,
               method: settlementFunctionMap[input.settlementType],
@@ -112,28 +136,10 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
                   feeLp: BigInt(0),
                   feeMinter: BigInt(0),
                   feeReferrer: BigInt(0),
-                  seedLiquidity: BigInt(0),
+                  seedLiquidity: BigInt(seedLiquidity),
                 },
               ],
             });
-            const allowanceHelperTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "allowance",
-              params: [
-                account.address,
-                clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-              ],
-            });
-            const allowanceOfHelper = (await simulateTransaction({
-              transaction: allowanceHelperTx,
-              account,
-            })) as bigint;
-            if (allowanceOfHelper < HelperApprovalAmount) {
-              await sendTransaction({
-                transaction: approveHelperTx,
-                account,
-              });
-            }
             await sendTransaction({
               transaction: createTx,
               account,
