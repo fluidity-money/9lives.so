@@ -265,4 +265,34 @@ proptest! {
             // campaign that has ended.
         })
     }
+
+    #[test]
+    fn test_amm_mint_and_burn(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        setup_contract(&mut c, &[outcome_a, outcome_b]);
+        // test_add_liquidity(&mut c, 1000e6 as u64);
+        let mint_amt = U256::from(20e6 as u64);
+        should_spend_fusdc_sender!(
+            mint_amt,
+            c.mint_permit_243_E_E_C_56(
+                outcome_a,
+                mint_amt,
+                Address::ZERO,
+                msg_sender(),
+                U256::ZERO,
+                0,
+                FixedBytes::ZERO,
+                FixedBytes::ZERO,
+            )
+        );
+        let burn_amt = U256::from(1e6 as u64);
+        should_spend_fusdc_contract!(
+            burn_amt,
+            c.burn_A_E_5853_F_A(outcome_a, burn_amt, U256::ZERO, msg_sender())
+        );
+    }
+
 }
