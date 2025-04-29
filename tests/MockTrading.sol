@@ -109,6 +109,32 @@ contract MockTrading is INineLivesTrading {
         return shares;
     }
 
+    function addLiquidityPermit(
+        uint256 liquidity,
+        address recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (
+        uint256 userLiquidity,
+        UserLiqAdded[] memory liquidityAdded
+    ) {
+        ++counter_;
+        return (0, liquidityAdded);
+    }
+
+    function removeLiquidity3C857A15(
+        uint256 liquidity,
+        address recipient
+    ) external returns (
+        uint256 fusdcAmount,
+        UserLiqRemoved[] memory liquidityRemoved
+    ) {
+        ++counter_;
+        return (fusdcAmount, liquidityRemoved);
+    }
+
     function claimAddressFees70938D8(
         address /* recipient */
     ) external returns (uint256) {

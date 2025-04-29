@@ -81,6 +81,36 @@ interface INineLivesTrading {
         uint256 shares
     ) external view returns (uint256 estimatedFusdc);
 
+    struct UserLiqAdded {
+        bytes8 outcome;
+        uint256 sharesReceived;
+    }
+
+    function addLiquidityPermit(
+        uint256 liquidity,
+        address recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (
+        uint256 userLiquidity,
+        UserLiqAdded[] memory liquidityAdded
+    );
+
+    struct UserLiqRemoved {
+        bytes8 outcome;
+        uint256 sharesReceived;
+    }
+
+    function removeLiquidity3C857A15(
+        uint256 liquidity,
+        address recipient
+    ) external returns (
+        uint256 fusdcAmount,
+        UserLiqRemoved[] memory liquidityRemoved
+    );
+
     /// @notice Claim fees owed to a specific address, perhaps after they've
     ///        been doing referrals.
     /// @param recipient to send the rewards to.

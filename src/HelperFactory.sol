@@ -3,6 +3,7 @@
 pragma solidity 0.8.20;
 
 import "./INineLivesFactory.sol";
+import "./INineLivesTrading.sol";
 
 interface IERC20Permit {
     function permit(
@@ -32,6 +33,7 @@ struct CreateArgs {
     uint64 feeLp;
     uint64 feeMinter;
     uint64 feeReferrer;
+    uint256 seedLiquidity;
 }
 
 /**
@@ -63,7 +65,7 @@ contract HelperFactory {
     /// Create a new campaign, ignoring the CreateArgs oracle argument.
     function create(address _oracle, CreateArgs calldata _a) internal returns (address) {
         require(_a.timeEnding > block.timestamp, "time ending before timestamp");
-        return FACTORY.newTrading320E32E9(
+        INineLivesTrading t = INineLivesTrading(FACTORY.newTrading320E32E9(
             _a.outcomes,
             _oracle,
             uint64(block.timestamp + 1),
@@ -74,7 +76,12 @@ contract HelperFactory {
             _a.feeLp,
             _a.feeMinter,
             _a.feeReferrer
-        );
+        ));
+        if (_a.seedLiquidity > 0) {
+            FUSDC.transferFrom(msg.sender, address(this), _a.seedLiquidity);
+            t.addLiquidityPermit(_a.seedLiquidity, msg.sender, 0, 0, bytes32(0), bytes32(0));
+        }
+        return address(t);
     }
 
     function createWithBeautyContest(CreateArgs calldata _a) public returns (address tradingAddr) {
