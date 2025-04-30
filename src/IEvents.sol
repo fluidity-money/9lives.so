@@ -67,7 +67,7 @@ interface IEvents {
     );
 
     event LiquidityAddedSharesSent(
-        bytes8 indexed share,
+        bytes8 indexed outcome,
         address indexed recipient,
         uint256 indexed amount
     );
@@ -79,7 +79,7 @@ interface IEvents {
     );
 
     event LiquidityRemovedSharesSent(
-        bytes8 indexed share,
+        bytes8 indexed outcome,
         address indexed recipient,
         uint256 indexed amount
     );

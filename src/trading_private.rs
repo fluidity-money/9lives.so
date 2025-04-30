@@ -303,14 +303,16 @@ mod proptesting {
                 expected_fee_protocol;
             // In our tests, we tolerate a difference.
             let tol = U256::from(10);
-            let got = c.calculate_and_set_fees(value, referrer_addr).unwrap();
+            let got = value - c.calculate_and_set_fees(value, referrer_addr).unwrap();
             assert!(
                 got >= (value - expected_cum_fee) - tol &&
-                got <= (value - expected_cum_fee) + tol
+                got <= (value - expected_cum_fee) + tol,
             );
             assert!(
                 c.amm_fees_collected_weighted.get() >= expected_cum_fee - tol &&
-                c.amm_fees_collected_weighted.get() <= expected_cum_fee + tol
+                c.amm_fees_collected_weighted.get() <= expected_cum_fee + tol,
+                "fees collected weighted: {}, expected cum fee: {expected_cum_fee}",
+                c.amm_fees_collected_weighted.get()
             );
         }
     }

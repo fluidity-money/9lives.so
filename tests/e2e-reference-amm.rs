@@ -824,11 +824,11 @@ proptest! {
         mut c in strat_storage_trading(false)
     ) {
         let target_fee_collected = U256::from(12000000);
-        c.oracle.set(ELI);
         let half_of_target_fee_collected = target_fee_collected / U256::from(2);
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b]);
+                c.oracle.set(ELI);
                 // 20 = 2% fees
                 c.fee_lp.set(U256::from(20));
                 test_add_liquidity(&mut c, 500e6 as u64);
@@ -878,7 +878,63 @@ proptest! {
                 assert!(fusdc_call::balance_of(CONTRACT).unwrap().is_zero());
             },
             ELI => {
-                c.declare(outcome_a).unwrap();
+                // Since the check for whether the market has concluded is the time, we
+                // need to set it to more than 0.
+                host::set_block_timestamp(1);
+                c.decide(outcome_a).unwrap();
+                let win_amt = U256::from(667476901);
+                should_spend_fusdc_contract!(
+                    win_amt,
+                    c.payoff_8_5_D_8_D_F_C_9(
+                        outcome_a,
+                        win_amt,
+                        msg_sender()
+                    )
+                );
+            },
+            IVAN => {
+                should_spend_fusdc_contract!(
+                    360230500,
+                    c.claim_liquidity_9_C_391_F_85(msg_sender())
+                );
+            },
+            ERIK => {
+                should_spend_fusdc_contract!(
+                    360230500,
+                    c.claim_liquidity_9_C_391_F_85(msg_sender())
+                );
+            }
+        };
+    }
+
+    #[test]
+    fn test_amm_user_story_18(
+        outcome_a in strat_fixed_bytes::<8>(),
+        outcome_b in strat_fixed_bytes::<8>(),
+        outcome_c in strat_fixed_bytes::<8>(),
+        outcome_d in strat_fixed_bytes::<8>(),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                c.oracle.set(ELI);
+                // 20 = 2% fees
+                c.fee_lp.set(U256::from(20));
+                test_add_liquidity(&mut c, 500e6 as u64);
+            },
+            ERIK => {
+                test_add_liquidity(&mut c, 500e6 as u64);
+            },
+            OGOUS => {
+                test_should_buy_check_shares!(
+                    c,
+                    outcome_a,
+                    100e6 as u64,
+                    755427830, // Market shares
+                    342572170, // User shares
+                    10e6 as u64 // Fees
+                );
             }
         };
     }

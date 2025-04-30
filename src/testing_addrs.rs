@@ -34,7 +34,7 @@ defaults! {
     MARKO
 }
 
-pub const TESTING_ADDRS: [Address; 16] = [
+pub const TESTING_ADDRS: [Address; 17] = [
     MSG_SENDER,
     CONTRACT,
     FUSDC,
@@ -53,4 +53,5 @@ pub const TESTING_ADDRS: [Address; 16] = [
     OGOUS,
     PAXIA,
     YOEL,
+    MARKO,
 ];

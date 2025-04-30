@@ -138,7 +138,7 @@ impl StorageTrading {
                         outcome_shares_received,
                     )?;
                     evm::log(events::LiquidityAddedSharesSent {
-                        share: outcome_id,
+                        outcome: outcome_id,
                         recipient,
                         amount: outcome_shares_received,
                     });
@@ -230,9 +230,11 @@ impl StorageTrading {
             .set(maths::rooti(product, self.outcome_list.len() as u32));
         {
             let user_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
-            self.amm_user_liquidity_shares
-                .setter(msg_sender())
-                .set(user_liq_shares - amount);
+            self.amm_user_liquidity_shares.setter(msg_sender()).set(
+                user_liq_shares
+                    .checked_sub(amount)
+                    .ok_or(Error::CheckedSubOverflow)?,
+            );
         }
         let shares_received = self
             .outcome_ids_iter()
@@ -253,7 +255,7 @@ impl StorageTrading {
                         outcome_shares_received,
                     )?;
                     evm::log(events::LiquidityRemovedSharesSent {
-                        share: outcome_id,
+                        outcome: outcome_id,
                         recipient,
                         amount: outcome_shares_received,
                     });
@@ -346,14 +348,13 @@ impl StorageTrading {
         assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
-        let liq_price = self
-            .amm_shares
-            .get(self.winner.get())
-            .checked_div(self.amm_liquidity.get())
-            .ok_or(Error::CheckedDivOverflow)?;
-        let claimed_amt = sender_liq_shares
-            .checked_mul(liq_price)
-            .ok_or(Error::CheckedDivOverflow)?;
+        let liq_price = maths::mul_div(
+            self.amm_shares.get(self.winner.get()),
+            SHARE_DECIMALS_EXP,
+            self.amm_liquidity.get(),
+        )?
+        .0;
+        let claimed_amt = maths::mul_div(sender_liq_shares, liq_price, SHARE_DECIMALS_EXP)?.0;
         fusdc_call::transfer(recipient, claimed_amt)?;
         self.amm_user_liquidity_shares
             .setter(msg_sender())

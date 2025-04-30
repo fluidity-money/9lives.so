@@ -183,4 +183,50 @@ type (
 		Ticket        Number `json:"ticket"`
 		Justification Bytes  `json:"justification"`
 	}
+
+	EventLiquidityAdded struct {
+		Event
+
+		FusdcAmt Number `json:"fusdc_amt"`
+		LiquidityShares Number `json:"liquidity_shares"`
+		Recipient Address `json:"recipient"`
+	}
+
+	EventLiquidityAddedSharesSent struct {
+		Event
+
+		Outcome Bytes `json:"outcome"`
+		LiquidityShares Number `json:"liquidity_shares"`
+		Recipient Address `json:"recipient"`
+	}
+
+	EventLiquidityRemoved struct {
+		Event
+
+		FusdcAmt Number `json:"fusdc_amt"`
+		Recipient Address `json:"recipient"`
+		LiquidityAmt Number `json:"liquidity_amt"`
+	}
+
+	EventLiquidityRemovedSharesSent struct {
+		Event
+
+		Outcome Bytes `json:"outcome"`
+		Recipient Address `json:"recipient"`
+		Amount Number `json:"amount"`
+	}
+
+	EventLiquidityClaimed struct {
+		Event
+
+		Recipient Address `json:"recipient"`
+		FusdcAmt Number `json:"fusdc_amt"`
+	}
+
+	EventLPFeesClaimed struct {
+		Event
+
+		Recipient Address `json:"recipient"`
+		Amount Number `json:"amount"`
+	}
 )

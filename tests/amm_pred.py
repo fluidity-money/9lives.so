@@ -299,6 +299,8 @@ class PredMarketNew:
 
         liqudity_price = self.shares[self.winning_outcome] / self.liquidity
         claimed_amount = no_of_liquidity_shares * liqudity_price
+        print(f"liquidity price: {liqudity_price}")
+        print(f"claimed amount: {claimed_amount}")
 
         self.transfer_from_pool_to_user(claimed_amount, user)
 
@@ -996,6 +998,7 @@ def simulate_market_17():
     before_alice_wallet_usd = market.user_wallet_usd[ALICE]
     market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE)
     amount_usd_received_alice = market.user_wallet_usd[ALICE] - before_alice_wallet_usd
+    print(f"amount of usd received by alice: {amount_usd_received_alice}")
     # Alice should receive half of the remaining USD in the pool since she has 50% of the total liquidity shares
     assert amount_usd_received_alice == remaining_usd_in_pool / 2
 
