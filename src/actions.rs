@@ -75,21 +75,23 @@ pub enum Action {
 }
 
 pub fn strat_action() -> BoxedStrategy<Action> {
-    prop_oneof![
+    #[cfg(feature = "trading-backend-amm")]
+    return prop_oneof![
         any::<ActionCtor>().prop_map(Action::Ctor),
         any::<ActionMint>().prop_map(Action::Mint),
-        #[cfg(feature = "trading-backend-amm")]
         any::<ActionAddLiquidity>().prop_map(Action::AddLiquidity),
-        #[cfg(feature = "trading-backend-amm")]
         any::<ActionRemoveLiquidity>().prop_map(Action::RemoveLiquidity),
-        #[cfg(feature = "trading-backend-amm")]
         any::<ActionBurn>().prop_map(Action::Burn),
-        #[cfg(feature = "trading-backend-amm")]
         any::<ActionClaimLiquidity>().prop_map(Action::ClaimLiquidity),
-        #[cfg(feature = "trading-backend-amm")]
         any::<ActionClaimLpFees>().prop_map(Action::ClaimLpFees),
     ]
-    .boxed()
+    .boxed();
+    #[cfg(not(feature = "trading-backend-amm"))]
+    return prop_oneof![
+        any::<ActionCtor>().prop_map(Action::Ctor),
+        any::<ActionMint>().prop_map(Action::Mint),
+    ]
+    .boxed();
 }
 
 #[derive(Debug, Clone, PartialEq)]
