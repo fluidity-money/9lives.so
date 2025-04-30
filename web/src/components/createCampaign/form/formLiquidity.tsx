@@ -17,7 +17,7 @@ export default function CreateCampaignFormLiquidity({
       <Label text="Seed Liquidity" />
       <p className="text-xs">
         Optionally you can add a seed liquidity to your campaign. Campaigns with
-        0 liquidity can be traded on the market.
+        0 liquidity can not be traded on the market.
       </p>
       <Input
         {...register("seedLiquidity")}
