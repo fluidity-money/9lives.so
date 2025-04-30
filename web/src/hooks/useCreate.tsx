@@ -3,6 +3,7 @@ import {
   prepareContractCall,
   sendTransaction,
   simulateTransaction,
+  toUnits,
   ZERO_ADDRESS,
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
@@ -35,11 +36,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
   const minOracleCreatePrice = BigInt(4e6);
   const minDefaultCreatePrice = BigInt(3e6);
-  const create = async (
-    input: CampaignInput,
-    account: Account,
-    seedLiquidity: number = 0,
-  ) =>
+  const create = async (input: CampaignInput, account: Account) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -92,7 +89,11 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             //   const descBytes = toUtf8Bytes(input.oracleDescription);
             //   hashedDocumentation = keccak256(descBytes) as `0x${string}`;
             // }
-            if (seedLiquidity > 0) {
+            const seedLiquidity = toUnits(
+              input.seedLiquidity.toString(),
+              config.contracts.decimals.fusdc,
+            );
+            if (input.seedLiquidity > 0) {
               const allowanceHelperTx = prepareContractCall({
                 contract: config.contracts.fusdc,
                 method: "allowance",
@@ -105,13 +106,13 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
                 transaction: allowanceHelperTx,
                 account,
               })) as bigint;
-              if (allowanceOfHelper < BigInt(seedLiquidity)) {
+              if (allowanceOfHelper < seedLiquidity) {
                 const approveHelperTx = prepareContractCall({
                   contract: config.contracts.fusdc,
                   method: "approve",
                   params: [
                     clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-                    BigInt(seedLiquidity),
+                    seedLiquidity,
                   ],
                 });
                 await sendTransaction({
@@ -136,7 +137,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
                   feeLp: BigInt(0),
                   feeMinter: BigInt(0),
                   feeReferrer: BigInt(0),
-                  seedLiquidity: BigInt(seedLiquidity),
+                  seedLiquidity,
                 },
               ],
             });
