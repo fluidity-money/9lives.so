@@ -220,6 +220,12 @@ generate these, run `./print-error-table.sh`.
 | CheckedNegOverflow            | 0x990972                                                                                                                                                                                       |
 | CheckedConvOverflow           | 0x990973                                                                                                                                                                                       |
 | ExcessiveFee                  | 0x990974                                                                                                                                                                                       |
+| NotEnoughLiquidity            | 0x990975                                                                                                                                                                                       |
+| NotDecided                    | 0x990976                                                                                                                                                                                       |
+| BadDenominator                | 0x990977                                                                                                                                                                                       |
+| MulDivIsU256Max               | 0x990978                                                                                                                                                                                       |
+| NotEnoughSharesBurned         | 0x990979                                                                                                                                                                                       |
+| NoFeesToClaim                 | 0x99097a                                                                                                                                                                                       |
 
 ## Deployments
 

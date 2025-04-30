@@ -89,7 +89,6 @@ pub fn test_block_timestamp_sub_time(t: u64) {
 // time, then this also reads from a storage slot that loads the amount.
 pub fn block_timestamp() -> u64 {
     #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-    #[allow(unused)]
     let time = crate::host::block_timestamp();
     #[cfg(target_arch = "wasm32")]
     let time = stylus_sdk::block::timestamp();
@@ -103,14 +102,6 @@ pub fn block_timestamp() -> u64 {
             0
         }
     };
-    #[cfg(not(all(feature = "testing", not(target_arch = "wasm32"))))]
-    return 0;
-    #[cfg(any(
-        all(feature = "testing", not(target_arch = "wasm32")),
-        feature = "e2e-adjust-time",
-        target_arch = "wasm32"
-    ))]
-    #[allow(unreachable_code)]
     time
 }
 

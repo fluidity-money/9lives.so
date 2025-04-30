@@ -69,7 +69,7 @@ impl StorageTrading {
     }
 
     /// Burn, preventing us from blowing past and below the amounts given.
-    /// Used by burn by shares as well.
+    /// Used by burn by shares as well. Returns the shares burned.
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn burn_9_C_54_A_443(
@@ -110,6 +110,8 @@ impl StorageTrading {
         return self.internal_amm_estimate_burn(_outcome, _shares);
     }
 
+    /// Burn a number of shares by using binary search to estimate the amount
+    /// of fUSDC to take. Returns the shares burned and the fUSDC returned.
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn burn_by_shares_9_F_3_C_B_274(
@@ -119,17 +121,23 @@ impl StorageTrading {
         _min_shares: U256,
         _referrer: Address,
         _recipient: Address,
-    ) -> R<U256> {
+    ) -> R<(U256, U256)> {
         #[cfg(feature = "trading-backend-dpm")]
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.burn_9_C_54_A_443(
-            _outcome,
-            self.internal_amm_estimate_burn(_outcome, _max_shares)?,
-            _min_shares,
-            _referrer,
-            _recipient,
-        );
+        {
+            let fusdc_returned = self.internal_amm_estimate_burn(_outcome, _max_shares)?;
+            return Ok((
+                self.burn_9_C_54_A_443(
+                    _outcome,
+                    fusdc_returned,
+                    _min_shares,
+                    _referrer,
+                    _recipient,
+                )?,
+                fusdc_returned,
+            ));
+        }
     }
 }
 

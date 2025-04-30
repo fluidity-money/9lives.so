@@ -78,14 +78,14 @@ contract MockTrading is INineLivesTrading {
     }
 
     function burnByShares9F3CB274(
-        bytes8 outcome,
-        uint256 shareAmount,
-        uint256 minShares,
-        address referrer,
-        address recipient
-    ) external returns (uint256) {
+        bytes8 /* outcome */,
+        uint256 /* shareAmount */,
+        uint256 /* minShares */,
+        address /* referrer */,
+        address /* recipient */
+    ) external returns (uint256, uint256) {
         ++counter_;
-        return 0;
+        return (0, 0);
     }
 
     function quoteC0E17FC7(
@@ -107,17 +107,17 @@ contract MockTrading is INineLivesTrading {
     function estimateBurnFFCEBFF5(
         bytes8 /* outcome */,
         uint256 shares
-    ) external view returns (uint256) {
+    ) external pure returns (uint256) {
         return shares;
     }
 
     function addLiquidityPermit(
-        uint256 liquidity,
-        address recipient,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
+        uint256 /* liquidity */,
+        address /* recipient */,
+        uint256 /* deadline */,
+        uint8 /* v */,
+        bytes32 /* r */,
+        bytes32 /* s */
     ) external returns (
         uint256 userLiquidity,
         UserLiqAdded[] memory liquidityAdded
@@ -127,8 +127,8 @@ contract MockTrading is INineLivesTrading {
     }
 
     function removeLiquidity3C857A15(
-        uint256 liquidity,
-        address recipient
+        uint256 /* liquidity */,
+        address /* recipient */
     ) external returns (
         uint256 fusdcAmount,
         uint256 lpFeesEarned,
@@ -218,7 +218,7 @@ contract MockTrading is INineLivesTrading {
     function fees() external view returns (Fees memory f) {
     }
 
-    function userLiquidityShares(address spender) external view returns (uint256) {
+    function userLiquidityShares(address spender) external pure returns (uint256) {
         return uint256(keccak256(abi.encodePacked(spender)));
     }
 }

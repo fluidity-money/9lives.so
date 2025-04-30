@@ -63,7 +63,7 @@ interface INineLivesTrading {
         uint256 minShares,
         address referrer,
         address recipient
-    ) external returns (uint256);
+    ) external returns (uint256, uint256);
 
     /// @notice Quote function for testing the amount that could be minted.
     /// @param outcome to test for
