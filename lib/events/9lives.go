@@ -19,29 +19,34 @@ var abiB []byte
 var abi, abiErr = ethAbi.JSON(bytes.NewReader(abiB))
 
 var (
-	TopicNewTrading2         = abi.Events["NewTrading2"].ID
-	TopicOutcomeCreated      = abi.Events["OutcomeCreated"].ID
-	TopicOutcomeDecided      = abi.Events["OutcomeDecided"].ID
-	TopicSharesMinted        = abi.Events["SharesMinted"].ID
-	TopicSharesBurned        = abi.Events["SharesBurned"].ID
-	TopicPayoffActivated     = abi.Events["PayoffActivated"].ID
-	TopicDeadlineExtension   = abi.Events["DeadlineExtension"].ID
-	TopicMarketCreated2      = abi.Events["MarketCreated2"].ID
-	TopicCallMade            = abi.Events["CallMade"].ID
-	TopicInfraMarketClosed   = abi.Events["InfraMarketClosed"].ID
-	TopicDAOMoneyDistributed = abi.Events["DAOMoneyDistributed"].ID
-	TopicCommitted           = abi.Events["Committed"].ID
-	TopicCommitmentRevealed  = abi.Events["CommitmentRevealed"].ID
-	TopicWhinged             = abi.Events["Whinged"].ID
-	TopicCampaignEscaped     = abi.Events["CampaignEscaped"].ID
-	TopicLockedUp            = abi.Events["LockedUp"].ID
-	TopicDeclared            = abi.Events["Declared"].ID
-	TopicWithdrew            = abi.Events["Withdrew"].ID
-	TopicSlashed             = abi.Events["Slashed"].ID
-	TopicFrozen              = abi.Events["Frozen"].ID
-	TopicRequested           = abi.Events["Requested"].ID
-	TopicConcluded           = abi.Events["Concluded"].ID
-	TopicLiquidityAdded      = abi.Events["LiquidityAdded"].ID
+	TopicNewTrading2                = abi.Events["NewTrading2"].ID
+	TopicOutcomeCreated             = abi.Events["OutcomeCreated"].ID
+	TopicOutcomeDecided             = abi.Events["OutcomeDecided"].ID
+	TopicSharesMinted               = abi.Events["SharesMinted"].ID
+	TopicSharesBurned               = abi.Events["SharesBurned"].ID
+	TopicPayoffActivated            = abi.Events["PayoffActivated"].ID
+	TopicDeadlineExtension          = abi.Events["DeadlineExtension"].ID
+	TopicMarketCreated2             = abi.Events["MarketCreated2"].ID
+	TopicCallMade                   = abi.Events["CallMade"].ID
+	TopicInfraMarketClosed          = abi.Events["InfraMarketClosed"].ID
+	TopicDAOMoneyDistributed        = abi.Events["DAOMoneyDistributed"].ID
+	TopicCommitted                  = abi.Events["Committed"].ID
+	TopicCommitmentRevealed         = abi.Events["CommitmentRevealed"].ID
+	TopicWhinged                    = abi.Events["Whinged"].ID
+	TopicCampaignEscaped            = abi.Events["CampaignEscaped"].ID
+	TopicLockedUp                   = abi.Events["LockedUp"].ID
+	TopicDeclared                   = abi.Events["Declared"].ID
+	TopicWithdrew                   = abi.Events["Withdrew"].ID
+	TopicSlashed                    = abi.Events["Slashed"].ID
+	TopicFrozen                     = abi.Events["Frozen"].ID
+	TopicRequested                  = abi.Events["Requested"].ID
+	TopicConcluded                  = abi.Events["Concluded"].ID
+	TopicLiquidityAdded             = abi.Events["LiquidityAdded"].ID
+	TopicLiquidityAddedSharesSent   = abi.Events["LiquidityAddedSharesSent"].ID
+	TopicLiquidityRemoved           = abi.Events["LiquidityRemoved"].ID
+	TopicLiquidityRemovedSharesSent = abi.Events["LiquidityRemovedSharesSent"].ID
+	TopicLiquidityClaimed           = abi.Events["LiquidityClaimed"].ID
+	TopicLPFeesClaimed              = abi.Events["LPFeesClaimed"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
@@ -294,6 +299,44 @@ func UnpackLiquidityAdded(topic1, topic2, topic3 ethCommon.Hash) (*events.EventL
 		FusdcAmt:        hashToNumber(topic1),
 		LiquidityShares: hashToNumber(topic2),
 		Recipient:       hashToAddr(topic3),
+	}, nil
+}
+
+func UnpackLiquidityAddedSharesSent(topic1, topic2, topic3 ethCommon.Hash) (*events.EventLiquidityAddedSharesSent, error) {
+	return &events.EventLiquidityAddedSharesSent{
+		Outcome:   hashToBytes8(topic1),
+		LiquidityShares: hashToNumber(topic2),
+		Recipient:    hashToAddr(topic3),
+	}, nil
+}
+
+func UnpackLiquidityRemoved(topic1, topic2, topic3 ethCommon.Hash) (*events.EventLiquidityRemoved, error) {
+	return &events.EventLiquidityRemoved{
+		FusdcAmt:     hashToNumber(topic1),
+		Recipient:    hashToAddr(topic2),
+		LiquidityAmt: hashToNumber(topic3),
+	}, nil
+}
+
+func UnpackLiquidityRemovedSharesSent(topic1, topic2, topic3 ethCommon.Hash) (*events.EventLiquidityRemovedSharesSent, error) {
+	return &events.EventLiquidityRemovedSharesSent{
+		Outcome:   hashToBytes8(topic1),
+		Recipient: hashToAddr(topic2),
+		Amount:    hashToNumber(topic3),
+	}, nil
+}
+
+func UnpackLiquidityClaimed(topic1, topic2 ethCommon.Hash) (*events.EventLiquidityClaimed, error) {
+	return &events.EventLiquidityClaimed{
+		Recipient: hashToAddr(topic1),
+		FusdcAmt:  hashToNumber(topic2),
+	}, nil
+}
+
+func UnpackLPFeesClaimed(topic1, topic2 ethCommon.Hash) (*events.EventLPFeesClaimed, error) {
+	return &events.EventLPFeesClaimed{
+		Recipient: hashToAddr(topic1),
+		Amount:    hashToNumber(topic2),
 	}, nil
 }
 

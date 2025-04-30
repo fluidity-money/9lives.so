@@ -107,3 +107,48 @@ func TestOutcomeDecided(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, wasRun)
 }
+
+func TestLiquidityAdded(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0xfe0875623f0a594d1a466da1fd00b8f3003563e6",
+		"blockHash": "0xf9cb559eb2af7cf27f33deb9a00c6d637b4cf7aa2b1ee146ad782dbb3219fd3e",
+		"blockNumber": "0x18e7c5d",
+		"data": "0x",
+		"logIndex": "0x2",
+		"removed": false,
+		"topics": [
+			"0x0351f600ef1e31e5e13b4dc27bff4cbde3e9269f0ffc666629ae6cac573eb220",
+			"0x0000000000000000000000000000000000000000000000000000000001c9c380",
+			"0x0000000000000000000000000000000000000000000000000000000001c9c380",
+			"0x00000000000000000000000063177184b8b5e1229204067a76ec4c635009cbd2"
+		],
+		"transactionHash": "0x6e5cfdf5dfa2383a4a82b75b710c48839456c3d2a467fbe5f7ab63d45591efe8",
+		"transactionIndex": "0x1"
+}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0xfe0875623f0a594d1a466da1fd00b8f3003563e6")
+	_, err := handleLogCallback(
+		factoryAddr,
+		factoryAddr, // Actually the infra market
+		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "ninelives_events_liquidity_added", table, "table not equal")
+			_, ok := a.(*events.EventLiquidityAdded)
+			assert.Truef(t, ok, "EventLiquidityAdded type coercion not true")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}
