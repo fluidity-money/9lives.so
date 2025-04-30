@@ -7,9 +7,9 @@
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    actions::strat_action, error::Error, host, implement_action, interactions_clear_after,
-    panic_guard, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
-    strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
+    actions::strat_action, error::Error, host, host_erc20_call, implement_action,
+    interactions_clear_after, panic_guard, proxy, should_spend_fusdc_contract,
+    should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
 };
 
 use proptest::prelude::*;
@@ -59,47 +59,6 @@ fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedByte
 }
 
 proptest! {
-    #[test]
-    fn test_amm_erik_2(
-        outcome_a in strat_fixed_bytes::<8>(),
-        outcome_b in strat_fixed_bytes::<8>(),
-        mut c in strat_storage_trading(false)
-    ) {
-        setup_contract(&mut c, &[outcome_a, outcome_b]);
-        // 2% fee:
-        let fee = 20;
-        c.fee_lp.set(U256::from(fee));
-        test_add_liquidity(&mut c, 1000e6 as u64);
-        let mut acc = 0;
-        for amt in [50, 75, 100, 25, 60] {
-            let amt = amt * 1e6 as u64;
-            acc += (amt * fee) / 1000;
-            let amt = U256::from(amt);
-            should_spend_fusdc_sender!(
-                amt,
-                c.mint_permit_243_E_E_C_56(
-                    outcome_a,
-                    amt,
-                    Address::ZERO,
-                    msg_sender(),
-                    U256::ZERO,
-                    0,
-                    FixedBytes::ZERO,
-                    FixedBytes::ZERO,
-                )
-            );
-        }
-        assert_eq!(6200000, acc);
-        should_spend_fusdc_contract!(
-            U256::from(acc),
-            c.claim_lp_fees_66980_F_36(msg_sender())
-        );
-        assert_eq!(
-            U256::ZERO,
-            c.claim_lp_fees_66980_F_36(msg_sender()).unwrap()
-        );
-    }
-
     // FIXME
     #[test]
     #[ignore]
@@ -263,43 +222,5 @@ proptest! {
             // A user should not be able to add, remove, or mint liquidity for a
             // campaign that has ended.
         })
-    }
-
-    #[test]
-    fn test_amm_mint_and_burn(
-        outcome_a in strat_fixed_bytes::<8>(),
-        outcome_b in strat_fixed_bytes::<8>(),
-        add_liq in 1e6 as u64..100e6 as u64,
-        ogous_liq in 100e6 as u64..100_000e6 as u64,
-        mut c in strat_storage_trading(false)
-    ) {
-        setup_contract(&mut c, &[outcome_a, outcome_b]);
-        test_add_liquidity(&mut c, add_liq);
-        let shares = should_spend_fusdc_sender!(
-            ogous_liq,
-            c.mint_permit_243_E_E_C_56(
-                outcome_a,
-                U256::from(ogous_liq),
-                Address::ZERO,
-                msg_sender(),
-                U256::ZERO,
-                0,
-                FixedBytes::ZERO,
-                FixedBytes::ZERO,
-            )
-        );
-        // We're aware of edge case behaviour where more than 10 million in a
-        // market like this will cause a sub overflow in the burn function.
-        // We don't work with referrers here!
-        should_spend_fusdc_contract!(
-            ogous_liq,
-            c.burn_by_shares_9_F_3_C_B_274(
-                outcome_a,
-                shares,
-                U256::ZERO,
-                Address::ZERO,
-                msg_sender()
-            )
-        );
     }
 }

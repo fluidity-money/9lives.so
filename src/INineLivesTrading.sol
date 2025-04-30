@@ -57,6 +57,8 @@ interface INineLivesTrading {
         address recipient
     ) external returns (uint256);
 
+    /// @notice Burn an amount of shares using local estimation in the
+    /// contract. Returns the shares burned and the fUSDC returned.
     function burnByShares9F3CB274(
         bytes8 outcome,
         uint256 shareAmount,
