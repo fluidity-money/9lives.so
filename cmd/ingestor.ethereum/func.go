@@ -358,26 +358,32 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		a, err = events.UnpackLiquidityAdded(topic1, topic2, topic3, data)
 		table = "ninelives_events_liquidity_added"
 		logEvent("LiquidityAdded")
+		fromTrading = true
 	case events.TopicLiquidityAddedSharesSent:
 		a, err = events.UnpackLiquidityAddedSharesSent(topic1, topic2, topic3)
 		table = "ninelives_events_liquidity_added_shares_sent"
 		logEvent("LiquidityAddedSharesSent")
+		fromTrading = true
 	case events.TopicLiquidityRemoved:
 		a, err = events.UnpackLiquidityRemoved(topic1, topic2, topic3)
 		table = "ninelives_events_liquidity_removed"
 		logEvent("LiquidityRemoved")
+		fromTrading = true
 	case events.TopicLiquidityRemovedSharesSent:
 		a, err = events.UnpackLiquidityRemovedSharesSent(topic1, topic2, topic3)
 		table = "ninelives_events_liquidity_removed_shares_sent"
 		logEvent("LiquidityRemovedSharesSent")
+		fromTrading = true
 	case events.TopicLiquidityClaimed:
 		a, err = events.UnpackLiquidityClaimed(topic1, topic2)
 		table = "ninelives_events_liquidity_claimed"
 		logEvent("LiquidityClaimed")
+		fromTrading = true
 	case events.TopicLPFeesClaimed:
 		a, err = events.UnpackLPFeesClaimed(topic1, topic2, topic3, data)
 		table = "ninelives_events_lp_fees_claimed"
 		logEvent("LPFeesClaimed")
+		fromTrading = true
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
