@@ -879,7 +879,6 @@ campaign_investments AS (
 )
 SELECT
     	nc.*,
-		COALESCE(ci.total_volume, 0) AS total_volume,
 		ci.investment_amounts
 		FROM
 			ninelives_campaigns_1 nc
