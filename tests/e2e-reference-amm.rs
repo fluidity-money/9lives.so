@@ -35,11 +35,6 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
     c.amm_liquidity.set(U256::ZERO);
     c.when_decided.set(U64::ZERO);
     c.is_shutdown.set(false);
-    // For our testing in this code, we explicitly disable these fees.
-    c.fee_creator.set(U256::ZERO);
-    c.fee_minter.set(U256::ZERO);
-    c.fee_lp.set(U256::ZERO);
-    c.fee_referrer.set(U256::ZERO);
     for (i, o) in outcomes.iter().enumerate() {
         host::register_addr(
             proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),

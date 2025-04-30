@@ -6,7 +6,7 @@ make solidity
 
 cargo test --features testing,trading-backend-amm $@
 
-exit
+exit 0
 
 #cargo mutants \
 #	--features testing,trading-backend-dpm \

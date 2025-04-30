@@ -2,7 +2,7 @@ use stylus_sdk::alloy_primitives::U256;
 
 use rust_decimal::{Decimal, MathematicalOps};
 
-use crate::error::Error;
+use crate::{error::Error, fees::FEE_SCALING};
 
 macro_rules! add {
     ($x:expr, $y:expr) => {
@@ -130,6 +130,24 @@ pub fn mul_div_round_up(a: U256, b: U256, denominator: U256) -> Result<U256, Err
     } else {
         Ok(result)
     }
+}
+
+pub fn calc_fee(x: U256, f: U256) -> Result<U256, Error> {
+    Ok(mul_div_round_up(
+        x.checked_mul(FEE_SCALING)
+            .ok_or(Error::CheckedMulOverflow)?,
+        f,
+        FEE_SCALING
+            .checked_sub(f)
+            .ok_or(Error::CheckedSubOverflow)?,
+    )?
+    .div_ceil(FEE_SCALING))
+}
+
+#[test]
+fn test_calc_fee() {
+    let x = U256::from(100000);
+    assert_eq_u!(2041, calc_fee(x, U256::from(20)).unwrap());
 }
 
 #[test]

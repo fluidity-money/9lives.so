@@ -3,7 +3,7 @@ use stylus_sdk::{alloy_primitives::*, evm};
 use crate::{
     error::*,
     events,
-    fees::{FEE_SCALING, FEE_SPN_MINT_PCT},
+    fees::FEE_SPN_MINT_PCT,
     immutables::*,
     maths,
     storage_trading::*,
@@ -128,16 +128,16 @@ impl StorageTrading {
     /// Calculate fees based on the configuration in the pool, including
     /// whether the action has a referrer.
     pub fn calculate_fees(&self, value: U256, has_referrer: bool) -> R<(U256, CalcFees)> {
-        let fee_for_creator = maths::mul_div_round_up(value, self.fee_creator.get(), FEE_SCALING)?;
-        let fee_for_minter = maths::mul_div_round_up(value, self.fee_minter.get(), FEE_SCALING)?;
-        let fee_for_lp = maths::mul_div_round_up(value, self.fee_lp.get(), FEE_SCALING)?;
+        let fee_for_creator = maths::calc_fee(value, self.fee_creator.get())?;
+        let fee_for_minter = maths::calc_fee(value, self.fee_minter.get())?;
+        let fee_for_lp = maths::calc_fee(value, self.fee_lp.get())?;
         let fee_for_referrer = if has_referrer {
-            maths::mul_div_round_up(value, self.fee_referrer.get(), FEE_SCALING)?
+            maths::calc_fee(value, self.fee_referrer.get())?
         } else {
             U256::ZERO
         };
         let fee_for_protocol = if !self.is_protocol_fee_disabled.get() {
-            maths::mul_div_round_up(value, FEE_SPN_MINT_PCT, FEE_SCALING)?
+            maths::calc_fee(value, FEE_SPN_MINT_PCT)?
         } else {
             U256::ZERO
         };
@@ -184,7 +184,8 @@ impl StorageTrading {
                         .ok_or(Error::CheckedAddOverflow)?,
                 );
         }
-        // TODO: we don't do anything with this -- yet.
+        // TODO: we don't do anything with this -- yet. No-one internal to the
+        // team should be deploying contracts with this enabled for now.
         let _ = fee_for_minter;
         self.amm_fees_collected_weighted.set(
             self.amm_fees_collected_weighted
@@ -227,9 +228,9 @@ fn test_is_amm() {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod proptesting {
     use crate::{
-        fees::{FEE_SCALING, FEE_SPN_MINT_PCT},
-        strat_storage_trading,
+        maths, strat_storage_trading,
         utils::{strat_address_not_empty, strat_medium_u256},
+        fees::FEE_SPN_MINT_PCT,
     };
 
     use stylus_sdk::alloy_primitives::U256;
@@ -270,50 +271,16 @@ mod proptesting {
             c.fee_lp.set(fee_for_lp);
             c.fee_referrer.set(fee_for_referrer);
             c.is_protocol_fee_disabled.set(false);
-            let expected_fee_creator = fee_for_creator
-                .checked_mul(value)
-                .unwrap()
-                .checked_div(FEE_SCALING)
-                .unwrap();
-            let expected_fee_minter = fee_for_minter
-                .checked_mul(value)
-                .unwrap()
-                .checked_div(FEE_SCALING)
-                .unwrap();
-            let expected_fee_lp = fee_for_lp
-                .checked_mul(value)
-                .unwrap()
-                .checked_div(FEE_SCALING)
-                .unwrap();
-            let expected_fee_referrer = fee_for_referrer
-                .checked_mul(value)
-                .unwrap()
-                .checked_div(FEE_SCALING)
-                .unwrap();
-            let expected_fee_protocol = FEE_SPN_MINT_PCT
-                .checked_mul(value)
-                .unwrap()
-                .checked_div(FEE_SCALING)
-                .unwrap();
-            let expected_cum_fee =
-                expected_fee_creator +
-                expected_fee_minter +
-                expected_fee_lp +
-                expected_fee_referrer +
-                expected_fee_protocol;
-            // In our tests, we tolerate a difference.
-            let tol = U256::from(10);
-            let got = value - c.calculate_and_set_fees(value, referrer_addr).unwrap();
-            assert!(
-                got >= (value - expected_cum_fee) - tol &&
-                got <= (value - expected_cum_fee) + tol,
-            );
-            assert!(
-                c.amm_fees_collected_weighted.get() >= expected_cum_fee - tol &&
-                c.amm_fees_collected_weighted.get() <= expected_cum_fee + tol,
-                "fees collected weighted: {}, expected cum fee: {expected_cum_fee}",
-                c.amm_fees_collected_weighted.get()
-            );
+            let lp_fee = maths::calc_fee(value, fee_for_lp).unwrap();
+            let cum_fee =
+                maths::calc_fee(value, fee_for_creator).unwrap() +
+                maths::calc_fee(value, fee_for_minter).unwrap() +
+                lp_fee +
+                maths::calc_fee(value, fee_for_referrer).unwrap() +
+                maths::calc_fee(value, FEE_SPN_MINT_PCT).unwrap();
+            let fee = c.calculate_and_set_fees(value, referrer_addr).unwrap();
+            assert_eq!(cum_fee, fee);
+            assert_eq!(lp_fee, c.amm_fees_collected_weighted.get());
         }
     }
 }
