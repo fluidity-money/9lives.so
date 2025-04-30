@@ -3,7 +3,13 @@
 
 9Lives is an Arbitrum Stylus smart contract implemented with a simple factory/pair
 pattern. A factory takes a list of outcomes, and creates a variable number of contracts
-with a minimal viable proxy pointing to share ERC20s, and a trading contract.
+with a minimal viable proxy pointing to share ERC20s, and a trading contract. It either
+supports the Dynamic Pari-Mutuel Market (DPM) model to solve liquidity issues in
+orderbooks, or a Constant Product Market Maker model to be totally separate.
+
+To get started with the contract entrypoint, src/lib.rs contains the matching of features
+to deploy different contract facets. Testing is done with a mixture of property and
+mutation testing and a bespoke testing environment for ERC20 accounting and more.
 
 Inventors create campaigns (the prediction markets) by locking up "incentive" amounts, and
 by picking the type of oracle they want to use. Any fees earned in the campaign are sent
