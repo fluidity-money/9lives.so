@@ -41,6 +41,7 @@ var (
 	TopicFrozen              = abi.Events["Frozen"].ID
 	TopicRequested           = abi.Events["Requested"].ID
 	TopicConcluded           = abi.Events["Concluded"].ID
+	TopicLiquidityAdded      = abi.Events["LiquidityAdded"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
@@ -112,11 +113,11 @@ func UnpackSharesBurned(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*event
 		return nil, fmt.Errorf("bad fusdc returned: %T", i[1])
 	}
 	return &events.EventSharesBurned{
-		Identifier:  hashToBytes8(topic1),
-		ShareAmount: hashToNumber(topic2),
-		Spender:     hashToAddr(topic3),
-		Recipient:   events.AddressFromString(recipient.String()),
-		FusdcReturned:  events.NumberFromBig(fusdcReturned),
+		Identifier:    hashToBytes8(topic1),
+		ShareAmount:   hashToNumber(topic2),
+		Spender:       hashToAddr(topic3),
+		Recipient:     events.AddressFromString(recipient.String()),
+		FusdcReturned: events.NumberFromBig(fusdcReturned),
 	}, nil
 }
 
@@ -285,6 +286,14 @@ func UnpackRequested(topic1, topic2 ethCommon.Hash) (*events.EventRequested, err
 func UnpackConcluded(topic1 ethCommon.Hash) (*events.EventConcluded, error) {
 	return &events.EventConcluded{
 		Ticket: hashToNumber(topic1),
+	}, nil
+}
+
+func UnpackLiquidityAdded(topic1, topic2, topic3 ethCommon.Hash) (*events.EventLiquidityAdded, error) {
+	return &events.EventLiquidityAdded{
+		FusdcAmt:        hashToNumber(topic1),
+		LiquidityShares: hashToNumber(topic2),
+		Recipient:       hashToAddr(topic3),
 	}, nil
 }
 

@@ -47,6 +47,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicFrozen,
 	events.TopicRequested,
 	events.TopicConcluded,
+	events.TopicLiquidityAdded,
 }
 
 // Entry function, using the database to determine if polling should be
@@ -54,9 +55,9 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 // exclusively websockets.
 func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, c *ethclient.Client, db *gorm.DB) {
 	var (
-		factoryAddr     = ethCommon.HexToAddress(config.FactoryAddress)
-		infraMarketAddr = ethCommon.HexToAddress(config.InfraMarketAddress)
-		lockupAddr      = ethCommon.HexToAddress(config.LockupAddress)
+		factoryAddr            = ethCommon.HexToAddress(config.FactoryAddress)
+		infraMarketAddr        = ethCommon.HexToAddress(config.InfraMarketAddress)
+		lockupAddr             = ethCommon.HexToAddress(config.LockupAddress)
 		sarpAiSignallerAddress = ethCommon.HexToAddress(config.SarpAiSignallerAddress)
 	)
 	IngestPolling(
@@ -348,6 +349,10 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		a, err = events.UnpackConcluded(topic1)
 		table = "ninelives_events_concluded"
 		logEvent("Concluded")
+	case events.TopicLiquidityAdded:
+		a, err = events.UnpackLiquidityAdded(topic1, topic2, topic3)
+		table = "ninelives_events_liquidity_added"
+		logEvent("LiquidityAdded")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -367,15 +372,15 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		return false, fmt.Errorf("finding trading addr: %v", err)
 	}
 	var (
-		isFactory     = factoryAddr == emitterAddr
-		isInfraMarket = infraMarketAddr == emitterAddr
-		isLockup      = lockupAddr == emitterAddr
+		isFactory       = factoryAddr == emitterAddr
+		isInfraMarket   = infraMarketAddr == emitterAddr
+		isLockup        = lockupAddr == emitterAddr
 		isSarpSignaller = sarpSignallerAiAddr == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
-	case isFactory || isInfraMarket || isLockup || isSarpSignaller :
+	case isFactory || isInfraMarket || isLockup || isSarpSignaller:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to
