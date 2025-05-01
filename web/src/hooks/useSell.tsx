@@ -18,14 +18,16 @@ const useSell = ({
   tradingAddr,
   campaignId,
   outcomeId,
+  outcomes,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
   campaignId: `0x${string}`;
+  outcomes: Outcome[];
 }) => {
   const queryClient = useQueryClient();
-  const sell = async (account: Account, fusdc: number, outcomes: Outcome[]) =>
+  const sell = async (account: Account, fusdc: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -102,9 +104,11 @@ const useSell = ({
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", outcomeIds],
           });
-          track(EVENTS.MINT, {
+          track(EVENTS.BURN, {
             wallet: account.address,
             amount: fusdc,
+            maxShareOut,
+            minShareOut,
             outcomeId,
             shareAddr,
             tradingAddr,

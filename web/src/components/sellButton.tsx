@@ -20,7 +20,13 @@ export default function SellButton({
   outcomes: Outcome[];
   fusdc: number;
 }) {
-  const { sell } = useSell({ campaignId, outcomeId, shareAddr, tradingAddr });
+  const { sell } = useSell({
+    campaignId,
+    outcomeId,
+    shareAddr,
+    tradingAddr,
+    outcomes,
+  });
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const [isSelling, setIsSelling] = useState(false);
@@ -28,7 +34,7 @@ export default function SellButton({
     try {
       if (!campaignId) toast.error("No campaignId");
       setIsSelling(true);
-      await sell(account!, fusdc, outcomes);
+      await sell(account!, fusdc);
     } finally {
       setIsSelling(false);
     }
