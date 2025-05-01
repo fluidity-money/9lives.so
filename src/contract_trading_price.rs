@@ -4,8 +4,6 @@ use crate::error::*;
 
 pub use crate::{storage_trading::*, utils::msg_sender};
 
-use alloc::vec::Vec;
-
 #[cfg(not(feature = "trading-backend-dpm"))]
 use crate::fusdc_call;
 
@@ -47,7 +45,7 @@ impl StorageTrading {
         &mut self,
         _amount_liq: U256,
         _recipient: Address,
-    ) -> R<(U256, U256, Vec<(FixedBytes<8>, U256)>)> {
+    ) -> R<(U256, U256)> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
@@ -58,10 +56,10 @@ impl StorageTrading {
                 self.amm_user_liquidity_shares.get(msg_sender()) >= _amount_liq,
                 Error::NotEnoughLiquidity
             );
-            let (fusdc_amt, fees_earned, shares_received) =
+            let (fusdc_amt, fees_earned, _) =
                 self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
             fusdc_call::transfer(_recipient, fusdc_amt)?;
-            Ok((fusdc_amt, fees_earned, shares_received))
+            Ok((fusdc_amt, fees_earned))
         };
     }
 }

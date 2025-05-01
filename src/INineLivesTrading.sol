@@ -111,8 +111,7 @@ interface INineLivesTrading {
         address recipient
     ) external returns (
         uint256 fusdcAmount,
-        uint256 lpFeesEarned,
-        UserLiqRemoved[] memory liquidityRemoved
+        uint256 lpFeesEarned
     );
 
     /// @notice Claim fees owed to a specific address, perhaps after they've
