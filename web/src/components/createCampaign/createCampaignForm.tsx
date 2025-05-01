@@ -63,6 +63,7 @@ export default function CreateCampaignForm() {
   const { connect } = useConnectWallet();
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("custom");
   const [pictureBlob, setPictureBlob] = useState<string>();
+  const defaultSeedLiquidity = 1;
   const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
     (string | undefined)[]
   >([]);
@@ -145,7 +146,7 @@ export default function CreateCampaignForm() {
         //   settlementType === "contract"
         //     ? z.string().startsWith("0x").min(42)
         //     : z.undefined(),
-        seedLiquidity: z.preprocess((val) => Number(val), z.number().min(0)),
+        seedLiquidity: z.preprocess((val) => Number(val), z.number().min(1)),
       }),
     [outcomeType, outcomeschema, pictureSchema, settlementType],
   );
@@ -174,14 +175,14 @@ export default function CreateCampaignForm() {
           seed: randomValue4Uint8(),
         },
       ],
-      seedLiquidity: 0,
+      seedLiquidity: defaultSeedLiquidity,
     },
   });
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
   const onSubmit = (input: FormData, account: Account) => {
-    if (input.seedLiquidity === 0 && !isLPModalDisplayed) {
+    if (input.seedLiquidity === defaultSeedLiquidity && !isLPModalDisplayed) {
       setIsLPModalOpen(true);
       setIsLPModalDisplayed(true);
       return;
@@ -314,13 +315,23 @@ export default function CreateCampaignForm() {
         setIsOpen={setFundModalOpen}
         title="ADD SEED LIQUIDITY"
       >
-        <div className="flex flex-col gap-7">
+        <div className="flex flex-col gap-4">
+          <p className="text-center font-chicago text-base">
+            Supply More Liquidity to Your Campaign?
+          </p>
+          <p className="text-center font-chicago text-xl">{fields.name}</p>
+          <p className="text-center text-xs">
+            Higher liquidty means better trading stability and lower slippage.
+            You can add liquidity to your campaign and earn provider rewards at
+            any time.
+          </p>
           <CreateCampaignFormLiquidity
+            renderLabel={false}
             register={register}
             error={errors.seedLiquidity}
           />
           <Button
-            intent={"cta"}
+            intent={"yes"}
             title="Add Liquidity"
             size={"xlarge"}
             onClick={() => setIsLPModalOpen(false)}

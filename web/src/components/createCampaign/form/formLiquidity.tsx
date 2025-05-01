@@ -5,25 +5,28 @@ import { fieldClass } from "../createCampaignForm";
 import ErrorInfo from "@/components/themed/errorInfo";
 import { FieldError, UseFormRegister } from "react-hook-form";
 import Input from "@/components/themed/input";
+import AssetSelector from "@/components/assetSelector";
 export default function CreateCampaignFormLiquidity({
   register,
   error,
+  renderLabel = true,
 }: {
   register: UseFormRegister<{ seedLiquidity: number } & any>;
   error?: FieldError;
+  renderLabel?: boolean;
 }) {
   return (
     <Field className={fieldClass}>
-      <Label text="Seed Liquidity" />
-      <p className="text-xs">
-        Optionally you can add a seed liquidity to your campaign. Campaigns with
-        0 liquidity can not be traded on the market.
-      </p>
-      <Input
-        {...register("seedLiquidity")}
-        type="number"
-        className={combineClass(error && "border-2 border-red-500")}
-      />
+      {renderLabel && <Label text="Seed Liquidity" required />}
+      <div className="flex gap-2.5">
+        <AssetSelector />
+        <Input
+          {...register("seedLiquidity")}
+          type="number"
+          min={1}
+          className={combineClass(error && "border-2 border-red-500", "flex-1")}
+        />
+      </div>
       {error && <ErrorInfo text={error.message} />}
     </Field>
   );
