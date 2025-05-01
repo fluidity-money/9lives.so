@@ -267,28 +267,28 @@ generate these, run `./print-error-table.sh`.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5` |
-| Factory 1 implementation      | `0xc4b0f89d44078b5cd51f24a3dddd2eec006c5cd7` |
-| Factory 2 implementation      | `0x84bcbf2f8b140cc2836d8a76cdb0a4d68b119253` |
-| Lockup implementation         | `0x4b8217ce02e8ac65c90bbadd38fe92aa0fbac072` |
-| Optimistic infra predict impl | `0xe11c0c5254f410707f14a9035e41ef77a5b24a6b` |
-| Trading DPM mint impl         | `0xe698ea8e0a53e5778a17708fe4a277ca33ca69d5` |
-| Trading DPM extras impl       | `0x916d6df7a14ea0321d5b75c163ea512e3626f83d` |
-| Trading DPM quotes impl       | `0x9135380d854a27b75d156494b6ce8e9949730333` |
-| Trading DPM price impl        | `0xee796cc19bd85af8a6305e0a243f0ca7eedb62cc` |
-| Trading AMM mint impl         | `0xae78a020e0da5963b5babb43ec42a01916006e99` |
-| Trading AMM extras impl       | `0xdc633558f336edb4e51eafae7ad7746301e6fe8b` |
-| Trading AMM quotes impl       | `0x6727ae382a5016e4cdfb893ffe06e0bb15d8a485` |
-| Trading AMM price impl        | `0xd7026e8cd6581e9b759a5cf885e3ff66bec45051` |
-| Share implementation          | `0x2FFEAAe31dddBa12374D91C023F54234dC15fD45` |
-| Lockup token implementation   | `0x78BD528bCECe23e7B4590D9bE34D2fA7E74a8944` |
-| Infrastructure market proxy   | `0x1b7aae609293dded091a0099326ca77db4eae3af` |
-| Lockup proxy                  | `0x6e58d1905510162d3eb57476317a029093a26f42` |
-| Lockup token proxy            | `0x1b092f52e3e50bad423a293f06f4cdc1e0f1b734` |
-| Factory proxy                 | `0x3d6898e21e5b99fe115a05d04ad610f596fa630b` |
-| Helper factory                | `0xC0782393da594B9655E3A6Cd8c05db5271244492` |
-| LensesV1                      | `0xf1486A4d874E2B616B570f982c9Ac94256348742` |
-| Beauty contest implementation | `0xc0feb526ec4b6a575b2b267435108971ad5d4ddf` |
-| Beauty contest proxy          | `0xd29b210080ca5395012a23124d5fb08a32cac21c` |
+| Factory 1 implementation      | `0x82427db013874865904606684da00bee0b085cab` |
+| Factory 2 implementation      | `0x1ca80fec3e965773903ba2cbeb1bc29392404538` |
+| Lockup implementation         | `0xf60c72cae461cb3ff16ab96283e59d6f5ebd4eb1` |
+| Optimistic infra predict impl | `0x5dca987e0df57bc4da72c5d70290b47de339b305` |
+| Trading DPM mint impl         | `0x8ad317db9971b8f3b3eb08538d0140c7b2d1a38a` |
+| Trading DPM extras impl       | `0x35dfbe4086abcb4c841b5dcb59d035b2ed85b962` |
+| Trading DPM quotes impl       | `0x88d82fbcea0d7a5ec314dadd6ae0d98175b36078` |
+| Trading DPM price impl        | `0x53d18d786b932962b1e7748ee5bc8231b28195e2` |
+| Trading AMM mint impl         | `0x8d480cba6b29accfac91a687173b7fd455b8ed57` |
+| Trading AMM extras impl       | `0x5f3c5d85b1821b6f90d0c69cda8a93d31a6f0418` |
+| Trading AMM quotes impl       | `0x4a1c069b5f566128ac0797f778bdf9990d227a13` |
+| Trading AMM price impl        | `0xc9c5a733732c03a67b93c2fdb48e71549d4f6284` |
+| Share implementation          | `0x48706B69d8af9a68e71893711661cC33269b33DE` |
+| Lockup token implementation   | `0xF1591310EADAC5BB4399d12215D4AA6886694d93` |
+| Infrastructure market proxy   | `0x112cc68f38bb489ffe08ec97686b8ce5771ba2a5` |
+| Lockup proxy                  | `0xbc4425a5fe13fcf39b01db1ce5eda32296284833` |
+| Lockup token proxy            | `0x8c8767c817eca40efdbb35ceb21ff1f50d8777b6` |
+| Factory proxy                 | `0xbdda30cee9c0243f4c2db59490aa6c528518d12a` |
+| Helper factory                | `0x51ffBa769B32768403Ed013D9946ec5Bf8E94c56` |
+| LensesV1                      | `0x03edBB086c18a19D0fDEb7e1296E4B5134FF8F32` |
+| Beauty contest implementation | `0x50ecc28f016b11a3dd8d6294c7c26927561b2e12` |
+| Beauty contest proxy          | `0xaea36de182b4abe64edd42f11cf5230af6a0e4fb` |
 | Sarp AI Resolver              | `0x0000000000000000000000000000000000000000` |
-| Buy helper2                   | `0xd20306f5966f93a3d55fAA5A22Fe3FBF34053D3E` |
+| Buy helper2                   | `0x940a0F2ec94e05C683eeD67eDb77C928281Fc154` |
 | SARP Signaller                | `0x2137B4C506f0d7eF2A562B02Be9110a4a3A93bC9` |
