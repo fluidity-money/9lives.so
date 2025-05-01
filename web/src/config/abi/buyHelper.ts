@@ -40,6 +40,11 @@ const buyHelperAbi = [
         internalType: "bytes8",
       },
       {
+        name: "_minFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
         name: "_maxShareOut",
         type: "uint256",
         internalType: "uint256",
@@ -49,8 +54,18 @@ const buyHelperAbi = [
         type: "uint256",
         internalType: "uint256",
       },
+      {
+        name: "_referrer",
+        type: "address",
+        internalType: "address",
+      },
     ],
     outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
       {
         name: "",
         type: "uint256",

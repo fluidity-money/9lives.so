@@ -62,7 +62,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "burnAE5853FA",
+    name: "burn9C54A443",
     inputs: [
       {
         name: "outcome",
@@ -78,6 +78,11 @@ const tradingAbi = [
         name: "minShares",
         type: "uint256",
         internalType: "uint256",
+      },
+      {
+        name: "referrer",
+        type: "address",
+        internalType: "address",
       },
       {
         name: "recipient",
@@ -96,7 +101,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "burnByShares7306A4B9",
+    name: "burnByShares9F3CB274",
     inputs: [
       {
         name: "outcome",
@@ -114,12 +119,22 @@ const tradingAbi = [
         internalType: "uint256",
       },
       {
+        name: "referrer",
+        type: "address",
+        internalType: "address",
+      },
+      {
         name: "recipient",
         type: "address",
         internalType: "address",
       },
     ],
     outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
       {
         name: "",
         type: "uint256",
@@ -291,6 +306,41 @@ const tradingAbi = [
         name: "estimatedFusdc",
         type: "uint256",
         internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "fees",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        internalType: "struct INineLivesTrading.Fees",
+        components: [
+          {
+            name: "feeCreator",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "feeMinter",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "feeLp",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "feeReferrer",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
       },
     ],
     stateMutability: "view",
@@ -543,6 +593,11 @@ const tradingAbi = [
         internalType: "uint256",
       },
       {
+        name: "lpFeesEarned",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
         name: "liquidityRemoved",
         type: "tuple[]",
         internalType: "struct INineLivesTrading.UserLiqRemoved[]",
@@ -616,6 +671,25 @@ const tradingAbi = [
         name: "",
         type: "uint64",
         internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "userLiquidityShares",
+    inputs: [
+      {
+        name: "spender",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
