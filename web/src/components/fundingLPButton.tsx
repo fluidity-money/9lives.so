@@ -10,7 +10,6 @@ export default function FundingLPButton({ name }: { name: string }) {
       <Button
         intent={"yes"}
         title="Add Liquidity"
-        size={"xlarge"}
         onClick={() => setIsLPModalOpen(true)}
       />
       <Modal
