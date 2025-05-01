@@ -8,6 +8,7 @@ import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
+import FundingLPButton from "../fundingLPButton";
 export default function DetailHeader({
   data,
   isEnded,
@@ -99,7 +100,10 @@ export default function DetailHeader({
             Campaign {isConcluded ? "Concluded" : "Ended"}
           </span>
         ) : (
-          <WatchlistButton data={data} />
+          <div className="flex items-center gap-2.5">
+            <FundingLPButton name={data.name} />
+            <WatchlistButton data={data} />
+          </div>
         )}
       </div>
     </div>

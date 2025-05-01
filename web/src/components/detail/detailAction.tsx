@@ -20,7 +20,7 @@ import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import AssetSelector from "../assetSelector";
 import Modal from "../themed/modal";
-import Funding from "../funding";
+import Funding from "../fundingBalance";
 import DownIcon from "#/icons/down-caret.svg";
 
 export default function DetailCall2Action({
