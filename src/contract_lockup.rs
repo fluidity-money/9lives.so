@@ -11,6 +11,9 @@ use crate::{
 
 pub use crate::storage_lockup::*;
 
+#[cfg(feature = "contract-lockup")]
+use alloc::vec::Vec;
+
 #[cfg_attr(feature = "contract-lockup", stylus_sdk::prelude::public)]
 impl StorageLockup {
     pub fn ctor(

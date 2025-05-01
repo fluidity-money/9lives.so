@@ -14,6 +14,9 @@ use crate::{
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
+#[cfg(feature = "contract-trading-mint")]
+use alloc::vec::Vec;
+
 #[cfg_attr(feature = "contract-trading-mint", stylus_sdk::prelude::public)]
 impl StorageTrading {
     #[allow(clippy::too_many_arguments)]

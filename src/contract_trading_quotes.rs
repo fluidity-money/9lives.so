@@ -12,6 +12,9 @@ use crate::{
 
 pub use crate::storage_trading::*;
 
+#[cfg(feature = "contract-trading-quotes")]
+use alloc::vec::Vec;
+
 #[cfg_attr(feature = "contract-trading-quotes", stylus_sdk::prelude::public)]
 impl StorageTrading {
     #[allow(non_snake_case)]
