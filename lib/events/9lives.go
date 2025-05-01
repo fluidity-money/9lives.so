@@ -294,7 +294,7 @@ func UnpackConcluded(topic1 ethCommon.Hash) (*events.EventConcluded, error) {
 	}, nil
 }
 
-func UnpackLiquidityAdded(topic1, topic2, topic3 ethCommon.Hash) (*events.EventLiquidityAdded, error) {
+func UnpackLiquidityAdded(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventLiquidityAdded, error) {
 	a, err := abi.Unpack("LiquidityAdded", b)
 	if err != nil {
 		return nil, err

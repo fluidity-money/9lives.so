@@ -355,7 +355,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		table = "ninelives_events_concluded"
 		logEvent("Concluded")
 	case events.TopicLiquidityAdded:
-		a, err = events.UnpackLiquidityAdded(topic1, topic2, topic3)
+		a, err = events.UnpackLiquidityAdded(topic1, topic2, topic3, data)
 		table = "ninelives_events_liquidity_added"
 		logEvent("LiquidityAdded")
 	case events.TopicLiquidityAddedSharesSent:
