@@ -19,8 +19,7 @@ sol! {
 
 pub fn transfer(addr: Address, recipient: Address, value: U256) -> Result<(), Error> {
     unpack_bool_safe(
-        &RawCall::new()
-            .call(addr, &transferCall { recipient, value }.abi_encode())
+        &unsafe { RawCall::new().call(addr, &transferCall { recipient, value }.abi_encode()) }
             .map_err(|b| Error::ERC20ErrorTransfer(addr, b))?,
     )
 }
@@ -32,8 +31,8 @@ pub fn transfer_from(
     amount: U256,
 ) -> Result<(), Error> {
     unpack_bool_safe(
-        &RawCall::new()
-            .call(
+        &unsafe {
+            RawCall::new().call(
                 addr,
                 &transferFromCall {
                     spender,
@@ -42,7 +41,8 @@ pub fn transfer_from(
                 }
                 .abi_encode(),
             )
-            .map_err(|_| Error::ERC20ErrorTransferFrom(addr, spender, recipient, amount))?,
+        }
+        .map_err(|_| Error::ERC20ErrorTransferFrom(addr, spender, recipient, amount))?,
     )
 }
 
@@ -58,8 +58,8 @@ pub fn permit(
     s: FixedBytes<32>,
 ) -> Result<(), Error> {
     unpack_bool_safe(
-        &RawCall::new()
-            .call(
+        &unsafe {
+            RawCall::new().call(
                 addr,
                 &permitCall {
                     owner,
@@ -72,14 +72,14 @@ pub fn permit(
                 }
                 .abi_encode(),
             )
-            .map_err(|b| Error::ERC20ErrorPermit(addr, b))?,
+        }
+        .map_err(|b| Error::ERC20ErrorPermit(addr, b))?,
     )
 }
 
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
     unpack_u256(
-        &RawCall::new_static()
-            .call(addr, &balanceOfCall { spender }.abi_encode())
+        &unsafe { RawCall::new_static().call(addr, &balanceOfCall { spender }.abi_encode()) }
             .map_err(|b| Error::ERC20ErrorBalanceOf(addr, b))?,
     )
     .ok_or(Error::ERC20UnableToUnpack)
@@ -87,8 +87,7 @@ pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
 
 pub fn approve(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
     unpack_bool_safe(
-        &RawCall::new()
-            .call(addr, &approveCall { spender, amount }.abi_encode())
+        &unsafe { RawCall::new().call(addr, &approveCall { spender, amount }.abi_encode()) }
             .map_err(|_| Error::ERC20Approve)?,
     )
 }

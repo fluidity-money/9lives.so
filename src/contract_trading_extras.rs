@@ -54,7 +54,7 @@ impl StorageTrading {
         _v: u8,
         _r: FixedBytes<32>,
         _s: FixedBytes<32>,
-    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
+    ) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
@@ -66,7 +66,8 @@ impl StorageTrading {
                     _amount, _deadline, _v, _r, _s
                 ))
             }
-            self.internal_amm_add_liquidity(_amount, _recipient)
+            let (shares, _) = self.internal_amm_add_liquidity(_amount, _recipient)?;
+            Ok(shares)
         };
     }
 
@@ -146,7 +147,7 @@ impl StorageTrading {
 
     #[mutants::skip]
     pub fn ended(&self) -> R<bool> {
-        Ok(!self.when_decided.is_zero())
+        Ok(!self.when_decided.get().is_zero())
     }
 
     #[mutants::skip]

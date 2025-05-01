@@ -119,11 +119,10 @@ contract MockTrading is INineLivesTrading {
         bytes32 /* r */,
         bytes32 /* s */
     ) external returns (
-        uint256 userLiquidity,
-        UserLiqAdded[] memory liquidityAdded
+        uint256 userLiquidity
     ) {
         ++counter_;
-        return (0, liquidityAdded);
+        return 0;
     }
 
     function removeLiquidity3C857A15(

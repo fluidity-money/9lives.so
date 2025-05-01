@@ -12,8 +12,7 @@ sol! {
 }
 
 pub fn freeze(addr: Address, spender: Address, until: u64) -> Result<(), Error> {
-    RawCall::new()
-        .call(addr, &freezeCall { spender, until }.abi_encode())
+    unsafe { RawCall::new().call(addr, &freezeCall { spender, until }.abi_encode()) }
         .map_err(|b| Error::LockupError(addr, b))?;
     Ok(())
 }
@@ -25,8 +24,8 @@ pub fn slash(
     recipient: Address,
 ) -> Result<U256, Error> {
     unpack_u256(
-        &RawCall::new()
-            .call(
+        &unsafe {
+            RawCall::new().call(
                 addr,
                 &slashCall {
                     victim,
@@ -35,7 +34,8 @@ pub fn slash(
                 }
                 .abi_encode(),
             )
-            .map_err(|b| Error::LockupError(addr, b))?,
+        }
+        .map_err(|b| Error::LockupError(addr, b))?,
     )
     .ok_or(Error::LockupUnableToUnpack)
 }

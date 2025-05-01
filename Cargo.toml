@@ -28,7 +28,7 @@ opt-level = "z"
 incremental = false
 
 [dependencies]
-stylus-sdk = "=0.6.0"
+stylus-sdk = "=0.6.1"
 tiny-keccak = "2.0.2"
 num-traits = { version = "0.2.19", default-features = false }
 alloy-sol-types = { version = "=0.7.6", default-features = false }

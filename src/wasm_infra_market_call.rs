@@ -25,8 +25,8 @@ pub fn register(
     launch_ts: u64,
     deadline_ts: u64,
 ) -> Result<(), Error> {
-    RawCall::new()
-        .call(
+    unsafe {
+        RawCall::new().call(
             infra_market,
             &registerCall {
                 trading,
@@ -36,6 +36,7 @@ pub fn register(
             }
             .abi_encode(),
         )
-        .map_err(Error::InfraMarketCallError)?;
+    }
+    .map_err(Error::InfraMarketCallError)?;
     Ok(())
 }

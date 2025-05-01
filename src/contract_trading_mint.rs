@@ -101,7 +101,7 @@ impl StorageTrading {
 
     #[allow(non_snake_case)]
     pub fn estimate_burn_F_F_C_E_B_F_F_5(&self, _outcome: FixedBytes<8>, _shares: U256) -> R<U256> {
-        if !self.when_decided.is_zero() {
+        if !self.when_decided.get().is_zero() {
             return Ok(U256::ZERO);
         }
         #[cfg(feature = "trading-backend-dpm")]

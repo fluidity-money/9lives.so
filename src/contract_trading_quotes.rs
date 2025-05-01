@@ -16,7 +16,7 @@ pub use crate::storage_trading::*;
 impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn quote_C_0_E_17_F_C_7(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
-        if !self.when_decided.is_zero() {
+        if !self.when_decided.get().is_zero() {
             return Ok(U256::ZERO);
         }
         #[cfg(feature = "trading-backend-dpm")]
@@ -29,7 +29,7 @@ impl StorageTrading {
     /// fUSDC amount given. Is not inclusive of fees taken for the burn.
     #[allow(non_snake_case)]
     pub fn quote_burn_8_D_B_D_C_A_C_7(&self, _outcome_id: FixedBytes<8>, _value: U256) -> R<U256> {
-        if !self.when_decided.is_zero() {
+        if !self.when_decided.get().is_zero() {
             return Ok(U256::ZERO);
         }
         #[cfg(feature = "trading-backend-dpm")]

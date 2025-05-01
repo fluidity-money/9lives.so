@@ -98,8 +98,7 @@ interface INineLivesTrading {
         bytes32 r,
         bytes32 s
     ) external returns (
-        uint256 userLiquidity,
-        UserLiqAdded[] memory liquidityAdded
+        uint256 userLiquidity
     );
 
     struct UserLiqRemoved {

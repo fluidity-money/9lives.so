@@ -14,7 +14,7 @@ impl StorageTrading {
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn price_A_827_E_D_27(&mut self, id: FixedBytes<8>) -> R<U256> {
-        if !self.when_decided.is_zero() {
+        if !self.when_decided.get().is_zero() {
             return Ok(U256::ZERO);
         }
         #[cfg(feature = "trading-backend-dpm")]
