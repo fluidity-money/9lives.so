@@ -65,7 +65,7 @@ impl StorageTrading {
                 .set(x.checked_add(amount).ok_or(Error::CheckedAddOverflow)?);
         }
         if !self.amm_liquidity.get().is_zero() {
-            self.rebalance_fees(recipient, amount, true)?;
+            self.rebalance_fees(msg_sender(), amount, true)?;
         }
         let prev_shares = self
             .outcome_ids_iter()
@@ -113,8 +113,8 @@ impl StorageTrading {
             .get()
             .checked_sub(prev_liquidity)
             .ok_or(Error::CheckedSubOverflow));
-        let user_liq_shares = self.amm_user_liquidity_shares.get(recipient);
-        self.amm_user_liquidity_shares.setter(recipient).set(
+        let user_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
+        self.amm_user_liquidity_shares.setter(msg_sender()).set(
             user_liq_shares
                 .checked_add(add_user_liq)
                 .ok_or(Error::CheckedAddOverflow)?,
