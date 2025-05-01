@@ -215,7 +215,7 @@ type Mutation {
     """
     Seed liquidity provided to the campaign
     """
-    totalVolume: Int!
+    seedLiquidity: Int!
   ): Boolean
 
   """
