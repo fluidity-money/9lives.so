@@ -93,33 +93,31 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
               input.seedLiquidity.toString(),
               config.contracts.decimals.fusdc,
             );
-            if (input.seedLiquidity > 0) {
-              const allowanceHelperTx = prepareContractCall({
+            const allowanceHelperTx = prepareContractCall({
+              contract: config.contracts.fusdc,
+              method: "allowance",
+              params: [
+                account.address,
+                clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+              ],
+            });
+            const allowanceOfHelper = (await simulateTransaction({
+              transaction: allowanceHelperTx,
+              account,
+            })) as bigint;
+            if (allowanceOfHelper < seedLiquidity) {
+              const approveHelperTx = prepareContractCall({
                 contract: config.contracts.fusdc,
-                method: "allowance",
+                method: "approve",
                 params: [
-                  account.address,
                   clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+                  seedLiquidity,
                 ],
               });
-              const allowanceOfHelper = (await simulateTransaction({
-                transaction: allowanceHelperTx,
+              await sendTransaction({
+                transaction: approveHelperTx,
                 account,
-              })) as bigint;
-              if (allowanceOfHelper < seedLiquidity) {
-                const approveHelperTx = prepareContractCall({
-                  contract: config.contracts.fusdc,
-                  method: "approve",
-                  params: [
-                    clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-                    seedLiquidity,
-                  ],
-                });
-                await sendTransaction({
-                  transaction: approveHelperTx,
-                  account,
-                });
-              }
+              });
             }
             const createTx = prepareContractCall({
               contract: config.contracts.helperFactory,
