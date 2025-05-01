@@ -2,12 +2,14 @@ import posthog from "posthog-js";
 
 export const EVENTS = {
   MINT: "mint",
+  BURN: "burn",
   CLAIM_REWARD: "claim_reward",
   CAMPAIGN_CLICK: "campaign_click",
   CAMPAIGN_CREATE: "campaign_create",
   WALLET_CONNECT: "wallet_connect",
   OUTCOME_SELECT: "outcome_select",
   FUNDING_CLICKED: "funding_clicked",
+  ADD_LIQUIDITY: "add_liquidity",
   EMAIL_SUB: "email_sub",
 } as const;
 
