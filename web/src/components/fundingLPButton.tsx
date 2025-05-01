@@ -16,7 +16,7 @@ export default function FundingLPButton({ name }: { name: string }) {
       <Modal
         isOpen={isLPModalOpen}
         setIsOpen={setIsLPModalOpen}
-        title="ADD SEED LIQUIDITY"
+        title="ADD LIQUIDITY"
       >
         <FundingLP close={() => setIsLPModalOpen(false)} name={name} />
       </Modal>
