@@ -295,10 +295,19 @@ func UnpackConcluded(topic1 ethCommon.Hash) (*events.EventConcluded, error) {
 }
 
 func UnpackLiquidityAdded(topic1, topic2, topic3 ethCommon.Hash) (*events.EventLiquidityAdded, error) {
+	a, err := abi.Unpack("LiquidityAdded", b)
+	if err != nil {
+		return nil, err
+	}
+	shares, ok := a[0].(*big.Int)
+	if !ok {
+		return nil, fmt.Errorf("bad shares: %T", a[0])
+	}
 	return &events.EventLiquidityAdded{
-		FusdcAmt:        hashToNumber(topic1),
-		LiquidityShares: hashToNumber(topic2),
+		Sender:          hashToAddr(topic1),
+		FusdcAmt:        hashToNumber(topic2),
 		Recipient:       hashToAddr(topic3),
+		LiquidityShares: events.NumberFromBig(shares),
 	}, nil
 }
 

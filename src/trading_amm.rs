@@ -147,6 +147,7 @@ impl StorageTrading {
             })
             .collect::<R<Vec<_>>>()?;
         evm::log(events::LiquidityAdded {
+            sender: msg_sender(),
             fusdcAmt: amount,
             liquidityShares: add_user_liq,
             recipient,

@@ -8,9 +8,10 @@ CREATE TABLE ninelives_events_liquidity_added (
 	block_number INTEGER NOT NULL,
 	emitter_addr ADDRESS NOT NULL,
 
+	sender ADDRESS NOT NULL,
 	fusdc_amt HUGEINT NOT NULL,
-	liquidity_shares HUGEINT NOT NULL,
-	recipient ADDRESS NOT NULL
+	recipient ADDRESS NOT NULL,
+	liquidity_shares HUGEINT NOT NULL
 );
 
 CREATE TABLE ninelives_events_liquidity_added_shares_sent (

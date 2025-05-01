@@ -61,9 +61,10 @@ interface IEvents {
     );
 
     event LiquidityAdded(
+        address indexed sender,
         uint256 indexed fusdcAmt,
-        uint256 indexed liquidityShares,
-        address indexed recipient
+        address indexed recipient,
+        uint256 liquidityShares
     );
 
     event LiquidityAddedSharesSent(

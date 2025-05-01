@@ -300,6 +300,12 @@
 		"name": "LPFeesClaimed",
 		"inputs": [
 			{
+				"name": "sender",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
 				"name": "recipient",
 				"type": "address",
 				"indexed": true,
@@ -314,7 +320,7 @@
 			{
 				"name": "senderLiquidityShares",
 				"type": "uint256",
-				"indexed": true,
+				"indexed": false,
 				"internalType": "uint256"
 			}
 		],
@@ -325,13 +331,13 @@
 		"name": "LiquidityAdded",
 		"inputs": [
 			{
-				"name": "fusdcAmt",
-				"type": "uint256",
+				"name": "sender",
+				"type": "address",
 				"indexed": true,
-				"internalType": "uint256"
+				"internalType": "address"
 			},
 			{
-				"name": "liquidityShares",
+				"name": "fusdcAmt",
 				"type": "uint256",
 				"indexed": true,
 				"internalType": "uint256"
@@ -341,6 +347,12 @@
 				"type": "address",
 				"indexed": true,
 				"internalType": "address"
+			},
+			{
+				"name": "liquidityShares",
+				"type": "uint256",
+				"indexed": false,
+				"internalType": "uint256"
 			}
 		],
 		"anonymous": false

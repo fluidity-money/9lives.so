@@ -187,9 +187,10 @@ type (
 	EventLiquidityAdded struct {
 		Event
 
+		Sender          Address `json:"sender"`
 		FusdcAmt        Number  `json:"fusdc_amt"`
-		LiquidityShares Number  `json:"liquidity_shares"`
 		Recipient       Address `json:"recipient"`
+		LiquidityShares Number  `json:"liquidity_shares"`
 	}
 
 	EventLiquidityAddedSharesSent struct {
