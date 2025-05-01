@@ -53,7 +53,7 @@ const useClaim = ({
           });
           const claimTx = prepareContractCall({
             contract: tradingContract,
-            method: "payoff91FA8C2E",
+            method: "payoff85D8DFC9",
             params: [outcomeId, shares, account.address],
           });
           await sendTransaction({
