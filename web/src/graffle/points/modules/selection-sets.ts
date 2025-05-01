@@ -107,6 +107,14 @@ export interface Query<
   getDiscordName?:
     | Query.getDiscordName<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.getDiscordName<_$Scalars>>;
+  /**
+   *
+   * Select the `getTokenLeaderboard` field on the `Query` object. Its type is `TokenHolding` (a `OutputObject` kind of type).
+   *
+   */
+  getTokenLeaderboard?:
+    | Query.getTokenLeaderboard<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.getTokenLeaderboard<_$Scalars>>;
 
   /**
    *
@@ -413,6 +421,45 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getDiscordName$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type getTokenLeaderboard<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = getTokenLeaderboard$SelectionSet<_$Scalars>;
+
+  export interface getTokenLeaderboard$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$TokenHolding<_$Scalars> {
+    /**
+     * Arguments for `getTokenLeaderboard` field. All arguments are required so you must include this.
+     */
+    $: getTokenLeaderboard$Arguments<_$Scalars>;
+  }
+
+  export interface getTokenLeaderboard$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    token: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `getTokenLeaderboard` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type getTokenLeaderboard$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<getTokenLeaderboard$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -474,6 +521,16 @@ export interface Mutation<
     | Mutation.setCampaignCategories<_$Scalars>
     | $Select.SelectAlias.SelectAlias<
         Mutation.setCampaignCategories<_$Scalars>
+      >;
+  /**
+   *
+   * Select the `requestTokensHackathon` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  requestTokensHackathon?:
+    | Mutation.requestTokensHackathon<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<
+        Mutation.requestTokensHackathon<_$Scalars>
       >;
 
   /**
@@ -763,6 +820,59 @@ export namespace Mutation {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<setCampaignCategories$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type requestTokensHackathon<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = requestTokensHackathon$SelectionSet<_$Scalars>;
+
+  export interface requestTokensHackathon$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `requestTokensHackathon` field. All arguments are required so you must include this.
+     */
+    $: requestTokensHackathon$Arguments<_$Scalars>;
+  }
+
+  export interface requestTokensHackathon$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    /**
+     * The Telegram associated with this participant.
+     */
+    telegram: string;
+    /**
+     * The name of the submitter's project, if any.
+     */
+    projectName: string;
+    /**
+     * Recipient address of the tokens.
+     */
+    recipientAddress: string;
+    /**
+     * Turnstile token that must be used to request from the faucet.
+     */
+    turnstileToken: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `requestTokensHackathon` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type requestTokensHackathon$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<requestTokensHackathon$SelectionSet<_$Scalars>>;
 }
 
 //
@@ -1611,6 +1721,159 @@ export namespace Points {
   >;
 }
 
+//                                            TokenHolding
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface TokenHolding<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `id` field on the `TokenHolding` object. Its type is `ID` (a `ScalarStandard` kind of type).
+   *
+   */
+  id?:
+    | TokenHolding.id$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<TokenHolding.id<_$Scalars>>;
+  /**
+   *
+   * Select the `wallet` field on the `TokenHolding` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  wallet?:
+    | TokenHolding.wallet$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<TokenHolding.wallet<_$Scalars>>;
+  /**
+   *
+   * Select the `amount` field on the `TokenHolding` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  amount?:
+    | TokenHolding.amount$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<TokenHolding.amount<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | TokenHolding$FragmentInline<_$Scalars>
+    | TokenHolding$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface TokenHolding$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends TokenHolding<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace TokenHolding {
+  export type id<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
+
+  export interface id$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `id` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type id$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type wallet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
+
+  export interface wallet$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `wallet` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type wallet$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type amount<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
+
+  export interface amount$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `amount` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type amount$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
+  >;
+}
+
 /**
  * [1] These definitions serve to allow field selection interfaces to extend their respective object type without
  *     name clashing between the field name and the object name.
@@ -1643,4 +1906,8 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = Points<_$Scalars>;
+  export type $TokenHolding<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = TokenHolding<_$Scalars>;
 }
