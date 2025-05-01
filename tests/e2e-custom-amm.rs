@@ -7,9 +7,9 @@
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    actions::strat_action, error::Error, host, host_erc20_call, implement_action,
-    interactions_clear_after, panic_guard, proxy, should_spend_fusdc_contract,
-    should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
+    actions::strat_action, error::Error, host, implement_action, interactions_clear_after,
+    panic_guard, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
+    strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
 };
 
 use proptest::prelude::*;

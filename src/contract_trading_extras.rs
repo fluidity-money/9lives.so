@@ -56,7 +56,7 @@ impl StorageTrading {
         _s: FixedBytes<32>,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
+        return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return {
             if _deadline.is_zero() {

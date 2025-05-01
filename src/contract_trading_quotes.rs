@@ -33,7 +33,7 @@ impl StorageTrading {
             return Ok(U256::ZERO);
         }
         #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
+        return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_quote_burn(_outcome_id, _value);
     }

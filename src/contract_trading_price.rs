@@ -29,14 +29,14 @@ impl StorageTrading {
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_claim_liquidity(_recipient);
         #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!()
+        return Err(Error::AMMOnly)
     }
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn claim_lp_fees_66980_F_36(&mut self, _recipient: Address) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
+        return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         self.internal_amm_claim_lp_fees(_recipient)
     }
@@ -49,7 +49,7 @@ impl StorageTrading {
         _recipient: Address,
     ) -> R<(U256, U256, Vec<(FixedBytes<8>, U256)>)> {
         #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
+        return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return {
             self.require_not_done_predicting()?;

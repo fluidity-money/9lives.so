@@ -200,7 +200,8 @@ impl StorageTrading {
                 let total_shares = self
                     .amm_total_shares
                     .get(outcome_id)
-                    .wrapping_sub(liquidity_shares_val);
+                    .checked_sub(liquidity_shares_val)
+                    .ok_or(Error::CheckedSubOverflow)?;
                 self.amm_total_shares.setter(outcome_id).set(total_shares);
             }
         }

@@ -82,7 +82,7 @@ impl StorageTrading {
     ) -> R<U256> {
         self.require_not_done_predicting()?;
         #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
+        return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         {
             let (burned_shares, fusdc_to_return) =
@@ -105,7 +105,7 @@ impl StorageTrading {
             return Ok(U256::ZERO);
         }
         #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
+        return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_estimate_burn(_outcome, _shares);
     }
@@ -123,7 +123,7 @@ impl StorageTrading {
         _recipient: Address,
     ) -> R<(U256, U256)> {
         #[cfg(feature = "trading-backend-dpm")]
-        unimplemented!();
+        return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         {
             let fusdc_returned = self.internal_amm_estimate_burn(_outcome, _max_shares)?;
