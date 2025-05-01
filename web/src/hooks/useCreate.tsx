@@ -149,6 +149,9 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
           }
           await requestCreateCampaign({
             ...input,
+            seedLiquidity:
+              input.seedLiquidity *
+              Math.pow(10, config.contracts.decimals.fusdc),
             starting: Math.floor(new Date(input.starting).getTime() / 1000),
             ending: Math.floor(new Date(input.ending).getTime() / 1000),
             creator: account.address,
