@@ -226,7 +226,7 @@ impl StorageTrading {
             .map(|x| self.amm_shares.get(x))
             .product();
         let lp_fees_earned = self.internal_amm_claim_lp_fees(recipient)?;
-        self.rebalance_fees(recipient, amount, false)?;
+        self.rebalance_fees(msg_sender(), amount, false)?;
         self.amm_liquidity
             .set(maths::rooti(product, self.outcome_list.len() as u32));
         {
@@ -426,6 +426,7 @@ impl StorageTrading {
             .set(claimed.checked_add(fees).ok_or(Error::CheckedAddOverflow)?);
         fusdc_call::transfer(recipient, fees)?;
         evm::log(events::LPFeesClaimed {
+            sender: msg_sender(),
             recipient,
             feesEarned: fees,
             senderLiquidityShares: sender_liq_shares,

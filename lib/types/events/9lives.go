@@ -44,11 +44,11 @@ type (
 	EventSharesBurned struct {
 		Event
 
-		Identifier  Bytes   `json:"identifier"`
-		ShareAmount Number  `json:"share_amount"`
-		Spender     Address `json:"spender"`
-		Recipient   Address `json:"recipient"`
-		FusdcReturned  Number  `json:"fusdc_spent"`
+		Identifier    Bytes   `json:"identifier"`
+		ShareAmount   Number  `json:"share_amount"`
+		Spender       Address `json:"spender"`
+		Recipient     Address `json:"recipient"`
+		FusdcReturned Number  `json:"fusdc_spent"`
 	}
 
 	EventPayoffActivated struct {
@@ -124,7 +124,7 @@ type (
 
 		TradingAddr      Address `json:"trading_addr"`
 		PreferredOutcome Bytes   `json:"preferred_outcome"`
-		Whinger     Address `json:"whinger"`
+		Whinger          Address `json:"whinger"`
 	}
 
 	EventCampaignEscaped struct {
@@ -187,46 +187,48 @@ type (
 	EventLiquidityAdded struct {
 		Event
 
-		FusdcAmt Number `json:"fusdc_amt"`
-		LiquidityShares Number `json:"liquidity_shares"`
-		Recipient Address `json:"recipient"`
+		FusdcAmt        Number  `json:"fusdc_amt"`
+		LiquidityShares Number  `json:"liquidity_shares"`
+		Recipient       Address `json:"recipient"`
 	}
 
 	EventLiquidityAddedSharesSent struct {
 		Event
 
-		Outcome Bytes `json:"outcome"`
-		LiquidityShares Number `json:"liquidity_shares"`
-		Recipient Address `json:"recipient"`
+		Outcome         Bytes   `json:"outcome"`
+		LiquidityShares Number  `json:"liquidity_shares"`
+		Recipient       Address `json:"recipient"`
 	}
 
 	EventLiquidityRemoved struct {
 		Event
 
-		FusdcAmt Number `json:"fusdc_amt"`
-		Recipient Address `json:"recipient"`
-		LiquidityAmt Number `json:"liquidity_amt"`
+		FusdcAmt     Number  `json:"fusdc_amt"`
+		Recipient    Address `json:"recipient"`
+		LiquidityAmt Number  `json:"liquidity_amt"`
 	}
 
 	EventLiquidityRemovedSharesSent struct {
 		Event
 
-		Outcome Bytes `json:"outcome"`
+		Outcome   Bytes   `json:"outcome"`
 		Recipient Address `json:"recipient"`
-		Amount Number `json:"amount"`
+		Amount    Number  `json:"amount"`
 	}
 
 	EventLiquidityClaimed struct {
 		Event
 
 		Recipient Address `json:"recipient"`
-		FusdcAmt Number `json:"fusdc_amt"`
+		FusdcAmt  Number  `json:"fusdc_amt"`
 	}
 
 	EventLPFeesClaimed struct {
 		Event
 
-		Recipient Address `json:"recipient"`
-		Amount Number `json:"amount"`
+		Sender                Address `json:"sender"`
+		Recipient             Address `json:"recipient"`
+		FeesEarned            Number  `json:"fees_earned"`
+		SenderLiquidityShares Number  `json:"sender_liquidity_shares"`
 	}
 )

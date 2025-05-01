@@ -375,7 +375,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		table = "ninelives_events_liquidity_claimed"
 		logEvent("LiquidityClaimed")
 	case events.TopicLPFeesClaimed:
-		a, err = events.UnpackLPFeesClaimed(topic1, topic2)
+		a, err = events.UnpackLPFeesClaimed(topic1, topic2, topic3, data)
 		table = "ninelives_events_lp_fees_claimed"
 		logEvent("LPFeesClaimed")
 	default:

@@ -90,9 +90,10 @@ interface IEvents {
     );
 
     event LPFeesClaimed(
+        address indexed sender,
         address indexed recipient,
         uint256 indexed feesEarned,
-        uint256 indexed senderLiquidityShares
+        uint256 senderLiquidityShares
     );
 
     event AddressFeesClaimed(

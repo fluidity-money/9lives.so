@@ -304,9 +304,9 @@ func UnpackLiquidityAdded(topic1, topic2, topic3 ethCommon.Hash) (*events.EventL
 
 func UnpackLiquidityAddedSharesSent(topic1, topic2, topic3 ethCommon.Hash) (*events.EventLiquidityAddedSharesSent, error) {
 	return &events.EventLiquidityAddedSharesSent{
-		Outcome:   hashToBytes8(topic1),
+		Outcome:         hashToBytes8(topic1),
 		LiquidityShares: hashToNumber(topic2),
-		Recipient:    hashToAddr(topic3),
+		Recipient:       hashToAddr(topic3),
 	}, nil
 }
 
@@ -333,10 +333,20 @@ func UnpackLiquidityClaimed(topic1, topic2 ethCommon.Hash) (*events.EventLiquidi
 	}, nil
 }
 
-func UnpackLPFeesClaimed(topic1, topic2 ethCommon.Hash) (*events.EventLPFeesClaimed, error) {
+func UnpackLPFeesClaimed(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventLPFeesClaimed, error) {
+	a, err := abi.Unpack("LPFeesClaimed", b)
+	if err != nil {
+		return nil, err
+	}
+	shares, ok := a[0].(*big.Int)
+	if !ok {
+		return nil, fmt.Errorf("bad shares: %T", a[0])
+	}
 	return &events.EventLPFeesClaimed{
-		Recipient: hashToAddr(topic1),
-		Amount:    hashToNumber(topic2),
+		Sender:                hashToAddr(topic1),
+		Recipient:             hashToAddr(topic2),
+		FeesEarned:            hashToNumber(topic3),
+		SenderLiquidityShares: events.NumberFromBig(shares),
 	}, nil
 }
 
