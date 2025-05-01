@@ -68,7 +68,7 @@ contract HelperFactory {
         INineLivesTrading t = INineLivesTrading(FACTORY.newTrading320E32E9(
             _a.outcomes,
             _oracle,
-            uint64(block.timestamp + 1),
+            uint64(block.timestamp),
             _a.timeEnding,
             _a.documentation,
             _a.feeRecipient,
