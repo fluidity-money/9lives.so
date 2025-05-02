@@ -45,17 +45,7 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
 
 fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedBytes<8>, U256)>) {
     let buy_amt = U256::from(amt);
-    should_spend_fusdc_sender!(
-        buy_amt,
-        c.add_liquidity_permit(
-            buy_amt,
-            msg_sender(),
-            U256::ZERO,
-            0,
-            FixedBytes::<32>::ZERO,
-            FixedBytes::<32>::ZERO
-        )
-    )
+    should_spend_fusdc_sender!(buy_amt, c.add_liquidity_test(buy_amt, msg_sender()))
 }
 
 proptest! {

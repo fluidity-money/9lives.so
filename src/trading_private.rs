@@ -127,10 +127,19 @@ impl StorageTrading {
 
     /// Calculate fees based on the configuration in the pool, including
     /// whether the action has a referrer.
-    pub fn calculate_fees(&self, value: U256, has_referrer: bool) -> R<(U256, CalcFees)> {
+    pub fn calculate_fees(
+        &self,
+        value: U256,
+        is_buy: bool,
+        has_referrer: bool,
+    ) -> R<(U256, CalcFees)> {
         let fee_for_creator = maths::calc_fee(value, self.fee_creator.get())?;
         let fee_for_minter = maths::calc_fee(value, self.fee_minter.get())?;
-        let fee_for_lp = maths::calc_fee(value, self.fee_lp.get())?;
+        let fee_for_lp = if is_buy {
+            maths::calc_fee(value, self.fee_lp.get())?
+        } else {
+            maths::calc_lp_sell_fee(value, self.fee_lp.get())?
+        };
         let fee_for_referrer = if has_referrer {
             maths::calc_fee(value, self.fee_referrer.get())?
         } else {
@@ -162,8 +171,15 @@ impl StorageTrading {
 
     /// Calculate and set fees where possible, including the AMM fee weight
     /// if we're a AMM. Returns the cumulative fee, inclusive of the different
-    /// kinds.
-    pub fn calculate_and_set_fees(&mut self, value: U256, referrer: Address) -> R<U256> {
+    /// kinds. If the is buy flag is true, then the code will return a normal
+    /// fee * amount value. If it's set to false, then it'll return the behaviour that
+    /// sell expects, and the caller is expected to add it themselves to their value.
+    pub fn calculate_and_set_fees(
+        &mut self,
+        value: U256,
+        is_buy: bool,
+        referrer: Address,
+    ) -> R<U256> {
         let (
             fee_cum,
             CalcFees {
@@ -173,7 +189,7 @@ impl StorageTrading {
                 fee_for_referrer,
                 fee_for_protocol,
             },
-        ) = self.calculate_fees(value, !referrer.is_zero())?;
+        ) = self.calculate_fees(value, is_buy, !referrer.is_zero())?;
         // Start to allocate some fees to the creator and to the referrer.
         if !fee_for_creator.is_zero() {
             let fees_so_far = self.fees_owed_addresses.get(self.fee_recipient.get());
@@ -258,13 +274,14 @@ mod proptesting {
         }
 
         #[test]
-        fn test_fee_addition_ok(
+        fn test_fee_addition_ok_selling(
             fee_for_creator in (0..=100).prop_map(U256::from),
             fee_for_minter in (0..=100).prop_map(U256::from),
             fee_for_lp in (0..=100).prop_map(U256::from),
             fee_for_referrer in (0..=100).prop_map(U256::from),
             value in strat_medium_u256(),
             referrer_addr in strat_address_not_empty(),
+            is_buy in any::<bool>(),
             mut c in strat_storage_trading(false)
         ) {
             c.fee_creator.set(fee_for_creator);
@@ -272,14 +289,18 @@ mod proptesting {
             c.fee_lp.set(fee_for_lp);
             c.fee_referrer.set(fee_for_referrer);
             c.is_protocol_fee_disabled.set(false);
-            let lp_fee = maths::calc_fee(value, fee_for_lp).unwrap();
+            let lp_fee = if is_buy {
+                maths::calc_fee(value, fee_for_lp).unwrap()
+            } else {
+                maths::calc_lp_sell_fee(value, fee_for_lp).unwrap()
+            };
             let cum_fee =
                 maths::calc_fee(value, fee_for_creator).unwrap() +
                 maths::calc_fee(value, fee_for_minter).unwrap() +
                 lp_fee +
                 maths::calc_fee(value, fee_for_referrer).unwrap() +
                 maths::calc_fee(value, FEE_SPN_MINT_PCT).unwrap();
-            let fee = c.calculate_and_set_fees(value, referrer_addr).unwrap();
+            let fee = c.calculate_and_set_fees(value, is_buy, referrer_addr).unwrap();
             assert_eq!(cum_fee, fee);
             assert_eq!(lp_fee, c.amm_fees_collected_weighted.get());
         }

@@ -60,14 +60,7 @@ fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut
         {
             should_spend_fusdc_sender!(
                 liquidity_amt,
-                c.add_liquidity_permit(
-                    liquidity_amt,
-                    IVAN,
-                    U256::ZERO,
-                    0,
-                    FixedBytes::<32>::ZERO,
-                    FixedBytes::<32>::ZERO
-                )
+                c.add_liquidity_test(liquidity_amt, IVAN)
             );
             Ok(())
         }
@@ -89,17 +82,7 @@ fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedByte
     let buy_amt = U256::from(amt);
     // Make sure we don't include fees that we didn't clean up.
     host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
-    should_spend_fusdc_sender!(
-        buy_amt,
-        c.add_liquidity_permit(
-            buy_amt,
-            msg_sender(),
-            U256::ZERO,
-            0,
-            FixedBytes::<32>::ZERO,
-            FixedBytes::<32>::ZERO
-        )
-    )
+    should_spend_fusdc_sender!(buy_amt, c.add_liquidity_test(buy_amt, msg_sender()))
 }
 
 /// Test if a user can buy some shares, and do some balance accounting to
@@ -201,14 +184,7 @@ proptest! {
                 let liquidity_amt = U256::from(100e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_permit(
-                        liquidity_amt,
-                        IVAN,
-                        U256::ZERO,
-                        0,
-                        FixedBytes::<32>::ZERO,
-                        FixedBytes::<32>::ZERO
-                    )
+                    c.add_liquidity_test(liquidity_amt, IVAN)
                 );
                 assert_eq!(
                     U256::from(100e6 as u64),
@@ -217,14 +193,7 @@ proptest! {
                 let liquidity_amt = U256::from(1000e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_permit(
-                        liquidity_amt,
-                        IVAN,
-                        U256::ZERO,
-                        0,
-                        FixedBytes::<32>::ZERO,
-                        FixedBytes::<32>::ZERO
-                    )
+                    c.add_liquidity_test(liquidity_amt, IVAN)
                 );
                 assert_eq_u!(1100000000, c.amm_liquidity.get());
                 assert_eq_u!(1100000000, c.amm_shares.get(outcome_a));
@@ -271,14 +240,7 @@ proptest! {
                 let liquidity_amt = U256::from(1000e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_permit(
-                        liquidity_amt,
-                        IVAN,
-                        U256::ZERO,
-                        0,
-                        FixedBytes::<32>::ZERO,
-                        FixedBytes::<32>::ZERO
-                    )
+                    c.add_liquidity_test(liquidity_amt, IVAN)
                 );
                 assert_eq_u!(1772800379, c.amm_liquidity.get());
                 assert_eq_u!(818199300, c.amm_shares.get(outcome_a));
@@ -620,7 +582,7 @@ proptest! {
                 c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(10e6 as u64));
                 let (_, _, shares) = should_spend_fusdc_contract!(
                     U256::from(3535534),
-                    c.remove_liquidity_3_C_857_A_15(U256::from(5e6 as u64), msg_sender())
+                    c.remove_liquidity_test(U256::from(5e6 as u64), msg_sender())
                 );
                 for (i, (_, s)) in shares.into_iter().enumerate() {
                     if i == 0 || i == 1 {
@@ -810,8 +772,8 @@ proptest! {
                     818859060, // User shares
                     10e6 as u64 // Fees
                 );
-                assert_eq!(U256::from(10e6 as u64), c.amm_fees_collected_weighted.get());
-                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151320155, 0);
+                assert_eq_u!(10e6 as u64, c.amm_fees_collected_weighted.get());
+                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151396175, 2040817);
                 // A normal fee amount (from our perspective) until we reconcile the best approach.
                 //TODO
                 assert_eq!(U256::from(12000000 as u64), c.amm_fees_collected_weighted.get());

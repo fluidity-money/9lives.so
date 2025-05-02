@@ -921,11 +921,12 @@ def simulate_market_16():
     market.test_get_market_details()
     market.test_get_user_details(ALICE)
     assert market.fees_collected_weighted == 10 # 2% of 500 USD = 10 USD
+    print(f"fees collected weighted early: {market.fees_collected_weighted}")
 
     market.sell(0, 100, ALICE)
     market.test_get_market_details()
     market.test_get_user_details(ALICE)
-    print(f"fees collected weighted last: {market.fees_collected_weighted}")
+    print(f"fees collected weighted completed: {market.fees_collected_weighted}")
     assert market.fees_collected_weighted == 10 + (100 * 0.02)/0.98 # Earlier collected 10 USD + 2.040816326530612 USD collected from selling
 
 # Simulate the "Fee Collection" feature during buy/sell + Also resolve the market to verify that it closed properly
@@ -1121,7 +1122,7 @@ def simulate_market_19():
 
 
 if __name__ == "__main__":
-    simulate_market_17()
+    simulate_market_16()
     exit(0)
     simulate_market_18()
     simulate_market_19()

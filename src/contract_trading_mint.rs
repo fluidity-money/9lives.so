@@ -63,7 +63,7 @@ impl StorageTrading {
         }
         // Set the fees, including the AMM helper ones.
         let value = value
-            .checked_sub(self.calculate_and_set_fees(value, referrer)?)
+            .checked_sub(self.calculate_and_set_fees(value, true, referrer)?)
             .ok_or(Error::CheckedSubOverflow)?;
         #[cfg(feature = "trading-backend-dpm")]
         return self.internal_dpm_mint(outcome, value, recipient);

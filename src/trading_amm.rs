@@ -293,7 +293,7 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        let fee = self.calculate_and_set_fees(usd_amt, referrer)?;
+        let fee = self.calculate_and_set_fees(usd_amt, false, referrer)?;
         let usd_amt_added_fee = usd_amt.checked_add(fee).ok_or(Error::CheckedAddOverflow)?;
         let usd_amt_no_fee = usd_amt.checked_sub(fee).ok_or(Error::CheckedSubOverflow)?;
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
@@ -543,7 +543,7 @@ impl StorageTrading {
         if self.amm_liquidity.get().is_zero() {
             return Ok(U256::ZERO);
         }
-        let usd_amt = usd_amt - self.calculate_fees(usd_amt, false)?.0;
+        let usd_amt = usd_amt - self.calculate_fees(usd_amt, true, false)?.0;
         let shares_tmp = self
             .outcome_ids_iter()
             .map(|id| {

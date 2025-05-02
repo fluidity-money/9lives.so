@@ -136,21 +136,22 @@ pub fn calc_fee(x: U256, f: U256) -> Result<U256, Error> {
     if f.is_zero() {
         return Ok(U256::ZERO);
     }
-    Ok(mul_div_round_up(
-        x.checked_mul(FEE_SCALING)
-            .ok_or(Error::CheckedMulOverflow)?,
-        f,
-        FEE_SCALING
-            .checked_sub(f)
-            .ok_or(Error::CheckedSubOverflow)?,
-    )?
-    .div_ceil(FEE_SCALING))
+    mul_div_round_up(x, f, FEE_SCALING)
+}
+
+pub fn calc_lp_sell_fee(x: U256, f: U256) -> Result<U256, Error> {
+    if f.is_zero() {
+        return Ok(U256::ZERO);
+    }
+    let l = mul_div(x, f, FEE_SCALING)?.0;
+    let r = FEE_SCALING.checked_sub(f).ok_or(Error::CheckedSubOverflow)?;
+    Ok(l.checked_mul(r).ok_or(Error::CheckedSubOverflow)?.div_ceil(FEE_SCALING))
 }
 
 #[test]
-fn test_calc_fee() {
-    let x = U256::from(100000);
-    assert_eq_u!(2041, calc_fee(x, U256::from(20)).unwrap());
+fn test_calc_buy_fee() {
+    let x = U256::from(500e6 as u64);
+    assert_eq_u!(10e6 as u64, calc_fee(x, U256::from(20)).unwrap());
 }
 
 #[test]
