@@ -600,12 +600,11 @@ impl StorageTrading {
             .collect::<R<Vec<_>>>()?
             .iter()
             .product();
-        let new_shares = c!(self
+        let new_shares = self
             .amm_liquidity
             .get()
             .pow(U256::from(self.outcome_list.len()))
-            .checked_div(product)
-            .ok_or(Error::CheckedDivOverflow));
+            .div_ceil(product);
         Ok(c!(new_shares
             .checked_sub(prev_after)
             .ok_or(Error::CheckedSubOverflow)))
