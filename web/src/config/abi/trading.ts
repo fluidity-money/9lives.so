@@ -1,7 +1,7 @@
 const tradingAbi = [
   {
     type: "function",
-    name: "addLiquidityPermit",
+    name: "addLiquidity",
     inputs: [
       {
         name: "liquidity",
@@ -13,26 +13,6 @@ const tradingAbi = [
         type: "address",
         internalType: "address",
       },
-      {
-        name: "deadline",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "v",
-        type: "uint8",
-        internalType: "uint8",
-      },
-      {
-        name: "r",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
-      {
-        name: "s",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
     ],
     outputs: [
       {
@@ -40,29 +20,12 @@ const tradingAbi = [
         type: "uint256",
         internalType: "uint256",
       },
-      {
-        name: "liquidityAdded",
-        type: "tuple[]",
-        internalType: "struct INineLivesTrading.UserLiqAdded[]",
-        components: [
-          {
-            name: "outcome",
-            type: "bytes8",
-            internalType: "bytes8",
-          },
-          {
-            name: "sharesReceived",
-            type: "uint256",
-            internalType: "uint256",
-          },
-        ],
-      },
     ],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
-    name: "burn9C54A443",
+    name: "burn854CC96E",
     inputs: [
       {
         name: "outcome",
@@ -75,43 +38,9 @@ const tradingAbi = [
         internalType: "uint256",
       },
       {
-        name: "minShares",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "referrer",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "recipient",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "burnByShares9F3CB274",
-    inputs: [
-      {
-        name: "outcome",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
-      {
-        name: "shareAmount",
-        type: "uint256",
-        internalType: "uint256",
+        name: "shouldEstimateShares",
+        type: "bool",
+        internalType: "bool",
       },
       {
         name: "minShares",
@@ -288,30 +217,6 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "estimateBurnFFCEBFF5",
-    inputs: [
-      {
-        name: "outcome",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
-      {
-        name: "shares",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "estimatedFusdc",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "fees",
     inputs: [],
     outputs: [
@@ -386,7 +291,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "mintPermit243EEC56",
+    name: "mint8A059B6E",
     inputs: [
       {
         name: "outcome",
@@ -407,26 +312,6 @@ const tradingAbi = [
         name: "recipient",
         type: "address",
         internalType: "address",
-      },
-      {
-        name: "deadline",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "v",
-        type: "uint8",
-        internalType: "uint8",
-      },
-      {
-        name: "r",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
-      {
-        name: "s",
-        type: "bytes32",
-        internalType: "bytes32",
       },
     ],
     outputs: [
@@ -596,23 +481,6 @@ const tradingAbi = [
         name: "lpFeesEarned",
         type: "uint256",
         internalType: "uint256",
-      },
-      {
-        name: "liquidityRemoved",
-        type: "tuple[]",
-        internalType: "struct INineLivesTrading.UserLiqRemoved[]",
-        components: [
-          {
-            name: "outcome",
-            type: "bytes8",
-            internalType: "bytes8",
-          },
-          {
-            name: "sharesReceived",
-            type: "uint256",
-            internalType: "uint256",
-          },
-        ],
       },
     ],
     stateMutability: "nonpayable",
