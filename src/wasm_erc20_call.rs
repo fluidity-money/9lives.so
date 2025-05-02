@@ -79,7 +79,7 @@ pub fn permit(
 
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
     unpack_u256(
-        &{ RawCall::new_static().call(addr, &balanceOfCall { spender }.abi_encode()) }
+        &RawCall::new_static().call(addr, &balanceOfCall { spender }.abi_encode())
             .map_err(|b| Error::ERC20ErrorBalanceOf(addr, b))?,
     )
     .ok_or(Error::ERC20UnableToUnpack)

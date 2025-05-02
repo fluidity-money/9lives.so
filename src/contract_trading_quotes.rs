@@ -29,7 +29,7 @@ impl StorageTrading {
     }
 
     /// Quote the amount of shares that would be received for burning the
-    /// fUSDC amount given. Is not inclusive of fees taken for the burn.
+    /// fUSDC amount given. Inclusive of fees.
     #[allow(non_snake_case)]
     pub fn quote_burn_8_D_B_D_C_A_C_7(&self, _outcome_id: FixedBytes<8>, _value: U256) -> R<U256> {
         if !self.when_decided.get().is_zero() {

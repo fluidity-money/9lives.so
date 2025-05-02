@@ -127,12 +127,7 @@ impl StorageTrading {
 
     /// Calculate fees based on the configuration in the pool, including
     /// whether the action has a referrer.
-    pub fn calculate_fees(
-        &self,
-        value: U256,
-        is_buy: bool,
-        has_referrer: bool,
-    ) -> R<(U256, CalcFees)> {
+    pub fn calculate_fees(&self, value: U256, is_buy: bool) -> R<(U256, CalcFees)> {
         let fee_for_creator = maths::calc_fee(value, self.fee_creator.get())?;
         let fee_for_minter = maths::calc_fee(value, self.fee_minter.get())?;
         let fee_for_lp = if is_buy {
@@ -140,11 +135,7 @@ impl StorageTrading {
         } else {
             maths::calc_lp_sell_fee(value, self.fee_lp.get())?
         };
-        let fee_for_referrer = if has_referrer {
-            maths::calc_fee(value, self.fee_referrer.get())?
-        } else {
-            U256::ZERO
-        };
+        let fee_for_referrer = maths::calc_fee(value, self.fee_referrer.get())?;
         let fee_for_protocol = if !self.is_protocol_fee_disabled.get() {
             maths::calc_fee(value, FEE_SPN_MINT_PCT)?
         } else {
@@ -189,7 +180,7 @@ impl StorageTrading {
                 fee_for_referrer,
                 fee_for_protocol,
             },
-        ) = self.calculate_fees(value, is_buy, !referrer.is_zero())?;
+        ) = self.calculate_fees(value, is_buy)?;
         // Start to allocate some fees to the creator and to the referrer.
         if !fee_for_creator.is_zero() {
             let fees_so_far = self.fees_owed_addresses.get(self.fee_recipient.get());
@@ -211,10 +202,17 @@ impl StorageTrading {
                 .ok_or(Error::CheckedAddOverflow)?,
         );
         {
+            // If the referrer was not provided, we send it to the protocol.
+            let dao_fees = fee_for_protocol
+                + if !referrer.is_zero() {
+                    fee_for_referrer
+                } else {
+                    U256::ZERO
+                };
             let fees_so_far = self.fees_owed_addresses.get(DAO_ADDR);
             self.fees_owed_addresses.setter(DAO_ADDR).set(
                 fees_so_far
-                    .checked_add(fee_for_protocol)
+                    .checked_add(dao_fees)
                     .ok_or(Error::CheckedAddOverflow)?,
             );
         }

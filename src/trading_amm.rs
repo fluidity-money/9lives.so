@@ -545,7 +545,7 @@ impl StorageTrading {
         if self.amm_liquidity.get().is_zero() {
             return Ok(U256::ZERO);
         }
-        let usd_amt = usd_amt - self.calculate_fees(usd_amt, true, false)?.0;
+        let usd_amt = usd_amt - self.calculate_fees(usd_amt, true)?.0;
         let shares_tmp = self
             .outcome_ids_iter()
             .map(|id| {
@@ -583,10 +583,12 @@ impl StorageTrading {
         if self.amm_liquidity.get().is_zero() {
             return Ok(U256::ZERO);
         }
+        let (fee, _) = self.calculate_fees(usd_amt, false)?;
+        let usd_amt_added_fee = usd_amt.checked_add(fee).ok_or(Error::CheckedAddOverflow)?;
         let prev_after = c!(self
             .amm_shares
             .get(outcome_id)
-            .checked_sub(usd_amt)
+            .checked_sub(usd_amt_added_fee)
             .ok_or(Error::CheckedSubOverflow));
         let product = self
             .outcome_ids_iter()
@@ -594,7 +596,7 @@ impl StorageTrading {
             .map(|id| {
                 self.amm_shares
                     .get(id)
-                    .checked_sub(usd_amt)
+                    .checked_sub(usd_amt_added_fee)
                     .ok_or(Error::CheckedSubOverflow)
             })
             .collect::<R<Vec<_>>>()?
@@ -616,25 +618,17 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         shares_target: U256,
     ) -> R<U256> {
-        assert_or!(
-            self.amm_outcome_exists.get(outcome_id),
-            Error::NonexistentOutcome
-        );
         let mut lo = U256::ZERO;
         let mut hi = self.amm_shares.get(outcome_id);
-        for _ in 0..500 {
-            let mid = (lo + hi) >> 1;
-            let burned = self.internal_amm_quote_burn(outcome_id, mid)?;
-            if burned < shares_target {
-                lo = mid + U256::from(1);
-            } else if burned == shares_target {
-                break;
+        while lo < hi {
+            let mid = (lo + hi + U256::from(1)) >> 1;
+            if self.internal_amm_quote_burn(outcome_id, mid)? <= shares_target {
+                lo = mid;
             } else {
-                hi = mid;
+                hi = mid - U256::from(1);
             }
         }
-        // Return the amount of fUSDC to recommend to the frontend.
-        Ok(hi)
+        Ok(lo)
     }
 
     pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {
