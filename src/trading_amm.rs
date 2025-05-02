@@ -412,15 +412,15 @@ impl StorageTrading {
     pub fn internal_amm_claim_lp_fees(&mut self, recipient: Address) -> R<U256> {
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
-        let entitled = maths::mul_div_round_up(
+        let entitled = maths::mul_div(
             sender_liq_shares,
             self.amm_fees_collected_weighted.get(),
             self.amm_liquidity.get(),
-        )?;
+        )?
+        .0;
         let claimed = self.amm_lp_user_fees_claimed.get(msg_sender());
-        let fees = c!(entitled
-            .checked_sub(claimed)
-            .ok_or(Error::CheckedSubOverflow));
+        // Avoid a rounding error by clamping to 0 if we're off by 1.
+        let fees = entitled.saturating_sub(claimed);
         if fees.is_zero() {
             return Ok(U256::ZERO);
         }

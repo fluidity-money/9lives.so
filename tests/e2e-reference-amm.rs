@@ -904,7 +904,6 @@ proptest! {
             },
             ELI => {
                 assert_eq_u!(2e6 as u64, c.amm_fees_collected_weighted.get());
-                let fees = 14571949 as u64;
                 let bal = 8000e6 as u64;
                 test_add_liquidity(&mut c, bal);
                 assert_eq_u!(bal, fusdc_call::balance_of(CONTRACT).unwrap());
@@ -912,6 +911,12 @@ proptest! {
                 // This is a dust amount, so zero.
                 c.claim_lp_fees_66980_F_36(msg_sender()).unwrap();
                 assert_eq_u!(U256::ZERO, fusdc_call::balance_of(msg_sender()).unwrap());
+            },
+            IVAN => {
+                should_spend_fusdc_contract!(
+                    1e6 as u64,
+                    c.claim_lp_fees_66980_F_36(msg_sender())
+                );
             }
         };
     }
