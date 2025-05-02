@@ -157,7 +157,13 @@ macro_rules! test_should_burn_shares {
             shares_sold,
             should_spend_fusdc_contract!($buy_amt, {
                 let x = $c
-                    .burn_9_C_54_A_443($outcome, buy_amt, U256::ZERO, Address::ZERO, msg_sender())
+                    .burn_9_C_54_A_443(
+                        $outcome,
+                        buy_amt,
+                        U256::ZERO,
+                        Address::ZERO,
+                        msg_sender(),
+                    )
                     .unwrap();
                 assert_eq!(fees_taken, fusdc_call::balance_of(CONTRACT).unwrap());
                 host_erc20_call::burn(FUSDC_ADDR, CONTRACT, fees_taken);
@@ -773,10 +779,8 @@ proptest! {
                     10e6 as u64 // Fees
                 );
                 assert_eq_u!(10e6 as u64, c.amm_fees_collected_weighted.get());
-                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151396175, 2040817);
-                // A normal fee amount (from our perspective) until we reconcile the best approach.
-                //TODO
-                assert_eq!(U256::from(12000000 as u64), c.amm_fees_collected_weighted.get());
+                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151382159, 2040817);
+                assert_eq!(U256::from(12040817 as u64), c.amm_fees_collected_weighted.get());
             }
         };
     }
@@ -787,7 +791,7 @@ proptest! {
         outcome_b in strat_fixed_bytes::<8>(),
         mut c in strat_storage_trading(false)
     ) {
-        let target_fee_collected = U256::from(12000000);
+        let target_fee_collected = U256::from(12040817);
         let half_of_target_fee_collected = target_fee_collected / U256::from(2);
         interactions_clear_after! {
             IVAN => {
@@ -814,8 +818,8 @@ proptest! {
                     c,
                     outcome_a,
                     100e6 as u64,
-                    151320155,
-                    2000000 // Fees
+                    151382159,
+                    2040817 // Fees
                 );
                 // According to the Python, this should be 12040816.
                 assert_eq!(target_fee_collected, c.amm_fees_collected_weighted.get());
@@ -858,13 +862,13 @@ proptest! {
             },
             IVAN => {
                 should_spend_fusdc_contract!(
-                    360230500,
-                    c.claim_liquidity_9_C_391_F_85(msg_sender())
+                    360241000,
+                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             },
             ERIK => {
                 should_spend_fusdc_contract!(
-                    360230500,
+                    360241000,
                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             }

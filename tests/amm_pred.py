@@ -307,6 +307,8 @@ class PredMarketNew:
         # Burn the user's claimed liquidity shares to avoid double claim
         self.user_liquidity_shares[user] -= no_of_liquidity_shares
 
+        print(f"claimed amount in claim liquidity: {claimed_amount}")
+
         return claimed_amount
 
     def claim_fee(self, user):
@@ -1122,7 +1124,7 @@ def simulate_market_19():
 
 
 if __name__ == "__main__":
-    simulate_market_16()
+    simulate_market_17()
     exit(0)
     simulate_market_18()
     simulate_market_19()
