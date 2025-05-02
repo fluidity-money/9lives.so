@@ -116,7 +116,7 @@ fn test_write_address() {
         address!("6221a9c005f6e47eb398fd867784cacfdcfff4e7"),
     );
     assert_eq!(
-        const_hex::encode(&b),
+        const_hex::encode(b),
         "000000000000000000000000000000006221a9c005f6e47eb398fd867784cacfdcfff4e7"
     )
 }
@@ -128,7 +128,7 @@ fn test_write_u256() {
     //cast calldata 'hello(uint256)' 1
     write_u256(&mut b, 0, U256::from(1));
     assert_eq!(
-        const_hex::encode(&b),
+        const_hex::encode(b),
         "b0f0c96a0000000000000000000000000000000000000000000000000000000000000001"
     );
     //cast calldata 'hello(uint256)' 115792089237316195423570985008687907853269984665640564039457584007913129639935
@@ -143,7 +143,7 @@ fn test_write_u256() {
         ]),
     );
     assert_eq!(
-        const_hex::encode(&b),
+        const_hex::encode(b),
         "b0f0c96affffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
     )
 }
@@ -159,7 +159,7 @@ fn test_write_b8() {
         FixedBytes::from_slice(&[0x45, 0x45, 0x03, 0x00, 0x55, 0x05, 0x56, 0x99]),
     );
     assert_eq!(
-        const_hex::encode(&b),
+        const_hex::encode(b),
         "9bb01bc64545030055055699000000000000000000000000000000000000000000000000"
     );
 }
@@ -179,7 +179,7 @@ fn test_write_b32() {
         ]),
     );
     assert_eq!(
-        const_hex::encode(&b),
+        const_hex::encode(b),
         "b391e5058519dd1b0fae269362142025eb1ce3195274c63b454fec15634db968426fccfe"
     );
 }
@@ -191,7 +191,7 @@ fn test_write_u8() {
     write_selector(&mut b, &[0xd6, 0x50, 0x06, 0xcf]);
     write_u8(&mut b, 0, 8);
     assert_eq!(
-        const_hex::encode(&b),
+        const_hex::encode(b),
         "d65006cf0000000000000000000000000000000000000000000000000000000000000008"
     );
 }
@@ -203,7 +203,7 @@ fn test_write_u128() {
     write_selector(&mut b, &[0x6d, 0x67, 0x7a, 0x1f]);
     write_u128(&mut b, 0, 88478);
     assert_eq!(
-        const_hex::encode(&b),
+        const_hex::encode(b),
         "6d677a1f000000000000000000000000000000000000000000000000000000000001599e"
     );
 }

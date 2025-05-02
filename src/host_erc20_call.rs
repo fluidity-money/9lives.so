@@ -142,7 +142,7 @@ macro_rules! give_then_reset_token {
 pub fn burn(addr: Address, spender: Address, amt: U256) {
     BALANCES
         .with(|b| -> Option<()> {
-            let p = b.borrow().get(&addr)?.get(&spender)?.clone();
+            let p = *b.borrow().get(&addr)?.get(&spender)?;
             *b.borrow_mut().get_mut(&addr)?.get_mut(&spender)? = p
                 .checked_sub(amt)
                 .expect("failed to burn token {addr} for spender {spender}, {amt}, has {p}");

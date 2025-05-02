@@ -9,7 +9,7 @@ use lib9lives::outcome::create_commit;
 fn test_print_hash() {
     eprintln!(
         "{}",
-        const_hex::encode(&create_commit(
+        const_hex::encode(create_commit(
             address!("d8e78951d5bd1dee358d9772464d45025338b6bf"),
             fixed_bytes!("21e44c00f545271b"),
             U256::from(123)
@@ -17,7 +17,7 @@ fn test_print_hash() {
     );
     eprintln!(
         "{}",
-        const_hex::encode(&create_commit(
+        const_hex::encode(create_commit(
             address!("d8e78951d5bd1dee358d9772464d45025338b6bf"),
             fixed_bytes!("21e44c00f545271b"),
             U256::from_str_radix("9007199254740991", 10).unwrap()
@@ -25,7 +25,7 @@ fn test_print_hash() {
     );
     eprintln!(
         "{}",
-        const_hex::encode(&create_commit(
+        const_hex::encode(create_commit(
             address!("d8e78951d5bd1dee358d9772464d45025338b6bf"),
             fixed_bytes!("21e44c00f545271b"),
             U256::from_str_radix("340282366920938463463374607431768211454", 10).unwrap()

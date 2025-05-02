@@ -142,5 +142,5 @@ extern "C" {
 ))]
 compile_error!("one of the contract-* features must be enabled!");
 
-#[cfg(not(all(target_arch = "wasm32", feature = "testing")))]
+#[cfg(all(target_arch = "wasm32", not(feature = "testing")))]
 compile_error!("testing must be enabled if in not wasm32-unknown-unknown");

@@ -130,7 +130,7 @@ impl StorageTrading {
         #[cfg(not(feature = "trading-backend-dpm"))]
         {
             let fusdc_returned = self.internal_amm_estimate_burn(_outcome, _max_shares)?;
-            return Ok((
+            Ok((
                 self.burn_9_C_54_A_443(
                     _outcome,
                     fusdc_returned,
@@ -139,7 +139,7 @@ impl StorageTrading {
                     _recipient,
                 )?,
                 fusdc_returned,
-            ));
+            ))
         }
     }
 }

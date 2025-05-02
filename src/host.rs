@@ -297,7 +297,7 @@ pub fn clear_storage() {
 }
 
 pub fn get_addr_expl(addr: Address) -> Option<String> {
-    REGISTERED_ADDRESSES.with(|h| h.borrow().get(&addr).map(|x| x.clone()))
+    REGISTERED_ADDRESSES.with(|h| h.borrow().get(&addr).cloned())
 }
 
 pub fn register_addr(addr: Address, expl: String) {
