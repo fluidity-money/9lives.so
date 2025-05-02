@@ -903,6 +903,12 @@ proptest! {
                     342572170, // User shares
                     10e6 as u64 // Fees
                 );
+                assert_eq_u!(2e6 as u64, c.amm_fees_collected_weighted.get());
+                test_add_liquidity(&mut c, 8000e6 as u64);
+                should_spend_fusdc_contract!(
+                    100,
+                    c.claim_liquidity_9_C_391_F_85(msg_sender())
+                );
             }
         };
     }

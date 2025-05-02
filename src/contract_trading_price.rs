@@ -4,6 +4,9 @@ use crate::error::*;
 
 pub use crate::{storage_trading::*, utils::msg_sender};
 
+#[cfg(feature = "contract-trading-price")]
+use alloc::vec::Vec;
+
 #[cfg(not(feature = "trading-backend-dpm"))]
 use crate::fusdc_call;
 

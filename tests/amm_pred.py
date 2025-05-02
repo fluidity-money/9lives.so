@@ -1037,6 +1037,7 @@ def simulate_market_18():
     before_charles_wallet_usd = market.user_wallet_usd[CHARLES]
     market.claim_fee(CHARLES)
     amount_usd_received_charles = market.user_wallet_usd[CHARLES] - before_charles_wallet_usd
+    print(f"charles usd received: {amount_usd_received_charles}")
     # Due to rounding error, the "amount_usd_received_charles" will be a dust amount of 0.0000000000000017 USD, which will round down to zero in Solidity OR unprofitable to claim due to gas cost
     assert amount_usd_received_charles == pytest.approx(0, abs=1e-12)
 
@@ -1124,7 +1125,6 @@ def simulate_market_19():
 
 
 if __name__ == "__main__":
-    simulate_market_17()
-    exit(0)
     simulate_market_18()
+    exit(0)
     simulate_market_19()
