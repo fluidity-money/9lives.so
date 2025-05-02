@@ -1042,7 +1042,6 @@ def simulate_market_18():
 
     before_charles_wallet_usd = market.user_wallet_usd[CHARLES]
     market.claim_fee(CHARLES)
-    exit(0)
 
     amount_usd_received_charles = market.user_wallet_usd[CHARLES] - before_charles_wallet_usd
     print(f"charles usd received: {amount_usd_received_charles}")

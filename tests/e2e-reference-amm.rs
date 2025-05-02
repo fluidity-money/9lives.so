@@ -892,20 +892,26 @@ proptest! {
                 test_add_liquidity(&mut c, 500e6 as u64);
             },
             OGOUS => {
+                host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
                 test_should_buy_check_shares!(
                     c,
                     outcome_a,
                     100e6 as u64,
                     755427830, // Market shares
                     342572170, // User shares
-                    10e6 as u64 // Fees
+                    100e6 as u64 // Fees
                 );
+            },
+            ELI => {
                 assert_eq_u!(2e6 as u64, c.amm_fees_collected_weighted.get());
-                test_add_liquidity(&mut c, 8000e6 as u64);
-                should_spend_fusdc_contract!(
-                    14571949,
-                    c.claim_lp_fees_66980_F_36(msg_sender())
-                );
+                let fees = 14571949 as u64;
+                let bal = 8000e6 as u64;
+                test_add_liquidity(&mut c, bal);
+                assert_eq_u!(bal, fusdc_call::balance_of(CONTRACT).unwrap());
+                host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
+                // This is a dust amount, so zero.
+                c.claim_lp_fees_66980_F_36(msg_sender()).unwrap();
+                assert_eq_u!(U256::ZERO, fusdc_call::balance_of(msg_sender()).unwrap());
             }
         };
     }

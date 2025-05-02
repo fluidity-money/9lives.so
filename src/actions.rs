@@ -129,24 +129,12 @@ macro_rules! implement_action {
             Action::Mint(a) => {
                 should_spend_fusdc_sender!(
                     a.usd_amt,
-                    $c.mint_8_A_059_B_6_E(
-                        a.outcome,
-                        a.usd_amt,
-                        a.referrer,
-                        $sender,
-                    )
+                    $c.mint_8_A_059_B_6_E(a.outcome, a.usd_amt, a.referrer, $sender,)
                 );
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::AddLiquidity(a) => {
-                should_spend_fusdc_sender!(
-                    a.amount,
-                    $c.add_liquidity(
-                        a.amount,
-                        $sender,
-                        U256::ZERO,
-                    )
-                );
+                should_spend_fusdc_sender!(a.amount, $c.add_liquidity(a.amount, $sender,));
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::RemoveLiquidity(a) => {
@@ -160,13 +148,13 @@ macro_rules! implement_action {
                 should_spend_fusdc_sender!(
                     a.usd_amt,
                     $c.burn_854_C_C_96_E(
-                         a.outcome,
-                         a.usd_amt,
-                         a.should_estimate_share_burn,
-                         U256::ZERO,
-                         a.referrer,
-                         $sender
-                     )
+                        a.outcome,
+                        a.usd_amt,
+                        a.should_estimate_share_burn,
+                        U256::ZERO,
+                        a.referrer,
+                        $sender
+                    )
                 );
             }
             #[cfg(feature = "trading-backend-amm")]

@@ -50,7 +50,6 @@ impl StorageTrading {
         &mut self,
         _amount: U256,
         _recipient: Address,
-        _deadline: U256,
     ) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);

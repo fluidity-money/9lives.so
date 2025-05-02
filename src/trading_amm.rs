@@ -375,11 +375,6 @@ impl StorageTrading {
             self.amm_fees_collected_weighted.get(),
             self.amm_liquidity.get(),
         )?;
-        eprintln!(
-            "rebalanceFee: ({delta_liq} * {}) / {} = {fee_weight}",
-            self.amm_fees_collected_weighted.get(),
-            self.amm_liquidity.get(),
-        );
         if is_add {
             {
                 let x = self
