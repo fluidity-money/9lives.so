@@ -328,8 +328,7 @@ impl StorageTrading {
             self.amm_liquidity
                 .get()
                 .pow(U256::from(self.outcome_list.len()))
-                .checked_div(product)
-                .ok_or(Error::CheckedDivOverflow)?,
+                .div_ceil(product),
         );
         let burned_shares = c!(self
             .amm_shares

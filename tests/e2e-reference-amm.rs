@@ -107,17 +107,13 @@ macro_rules! test_should_buy_check_shares {
             $c.quote_C_0_E_17_F_C_7($outcome, buy_amt).unwrap(),
             "quote amount of users shares diff"
         );
+        let mut amount = U256::ZERO;
         assert_eq!(
             user_share_amt,
             // We can also test the quote function this way.
             should_spend_fusdc_sender!(buy_amt, {
-                let amount = $c
-                    .mint_8_A_059_B_6_E(
-                        $outcome,
-                        buy_amt,
-                        Address::ZERO,
-                        msg_sender(),
-                    )
+                amount = $c
+                    .mint_8_A_059_B_6_E($outcome, buy_amt, Address::ZERO, msg_sender())
                     .unwrap();
                 assert_eq!(
                     U256::from($market_share_amt),
@@ -128,7 +124,8 @@ macro_rules! test_should_buy_check_shares {
                 Ok(amount)
             }),
             "user shares"
-        )
+        );
+        amount
     }};
 }
 
@@ -880,6 +877,7 @@ proptest! {
         outcome_d in strat_fixed_bytes::<8>(),
         mut c in strat_storage_trading(false)
     ) {
+        let mut eli_shares: Vec<(FixedBytes<8>, U256)> = Vec::new();
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
@@ -905,7 +903,7 @@ proptest! {
             ELI => {
                 assert_eq_u!(2e6 as u64, c.amm_fees_collected_weighted.get());
                 let bal = 8000e6 as u64;
-                test_add_liquidity(&mut c, bal);
+                (_, eli_shares) = test_add_liquidity(&mut c, bal);
                 assert_eq_u!(bal, fusdc_call::balance_of(CONTRACT).unwrap());
                 host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
                 // This is a dust amount, so zero.
@@ -916,6 +914,55 @@ proptest! {
                 should_spend_fusdc_contract!(
                     1e6 as u64,
                     c.claim_lp_fees_66980_F_36(msg_sender())
+                );
+            },
+            ERIK => {
+                should_spend_fusdc_contract!(
+                    1e6 as u64,
+                    c.claim_lp_fees_66980_F_36(msg_sender())
+                );
+            },
+            ELI => {
+                let (_, outcome_a_shares) = eli_shares[0];
+                // In the reference, the shares are 2495.9721018075907:
+                assert_eq_u!(2495972386u64, outcome_a_shares);
+                panic_guard(|| {
+                    assert_eq!(
+                        Error::NotWinner,
+                        c.payoff_8_5_D_8_D_F_C_9(
+                            outcome_a,
+                            outcome_a_shares,
+                            msg_sender()
+                        ).unwrap_err()
+                    );
+                });
+                host::set_block_timestamp(1);
+                c.decide(outcome_a).unwrap();
+                should_spend_fusdc_contract!(
+                    outcome_a_shares,
+                    c.payoff_8_5_D_8_D_F_C_9(
+                        outcome_a,
+                        outcome_a_shares,
+                        msg_sender()
+                    )
+                );
+            },
+            OGOUS => {
+                let ogous_shares = U256::from(342572170);
+                should_spend_fusdc_contract!(
+                    ogous_shares,
+                    c.payoff_8_5_D_8_D_F_C_9(
+                        outcome_a,
+                        ogous_shares,
+                        msg_sender()
+                    )
+                );
+            },
+            IVAN => {
+                assert_eq_u!(500e6 as u64, c.amm_user_liquidity_shares.get(msg_sender()));
+                should_spend_fusdc_contract!(
+                    377713914,
+                    c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             }
         };

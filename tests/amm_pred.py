@@ -1072,10 +1072,12 @@ def simulate_market_18():
     market.test_get_user_details(ALICE)
     market.test_get_user_details(BOB)
     market.test_get_user_details(CHARLES)
+    print(f"market user outcome shares for charles: {market.user_outcome_shares[CHARLES][0], CHARLES}")
     market.resolution(market.user_outcome_shares[CHARLES][0], CHARLES)
 
     market.test_get_user_details(DAVID)
     before_david_outcome_shares = market.user_outcome_shares[DAVID][0]
+    print(f"david shares: {before_david_outcome_shares}")
     before_david_wallet_usd = market.user_wallet_usd[DAVID]
     market.resolution(market.user_outcome_shares[DAVID][0], DAVID) # Claim all outcome 0 shares
     winning_amount_in_usd = market.user_wallet_usd[DAVID] - before_david_wallet_usd
@@ -1083,7 +1085,9 @@ def simulate_market_18():
     # Verify user received the winning outcome shares (1:1 ratio)
     assert winning_amount_in_usd == before_david_outcome_shares
 
-    market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE)
+    print(f"alice shares: {market.user_liquidity_shares[ALICE]}")
+
+    print(f"alice claimed: {market.claim_liqudity(market.user_liquidity_shares[ALICE], ALICE)}")
     market.claim_liqudity(market.user_liquidity_shares[BOB], BOB)
     market.claim_liqudity(market.user_liquidity_shares[CHARLES], CHARLES)
 
