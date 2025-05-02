@@ -107,7 +107,14 @@ fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedByte
 /// to take it from them, and assumes the caller will do some accounting
 /// to be certain.
 macro_rules! test_should_buy_check_shares {
-    ($c:ident, $outcome:expr, $buy_amt:expr, $market_share_amt:expr, $user_share_amt:expr, $fees_taken:expr) => {{
+    (
+        $c:ident,
+        $outcome:expr,
+        $buy_amt:expr,
+        $market_share_amt:expr,
+        $user_share_amt:expr,
+        $fees_taken:expr
+    ) => {{
         let buy_amt = U256::from($buy_amt);
         let user_share_amt = U256::from($user_share_amt);
         let fees_taken = U256::from($fees_taken);

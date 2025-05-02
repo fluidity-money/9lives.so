@@ -19,7 +19,7 @@ sol! {
 
 pub fn transfer(addr: Address, recipient: Address, value: U256) -> Result<(), Error> {
     unpack_bool_safe(
-        &unsafe { RawCall::new().call(addr, &transferCall { recipient, value }.abi_encode()) }
+        &{ RawCall::new().call(addr, &transferCall { recipient, value }.abi_encode()) }
             .map_err(|b| Error::ERC20ErrorTransfer(addr, b))?,
     )
 }
@@ -31,7 +31,7 @@ pub fn transfer_from(
     amount: U256,
 ) -> Result<(), Error> {
     unpack_bool_safe(
-        &unsafe {
+        &{
             RawCall::new().call(
                 addr,
                 &transferFromCall {
@@ -58,7 +58,7 @@ pub fn permit(
     s: FixedBytes<32>,
 ) -> Result<(), Error> {
     unpack_bool_safe(
-        &unsafe {
+        &{
             RawCall::new().call(
                 addr,
                 &permitCall {
@@ -79,7 +79,7 @@ pub fn permit(
 
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
     unpack_u256(
-        &unsafe { RawCall::new_static().call(addr, &balanceOfCall { spender }.abi_encode()) }
+        &{ RawCall::new_static().call(addr, &balanceOfCall { spender }.abi_encode()) }
             .map_err(|b| Error::ERC20ErrorBalanceOf(addr, b))?,
     )
     .ok_or(Error::ERC20UnableToUnpack)
@@ -87,7 +87,7 @@ pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
 
 pub fn approve(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
     unpack_bool_safe(
-        &unsafe { RawCall::new().call(addr, &approveCall { spender, amount }.abi_encode()) }
+        &{ RawCall::new().call(addr, &approveCall { spender, amount }.abi_encode()) }
             .map_err(|_| Error::ERC20Approve)?,
     )
 }

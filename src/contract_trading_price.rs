@@ -27,7 +27,7 @@ impl StorageTrading {
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_claim_liquidity(_recipient);
         #[cfg(feature = "trading-backend-dpm")]
-        return Err(Error::AMMOnly)
+        return Err(Error::AMMOnly);
     }
 
     #[allow(clippy::too_many_arguments)]

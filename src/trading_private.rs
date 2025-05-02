@@ -161,7 +161,8 @@ impl StorageTrading {
     }
 
     /// Calculate and set fees where possible, including the AMM fee weight
-    /// if we're a AMM. Returns the amount remaining.
+    /// if we're a AMM. Returns the cumulative fee, inclusive of the different
+    /// kinds.
     pub fn calculate_and_set_fees(&mut self, value: U256, referrer: Address) -> R<U256> {
         let (
             fee_cum,
@@ -228,9 +229,9 @@ fn test_is_amm() {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod proptesting {
     use crate::{
+        fees::FEE_SPN_MINT_PCT,
         maths, strat_storage_trading,
         utils::{strat_address_not_empty, strat_medium_u256},
-        fees::FEE_SPN_MINT_PCT,
     };
 
     use stylus_sdk::alloy_primitives::U256;

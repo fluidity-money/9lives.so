@@ -24,7 +24,7 @@ pub fn slash(
     recipient: Address,
 ) -> Result<U256, Error> {
     unpack_u256(
-        &unsafe {
+        &{
             RawCall::new().call(
                 addr,
                 &slashCall {

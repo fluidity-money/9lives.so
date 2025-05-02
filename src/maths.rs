@@ -133,6 +133,9 @@ pub fn mul_div_round_up(a: U256, b: U256, denominator: U256) -> Result<U256, Err
 }
 
 pub fn calc_fee(x: U256, f: U256) -> Result<U256, Error> {
+    if f.is_zero() {
+        return Ok(U256::ZERO);
+    }
     Ok(mul_div_round_up(
         x.checked_mul(FEE_SCALING)
             .ok_or(Error::CheckedMulOverflow)?,

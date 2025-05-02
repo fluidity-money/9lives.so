@@ -25,11 +25,7 @@ pub fn should_points<T>(
 
 #[macro_export]
 macro_rules! should_points {
-    (
-        $addr:expr,
-        $amt: expr,
-        $func:expr
-    ) => {
+    ($addr:expr, $amt:expr, $func:expr) => {
         $crate::host_nineliveslockedarb_call::should_points($addr, $amt, || $func)
     };
 }
