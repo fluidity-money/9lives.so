@@ -37,15 +37,11 @@ interface INineLivesTrading {
 
     /// @notice Mint some shares in exchange for fUSDC. Optionally branches to permit or a
     /// classic approval based on the deadline argument (if set to 0, assumes approval)
-    function mintPermit243EEC56(
+    function mint8A059B6E(
         bytes8 outcome,
         uint256 value,
         address referrer,
-        address recipient,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
+        address recipient
     ) external returns (uint256);
 
     /// @notice Burn some shares by inverting the AMM function using the
@@ -72,11 +68,6 @@ interface INineLivesTrading {
         bytes8 outcome,
         uint256 fusdcValue
     ) external returns (uint256);
-
-    function estimateBurnFFCEBFF5(
-        bytes8 outcome,
-        uint256 shares
-    ) external view returns (uint256 estimatedFusdc);
 
     struct UserLiqAdded {
         bytes8 outcome;

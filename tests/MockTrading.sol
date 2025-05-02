@@ -49,15 +49,11 @@ contract MockTrading is INineLivesTrading {
         return oracle_;
     }
 
-    function mintPermit243EEC56(
+    function mint8A059B6E(
         bytes8 outcome,
         uint256 value,
         address /* referrer */,
-        address recipient,
-        uint256 /* deadline */,
-        uint8 /* v */,
-        bytes32 /* r */,
-        bytes32 /* s */
+        address recipient
     ) external returns (uint256) {
         require(block.timestamp > timeStart_, "hasn't started");
         require(block.timestamp < timeEnding_, "has ended");
@@ -92,13 +88,6 @@ contract MockTrading is INineLivesTrading {
     ) external returns (uint256) {
         ++counter_;
         return fusdcValue;
-    }
-
-    function estimateBurnFFCEBFF5(
-        bytes8 /* outcome */,
-        uint256 shares
-    ) external pure returns (uint256) {
-        return shares;
     }
 
     function addLiquidityPermit(

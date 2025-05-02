@@ -56,15 +56,11 @@ contract BuyHelper2 {
             fusdc = _amount;
         }
         FUSDC.approve(_tradingAddr, fusdc);
-        uint256 shares = INineLivesTrading(_tradingAddr).mintPermit243EEC56(
+        uint256 shares = INineLivesTrading(_tradingAddr).mint8A059B6E(
             _outcome,
             fusdc,
             _referrer,
-            msg.sender,
-            0,
-            0,
-            bytes32(0),
-            bytes32(0)
+            msg.sender
         );
         require(shares >= _minShareOut, "not enough shares");
         return shares;

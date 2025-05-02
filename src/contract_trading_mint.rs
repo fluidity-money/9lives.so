@@ -21,25 +21,15 @@ use alloc::vec::Vec;
 impl StorageTrading {
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn mint_permit_243_E_E_C_56(
+    pub fn mint_8_A_059_B_6_E(
         &mut self,
         outcome: FixedBytes<8>,
         value: U256,
         referrer: Address,
         recipient: Address,
-        deadline: U256,
-        v: u8,
-        r: FixedBytes<32>,
-        s: FixedBytes<32>,
     ) -> R<U256> {
         self.require_not_done_predicting()?;
-        if deadline.is_zero() {
-            c!(fusdc_call::take_from_sender(value));
-        } else {
-            c!(fusdc_call::take_from_sender_permit(
-                value, deadline, v, r, s
-            ))
-        }
+        c!(fusdc_call::take_from_sender(value));
         assert_or!(value < MAX_UINT256, Error::U256TooLarge);
         assert_or!(!value.is_zero(), Error::ZeroAmount);
         let recipient = if recipient.is_zero() {
@@ -106,17 +96,6 @@ impl StorageTrading {
             });
             Ok(burned_shares)
         }
-    }
-
-    #[allow(non_snake_case)]
-    pub fn estimate_burn_F_F_C_E_B_F_F_5(&self, _outcome: FixedBytes<8>, _shares: U256) -> R<U256> {
-        if !self.when_decided.get().is_zero() {
-            return Ok(U256::ZERO);
-        }
-        #[cfg(feature = "trading-backend-dpm")]
-        return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_estimate_burn(_outcome, _shares);
     }
 }
 
