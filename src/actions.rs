@@ -129,15 +129,11 @@ macro_rules! implement_action {
             Action::Mint(a) => {
                 should_spend_fusdc_sender!(
                     a.usd_amt,
-                    $c.mint_permit_243_E_E_C_56(
+                    $c.mint_8_A_059_B_6_E(
                         a.outcome,
                         a.usd_amt,
                         a.referrer,
                         $sender,
-                        U256::ZERO,
-                        0,
-                        FixedBytes::<32>::ZERO,
-                        FixedBytes::<32>::ZERO,
                     )
                 );
             }
@@ -145,13 +141,10 @@ macro_rules! implement_action {
             Action::AddLiquidity(a) => {
                 should_spend_fusdc_sender!(
                     a.amount,
-                    $c.add_liquidity_permit(
+                    $c.add_liquidity(
                         a.amount,
                         $sender,
                         U256::ZERO,
-                        0,
-                        FixedBytes::<32>::ZERO,
-                        FixedBytes::<32>::ZERO,
                     )
                 );
             }

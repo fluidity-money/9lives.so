@@ -64,9 +64,6 @@ impl StorageTrading {
                 .setter(id)
                 .set(x.checked_add(amount).ok_or(Error::CheckedAddOverflow)?);
         }
-        if !self.amm_liquidity.get().is_zero() {
-            self.rebalance_fees(msg_sender(), amount, true)?;
-        }
         let prev_shares = self
             .outcome_ids_iter()
             .map(|x| self.amm_shares.get(x))
@@ -104,6 +101,13 @@ impl StorageTrading {
             .outcome_ids_iter()
             .map(|x| self.amm_shares.get(x))
             .product();
+        let new_liq = maths::rooti(product, self.outcome_list.len() as u32);
+        let liq_shares_minted = new_liq
+            .checked_sub(prev_liquidity)
+            .ok_or(Error::CheckedSubOverflow)?;
+        if !self.amm_liquidity.get().is_zero() {
+            self.rebalance_fees(msg_sender(), liq_shares_minted, true)?;
+        }
         self.amm_liquidity
             .set(maths::rooti(product, self.outcome_list.len() as u32));
         // Time to mint the user some shares. For now, we're going to simply bump
@@ -371,6 +375,11 @@ impl StorageTrading {
             self.amm_fees_collected_weighted.get(),
             self.amm_liquidity.get(),
         )?;
+        eprintln!(
+            "rebalanceFee: ({delta_liq} * {}) / {} = {fee_weight}",
+            self.amm_fees_collected_weighted.get(),
+            self.amm_liquidity.get(),
+        );
         if is_add {
             {
                 let x = self
@@ -408,16 +417,15 @@ impl StorageTrading {
     pub fn internal_amm_claim_lp_fees(&mut self, recipient: Address) -> R<U256> {
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
-        let entitled = maths::mul_div(
+        let entitled = maths::mul_div_round_up(
             sender_liq_shares,
             self.amm_fees_collected_weighted.get(),
             self.amm_liquidity.get(),
-        )?
-        .0;
+        )?;
         let claimed = self.amm_lp_user_fees_claimed.get(msg_sender());
-        let fees = entitled
+        let fees = c!(entitled
             .checked_sub(claimed)
-            .ok_or(Error::CheckedSubOverflow)?;
+            .ok_or(Error::CheckedSubOverflow));
         if fees.is_zero() {
             return Ok(U256::ZERO);
         }

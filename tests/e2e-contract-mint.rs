@@ -86,14 +86,10 @@ proptest! {
         )
         .unwrap();
         ts_add_time(secs_since);
-        should_spend_fusdc_sender!(mint_value, c.mint_permit_243_E_E_C_56(
+        should_spend_fusdc_sender!(mint_value, c.mint_8_A_059_B_6_E(
             outcome_1,
             mint_value,
             msg_sender(),
-            U256::ZERO,
-            0,
-            FixedBytes::<32>::ZERO,
-            FixedBytes::<32>::ZERO,
          ));
     }
 }

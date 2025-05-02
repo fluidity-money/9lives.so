@@ -127,6 +127,8 @@ class PredMarketNew:
 
         liquidity_shares_minted = (new_liquidity - previous_liquidity)
 
+        print(f"rebalance fees add: {liquidity_shares_minted}")
+
         # Don't need to rebalance if the liquidity shares is zero
         if (self.liquidity > 0):
             self.rebalanceFee(liquidity_shares_minted, user, "add")
@@ -320,6 +322,8 @@ class PredMarketNew:
 
         amount_not_claimed = fee_entitled - self.fees_claimed[user]
 
+        print(f"amount not claimed: {amount_not_claimed}")
+
         self.fees_collected_usd -= amount_not_claimed
 
         self.user_wallet_usd[user] += amount_not_claimed
@@ -330,6 +334,8 @@ class PredMarketNew:
         fee_weight = (liquidity_shares * self.fees_collected_weighted) / self.liquidity
         print(f"fee weight: {fee_weight}")
         print(f"{user} - rebalanceFee: ({liquidity_shares} * {self.fees_collected_weighted}) / {self.liquidity} = {(liquidity_shares * self.fees_collected_weighted) / self.liquidity}")
+
+        print(f"fee weight: {fee_weight}")
 
         if (operation == "add"):
             self.fees_collected_weighted += fee_weight
@@ -1036,6 +1042,8 @@ def simulate_market_18():
 
     before_charles_wallet_usd = market.user_wallet_usd[CHARLES]
     market.claim_fee(CHARLES)
+    exit(0)
+
     amount_usd_received_charles = market.user_wallet_usd[CHARLES] - before_charles_wallet_usd
     print(f"charles usd received: {amount_usd_received_charles}")
     # Due to rounding error, the "amount_usd_received_charles" will be a dust amount of 0.0000000000000017 USD, which will round down to zero in Solidity OR unprofitable to claim due to gas cost

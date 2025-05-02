@@ -70,15 +70,11 @@ proptest! {
                 test_add_liquidity(&mut c, 1000e6 as u64);
                 should_spend_fusdc_sender!(
                     amt,
-                    c.mint_permit_243_E_E_C_56(
+                    c.mint_8_A_059_B_6_E(
                         outcome_a,
                         amt,
                         Address::ZERO,
                         msg_sender(),
-                        U256::ZERO,
-                        0,
-                        FixedBytes::ZERO,
-                        FixedBytes::ZERO,
                     )
                 );
             },
@@ -123,15 +119,11 @@ proptest! {
                 let amt = U256::from(ivan_amt);
                 should_spend_fusdc_sender!(
                     amt,
-                    c.mint_permit_243_E_E_C_56(
+                    c.mint_8_A_059_B_6_E(
                         outcome_a,
                         amt,
                         Address::ZERO,
                         msg_sender(),
-                        U256::ZERO,
-                        0,
-                        FixedBytes::ZERO,
-                        FixedBytes::ZERO,
                     )
                 );
             },
@@ -146,15 +138,11 @@ proptest! {
                 });
                 should_spend_fusdc_sender!(
                     erik_amt,
-                    c.mint_permit_243_E_E_C_56(
+                    c.mint_8_A_059_B_6_E(
                         outcome_a,
                         erik_amt,
                         Address::ZERO,
                         msg_sender(),
-                        U256::ZERO,
-                        0,
-                        FixedBytes::ZERO,
-                        FixedBytes::ZERO,
                     )
                 );
             },

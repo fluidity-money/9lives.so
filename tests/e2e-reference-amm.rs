@@ -112,15 +112,11 @@ macro_rules! test_should_buy_check_shares {
             // We can also test the quote function this way.
             should_spend_fusdc_sender!(buy_amt, {
                 let amount = $c
-                    .mint_permit_243_E_E_C_56(
+                    .mint_8_A_059_B_6_E(
                         $outcome,
                         buy_amt,
                         Address::ZERO,
                         msg_sender(),
-                        U256::ZERO,
-                        0,
-                        FixedBytes::ZERO,
-                        FixedBytes::ZERO,
                     )
                     .unwrap();
                 assert_eq!(
@@ -907,7 +903,7 @@ proptest! {
                 assert_eq_u!(2e6 as u64, c.amm_fees_collected_weighted.get());
                 test_add_liquidity(&mut c, 8000e6 as u64);
                 should_spend_fusdc_contract!(
-                    100,
+                    14571949,
                     c.claim_lp_fees_66980_F_36(msg_sender())
                 );
             }
