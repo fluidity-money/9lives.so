@@ -78,10 +78,10 @@ impl StorageTrading {
     pub fn burn_9_C_54_A_443(
         &mut self,
         _outcome: FixedBytes<8>,
-        fusdc_amount: U256,
+        _fusdc_amount: U256,
         _min_shares: U256,
-        referrer: Address,
-        recipient: Address,
+        _referrer: Address,
+        _recipient: Address,
     ) -> R<U256> {
         self.require_not_done_predicting()?;
         #[cfg(feature = "trading-backend-dpm")]
@@ -89,13 +89,13 @@ impl StorageTrading {
         #[cfg(not(feature = "trading-backend-dpm"))]
         {
             let (burned_shares, fusdc_to_return) =
-                self.internal_amm_burn(_outcome, fusdc_amount, _min_shares, referrer)?;
-            fusdc_call::transfer(recipient, fusdc_to_return)?;
+                self.internal_amm_burn(_outcome, _fusdc_amount, _min_shares, _referrer)?;
+            fusdc_call::transfer(_recipient, fusdc_to_return)?;
             evm::log(events::SharesBurned {
                 identifier: _outcome,
                 shareAmount: burned_shares,
                 spender: msg_sender(),
-                recipient,
+                recipient: _recipient,
                 fusdcReturned: fusdc_to_return,
             });
             Ok(burned_shares)
