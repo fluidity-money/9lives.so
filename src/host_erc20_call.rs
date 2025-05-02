@@ -112,7 +112,7 @@ pub fn test_give_tokens(addr: Address, recipient: Address, amt: U256) {
             None => U256::ZERO,
             Some(v) => *v,
         };
-        b.insert(recipient, amt.checked_sub(existing_bal).unwrap());
+        b.insert(recipient, existing_bal.checked_add(amt).unwrap());
     });
 }
 

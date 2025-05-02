@@ -157,9 +157,10 @@ macro_rules! test_should_burn_shares {
             shares_sold,
             should_spend_fusdc_contract!($buy_amt, {
                 let x = $c
-                    .burn_9_C_54_A_443(
+                    .burn_854_C_C_96_E(
                         $outcome,
                         buy_amt,
+                        false,
                         U256::ZERO,
                         Address::ZERO,
                         msg_sender(),
@@ -907,7 +908,7 @@ proptest! {
                 test_add_liquidity(&mut c, 8000e6 as u64);
                 should_spend_fusdc_contract!(
                     100,
-                    c.claim_liquidity_9_C_391_F_85(msg_sender())
+                    c.claim_lp_fees_66980_F_36(msg_sender())
                 );
             }
         };

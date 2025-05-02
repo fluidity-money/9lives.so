@@ -48,6 +48,7 @@ pub struct ActionBurn {
     pub outcome: FixedBytes<8>,
     pub referrer: Address,
     pub usd_amt: U256,
+    pub should_estimate_share_burn: bool,
 }
 
 #[cfg(feature = "trading-backend-amm")]
@@ -165,7 +166,14 @@ macro_rules! implement_action {
             Action::Burn(a) => {
                 should_spend_fusdc_sender!(
                     a.usd_amt,
-                    $c.burn_9_C_54_A_443(a.outcome, a.usd_amt, U256::ZERO, a.referrer, $sender)
+                    $c.burn_854_C_C_96_E(
+                         a.outcome,
+                         a.usd_amt,
+                         a.should_estimate_share_burn,
+                         U256::ZERO,
+                         a.referrer,
+                         $sender
+                     )
                 );
             }
             #[cfg(feature = "trading-backend-amm")]

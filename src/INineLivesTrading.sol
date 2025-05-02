@@ -48,20 +48,13 @@ interface INineLivesTrading {
         bytes32 s
     ) external returns (uint256);
 
-    /// @notice Burn some shares by inverting the AMM function using the fUSDC amount.
-    function burn9C54A443(
+    /// @notice Burn some shares by inverting the AMM function using the
+    /// fUSDC amount, or the shares, depending on the shouldEstimateShares
+    /// argument. Returns the burned shares, and the fusdc returned.
+    function burn854CC96E(
         bytes8 outcome,
         uint256 fusdcAmount,
-        uint256 minShares,
-        address referrer,
-        address recipient
-    ) external returns (uint256);
-
-    /// @notice Burn an amount of shares using local estimation in the
-    /// contract. Returns the shares burned and the fUSDC returned.
-    function burnByShares9F3CB274(
-        bytes8 outcome,
-        uint256 shareAmount,
+        bool shouldEstimateShares,
         uint256 minShares,
         address referrer,
         address recipient

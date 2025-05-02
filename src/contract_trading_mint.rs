@@ -72,13 +72,14 @@ impl StorageTrading {
     }
 
     /// Burn, preventing us from blowing past and below the amounts given.
-    /// Used by burn by shares as well. Returns the shares burned.
+    /// Can optionally burn shares as well by way of estimation. Returns the shares burned.
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn burn_9_C_54_A_443(
+    pub fn burn_854_C_C_96_E(
         &mut self,
         _outcome: FixedBytes<8>,
-        _fusdc_amount: U256,
+        _amount: U256,
+        _should_estimate_shares_burn: bool,
         _min_shares: U256,
         _referrer: Address,
         _recipient: Address,
@@ -88,8 +89,13 @@ impl StorageTrading {
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         {
+            let fusdc = if _should_estimate_shares_burn {
+                self.internal_amm_estimate_burn(_outcome, _amount)?
+            } else {
+                _amount
+            };
             let (burned_shares, fusdc_to_return) =
-                self.internal_amm_burn(_outcome, _fusdc_amount, _min_shares, _referrer)?;
+                self.internal_amm_burn(_outcome, fusdc, _min_shares, _referrer)?;
             fusdc_call::transfer(_recipient, fusdc_to_return)?;
             evm::log(events::SharesBurned {
                 identifier: _outcome,
@@ -111,36 +117,6 @@ impl StorageTrading {
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_estimate_burn(_outcome, _shares);
-    }
-
-    /// Burn a number of shares by using binary search to estimate the amount
-    /// of fUSDC to take. Returns the shares burned and the fUSDC returned.
-    #[allow(clippy::too_many_arguments)]
-    #[allow(non_snake_case)]
-    pub fn burn_by_shares_9_F_3_C_B_274(
-        &mut self,
-        _outcome: FixedBytes<8>,
-        _max_shares: U256,
-        _min_shares: U256,
-        _referrer: Address,
-        _recipient: Address,
-    ) -> R<(U256, U256)> {
-        #[cfg(feature = "trading-backend-dpm")]
-        return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        {
-            let fusdc_returned = self.internal_amm_estimate_burn(_outcome, _max_shares)?;
-            Ok((
-                self.burn_9_C_54_A_443(
-                    _outcome,
-                    fusdc_returned,
-                    _min_shares,
-                    _referrer,
-                    _recipient,
-                )?,
-                fusdc_returned,
-            ))
-        }
     }
 }
 
