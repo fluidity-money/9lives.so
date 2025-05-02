@@ -46,26 +46,17 @@ impl StorageTrading {
         self.internal_ctor(a.0, a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8, a.9, a.10)
     }
 
-    pub fn add_liquidity_permit(
+    pub fn add_liquidity(
         &mut self,
         _amount: U256,
         _recipient: Address,
         _deadline: U256,
-        _v: u8,
-        _r: FixedBytes<32>,
-        _s: FixedBytes<32>,
     ) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return {
-            if _deadline.is_zero() {
-                c!(fusdc_call::take_from_sender(_amount));
-            } else {
-                c!(fusdc_call::take_from_sender_permit(
-                    _amount, _deadline, _v, _r, _s
-                ))
-            }
+            c!(fusdc_call::take_from_sender(_amount));
             let (shares, _) = self.internal_amm_add_liquidity(_amount, _recipient)?;
             Ok(shares)
         };

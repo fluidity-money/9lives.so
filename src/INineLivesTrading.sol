@@ -74,14 +74,7 @@ interface INineLivesTrading {
         uint256 sharesReceived;
     }
 
-    function addLiquidityPermit(
-        uint256 liquidity,
-        address recipient,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external returns (
+    function addLiquidity(uint256 liquidity, address recipient) external returns (
         uint256 userLiquidity
     );
 
