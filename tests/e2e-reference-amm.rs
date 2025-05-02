@@ -878,20 +878,22 @@ proptest! {
         mut c in strat_storage_trading(false)
     ) {
         let mut eli_shares: Vec<(FixedBytes<8>, U256)> = Vec::new();
+        let mut ivan_liq_shares = U256::ZERO;
+        let mut ogous_shares = U256::ZERO;
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
                 c.oracle.set(ELI);
                 // 20 = 2% fees
                 c.fee_lp.set(U256::from(20));
-                test_add_liquidity(&mut c, 500e6 as u64);
+                (ivan_liq_shares, _) = test_add_liquidity(&mut c, 500e6 as u64);
             },
             ERIK => {
                 test_add_liquidity(&mut c, 500e6 as u64);
             },
             OGOUS => {
                 host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
-                test_should_buy_check_shares!(
+                ogous_shares = test_should_buy_check_shares!(
                     c,
                     outcome_a,
                     100e6 as u64,
@@ -899,6 +901,7 @@ proptest! {
                     342572170, // User shares
                     100e6 as u64 // Fees
                 );
+                assert_eq_u!(342572170, ogous_shares);
             },
             ELI => {
                 assert_eq_u!(2e6 as u64, c.amm_fees_collected_weighted.get());
@@ -948,7 +951,6 @@ proptest! {
                 );
             },
             OGOUS => {
-                let ogous_shares = U256::from(342572170);
                 should_spend_fusdc_contract!(
                     ogous_shares,
                     c.payoff_8_5_D_8_D_F_C_9(
@@ -959,11 +961,26 @@ proptest! {
                 );
             },
             IVAN => {
-                assert_eq_u!(500e6 as u64, c.amm_user_liquidity_shares.get(msg_sender()));
+                assert_eq_u!(ivan_liq_shares, c.amm_user_liquidity_shares.get(msg_sender()));
+                assert_eq_u!(500e6 as u64, ivan_liq_shares);
                 should_spend_fusdc_contract!(
-                    377713914,
+                    // In the Python, this is 377.71391451345414:
+                    377713500,
                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
+            },
+            ERIK => should_spend_fusdc_contract!(
+                // In the Python, this is 377.71391451345414:
+                377713500,
+                c.claim_liquidity_9_C_391_F_85(msg_sender())
+            ),
+            ELI => {
+                should_spend_fusdc_contract!(
+                    // In the Python, this is 5504.027898192409:
+                    5504021786u64,
+                    c.claim_liquidity_9_C_391_F_85(msg_sender())
+                );
+                assert_eq!(U256::ZERO, fusdc_call::balance_of(CONTRACT).unwrap());
             }
         };
     }
