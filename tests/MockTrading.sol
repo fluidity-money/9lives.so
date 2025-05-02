@@ -130,11 +130,10 @@ contract MockTrading is INineLivesTrading {
         address /* recipient */
     ) external returns (
         uint256 fusdcAmount,
-        uint256 lpFeesEarned,
-        UserLiqRemoved[] memory liquidityRemoved
+        uint256 lpFeesEarned
     ) {
         ++counter_;
-        return (fusdcAmount, lpFeesEarned, liquidityRemoved);
+        return (fusdcAmount, lpFeesEarned);
     }
 
     function claimAddressFees70938D8(
