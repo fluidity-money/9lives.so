@@ -490,7 +490,7 @@ proptest! {
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity(&mut c, add_liq_amt);
                 let user_shares = 833333333u64;
-                test_should_buy_check_shares!(
+                let user_shares = test_should_buy_check_shares!(
                     c,
                     outcome_a,
                     500e6 as u64,
@@ -501,6 +501,7 @@ proptest! {
                 host::set_block_timestamp(1);
                 c.decide(outcome_a).unwrap();
                 assert_eq!(U64::from(1), c.when_decided.get());
+                host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
                 should_spend_fusdc_contract!(
                     U256::from(user_shares),
                     c.payoff_8_5_D_8_D_F_C_9(

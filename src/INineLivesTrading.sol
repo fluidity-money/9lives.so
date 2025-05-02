@@ -49,7 +49,7 @@ interface INineLivesTrading {
     /// argument. Returns the burned shares, and the fusdc returned.
     function burn854CC96E(
         bytes8 outcome,
-        uint256 fusdcAmount,
+        uint256 amount,
         bool shouldEstimateShares,
         uint256 minShares,
         address referrer,

@@ -125,6 +125,16 @@ extern "C" {
     pub fn die(ptr: *const u8, len: usize, rc: i32);
 }
 
+/// A useful function that uses stylus-interpreter's harness functions to
+/// print a message, then die with a exit of 1.
+#[macro_export]
+macro_rules! harness_die {
+    ($($arg:tt)+) => {{
+        let msg = alloc::format!($($arg)+);
+        unsafe { $crate::die(msg.as_ptr(), msg.len(), 1) }
+    }};
+}
+
 #[cfg(all(
     target_arch = "wasm32",
     not(any(

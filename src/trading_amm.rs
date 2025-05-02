@@ -627,11 +627,13 @@ impl StorageTrading {
             let burned = self.internal_amm_quote_burn(outcome_id, mid)?;
             if burned < shares_target {
                 lo = mid + U256::from(1);
+            } else if burned == shares_target {
+                break;
             } else {
                 hi = mid;
             }
         }
-        // Return the shares to send to the frontend.
+        // Return the amount of fUSDC to recommend to the frontend.
         Ok(hi)
     }
 
