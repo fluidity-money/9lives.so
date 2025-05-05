@@ -101,7 +101,11 @@ export default function DetailHeader({
           </span>
         ) : (
           <div className="flex items-center gap-2.5">
-            <FundingLPButton name={data.name} />
+            <FundingLPButton
+              name={data.name}
+              campaignId={data.identifier}
+              tradingAddr={data.poolAddress}
+            />
             <WatchlistButton data={data} />
           </div>
         )}

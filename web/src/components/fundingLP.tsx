@@ -3,20 +3,26 @@ import CreateCampaignFormLiquidity from "./createCampaign/form/formLiquidity";
 import Button from "./themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { Account } from "thirdweb/wallets";
+import useAddLiquidity from "@/hooks/useAddLiquidity";
 
 export default function FundingLP({
   name,
   close,
+  campaignId,
+  tradingAddr,
 }: {
   name: string;
   close: () => void;
+  campaignId: `0x${string}`;
+  tradingAddr: `0x${string}`;
 }) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
+  const [isFunding, setIsFunding] = useState(false);
   const formSchema = z.object({
     seedLiquidity: z.preprocess((val) => Number(val), z.number().min(1)),
   });
@@ -31,7 +37,19 @@ export default function FundingLP({
       seedLiquidity: 1,
     },
   });
-  const onSubmit = (input: FormData, account: Account) => {};
+  const { addLiquidity } = useAddLiquidity({
+    campaignId,
+    tradingAddr,
+  });
+  const onSubmit = async (input: FormData, account: Account) => {
+    try {
+      setIsFunding(true);
+      await addLiquidity(account!, input.seedLiquidity.toString());
+      close();
+    } finally {
+      setIsFunding(false);
+    }
+  };
   const handleSubmitWithAccount = (e: FormEvent) => {
     if (!account) {
       e.preventDefault();
@@ -58,8 +76,9 @@ export default function FundingLP({
       />
       <Button
         intent={"yes"}
-        title="Add Liquidity"
+        title={isFunding ? "Loading..." : "Add Liquidity"}
         size={"xlarge"}
+        disabled={isFunding}
         onClick={handleSubmitWithAccount}
       />
     </div>
