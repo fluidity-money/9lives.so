@@ -1,31 +1,33 @@
 import config from "@/config";
 import {
+  getContract,
   prepareContractCall,
   sendTransaction,
   simulateTransaction,
+  toUnits,
 } from "thirdweb";
-import { toUnits } from "thirdweb/utils";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
-
-const useBuy = ({
+import { MaxUint256, MinInt256 } from "ethers";
+import ERC20Abi from "@/config/abi/erc20";
+const useSell = ({
   shareAddr,
   tradingAddr,
   campaignId,
   outcomeId,
-  openFundModal,
+  outcomes,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
   campaignId: `0x${string}`;
-  openFundModal: () => void;
+  outcomes: Outcome[];
 }) => {
   const queryClient = useQueryClient();
-  const buy = async (account: Account, fusdc: number, outcomes: Outcome[]) =>
+  const sell = async (account: Account, fusdc: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -33,61 +35,57 @@ const useBuy = ({
             fusdc.toString(),
             config.contracts.decimals.fusdc,
           );
-          const userBalanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
+          const shareContract = getContract({
+            abi: ERC20Abi,
+            address: shareAddr,
+            client: config.thirdweb.client,
+            chain: config.chains.currentChain,
+          });
+          const balanceOfTx = prepareContractCall({
+            contract: shareContract,
             method: "balanceOf",
             params: [account?.address],
           });
-          const userBalance = await simulateTransaction({
-            transaction: userBalanceTx,
+          const balance = await simulateTransaction({
+            transaction: balanceOfTx,
             account,
           });
-          if (amount > userBalance) {
-            openFundModal();
-            throw new Error("You dont have enough USDC.");
-          }
-          const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
-            prepareContractCall({
-              contract: config.contracts.buyHelper,
-              method: "mint",
-              params: [
-                tradingAddr,
-                config.contracts.fusdc.address,
-                outcomeId,
-                minShareOut,
-                amount,
-                account.address,
-              ],
-            });
+          const minShareOut = balance;
+          const maxShareOut = balance;
           const allowanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
+            contract: shareContract,
             method: "allowance",
             params: [account.address, config.contracts.buyHelper.address],
           });
-          const allowance = (await simulateTransaction({
+          const allowance = await simulateTransaction({
             transaction: allowanceTx,
             account,
-          })) as bigint;
-          if (amount > allowance) {
+          });
+          if (balance > allowance) {
             const approveTx = prepareContractCall({
-              contract: config.contracts.fusdc,
+              contract: shareContract,
               method: "approve",
-              params: [config.contracts.buyHelper.address, amount],
+              params: [config.contracts.buyHelper.address, balance],
             });
             await sendTransaction({
               transaction: approveTx,
               account,
             });
           }
-          const return9lives = await simulateTransaction({
-            transaction: mintWith9LivesTx(),
-            account,
+          const burnTx = prepareContractCall({
+            contract: config.contracts.buyHelper,
+            method: "burn",
+            params: [
+              tradingAddr,
+              outcomeId,
+              amount,
+              maxShareOut,
+              minShareOut,
+              account.address,
+            ],
           });
-
-          // sets minimum share to %90 of expected return shares
-          const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
           await sendTransaction({
-            transaction: mintWith9LivesTx(minShareOut),
+            transaction: burnTx,
             account,
           });
           const outcomeIds = outcomes.map((o) => o.identifier);
@@ -106,9 +104,11 @@ const useBuy = ({
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", outcomeIds],
           });
-          track(EVENTS.MINT, {
+          track(EVENTS.BURN, {
             wallet: account.address,
             amount: fusdc,
+            maxShareOut,
+            minShareOut,
             outcomeId,
             shareAddr,
             tradingAddr,
@@ -119,14 +119,14 @@ const useBuy = ({
         }
       }),
       {
-        loading: "Buying shares...",
-        success: "Shares bought successfully!",
+        loading: "Selling shares...",
+        success: "Shares sold successfully!",
         error: (e: unknown) =>
           `Create failed. ${e instanceof Error ? e.message : e instanceof String ? e : `Unknown error: ${JSON.stringify(e)}`}`,
       },
     );
 
-  return { buy };
+  return { sell };
 };
 
-export default useBuy;
+export default useSell;

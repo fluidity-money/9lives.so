@@ -7,10 +7,12 @@ export default function PositionBody({
   positionGroups,
   areGroupsLoading,
   detailPage,
+  isDpm,
 }: {
   positionGroups: PositionsProps[];
   areGroupsLoading?: boolean;
   detailPage?: boolean;
+  isDpm?: boolean;
 }) {
   return (
     <tbody className={bodyStyles}>
@@ -24,6 +26,7 @@ export default function PositionBody({
       ) : (
         positionGroups.map((group) => (
           <PositionsGroup
+            isDpm={isDpm}
             detailPage={detailPage}
             key={group.tradingAddr}
             tradingAddr={group.tradingAddr}

@@ -82,6 +82,7 @@ export const requestCreateCampaign = (params: {
   telegram?: string;
   web?: string;
   isFake: boolean;
+  seedLiquidity: number;
 }) =>
   graph9Lives.mutation.explainCampaign({
     $: {
@@ -100,6 +101,7 @@ export const requestCreateCampaign = (params: {
       telegram: params.telegram,
       web: params.web,
       isFake: params.isFake,
+      seedLiquidity: params.seedLiquidity,
     },
   });
 export const requestGetAITitles = graph9Lives.query.suggestedHeadlines();

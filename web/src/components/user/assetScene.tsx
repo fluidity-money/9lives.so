@@ -12,11 +12,13 @@ interface AssetSceneProps {
   areGroupsLoading?: boolean;
   campaignId?: string;
   detailPage?: boolean;
+  isDpm?: boolean;
 }
 export default function AssetScene({
   positionGrops,
   areGroupsLoading,
   campaignId,
+  isDpm,
   detailPage = false,
 }: AssetSceneProps) {
   return (
@@ -41,6 +43,7 @@ export default function AssetScene({
         <TabPanel>
           <ShadowCard className="rounded-tl-none p-3 md:p-5">
             <PositionTable
+              isDpm={isDpm}
               detailPage={detailPage}
               positionGroups={positionGrops}
               areGroupsLoading={areGroupsLoading}

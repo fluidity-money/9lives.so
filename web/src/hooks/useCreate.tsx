@@ -3,8 +3,9 @@ import {
   prepareContractCall,
   sendTransaction,
   simulateTransaction,
+  toUnits,
+  ZERO_ADDRESS,
 } from "thirdweb";
-import { keccak256, toUtf8Bytes } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -15,21 +16,16 @@ import { useCampaignStore } from "@/stores/campaignStore";
 import clientEnv from "../config/clientEnv";
 import { generateCampaignId, generateOutcomeId } from "@/utils/generateId";
 import helperAbi from "@/config/abi/helperFactory";
-// HelperApprovalAmount taken by the contract for every deployment (in the current
-// two outcome DPM mode).
-const HelperApprovalAmount = BigInt(5000000);
-const approveHelperTx = prepareContractCall({
-  contract: config.contracts.fusdc,
-  method: "approve",
-  params: [clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR, HelperApprovalAmount],
-});
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
-type FunctionNames = ExtractNames<(typeof helperAbi)[number]>;
+type Create =
+  // | "createWithInfraMarket"
+  "createWithAI" | "createWithBeautyContest";
+type FunctionNames = ExtractNames<(typeof helperAbi)[number]> & Create;
 const settlementFunctionMap: Record<
-  Exclude<SettlementType, "CONTRACT">,
+  Exclude<SettlementType, "CONTRACT" | "ORACLE">,
   FunctionNames
 > = {
-  ORACLE: "createWithInfraMarket",
+  // ORACLE: "createWithInfraMarket",
   AI: "createWithAI",
   POLL: "createWithBeautyContest",
 };
@@ -87,20 +83,16 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             let hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
             if (input.settlementType === "CONTRACT")
               throw new Error("Contract settlement is not supported yet");
-            if (input.settlementType === "ORACLE" && input.oracleDescription) {
-              const descBytes = toUtf8Bytes(input.oracleDescription);
-              hashedDocumentation = keccak256(descBytes) as `0x${string}`;
-            }
-            const createTx = prepareContractCall({
-              contract: config.contracts.helperFactory,
-              method: settlementFunctionMap[input.settlementType],
-              params: [
-                creationList, // outcomes
-                BigInt(Math.floor(new Date(input.ending).getTime() / 1000)), // time ending in seconds timestamp
-                hashedDocumentation, // documentation (settlement description)
-                account.address, // fee recipient
-              ],
-            });
+            if (input.settlementType === "ORACLE")
+              throw new Error("ORACLE settlement is not supported yet");
+            // if (input.settlementType === "ORACLE" && input.oracleDescription) {
+            //   const descBytes = toUtf8Bytes(input.oracleDescription);
+            //   hashedDocumentation = keccak256(descBytes) as `0x${string}`;
+            // }
+            const seedLiquidity = toUnits(
+              input.seedLiquidity.toString(),
+              config.contracts.decimals.fusdc,
+            );
             const allowanceHelperTx = prepareContractCall({
               contract: config.contracts.fusdc,
               method: "allowance",
@@ -113,12 +105,40 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
               transaction: allowanceHelperTx,
               account,
             })) as bigint;
-            if (allowanceOfHelper < HelperApprovalAmount) {
+            if (allowanceOfHelper < seedLiquidity) {
+              const approveHelperTx = prepareContractCall({
+                contract: config.contracts.fusdc,
+                method: "approve",
+                params: [
+                  clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+                  seedLiquidity,
+                ],
+              });
               await sendTransaction({
                 transaction: approveHelperTx,
                 account,
               });
             }
+            const createTx = prepareContractCall({
+              contract: config.contracts.helperFactory,
+              method: settlementFunctionMap[input.settlementType],
+              params: [
+                {
+                  oracle: ZERO_ADDRESS,
+                  outcomes: creationList,
+                  timeEnding: BigInt(
+                    Math.floor(new Date(input.ending).getTime() / 1000),
+                  ),
+                  documentation: hashedDocumentation,
+                  feeRecipient: account.address,
+                  feeCreator: BigInt(0),
+                  feeLp: BigInt(0),
+                  feeMinter: BigInt(0),
+                  feeReferrer: BigInt(0),
+                  seedLiquidity,
+                },
+              ],
+            });
             await sendTransaction({
               transaction: createTx,
               account,
@@ -129,6 +149,9 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
           }
           await requestCreateCampaign({
             ...input,
+            seedLiquidity:
+              input.seedLiquidity *
+              Math.pow(10, config.contracts.decimals.fusdc),
             starting: Math.floor(new Date(input.starting).getTime() / 1000),
             ending: Math.floor(new Date(input.ending).getTime() / 1000),
             creator: account.address,

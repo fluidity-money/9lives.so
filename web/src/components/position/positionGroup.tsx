@@ -15,7 +15,8 @@ export default function PositionsGroup({
   campaignId,
   winner,
   detailPage,
-}: PositionsProps & { detailPage?: boolean }) {
+  isDpm,
+}: PositionsProps & { detailPage?: boolean; isDpm?: boolean }) {
   const account = useActiveAccount();
   const {
     isLoading,
@@ -64,6 +65,7 @@ export default function PositionsGroup({
       {positions?.map((item, idx) => (
         <PositionRow
           key={idx}
+          isDpm={isDpm}
           data={{ ...item, campaignName, campaignId, winner }}
           price={sharePrices?.find((o) => o.id === item.id)?.price}
           history={positionsHistory?.filter((p) => p.id === item.id)}

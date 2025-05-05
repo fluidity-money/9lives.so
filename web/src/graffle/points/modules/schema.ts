@@ -35,6 +35,7 @@ export namespace Schema {
       getPointsComponent: Query.getPointsComponent;
       getAddressByDiscord: Query.getAddressByDiscord;
       getDiscordName: Query.getDiscordName;
+      getTokenLeaderboard: Query.getTokenLeaderboard;
     };
   }
 
@@ -176,6 +177,23 @@ export namespace Schema {
       inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
+
+    /**
+     * Get a leaderboard of the top holders of a token given.
+     */
+    export interface getTokenLeaderboard extends $.OutputField {
+      name: "getTokenLeaderboard";
+      arguments: {
+        token: {
+          kind: "InputField";
+          name: "token";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0, [1]];
+      namedType: $$NamedTypes.$$TokenHolding;
+    }
   }
 
   //                                              Mutation
@@ -192,6 +210,7 @@ export namespace Schema {
       calculatePoints: Mutation.calculatePoints;
       hideCampaign: Mutation.hideCampaign;
       setCampaignCategories: Mutation.setCampaignCategories;
+      requestTokensHackathon: Mutation.requestTokensHackathon;
     };
   }
 
@@ -361,6 +380,54 @@ export namespace Schema {
           kind: "InputField";
           name: "categories";
           inlineType: [1, [1]];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Request tokens, but only for hackathons participants. Should be manually disabled in
+     * the database if not taking place.
+     */
+    export interface requestTokensHackathon extends $.OutputField {
+      name: "requestTokensHackathon";
+      arguments: {
+        /**
+         * The Telegram associated with this participant.
+         */
+        telegram: {
+          kind: "InputField";
+          name: "telegram";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The name of the submitter's project, if any.
+         */
+        projectName: {
+          kind: "InputField";
+          name: "projectName";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Recipient address of the tokens.
+         */
+        recipientAddress: {
+          kind: "InputField";
+          name: "recipientAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Turnstile token that must be used to request from the faucet.
+         */
+        turnstileToken: {
+          kind: "InputField";
+          name: "turnstileToken";
+          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
       };
@@ -669,6 +736,59 @@ export namespace Schema {
     }
   }
 
+  //                                            TokenHolding
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface TokenHolding extends $.OutputObject {
+    name: "TokenHolding";
+    fields: {
+      __typename: TokenHolding.__typename;
+      id: TokenHolding.id;
+      wallet: TokenHolding.wallet;
+      amount: TokenHolding.amount;
+    };
+  }
+
+  export namespace TokenHolding {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "TokenHolding";
+      };
+    }
+
+    export interface id extends $.OutputField {
+      name: "id";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$ID;
+    }
+
+    /**
+     * The wallet that holds this token amount.
+     */
+    export interface wallet extends $.OutputField {
+      name: "wallet";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Amount in the form of a base10 string encoded int.
+     */
+    export interface amount extends $.OutputField {
+      name: "amount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+  }
+
   //
   //
   //
@@ -826,6 +946,7 @@ export namespace Schema {
     export type $$Leaderboard = Leaderboard;
     export type $$LeaderboardItem = LeaderboardItem;
     export type $$Points = Points;
+    export type $$TokenHolding = TokenHolding;
     export type $$Boolean = Boolean;
     export type $$Float = Float;
     export type $$ID = ID;
@@ -868,12 +989,14 @@ export interface Schema<
     Leaderboard: Schema.Leaderboard;
     LeaderboardItem: Schema.LeaderboardItem;
     Points: Schema.Points;
+    TokenHolding: Schema.TokenHolding;
   };
   objects: {
     Achievement: Schema.Achievement;
     Leaderboard: Schema.Leaderboard;
     LeaderboardItem: Schema.LeaderboardItem;
     Points: Schema.Points;
+    TokenHolding: Schema.TokenHolding;
   };
   unions: {};
   interfaces: {};

@@ -8,14 +8,17 @@ import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
+import FundingLPButton from "../fundingLPButton";
 export default function DetailHeader({
   data,
   isEnded,
   isConcluded,
+  isDpm,
 }: {
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
+  isDpm?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -99,7 +102,16 @@ export default function DetailHeader({
             Campaign {isConcluded ? "Concluded" : "Ended"}
           </span>
         ) : (
-          <WatchlistButton data={data} />
+          <div className="flex items-center gap-2.5">
+            {isDpm !== undefined && !isDpm && (
+              <FundingLPButton
+                name={data.name}
+                campaignId={data.identifier}
+                tradingAddr={data.poolAddress}
+              />
+            )}
+            <WatchlistButton data={data} />
+          </div>
         )}
       </div>
     </div>

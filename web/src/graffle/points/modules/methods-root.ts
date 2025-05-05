@@ -190,6 +190,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Get a leaderboard of the top holders of a token given.
+   */
+  getTokenLeaderboard: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.getTokenLeaderboard<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { getTokenLeaderboard: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "getTokenLeaderboard"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
@@ -354,6 +376,29 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
             $$Schema.Schema<$Context["scalars"]>
           >,
           "setCampaignCategories"
+        >
+    >
+  >;
+  /**
+   * Request tokens, but only for hackathons participants. Should be manually disabled in
+   * the database if not taking place.
+   */
+  requestTokensHackathon: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.requestTokensHackathon<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { requestTokensHackathon: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "requestTokensHackathon"
         >
     >
   >;

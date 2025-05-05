@@ -4,7 +4,7 @@ import { CampaignDetail } from "@/types";
 import { SelectedOutcome } from "../../types";
 import React from "react";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
-import useChances from "@/hooks/useChances";
+import formatFusdc from "@/utils/formatFusdc";
 
 export default function DetailOutcomes({
   data,
@@ -21,12 +21,6 @@ export default function DetailOutcomes({
 }) {
   const titles = ["Outcome", "Chance %", "Invested", "Current Price", ""];
   const displayQuickActions = useFeatureFlag("display quick actions");
-  const outcomeIds = data.outcomes.map((o) => o.identifier as `0x${string}`);
-  const chances = useChances({
-    investmentAmounts: data.investmentAmounts,
-    totalVolume: data.totalVolume,
-    outcomeIds,
-  });
   return (
     <table className="w-full border-separate border-spacing-0">
       <thead>
@@ -48,25 +42,26 @@ export default function DetailOutcomes({
       </thead>
       <tbody>
         {data.outcomes.map((outcome) => {
-          const chance = chances?.find(
-            (chance) => chance.id === outcome.identifier,
-          )!.chance;
-          const amount = chances?.find(
-            (chance) => chance.id === outcome.identifier,
-          )!.investedAmount;
+          const amount =
+            data.investmentAmounts.find(
+              (item) => item.id === outcome.identifier,
+            )?.usdc ?? 0;
+          const sharePrice =
+            sharePrices?.find((item) => item.id === outcome.identifier)
+              ?.price ?? "0";
+          const price =
+            data.winner && outcome.identifier !== data.winner
+              ? "0"
+              : sharePrice;
+          const chance = Number(price) * 100;
           return (
             <DetailOutcomeRow
               isYesNo={data.isYesNo}
               selectedOutcome={selectedOutcome}
               setSelectedOutcome={setSelectedOutcome}
-              price={
-                data.winner && outcome.identifier !== data.winner
-                  ? "0"
-                  : (sharePrices?.find((item) => item.id === outcome.identifier)
-                      ?.price ?? "0")
-              }
+              price={price}
               chance={chance}
-              amount={amount}
+              amount={formatFusdc(amount, 2)}
               isWinner={outcome.identifier === data.winner}
               key={outcome.identifier}
               data={outcome as CampaignDetail["outcomes"][number]}

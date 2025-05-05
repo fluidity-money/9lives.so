@@ -20,9 +20,8 @@ import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import AssetSelector from "../assetSelector";
 import Modal from "../themed/modal";
-import Funding from "../funding";
+import Funding from "../fundingBalance";
 import DownIcon from "#/icons/down-caret.svg";
-import useChances from "@/hooks/useChances";
 
 export default function DetailCall2Action({
   shouldStopAction,
@@ -45,7 +44,6 @@ export default function DetailCall2Action({
   const outcome = selectedOutcome
     ? data.outcomes.find((o) => o.identifier === selectedOutcome.id)!
     : data.outcomes[0];
-  const outcomeIds = data.outcomes.map((o) => o.identifier);
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z.object({
@@ -54,14 +52,7 @@ export default function DetailCall2Action({
       .number()
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
-  const chances = useChances({
-    investmentAmounts: data.investmentAmounts,
-    totalVolume: data.totalVolume,
-    outcomeIds,
-  });
-  const chance = chances?.find(
-    (chance) => chance.id === outcome.identifier,
-  )!.chance;
+  const chance = Number(price) * 100;
   type FormData = z.infer<typeof formSchema>;
   const {
     register,

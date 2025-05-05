@@ -11,3 +11,4 @@ mutants.out*
 db/db/schema.sql
 tests/.hypothesis
 tests/__pycache__
+insert-env.*

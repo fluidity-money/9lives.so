@@ -212,6 +212,10 @@ type Mutation {
     """
     isFake: Boolean
 
+    """
+    Seed liquidity provided to the campaign
+    """
+    seedLiquidity: Int!
   ): Boolean
 
   """

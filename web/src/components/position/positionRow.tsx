@@ -15,6 +15,7 @@ import { requestCampaignById } from "@/providers/graphqlClient";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
+import SellButton from "../sellButton";
 export default function PositionRow({
   data,
   price,
@@ -22,17 +23,19 @@ export default function PositionRow({
   tradingAddr,
   outcomes,
   detailPage,
+  isDpm,
 }: {
   data: {
     id: `0x${string}`;
     shareAddress: `0x${string}`;
     name: string;
     balance: string;
-    campaignName?: string;
-    campaignId?: string;
+    campaignName: string;
+    campaignId: `0x${string}`;
     outcomePic?: string;
     winner?: string;
   };
+  isDpm?: boolean;
   detailPage?: boolean;
   price?: string;
   history?: { usdc: number; share: number; id: string; txHash: string }[];
@@ -151,7 +154,7 @@ export default function PositionRow({
                 />
               ) : null}
               <div className="flex flex-col gap-1">
-                {data.campaignName ? (
+                {!detailPage ? (
                   <p className="font-chicago text-xs font-bold">
                     <Link
                       onClick={(e) => {
@@ -192,7 +195,7 @@ export default function PositionRow({
                   {data.name}
                 </p>
                 <div className="flex items-center gap-1">
-                  {data.campaignId ? (
+                  {!detailPage ? (
                     <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
                       Share Addr:
                     </span>
@@ -318,6 +321,18 @@ export default function PositionRow({
             </div>
           ) : null}
         </td>
+        {isDpm !== undefined && !isDpm && (
+          <td className="">
+            <SellButton
+              campaignId={data.campaignId}
+              outcomeId={data.id}
+              shareAddr={data.shareAddress}
+              tradingAddr={tradingAddr}
+              fusdc={historicalValue}
+              outcomes={outcomes}
+            />
+          </td>
+        )}
       </tr>
       {showHistory &&
         history?.map((h) => {

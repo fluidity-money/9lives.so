@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { requestCampaignById } from "@/providers/graphqlClient";
 import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
+import useIsDpm from "@/hooks/useIsDpm";
 
 export default function DetailWrapper({
   initialData,
@@ -49,7 +50,7 @@ export default function DetailWrapper({
     initialData,
   });
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
-
+  const { data: isDpm } = useIsDpm(data.poolAddress);
   return (
     <section
       className={combineClass(
@@ -58,7 +59,12 @@ export default function DetailWrapper({
       )}
     >
       <div className="flex flex-[2] flex-col gap-8">
-        <DetailHeader data={data} isEnded={isEnded} isConcluded={isConcluded} />
+        <DetailHeader
+          data={data}
+          isEnded={isEnded}
+          isConcluded={isConcluded}
+          isDpm={isDpm}
+        />
         <DetailOutcomeTable
           data={data}
           sharePrices={sharePrices}
@@ -85,8 +91,14 @@ export default function DetailWrapper({
         )}
         <AssetScene
           positionGrops={[
-            { tradingAddr: data.poolAddress, outcomes: data.outcomes },
+            {
+              tradingAddr: data.poolAddress,
+              outcomes: data.outcomes,
+              campaignId: data.identifier,
+              campaignName: data.name,
+            },
           ]}
+          isDpm={isDpm}
           campaignId={data.identifier}
           detailPage={true}
         />

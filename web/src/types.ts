@@ -69,6 +69,7 @@ export type CampaignInput = {
   outcomeType?: OutcomeType;
   settlementType: SettlementType;
   oracleDescription?: string;
+  seedLiquidity: number;
 };
 export type OutcomeInput = {
   picture?: string;
@@ -239,8 +240,8 @@ class OutcomeDto implements Outcome {
   }
 }
 export type PositionsProps = {
-  campaignName?: string;
-  campaignId?: string;
+  campaignName: string;
+  campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   winner?: string;

@@ -20,8 +20,9 @@ import useConnectWallet from "@/hooks/useConnectWallet";
 import { randomValue4Uint8 } from "@/utils/generateId";
 import { track, EVENTS } from "@/utils/analytics";
 import Modal from "../themed/modal";
-import Funding from "../funding";
+import Funding from "../fundingBalance";
 import { Account } from "thirdweb/wallets";
+import CreateCampaignFormLiquidity from "./form/formLiquidity";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -55,11 +56,14 @@ export function onFileChange(
 }
 export default function CreateCampaignForm() {
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
+  const [isLPModalOpen, setIsLPModalOpen] = useState<boolean>(false);
+  const [isLPModalDisplayed, setIsLPModalDisplayed] = useState(false);
   const { create } = useCreate({ openFundModal: () => setFundModalOpen(true) });
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("custom");
   const [pictureBlob, setPictureBlob] = useState<string>();
+  const defaultSeedLiquidity = 1;
   const [outcomeImageBlobs, setOutcomeImageBlobs] = useState<
     (string | undefined)[]
   >([]);
@@ -142,6 +146,7 @@ export default function CreateCampaignForm() {
         //   settlementType === "contract"
         //     ? z.string().startsWith("0x").min(42)
         //     : z.undefined(),
+        seedLiquidity: z.preprocess((val) => Number(val), z.number().min(1)),
       }),
     [outcomeType, outcomeschema, pictureSchema, settlementType],
   );
@@ -170,12 +175,19 @@ export default function CreateCampaignForm() {
           seed: randomValue4Uint8(),
         },
       ],
+      seedLiquidity: defaultSeedLiquidity,
     },
   });
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
   const onSubmit = (input: FormData, account: Account) => {
+    if (input.seedLiquidity === defaultSeedLiquidity && !isLPModalDisplayed) {
+      setIsLPModalOpen(true);
+      setIsLPModalDisplayed(true);
+      return;
+    }
+
     let outcomes;
     if (outcomeType === "default") {
       outcomes = input.outcomes.slice(0, 2).map((o, idx) => ({
@@ -280,6 +292,10 @@ export default function CreateCampaignForm() {
           setSettlementType={setSettlementType}
         />
         <CreateCampaignFormSocials register={register} errors={errors} />
+        <CreateCampaignFormLiquidity
+          register={register}
+          error={errors.seedLiquidity}
+        />
         <Button intent={"cta"} title="CONFIRM" size={"xlarge"} type="submit" />
       </form>
       <Modal
@@ -293,6 +309,34 @@ export default function CreateCampaignForm() {
           type="create"
           fundToBuy={settlementType === "ORACLE" ? 4.2 : 3}
         />
+      </Modal>
+      <Modal
+        isOpen={isLPModalOpen}
+        setIsOpen={setFundModalOpen}
+        title="ADD SEED LIQUIDITY"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-center font-chicago text-base">
+            Supply More Liquidity to Your Campaign?
+          </p>
+          <p className="text-center font-chicago text-xl">{fields.name}</p>
+          <p className="text-center text-xs">
+            Higher liquidty means better trading stability and lower slippage.
+            You can add liquidity to your campaign and earn provider rewards at
+            any time.
+          </p>
+          <CreateCampaignFormLiquidity
+            renderLabel={false}
+            register={register}
+            error={errors.seedLiquidity}
+          />
+          <Button
+            intent={"yes"}
+            title="Add Liquidity"
+            size={"xlarge"}
+            onClick={() => setIsLPModalOpen(false)}
+          />
+        </div>
       </Modal>
     </>
   );

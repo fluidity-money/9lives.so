@@ -136,6 +136,14 @@ const Points: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   },
 };
 
+const TokenHolding: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    id: {},
+    wallet: {},
+    amount: {},
+  },
+};
+
 //
 //
 //
@@ -253,6 +261,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    getTokenLeaderboard: {
+      a: {
+        token: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: TokenHolding, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -330,6 +347,26 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    requestTokensHackathon: {
+      a: {
+        telegram: {
+          nt: String,
+          it: [1],
+        },
+        projectName: {
+          nt: String,
+          it: [1],
+        },
+        recipientAddress: {
+          nt: String,
+          it: [1],
+        },
+        turnstileToken: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 
@@ -354,6 +391,7 @@ Leaderboard.f[`items`]!.nt = LeaderboardItem;
 Query.f[`points`]!.nt = Points;
 Query.f[`achievements`]!.nt = Achievement;
 Query.f[`leaderboards`]!.nt = Leaderboard;
+Query.f[`getTokenLeaderboard`]!.nt = TokenHolding;
 
 //
 //
@@ -387,6 +425,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Leaderboard,
     LeaderboardItem,
     Points,
+    TokenHolding,
     Query,
     Mutation,
   },

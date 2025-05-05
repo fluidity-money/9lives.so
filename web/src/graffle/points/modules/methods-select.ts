@@ -24,6 +24,7 @@ export interface $MethodsSelect {
   Leaderboard: Leaderboard;
   LeaderboardItem: LeaderboardItem;
   Points: Points;
+  TokenHolding: TokenHolding;
 }
 
 //
@@ -94,6 +95,15 @@ export interface LeaderboardItem {
 export interface Points {
   <$SelectionSet>(
     selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Points>,
+  ): $SelectionSet;
+}
+
+export interface TokenHolding {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.TokenHolding
+    >,
   ): $SelectionSet;
 }
 

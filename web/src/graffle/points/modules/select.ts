@@ -82,6 +82,12 @@ export namespace Select {
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Points"]
     >;
+  export type TokenHolding<$SelectionSet extends $$SelectionSets.TokenHolding> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["TokenHolding"]
+    >;
   //                                               Union
   // --------------------------------------------------------------------------------------------------
   //
