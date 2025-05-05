@@ -40,6 +40,7 @@ export default withSentryConfig(nextConfig, {
   project: "9lives",
   silent: !process.env.CI,
   widenClientFileUpload: true,
+  sourcemaps: false,
   authToken: process.env.SENTRY_AUTH_TOKEN,
   hideSourceMaps: true,
   disableLogger: true,
