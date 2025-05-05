@@ -30,6 +30,7 @@ export default function PositionTable({
       </thead>
       <PositionsBody
         isDpm={isDpm}
+        colSpan={tableHeaders.length}
         detailPage={detailPage}
         positionGroups={positionGroups}
         areGroupsLoading={areGroupsLoading}

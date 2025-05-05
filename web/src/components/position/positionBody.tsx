@@ -8,24 +8,28 @@ export default function PositionBody({
   areGroupsLoading,
   detailPage,
   isDpm,
+  colSpan,
 }: {
   positionGroups: PositionsProps[];
   areGroupsLoading?: boolean;
   detailPage?: boolean;
   isDpm?: boolean;
+  colSpan: number;
 }) {
   return (
     <tbody className={bodyStyles}>
       {areGroupsLoading ? (
-        <Placeholder title="Loading.." />
+        <Placeholder title="Loading.." colSpan={colSpan} />
       ) : positionGroups?.length === 0 ? (
         <Placeholder
           title="Nothing yet."
           subtitle="Start Growing Your Portfolio."
+          colSpan={colSpan}
         />
       ) : (
         positionGroups.map((group) => (
           <PositionsGroup
+            colSpan={colSpan}
             isDpm={isDpm}
             detailPage={detailPage}
             key={group.tradingAddr}

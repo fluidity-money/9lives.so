@@ -16,7 +16,12 @@ export default function PositionsGroup({
   winner,
   detailPage,
   isDpm,
-}: PositionsProps & { detailPage?: boolean; isDpm?: boolean }) {
+  colSpan,
+}: PositionsProps & {
+  detailPage?: boolean;
+  isDpm?: boolean;
+  colSpan: number;
+}) {
   const account = useActiveAccount();
   const {
     isLoading,
@@ -41,6 +46,7 @@ export default function PositionsGroup({
   if (isLoading)
     return (
       <Placeholder
+        colSpan={colSpan}
         title="Loading..."
         height={!detailPage ? "min-h-20" : undefined}
       />
@@ -48,6 +54,7 @@ export default function PositionsGroup({
   if (isError)
     return (
       <Placeholder
+        colSpan={colSpan}
         title="Whoops, error!"
         subtitle={error.message}
         height={!detailPage ? "min-h-20" : undefined}
@@ -56,6 +63,7 @@ export default function PositionsGroup({
   if (detailPage && positions?.length === 0)
     return (
       <Placeholder
+        colSpan={colSpan}
         title="Nothing yet."
         subtitle="Start Growing Your Portfolio."
       />
