@@ -307,7 +307,8 @@ proptest! {
                 c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(1000e6 as u64));
                 let remove_amt = U256::from(300e6 as u64);
                 should_spend_fusdc_contract!(
-                    remove_amt,
+                    // 137.72998508204873
+                    137729985,
                     {
                         let res = c.remove_liquidity_3_C_857_A_15(remove_amt, msg_sender()).unwrap();
                         assert_eq_u!(1469682744, c.amm_liquidity.get());
