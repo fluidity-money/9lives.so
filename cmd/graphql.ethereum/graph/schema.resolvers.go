@@ -587,6 +587,11 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	return &res, nil
 }
 
+// ExplainCampaignAdmin is the resolver for the explainCampaignAdmin field.
+func (r *mutationResolver) ExplainCampaignAdmin(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, outcomes []model.OutcomeAdminInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: ExplainCampaignAdmin - explainCampaignAdmin"))
+}
+
 // RevealCommitment is the resolver for the revealCommitment field.
 func (r *mutationResolver) RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error) {
 	if tradingAddr == "" || sender == "" || seed == "" || preferredOutcome == "" {

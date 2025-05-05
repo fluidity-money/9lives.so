@@ -108,6 +108,26 @@ input OutcomeInput {
   picture: String
 }
 
+"""
+Outcome that an admin has used to expliictly load in without any checks.
+"""
+input OutcomeAdminInput {
+  """
+  Name of the campaign outcome. Ie, "Donald Trump" for the election.
+  """
+  name: String!
+
+  """
+  Picture of the outcome.
+  """
+  picture: String
+
+  """
+  Computed identifier that should be used.
+  """
+  identifier: String!
+}
+
 type Mutation {
   """
   "Explain" a campaign, so an on-chain campaign creation is listed in the frontend.
@@ -192,6 +212,80 @@ type Mutation {
     """
     isFake: Boolean
 
+  ): Boolean
+
+  """
+  Explain a campaign using the administrative path, so the admin can explicitly state what
+  the outcome ids should be, but still upload assets and the like.
+  """
+  explainCampaignAdmin(
+    """
+    Type of the modification to the campaign explanation.
+    """
+    type: Modification!
+
+    """
+    Name of the campaign.
+    """
+    name: String!
+
+    """
+    Description of the campaign.
+    """
+    description: String!
+
+    """
+    Picture of the campaign.
+    """
+    picture: String
+
+    """
+    Outcomes associated with this campaign. An outcome can either be something like
+    Trump winning the election, or something else.
+    """
+    outcomes: [OutcomeAdminInput!]!
+
+    """
+    Expected ending timestamp.
+    """
+    ending: Int!
+
+    """
+    Expected starting timestamp.
+    """
+    starting: Int!
+
+    """
+    Creator address. Hex encoded. Verified to be the creator later.
+    """
+    creator: String!
+
+    """
+    Oracle description defines under which conditions campaigns conclude if infra market
+    used as settlement source.
+    """
+    oracleDescription: String
+
+    """
+    Oracle URLs are helper sources for documents when the infrastructure market is used as
+    a settlement source.
+    """
+    oracleUrls: [String]
+
+    """
+    X/Twitter username
+    """
+    x: String
+
+    """
+    Telegram username
+    """
+    telegram: String
+
+    """
+    Web url
+    """
+    web: String
   ): Boolean
 
   """
