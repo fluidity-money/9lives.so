@@ -93,7 +93,7 @@ func main() {
 	s3Client := s3.NewFromConfig(awsConf)
 	lambdaClient := lambdaService.NewFromConfig(awsConf)
 	f := features.Get()
-	adminSecret := os.Getenv(EnvLambdaMiscAiBackend)
+	adminSecret := os.Getenv(EnvAdminSecret)
 	if f.Is(features.FeatureAdminFeaturesEnabled) && adminSecret == "" {
 		setup.Exitf("admin feature is enabled, but secret not set")
 	}
