@@ -157,6 +157,10 @@ impl StorageTrading {
         ))
     }
 
+    pub fn factory_addr(&self) -> R<Address> {
+        Ok(self.factory_addr.get())
+    }
+
     pub fn fees(&self) -> R<(U256, U256, U256, U256)> {
         Ok((
             self.fee_creator.get(),

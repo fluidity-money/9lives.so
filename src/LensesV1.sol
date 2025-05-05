@@ -41,9 +41,10 @@ contract LensesV1 {
 
     function getShareAddr(
          INineLivesFactory _factory,
+         bytes32 _hash,
         address _tradingAddr,
         bytes8 _outcomeId
-    ) public view returns (address shareAddr) {
+    ) public pure returns (address shareAddr) {
         shareAddr = address(uint160(uint256(keccak256(abi.encodePacked(
             hex"ff",
             _factory,
@@ -51,19 +52,24 @@ contract LensesV1 {
                 _outcomeId,
                 _tradingAddr
             )),
-            _factory.erc20Hash()
+            _hash
         )))));
     }
 
-    function balancesWithFactory(
+    function balancesWithFactoryAndHash(
         INineLivesFactory _factory,
+        bytes32 _hash,
         address _tradingAddr,
         bytes32[] calldata _words,
         address _spender
     ) external view returns (uint256[] memory bals) {
         INineLivesFactory factory = _factory;
+        bytes32 hash = _hash;
         if (address(factory) == address(0)) {
             factory = FACTORY;
+        }
+        if (hash == bytes32(0)) {
+            hash = _factory.erc20Hash();
         }
         bals = new uint256[](_words.length * 4); // TODO: trim suffix of return array
         uint x = 0;
@@ -71,19 +77,39 @@ contract LensesV1 {
             (bytes8 word1, bytes8 word2, bytes8 word3, bytes8 word4) =
                 WordPackingLib.unpack(_words[i]);
             if (word1 != bytes8(0)) {
-                bals[x] = IERC20(getShareAddr(factory, _tradingAddr, word1)).balanceOf(_spender);
+                bals[x] = IERC20(getShareAddr(
+                    factory,
+                    hash,
+                    _tradingAddr,
+                    word1
+                )).balanceOf(_spender);
                 ++x;
             }
             if (word2 != bytes8(0)) {
-                bals[x] = IERC20(getShareAddr(factory, _tradingAddr, word2)).balanceOf(_spender);
+                bals[x] = IERC20(getShareAddr(
+                    factory,
+                    hash,
+                    _tradingAddr,
+                    word2
+                )).balanceOf(_spender);
                 ++x;
             }
             if (word3 != bytes8(0)) {
-                bals[x] = IERC20(getShareAddr(factory, _tradingAddr, word3)).balanceOf(_spender);
+                bals[x] = IERC20(getShareAddr(
+                    factory,
+                    hash,
+                    _tradingAddr,
+                    word3
+                )).balanceOf(_spender);
                 ++x;
             }
             if (word4 != bytes8(0)) {
-                bals[x] = IERC20(getShareAddr(factory, _tradingAddr, word4)).balanceOf(_spender);
+                bals[x] = IERC20(getShareAddr(
+                    factory,
+                    hash,
+                    _tradingAddr,
+                    word4
+                )).balanceOf(_spender);
                 ++x;
             }
         }
