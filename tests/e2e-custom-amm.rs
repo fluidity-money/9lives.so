@@ -38,7 +38,7 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
     for (i, o) in outcomes.iter().enumerate() {
         host::register_addr(
             proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
-            format!("outcome share {o}, count {i}"),
+            format!("outcome share {o}, outcome id {i}"),
         );
     }
 }

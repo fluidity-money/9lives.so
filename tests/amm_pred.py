@@ -110,12 +110,15 @@ class PredMarketNew:
         for i in range(len(self.shares)):
             self.shares[i] += amount
             self.total_shares[i] += amount
+            print(f"minting liquidity shares {i} for user: {amount}")
 
         previous_shares = self.shares.copy()
 
         least_likely = self.shares.index(max(self.shares))
         # It is possible to have more than one outcome shares with the same max shares. (e.g., OutA=100, OutB=100, OutC=200, OutD=300)
         least_likely_indices = [i for i, s in enumerate(self.shares) if s == max(self.shares)]
+
+        print(f"least likely ids: {least_likely_indices}")
 
         # Recompute all other outcome shares to preserve price ratios
         for i in range(len(self.shares)):
@@ -141,6 +144,7 @@ class PredMarketNew:
             outcome_shares_received = previous_shares[i] - self.shares[i]
             # Update the outcome shares received
             self.user_outcome_shares[user][i] += outcome_shares_received
+            print(f"outcome share received from add liq: {outcome_shares_received}")
 
         return self.shares
 
@@ -169,7 +173,7 @@ class PredMarketNew:
         # "amount" is the number of liquidity shares the user give back to the pool
         # Incorrect: liquiditysharesvalue = self.liquidity / self.shares[least_likely] * amount
         liquiditysharesvalue = (self.shares[most_likely] * amount) / self.liquidity
-        print("liquiditysharesvalue = ", liquiditysharesvalue)
+        print("liquiditysharesvalue we're giving back to user = ", liquiditysharesvalue)
         self.transfer_from_pool_to_user(liquiditysharesvalue, user)
 
         for i in range(len(self.shares)):
@@ -196,6 +200,7 @@ class PredMarketNew:
             outcome_shares_received = previous_shares[i] - self.shares[i]
             # Update the outcome shares received
             self.user_outcome_shares[user][i] += outcome_shares_received
+            print(f"inside remove liquidity function, we sent to the user shares with id {i}, {outcome_shares_received}")
 
         return self.shares
 
@@ -889,6 +894,7 @@ def simulate_market_15():
     market.test_get_user_details(ALICE)
 
     market.remove_liquidity(384.6153846153845, ALICE)
+    exit(0)
     market.test_get_market_details()
     market.test_get_user_details(ALICE)
     assert market.liquidity == 1000
@@ -1125,6 +1131,4 @@ def simulate_market_19():
 
 
 if __name__ == "__main__":
-    simulate_market_18()
-    exit(0)
-    simulate_market_19()
+    simulate_market_15()

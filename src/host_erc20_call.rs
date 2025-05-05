@@ -189,6 +189,8 @@ pub fn should_spend<T>(
     f: impl FnOnce() -> Result<T, Error>,
 ) -> Result<T, Error> {
     for (r, amt) in spenders.clone() {
+        // Also wipe the existing holdings of the spender so there's no test confusion.
+        test_reset_bal(addr, r);
         test_give_tokens(addr, r, amt)
     }
     for k in spenders.keys() {
@@ -203,10 +205,10 @@ pub fn should_spend<T>(
             return Err(Error::ERC20ErrorTransfer(
                 addr,
                 format!(
-                    "{} has leftover bal {}, they started with {}",
-                    rename_addr(addr),
-                    rename_amt(addr, v),
+                    "{} has leftover bal {} ({b}), they were initially given {} ({v})",
+                    rename_addr(k),
                     rename_amt(addr, b),
+                    rename_amt(addr, v),
                 )
                 .into(),
             ));
@@ -236,9 +238,6 @@ pub fn transfer_from(
 ) -> Result<(), Error> {
     BALANCES
         .with(|b| -> Result<(), U256> {
-            if spender == testing_addrs::ZERO_FOR_MINT_ADDR {
-                return Ok(());
-            }
             let mut b = b.borrow_mut();
             let b = b.get_mut(&addr).ok_or(U256::ZERO)?;
             let x = b.get(&spender).ok_or(U256::ZERO)?;
@@ -249,18 +248,24 @@ pub fn transfer_from(
             }
             Ok(())
         })
-        .map_err(|cur_bal| {
-            Error::ERC20ErrorTransfer(
+        .or_else(|cur_bal| {
+            // We can allow the spender here to go ahead if they have zero balance
+            // and they're the mint address. This is because they might send a
+            // large number of tokens in some tests that don't capture everything.
+            if spender == testing_addrs::ZERO_FOR_MINT_ADDR && cur_bal.is_zero() {
+                return Ok(());
+            }
+            Err(Error::ERC20ErrorTransfer(
                 addr,
                 format!(
-                    "{} sending {} to {}: bal was {}",
+                    "{} sending {} ({amount}) to {}: bal is {} ({cur_bal})",
                     rename_addr(spender),
-                    amount,
+                    rename_amt(addr, amount),
                     rename_addr(recipient),
                     rename_amt(addr, cur_bal)
                 )
                 .into(),
-            )
+            ))
         })?;
     test_give_tokens(addr, recipient, amount);
     // We need to also check that the spender interacted with this token.

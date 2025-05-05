@@ -62,7 +62,8 @@ impl StorageTrading {
     }
 
     /// Burn, preventing us from blowing past and below the amounts given.
-    /// Can optionally burn shares as well by way of estimation. Returns the shares burned.
+    /// Can optionally burn shares as well by way of estimation.
+    // Returns the shares burned, and the fUSDC being returned.
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn burn_854_C_C_96_E(

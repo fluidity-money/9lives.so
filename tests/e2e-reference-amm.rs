@@ -38,7 +38,7 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
     for (i, o) in outcomes.iter().enumerate() {
         host::register_addr(
             proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
-            format!("outcome share {o}, count {i}"),
+            format!("outcome share {o}, outcome id {i}"),
         );
     }
 }
@@ -149,7 +149,7 @@ macro_rules! test_should_burn_shares {
         assert_eq!(
             shares_sold,
             should_spend_fusdc_contract!($buy_amt, {
-                let x = $c
+                let (x, _) = $c
                     .burn_854_C_C_96_E(
                         $outcome,
                         buy_amt,
@@ -481,21 +481,22 @@ proptest! {
     fn test_amm_user_story_10(
         outcome_a in strat_fixed_bytes::<8>(),
         outcome_b in strat_fixed_bytes::<8>(),
+        outcome_c in strat_fixed_bytes::<8>(),
+        outcome_d in strat_fixed_bytes::<8>(),
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
                 // First, fund the contract with some fUSDC using add liquidity:
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity(&mut c, add_liq_amt);
-                let user_shares = 833333333u64;
                 let user_shares = test_should_buy_check_shares!(
                     c,
                     outcome_a,
-                    500e6 as u64,
-                    666666667, // Market shares
-                    user_shares, // User shares
+                    200e6 as u64,
+                    578703704, // Market shares
+                    621296296, // User shares
                     0 // Fees
                 );
                 host::set_block_timestamp(1);
@@ -511,7 +512,7 @@ proptest! {
                     )
                 );
                 should_spend_fusdc_contract!(
-                    U256::from(add_liq_amt),
+                    U256::from(578703000),
                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             }
@@ -687,7 +688,7 @@ proptest! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
                 test_add_liquidity(&mut c, 1000e6 as u64);
-                for o in [outcome_a, outcome_b] {
+                for o in [outcome_a, outcome_b, outcome_c, outcome_d] {
                     assert_eq!(
                         U256::ZERO,
                         share_call::balance_of(c.share_addr(o).unwrap(), msg_sender()).unwrap()
@@ -704,21 +705,28 @@ proptest! {
                 let sender_outcome_a_bal = U256::from(1169769517);
                 let (shares, _) = should_spend!(
                     c.share_addr(outcome_a).unwrap(),
-                    { ZERO_FOR_MINT_ADDR => sender_outcome_a_bal },
+                    { ZERO_FOR_MINT_ADDR => 324935653 },
                     Ok(test_add_liquidity(&mut c, 500e6 as u64))
                 );
                 assert_eq_u!(384615631, shares);
-                should_spend!(
-                    c.share_addr(outcome_b).unwrap(),
-                    { ZERO_FOR_MINT_ADDR => 324936101 },
-                    {
-                        should_spend_fusdc_contract!(
-                            U256::from(455166379),
-                            c.remove_liquidity_3_C_857_A_15(shares, msg_sender())
-                        );
-                        Ok(())
-                    }
+                for o in [outcome_a, outcome_b, outcome_c, outcome_d] {
+                    host_erc20_call::test_reset_bal(c.share_addr(o).unwrap(), msg_sender());
+                }
+                should_spend_fusdc_contract!(
+                    U256::from(175064104),
+                    c.remove_liquidity_3_C_857_A_15(shares, msg_sender())
                 );
+                assert_eq!(
+                    U256::ZERO,
+                    share_call::balance_of(c.share_addr(outcome_a).unwrap(), msg_sender()).unwrap()
+                );
+
+                for o in [outcome_b, outcome_c, outcome_d] {
+                    assert_eq!(
+                        U256::from(324936101),
+                        share_call::balance_of(c.share_addr(o).unwrap(), msg_sender()).unwrap()
+                    );
+                }
                 assert_eq!(
                     sender_outcome_a_bal,
                     share_call::balance_of(
@@ -774,7 +782,7 @@ proptest! {
                     10e6 as u64 // Fees
                 );
                 assert_eq_u!(10e6 as u64, c.amm_fees_collected_weighted.get());
-                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151382159, 2040817);
+                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151382160, 2040817);
                 assert_eq!(U256::from(12040817 as u64), c.amm_fees_collected_weighted.get());
             }
         };
@@ -813,7 +821,7 @@ proptest! {
                     c,
                     outcome_a,
                     100e6 as u64,
-                    151382159,
+                    151382160,
                     2040817 // Fees
                 );
                 // According to the Python, this should be 12040816.
