@@ -11,16 +11,12 @@ async function fetchPositions(
   account?: Account,
 ) {
   if (!account) return [];
-  const concatIds = outcomes.reduce((acc, v) => {
-    acc = acc + v.identifier.slice(2);
-    return acc;
-  }, "");
-  const word = zeroPadValue(`0x${concatIds}`, 32);
+  const words = outcomes.map((i) => zeroPadValue(i.identifier, 32));
   const balances = (await simulateTransaction({
     transaction: prepareContractCall({
       contract: config.contracts.lens,
       method: "balances",
-      params: [tradingAddr, [word] as `0x${string}`[], account.address],
+      params: [tradingAddr, words as `0x${string}`[], account.address],
     }),
   })) as bigint[];
 
