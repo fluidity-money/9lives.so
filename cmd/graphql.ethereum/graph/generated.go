@@ -119,7 +119,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		ExplainCampaign      func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
-		ExplainCampaignAdmin func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, outcomes []model.OutcomeAdminInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) int
+		ExplainCampaignAdmin func(childComplexity int, typeArg model.Modification, address string, name string, description string, picture *string, outcomes []model.OutcomeAdminInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, categories []string, x *string, telegram *string, web *string) int
 		RevealCommitment     func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string) int
 		RevealCommitment2    func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) int
 		SynchProfile         func(childComplexity int, walletAddress string, email string) int
@@ -212,7 +212,7 @@ type ClaimResolver interface {
 }
 type MutationResolver interface {
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error)
-	ExplainCampaignAdmin(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, outcomes []model.OutcomeAdminInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) (*bool, error)
+	ExplainCampaignAdmin(ctx context.Context, typeArg model.Modification, address string, name string, description string, picture *string, outcomes []model.OutcomeAdminInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, categories []string, x *string, telegram *string, web *string) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
 	SynchProfile(ctx context.Context, walletAddress string, email string) (*bool, error)
@@ -611,7 +611,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ExplainCampaignAdmin(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(*string), args["outcomes"].([]model.OutcomeAdminInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string)), true
+		return e.complexity.Mutation.ExplainCampaignAdmin(childComplexity, args["type"].(model.Modification), args["address"].(string), args["name"].(string), args["description"].(string), args["picture"].(*string), args["outcomes"].([]model.OutcomeAdminInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["categories"].([]string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string)), true
 
 	case "Mutation.revealCommitment":
 		if e.complexity.Mutation.RevealCommitment == nil {
@@ -989,113 +989,131 @@ func (ec *executionContext) field_Mutation_explainCampaignAdmin_args(ctx context
 	}
 	args["type"] = arg0
 	var arg1 string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+	if tmp, ok := rawArgs["address"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["name"] = arg1
+	args["address"] = arg1
 	var arg2 string
-	if tmp, ok := rawArgs["description"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+	if tmp, ok := rawArgs["name"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 		arg2, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["description"] = arg2
-	var arg3 *string
+	args["name"] = arg2
+	var arg3 string
+	if tmp, ok := rawArgs["description"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["description"] = arg3
+	var arg4 *string
 	if tmp, ok := rawArgs["picture"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("picture"))
-		arg3, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		arg4, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["picture"] = arg3
-	var arg4 []model.OutcomeAdminInput
+	args["picture"] = arg4
+	var arg5 []model.OutcomeAdminInput
 	if tmp, ok := rawArgs["outcomes"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outcomes"))
-		arg4, err = ec.unmarshalNOutcomeAdminInput2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeAdminInputᚄ(ctx, tmp)
+		arg5, err = ec.unmarshalNOutcomeAdminInput2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeAdminInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["outcomes"] = arg4
-	var arg5 int
+	args["outcomes"] = arg5
+	var arg6 int
 	if tmp, ok := rawArgs["ending"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ending"))
-		arg5, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["ending"] = arg5
-	var arg6 int
-	if tmp, ok := rawArgs["starting"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting"))
 		arg6, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["starting"] = arg6
-	var arg7 string
+	args["ending"] = arg6
+	var arg7 int
+	if tmp, ok := rawArgs["starting"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting"))
+		arg7, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["starting"] = arg7
+	var arg8 string
 	if tmp, ok := rawArgs["creator"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("creator"))
-		arg7, err = ec.unmarshalNString2string(ctx, tmp)
+		arg8, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["creator"] = arg7
-	var arg8 *string
+	args["creator"] = arg8
+	var arg9 *string
 	if tmp, ok := rawArgs["oracleDescription"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("oracleDescription"))
-		arg8, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		arg9, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["oracleDescription"] = arg8
-	var arg9 []*string
+	args["oracleDescription"] = arg9
+	var arg10 []*string
 	if tmp, ok := rawArgs["oracleUrls"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("oracleUrls"))
-		arg9, err = ec.unmarshalOString2ᚕᚖstring(ctx, tmp)
+		arg10, err = ec.unmarshalOString2ᚕᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["oracleUrls"] = arg9
-	var arg10 *string
+	args["oracleUrls"] = arg10
+	var arg11 []string
+	if tmp, ok := rawArgs["categories"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categories"))
+		arg11, err = ec.unmarshalNString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["categories"] = arg11
+	var arg12 *string
 	if tmp, ok := rawArgs["x"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("x"))
-		arg10, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["x"] = arg10
-	var arg11 *string
-	if tmp, ok := rawArgs["telegram"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telegram"))
-		arg11, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["telegram"] = arg11
-	var arg12 *string
-	if tmp, ok := rawArgs["web"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("web"))
 		arg12, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["web"] = arg12
+	args["x"] = arg12
+	var arg13 *string
+	if tmp, ok := rawArgs["telegram"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telegram"))
+		arg13, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["telegram"] = arg13
+	var arg14 *string
+	if tmp, ok := rawArgs["web"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("web"))
+		arg14, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["web"] = arg14
 	return args, nil
 }
 
@@ -3858,7 +3876,7 @@ func (ec *executionContext) _Mutation_explainCampaignAdmin(ctx context.Context, 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaignAdmin(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(*string), fc.Args["outcomes"].([]model.OutcomeAdminInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string))
+		return ec.resolvers.Mutation().ExplainCampaignAdmin(rctx, fc.Args["type"].(model.Modification), fc.Args["address"].(string), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(*string), fc.Args["outcomes"].([]model.OutcomeAdminInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["categories"].([]string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

@@ -13,6 +13,10 @@ interface IERC20 {
     function transfer(address spender, uint256 amount) external;
 }
 
+interface DPMOld {
+    function mintPermitE90275AB(bytes8,uint256,address,uint8,bytes32,bytes32) external returns (uint256);
+}
+
 contract BuyHelper2 {
     INineLivesFactory immutable FACTORY;
     ILongtail immutable LONGTAIL;
@@ -56,12 +60,26 @@ contract BuyHelper2 {
             fusdc = _amount;
         }
         FUSDC.approve(_tradingAddr, fusdc);
-        uint256 shares = INineLivesTrading(_tradingAddr).mint8A059B6E(
-            _outcome,
-            fusdc,
-            _referrer,
-            msg.sender
-        );
+        uint256 shares;
+        INineLivesTrading t = INineLivesTrading(_tradingAddr);
+        // The DPM is currently on the old signature.
+        if (t.isDpm()) {
+             shares = DPMOld(address(t)).mintPermitE90275AB(
+                _outcome,
+                fusdc,
+                msg.sender,
+                0,
+                bytes32(0),
+                bytes32(0)
+            );
+        } else {
+             shares = t.mint8A059B6E(
+                _outcome,
+                fusdc,
+                _referrer,
+                msg.sender
+            );
+        }
         require(shares >= _minShareOut, "not enough shares");
         return shares;
     }

@@ -2,15 +2,21 @@ package graph
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"fmt"
-	"io"
-	"regexp"
-	"strings"
 	"image"
 	_ "image/gif"
-	_ "image/png"
 	_ "image/jpeg"
+	_ "image/png"
+	"io"
+	"net/url"
+	"regexp"
+	"strings"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 // MaxImageSizeEncoded is 2 megabytes
@@ -52,4 +58,30 @@ func decodeAndCheckPictureValidity(img string) (out io.Reader, err error) {
 		return nil, fmt.Errorf("bad image: %v", imageType)
 	}
 	return &buf, nil
+}
+
+func uploadTradingPicMaybePrecommit(ctx context.Context, uploadBucketName, picturesUri string, umgr *s3manager.Uploader, img, tradingAddrStr string, isNotPrecommit bool) (string, error) {
+	// Upload the image for the base to S3, so we can serve it later,
+	// start by unpacking the base64. This should also blow up if this
+	// is bad base64.
+	buf, err := decodeAndCheckPictureValidity(img)
+	if err != nil {
+		return "", fmt.Errorf("failed to decode: %v", err)
+	}
+	tradingPicKey := tradingAddrStr + "-base"
+	if isNotPrecommit {
+		_, err = umgr.Upload(ctx, &s3.PutObjectInput{
+			Bucket: aws.String(uploadBucketName),
+			Key:    aws.String(tradingPicKey),
+			Body:   buf,
+		})
+		if err != nil {
+			return "", fmt.Errorf("uploading image: %v", err)
+		}
+	}
+	concatPicUrl, err := url.JoinPath(picturesUri, tradingPicKey)
+	if err != nil {
+		return "", fmt.Errorf("error joining path: %v", err)
+	}
+	return concatPicUrl, nil
 }

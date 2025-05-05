@@ -225,6 +225,11 @@ type Mutation {
     type: Modification!
 
     """
+    The address of the campaign's fully deployed contract.
+    """
+    address: String!
+
+    """
     Name of the campaign.
     """
     name: String!
@@ -271,6 +276,11 @@ type Mutation {
     a settlement source.
     """
     oracleUrls: [String]
+
+    """
+    Categories that are set explicitly during creation.
+    """
+    categories: [String!]!
 
     """
     X/Twitter username
