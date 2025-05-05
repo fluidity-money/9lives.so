@@ -418,7 +418,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			shareAddrStr = strings.ToLower(shareAddr.Hex())
 		}
 		var outcomePicUrl *string
-		if pic := outcome.Picture; pic != nil {
+		if pic := outcome.Picture; pic != nil && *pic != "" {
 			var img string
 			picKey := fmt.Sprintf("%v-%v", tradingAddr, shareAddrStr)
 			img, err = uploadTradingPicMaybePrecommit(
@@ -555,7 +555,7 @@ func (r *mutationResolver) ExplainCampaignAdmin(ctx context.Context, typeArg mod
 		return nil, fmt.Errorf("bad admin secret")
 	}
 	tradingAddr := ethCommon.HexToAddress(address)
-	hexCampaignId := "0x"+ hex.EncodeToString(tradingAddr.Bytes()[:8])
+	hexCampaignId := "0x" + hex.EncodeToString(tradingAddr.Bytes()[:8])
 	var tradingPicUrl *string
 	if picture != nil {
 		var img string
