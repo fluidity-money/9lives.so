@@ -73,7 +73,7 @@ impl StorageTrading {
         _min_shares: U256,
         _referrer: Address,
         _recipient: Address,
-    ) -> R<U256> {
+    ) -> R<(U256, U256)> {
         self.require_not_done_predicting()?;
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
@@ -94,7 +94,7 @@ impl StorageTrading {
                 recipient: _recipient,
                 fusdcReturned: fusdc_to_return,
             });
-            Ok(burned_shares)
+            Ok((burned_shares, fusdc_to_return))
         }
     }
 }
