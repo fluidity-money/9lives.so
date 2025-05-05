@@ -554,7 +554,7 @@ func (r *mutationResolver) ExplainCampaignAdmin(ctx context.Context, typeArg mod
 		return nil, fmt.Errorf("bad admin secret")
 	}
 	tradingAddr := ethCommon.HexToAddress(address)
-	hexCampaignId := "0x"+ hex.EncodeToString(tradingAddr.Bytes()[:4])
+	hexCampaignId := "0x"+ hex.EncodeToString(tradingAddr.Bytes()[:8])
 	var tradingPicUrl *string
 	if picture != nil {
 		var img string
