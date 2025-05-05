@@ -69,7 +69,7 @@ export default function CampaignItemOutcomes({
             <span className="text-xs font-normal">{outcome.name}</span>
           </Link>
           <div className="flex items-center gap-1">
-            <span className="font-chicago text-sm font-normal">{"%75"}</span>
+            {/* <span className="font-chicago text-sm font-normal">{"%75"}</span> */}
             <Button
               intent="default"
               cat="secondary"
