@@ -149,7 +149,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
           }
           await requestCreateCampaign({
             ...input,
-            seedLiquidity: 0,
+            seedLiquidity: 0, // add liquidity trigger onchain sets this value
             starting: Math.floor(new Date(input.starting).getTime() / 1000),
             ending: Math.floor(new Date(input.ending).getTime() / 1000),
             creator: account.address,
