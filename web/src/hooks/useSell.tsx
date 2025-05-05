@@ -32,7 +32,7 @@ const useSell = ({
       new Promise(async (res, rej) => {
         try {
           const amount = toUnits(
-            fusdc.toString(),
+            (fusdc * 0.9).toFixed(config.contracts.decimals.fusdc),
             config.contracts.decimals.fusdc,
           );
           const shareContract = getContract({
