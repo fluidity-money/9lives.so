@@ -161,3 +161,17 @@ pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 
 /// Minimum amount of fUSDC that can be minted with.
 pub const MINIMUM_MINT_AMT: i64 = 0;
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod test {
+    use super::*;
+    use stylus_sdk::alloy_primitives::address;
+
+    #[test]
+    #[ignore]
+    fn test_print_cur_hash() {
+        dbg!(const_hex::encode(erc20_proxy_hash(address!(
+            "3e27e934344bf490457231Cb8F0c0eda7d60C362"
+        ))));
+    }
+}

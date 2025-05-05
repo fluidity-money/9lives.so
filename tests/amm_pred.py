@@ -178,6 +178,7 @@ class PredMarketNew:
 
         for i in range(len(self.shares)):
             self.shares[i] -= liquiditysharesvalue
+            print(f"about to remove total shares: {self.total_shares[i]} - {liquiditysharesvalue}")
             self.total_shares[i] -= liquiditysharesvalue
 
         previous_shares = self.shares.copy()
@@ -544,17 +545,19 @@ def simulate_market_4():
 # Removing liquidity from a multiple outcome market (https://help.polkamarkets.com/how-polkamarkets-works/market-liquidity/removing-liquidity#cd72f255bbd74ca4a0261f0cd6272030)
 def simulate_market_5():
     market = PredMarketNew(liquidity=0, outcomes=4)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
     market.pool_wallet_usd = 10000 # This is a testing value
     market.test_set_outcome_shares(1769.68, [812.46, 2294, 2294, 2294])
-    market.user_liquidity_shares = 1000
+    market.user_liquidity_shares[ALICE] = 1000
     market.test_get_market_details()
-    market.test_get_user_details()
 
     # Charlie give back 300 liquidity shares to pool
     before_outcome_prices = market.get_outcome_prices()
-    market.remove_liquidity(300)
+    market.remove_liquidity(300, ALICE)
     market.test_get_market_details()
-    market.test_get_user_details()
 
     # Remove liquidity must not lead to any change to the outcome prices
     market.test_has_significant_change_in_outcome_prices(before_outcome_prices)
@@ -1131,4 +1134,4 @@ def simulate_market_19():
 
 
 if __name__ == "__main__":
-    simulate_market_11()
+    simulate_market_5()
