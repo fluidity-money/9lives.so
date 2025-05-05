@@ -554,7 +554,7 @@ proptest! {
                     )
                 );
                 should_spend_fusdc_contract!(
-                    U256::from(add_liq_amt),
+                    U256::from(1200e6 as u64),
                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             }

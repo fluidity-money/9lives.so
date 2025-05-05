@@ -52,9 +52,11 @@ contract TestShare is Test {
         address eTrading2 = 0xF361dd38da58a587c92160b3F1173db31DfF2C94;
         address eTrading3 = 0x104075d59d7623B9f1B5F47d673c4A7584921594;
         address eTrading4 = 0xa046976f03522C9c1390b029c02f767Af14c3164;
-        assertEq(eTrading1, lenses.getShareAddr(trading, 0x0101010101010101));
-        assertEq(eTrading2, lenses.getShareAddr(trading, 0x0202020202020202));
-        assertEq(eTrading3, lenses.getShareAddr(trading, 0x0303030303030303));
-        assertEq(eTrading4, lenses.getShareAddr(trading, 0x0404040404040404));
+        // Use the default factory, so set this to 0.
+        INineLivesFactory f = INineLivesFactory(address(0));
+        assertEq(eTrading1, lenses.getShareAddr(f, trading, 0x0101010101010101));
+        assertEq(eTrading2, lenses.getShareAddr(f, trading, 0x0202020202020202));
+        assertEq(eTrading3, lenses.getShareAddr(f, trading, 0x0303030303030303));
+        assertEq(eTrading4, lenses.getShareAddr(f, trading, 0x0404040404040404));
     }
 }
