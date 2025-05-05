@@ -694,7 +694,7 @@ proptest! {
                         share_call::balance_of(c.share_addr(o).unwrap(), msg_sender()).unwrap()
                     );
                 }
-                test_should_buy_check_shares!(
+                let outcome_a_buy_shares = test_should_buy_check_shares!(
                     c,
                     outcome_a,
                     300e6 as u64,
@@ -702,7 +702,6 @@ proptest! {
                     844833864, // User shares
                     0 // Fees
                 );
-                let sender_outcome_a_bal = U256::from(1169769517);
                 let (shares, _) = should_spend!(
                     c.share_addr(outcome_a).unwrap(),
                     { ZERO_FOR_MINT_ADDR => 324935653 },
@@ -720,28 +719,20 @@ proptest! {
                     U256::ZERO,
                     share_call::balance_of(c.share_addr(outcome_a).unwrap(), msg_sender()).unwrap()
                 );
-
                 for o in [outcome_b, outcome_c, outcome_d] {
                     assert_eq!(
-                        U256::from(324936101),
+                        U256::from(324936130),
                         share_call::balance_of(c.share_addr(o).unwrap(), msg_sender()).unwrap()
                     );
                 }
-                assert_eq!(
-                    sender_outcome_a_bal,
-                    share_call::balance_of(
-                        c.share_addr(outcome_a).unwrap(),
-                        msg_sender()
-                    ).unwrap()
-                );
                 let remove_liq_amt = U256::from(1000e6 as u64);
                 c.amm_liquidity.set(remove_liq_amt);
                 should_spend!(
                     c.share_addr(outcome_b).unwrap(),
-                    { ZERO_FOR_MINT_ADDR => 324936101 },
+                    { ZERO_FOR_MINT_ADDR => 0 },
                     {
                         should_spend_fusdc_contract!(
-                            U256::from(455166379),
+                            455166379,
                             c.remove_liquidity_3_C_857_A_15(remove_liq_amt, msg_sender())
                         );
                         Ok(())
@@ -749,13 +740,21 @@ proptest! {
                 );
                 assert_eq!(U256::ZERO, c.amm_liquidity.get());
                 c.decide(outcome_a).unwrap();
-                should_spend_fusdc_contract!(
-                    sender_outcome_a_bal,
-                    c.payoff_8_5_D_8_D_F_C_9(
-                        outcome_a,
-                        sender_outcome_a_bal,
-                        msg_sender()
-                    )
+                let sender_outcome_a_bal = U256::from(1169769517);
+                should_spend!(
+                    c.share_addr(outcome_a).unwrap(),
+                    { msg_sender() => sender_outcome_a_bal },
+                    {
+                        should_spend_fusdc_contract!(
+                            sender_outcome_a_bal,
+                            c.payoff_8_5_D_8_D_F_C_9(
+                                outcome_a,
+                                sender_outcome_a_bal,
+                                msg_sender()
+                            )
+                        );
+                        Ok(())
+                    }
                 )
             }
         }

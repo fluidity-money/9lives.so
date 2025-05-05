@@ -894,7 +894,6 @@ def simulate_market_15():
     market.test_get_user_details(ALICE)
 
     market.remove_liquidity(384.6153846153845, ALICE)
-    exit(0)
     market.test_get_market_details()
     market.test_get_user_details(ALICE)
     assert market.liquidity == 1000
@@ -906,6 +905,7 @@ def simulate_market_15():
 
     print("Market Resolved - Winner is Outcome 0")
     market.resolve_market(0) # Resolve Outcome 0 as winner
+    print(f"ALICE SHARES: {market.user_outcome_shares[ALICE][0]}")
     market.resolution(market.user_outcome_shares[ALICE][0], ALICE) # Claim all outcome 0 shares
     market.test_get_market_details()
     market.test_get_user_details(ALICE)
