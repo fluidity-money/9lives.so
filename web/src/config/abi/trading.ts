@@ -33,7 +33,7 @@ const tradingAbi = [
         internalType: "bytes8",
       },
       {
-        name: "fusdcAmount",
+        name: "amount",
         type: "uint256",
         internalType: "uint256",
       },
