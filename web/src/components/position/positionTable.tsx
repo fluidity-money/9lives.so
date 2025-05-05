@@ -5,27 +5,23 @@ export default function PositionTable({
   positionGroups,
   areGroupsLoading,
   detailPage,
+  isDpm,
 }: {
   positionGroups: PositionsProps[];
   areGroupsLoading?: boolean;
   detailPage?: boolean;
+  isDpm?: boolean;
 }) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
-  const tablesHeaders = [
-    "Position",
-    "Current",
-    "Qty",
-    "Value",
-    "PnL",
-    "Actions",
-  ];
-
+  const dpmHeaders = ["Position", "Current", "Qty", "Value", "PnL"];
+  const ammHeaders = [...dpmHeaders, "Actions"];
+  const tableHeaders = isDpm ? dpmHeaders : ammHeaders;
   return (
     <table className="w-full table-auto border-separate border-spacing-y-1">
       <thead>
         <tr className="font-geneva">
-          {tablesHeaders.map((key) => (
+          {tableHeaders.map((key) => (
             <th className={tableHeaderClasses} key={key}>
               {key}
             </th>
@@ -33,6 +29,7 @@ export default function PositionTable({
         </tr>
       </thead>
       <PositionsBody
+        isDpm={isDpm}
         detailPage={detailPage}
         positionGroups={positionGroups}
         areGroupsLoading={areGroupsLoading}

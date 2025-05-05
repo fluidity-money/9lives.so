@@ -23,6 +23,7 @@ export default function PositionRow({
   tradingAddr,
   outcomes,
   detailPage,
+  isDpm,
 }: {
   data: {
     id: `0x${string}`;
@@ -34,6 +35,7 @@ export default function PositionRow({
     outcomePic?: string;
     winner?: string;
   };
+  isDpm?: boolean;
   detailPage?: boolean;
   price?: string;
   history?: { usdc: number; share: number; id: string; txHash: string }[];
@@ -319,16 +321,18 @@ export default function PositionRow({
             </div>
           ) : null}
         </td>
-        <td className="">
-          <SellButton
-            campaignId={data.campaignId}
-            outcomeId={data.id}
-            shareAddr={data.shareAddress}
-            tradingAddr={tradingAddr}
-            fusdc={historicalValue}
-            outcomes={outcomes}
-          />
-        </td>
+        {isDpm !== undefined && !isDpm && (
+          <td className="">
+            <SellButton
+              campaignId={data.campaignId}
+              outcomeId={data.id}
+              shareAddr={data.shareAddress}
+              tradingAddr={tradingAddr}
+              fusdc={historicalValue}
+              outcomes={outcomes}
+            />
+          </td>
+        )}
       </tr>
       {showHistory &&
         history?.map((h) => {

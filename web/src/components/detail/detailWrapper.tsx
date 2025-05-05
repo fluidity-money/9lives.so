@@ -98,6 +98,7 @@ export default function DetailWrapper({
               campaignName: data.name,
             },
           ]}
+          isDpm={isDpm}
           campaignId={data.identifier}
           detailPage={true}
         />
