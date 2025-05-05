@@ -259,7 +259,7 @@ generate these, run `./print-error-table.sh`.
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0xE307205f1558aCE077EADb57DD9e1D4cFf4D3CC8` |
-| Buy helper2                   | `0x98E5fEe28CB760A9a97391F319536175700D7524` |
+| Buy helper2                   | `0x04cDAf344F459E7c0eE86e8088dB603aEc035c86` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 
 ### Superposition testnet
