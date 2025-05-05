@@ -1,4 +1,7 @@
 {
 	"graph mock data": false,
-	"display quick actions": false
+	"display quick actions": false,
+	"ingestor should track trading first": false,
+	"ai for categories": true,
+	"admin features are enabled": true
 }

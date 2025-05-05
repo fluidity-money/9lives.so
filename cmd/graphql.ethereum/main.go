@@ -29,8 +29,8 @@ import (
 
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	lambdaService "github.com/aws/aws-sdk-go-v2/service/lambda"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 const (
@@ -51,6 +51,10 @@ const (
 	// EnvLambdaMiscAiBackend to use for frontend-related requests where
 	// existing infra is inappropriate.
 	EnvLambdaMiscAiBackend = "SPN_MISC_AI_FUNCTION_NAME"
+
+	// EnvAdminSecret to use for using any trusted paths (currently, only
+	// campaign explanation).
+	EnvAdminSecret = "SPN_ADMIN_SECRET"
 )
 
 // ChangelogLen to send to the user at max on request for the changelog endpoint.
@@ -63,7 +67,8 @@ type corsMiddleware struct {
 func (m corsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
-	m.srv.ServeHTTP(w, r)
+	ctx := context.WithValue(r.Context(), "admin secret", r.Header.Get("Authorization"))
+	m.srv.ServeHTTP(w, r.WithContext(ctx))
 }
 
 func main() {
@@ -87,6 +92,11 @@ func main() {
 	}
 	s3Client := s3.NewFromConfig(awsConf)
 	lambdaClient := lambdaService.NewFromConfig(awsConf)
+	f := features.Get()
+	adminSecret := os.Getenv(EnvLambdaMiscAiBackend)
+	if f.Is(features.FeatureAdminFeaturesEnabled) && adminSecret == "" {
+		setup.Exitf("admin feature is enabled, but secret not set")
+	}
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
 			DB:                 db,
@@ -102,9 +112,10 @@ func main() {
 			S3UploadManager: s3manager.NewUploader(s3Client, func(u *s3manager.Uploader) {
 				u.PartSize = 10 * 1024 * 1024
 			}),
-			PicturesUriBase:            UploadTradingPicsUrl,
-			LambdaClient: lambdaClient,
-			LambdaMiscAiBackendName: os.Getenv(EnvLambdaMiscAiBackend),
+			PicturesUriBase:         UploadTradingPicsUrl,
+			LambdaClient:            lambdaClient,
+			LambdaMiscAiBackendName: adminSecret,
+			AdminSecret:             adminSecret,
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})

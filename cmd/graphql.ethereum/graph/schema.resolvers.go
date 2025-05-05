@@ -589,6 +589,9 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 
 // ExplainCampaignAdmin is the resolver for the explainCampaignAdmin field.
 func (r *mutationResolver) ExplainCampaignAdmin(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, outcomes []model.OutcomeAdminInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string) (*bool, error) {
+	if !r.F.Is(features.FeatureAdminFeaturesEnabled) {
+		return nil, fmt.Errorf("admin not enabled")
+	}
 	panic(fmt.Errorf("not implemented: ExplainCampaignAdmin - explainCampaignAdmin"))
 }
 

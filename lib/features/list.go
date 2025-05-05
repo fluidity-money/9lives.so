@@ -9,4 +9,6 @@ const (
 	FeatureShouldCheckIfTrackedFirst = "ingestor should track trading first"
 	// FeatureUseAIForCategories to be enabled if the graph should use AI to check categories.
 	FeatureUseAIForCategories = "ai for categories"
+	// FeatureAdminFeaturesEnabled should be enabled if the admin features can be used with a secret.
+	FeatureAdminFeaturesEnabled = "admin features are enabled"
 )
