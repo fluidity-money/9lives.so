@@ -13,10 +13,12 @@ export default function DetailHeader({
   data,
   isEnded,
   isConcluded,
+  isDpm,
 }: {
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
+  isDpm?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -101,11 +103,13 @@ export default function DetailHeader({
           </span>
         ) : (
           <div className="flex items-center gap-2.5">
-            <FundingLPButton
-              name={data.name}
-              campaignId={data.identifier}
-              tradingAddr={data.poolAddress}
-            />
+            {isDpm !== undefined && !isDpm && (
+              <FundingLPButton
+                name={data.name}
+                campaignId={data.identifier}
+                tradingAddr={data.poolAddress}
+              />
+            )}
             <WatchlistButton data={data} />
           </div>
         )}
