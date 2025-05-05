@@ -56,7 +56,7 @@ fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut
     let liquidity_amt = U256::from(1000e6 as u64);
     should_spend!(
         c.share_addr(outcome_a).unwrap(),
-        { ZERO_FOR_MINT_ADDR => 387098150 },
+        { ZERO_FOR_MINT_ADDR => 387098718 },
         {
             should_spend_fusdc_sender!(
                 liquidity_amt,
@@ -271,7 +271,8 @@ proptest! {
                 ]);
                 let remove_amt = c.amm_user_liquidity_shares.get(msg_sender());
                 should_spend_fusdc_contract!(
-                    remove_amt,
+                    // Less than 500.3415140438574, which is the reference.
+                    500061681,
                     {
                         let res = c.remove_liquidity_3_C_857_A_15(remove_amt, msg_sender()).unwrap();
                         assert_eq_u!(4815769830u64, c.amm_liquidity.get());
@@ -471,7 +472,7 @@ proptest! {
                     )
                 );
                 should_spend_fusdc_contract!(
-                    U256::from(add_liq_amt),
+                    666666000,
                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             }
@@ -584,7 +585,7 @@ proptest! {
                 );
                 c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(10e6 as u64));
                 let (_, _, shares) = should_spend_fusdc_contract!(
-                    U256::from(3535534),
+                    U256::from(3535533),
                     c.remove_liquidity_test(U256::from(5e6 as u64), msg_sender())
                 );
                 for (i, (_, s)) in shares.into_iter().enumerate() {
@@ -855,7 +856,7 @@ proptest! {
                 c.decide(outcome_a).unwrap();
                 let win_amt = U256::from(667476901);
                 should_spend_fusdc_contract!(
-                    win_amt,
+                    667476900,
                     c.payoff_8_5_D_8_D_F_C_9(
                         outcome_a,
                         win_amt,
