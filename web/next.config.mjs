@@ -43,6 +43,7 @@ export default withSentryConfig(nextConfig, {
   sourcemaps: {
     disable: false,
   },
+  telemetry: false,
   authToken: process.env.SENTRY_AUTH_TOKEN,
   hideSourceMaps: true,
   disableLogger: true,
