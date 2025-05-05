@@ -87,7 +87,7 @@ contract BuyHelper2 {
             _referrer,
             msg.sender
         );
-        require(fusdcReturned > _minFusdc, "not enough fusdc returned");
+        require(fusdcReturned >= _minFusdc, "not enough fusdc returned");
         uint256 toSend = shareAddr.balanceOf(address(this));
         if (toSend > 0) shareAddr.transfer(msg.sender, toSend);
         return (burnedShares, fusdcReturned);
