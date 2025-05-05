@@ -22,7 +22,7 @@ export default function AIResolveButton({
           ? "Requesting..."
           : isSuccess
             ? "Requested"
-            : "Request Resolvement"
+            : "Request Resolution"
       }
       disabled={isLoading || isSuccess}
       intent={isSuccess ? "default" : "yes"}
