@@ -53,10 +53,11 @@ proptest! {
     #[test]
     #[ignore]
     fn test_amm_dilution_event_1(
-        outcome_a in strat_fixed_bytes::<8>(),
-        outcome_b in strat_fixed_bytes::<8>(),
+        outcomes in strat_uniq_outcomes(2),
         mut c in strat_storage_trading(false)
     ) {
+        let outcome_a = outcomes[0];
+        let outcome_b = outcomes[1];
         // Test that someone is not able to come in and claim from the pool after
         // just LPing, and not being there from the outset in doing so.
         let fee_take_amt = 20;
@@ -100,10 +101,11 @@ proptest! {
     #[test]
     #[ignore]
     fn test_amm_dilution_event_2(
-        outcome_a in strat_fixed_bytes::<8>(),
-        outcome_b in strat_fixed_bytes::<8>(),
+        outcomes in strat_uniq_outcomes(2),
         mut c in strat_storage_trading(false)
     ) {
+        let outcome_a = outcomes[0];
+        let outcome_b = outcomes[1];
         // Test that someone can make a swap, and the existing LP is entitled to
         // X fees, then a new LP only gets the fees from the next trade.
         let fee_take_amt = 20;
@@ -203,17 +205,41 @@ proptest! {
     }
 
     #[test]
-    fn test_amm_five_outcomes(
-        outcomes in [
-            strat_fixed_bytes::<8>(),
-            strat_fixed_bytes::<8>(),
-            strat_fixed_bytes::<8>(),
-            strat_fixed_bytes::<8>(),
-            strat_fixed_bytes::<8>()
-        ],
+    fn test_five_outcomes(
+        outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 7),
         mut c in strat_storage_trading(false)
     ) {
-        setup_contract(&mut c, &outcomes);
-        test_add_liquidity(&mut c, 1000e6 as u64);
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &outcomes);
+                test_add_liquidity(&mut c, 1000e6 as u64);
+            }
+        }
+    }
+
+    #[test]
+    fn test_variable_outcomes(
+        outcomes in strat_uniq_outcomes(9),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &outcomes);
+                test_add_liquidity(&mut c, 10_000_000e6 as u64);
+            }
+        }
+    }
+
+    #[test]
+    fn test_breaking_specific_26k(
+        outcomes in strat_uniq_outcomes(7),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            ERIK => {
+                setup_contract(&mut c, &outcomes);
+                test_add_liquidity(&mut c, 100_000e6 as u64);
+            }
+        }
     }
 }

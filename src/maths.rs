@@ -1,4 +1,4 @@
-use stylus_sdk::alloy_primitives::U256;
+use stylus_sdk::alloy_primitives::{U256};
 
 use rust_decimal::{Decimal, MathematicalOps};
 
@@ -80,13 +80,16 @@ pub fn dpm_payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error
     Ok(mul!(div!(n, N_1), M))
 }
 
-pub fn rooti(x: U256, n: u32) -> U256 {
+pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {
     // We need this because Alloy uses floating points code for this.
     if x.is_zero() {
-        return U256::ZERO;
+        return Ok(U256::ZERO);
+    }
+    if n == 0 {
+        return Err(Error::BadDenominator);
     }
     if n == 1 {
-        return x;
+        return Ok(x);
     }
     let mut z = (x >> (n - 1)) + U256::from(1);
     let mut y = x;
@@ -94,12 +97,16 @@ pub fn rooti(x: U256, n: u32) -> U256 {
     let n_1 = n - U256::from(1);
     while z < y {
         y = z;
-        z = ((x / z.pow(n_1)) + (z * n_1)) / n;
+        let p = z.pow(n_1);
+        if p.is_zero() {
+            return Err(Error::PowOverflow);
+        }
+        z = ((x / p) + (z * n_1)) / n;
     }
     if y.pow(n) > x {
         y -= U256::from(1);
     }
-    y
+    Ok(y)
 }
 
 /// Muldiv using the Chinese Remainder Theorem

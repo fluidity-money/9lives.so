@@ -501,6 +501,9 @@ pub enum Error {
 
     // No fees are available to claim!
     NoFeesToClaim,
+
+    // Pow overflowed inside the rooti function and became 0.
+    PowOverflow,
 }
 
 #[cfg(any(

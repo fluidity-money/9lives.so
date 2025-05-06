@@ -28,7 +28,7 @@ pub struct CalcFees {
 impl StorageTrading {
     pub fn internal_ctor(
         &mut self,
-        outcomes: Vec<FixedBytes<8>>,
+        mut outcomes: Vec<FixedBytes<8>>,
         oracle: Address,
         time_start: u64,
         time_ending: u64,
@@ -40,6 +40,13 @@ impl StorageTrading {
         fee_minter: u64,
         fee_referrer: u64,
     ) -> R<()> {
+        {
+            // Prevent someone from constructing this with reused shares.
+            let outcome_before_len = outcomes.len();
+            outcomes.sort();
+            outcomes.dedup();
+            assert_or!(outcomes.len() == outcome_before_len, Error::BadTradingCtor);
+        }
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // Make sure that the user hasn't given us any zero values, or the end
         // date isn't in the past, in places that don't make sense!

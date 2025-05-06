@@ -113,18 +113,28 @@ class PredMarketNew:
         previous_shares = self.shares.copy()
 
         least_likely = self.shares.index(max(self.shares))
+        print(f"least likely index: {least_likely}")
         # It is possible to have more than one outcome shares with the same max shares. (e.g., OutA=100, OutB=100, OutC=200, OutD=300)
+        print(f"max shares: {max(self.shares)}, shares: {self.shares}")
         least_likely_indices = [i for i, s in enumerate(self.shares) if s == max(self.shares)]
+        print(f"least likely indices: {least_likely_indices}")
 
         # Recompute all other outcome shares to preserve price ratios
         for i in range(len(self.shares)):
             if i not in least_likely_indices:
                 self.shares[i] = (self.shares[least_likely] * self.outcome_prices[least_likely]) / self.outcome_prices[i]
+                print(f"self shares now: {self.shares[i]}")
 
+        print(f"shares inside add liq: {self.shares}")
         product = math.prod(self.shares)
+        print(f"product inside add liq: {product}")
+        print(f"about to pow inside add liq: {product}, {1/len(self.shares)}")
         new_liquidity = pow(product, 1/len(self.shares))
+        print(f"new liquidity inside add liq: {new_liquidity}")
+        print(f"prev liquidity inside add liq: {previous_liquidity}")
 
         liquidity_shares_minted = (new_liquidity - previous_liquidity)
+        print(f"liquidity shares minted: {liquidity_shares_minted}")
 
         # Don't need to rebalance if the liquidity shares is zero
         if (self.liquidity > 0):
@@ -1096,6 +1106,37 @@ def simulate_market_19():
     assert market.fees_claimed[BOB] == 1
     assert market.claim_fee(BOB) == 0
 
+def simulate_market_20():
+    market = PredMarketNew(liquidity=0, outcomes=5)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
+    market.user_wallet_usd[ALICE] = 1294
+    market.user_wallet_usd[BOB] = 300
+    market.add_liquidity(100, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+
+    # Bob buy 294 USD worth of Outcome A shares (index 0)
+    market.buy(0, 294, ALICE)
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+
+    market.buy(1,300,BOB)
+    market.test_get_market_details()
+    market.test_get_user_details(BOB)
+
+def simulate_market_21():
+    market = PredMarketNew(liquidity=0, outcomes=10)
+
+    ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
+    market.add_user(ALICE, BOB, CHARLES)
+
+    amt = 100_000
+    market.user_wallet_usd[ALICE] = amt
+    market.add_liquidity(amt, ALICE)
 
 if __name__ == "__main__":
-    simulate_market_5()
+    simulate_market_3()
+
