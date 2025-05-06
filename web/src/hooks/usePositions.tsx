@@ -3,7 +3,11 @@ import { Outcome } from "@/types";
 import formatFusdc from "@/utils/formatFusdc";
 import { useQuery } from "@tanstack/react-query";
 import { zeroPadValue } from "ethers";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
+import {
+  prepareContractCall,
+  simulateTransaction,
+  ZERO_ADDRESS,
+} from "thirdweb";
 import { Account } from "thirdweb/wallets";
 async function fetchPositions(
   tradingAddr: `0x${string}`,
@@ -15,8 +19,13 @@ async function fetchPositions(
   const balances = (await simulateTransaction({
     transaction: prepareContractCall({
       contract: config.contracts.lens,
-      method: "balances",
-      params: [tradingAddr, words as `0x${string}`[], account.address],
+      method: "balancesWithFactory",
+      params: [
+        ZERO_ADDRESS,
+        tradingAddr,
+        words as `0x${string}`[],
+        account.address,
+      ],
     }),
   })) as bigint[];
 
