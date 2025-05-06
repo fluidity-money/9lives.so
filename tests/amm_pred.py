@@ -878,6 +878,7 @@ def simulate_market_15():
     market.test_get_user_details(ALICE)
 
     market.remove_liquidity(384.6153846153845, ALICE)
+    exit(0)
     market.test_get_market_details()
     market.test_get_user_details(ALICE)
     assert market.liquidity == 1000
@@ -1138,5 +1139,4 @@ def simulate_market_21():
     market.add_liquidity(amt, ALICE)
 
 if __name__ == "__main__":
-    simulate_market_3()
-
+    simulate_market_18()

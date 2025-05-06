@@ -73,17 +73,17 @@ impl StorageTrading {
             .fold(None, |acc, id| {
                 let shares = self.amm_shares.get(id);
                 if let Some((max_shares, _)) = acc {
-                    if max_shares >= shares {
+                    if shares <= max_shares {
                         return acc;
                     }
                 }
                 Some((shares, id))
             })
             .unwrap();
-        let least_likely_ids = self
+        let least_likely_ids: Vec<_> = self
             .outcome_ids_iter()
             .filter(|&id| self.amm_shares.get(id) == max_amt)
-            .collect::<Vec<_>>();
+            .collect();
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             if least_likely_ids.contains(&outcome_id) {
                 continue;
@@ -99,25 +99,17 @@ impl StorageTrading {
         }
         let product = self
             .outcome_ids_iter()
-            .map(|x| {
-                self.amm_shares
-                    .get(x)
-                    .checked_div(SHARE_DECIMALS_EXP)
-                    .ok_or(Error::CheckedMulOverflow)
-            })
-            .collect::<R<Vec<_>>>()?
-            .iter()
+            .map(|x| self.amm_shares.get(x))
             .product();
-        let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32))
-            .checked_mul(SHARE_DECIMALS_EXP)
-            .ok_or(Error::CheckedMulOverflow)?;
-        let liq_shares_minted = c!(new_liq
+        let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32));
+        let liq_shares_minted = new_liq
             .checked_sub(prev_liquidity)
-            .ok_or(Error::CheckedSubOverflow));
+            .ok_or(Error::CheckedSubOverflow)?;
         if !self.amm_liquidity.get().is_zero() {
             self.rebalance_fees(msg_sender(), liq_shares_minted, true)?;
         }
-        self.amm_liquidity.set(new_liq);
+        self.amm_liquidity
+            .set(c!(maths::rooti(product, self.outcome_list.len() as u32)));
         // Time to mint the user some shares. For now, we're going to simply bump
         // their balance.
         let add_user_liq = c!(self
@@ -236,21 +228,12 @@ impl StorageTrading {
         }
         let product = self
             .outcome_ids_iter()
-            .map(|x| {
-                self.amm_shares
-                    .get(x)
-                    .checked_div(SHARE_DECIMALS_EXP)
-                    .ok_or(Error::CheckedMulOverflow)
-            })
-            .collect::<R<Vec<_>>>()?
-            .iter()
+            .map(|x| self.amm_shares.get(x))
             .product();
-        let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32))
-            .checked_mul(SHARE_DECIMALS_EXP)
-            .ok_or(Error::CheckedMulOverflow)?;
         let lp_fees_earned = self.internal_amm_claim_lp_fees(recipient)?;
         self.rebalance_fees(msg_sender(), amount, false)?;
-        self.amm_liquidity.set(new_liq);
+        self.amm_liquidity
+            .set(c!(maths::rooti(product, self.outcome_list.len() as u32)));
         {
             let user_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
             self.amm_user_liquidity_shares.setter(msg_sender()).set(
@@ -370,18 +353,13 @@ impl StorageTrading {
         assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
-        let liq_price = c!(maths::mul_div(
+        let liq_price = maths::mul_div(
             self.amm_shares.get(self.winner.get()),
             SHARE_DECIMALS_EXP,
             self.amm_liquidity.get(),
-        ))
+        )?
         .0;
-        let claimed_amt = c!(maths::mul_div(
-            sender_liq_shares,
-            liq_price,
-            SHARE_DECIMALS_EXP
-        ))
-        .0;
+        let claimed_amt = maths::mul_div(sender_liq_shares, liq_price, SHARE_DECIMALS_EXP)?.0;
         fusdc_call::transfer(recipient, claimed_amt)?;
         self.amm_user_liquidity_shares
             .setter(msg_sender())
