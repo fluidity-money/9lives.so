@@ -1,6 +1,5 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
-import { Outcome } from "@/types";
 import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -10,7 +9,6 @@ import {
   sendTransaction,
   simulateTransaction,
   toUnits,
-  ZERO_ADDRESS,
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 
@@ -27,6 +25,18 @@ export default function useAddLiquidity({
       new Promise(async (res, rej) => {
         try {
           const amount = toUnits(fusdc, config.contracts.decimals.shares);
+          const balanceOfTx = prepareContractCall({
+            contract: config.contracts.fusdc,
+            method: "balanceOf",
+            params: [account.address],
+          });
+          const balance = await simulateTransaction({
+            transaction: balanceOfTx,
+            account: account,
+          });
+          if (amount > balance) {
+            rej("Insufficient balance");
+          }
           const allowanceTx = prepareContractCall({
             contract: config.contracts.fusdc,
             method: "allowance",
