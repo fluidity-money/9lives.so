@@ -242,10 +242,10 @@ generate these, run `./print-error-table.sh`.
 | Trading DPM extras impl       | `0x81eebeda7eb9f68c9a825c619f5e0d13a117e5f6` |
 | Trading DPM price impl        | `0x8fc31d39edec596e8089b313920c05642e86d549` |
 | Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
-| Trading AMM mint impl         | `0x75a1561702de3a5bb5ae07ef0106a085a38b9369` |
-| Trading AMM extras impl       | `0xb73ceaf59fe6d13792153ee73ab2474de8c6df10` |
-| Trading AMM price impl        | `0xe8e2e4ac62b89a8b0e0632fd9f19316b8b2af76e` |
-| Trading AMM quotes impl       | `0x1086fe3c7a453e31d5f04a55924ec633b62157d9` |
+| Trading AMM mint impl         | `0x99a43025b43de6ab779392fae8e26696510d2a75` |
+| Trading AMM extras impl       | `0xfcb945875a6cd320cc9b28dbe1c476d2bf2d03df` |
+| Trading AMM price impl        | `0x4e4753a169e26c83ec224bfd2cbf36d74eada822` |
+| Trading AMM quotes impl       | `0x5e2e65ee0e473a975c1228b671cb42da5d6c8db2` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
 | Infrastructure market impl    | `0x863642e21a45e824c4f6347a5757e5dcacae11c1` |
@@ -254,7 +254,7 @@ generate these, run `./print-error-table.sh`.
 | Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
 | Helper factory                | `0x2965aF7dD96D550d63be1577feC27ae26d2C46F7` |
-| LensesV1                      | `0x95EB1d562CB7c918D1b1eE15a917E46d23f69f96` |
+| LensesV1                      | `0x051648539bC4a1C247030EABCBC29cfD1887cd83` |
 | Beauty contest implementation | `0x3421264e413489b1e69ae84ace8c33c6cb7809ff` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
