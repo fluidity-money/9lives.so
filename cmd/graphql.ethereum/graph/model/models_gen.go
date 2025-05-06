@@ -11,16 +11,6 @@ import (
 type Mutation struct {
 }
 
-// Outcome that an admin has used to expliictly load in without any checks.
-type OutcomeAdminInput struct {
-	// Name of the campaign outcome. Ie, "Donald Trump" for the election.
-	Name string `json:"name"`
-	// Picture of the outcome.
-	Picture *string `json:"picture,omitempty"`
-	// Computed identifier that should be used.
-	Identifier string `json:"identifier"`
-}
-
 // Outcome associated with a Campaign creation that's notified to the graph.
 type OutcomeInput struct {
 	// Name of the campaign outcome. Ie, "Donald Trump" for the election.

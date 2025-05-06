@@ -118,11 +118,10 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ExplainCampaign      func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, seedLiquidity int) int
-		ExplainCampaignAdmin func(childComplexity int, typeArg model.Modification, address string, name string, description string, picture *string, outcomes []model.OutcomeAdminInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, categories []string, x *string, telegram *string, web *string) int
-		RevealCommitment     func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string) int
-		RevealCommitment2    func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) int
-		SynchProfile         func(childComplexity int, walletAddress string, email string) int
+		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, seedLiquidity int) int
+		RevealCommitment  func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string) int
+		RevealCommitment2 func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) int
+		SynchProfile      func(childComplexity int, walletAddress string, email string) int
 	}
 
 	Outcome struct {
@@ -212,7 +211,6 @@ type ClaimResolver interface {
 }
 type MutationResolver interface {
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, seedLiquidity int) (*bool, error)
-	ExplainCampaignAdmin(ctx context.Context, typeArg model.Modification, address string, name string, description string, picture *string, outcomes []model.OutcomeAdminInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, categories []string, x *string, telegram *string, web *string) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
 	SynchProfile(ctx context.Context, walletAddress string, email string) (*bool, error)
@@ -601,18 +599,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(*string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string), args["isFake"].(*bool), args["seedLiquidity"].(int)), true
 
-	case "Mutation.explainCampaignAdmin":
-		if e.complexity.Mutation.ExplainCampaignAdmin == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_explainCampaignAdmin_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.ExplainCampaignAdmin(childComplexity, args["type"].(model.Modification), args["address"].(string), args["name"].(string), args["description"].(string), args["picture"].(*string), args["outcomes"].([]model.OutcomeAdminInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["categories"].([]string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string)), true
-
 	case "Mutation.revealCommitment":
 		if e.complexity.Mutation.RevealCommitment == nil {
 			break
@@ -858,7 +844,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputOutcomeAdminInput,
 		ec.unmarshalInputOutcomeInput,
 	)
 	first := true
@@ -975,147 +960,6 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
-
-func (ec *executionContext) field_Mutation_explainCampaignAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.Modification
-	if tmp, ok := rawArgs["type"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
-		arg0, err = ec.unmarshalNModification2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐModification(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["type"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["address"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["address"] = arg1
-	var arg2 string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg2, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["name"] = arg2
-	var arg3 string
-	if tmp, ok := rawArgs["description"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-		arg3, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["description"] = arg3
-	var arg4 *string
-	if tmp, ok := rawArgs["picture"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("picture"))
-		arg4, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["picture"] = arg4
-	var arg5 []model.OutcomeAdminInput
-	if tmp, ok := rawArgs["outcomes"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outcomes"))
-		arg5, err = ec.unmarshalNOutcomeAdminInput2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeAdminInputᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["outcomes"] = arg5
-	var arg6 int
-	if tmp, ok := rawArgs["ending"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ending"))
-		arg6, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["ending"] = arg6
-	var arg7 int
-	if tmp, ok := rawArgs["starting"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting"))
-		arg7, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["starting"] = arg7
-	var arg8 string
-	if tmp, ok := rawArgs["creator"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("creator"))
-		arg8, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["creator"] = arg8
-	var arg9 *string
-	if tmp, ok := rawArgs["oracleDescription"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("oracleDescription"))
-		arg9, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["oracleDescription"] = arg9
-	var arg10 []*string
-	if tmp, ok := rawArgs["oracleUrls"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("oracleUrls"))
-		arg10, err = ec.unmarshalOString2ᚕᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["oracleUrls"] = arg10
-	var arg11 []string
-	if tmp, ok := rawArgs["categories"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categories"))
-		arg11, err = ec.unmarshalNString2ᚕstringᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["categories"] = arg11
-	var arg12 *string
-	if tmp, ok := rawArgs["x"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("x"))
-		arg12, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["x"] = arg12
-	var arg13 *string
-	if tmp, ok := rawArgs["telegram"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telegram"))
-		arg13, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["telegram"] = arg13
-	var arg14 *string
-	if tmp, ok := rawArgs["web"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("web"))
-		arg14, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["web"] = arg14
-	return args, nil
-}
 
 func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -3865,58 +3709,6 @@ func (ec *executionContext) fieldContext_Mutation_explainCampaign(ctx context.Co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_explainCampaign_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_explainCampaignAdmin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_explainCampaignAdmin(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaignAdmin(rctx, fc.Args["type"].(model.Modification), fc.Args["address"].(string), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(*string), fc.Args["outcomes"].([]model.OutcomeAdminInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["categories"].([]string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_explainCampaignAdmin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_explainCampaignAdmin_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -7305,47 +7097,6 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputOutcomeAdminInput(ctx context.Context, obj interface{}) (model.OutcomeAdminInput, error) {
-	var it model.OutcomeAdminInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"name", "picture", "identifier"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "name":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Name = data
-		case "picture":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("picture"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Picture = data
-		case "identifier":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Identifier = data
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputOutcomeInput(ctx context.Context, obj interface{}) (model.OutcomeInput, error) {
 	var it model.OutcomeInput
 	asMap := map[string]interface{}{}
@@ -8703,10 +8454,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_explainCampaign(ctx, field)
 			})
-		case "explainCampaignAdmin":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_explainCampaignAdmin(ctx, field)
-			})
 		case "revealCommitment":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_revealCommitment(ctx, field)
@@ -10026,28 +9773,6 @@ func (ec *executionContext) marshalNOutcome2ᚕgithubᚗcomᚋfluidityᚑmoney�
 	}
 
 	return ret
-}
-
-func (ec *executionContext) unmarshalNOutcomeAdminInput2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeAdminInput(ctx context.Context, v interface{}) (model.OutcomeAdminInput, error) {
-	res, err := ec.unmarshalInputOutcomeAdminInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNOutcomeAdminInput2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeAdminInputᚄ(ctx context.Context, v interface{}) ([]model.OutcomeAdminInput, error) {
-	var vSlice []interface{}
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]model.OutcomeAdminInput, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNOutcomeAdminInput2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeAdminInput(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
 }
 
 func (ec *executionContext) unmarshalNOutcomeInput2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐOutcomeInput(ctx context.Context, v interface{}) (model.OutcomeInput, error) {

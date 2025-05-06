@@ -2,6 +2,7 @@ use stylus_sdk::alloy_primitives::*;
 
 use crate::{
     error::*,
+    fusdc_call,
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
@@ -11,9 +12,6 @@ use alloc::vec::Vec;
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
-
-#[cfg(not(feature = "trading-backend-dpm"))]
-use crate::fusdc_call;
 
 // Arguments for the ctor function. In a tuple form for Solidity
 // calldata, and for a Default trait impl later.
@@ -46,11 +44,7 @@ impl StorageTrading {
         self.internal_ctor(a.0, a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8, a.9, a.10)
     }
 
-    pub fn add_liquidity(
-        &mut self,
-        _amount: U256,
-        _recipient: Address,
-    ) -> R<U256> {
+    pub fn add_liquidity(&mut self, _amount: U256, _recipient: Address) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
@@ -172,6 +166,16 @@ impl StorageTrading {
             self.fee_lp.get(),
             self.fee_referrer.get(),
         ))
+    }
+
+    pub fn rescue(&self, recipient: Address) -> R<U256> {
+        // The point of this function is that while we don't have upgrade powers,
+        // we can rescue any funds if something goes wrong during our first batch
+        // of usage.
+        assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
+        let bal = fusdc_call::balance_of(contract_address())?;
+        fusdc_call::transfer(recipient, bal)?;
+        Ok(bal)
     }
 }
 
