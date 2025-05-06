@@ -167,7 +167,7 @@ proptest! {
     #[test]
     #[ignore]
     fn test_amm_crazy_testing_1(
-        outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2..100),
+        outcomes in strat_uniq_outcomes(100),
         mut c in strat_storage_trading(false),
         actions in proptest::collection::vec((any::<Address>(), strat_action()), 1..1000)
     ) {
@@ -179,7 +179,7 @@ proptest! {
 
     #[test]
     fn test_amm_access_control_okay_1(
-        outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2..100),
+        outcomes in strat_uniq_outcomes(100),
         mut c in strat_storage_trading(false),
         rand_word in strat_large_u256()
     ) {
@@ -206,7 +206,7 @@ proptest! {
 
     #[test]
     fn test_five_outcomes(
-        outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 7),
+        outcomes in strat_uniq_outcomes(7),
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {

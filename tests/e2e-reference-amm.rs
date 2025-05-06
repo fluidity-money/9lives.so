@@ -70,12 +70,12 @@ fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut
         U256::ZERO,
         share_call::balance_of(c.share_addr(outcome_b).unwrap(), msg_sender()).unwrap()
     );
-    assert_eq_u!(1882000000, c.amm_liquidity.get());
+    assert_eq_u!(1882881997, c.amm_liquidity.get());
     assert_eq_u!(1474071282, c.amm_shares.get(outcome_a));
     assert_eq_u!(2405070000u64, c.amm_shares.get(outcome_b));
     assert_eq_u!(620000, c.amm_outcome_prices.get(outcome_a));
     assert_eq_u!(379999, c.amm_outcome_prices.get(outcome_b));
-    assert_eq_u!(782000000, c.amm_user_liquidity_shares.get(msg_sender()));
+    assert_eq_u!(782881997, c.amm_user_liquidity_shares.get(msg_sender()));
 }
 
 fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedBytes<8>, U256)>) {
@@ -245,7 +245,7 @@ proptest! {
                     liquidity_amt,
                     c.add_liquidity_test(liquidity_amt, IVAN)
                 );
-                assert_eq_u!(1773000000, c.amm_liquidity.get());
+                assert_eq_u!(1772800379, c.amm_liquidity.get());
                 assert_eq_u!(818199300, c.amm_shares.get(outcome_a));
                 assert_eq_u!(2294000000u64, c.amm_shares.get(outcome_b));
                 assert_eq_u!(2294000000u64, c.amm_shares.get(outcome_c));
@@ -254,7 +254,7 @@ proptest! {
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_b));
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_c));
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_d));
-                assert_eq_u!(773000000, c.amm_user_liquidity_shares.get(msg_sender()));
+                assert_eq_u!(772800379, c.amm_user_liquidity_shares.get(msg_sender()));
             },
         }
     }
@@ -276,12 +276,12 @@ proptest! {
                 let remove_amt = c.amm_user_liquidity_shares.get(msg_sender());
                 should_spend_fusdc_contract!(
                     // Less than 500.3415140438574, which is the reference.
-                    500137055,
+                    500061681,
                     {
                         let res = c.remove_liquidity_3_C_857_A_15(remove_amt, msg_sender()).unwrap();
-                        assert_eq_u!(4816000000u64, c.amm_liquidity.get());
-                        assert_eq_u!(3076832945u64, c.amm_shares.get(outcome_a));
-                        assert_eq_u!(7537134208u64, c.amm_shares.get(outcome_b));
+                        assert_eq_u!(4815769830u64, c.amm_liquidity.get());
+                        assert_eq_u!(3076908319u64, c.amm_shares.get(outcome_a));
+                        assert_eq_u!(7537318847u64, c.amm_shares.get(outcome_b));
                         assert_eq_u!(710114, c.amm_outcome_prices.get(outcome_a));
                         assert_eq_u!(289885, c.amm_outcome_prices.get(outcome_b));
                         assert_eq_u!(0, c.amm_user_liquidity_shares.get(msg_sender()));
@@ -1001,13 +1001,13 @@ proptest! {
             },
             ERIK => should_spend_fusdc_contract!(
                 // In the Python, this is 377.71391451345414:
-                377712500,
+                377713500,
                 c.claim_liquidity_9_C_391_F_85(msg_sender())
             ),
             ELI => {
                 should_spend_fusdc_contract!(
                     // In the Python, this is 5504.027898192409:
-                    5504026550u64,
+                    5504021786u64,
                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
                 assert_eq!(U256::ZERO, fusdc_call::balance_of(CONTRACT).unwrap());
