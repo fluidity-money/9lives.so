@@ -74,7 +74,7 @@ export default function CampaignItemOutcomes({
               intent="default"
               cat="secondary"
               size="small"
-              title="Bet"
+              title="Predict"
               onClick={(e) => {
                 e.stopPropagation();
                 router.push(
