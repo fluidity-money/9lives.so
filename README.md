@@ -253,7 +253,7 @@ generate these, run `./print-error-table.sh`.
 | Lockup proxy                  | `0x20d2360706086ec9814d15a52ad2d2aec2c43caa` |
 | Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
-| Helper factory                | `0xe5476af9E9299F139d63077dA735d022953Fd404` |
+| Helper factory                | `0x2965aF7dD96D550d63be1577feC27ae26d2C46F7` |
 | LensesV1                      | `0x95EB1d562CB7c918D1b1eE15a917E46d23f69f96` |
 | Beauty contest implementation | `0x3421264e413489b1e69ae84ace8c33c6cb7809ff` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
