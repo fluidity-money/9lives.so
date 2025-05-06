@@ -17,8 +17,39 @@ const lensAbi = [
   },
   {
     type: "function",
-    name: "balances",
+    name: "FACTORY",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract INineLivesFactory",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "LONGTAIL",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract ILongtail",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "balancesWithFactory",
     inputs: [
+      {
+        name: "_factory",
+        type: "address",
+        internalType: "contract INineLivesFactory",
+      },
       {
         name: "_tradingAddr",
         type: "address",
@@ -40,19 +71,6 @@ const lensAbi = [
         name: "bals",
         type: "uint256[]",
         internalType: "uint256[]",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "factory",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "contract INineLivesFactory",
       },
     ],
     stateMutability: "view",
@@ -96,6 +114,11 @@ const lensAbi = [
     name: "getShareAddr",
     inputs: [
       {
+        name: "_factory",
+        type: "address",
+        internalType: "contract INineLivesFactory",
+      },
+      {
         name: "_tradingAddr",
         type: "address",
         internalType: "address",
@@ -111,19 +134,6 @@ const lensAbi = [
         name: "shareAddr",
         type: "address",
         internalType: "address",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "longtail",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "contract ILongtail",
       },
     ],
     stateMutability: "view",
