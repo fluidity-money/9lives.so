@@ -2,7 +2,7 @@ import config from "@/config";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/formatFusdc";
 import { useQuery } from "@tanstack/react-query";
-import { zeroPadValue } from "ethers";
+import { zeroPadBytes, zeroPadValue } from "ethers";
 import {
   prepareContractCall,
   simulateTransaction,
@@ -22,7 +22,7 @@ async function fetchPositions(
       method: "balancesWithFactoryAndHash",
       params: [
         ZERO_ADDRESS,
-        ZERO_ADDRESS,
+        zeroPadBytes("0x00", 32) as `0x${string}`,
         tradingAddr,
         words as `0x${string}`[],
         account.address,
