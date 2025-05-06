@@ -135,6 +135,21 @@ macro_rules! harness_die {
     }};
 }
 
+#[macro_export]
+macro_rules! harness_dbg_die {
+    ($val:expr) => {{
+        let tmp = $val;
+        let msg = alloc::format!("[{}:{}] {} = {:#?}\n", file!(), line!(), stringify!($val), &tmp);
+        unsafe { $crate::die(msg.as_ptr(), msg.len(), 0) };
+        tmp
+    }};
+    ($($vals:expr),+ $(,)?) => {{
+        let tup = ($($vals),+);
+        let msg = alloc::format!("[{}:{}] {} = {:#?}\n", file!(), line!(), stringify!(($($vals),+)), &tup);
+        unsafe { $crate::die(msg.as_ptr(), msg.len(), 0) };
+        tup
+    }};}
+
 #[cfg(all(
     target_arch = "wasm32",
     not(any(

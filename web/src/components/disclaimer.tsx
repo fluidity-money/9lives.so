@@ -40,14 +40,15 @@ function About() {
   return (
     <Section>
       <Title text="What is 9Lives?" />
-      <Parag text="9Lives is the most capital-efficient prediction market developed by the Superposition team. Inspired by decentralized finance, 9Lives combines parimutuel markets with a continuous double auction, providing deep liquidity and a risk-free environment for market participants." />
+      <Parag text="9Lives is the most advanced prediction market developed by the Superposition team. Inspired by decentralized finance, 9Lives combines a constant product market maker with parimutuel markets and a continuous double auction, providing deep liquidity and a risk-free environment for market participants." />
       <Parag text="Built using Arbitrum Stylus, 9Lives is the most cost-efficient, and the most advanced platform for trading. With 9Lives, traders can easily place bets, trade their positions, and maximise capital efficiency while benefiting from the safest and most affordable prediction market on Web3." />
       <Title text="Disclaimer" />
       <List
         items={[
           "Use at Your Own Risk: This contract is unaudited. Please be aware of the risks involved.",
+          "About the Constant Product Maker Maker (CPMM) Model: The CPMM is a type of Automated Market Maker model popularised in decentralised finance.",
           "About the Dynamic Pari-Mutuel Market (DPM) Model: The Dynamic Pari-Mutuel Market (DPM) model is a novel approach adopted by Superposition for prediction markets. Its pricing dynamics differ from conventional models, offering unique opportunities for trading strategies but also introducing new risks. Wager payoffs are based on both the trade price and the final market payoff per share at close. Unlike some models, the initial price paid for a winning wager is not refunded. This can mean that, under volatile market conditions, even a wager on the correct outcome could lose money. If a trader buys in at a high price that later drops significantly, they may lose funds regardless of the outcome. While we believe such situations to be rare, please proceed with caution. For further details on the DPM model, refer to the original paper below.",
-          "Infrastructure Markets: Infrastructure Markets are a new natural language oracle powered by ARB and Staked ARB that determines truth after a deadline through the process of voting and staking. To learn more, read Introduction to Infra Markets below.",
+          "Infrastructure Markets: Infrastructure Markets are a new natural language oracle powered by ARB and Staked ARB that determines truth after a deadline through the process of voting and staking. To learn more, read Introduction to Infra Markets in the navigation bar past this screen.",
           "Opinion Polls: Opinion Polls are self resolving markets that are suitable for competitive voting. Markets are settled by the proportion of shares in the different outcomes.",
           "AI Resolver: SARP AI is the first AI-powered resolver for prediction markets using current news feeds. It exists exclusively on testnet currently. To learn more, read Introduction to SARP AI below.",
           "By accessing this web application, you agree that you are not a citizen of a country where gambling is prohibited. You agree that you have read and agree to the Terms and Conditions.",

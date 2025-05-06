@@ -201,4 +201,19 @@ proptest! {
             // campaign that has ended.
         })
     }
+
+    #[test]
+    fn test_amm_five_outcomes(
+        outcomes in [
+            strat_fixed_bytes::<8>(),
+            strat_fixed_bytes::<8>(),
+            strat_fixed_bytes::<8>(),
+            strat_fixed_bytes::<8>(),
+            strat_fixed_bytes::<8>()
+        ],
+        mut c in strat_storage_trading(false)
+    ) {
+        setup_contract(&mut c, &outcomes);
+        test_add_liquidity(&mut c, 1000e6 as u64);
+    }
 }
