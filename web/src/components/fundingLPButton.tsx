@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "./themed/button";
 import Modal from "./themed/modal";
-import FundingLP from "./fundingLP";
+import FundingLP from "./fundingLPDialog";
 
 export default function FundingLPButton({
   name,

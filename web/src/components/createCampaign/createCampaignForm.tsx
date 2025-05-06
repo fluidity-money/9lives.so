@@ -20,7 +20,7 @@ import useConnectWallet from "@/hooks/useConnectWallet";
 import { randomValue4Uint8 } from "@/utils/generateId";
 import { track, EVENTS } from "@/utils/analytics";
 import Modal from "../themed/modal";
-import Funding from "../fundingBalance";
+import Funding from "../fundingBalanceDialog";
 import { Account } from "thirdweb/wallets";
 import CreateCampaignFormLiquidity from "./form/formLiquidity";
 
