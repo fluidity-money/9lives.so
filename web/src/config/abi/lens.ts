@@ -43,12 +43,17 @@ const lensAbi = [
   },
   {
     type: "function",
-    name: "balancesWithFactory",
+    name: "balancesWithFactoryAndHash",
     inputs: [
       {
         name: "_factory",
         type: "address",
         internalType: "contract INineLivesFactory",
+      },
+      {
+        name: "_hash",
+        type: "bytes32",
+        internalType: "bytes32",
       },
       {
         name: "_tradingAddr",
@@ -119,6 +124,11 @@ const lensAbi = [
         internalType: "contract INineLivesFactory",
       },
       {
+        name: "_hash",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
         name: "_tradingAddr",
         type: "address",
         internalType: "address",
@@ -136,7 +146,7 @@ const lensAbi = [
         internalType: "address",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
 ] as const;
 

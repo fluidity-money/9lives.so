@@ -19,8 +19,9 @@ async function fetchPositions(
   const balances = (await simulateTransaction({
     transaction: prepareContractCall({
       contract: config.contracts.lens,
-      method: "balancesWithFactory",
+      method: "balancesWithFactoryAndHash",
       params: [
+        ZERO_ADDRESS,
         ZERO_ADDRESS,
         tradingAddr,
         words as `0x${string}`[],
