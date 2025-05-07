@@ -5,9 +5,79 @@ import LeftborderSparkle from "#/images/left-border-sparkle.svg";
 import Rightborder from "#/images/right-border.svg";
 import RightborderIdle from "#/images/right-border-idle.svg";
 import RightborderSparkle from "#/images/right-border-sparkle.svg";
-import { combineClass } from "@/utils/combineClass";
+import RightborderGreen from "#/images/right-border-green.svg";
+import RightborderRed from "#/images/right-border-red.svg";
+import LeftborderGreen from "#/images/left-border-green.svg";
+import LeftborderRed from "#/images/left-border-red.svg";
 import { forwardRef, HTMLAttributes } from "react";
-interface TabButtonProps extends HTMLAttributes<HTMLButtonElement> {
+import { cva, type VariantProps } from "class-variance-authority";
+const buttonTitle = cva(
+  "h-full border-t border-t-black px-2 py-1 font-chicago",
+  {
+    variants: {
+      intent: {
+        default: null,
+        watchlist: null,
+        buy: null,
+        sell: null,
+      },
+      selected: {
+        true: null,
+        false: null,
+      },
+      size: {
+        small: "text-xs",
+        medium: "text-base",
+      },
+    },
+    compoundVariants: [
+      {
+        intent: ["default", "watchlist", "buy", "sell"],
+        selected: true,
+        className: "bg-9layer",
+      },
+      {
+        intent: "default",
+        selected: false,
+        className: "bg-[#CCC]",
+      },
+      {
+        intent: "watchlist",
+        selected: false,
+        className: "bg-9yellow",
+      },
+      {
+        intent: "buy",
+        selected: false,
+        className: "bg-9green",
+      },
+      {
+        intent: "sell",
+        selected: false,
+        className: "bg-9red",
+      },
+    ],
+    defaultVariants: {
+      intent: "default",
+      selected: false,
+      size: "small",
+    },
+  },
+);
+const buttonImg = cva("w-auto", {
+  variants: {
+    size: {
+      small: "h-[25px]",
+      medium: "h-[33px]",
+    },
+  },
+  defaultVariants: {
+    size: "small",
+  },
+});
+interface TabButtonProps
+  extends HTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonTitle> {
   title: string;
   watchlist?: boolean;
   active: boolean;
@@ -16,17 +86,26 @@ interface TabButtonProps extends HTMLAttributes<HTMLButtonElement> {
   autofocus: boolean;
   selected: boolean;
 }
+const leftBorderUnselectedMap: Record<
+  NonNullable<VariantProps<typeof buttonTitle>["intent"]>,
+  any
+> = {
+  default: LeftborderIdle,
+  watchlist: LeftborderSparkle,
+  buy: LeftborderGreen,
+  sell: LeftborderRed,
+};
+const rightBorderUnselectedMap: Record<
+  NonNullable<VariantProps<typeof buttonTitle>["intent"]>,
+  any
+> = {
+  default: RightborderIdle,
+  watchlist: RightborderSparkle,
+  buy: RightborderGreen,
+  sell: RightborderRed,
+};
 export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
-  {
-    active,
-    selected,
-    hover,
-    focus,
-    autofocus,
-    title,
-    watchlist = false,
-    ...props
-  },
+  { active, selected, hover, focus, autofocus, title, ...props },
   ref,
 ) {
   return (
@@ -37,17 +116,19 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
     >
       <Image
         src={
-          selected ? Leftborder : watchlist ? LeftborderSparkle : LeftborderIdle
+          selected
+            ? Leftborder
+            : leftBorderUnselectedMap[props.intent ?? "default"]
         }
-        height={25}
-        alt={title + "left-border"}
-        className="h-[25px] w-auto"
+        alt=""
+        className={buttonImg({ size: props.size })}
       />
       <span
-        className={combineClass(
-          "h-full border-t border-t-black bg-9layer px-2 py-1 font-chicago text-xs",
-          selected ? "bg-9layer" : watchlist ? "bg-9yellow" : "bg-[#CCC]",
-        )}
+        className={buttonTitle({
+          selected,
+          intent: props.intent,
+          size: props.size,
+        })}
       >
         {title}
       </span>
@@ -55,13 +136,10 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
         src={
           selected
             ? Rightborder
-            : watchlist
-              ? RightborderSparkle
-              : RightborderIdle
+            : rightBorderUnselectedMap[props.intent ?? "default"]
         }
-        height={25}
-        alt={title + "right-border"}
-        className="h-[25px] w-auto"
+        alt=""
+        className={buttonImg({ size: props.size })}
       />
       {selected && (
         <div className="absolute -bottom-px h-[2px] w-full bg-9layer" />
