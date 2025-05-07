@@ -40,15 +40,16 @@ export default function AssetSelector({
       >
         <Image src={selected?.img ?? PawLogo} alt="fusdc" width={20} />
         <span className="font-chicago">{selected?.name ?? "9LVS"}</span>
-        {!disabled && (
-          <Image
-            src={DownIcon}
-            alt=""
-            width={16}
-            className="group pointer-events-none absolute right-2.5 top-2.5 size-4 fill-white/60"
-            aria-hidden="true"
-          />
-        )}
+        {!disabled ||
+          (!!oneShareItem && (
+            <Image
+              src={DownIcon}
+              alt=""
+              width={16}
+              className="group pointer-events-none absolute right-2.5 top-2.5 size-4 fill-white/60"
+              aria-hidden="true"
+            />
+          ))}
       </ListboxButton>
       <ListboxOptions
         anchor={{ to: "bottom", gap: 4 }}

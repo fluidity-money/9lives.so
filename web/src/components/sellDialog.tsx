@@ -105,7 +105,12 @@ export default function SellDialog({
       <Field className={"flex flex-col gap-2.5"}>
         <Label text="Shares to Burn" required />
         <div className="flex gap-2.5">
-          <AssetSelector disabled index={1} />
+          <AssetSelector
+            disabled
+            oneShareItem={{
+              img: outcomes.find((o) => o.identifier === outcomeId)?.picture,
+            }}
+          />
           <Input
             {...register("shareToBurn")}
             type="number"
@@ -133,7 +138,7 @@ export default function SellDialog({
       <Field className={"flex flex-col gap-2.5"}>
         <Label text="Min USDC to Recieve" required />
         <div className="flex gap-2.5">
-          <AssetSelector disabled index={0} />
+          <AssetSelector disabled />
           <Input
             {...register("minUsdcToGet")}
             type="number"
