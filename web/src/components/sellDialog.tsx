@@ -6,30 +6,55 @@ import { FormEvent, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { Account } from "thirdweb/wallets";
-import useAddLiquidity from "@/hooks/useAddLiquidity";
 import { Field } from "@headlessui/react";
 import Label from "./themed/label";
 import AssetSelector from "./assetSelector";
 import Input from "./themed/input";
 import { combineClass } from "@/utils/combineClass";
 import ErrorInfo from "./themed/errorInfo";
+import useSell from "@/hooks/useSell";
+import { Outcome } from "@/types";
+import config from "@/config";
+import formatFusdc from "@/utils/formatFusdc";
 
 export default function SellDialog({
   name,
   close,
-  campaignId,
+  shareAddr,
   tradingAddr,
+  outcomeId,
+  campaignId,
+  outcomes,
+  maxShareAmount,
+  maxUsdcValue,
 }: {
   name: string;
   close: () => void;
-  campaignId: `0x${string}`;
+  shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
+  outcomeId: `0x${string}`;
+  campaignId: `0x${string}`;
+  outcomes: Outcome[];
+  maxShareAmount: string;
+  maxUsdcValue: number;
 }) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
-  const [isFunding, setIsFunding] = useState(false);
+  const [isSelling, setIsSelling] = useState(false);
+  const maxShareAmountNum =
+    Number(maxShareAmount) / Math.pow(10, config.contracts.decimals.shares);
   const formSchema = z.object({
-    seedLiquidity: z.preprocess((val) => Number(val), z.number().min(1)),
+    shareToBurn: z.preprocess(
+      (val) => Number(val),
+      z.number().min(0).max(maxShareAmountNum),
+    ),
+    minUsdcToGet: z.preprocess(
+      (val) => Number(val),
+      z
+        .number()
+        .min(0)
+        .max(maxUsdcValue * 0.9),
+    ),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
@@ -39,20 +64,23 @@ export default function SellDialog({
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      seedLiquidity: 1,
+      minUsdcToGet: 1,
     },
   });
-  const { addLiquidity } = useAddLiquidity({
-    campaignId,
+  const { sell } = useSell({
     tradingAddr,
+    shareAddr,
+    outcomeId,
+    campaignId,
+    outcomes,
   });
   const onSubmit = async (input: FormData, account: Account) => {
     try {
-      setIsFunding(true);
-      await addLiquidity(account!, input.seedLiquidity.toString());
+      setIsSelling(true);
+      await sell(account!, input.shareToBurn, input.minUsdcToGet);
       close();
     } finally {
-      setIsFunding(false);
+      setIsSelling(false);
     }
   };
   const handleSubmitWithAccount = (e: FormEvent) => {
@@ -65,38 +93,78 @@ export default function SellDialog({
   };
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-center font-chicago text-base">
-        Supply Liquidity to The Campaign
-      </p>
+      <p className="text-center font-chicago text-base">Sell Your Position</p>
       <p className="text-center font-chicago text-xl">{name}</p>
+      <p className="text-center font-chicago text-xl">
+        {maxShareAmount}#9LVS = ${formatFusdc(maxUsdcValue, 2)}
+      </p>
       <p className="text-center text-xs">
-        Higher liquidty means better trading stability and lower slippage. You
-        can add liquidity to your campaign and earn provider rewards at any
-        time.
+        Select the amount of shares you want to sell and the minimum amount of
+        USDC you want to receive.
       </p>
       <Field className={"flex flex-col gap-2.5"}>
-        <Label text="Seed Liquidity" required />
+        <Label text="Shares to Burn" required />
         <div className="flex gap-2.5">
-          <AssetSelector />
+          <AssetSelector disabled index={1} />
           <Input
-            {...register("seedLiquidity")}
+            {...register("shareToBurn")}
             type="number"
-            min={1}
+            min={0}
+            max={maxShareAmountNum}
             className={combineClass(
-              errors.seedLiquidity && "border-2 border-red-500",
+              errors.shareToBurn && "border-2 border-red-500",
               "flex-1",
             )}
           />
         </div>
-        {errors.seedLiquidity && (
-          <ErrorInfo text={errors.seedLiquidity.message} />
+        <Input
+          {...register("shareToBurn")}
+          type="range"
+          step={0.1}
+          min={0}
+          max={maxShareAmountNum}
+          className={combineClass(
+            errors.shareToBurn && "border-2 border-red-500",
+            "flex-1",
+          )}
+        />
+        {errors.shareToBurn && <ErrorInfo text={errors.shareToBurn.message} />}
+      </Field>
+      <Field className={"flex flex-col gap-2.5"}>
+        <Label text="Min USDC to Recieve" required />
+        <div className="flex gap-2.5">
+          <AssetSelector disabled index={0} />
+          <Input
+            {...register("minUsdcToGet")}
+            type="number"
+            min={0}
+            max={maxUsdcValue * 0.9}
+            className={combineClass(
+              errors.minUsdcToGet && "border-2 border-red-500",
+              "flex-1",
+            )}
+          />
+        </div>
+        <Input
+          {...register("minUsdcToGet")}
+          type="range"
+          step={0.1}
+          min={0}
+          max={maxUsdcValue * 0.9}
+          className={combineClass(
+            errors.minUsdcToGet && "border-2 border-red-500",
+            "flex-1",
+          )}
+        />
+        {errors.minUsdcToGet && (
+          <ErrorInfo text={errors.minUsdcToGet.message} />
         )}
       </Field>
       <Button
-        intent={"yes"}
-        title={isFunding ? "Loading..." : "Add Liquidity"}
+        intent={"no"}
+        title={isSelling ? "Selling..." : "Sell"}
         size={"xlarge"}
-        disabled={isFunding}
+        disabled={isSelling}
         onClick={handleSubmitWithAccount}
       />
     </div>

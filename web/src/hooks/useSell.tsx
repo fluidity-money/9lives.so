@@ -11,7 +11,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
-import { MaxUint256, MinInt256 } from "ethers";
 import ERC20Abi from "@/config/abi/erc20";
 const useSell = ({
   shareAddr,
@@ -27,13 +26,17 @@ const useSell = ({
   outcomes: Outcome[];
 }) => {
   const queryClient = useQueryClient();
-  const sell = async (account: Account, fusdc: number) =>
+  const sell = async (account: Account, share: number, fusdc: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const amount = toUnits(
-            (fusdc * 0.9).toFixed(config.contracts.decimals.fusdc),
+          const usdAmount = toUnits(
+            fusdc.toFixed(config.contracts.decimals.fusdc),
             config.contracts.decimals.fusdc,
+          );
+          const shareAmount = toUnits(
+            share.toFixed(config.contracts.decimals.shares),
+            config.contracts.decimals.shares,
           );
           const shareContract = getContract({
             abi: ERC20Abi,
@@ -41,17 +44,9 @@ const useSell = ({
             client: config.thirdweb.client,
             chain: config.chains.currentChain,
           });
-          const balanceOfTx = prepareContractCall({
-            contract: shareContract,
-            method: "balanceOf",
-            params: [account?.address],
-          });
-          const balance = await simulateTransaction({
-            transaction: balanceOfTx,
-            account,
-          });
-          const minShareOut = balance;
-          const maxShareOut = balance;
+
+          const minShareOut = shareAmount;
+          const maxShareOut = shareAmount;
           const allowanceTx = prepareContractCall({
             contract: shareContract,
             method: "allowance",
@@ -61,11 +56,11 @@ const useSell = ({
             transaction: allowanceTx,
             account,
           });
-          if (balance > allowance) {
+          if (shareAmount > allowance) {
             const approveTx = prepareContractCall({
               contract: shareContract,
               method: "approve",
-              params: [config.contracts.buyHelper.address, balance],
+              params: [config.contracts.buyHelper.address, shareAmount],
             });
             await sendTransaction({
               transaction: approveTx,
@@ -78,7 +73,7 @@ const useSell = ({
             params: [
               tradingAddr,
               outcomeId,
-              amount,
+              usdAmount,
               maxShareOut,
               minShareOut,
               account.address,
