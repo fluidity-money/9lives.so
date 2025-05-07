@@ -736,7 +736,9 @@ impl StorageInfraMarket {
         )?;
         //amt - (amt * infra fee);
         let amt_fee = (amt * FEE_POT_INFRA_PCT) / FEE_SCALING;
-        let amt_no_fee = c!(amt.checked_sub(amt_fee).ok_or(Error::CheckedSubOverflow));
+        let amt_no_fee = c!(amt
+            .checked_sub(amt_fee)
+            .ok_or(Error::CheckedSubOverflow(amt, amt_fee)));
         {
             let p = e.redeemable_pot_existing.get();
             e.redeemable_pot_existing

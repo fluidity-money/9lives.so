@@ -225,7 +225,7 @@ proptest! {
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &outcomes);
-                test_add_liquidity(&mut c, 1e6 as u64);
+                test_add_liquidity(&mut c, 10e6 as u64);
             }
         }
     }

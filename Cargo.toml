@@ -25,7 +25,7 @@ incremental = false
 codegen-units = 16
 panic = "unwind"
 opt-level = "z"
-incremental = false
+incremental = true
 
 [dependencies]
 stylus-sdk = "=0.7.0"

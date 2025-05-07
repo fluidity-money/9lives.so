@@ -64,7 +64,7 @@ contract MockTrading is INineLivesTrading {
 
     function burn854CC96E(
         bytes8 /* outcome */,
-        uint256 /* fusdcAmount */,
+        uint256 /* value */,
         bool /* shouldTakeShares */,
         uint256 /* minShares */,
         address /* referrer */,
@@ -77,9 +77,9 @@ contract MockTrading is INineLivesTrading {
     function quoteC0E17FC7(
         bytes8 /* outcome */,
         uint256 value
-    ) external returns (uint256) {
+    ) external returns (uint256, uint256) {
         ++counter_;
-        return value;
+        return (value, 5);
     }
 
     function estimateBurnC04425D3(

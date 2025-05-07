@@ -17,15 +17,18 @@ use alloc::vec::Vec;
 
 #[cfg_attr(feature = "contract-trading-quotes", stylus_sdk::prelude::public)]
 impl StorageTrading {
+    // Quote the amount of shares purchased, and the fees taken.
     #[allow(non_snake_case)]
-    pub fn quote_C_0_E_17_F_C_7(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
+    pub fn quote_C_0_E_17_F_C_7(&self, outcome_id: FixedBytes<8>, value: U256) -> R<(U256, U256)> {
         if !self.when_decided.get().is_zero() {
-            return Ok(U256::ZERO);
+            return Ok((U256::ZERO, U256::ZERO));
         }
+        let (fee, _) = self.calculate_fees(value, true)?;
+        let value = value.checked_sub(fee).ok_or(Error::CheckedSubOverflow(value, fee))?;
         #[cfg(feature = "trading-backend-dpm")]
-        return self.internal_dpm_quote(outcome_id, value);
+        return Ok((self.internal_dpm_quote(outcome_id, value)?, fee));
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_quote_mint(outcome_id, value);
+        return Ok((self.internal_amm_quote_mint(outcome_id, value)?, fee));
     }
 
     /// Quote the amount of shares that would be received for burning the

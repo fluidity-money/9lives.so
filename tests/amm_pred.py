@@ -1139,4 +1139,4 @@ def simulate_market_21():
     market.add_liquidity(amt, ALICE)
 
 if __name__ == "__main__":
-    simulate_market_18()
+    simulate_market_14()

@@ -184,7 +184,7 @@ pub enum Error {
     NegU256,
 
     /// Checked overflow in the pow function!
-    CheckedPowOverflow,
+    CheckedPowOverflow(U256, U256),
 
     /// Checked overflow in a multiplication!
     CheckedMulOverflow,
@@ -193,7 +193,7 @@ pub enum Error {
     CheckedAddOverflow,
 
     /// Checked subtraction overflowed!
-    CheckedSubOverflow,
+    CheckedSubOverflow(U256, U256),
 
     /// Checked division overflowed!
     CheckedDivOverflow,
@@ -504,6 +504,9 @@ pub enum Error {
 
     // Pow overflowed inside the rooti function and became 0.
     PowOverflow,
+
+    // Subtraction underflow with a decimal function.
+    CheckedSubOverflowD
 }
 
 #[cfg(any(
@@ -592,6 +595,8 @@ impl core::fmt::Debug for Error {
                     rename_addr(*from),
                     rename_addr(*to),
                 ),
+                Error::CheckedSubOverflow(x, y) => format!("sub overflow: {x} - {y}"),
+                Error::CheckedPowOverflow(x, y) => format!("pow overflow: pow({x}, {y})"),
                 Error::ERC20ErrorTransfer(addr, msg) => format!(
                     "{}: {:?}",
                     rename_addr(*addr),

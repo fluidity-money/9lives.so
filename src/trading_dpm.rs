@@ -186,13 +186,19 @@ impl StorageTrading {
             .dpm_global_shares
             .get()
             .checked_sub(n_1)
-            .ok_or(Error::CheckedSubOverflow))));
+            .ok_or(Error::CheckedSubOverflow(
+                self.dpm_global_shares.get(),
+                n_1
+            )))));
         let n_1 = c!(share_u256_to_decimal(n_1));
         let m_2 = c!(fusdc_u256_to_decimal(c!(self
             .dpm_global_invested
             .get()
             .checked_sub(self.dpm_outcome_invested.get(id))
-            .ok_or(Error::CheckedSubOverflow))));
+            .ok_or(Error::CheckedSubOverflow(
+                self.dpm_global_invested.get(),
+                self.dpm_outcome_invested.get(id)
+            )))));
         fusdc_decimal_to_u256(c!(maths::dpm_price(m_1, m_2, n_1, n_2, Decimal::ZERO)))
     }
 }

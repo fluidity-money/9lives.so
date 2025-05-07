@@ -16,7 +16,7 @@ macro_rules! mul {
 }
 macro_rules! sub {
     ($x:expr, $y:expr) => {
-        c!($x.checked_sub($y).ok_or(Error::CheckedSubOverflow))
+        c!($x.checked_sub($y).ok_or(Error::CheckedSubOverflowD))
     };
 }
 macro_rules! div {
@@ -97,13 +97,10 @@ pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {
     let n_1 = n - U256::from(1);
     while z < y {
         y = z;
-        let p = z.pow(n_1);
-        if p.is_zero() {
-            return Err(Error::PowOverflow);
-        }
+        let p = z.checked_pow(n_1).ok_or(Error::CheckedPowOverflow(z, n_1))?;
         z = ((x / p) + (z * n_1)) / n;
     }
-    if y.pow(n) > x {
+    if y.checked_pow(n).ok_or(Error::CheckedPowOverflow(y, n))? > x {
         y -= U256::from(1);
     }
     Ok(y)
@@ -156,7 +153,7 @@ pub fn calc_lp_sell_fee(x: U256, f: U256) -> Result<U256, Error> {
         .ok_or(Error::CheckedMulOverflow)?;
     let r = FEE_SCALING
         .checked_sub(f)
-        .ok_or(Error::CheckedSubOverflow)?;
+        .ok_or(Error::CheckedSubOverflow(FEE_SCALING, f))?;
     Ok(l.checked_div(r)
         .ok_or(Error::CheckedDivOverflow)?
         .div_ceil(FEE_SCALING))
@@ -207,7 +204,7 @@ fn test_shares_edge_1() {
 mod proptesting {
     use super::*;
 
-    use crate::utils::strat_medium_u256;
+    use crate::utils::{strat_tiny_u256, strat_medium_u256};
 
     use proptest::prelude::*;
 
@@ -229,6 +226,11 @@ mod proptesting {
                 let r = mul_div_round_up(x, y, z).unwrap();
                 a == r || a == r - U256::from(1)
             })
+        }
+
+        #[test]
+        #[ignore]
+        fn test_large_pows(x in strat_medium_u256(), y in strat_tiny_u256()) {
         }
     }
 }
