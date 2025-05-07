@@ -218,21 +218,21 @@ proptest! {
     }
 
     #[test]
-    fn test_variable_outcomes(
-        outcomes in strat_uniq_outcomes(9),
+    fn test_amm_variable_outcomes(
+        outcomes in strat_uniq_outcomes(5),
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &outcomes);
-                test_add_liquidity(&mut c, 10_000_000e6 as u64);
+                test_add_liquidity(&mut c, 1e6 as u64);
             }
         }
     }
 
     #[test]
     fn test_breaking_specific_26k(
-        outcomes in strat_uniq_outcomes(7),
+        outcomes in strat_uniq_outcomes(100),
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {

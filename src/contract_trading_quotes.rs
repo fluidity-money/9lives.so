@@ -31,14 +31,14 @@ impl StorageTrading {
     /// Quote the amount of shares that would be received for burning the
     /// fUSDC amount given. Inclusive of fees.
     #[allow(non_snake_case)]
-    pub fn quote_burn_8_D_B_D_C_A_C_7(&self, _outcome_id: FixedBytes<8>, _value: U256) -> R<U256> {
+    pub fn estimate_burn_C_04425_D_3(&self, _outcome_id: FixedBytes<8>, _value: U256) -> R<U256> {
         if !self.when_decided.get().is_zero() {
             return Ok(U256::ZERO);
         }
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_quote_burn(_outcome_id, _value);
+        return self.internal_amm_estimate_burn(_outcome_id, _value);
     }
 
     #[allow(non_snake_case)]

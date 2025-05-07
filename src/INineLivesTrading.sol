@@ -64,9 +64,9 @@ interface INineLivesTrading {
         uint256 fusdcValue
     ) external returns (uint256);
 
-    function quoteBurn8DBDCAC7(
+    function estimateBurnC04425D3(
         bytes8 outcome,
-        uint256 fusdcValue
+        uint256 shareAmount
     ) external returns (uint256);
 
     struct UserLiqAdded {
