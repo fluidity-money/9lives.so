@@ -2,7 +2,6 @@ use stylus_sdk::alloy_primitives::*;
 
 use crate::{
     error::*,
-    fusdc_call,
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
@@ -42,17 +41,6 @@ impl StorageTrading {
     #[allow(clippy::too_many_arguments)]
     pub fn ctor(&mut self, a: CtorArgs) -> R<()> {
         self.internal_ctor(a.0, a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8, a.9, a.10)
-    }
-
-    pub fn add_liquidity(&mut self, _amount: U256, _recipient: Address) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
-        return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        return {
-            c!(fusdc_call::take_from_sender(_amount));
-            let (shares, _) = self.internal_amm_add_liquidity(_amount, _recipient)?;
-            Ok(shares)
-        };
     }
 
     pub fn is_shutdown(&self) -> R<bool> {

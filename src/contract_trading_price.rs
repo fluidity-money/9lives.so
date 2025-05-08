@@ -42,6 +42,18 @@ impl StorageTrading {
         self.internal_amm_claim_lp_fees(_recipient)
     }
 
+    #[allow(non_snake_case)]
+    pub fn add_liquidity_A_975_D_995(&mut self, _amount: U256, _recipient: Address) -> R<U256> {
+        #[cfg(feature = "trading-backend-dpm")]
+        return Err(Error::AMMOnly);
+        #[cfg(not(feature = "trading-backend-dpm"))]
+        return {
+            c!(fusdc_call::take_from_sender(_amount));
+            let (shares, _) = self.internal_amm_add_liquidity(_amount, _recipient)?;
+            Ok(shares)
+        };
+    }
+
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn remove_liquidity_3_C_857_A_15(

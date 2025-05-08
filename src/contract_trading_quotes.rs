@@ -75,7 +75,8 @@ impl StorageTrading {
         return self.internal_amm_payoff(outcome_id, amt, recipient);
     }
 
-    pub fn fees_20853617(&self) -> R<(U256, U256, U256, U256)> {
+    #[allow(non_snake_case)]
+    pub fn fees_456920_C_0(&self) -> R<(U256, U256, U256, U256)> {
         Ok((
             self.fee_creator.get(),
             self.fee_minter.get(),
@@ -85,7 +86,7 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn rescue_F_C_76_A_1_C_9(&self, recipient: Address) -> R<U256> {
+    pub fn rescue_2_7_6_D_D_9_A_B(&self, recipient: Address) -> R<U256> {
         // The point of this function is that while we don't have upgrade powers,
         // we can rescue any funds if something goes wrong during our first batch
         // of usage.
