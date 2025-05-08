@@ -42,6 +42,7 @@ export default function DetailAction(props: DetailActionProps) {
             selectedOutcome={props.selectedOutcome}
             setSelectedOutcome={props.setSelectedOutcome}
             data={props.data}
+            isDpm={props.isDpm}
             price={props.price}
           />
         </TabPanel>
