@@ -11,6 +11,7 @@ interface DetailActionProps {
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
   price: string;
+  isDpm?: boolean;
 }
 export default function DetailAction(props: DetailActionProps) {
   return (
@@ -21,11 +22,18 @@ export default function DetailAction(props: DetailActionProps) {
             <TabButton title="Buy" {...props} intent="buy" size={"medium"} />
           )}
         </Tab>
-        <Tab as={Fragment}>
-          {(props) => (
-            <TabButton title="Sell" {...props} intent="sell" size={"medium"} />
-          )}
-        </Tab>
+        {props.isDpm !== undefined && !props.isDpm && (
+          <Tab as={Fragment}>
+            {(props) => (
+              <TabButton
+                title="Sell"
+                {...props}
+                intent="sell"
+                size={"medium"}
+              />
+            )}
+          </Tab>
+        )}
       </TabList>
       <TabPanels>
         <TabPanel>

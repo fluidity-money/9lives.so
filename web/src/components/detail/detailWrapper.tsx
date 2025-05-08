@@ -79,6 +79,7 @@ export default function DetailWrapper({
           <DetailResults data={data} />
         ) : (
           <DetailCall2Action
+            isDpm={isDpm}
             shouldStopAction={isEnded || isConcluded}
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
