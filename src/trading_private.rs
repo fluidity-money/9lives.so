@@ -54,7 +54,8 @@ impl StorageTrading {
             time_ending >= block_timestamp()
                 && !share_impl.is_zero()
                 && time_ending > time_start
-                && outcomes.len() >= 2,
+                && outcomes.len() >= 2
+                && outcomes.len() <= 10,
             Error::BadTradingCtor
         );
         // We don't allow the fees to exceed 10% (100).

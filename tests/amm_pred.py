@@ -1129,7 +1129,7 @@ def simulate_market_20():
     market.test_get_user_details(BOB)
 
 def simulate_market_21():
-    market = PredMarketNew(liquidity=0, outcomes=10)
+    market = PredMarketNew(liquidity=0, outcomes=5)
 
     ALICE, BOB, CHARLES = "Alice", "Bob", "Charles"
     market.add_user(ALICE, BOB, CHARLES)
@@ -1138,5 +1138,8 @@ def simulate_market_21():
     market.user_wallet_usd[ALICE] = amt
     market.add_liquidity(amt, ALICE)
 
+    market.test_get_market_details()
+    market.test_get_user_details(ALICE)
+
 if __name__ == "__main__":
-    simulate_market_14()
+    simulate_market_21()

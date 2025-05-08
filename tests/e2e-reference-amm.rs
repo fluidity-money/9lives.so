@@ -666,7 +666,6 @@ proptest! {
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let outcome_c = outcomes[2];
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &outcomes);

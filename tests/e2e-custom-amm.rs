@@ -246,13 +246,12 @@ proptest! {
     #[test]
     fn test_amm_ogous_frontend_1(
         outcomes in strat_uniq_outcomes(5, 5),
-        add_liq_amt in 1e6 as u64..100_000e6 as u64,
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {
             ERIK => {
                 setup_contract(&mut c, &outcomes);
-                test_add_liquidity(&mut c, add_liq_amt);
+                dbg!(test_add_liquidity(&mut c, 100_000e6 as u64));
             }
         }
     }

@@ -2,7 +2,7 @@ use stylus_sdk::alloy_primitives::U256;
 
 use rust_decimal::{Decimal, MathematicalOps};
 
-use crate::{decimal::*, error::Error, fees::FEE_SCALING};
+use crate::{error::Error, fees::FEE_SCALING};
 
 macro_rules! add {
     ($x:expr, $y:expr) => {

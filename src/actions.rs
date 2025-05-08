@@ -105,6 +105,7 @@ pub struct ActionEffect {
     pub outcome_winner: Option<FixedBytes<8>>,
 }
 
+#[cfg(feature = "trading-backend-amm")]
 pub fn strat_tiny_mint_into_burn(
     outcomes: Vec<FixedBytes<8>>,
     referrers: Vec<Address>,
@@ -140,6 +141,7 @@ pub fn strat_tiny_mint_into_burn(
 }
 
 /*
+#[cfg(feature = "trading-backend-amm")]
 pub fn strat_reasonable_actions(
     max_outcomes: usize,
     max_referrers: usize,
