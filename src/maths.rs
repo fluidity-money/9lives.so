@@ -1,8 +1,8 @@
-use stylus_sdk::alloy_primitives::{U256};
+use stylus_sdk::alloy_primitives::U256;
 
 use rust_decimal::{Decimal, MathematicalOps};
 
-use crate::{error::Error, fees::FEE_SCALING};
+use crate::{decimal::*, error::Error, fees::FEE_SCALING};
 
 macro_rules! add {
     ($x:expr, $y:expr) => {
@@ -81,7 +81,6 @@ pub fn dpm_payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error
 }
 
 pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {
-    // We need this because Alloy uses floating points code for this.
     if x.is_zero() {
         return Ok(U256::ZERO);
     }
@@ -91,16 +90,31 @@ pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {
     if n == 1 {
         return Ok(x);
     }
-    let mut z = (x >> (n - 1)) + U256::from(1);
+    let n_u256 = U256::from(n);
+    let n_1 = n_u256 - U256::from(1);
+    // Initial guess: 2^ceil(bits(x)/n)
+    let mut b = 0;
+    let mut t = x;
+    while t != U256::ZERO {
+        b += 1;
+        t >>= 1;
+    }
+    let shift = (b + n as usize - 1) / n as usize;
+    let mut z = U256::from(1) << shift;
     let mut y = x;
-    let n = U256::from(n);
-    let n_1 = n - U256::from(1);
+    // Newton's method
     while z < y {
         y = z;
-        let p = z.checked_pow(n_1).ok_or(Error::CheckedPowOverflow(z, n_1))?;
-        z = ((x / p) + (z * n_1)) / n;
+        let p = z
+            .checked_pow(n_1)
+            .ok_or(Error::CheckedPowOverflow(z, n_1))?;
+        z = ((x / p) + (z * n_1)) / n_u256;
     }
-    if y.checked_pow(n).ok_or(Error::CheckedPowOverflow(y, n))? > x {
+    // Correct overshoot
+    if y.checked_pow(n_u256)
+        .ok_or(Error::CheckedPowOverflow(y, n_u256))?
+        > x
+    {
         y -= U256::from(1);
     }
     Ok(y)
@@ -204,7 +218,7 @@ fn test_shares_edge_1() {
 mod proptesting {
     use super::*;
 
-    use crate::utils::{strat_tiny_u256, strat_medium_u256};
+    use crate::utils::{strat_medium_u256, strat_tiny_u256};
 
     use proptest::prelude::*;
 

@@ -199,7 +199,10 @@ macro_rules! implement_action {
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::AddLiquidity(a) => {
-                should_spend_fusdc_sender!(a.amount, $c.add_liquidity(a.amount, $sender,));
+                should_spend_fusdc_sender!(a.amount, $c.add_liquidity_A_975_D_995(
+                    a.amount,
+                    $sender
+                ));
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::RemoveLiquidity(a) => {

@@ -623,8 +623,6 @@ proptest! {
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let outcome_c = outcomes[2];
-        let outcome_d = outcomes[3];
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &outcomes);
@@ -669,7 +667,6 @@ proptest! {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
         let outcome_c = outcomes[2];
-        let outcome_d = outcomes[3];
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &outcomes);
@@ -728,12 +725,12 @@ proptest! {
                     { ZERO_FOR_MINT_ADDR => 324935653 },
                     Ok(test_add_liquidity!(&mut c, 500e6 as u64))
                 );
-               assert_eq_u!(384000000, shares);
+               assert_eq_u!(384615631, shares);
                 for o in [outcome_a, outcome_b, outcome_c, outcome_d] {
                     host_erc20_call::test_reset_bal(c.share_addr(o).unwrap(), msg_sender());
                 }
                 should_spend_fusdc_contract!(
-                    174861636,
+                    175064104,
                     c.remove_liquidity_3_C_857_A_15(shares, msg_sender())
                 );
                 assert_eq!(
@@ -742,7 +739,7 @@ proptest! {
                 );
                 for o in [outcome_b, outcome_c, outcome_d] {
                     assert_eq!(
-                        U256::from(324560329),
+                        U256::from(324936130),
                         share_call::balance_of(c.share_addr(o).unwrap(), msg_sender()).unwrap()
                     );
                 }
@@ -753,7 +750,7 @@ proptest! {
                     { ZERO_FOR_MINT_ADDR => 0 },
                     {
                         should_spend_fusdc_contract!(
-                            455368847,
+                            455166379,
                             c.remove_liquidity_3_C_857_A_15(remove_liq_amt, msg_sender())
                         );
                         Ok(())

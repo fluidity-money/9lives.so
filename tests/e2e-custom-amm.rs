@@ -9,7 +9,7 @@ use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
 use lib9lives::{
     actions::strat_action, error::Error, host, implement_action, interactions_clear_after,
     panic_guard, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
-    strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
+    strat_storage_trading, testing_addrs::*, utils::*, StorageTrading, actions::*
 };
 
 use proptest::prelude::*;
@@ -231,7 +231,7 @@ proptest! {
     }
 
     #[test]
-    fn test_breaking_specific_26k(
+    fn test_amm_breaking_specific_26k(
         outcomes in strat_uniq_outcomes(2, 100),
         mut c in strat_storage_trading(false)
     ) {
@@ -244,15 +244,25 @@ proptest! {
     }
 
     #[test]
-    fn test_ogous_frontend_1(
+    fn test_amm_ogous_frontend_1(
         outcomes in strat_uniq_outcomes(5, 5),
+        add_liq_amt in 1e6 as u64..100_000e6 as u64,
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {
             ERIK => {
                 setup_contract(&mut c, &outcomes);
-                test_add_liquidity(&mut c, 100_000e6 as u64);
+                test_add_liquidity(&mut c, add_liq_amt);
             }
         }
     }
+
+    /*
+    #[test]
+    fn test_amm_exhaustive_lp_add_buys_sells_lp_remove(
+        (outcomes, actions) in strat_resaonable_actions(2, 20),
+        mut c in strat_storage_trading(false),
+    ) {
+
+    } */
 }

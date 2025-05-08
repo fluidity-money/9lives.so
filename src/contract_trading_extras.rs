@@ -140,40 +140,6 @@ impl StorageTrading {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-#[mutants::skip]
-impl StorageTrading {
-    /// Testing function that returns more than the deployed equivalent,
-    /// including the shares, though lacking in permit features.
-    pub fn add_liquidity_test(
-        &mut self,
-        _amount: U256,
-        _recipient: Address,
-    ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
-        c!(fusdc_call::take_from_sender(_amount));
-        self.internal_amm_add_liquidity(_amount, _recipient)
-    }
-
-    // Almost a carbon copy of the equivalent, though this returns the shares
-    /// as well.
-    pub fn remove_liquidity_test(
-        &mut self,
-        _amount_liq: U256,
-        _recipient: Address,
-    ) -> R<(U256, U256, Vec<(FixedBytes<8>, U256)>)> {
-        self.require_not_done_predicting()?;
-        assert_or!(!_amount_liq.is_zero(), Error::ZeroShares);
-        assert_or!(
-            self.amm_user_liquidity_shares.get(msg_sender()) >= _amount_liq,
-            Error::NotEnoughLiquidity
-        );
-        let (fusdc_amt, fees_earned, shares) =
-            self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
-        fusdc_call::transfer(_recipient, fusdc_amt)?;
-        Ok((fusdc_amt, fees_earned, shares))
-    }
-}
-
 /// Default for CtorArgs, which is useful for defining simple tests on the
 /// ctor function behaving correctly with certain inputs.
 #[cfg(test)]

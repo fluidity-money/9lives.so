@@ -99,18 +99,9 @@ impl StorageTrading {
         }
         let product = self
             .outcome_ids_iter()
-            .map(|x| {
-                self.amm_shares
-                    .get(x)
-                    .checked_div(SHARE_DECIMALS_EXP)
-                    .ok_or(Error::CheckedDivOverflow)
-            })
-            .collect::<R<Vec<_>>>()?
-            .iter()
+            .map(|x| self.amm_shares.get(x))
             .product();
-        let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32))
-            .checked_mul(SHARE_DECIMALS_EXP)
-            .ok_or(Error::CheckedMulOverflow)?;
+        let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32));
         let liq_shares_minted = new_liq
             .checked_sub(prev_liquidity)
             .ok_or(Error::CheckedSubOverflow(new_liq, prev_liquidity))?;
@@ -243,18 +234,9 @@ impl StorageTrading {
         }
         let product = self
             .outcome_ids_iter()
-            .map(|x| {
-                self.amm_shares
-                    .get(x)
-                    .checked_div(SHARE_DECIMALS_EXP)
-                    .ok_or(Error::CheckedDivOverflow)
-            })
-            .collect::<R<Vec<_>>>()?
-            .iter()
+            .map(|x| self.amm_shares.get(x))
             .product();
-        let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32))
-            .checked_mul(SHARE_DECIMALS_EXP)
-            .ok_or(Error::CheckedMulOverflow)?;
+        let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32));
         let lp_fees_earned = self.internal_amm_claim_lp_fees(recipient)?;
         self.rebalance_fees(msg_sender(), amount, false)?;
         self.amm_liquidity.set(new_liq);
