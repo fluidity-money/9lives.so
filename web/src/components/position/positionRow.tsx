@@ -321,7 +321,7 @@ export default function PositionRow({
             </div>
           ) : null}
         </td>
-        {isDpm !== undefined && !isDpm && (
+        {/* {isDpm !== undefined && !isDpm && (
           <td className="">
             <SellButton
               outcomeName={data.name}
@@ -334,7 +334,7 @@ export default function PositionRow({
               outcomes={outcomes}
             />
           </td>
-        )}
+        )} */}
       </tr>
       {showHistory &&
         history?.map((h) => {
