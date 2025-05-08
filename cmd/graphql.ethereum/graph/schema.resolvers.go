@@ -738,12 +738,16 @@ func (r *queryResolver) CampaignByID(ctx context.Context, id string) (*types.Cam
     SELECT
         campaign_id,
         outcome_id,
-        SUM(from_amount) AS sum_from_amount,
-        SUM(to_amount) as sum_to_amount
+        SUM(
+        case when type = 'buy' THEN from_amount else -to_amount end
+        ) AS sum_from_amount,
+        SUM(
+        case when type = 'buy' then to_amount else -from_amount end
+        ) as sum_to_amount
     FROM
         ninelives_buys_and_sells_1
     WHERE
-        "type" = 'buy' AND campaign_id = ?
+        campaign_id = ?
     GROUP BY
         campaign_id, outcome_id
 ),
