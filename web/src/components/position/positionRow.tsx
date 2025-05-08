@@ -15,7 +15,7 @@ import { requestCampaignById } from "@/providers/graphqlClient";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
-import SellButton from "../sellButton";
+// import SellButton from "../sellButton";
 export default function PositionRow({
   data,
   price,
@@ -38,7 +38,13 @@ export default function PositionRow({
   isDpm?: boolean;
   detailPage?: boolean;
   price?: string;
-  history?: { usdc: number; share: number; id: string; txHash: string }[];
+  history?: {
+    fromAmount: number;
+    toAmount: number;
+    id: string;
+    txHash: string;
+    type: "buy" | "sell";
+  }[];
   outcomes: Outcome[];
   tradingAddr: `0x${string}`;
 }) {
@@ -52,7 +58,14 @@ export default function PositionRow({
   const { connect } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const historicalValue = history?.reduce((acc, v) => acc + v.usdc, 0) ?? 0;
+  const historicalValue =
+    history?.reduce((acc, v) => {
+      if (v.type === "buy") {
+        return acc + v.fromAmount;
+      } else {
+        return acc - v.toAmount;
+      }
+    }, 0) ?? 0;
   const averageShareCost = +formatFusdc(historicalValue, 6) / +data.balance;
   const addPosition = usePortfolioStore((s) => s.addPositionValue);
   const PnL =
@@ -340,26 +353,43 @@ export default function PositionRow({
       {showHistory &&
         history?.map((h) => {
           const PnL =
-            +formatFusdc(h.share, 6) * Number(price ?? 0) -
-            +formatFusdc(h.usdc, 6);
-          const percentageChange = Math.abs(
-            (PnL / +formatFusdc(h.usdc, 6)) * 100,
-          ).toFixed(2);
+            h.type === "buy"
+              ? +formatFusdc(h.toAmount, 6) * Number(price ?? 0) -
+                +formatFusdc(h.fromAmount, 6)
+              : +formatFusdc(h.fromAmount, 6) * Number(price ?? 0) -
+                +formatFusdc(h.toAmount, 6);
+          const percentageChange =
+            h.type === "buy"
+              ? Math.abs((PnL / +formatFusdc(h.fromAmount, 6)) * 100).toFixed(2)
+              : "Nan";
           return (
-            <tr key={h.txHash} className="bg-[#DDDDDD]">
+            <tr
+              key={h.txHash}
+              className={combineClass(
+                h.type === "buy" ? "bg-9green/20" : "bg-9red/20",
+              )}
+            >
               <td>
                 <span className="pl-2 font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
-                  BUY tx
+                  {h.type} tx
                 </span>
               </td>
               <td className="pl-2">
                 <span className="font-chicago text-xs">
-                  ${(h.usdc / h.share).toFixed(2)}
+                  $
+                  {(h.type === "buy"
+                    ? h.fromAmount / h.toAmount
+                    : h.toAmount / h.fromAmount
+                  ).toFixed(2)}
                 </span>
               </td>
               <td>
                 <span className="font-chicago text-xs">
-                  {formatFusdc(h.share, 2)}{" "}
+                  {h.type === "buy" ? "+" : "-"}
+                  {formatFusdc(
+                    h.type === "buy" ? h.toAmount : h.fromAmount,
+                    2,
+                  )}{" "}
                   <span
                     className={combineClass(
                       "p-0.5",
@@ -376,7 +406,8 @@ export default function PositionRow({
               </td>
               <td>
                 <span className="font-chicago text-xs">
-                  ${formatFusdc(h.usdc, 2)}
+                  $
+                  {formatFusdc(h.type === "buy" ? h.fromAmount : h.toAmount, 2)}
                 </span>
               </td>
               <td>
@@ -396,13 +427,7 @@ export default function PositionRow({
                   </span>
                 </div>
               </td>
-              {isDpm !== undefined && !isDpm && (
-                <td>
-                  <span className="font-chicago text-xs">
-                    ${formatFusdc(h.share, 2)}
-                  </span>
-                </td>
-              )}
+              {isDpm !== undefined && !isDpm && <td></td>}
             </tr>
           );
         })}

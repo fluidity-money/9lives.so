@@ -7,8 +7,10 @@ import {
   prepareContractCall,
   simulateTransaction,
 } from "thirdweb";
-
-export default function useIsDpm(tradingAddr: `0x${string}`) {
+export default function useIsDpm(
+  tradingAddr: `0x${string}`,
+  initialData?: any,
+) {
   return useQuery({
     queryKey: ["isDpm", tradingAddr],
     queryFn: async () => {
@@ -26,5 +28,6 @@ export default function useIsDpm(tradingAddr: `0x${string}`) {
         transaction: isDpmTx,
       });
     },
+    initialData,
   });
 }

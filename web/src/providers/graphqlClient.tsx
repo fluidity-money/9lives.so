@@ -244,6 +244,7 @@ export const requestPositionHistory = (address: string, outcomeIds: string[]) =>
     toAmount: true,
     outcomeId: true,
     txHash: true,
+    type: true,
   });
 
 export const requestUserClaims = (address: string, campaignId?: string) =>

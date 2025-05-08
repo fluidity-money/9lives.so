@@ -39,7 +39,7 @@ export default function AssetScene({
           {(props) => <TabButton title="Claimed Rewards" {...props} />}
         </Tab>
       </TabList>
-      <TabPanels>
+      <TabPanels className={"md:min-w-[480px]"}>
         <TabPanel>
           <ShadowCard className="rounded-tl-none p-3 md:p-5">
             <PositionTable

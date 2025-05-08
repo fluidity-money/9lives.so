@@ -11,9 +11,10 @@ export default function usePositionHistory(
       if (!outcomeIds || !address) return [];
       const res = await requestPositionHistory(address, outcomeIds);
       return res.map((i) => ({
-        usdc: i.fromAmount,
-        share: i.toAmount,
+        fromAmount: i.fromAmount,
+        toAmount: i.toAmount,
         id: `0x${i.outcomeId}`,
+        type: i.type,
         txHash: i.txHash,
       }));
     },
