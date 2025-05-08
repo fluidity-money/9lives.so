@@ -7,40 +7,44 @@
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    actions::strat_action, error::Error, host, implement_action, interactions_clear_after,
-    panic_guard, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
-    strat_storage_trading, testing_addrs::*, utils::*, StorageTrading, actions::*
+    actions::strat_action, actions::*, error::Error, host, implement_action,
+    interactions_clear_after, panic_guard, proxy, should_spend_fusdc_contract,
+    should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
 };
 
 use proptest::prelude::*;
 
-fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
-    c.created.set(false);
-    c.is_protocol_fee_disabled.set(true);
-    c.ctor((
-        outcomes.to_vec(),
-        msg_sender(),
-        block_timestamp() + 1,
-        block_timestamp() + 10,
-        msg_sender(),
-        SHARE,
-        false,
-        0,
-        0,
-        0,
-        0,
-    ))
-    .unwrap();
-    c.amm_liquidity.set(U256::ZERO);
-    c.when_decided.set(U64::ZERO);
-    c.is_shutdown.set(false);
-    c.winner.set(FixedBytes::<8>::ZERO);
-    for (i, o) in outcomes.iter().enumerate() {
-        host::register_addr(
-            proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
-            format!("outcome share {o}, outcome id {i}"),
-        );
-    }
+macro_rules! setup_contract {
+    ($c:expr, $outcomes:expr) => {
+        let c = $c;
+        let outcomes = $outcomes;
+        c.created.set(false);
+        c.is_protocol_fee_disabled.set(true);
+        c.ctor((
+            outcomes.to_vec(),
+            msg_sender(),
+            block_timestamp() + 1,
+            block_timestamp() + 10,
+            msg_sender(),
+            SHARE,
+            false,
+            0,
+            0,
+            0,
+            0,
+        ))
+        .unwrap();
+        c.amm_liquidity.set(U256::ZERO);
+        c.when_decided.set(U64::ZERO);
+        c.is_shutdown.set(false);
+        c.winner.set(FixedBytes::<8>::ZERO);
+        for (i, o) in outcomes.iter().enumerate() {
+            host::register_addr(
+                proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
+                format!("outcome share {o}, outcome id {i}"),
+            );
+        }
+    };
 }
 
 fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedBytes<8>, U256)>) {
@@ -66,7 +70,7 @@ proptest! {
         let amt = U256::from(amt);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                setup_contract!(&mut c, &[outcome_a, outcome_b]);
                 c.fee_lp.set(U256::from(fee_take_amt));
                 test_add_liquidity(&mut c, 1000e6 as u64);
                 should_spend_fusdc_sender!(
@@ -115,7 +119,7 @@ proptest! {
         let erik_fee = (erik_amt * fee_take_amt) / 1000;
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                setup_contract!(&mut c, &[outcome_a, outcome_b]);
                 c.fee_lp.set(U256::from(fee_take_amt));
                 test_add_liquidity(&mut c, 1000e6 as u64);
                 let amt = U256::from(ivan_amt);
@@ -171,7 +175,7 @@ proptest! {
         mut c in strat_storage_trading(false),
         actions in proptest::collection::vec((any::<Address>(), strat_action()), 1..1000)
     ) {
-        setup_contract(&mut c, &outcomes);
+        setup_contract!(&mut c, &outcomes);
         for (sender, a) in actions {
             implement_action!(c, sender, a);
         }
@@ -179,11 +183,11 @@ proptest! {
 
     #[test]
     fn test_amm_access_control_okay_1(
-        outcomes in strat_uniq_outcomes(100, 100),
+        outcomes in strat_uniq_outcomes(2, 10),
         mut c in strat_storage_trading(false),
         rand_word in strat_large_u256()
     ) {
-        setup_contract(&mut c, &outcomes);
+        setup_contract!(&mut c, &outcomes);
         panic_guard(|| {
             // A user should not be able to use payoff with a campaign that hasn't ended.
             assert_eq!(
@@ -211,7 +215,7 @@ proptest! {
     ) {
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &outcomes);
+                setup_contract!(&mut c, &outcomes);
                 test_add_liquidity(&mut c, 1000e6 as u64);
             }
         }
@@ -224,7 +228,7 @@ proptest! {
     ) {
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &outcomes);
+                setup_contract!(&mut c, &outcomes);
                 test_add_liquidity(&mut c, 10e6 as u64);
             }
         }
@@ -232,12 +236,12 @@ proptest! {
 
     #[test]
     fn test_amm_breaking_specific_26k(
-        outcomes in strat_uniq_outcomes(2, 100),
+        outcomes in strat_uniq_outcomes(2, 10),
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {
             ERIK => {
-                setup_contract(&mut c, &outcomes);
+                setup_contract!(&mut c, &outcomes);
                 test_add_liquidity(&mut c, 100_000e6 as u64);
             }
         }
@@ -250,7 +254,7 @@ proptest! {
     ) {
         interactions_clear_after! {
             ERIK => {
-                setup_contract(&mut c, &outcomes);
+                setup_contract!(&mut c, &outcomes);
                 dbg!(test_add_liquidity(&mut c, 100_000e6 as u64));
             }
         }

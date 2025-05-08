@@ -993,7 +993,7 @@ proptest! {
                 assert_eq_u!(500e6 as u64, ivan_liq_shares);
                 should_spend_fusdc_contract!(
                     // In the Python, this is 377.71391451345414:
-                    377758000,
+                    377713500,
                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
             },
