@@ -1,7 +1,7 @@
 const tradingAbi = [
   {
     type: "function",
-    name: "addLiquidity",
+    name: "addLiquidityA975D995",
     inputs: [
       {
         name: "liquidity",
@@ -217,6 +217,30 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "estimateBurnC04425D3",
+    inputs: [
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "shareAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "fees",
     inputs: [],
     outputs: [
@@ -410,30 +434,6 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "quoteBurn8DBDCAC7",
-    inputs: [
-      {
-        name: "outcome",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
-      {
-        name: "fusdcValue",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     name: "quoteC0E17FC7",
     inputs: [
       {
@@ -449,7 +449,12 @@ const tradingAbi = [
     ],
     outputs: [
       {
-        name: "",
+        name: "purchased",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "fees",
         type: "uint256",
         internalType: "uint256",
       },
