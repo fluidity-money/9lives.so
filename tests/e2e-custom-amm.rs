@@ -260,6 +260,15 @@ proptest! {
         }
     }
 
+    #[test]
+    fn test_amm_tiny_mint_into_burning(
+        add_lp in strat_medium_u256(),
+        (outcomes, referrers, actions) in strat_tiny_mint_into_burn_outcomes(10, 10, 100, 1000)
+    )
+    {
+        // Test up to a thousand mint and burn operations from a hundred minimum.
+    }
+
     /*
     #[test]
     fn test_amm_exhaustive_lp_add_buys_sells_lp_remove(

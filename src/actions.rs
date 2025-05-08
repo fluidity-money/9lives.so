@@ -140,6 +140,26 @@ pub fn strat_tiny_mint_into_burn(
         })
 }
 
+#[cfg(feature = "trading-backend-amm")]
+pub fn strat_tiny_mint_into_burn_outcomes(
+    max_outcomes: usize,
+    max_referrers: usize,
+    lower: usize,
+    upper: usize,
+) -> impl Strategy<Value = (Vec<FixedBytes<8>>, Vec<Address>, Vec<[Action; 2]>)> {
+    use proptest::collection::vec;
+    (
+        strat_uniq_outcomes(2, max_outcomes),
+        vec(any::<Address>(), 0..=max_referrers),
+    )
+        .prop_flat_map(move |(outs, refs)| {
+            let outs2 = outs.clone();
+            let refs2 = refs.clone();
+            vec(strat_tiny_mint_into_burn(outs2, refs2), lower..=upper)
+                .prop_map(move |acts| (outs.clone(), refs.clone(), acts))
+        })
+}
+
 /*
 #[cfg(feature = "trading-backend-amm")]
 pub fn strat_reasonable_actions(
@@ -155,7 +175,7 @@ pub fn strat_reasonable_actions(
     // can do this to test if the contract ever runs a deficit.
     (
         strat_uniq_outcomes(2, max_outcomes),
-        vec(strat_address_not_empty(), 0..=max_referrers),
+        vec(any::<Address>(), 0..=max_referrers),
     )
         .prop_flat_map(move |(outs, refs)| {
             let outs2 = outs.clone();
@@ -201,10 +221,10 @@ macro_rules! implement_action {
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::AddLiquidity(a) => {
-                should_spend_fusdc_sender!(a.amount, $c.add_liquidity_A_975_D_995(
+                should_spend_fusdc_sender!(
                     a.amount,
-                    $sender
-                ));
+                    $c.add_liquidity_A_975_D_995(a.amount, $sender)
+                );
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::RemoveLiquidity(a) => {
