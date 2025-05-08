@@ -79,7 +79,6 @@ interface TabButtonProps
   extends HTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonTitle> {
   title: string;
-  watchlist?: boolean;
   active: boolean;
   hover: boolean;
   focus: boolean;

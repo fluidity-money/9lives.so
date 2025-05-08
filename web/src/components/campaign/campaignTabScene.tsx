@@ -23,7 +23,7 @@ export default function CampaignTabScene() {
           ))}
           <Tab as={Fragment}>
             {(props) => (
-              <TabButton title="My Watchlist" {...props} watchlist={true} />
+              <TabButton title="My Watchlist" {...props} intent="watchlist" />
             )}
           </Tab>
         </TabList>
