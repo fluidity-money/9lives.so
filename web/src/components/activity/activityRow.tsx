@@ -56,12 +56,19 @@ export default function ActivityRow({
       </td>
       <td>
         <span className="font-chicago text-xs">
-          ${(data.fromAmount / data.toAmount).toFixed(2)}
+          $
+          {(data.type === "buy"
+            ? data.fromAmount / data.toAmount
+            : data.toAmount / data.fromAmount
+          ).toFixed(2)}
         </span>
       </td>
       <td>
         <span className="font-chicago text-xs">
-          {formatFusdc(data.toAmount, 2)}{" "}
+          {formatFusdc(
+            data.type === "buy" ? data.toAmount : data.fromAmount,
+            2,
+          )}{" "}
           <span
             className={combineClass(
               "p-0.5",
@@ -78,7 +85,11 @@ export default function ActivityRow({
       </td>
       <td>
         <span className="font-chicago text-xs">
-          ${formatFusdc(data.fromAmount, 2)}
+          $
+          {formatFusdc(
+            data.type === "buy" ? data.fromAmount : data.toAmount,
+            2,
+          )}
         </span>
       </td>
       <td>
