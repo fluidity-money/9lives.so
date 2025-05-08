@@ -28,12 +28,14 @@ export default function DetailBuyAction({
   data,
   selectedOutcome,
   price,
+  isDpm,
 }: {
   shouldStopAction: boolean;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
   price: string;
+  isDpm?: boolean;
 }) {
   const [minimized, setMinimized] = useState(true);
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
@@ -94,6 +96,10 @@ export default function DetailBuyAction({
     {
       title: "Shares",
       value: share,
+    },
+    {
+      title: "To Win 💵",
+      value: `$${isDpm !== undefined && !isDpm ? share : estimatedReturn}`,
     },
   ];
   async function handleBuy({ fusdc }: FormData) {
