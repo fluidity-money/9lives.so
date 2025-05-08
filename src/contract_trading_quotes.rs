@@ -6,8 +6,10 @@ use stylus_sdk::{
 use crate::{
     decimal::{fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal},
     error::*,
-    events, fusdc_call, maths,
-    utils::msg_sender,
+    events, fusdc_call,
+    immutables::DAO_ADDR,
+    maths,
+    utils::{contract_address, msg_sender},
 };
 
 pub use crate::storage_trading::*;
@@ -24,7 +26,9 @@ impl StorageTrading {
             return Ok((U256::ZERO, U256::ZERO));
         }
         let (fee, _) = self.calculate_fees(value, true)?;
-        let value = value.checked_sub(fee).ok_or(Error::CheckedSubOverflow(value, fee))?;
+        let value = value
+            .checked_sub(fee)
+            .ok_or(Error::CheckedSubOverflow(value, fee))?;
         #[cfg(feature = "trading-backend-dpm")]
         return Ok((self.internal_dpm_quote(outcome_id, value)?, fee));
         #[cfg(not(feature = "trading-backend-dpm"))]
@@ -69,6 +73,26 @@ impl StorageTrading {
         return self.internal_dpm_payoff(outcome_id, amt, recipient);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_payoff(outcome_id, amt, recipient);
+    }
+
+    pub fn fees_20853617(&self) -> R<(U256, U256, U256, U256)> {
+        Ok((
+            self.fee_creator.get(),
+            self.fee_minter.get(),
+            self.fee_lp.get(),
+            self.fee_referrer.get(),
+        ))
+    }
+
+    #[allow(non_snake_case)]
+    pub fn rescue_F_C_76_A_1_C_9(&self, recipient: Address) -> R<U256> {
+        // The point of this function is that while we don't have upgrade powers,
+        // we can rescue any funds if something goes wrong during our first batch
+        // of usage.
+        assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
+        let bal = fusdc_call::balance_of(contract_address())?;
+        fusdc_call::transfer(recipient, bal)?;
+        Ok(bal)
     }
 }
 

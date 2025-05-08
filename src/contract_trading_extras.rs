@@ -150,25 +150,6 @@ impl StorageTrading {
             outcome,
         ))
     }
-
-    pub fn fees(&self) -> R<(U256, U256, U256, U256)> {
-        Ok((
-            self.fee_creator.get(),
-            self.fee_minter.get(),
-            self.fee_lp.get(),
-            self.fee_referrer.get(),
-        ))
-    }
-
-    pub fn rescue(&self, recipient: Address) -> R<U256> {
-        // The point of this function is that while we don't have upgrade powers,
-        // we can rescue any funds if something goes wrong during our first batch
-        // of usage.
-        assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
-        let bal = fusdc_call::balance_of(contract_address())?;
-        fusdc_call::transfer(recipient, bal)?;
-        Ok(bal)
-    }
 }
 
 #[cfg(not(target_arch = "wasm32"))]
