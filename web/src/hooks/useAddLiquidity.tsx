@@ -65,7 +65,7 @@ export default function useAddLiquidity({
           });
           const addLiquidityTx = prepareContractCall({
             contract: tradingContract,
-            method: "addLiquidity",
+            method: "addLiquidityA975D995",
             params: [amount, account.address],
           });
           await sendTransaction({
