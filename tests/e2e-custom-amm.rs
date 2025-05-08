@@ -53,7 +53,7 @@ proptest! {
     #[test]
     #[ignore]
     fn test_amm_dilution_event_1(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -101,7 +101,7 @@ proptest! {
     #[test]
     #[ignore]
     fn test_amm_dilution_event_2(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -167,7 +167,7 @@ proptest! {
     #[test]
     #[ignore]
     fn test_amm_crazy_testing_1(
-        outcomes in strat_uniq_outcomes(100),
+        outcomes in strat_uniq_outcomes(100, 100),
         mut c in strat_storage_trading(false),
         actions in proptest::collection::vec((any::<Address>(), strat_action()), 1..1000)
     ) {
@@ -179,7 +179,7 @@ proptest! {
 
     #[test]
     fn test_amm_access_control_okay_1(
-        outcomes in strat_uniq_outcomes(100),
+        outcomes in strat_uniq_outcomes(100, 100),
         mut c in strat_storage_trading(false),
         rand_word in strat_large_u256()
     ) {
@@ -206,7 +206,7 @@ proptest! {
 
     #[test]
     fn test_five_outcomes(
-        outcomes in strat_uniq_outcomes(7),
+        outcomes in strat_uniq_outcomes(2, 7),
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {
@@ -219,7 +219,7 @@ proptest! {
 
     #[test]
     fn test_amm_variable_outcomes(
-        outcomes in strat_uniq_outcomes(5),
+        outcomes in strat_uniq_outcomes(2, 5),
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {
@@ -232,7 +232,20 @@ proptest! {
 
     #[test]
     fn test_breaking_specific_26k(
-        outcomes in strat_uniq_outcomes(100),
+        outcomes in strat_uniq_outcomes(2, 100),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            ERIK => {
+                setup_contract(&mut c, &outcomes);
+                test_add_liquidity(&mut c, 100_000e6 as u64);
+            }
+        }
+    }
+
+    #[test]
+    fn test_ogous_frontend_1(
+        outcomes in strat_uniq_outcomes(5, 5),
         mut c in strat_storage_trading(false)
     ) {
         interactions_clear_after! {

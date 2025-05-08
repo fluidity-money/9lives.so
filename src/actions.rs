@@ -6,6 +6,8 @@ use proptest_derive::Arbitrary as P;
 
 use arbitrary::Arbitrary as A;
 
+use crate::utils::*;
+
 // Actions for use in property testing/fuzzing.
 
 #[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
@@ -102,6 +104,69 @@ pub struct ActionEffect {
     pub fusdc_spent: U256,
     pub outcome_winner: Option<FixedBytes<8>>,
 }
+
+pub fn strat_tiny_mint_into_burn(
+    outcomes: Vec<FixedBytes<8>>,
+    referrers: Vec<Address>,
+) -> impl Strategy<Value = [Action; 2]> {
+    // Create some outcomes in the range we want, then map over that to
+    // create a series of either tiny mint into burn strategies, add and
+    // remove liquidity strategies, then eventually a payoff at the end. We
+    // can do this to test if the contract ever runs a deficit.
+    let refs1 = referrers.clone();
+    let refs2 = referrers.clone();
+    (0..outcomes.len(), 0..refs1.len(), any::<u128>())
+        .prop_flat_map(move |(oi, ri_m, m)| {
+            let out = outcomes[oi];
+            let rm = refs1[ri_m];
+            let m_u = U256::from(m);
+            (Just((out, rm, m_u)), 0..refs1.len(), 0..=m)
+        })
+        .prop_map(move |((out, rm, m_u), ri_b, b)| {
+            [
+                Action::Mint(ActionMint {
+                    outcome: out,
+                    referrer: rm,
+                    usd_amt: m_u,
+                }),
+                Action::Burn(ActionBurn {
+                    outcome: out,
+                    referrer: refs2[ri_b],
+                    should_estimate_share_burn: false,
+                    usd_amt: U256::from(b),
+                }),
+            ]
+        })
+}
+
+/*
+pub fn strat_reasonable_actions(
+    max_outcomes: usize,
+    max_referrers: usize,
+    lower: usize,
+    upper: usize,
+) -> impl Strategy<Value = (Vec<FixedBytes<8>>, Vec<Address>, Vec<Action>)> {
+    use proptest::collection::vec;
+    // Create some outcomes in the range we want, then map over that to
+    // create a series of either tiny mint into burn strategies, add and
+    // remove liquidity strategies, then eventually a payoff at the end. We
+    // can do this to test if the contract ever runs a deficit.
+    (
+        strat_uniq_outcomes(2, max_outcomes),
+        vec(strat_address_not_empty(), 0..=max_referrers),
+    )
+        .prop_flat_map(move |(outs, refs)| {
+            let outs2 = outs.clone();
+            let refs2 = refs.clone();
+            vec(strat_tiny_mint_into_burn(&outs2, &refs2), lower..=upper).prop_map(
+                move |pairs: Vec<[Action; 2]>| {
+                    let actions = pairs.into_iter().flat_map(|arr| arr).collect::<Vec<_>>();
+                    (outs2.clone(), refs2.clone(), actions)
+                },
+            )
+        })
+}
+*/
 
 // TODO: translate this into a structured return type with the effect of the below.
 #[macro_export]

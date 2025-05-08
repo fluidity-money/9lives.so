@@ -173,7 +173,7 @@ macro_rules! test_should_burn_shares {
 proptest! {
     #[test]
     fn test_amm_user_story_1_a(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -210,7 +210,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_2(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -224,7 +224,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_3(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -263,7 +263,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_4(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -297,7 +297,7 @@ proptest! {
     #[test]
     #[ignore]
     fn test_amm_user_story_5(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -331,7 +331,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_6(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -361,7 +361,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_7(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -397,7 +397,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_8(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -452,7 +452,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_9(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -493,7 +493,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_10(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -536,7 +536,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_11(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -580,7 +580,7 @@ proptest! {
     #[test]
     #[ignore]
     fn test_amm_user_story_12(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -618,7 +618,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_13(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -663,7 +663,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_14(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -698,7 +698,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_15(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -783,7 +783,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_16(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -811,7 +811,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_17(
-        outcomes in strat_uniq_outcomes(2),
+        outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -902,7 +902,7 @@ proptest! {
 
     #[test]
     fn test_amm_user_story_18(
-        outcomes in strat_uniq_outcomes(4),
+        outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false)
     ) {
         let outcome_a = outcomes[0];
@@ -1009,7 +1009,7 @@ proptest! {
             ELI => {
                 should_spend_fusdc_contract!(
                     // In the Python, this is 5504.027898192409:
-                    5503934060,
+                    5503934060u64,
                     c.claim_liquidity_9_C_391_F_85(msg_sender())
                 );
                 assert_eq!(U256::ZERO, fusdc_call::balance_of(CONTRACT).unwrap());
