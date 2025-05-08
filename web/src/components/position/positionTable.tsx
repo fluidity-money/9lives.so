@@ -15,9 +15,8 @@ export default function PositionTable({
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
   const headers = ["Position", "Current", "Qty", "Value", "PnL"];
-  // const headersWithAction = [...headers, "Actions"];
-  // const tableHeaders = isDpm ? headers : headersWithAction;
-  const tableHeaders = headers;
+  const headersWithWin = [...headers, "To Win"];
+  const tableHeaders = isDpm ? headers : headersWithWin;
   return (
     <table className="w-full table-auto border-separate border-spacing-y-1">
       <thead>

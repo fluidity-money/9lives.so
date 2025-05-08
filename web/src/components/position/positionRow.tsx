@@ -321,9 +321,10 @@ export default function PositionRow({
             </div>
           ) : null}
         </td>
-        {/* {isDpm !== undefined && !isDpm && (
-          <td className="">
-            <SellButton
+        {isDpm !== undefined && !isDpm && (
+          <td>
+            <span className="font-chicago text-xs">${data.balance}</span>
+            {/* <SellButton
               outcomeName={data.name}
               campaignId={data.campaignId}
               outcomeId={data.id}
@@ -332,9 +333,9 @@ export default function PositionRow({
               maxShareAmount={data.balance}
               maxUsdcValue={historicalValue}
               outcomes={outcomes}
-            />
+            /> */}
           </td>
-        )} */}
+        )}
       </tr>
       {showHistory &&
         history?.map((h) => {
@@ -395,6 +396,13 @@ export default function PositionRow({
                   </span>
                 </div>
               </td>
+              {isDpm !== undefined && !isDpm && (
+                <td>
+                  <span className="font-chicago text-xs">
+                    ${formatFusdc(h.share, 2)}
+                  </span>
+                </td>
+              )}
             </tr>
           );
         })}
