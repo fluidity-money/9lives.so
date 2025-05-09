@@ -162,6 +162,12 @@ pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 /// Minimum amount of fUSDC that can be minted with.
 pub const MINIMUM_MINT_AMT: i64 = 0;
 
+/// We'll export the Crate version through the contract for feature branching.
+pub const CARGO_PKG_VERSION: &'static str = match option_env!("CARGO_PKG_VERSION") {
+    Some(v) => v,
+    _ => panic!("CARGO_PKG_VERSION")
+};
+
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod test {
     use super::*;

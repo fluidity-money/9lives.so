@@ -242,9 +242,9 @@ generate these, run `./print-error-table.sh`.
 | Trading DPM extras impl       | `0x81eebeda7eb9f68c9a825c619f5e0d13a117e5f6` |
 | Trading DPM price impl        | `0x8fc31d39edec596e8089b313920c05642e86d549` |
 | Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
-| Trading AMM mint impl         | `0x7472385232aa74e68ad21b0acd7213838a384cac` |
-| Trading AMM extras impl       | `0x2c4bd85deea040d91d0277bbf0dc928512656641` |
-| Trading AMM price impl        | `0xcbf0b8610735256268dad769ff075359823d527f` |
+| Trading AMM mint impl         | `0x0d5ff4ee4c15f0bea183222c2f2a10b24e43487c` |
+| Trading AMM extras impl       | `0x59c9660f835c1c1c5387a48b9fe8cf7d49020a64` |
+| Trading AMM price impl        | `0x6f532f98efeec6a9e40fe03f5827b42145bca3e9` |
 | Trading AMM quotes impl       | `0x3fbf75549696814a56b8d18a67d3269bd77f7e7d` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |

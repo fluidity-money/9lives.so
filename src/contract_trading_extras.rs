@@ -7,7 +7,7 @@ use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
-use alloc::vec::Vec;
+use alloc::{string::String, borrow::ToOwned, vec::Vec};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
@@ -137,6 +137,10 @@ impl StorageTrading {
             self.share_impl.get(),
             outcome,
         ))
+    }
+
+    pub fn version(&self) -> String {
+        CARGO_PKG_VERSION.to_owned()
     }
 }
 

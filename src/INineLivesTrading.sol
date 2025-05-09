@@ -156,6 +156,8 @@ interface INineLivesTrading {
         uint256 feeReferrer;
     }
 
+    function version() external pure returns (string memory);
+
     /// @notice fees currently set in the market. Scaled by FEE_SCALING.
     function fees62DAA154() external view returns (Fees memory);
 

@@ -196,6 +196,10 @@ contract MockTrading is INineLivesTrading {
         return address(shares_[outcome]);
     }
 
+    function version() external pure returns (string memory) {
+        return "";
+    }
+
     function fees62DAA154() external view returns (Fees memory f) {
     }
 
