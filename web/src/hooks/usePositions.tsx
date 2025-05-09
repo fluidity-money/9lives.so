@@ -54,6 +54,7 @@ async function fetchPositions(
       shareAddress: outcome.share.address,
       name: outcome.name,
       balance: formatFusdc(Number(balances[idx]), 2),
+      balanceRaw: balances[idx],
     }))
     .filter((item) => item.balance !== "0.00");
 
@@ -75,6 +76,7 @@ export default function usePositions({
       shareAddress: `0x${string}`;
       name: string;
       balance: string;
+      balanceRaw: bigint;
     }[]
   >({
     queryKey: ["positions", tradingAddr, outcomes, account],

@@ -13,6 +13,7 @@ import {
   getContract,
   prepareContractCall,
   simulateTransaction,
+  toUnits,
 } from "thirdweb";
 import config from "@/config";
 import { formatUnits } from "ethers";
@@ -26,6 +27,8 @@ import useSell from "@/hooks/useSell";
 import ERC20Abi from "@/config/abi/erc20";
 import { currentChain } from "@/config/chains";
 import thirdweb from "@/config/thirdweb";
+import usePositions from "@/hooks/usePositions";
+import useEstimateBurn from "@/hooks/useEstimateBurn";
 
 export default function DetailSellAction({
   shouldStopAction,
@@ -74,6 +77,31 @@ export default function DetailSellAction({
     outcomes: data.outcomes,
   });
   const share = watch("shareToBurn");
+  const { data: ownedShares } = usePositions({
+    tradingAddr: data.poolAddress,
+    outcomes: [data.outcomes.find((o) => o.identifier === selectedOutcome.id)!],
+    account,
+  });
+  const { data: estimation } = useEstimateBurn({
+    outcomeId: selectedOutcome.id as `0x${string}`,
+    share: toUnits(share.toString(), config.contracts.decimals.shares),
+    tradingAddr: data.poolAddress,
+    account,
+  });
+  const { data: estimationMax } = useEstimateBurn({
+    outcomeId: selectedOutcome.id as `0x${string}`,
+    share: ownedShares?.[0].balanceRaw,
+    tradingAddr: data.poolAddress,
+    account,
+  });
+  useEffect(() => {
+    if (estimation && estimation[1] > BigInt(0)) {
+      setValue(
+        "minUsdcToGet",
+        Number(formatUnits(+estimation[1], config.contracts.decimals.fusdc)),
+      );
+    }
+  }, [estimation, setValue]);
   const orderSummary = [
     {
       title: "AVG Price",
@@ -82,6 +110,13 @@ export default function DetailSellAction({
     {
       title: "Shares",
       value: share,
+    },
+    {
+      title: "USDC to Get",
+      value: formatUnits(
+        estimation ? estimation[1] : BigInt(0),
+        config.contracts.decimals.fusdc,
+      ),
     },
   ];
   async function handleSell(input: FormData) {
@@ -193,13 +228,21 @@ export default function DetailSellAction({
               <span className="font-chicago text-xs font-normal text-9black">
                 Shares to sell
               </span>
-              <Button
-                disabled={shouldStopAction || !account}
-                onClick={setToMaxShare}
-                intent={"default"}
-                size={"small"}
-                title="Max"
-              />
+              <div className="flex items-center gap-2">
+                <span className="font-geneva text-xs font-normal text-9black/50">
+                  {formatUnits(
+                    ownedShares?.[0].balanceRaw ?? BigInt(0),
+                    config.contracts.decimals.shares,
+                  )}
+                </span>
+                <Button
+                  disabled={shouldStopAction || !account}
+                  onClick={setToMaxShare}
+                  intent={"default"}
+                  size={"small"}
+                  title="Max"
+                />
+              </div>
             </div>
             <div className="flex gap-2.5">
               {/* <AssetSelector oneShareItem={{ img: outcome.picture }} /> */}
@@ -208,7 +251,7 @@ export default function DetailSellAction({
                 type="number"
                 min={0}
                 max={Number.MAX_SAFE_INTEGER}
-                placeholder="0"
+                placeholder={`Max you can get ${estimationMax ? formatUnits(estimationMax[1], config.contracts.decimals.fusdc) : 0}`}
                 onFocus={handleFocus}
                 className={combineClass(
                   "w-full flex-1 text-center",
