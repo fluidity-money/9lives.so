@@ -58,14 +58,9 @@ export default function PositionRow({
   const { connect } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const historicalValue =
-    history?.reduce((acc, v) => {
-      if (v.type === "buy") {
-        return acc + v.fromAmount;
-      } else {
-        return acc - v.toAmount;
-      }
-    }, 0) ?? 0;
+  const historicalValue = Math.trunc(
+    history?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0,
+  );
   const averageShareCost = +formatFusdc(historicalValue, 6) / +data.balance;
   const addPosition = usePortfolioStore((s) => s.addPositionValue);
   const PnL =
