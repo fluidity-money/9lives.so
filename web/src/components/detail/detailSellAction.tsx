@@ -171,7 +171,7 @@ export default function DetailSellAction({
             </div>
           ) : null}
           <div className="flex flex-col gap-1">
-            <h3 className="font-chicago text-base font-normal text-9black">
+            <h3 className="font-chicago text-lg font-normal text-9black">
               {outcome.name}
             </h3>
             <div className="flex items-center gap-1 font-geneva text-xs uppercase">
@@ -191,7 +191,7 @@ export default function DetailSellAction({
               )}
             >
               <span className="font-chicago text-xs font-normal text-9black">
-                Asset to sell
+                Shares to sell
               </span>
               <Button
                 disabled={shouldStopAction || !account}
@@ -202,7 +202,7 @@ export default function DetailSellAction({
               />
             </div>
             <div className="flex gap-2.5">
-              <AssetSelector oneShareItem={{ img: outcome.picture }} />
+              {/* <AssetSelector oneShareItem={{ img: outcome.picture }} /> */}
               <Input
                 {...register("shareToBurn")}
                 type="number"

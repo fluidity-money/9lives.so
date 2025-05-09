@@ -27,7 +27,7 @@ const buttonTitle = cva(
       },
       size: {
         small: "text-xs",
-        medium: "text-base",
+        medium: "text-sm",
       },
     },
     compoundVariants: [
@@ -68,7 +68,7 @@ const buttonImg = cva("w-auto", {
   variants: {
     size: {
       small: "h-[25px]",
-      medium: "h-[33px]",
+      medium: "h-[29px]",
     },
   },
   defaultVariants: {

@@ -194,7 +194,7 @@ export default function DetailBuyAction({
             </div>
           ) : null}
           <div className="flex flex-col gap-1">
-            <h3 className="font-chicago text-base font-normal text-9black">
+            <h3 className="font-chicago text-lg font-normal text-9black">
               {outcome.name}
             </h3>
             <div className="flex items-center gap-1 font-geneva text-xs uppercase">
