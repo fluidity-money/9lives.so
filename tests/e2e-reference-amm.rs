@@ -477,7 +477,7 @@ proptest! {
                 assert_eq!(U64::from(1), c.when_decided.get());
                 should_spend_fusdc_contract!(
                     U256::from(user_shares),
-                    c.payoff_8_5_D_8_D_F_C_9(
+                    c.payoff_C_B_6_F_2565(
                         outcome_a,
                         U256::from(user_shares),
                         msg_sender()
@@ -520,7 +520,7 @@ proptest! {
                 host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
                 should_spend_fusdc_contract!(
                     U256::from(user_shares),
-                    c.payoff_8_5_D_8_D_F_C_9(
+                    c.payoff_C_B_6_F_2565(
                         outcome_a,
                         U256::from(user_shares),
                         msg_sender()
@@ -562,7 +562,7 @@ proptest! {
                 panic_guard(||
                     assert_eq!(
                         Error::NotWinner,
-                        c.payoff_8_5_D_8_D_F_C_9(
+                        c.payoff_C_B_6_F_2565(
                             outcome_a,
                             U256::from(user_shares),
                             msg_sender()
@@ -764,7 +764,7 @@ proptest! {
                     {
                         should_spend_fusdc_contract!(
                             sender_outcome_a_bal,
-                            c.payoff_8_5_D_8_D_F_C_9(
+                            c.payoff_C_B_6_F_2565(
                                 outcome_a,
                                 sender_outcome_a_bal,
                                 msg_sender()
@@ -874,7 +874,7 @@ proptest! {
                 let win_amt = U256::from(667476901);
                 should_spend_fusdc_contract!(
                     667476900,
-                    c.payoff_8_5_D_8_D_F_C_9(
+                    c.payoff_C_B_6_F_2565(
                         outcome_a,
                         win_amt,
                         msg_sender()
@@ -960,7 +960,7 @@ proptest! {
                 panic_guard(|| {
                     assert_eq!(
                         Error::NotWinner,
-                        c.payoff_8_5_D_8_D_F_C_9(
+                        c.payoff_C_B_6_F_2565(
                             outcome_a,
                             outcome_a_shares,
                             msg_sender()
@@ -971,7 +971,7 @@ proptest! {
                 c.decide(outcome_a).unwrap();
                 should_spend_fusdc_contract!(
                     outcome_a_shares,
-                    c.payoff_8_5_D_8_D_F_C_9(
+                    c.payoff_C_B_6_F_2565(
                         outcome_a,
                         outcome_a_shares,
                         msg_sender()
@@ -981,7 +981,7 @@ proptest! {
             OGOUS => {
                 should_spend_fusdc_contract!(
                     ogous_shares,
-                    c.payoff_8_5_D_8_D_F_C_9(
+                    c.payoff_C_B_6_F_2565(
                         outcome_a,
                         ogous_shares,
                         msg_sender()

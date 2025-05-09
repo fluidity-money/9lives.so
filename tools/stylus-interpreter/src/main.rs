@@ -50,13 +50,10 @@ struct Args {
     #[arg(short, long, default_value = "https://rpc.superposition.so")]
     url: String,
 
-    #[arg(short, long, group = "action")]
-    run_tests: bool,
-
     #[arg(required = true)]
     file: String,
 
-    #[arg(group = "action", default_value = "")]
+    #[arg(required = true)]
     calldata: String,
 }
 
@@ -874,35 +871,13 @@ async fn main() -> Result<(), Error> {
 
     let instance = linker.instantiate_async(&mut store, &module).await?;
 
-    if args.run_tests {
-        let exports = instance
-            .exports(&mut store)
-            .map(|x| x.name().to_owned())
-            .collect::<Vec<_>>();
-        for f_name in exports {
-            if f_name.starts_with("stylus_interpreter_test") {
-                let mut results = Vec::with_capacity(1);
-                match instance.get_func(&mut store, &f_name).unwrap().call(
-                    &mut store,
-                    &[],
-                    &mut results,
-                ) {
-                    Ok(_) => (),
-                    err => {
-                        eprintln!("fname {f_name}: {:?}", err)
-                    }
-                }
-            }
-        }
-    } else {
-        let entrypoint = instance.get_typed_func::<i32, i32>(&mut store, "user_entrypoint")?;
-        eprintln!(
-            "{}",
-            entrypoint
-                .call_async(&mut store, calldata_len as i32)
-                .await?
-        );
-    }
+    let entrypoint = instance.get_typed_func::<i32, i32>(&mut store, "user_entrypoint")?;
+    eprintln!(
+        "{}",
+        entrypoint
+            .call_async(&mut store, calldata_len as i32)
+            .await?
+    );
 
     Ok(())
 }

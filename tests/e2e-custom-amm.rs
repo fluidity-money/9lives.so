@@ -192,7 +192,7 @@ proptest! {
             // A user should not be able to use payoff with a campaign that hasn't ended.
             assert_eq!(
                 Error::NotWinner,
-                c.payoff_8_5_D_8_D_F_C_9(
+                c.payoff_C_B_6_F_2565(
                     outcomes[0],
                     rand_word,
                     msg_sender()

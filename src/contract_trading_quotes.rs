@@ -76,7 +76,7 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn fees62_D_A_A_154(&self) -> R<(U256, U256, U256, U256)> {
+    pub fn fees_62_D_A_A_154(&self) -> R<(U256, U256, U256, U256)> {
         Ok((
             self.fee_creator.get(),
             self.fee_minter.get(),

@@ -35,7 +35,7 @@ alloy-sol-types = { version = "=0.8.14", default-features = false }
 alloy-sol-macro = { version = "=0.8.14", default-features = false }
 alloy-core = { version = "=0.8.14", default-features = false }
 alloy-primitives = { version = "=0.8.14", default-features = false, features = ["native-keccak"] }
-array-concat = "0.5.3"
+array-concat = "0.5.5"
 const-hex = { version = "1.12.0", default-features = false }
 paste = "1.0.15"
 rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths"] }
@@ -45,6 +45,7 @@ alloy-sol-macro-input = "=0.7.6"
 strum = { version = "0.26.3", default-features = false, features = ["derive"] }
 mutants = "0.0.3"
 ruint = { version = "1.14.0", default-features = false }
+backtrace = { version = "0.3.75", default-features = false }
 
 [dev-dependencies]
 proptest = "1.5.0"

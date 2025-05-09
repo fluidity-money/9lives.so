@@ -656,7 +656,7 @@ impl StorageTrading {
                     lo = mid;
                 }
                 Ok(amt) if amt == shares_target => {
-                    return Ok(amt);
+                    return Ok(mid);
                 }
                 Ok(_) | Err(Error::CheckedSubOverflow(_, _)) => {
                     hi = c!(mid
