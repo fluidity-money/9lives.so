@@ -45,7 +45,7 @@ const useSell = ({
             chain: config.chains.currentChain,
           });
 
-          const minShareOut = BigInt(Math.floor(Number(shareAmount) * 0.99));
+          const minShareOut = BigInt(Math.floor(Number(shareAmount) * 0.95));
           const maxShareOut = shareAmount;
           const allowanceTx = prepareContractCall({
             contract: shareContract,
