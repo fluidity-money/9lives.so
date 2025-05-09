@@ -607,21 +607,6 @@ impl StorageTrading {
         }
         let (fee, _) = self.calculate_fees(usd_amt, false)?;
         let usd_amt_added_fee = usd_amt.checked_add(fee).ok_or(Error::CheckedAddOverflow)?;
-        crate::harness_dbg!(
-            "meme",
-            "fee",
-            fee,
-            "usd amt",
-            usd_amt,
-            "usd amt added fee",
-            usd_amt_added_fee,
-            "shares for the outcome the user asked for",
-            self.amm_shares.get(outcome_id),
-            "outcome id the user is trying to burn",
-            self.outcome_ids_iter()
-                .position(|x| x == outcome_id)
-                .unwrap()
-        );
         let prev_after = c!(self
             .amm_shares
             .get(outcome_id)
