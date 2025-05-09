@@ -1,0 +1,46 @@
+#!/usr/bin/env -S rc -e
+
+# NOTICE: It's possible to have a false positive with this script if a
+# part of the selector matches a magic byte.
+
+fn selectors {
+	forge selectors list INineLivesTrading \
+		| awk -F'|' '/Function/ { print $3,";",$4 }' \
+		| sed 's/ //g'
+}
+
+fn print_facets {
+	mints=()
+	quotes=()
+	price=()
+	extras=()
+	for(l in `{selectors}) {
+		f=`{echo $l | cut -f1 -d';'}
+		s=`{echo $l | cut -f2 -d';' | sed -n 's/0x.....\(.\).*/\1/p'}
+		if (~ $s 1) {
+			mints=($f $mints)
+		}
+		if not {
+			if (~ $s 2) {
+				quotes=($f $quotes)
+			}
+			if not {
+				if (~ $s 3) {
+					price=($f $price)
+				}
+				if not extras=($f $extras)
+			}
+		}
+	}
+	echo -n '{"mints": ['
+	{ for(m in $mints) echo -n '"'$m'",' } | sed -s 's/\,$//g'
+	echo -n '], "quotes": ['
+	{ for(m in $quotes) echo -n '"'$m'",' } | sed -s 's/\,$//g'
+	echo -n '], "price": ['
+	{ for(m in $price) echo -n '"'$m'",' } | sed -s 's/\,$//g'
+	echo -n '], "extras": ['
+	{ for(m in $extras) echo -n '"'$m'",' } | sed -s 's/\,$//g'
+	echo ']}'
+}
+
+print_facets | jq

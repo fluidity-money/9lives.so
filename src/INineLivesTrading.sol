@@ -64,10 +64,16 @@ interface INineLivesTrading {
         uint256 fusdcValue
     ) external returns (uint256 purchased, uint256 fees);
 
-    function estimateBurnC04425D3(
+    function estimateBurnE9B09A17(
         bytes8 outcome,
         uint256 shareAmount
     ) external returns (uint256);
+
+    function rescue276DD9AB(address recipient) external returns (uint256);
+
+    function claimLiquidity9C391F85(address recipient) external;
+
+    function claimLpFees66980F36(address recipient) external;
 
     struct UserLiqAdded {
         bytes8 outcome;
@@ -78,23 +84,20 @@ interface INineLivesTrading {
         uint256 userLiquidity
     );
 
+    function removeLiquidity3C857A15(uint256 liquidity, address recipient) external returns (
+        uint256 fusdcAmount,
+        uint256 lpFeesEarned
+    );
+
     struct UserLiqRemoved {
         bytes8 outcome;
         uint256 sharesReceived;
     }
 
-    function removeLiquidity3C857A15(
-        uint256 liquidity,
-        address recipient
-    ) external returns (
-        uint256 fusdcAmount,
-        uint256 lpFeesEarned
-    );
-
     /// @notice Claim fees owed to a specific address, perhaps after they've
     ///        been doing referrals.
     /// @param recipient to send the rewards to.
-    function claimAddressFees70938D8(address recipient) external returns (uint256);
+    function claimAddressFeesB302CF6D(address recipient) external returns (uint256);
 
     /// @notice Get the price of an outcome in fUSDC.
     /// @param outcome to test for
@@ -113,20 +116,11 @@ interface INineLivesTrading {
     /// @param outcomeId to collect the payoff for.
     /// @param amount of share to use for receiving the payoff.
     /// @param recipient to send the winnings to.
-    function payoff85D8DFC9(
+    function payoffCB6F2565(
         bytes8 outcomeId,
         uint256 amount,
         address recipient
     ) external returns (uint256);
-
-    /// @notice Return the amount that would be earned if payoff was used under normal
-    /// circumstances.
-    /// @param outcomeId to use as the outcome to simulate payoff for.
-    /// @param amount to simulate with.
-    function payoffQuote1FA6DC28(
-        bytes8 outcomeId,
-        uint256 amount
-    ) external view returns (uint256);
 
     /// @notice Details that're available for this outcome.
     /// @param outcomeId to get the details for
@@ -163,7 +157,7 @@ interface INineLivesTrading {
     }
 
     /// @notice fees currently set in the market. Scaled by FEE_SCALING.
-    function fees() external view returns (Fees memory);
+    function fees62DAA154() external view returns (Fees memory);
 
     function userLiquidityShares(address spender) external view returns (uint256);
 }

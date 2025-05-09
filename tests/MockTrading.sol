@@ -90,6 +90,27 @@ contract MockTrading is INineLivesTrading {
         return shareAmount;
     }
 
+    function rescue276DD9AB(address /* recipient */) external returns (uint256) {
+        ++counter_;
+        return 0;
+    }
+
+    function estimateBurnE9B09A17(
+        bytes8 /* outcome */,
+        uint256 shareAmount
+    ) external returns (uint256) {
+        ++counter_;
+        return shareAmount;
+    }
+
+    function claimLiquidity9C391F85(address /* recipient */) external {
+        ++counter_;
+    }
+
+    function claimLpFees66980F36(address /* recipient */) external {
+        ++counter_;
+    }
+
     function addLiquidityA975D995(uint256 /* liquidity */, address /* recipient */) external returns (
         uint256 userLiquidity
     ) {
@@ -97,18 +118,15 @@ contract MockTrading is INineLivesTrading {
         return 0;
     }
 
-    function removeLiquidity3C857A15(
-        uint256 /* liquidity */,
-        address /* recipient */
-    ) external returns (
+    function removeLiquidity3C857A15(uint256 liquidity, address /* recipient */) external returns (
         uint256 fusdcAmount,
-        uint256 lpFeesEarned
+        uint256 feesEarned
     ) {
         ++counter_;
-        return (fusdcAmount, lpFeesEarned);
+        return (liquidity, 0);
     }
 
-    function claimAddressFees70938D8(
+    function claimAddressFeesB302CF6D(
         address /* recipient */
     ) external returns (uint256) {
         ++counter_;
@@ -131,20 +149,13 @@ contract MockTrading is INineLivesTrading {
         calledOutcome_ = outcome;
     }
 
-    function payoff85D8DFC9(
+    function payoffCB6F2565(
         bytes8 outcome,
         uint256 amount,
         address recipient
     ) external returns (uint256) {
         IERC20TransferFrom(FUSDC_ADDR).transfer(recipient, amount);
         shares_[outcome].burn(msg.sender, amount);
-        return amount;
-    }
-
-    function payoffQuote1FA6DC28(
-        bytes8 /* outcome */,
-        uint256 amount
-    ) external pure returns (uint256) {
         return amount;
     }
 
@@ -185,7 +196,7 @@ contract MockTrading is INineLivesTrading {
         return address(shares_[outcome]);
     }
 
-    function fees() external view returns (Fees memory f) {
+    function fees62DAA154() external view returns (Fees memory f) {
     }
 
     function userLiquidityShares(address spender) external pure returns (uint256) {
