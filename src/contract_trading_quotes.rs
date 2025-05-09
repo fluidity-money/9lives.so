@@ -38,7 +38,7 @@ impl StorageTrading {
     /// Quote the amount of shares that would be received for burning the
     /// fUSDC amount given. Inclusive of fees.
     #[allow(non_snake_case)]
-    pub fn estimate_burn_C_04425_D_3(&self, _outcome_id: FixedBytes<8>, _value: U256) -> R<U256> {
+    pub fn estimate_burn_E_9_B_09_A_17(&self, _outcome_id: FixedBytes<8>, _value: U256) -> R<U256> {
         if !self.when_decided.get().is_zero() {
             return Ok(U256::ZERO);
         }
@@ -49,7 +49,7 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn claim_address_fees_70938_D_8_B(&mut self, recipient: Address) -> R<U256> {
+    pub fn claim_address_fees_B_302_C_F_6_D(&mut self, recipient: Address) -> R<U256> {
         let owed = self.fees_owed_addresses.get(msg_sender());
         fusdc_call::transfer(recipient, owed)?;
         self.fees_owed_addresses
@@ -63,7 +63,7 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn payoff_8_5_D_8_D_F_C_9(
+    pub fn payoff_C_B_6_F_2565(
         &mut self,
         outcome_id: FixedBytes<8>,
         amt: U256,
@@ -76,7 +76,7 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn fees_456920_C_0(&self) -> R<(U256, U256, U256, U256)> {
+    pub fn fees62DAA154(&self) -> R<(U256, U256, U256, U256)> {
         Ok((
             self.fee_creator.get(),
             self.fee_minter.get(),
