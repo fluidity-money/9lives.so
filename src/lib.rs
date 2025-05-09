@@ -125,6 +125,13 @@ extern "C" {
     pub fn die(ptr: *const u8, len: usize, rc: i32);
 }
 
+#[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
+#[link(wasm_import_module = "console")]
+extern "C" {
+    #[allow(dead_code)]
+    pub fn log_txt(ptr: *const u8, len: usize);
+}
+
 /// A useful function that uses stylus-interpreter's harness functions to
 /// print a message, then die with a exit of 1.
 #[macro_export]
@@ -136,17 +143,17 @@ macro_rules! harness_die {
 }
 
 #[macro_export]
-macro_rules! harness_dbg_die {
+macro_rules! harness_dbg {
     ($val:expr) => {{
         let tmp = $val;
         let msg = alloc::format!("[{}:{}] {} = {:#?}\n", file!(), line!(), stringify!($val), &tmp);
-        unsafe { $crate::die(msg.as_ptr(), msg.len(), 0) };
+        unsafe { $crate::log_txt(msg.as_ptr(), msg.len()) };
         tmp
     }};
     ($($vals:expr),+ $(,)?) => {{
         let tup = ($($vals),+);
         let msg = alloc::format!("[{}:{}] {} = {:#?}\n", file!(), line!(), stringify!(($($vals),+)), &tup);
-        unsafe { $crate::die(msg.as_ptr(), msg.len(), 0) };
+        unsafe { $crate::log_txt(msg.as_ptr(), msg.len()) };
         tup
     }};}
 

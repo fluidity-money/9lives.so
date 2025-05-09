@@ -165,9 +165,9 @@ pub fn calc_lp_sell_fee(x: U256, f: U256) -> Result<U256, Error> {
         .checked_mul(FEE_SCALING)
         .and_then(|x| x.checked_mul(f))
         .ok_or(Error::CheckedMulOverflow)?;
-    let r = FEE_SCALING
+    let r = c!(FEE_SCALING
         .checked_sub(f)
-        .ok_or(Error::CheckedSubOverflow(FEE_SCALING, f))?;
+        .ok_or(Error::CheckedSubOverflow(FEE_SCALING, f)));
     Ok(l.checked_div(r)
         .ok_or(Error::CheckedDivOverflow)?
         .div_ceil(FEE_SCALING))

@@ -258,7 +258,7 @@ generate these, run `./print-error-table.sh`.
 | Beauty contest implementation | `0x3421264e413489b1e69ae84ace8c33c6cb7809ff` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
-| Helper factory                | `0xE307205f1558aCE077EADb57DD9e1D4cFf4D3CC8` |
+| Helper factory                | `0x6e95B1fcca9aBb2D94213AE3ccFCaf5BB8406E6B` |
 | Buy helper2                   | `0xEBBfeAcbbD331466512A362BEa782e1f7CB45b57` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 

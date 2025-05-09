@@ -102,9 +102,9 @@ impl StorageTrading {
             .map(|x| self.amm_shares.get(x))
             .product();
         let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32));
-        let liq_shares_minted = new_liq
+        let liq_shares_minted = c!(new_liq
             .checked_sub(prev_liquidity)
-            .ok_or(Error::CheckedSubOverflow(new_liq, prev_liquidity))?;
+            .ok_or(Error::CheckedSubOverflow(new_liq, prev_liquidity)));
         if !self.amm_liquidity.get().is_zero() {
             self.rebalance_fees(msg_sender(), liq_shares_minted, true)?;
         }
@@ -205,14 +205,14 @@ impl StorageTrading {
                 self.amm_shares.setter(outcome_id).set(shares);
             }
             {
-                let total_shares = self
+                let total_shares = c!(self
                     .amm_total_shares
                     .get(outcome_id)
                     .checked_sub(liquidity_shares_val)
                     .ok_or(Error::CheckedSubOverflow(
                         self.amm_total_shares.get(outcome_id),
                         liquidity_shares_val,
-                    ))?;
+                    )));
                 self.amm_total_shares.setter(outcome_id).set(total_shares);
             }
         }
@@ -242,22 +242,22 @@ impl StorageTrading {
         self.amm_liquidity.set(new_liq);
         {
             let user_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
-            self.amm_user_liquidity_shares.setter(msg_sender()).set(
-                user_liq_shares
+            self.amm_user_liquidity_shares
+                .setter(msg_sender())
+                .set(c!(user_liq_shares
                     .checked_sub(amount)
-                    .ok_or(Error::CheckedSubOverflow(user_liq_shares, amount))?,
-            );
+                    .ok_or(Error::CheckedSubOverflow(user_liq_shares, amount))));
         }
         let shares_received = self
             .outcome_ids_iter()
             .enumerate()
             .map(|(i, outcome_id)| {
-                let outcome_shares_received = prev_shares[i]
+                let outcome_shares_received = c!(prev_shares[i]
                     .checked_sub(self.amm_shares.get(outcome_id))
                     .ok_or(Error::CheckedSubOverflow(
                         prev_shares[i],
                         self.amm_shares.get(outcome_id),
-                    ))?;
+                    )));
                 if !outcome_shares_received.is_zero() {
                     share_call::mint(
                         proxy::get_share_addr(
@@ -308,9 +308,9 @@ impl StorageTrading {
         );
         let fee = self.calculate_and_set_fees(usd_amt, false, referrer)?;
         let usd_amt_added_fee = usd_amt.checked_add(fee).ok_or(Error::CheckedAddOverflow)?;
-        let usd_amt_no_fee = usd_amt
+        let usd_amt_no_fee = c!(usd_amt
             .checked_sub(fee)
-            .ok_or(Error::CheckedSubOverflow(usd_amt, fee))?;
+            .ok_or(Error::CheckedSubOverflow(usd_amt, fee)));
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
                 let shares = c!(self
@@ -532,12 +532,12 @@ impl StorageTrading {
                 .pow(U256::from(self.outcome_list.len()))
                 .div_ceil(product),
         );
-        let shares = outcome_previous_shares
+        let shares = c!(outcome_previous_shares
             .checked_sub(self.amm_shares.get(outcome_id))
             .ok_or(Error::CheckedSubOverflow(
                 outcome_previous_shares,
                 self.amm_shares.get(outcome_id),
-            ))?;
+            )));
         share_call::mint(
             proxy::get_share_addr(
                 self.factory_addr.get(),
@@ -591,9 +591,9 @@ impl StorageTrading {
             .find(|(id, _)| *id == outcome_id)
             .unwrap()
             .1;
-        let minted = current
+        let minted = c!(current
             .checked_sub(target)
-            .ok_or(Error::CheckedSubOverflow(current, target))?;
+            .ok_or(Error::CheckedSubOverflow(current, target)));
         Ok(minted)
     }
 
@@ -607,6 +607,21 @@ impl StorageTrading {
         }
         let (fee, _) = self.calculate_fees(usd_amt, false)?;
         let usd_amt_added_fee = usd_amt.checked_add(fee).ok_or(Error::CheckedAddOverflow)?;
+        crate::harness_dbg!(
+            "meme",
+            "fee",
+            fee,
+            "usd amt",
+            usd_amt,
+            "usd amt added fee",
+            usd_amt_added_fee,
+            "shares for the outcome the user asked for",
+            self.amm_shares.get(outcome_id),
+            "outcome id the user is trying to burn",
+            self.outcome_ids_iter()
+                .position(|x| x == outcome_id)
+                .unwrap()
+        );
         let prev_after = c!(self
             .amm_shares
             .get(outcome_id)
@@ -650,10 +665,20 @@ impl StorageTrading {
         let mut hi = self.amm_shares.get(outcome_id);
         while lo < hi {
             let mid = (lo + hi + U256::from(1)) >> 1;
-            if self.internal_amm_quote_burn(outcome_id, mid)? <= shares_target {
-                lo = mid;
-            } else {
-                hi = mid - U256::from(1);
+            let amt = self.internal_amm_quote_burn(outcome_id, mid);
+            match amt {
+                Ok(amt) if amt < shares_target => {
+                    lo = mid;
+                }
+                Ok(amt) if amt == shares_target => {
+                    return Ok(amt);
+                }
+                Ok(_) | Err(Error::CheckedSubOverflow(_, _)) => {
+                    hi = c!(mid
+                        .checked_sub(U256::from(1))
+                        .ok_or(Error::CheckedSubOverflow(mid, U256::from(1))));
+                }
+                Err(err) => return Err(err),
             }
         }
         Ok(lo)
