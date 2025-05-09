@@ -47,6 +47,12 @@ type Query {
   userClaims(address:String!, campaignId:String): [Claim]!
 
   userProfile(address:String!): Profile
+
+  """
+  Returns user's staked liquidity to the markets
+  """
+  userLiquidity(address:String!, tradingAddr: String): String!
+
 }
 type Settings {
   """

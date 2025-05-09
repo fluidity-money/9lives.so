@@ -926,6 +926,51 @@ func (r *queryResolver) UserProfile(ctx context.Context, address string) (*types
 	return &profile, nil
 }
 
+// UserLiquidity is the resolver for the userLiquidity field.
+func (r *queryResolver) UserLiquidity(ctx context.Context, address string, tradingAddr *string) (string, error) {
+	address = strings.ToLower(address)
+
+	var emitterCondition string
+	var args []interface{}
+	args = append(args, address)
+
+	if tradingAddr != nil {
+		lowered := strings.ToLower(*tradingAddr)
+		emitterCondition = "AND emitter_addr = ?"
+		args = append(args, lowered, address, lowered)
+	} else {
+		emitterCondition = ""
+		args = append(args, address)
+	}
+
+	query := fmt.Sprintf(`
+		SELECT 
+			COALESCE((
+				SELECT SUM(fusdc_amt) 
+				FROM ninelives_events_liquidity_added 
+				WHERE recipient = ? %s
+			), 0)
+			-
+			COALESCE((
+				SELECT SUM(fusdc_amt) 
+				FROM ninelives_events_liquidity_removed 
+				WHERE recipient = ? %s
+			), 0) 
+		AS total_fusdc;
+	`, emitterCondition, emitterCondition)
+
+	var liquidity string
+	err := r.DB.Raw(query, args...).Scan(&liquidity).Error
+	if err != nil {
+		slog.Error("Error getting liquidity from database",
+			"error", err,
+			"wallet address", address,
+		)
+		return "", fmt.Errorf("error getting liquidity from database: %w", err)
+	}
+	return liquidity, nil
+}
+
 // Activity returns ActivityResolver implementation.
 func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
 
