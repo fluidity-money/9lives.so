@@ -60,12 +60,12 @@ const tradingAbi = [
     ],
     outputs: [
       {
-        name: "",
+        name: "burnedShares",
         type: "uint256",
         internalType: "uint256",
       },
       {
-        name: "",
+        name: "fusdcReturned",
         type: "uint256",
         internalType: "uint256",
       },
