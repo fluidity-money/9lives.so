@@ -10,14 +10,6 @@ pub use lib9lives::user_entrypoint;
 #[mutants::skip]
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
-    unsafe {
-        backtrace::trace_unsynchronized(|frame| {
-            let ip = frame.ip() as usize;
-            let msg = format!("Died: {info}, frame pointer: {ip}");
-            lib9lives::die(msg.as_ptr(), msg.len(), 1);
-            true
-        });
-    }
     // This will be run if we don't compile with the trace info.
     let msg = format!("Died: {info}");
     unsafe {

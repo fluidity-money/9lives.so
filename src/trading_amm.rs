@@ -607,14 +607,14 @@ impl StorageTrading {
         }
         let (fee, _) = self.calculate_fees(usd_amt, false)?;
         let usd_amt_added_fee = usd_amt.checked_add(fee).ok_or(Error::CheckedAddOverflow)?;
-        let prev_after = c!(self
+        let prev_after = self
             .amm_shares
             .get(outcome_id)
             .checked_sub(usd_amt_added_fee)
             .ok_or(Error::CheckedSubOverflow(
                 self.amm_shares.get(outcome_id),
                 usd_amt_added_fee
-            )));
+            ))?;
         let product = self
             .outcome_ids_iter()
             .filter(|id| *id != outcome_id)

@@ -3,7 +3,8 @@
         feature = "contract-trading-extras",
         feature = "contract-trading-mint",
         feature = "contract-trading-quotes",
-        feature = "contract-trading-price"
+        feature = "contract-trading-price",
+        feature = "contract-trading-dumper"
     ),
     not(any(feature = "trading-backend-dpm", feature = "trading-backend-amm"))
 ))]
@@ -25,6 +26,9 @@ pub use crate::contract_trading_quotes::user_entrypoint;
 
 #[cfg(feature = "contract-trading-price")]
 pub use crate::contract_trading_price::user_entrypoint;
+
+#[cfg(feature = "contract-trading-dumper")]
+pub use crate::contract_trading_dumper::user_entrypoint;
 
 pub use crate::storage_trading::StorageTrading;
 

@@ -97,6 +97,8 @@ pub mod storage_infra_market;
 pub mod contract_beauty_contest;
 pub mod storage_beauty_contest;
 
+pub mod contract_trading_dumper;
+
 #[cfg(not(target_arch = "wasm32"))]
 pub mod actions;
 
@@ -169,7 +171,8 @@ macro_rules! harness_dbg {
         feature = "contract-lockup",
         feature = "contract-infra-market",
         feature = "contract-beauty-contest",
-        feature = "contract-infra-market-testing"
+        feature = "contract-infra-market-testing",
+        feature = "contract-trading-dumper",
     ))
 ))]
 compile_error!("one of the contract-* features must be enabled!");

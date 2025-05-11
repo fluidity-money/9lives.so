@@ -19,7 +19,7 @@ interface IERC20 {
 }
 
 interface DPMOld {
-    function mintPermitE90275AB(bytes8,uint256,address,uint8,bytes32,bytes32) external returns (uint256);
+    function mintPermitE90275AB(bytes8,uint256,address,uint256,uint8,bytes32,bytes32) external returns (uint256);
 }
 
 contract BuyHelper2 {
@@ -73,6 +73,7 @@ contract BuyHelper2 {
                 _outcome,
                 fusdc,
                 msg.sender,
+                0,
                 0,
                 bytes32(0),
                 bytes32(0)

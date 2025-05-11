@@ -14,21 +14,21 @@ d="$(cast --calldata-decode 'burn(address,bytes8,uint256,uint256,uint256,address
 trading_addr="$(echo $d | cut -f1 -d' ')"
 outcome="$(echo $d | cut -f2 -d' ')"
 max_share_out="$(echo $d | cut -f4 -d' ')"
-min_share_out="$(echo $d | cut -f5 -d' ')"
 referrer="$(echo $d | cut -f6 -d' ')"
 
 >&2 echo $trading_addr
+>&2 echo burned shares,fusdc returned
 
 cast --abi-decode 'burn()(uint256,uint256)' "$(stylus-interpreter \
-		-u "$url" \
-		-a "$trading_addr" \
-		-s "$sender" \
-		-b "$(cast bn --rpc-url $url)" \
-		target/wasm32-unknown-unknown/release/ninelives.wasm \
-		"$(cast calldata 'burn854CC96E(bytes8,uint256,bool,uint256,address,address)' \
-			"$outcome" \
-			"$max_share_out" \
-			true \
-			"$min_share_out" \
-			"$referrer" \
-			"$sender")")"
+	-u "$url" \
+	-a "$trading_addr" \
+	-s "$sender" \
+	-b "$(cast bn --rpc-url $url)" \
+	target/wasm32-unknown-unknown/release/ninelives.wasm \
+	"$(cast calldata 'burn854CC96E(bytes8,uint256,bool,uint256,address,address)' \
+		"$outcome" \
+		"$max_share_out" \
+		true \
+		0 \
+		"$referrer" \
+		"$sender")")"

@@ -45,14 +45,14 @@ alloy-sol-macro-input = "=0.7.6"
 strum = { version = "0.26.3", default-features = false, features = ["derive"] }
 mutants = "0.0.3"
 ruint = { version = "1.14.0", default-features = false }
-backtrace = { version = "0.3.75", default-features = false }
+hashbrown = { version = "0.15.3", default-features = false, features = ["allocator-api2", "serde"] }
+serde_json = { version = "1.0.133", default-features = false, features = ["alloc"] }
+serde = { version = "1.0.215", default-features = false, features = ["derive"] }
 
 [dev-dependencies]
 proptest = "1.5.0"
 const-hex = { version = "1.12.0", features = ["alloc"] }
 rust_decimal_macros = "1.36.0"
-serde_json = "1.0.133"
-serde = { version = "1.0.215", features = ["derive"] }
 arrayvec = "0.7.6"
 map-macro = "0.3.0"
 
@@ -85,3 +85,4 @@ trading-backend-amm = []
 trading-backend-dpm = []
 contract-infra-market-testing = []
 e2e-adjust-time = []
+contract-trading-dumper = []

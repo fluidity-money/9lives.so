@@ -7,10 +7,12 @@
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    actions::strat_action, actions::*, error::Error, host, implement_action,
+    actions::*, error::Error, host, implement_action,
     interactions_clear_after, panic_guard, proxy, should_spend_fusdc_contract,
     should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
 };
+
+use std::collection::HashMap;
 
 use proptest::prelude::*;
 
@@ -192,7 +194,7 @@ proptest! {
             // A user should not be able to use payoff with a campaign that hasn't ended.
             assert_eq!(
                 Error::NotWinner,
-                c.payoff_C_B_6_F_2565(
+                c.payoff_8_5_D_8_D_F_C_9(
                     outcomes[0],
                     rand_word,
                     msg_sender()
@@ -263,10 +265,27 @@ proptest! {
     #[test]
     fn test_amm_tiny_mint_into_burning(
         add_lp in strat_medium_u256(),
-        (outcomes, referrers, actions) in strat_tiny_mint_into_burn_outcomes(10, 10, 100, 1000)
+        fee_for_creator in (0..=100).prop_map(U256::from),
+        fee_for_minter in (0..=100).prop_map(U256::from),
+        fee_for_lp in (0..=100).prop_map(U256::from),
+        fee_for_referrer in (0..=100).prop_map(U256::from),
+        (outcomes, referrers, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 100, 1000)
     )
     {
         // Test up to a thousand mint and burn operations from a hundred minimum.
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract!(&mut c, &outcomes);
+                test_add_liquidity(&mut c, add_lp);
+                let mut referrer_fees = HashMap::new::<Address, U256>();
+                let cum_fee = fee_for_creator + fee_for_minter + fee_for_lp + fee_for_referrer;
+                for a in acts {
+                    match a {
+                        Action::
+                    }
+                }
+            }
+        }
     }
 
     /*

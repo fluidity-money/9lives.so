@@ -1,0 +1,6 @@
+#!/usr/bin/env -S rc -e
+
+# Use a different entrypoint that enumerates the state of each variable, and then prints
+# it to the output using the stylus-interpreter.
+
+# https://9lives.so/campaign/0x8a2479b941608086
