@@ -11,7 +11,7 @@ use stylus_sdk::{
 
 use lib9lives::{
     actions::*, error::Error, host, implement_action, interactions_clear_after, panic_guard, proxy,
-    should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
+    should_spend, should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
     testing_addrs::*, utils::*, StorageTrading,
 };
 
@@ -290,23 +290,15 @@ proptest! {
         }
     } */
 
-    /*
-    #[test]
-    fn test_amm_exhaustive_lp_add_buys_sells_lp_remove(
-        (outcomes, actions) in strat_resaonable_actions(2, 20),
-        mut c in strat_storage_trading(false),
-    ) {
-
-    } */
 }
 
 #[test]
-fn test_amm_reproduction_0xB4b096ECD5Eb290CEC81004e949E087b3eda6339_1618800() {
+fn test_amm_reproduction_0x276b5b896b088c5604E7333df90f7691d6FDE93A_1621096() {
     let outcomes = [
-        fixed_bytes!("439eae333c95ac29"),
-        fixed_bytes!("af3cb149de66b691"),
-        fixed_bytes!("c37bf2c12b3d685b"),
-        fixed_bytes!("e85828692eebeaee"),
+        fixed_bytes!("009380e6201ad444"),
+        fixed_bytes!("72e84ce41b33954e"),
+        fixed_bytes!("9cff5edbbb8ac0a9"),
+        fixed_bytes!("a7913c07dc467994"),
     ];
     interactions_clear_after! {
         IVAN => {
@@ -318,35 +310,39 @@ fn test_amm_reproduction_0xB4b096ECD5Eb290CEC81004e949E087b3eda6339_1618800() {
             //c.fee_referrer.set(U256::from(0));
             c.is_protocol_fee_disabled.set(true); // Disabled by the generator!
             //c.is_protocol_fee_disabled.set(false);
-            c.amm_liquidity.set(U256::from(101000000));
-            c.amm_outcome_prices.setter(fixed_bytes!("439eae333c95ac29")).set(U256::from(250000));
-            c.amm_outcome_prices.setter(fixed_bytes!("af3cb149de66b691")).set(U256::from(250000));
-            c.amm_outcome_prices.setter(fixed_bytes!("c37bf2c12b3d685b")).set(U256::from(250000));
-            c.amm_outcome_prices.setter(fixed_bytes!("e85828692eebeaee")).set(U256::from(250000));
-            c.amm_shares.setter(fixed_bytes!("439eae333c95ac29")).set(U256::from(150600000));
-            c.amm_shares.setter(fixed_bytes!("af3cb149de66b691")).set(U256::from(150600000));
-            c.amm_shares.setter(fixed_bytes!("c37bf2c12b3d685b")).set(U256::from(30465660));
-            c.amm_shares.setter(fixed_bytes!("e85828692eebeaee")).set(U256::from(150600000));
-            c.amm_total_shares.setter(fixed_bytes!("439eae333c95ac29")).set(U256::from(150600000));
-            c.amm_total_shares.setter(fixed_bytes!("af3cb149de66b691")).set(U256::from(150600000));
-            c.amm_total_shares.setter(fixed_bytes!("c37bf2c12b3d685b")).set(U256::from(150600000));
-            c.amm_total_shares.setter(fixed_bytes!("e85828692eebeaee")).set(U256::from(150600000));
-            c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(100000000));
+            c.amm_liquidity.set(U256::from(1000000));
+            c.amm_outcome_prices.setter(fixed_bytes!("009380e6201ad444")).set(U256::from(0));
+            c.amm_outcome_prices.setter(fixed_bytes!("72e84ce41b33954e")).set(U256::from(0));
+            c.amm_outcome_prices.setter(fixed_bytes!("9cff5edbbb8ac0a9")).set(U256::from(0));
+            c.amm_outcome_prices.setter(fixed_bytes!("a7913c07dc467994")).set(U256::from(0));
+            c.amm_shares.setter(fixed_bytes!("009380e6201ad444")).set(U256::from(5960000));
+            c.amm_shares.setter(fixed_bytes!("72e84ce41b33954e")).set(U256::from(5960000));
+            c.amm_shares.setter(fixed_bytes!("9cff5edbbb8ac0a9")).set(U256::from(4724));
+            c.amm_shares.setter(fixed_bytes!("a7913c07dc467994")).set(U256::from(5960000));
+            c.amm_total_shares.setter(fixed_bytes!("009380e6201ad444")).set(U256::from(5960000));
+            c.amm_total_shares.setter(fixed_bytes!("72e84ce41b33954e")).set(U256::from(5960000));
+            c.amm_total_shares.setter(fixed_bytes!("9cff5edbbb8ac0a9")).set(U256::from(5960000));
+            c.amm_total_shares.setter(fixed_bytes!("a7913c07dc467994")).set(U256::from(5960000));
+            c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(1000000));
             c.amm_fees_collected_weighted.set(U256::from(0));
             c.amm_lp_global_fees_claimed.set(U256::from(0));
             c.amm_lp_user_fees_claimed.setter(msg_sender()).set(U256::from(0));
-            let buy_amt = 50e6 as u64;
-            should_spend_fusdc_sender!(
-                buy_amt,
-                c.mint_8_A_059_B_6_E(
-                    outcomes[2],
-                    U256::from(buy_amt),
-                    Address::ZERO,
-                    msg_sender()
-                )
-            );
-            dbg!(c.internal_amm_quote_burn(outcomes[2], U256::from(77390246)).unwrap());
-            dbg!(c.estimate_burn_E_9_B_09_A_17(outcomes[2], U256::from(120134340)).unwrap());
+
+            dbg!(should_spend!(
+                c.share_addr(fixed_bytes!("9cff5edbbb8ac0a9")).unwrap(),
+                { msg_sender() => 5954797 },
+                Ok(should_spend_fusdc_contract!(
+                    4959880,
+                    c.burn_854_C_C_96_E(
+                        fixed_bytes!("9cff5edbbb8ac0a9"),
+                        U256::from(5955276),
+                        true,
+                        U256::ZERO,
+                        msg_sender(),
+                        msg_sender()
+                    )
+                ))
+            ));
         }
     }
 }

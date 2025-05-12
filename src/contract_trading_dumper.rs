@@ -60,7 +60,7 @@ impl StorageTrading {
             }
             write!(
                 &mut user_outcome_shares,
-                "    market.user_outcome_shares[\"Alice\"][{i}] = {bal}\n"
+                "    market.user_outcome_shares[\"Alice\"][{i}] = {bal} / 1e6\n"
             )
             .unwrap();
         }
@@ -115,16 +115,16 @@ impl StorageTrading {
 
 def simulate_market_{addr}_{bn}():
     # Note that fees are explicitly disabled!
-    market = PredMarketNew(liquidity={amm_liquidity}, outcomes={outcome_len}, fees=0)
-    market.outcome_prices = [{outcome_prices}]
-    market.shares = [{shares}]
-    market.total_shares = [{total_shares}]
+    market = PredMarketNew(liquidity={amm_liquidity} / 1e6, outcomes={outcome_len}, fees=0)
+    market.outcome_prices = [n / 1e6 for n in [{outcome_prices}]]
+    market.shares = [n / 1e6 for n in [{shares}]]
+    market.total_shares = [n / 1e6 for n in [{total_shares}]]
     market.user_outcome_shares["Alice"] = [0] * {outcome_len}
-{user_outcome_shares}    market.user_liquidity_shares["Alice"] = {user_liquidity_shares}
-    market.user_wallet_usd["Alice"] = {usd_bal_sender}
-    market.pool_wallet_usd = {usd_bal_contract}
-    market.fees_collected_weighted = {amm_fees_collected_weighted}
-    market.fees_claimed["Alice"] = {amm_lp_user_fees_claimed}
+{user_outcome_shares}    market.user_liquidity_shares["Alice"] = {user_liquidity_shares} / 1e6
+    market.user_wallet_usd["Alice"] = {usd_bal_sender} / 1e6
+    market.pool_wallet_usd = {usd_bal_contract} / 1e6
+    market.fees_collected_weighted = {amm_fees_collected_weighted} / 1e6
+    market.fees_claimed["Alice"] = {amm_lp_user_fees_claimed} / 1e6
 
 #[test]
 fn test_amm_reproduction_{addr}_{bn}() {{

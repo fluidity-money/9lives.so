@@ -87,7 +87,7 @@ impl StorageTrading {
                 _amount
             };
             let (burned_shares, fusdc_to_return) =
-                self.internal_amm_burn(_outcome, fusdc, _min_shares, _referrer)?;
+                self.internal_amm_burn(_outcome, fusdc, _min_shares)?;
             fusdc_call::transfer(_recipient, fusdc_to_return)?;
             evm::log(events::SharesBurned {
                 identifier: _outcome,

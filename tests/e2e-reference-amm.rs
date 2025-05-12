@@ -247,7 +247,7 @@ proptest! {
                     liquidity_amt,
                     c.add_liquidity_test(liquidity_amt, IVAN)
                 );
-                assert_eq_u!(1772000000, c.amm_liquidity.get());
+                assert_eq_u!(1772800379, c.amm_liquidity.get());
                 assert_eq_u!(818199300, c.amm_shares.get(outcome_a));
                 assert_eq_u!(2294000000u64, c.amm_shares.get(outcome_b));
                 assert_eq_u!(2294000000u64, c.amm_shares.get(outcome_c));

@@ -277,6 +277,7 @@ class PredMarketNew:
                 # Call sell function and observe how many shares would be deducted
                 old_shares = market_copy.user_outcome_shares[user][outcome]
                 market_copy.sell(outcome, current_usd, user)
+                print(f"trying market sell: {outcome}, {current_usd}")
                 shares_deducted = old_shares - market_copy.user_outcome_shares[user][outcome]
 
                 # Compare with our target
@@ -309,21 +310,11 @@ class PredMarketNew:
     def sell(self, outcome, amount, user):
         self.only_when_market_not_resolved()
 
-        # Fee Logic
-        # Assume the fee is 2% (0.02) and user wants to withdraw 100 USD (amount=100)
-        # Compute X where after charging 2% fee against X, the remaining X will be 100
-        # Formula to use: X = 100/(1 - fee) = 100/(1-0.02) = 100/0.98 = 102.04081632653062
-        # Charging 2% fee against 102.04081632653062. 102.04081632653062 - (102.04081632653062 * 0.02) = 100
-        # Formula for fee: amount/(1 - fee) - amount => re-arrange => (amount * fee) / (1 - fee)
-        fee = (amount * self.fees) / (1 - self.fees)
-        # Add fee to the amount
-        amount_with_fee = amount + fee
-
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
-            print(f"self shares[i] ({self.shares[i]}) - amount with fee ({amount_with_fee}): {self.shares[i] - amount_with_fee}")
-            self.shares[i] -= amount_with_fee
-            self.total_shares[i] -= amount_with_fee
+            print(f" taking from shares[{i}]: {self.shares[i]} - {amount}")
+            self.shares[i] -= amount
+            self.total_shares[i] -= amount
 
         previous_shares = self.shares.copy()
 
@@ -337,11 +328,10 @@ class PredMarketNew:
         if user_deducted_by > self.user_outcome_shares[user][outcome]:
             raise ArithmeticError("Insufficient shares to sell")
 
+        print(f"user outcome shares deducting user {user_deducted_by}")
         self.user_outcome_shares[user][outcome] -= user_deducted_by
 
         self.transfer_from_pool_to_user(amount, user)
-        self.collect_fees(fee)
-        self.pool_wallet_usd -= fee # The fee computed must be transfer from the pool to fee address.
 
         return self.shares
 
@@ -1251,5 +1241,37 @@ def simulate_market_0xB4b096ECD5Eb290CEC81004e949E087b3eda6339_1618867():
 
     print("sale estimation", market.inverse_sell(2, 120134340, "Alice"))
 
+def simulate_market_0x54067533FD2F9430454a687F94b8Fcb4e2Ce8D6a_1623132():
+    # Note that fees are explicitly disabled!
+    market = PredMarketNew(liquidity=1000000 / 1e6, outcomes=4, fees=0)
+    market.outcome_prices = [n / 1e6 for n in [0, 0, 0, 0]]
+    market.shares = [n / 1e6 for n in [5960000, 5960000, 4724, 5960000]]
+    market.total_shares = [n / 1e6 for n in [5960000, 5960000, 5960000, 5960000]]
+    market.user_outcome_shares["Alice"] = [0] * 4
+    market.user_outcome_shares["Alice"][2] = 5955276 / 1e6
+    market.user_liquidity_shares["Alice"] = 1000000 / 1e6
+    market.user_wallet_usd["Alice"] = 1021261505 / 1e6
+    market.pool_wallet_usd = 6000000 / 1e6
+    market.fees_collected_weighted = 0 / 1e6
+    market.fees_claimed["Alice"] = 0 / 1e6
+    print(f"predicted sale: {market.inverse_sell(2, 5955276 / 1e6, "Alice")}")
+    print("sale estimation", market.sell(2, market.inverse_sell(2, 5955276 / 1e6, "Alice"), "Alice"))
+
+def simulate_market_22():
+    market = PredMarketNew(liquidity=1, outcomes=4, fees = 0.008)
+
+    ERIK = "Erik"
+    market.add_user(ERIK)
+
+    market.user_wallet_usd[ERIK] = 150
+
+    market.buy(0, 5, ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
+    market.sell(0,market.inverse_sell(0,5.955276,ERIK), ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
 if __name__ == "__main__":
-    simulate_market_0xB4b096ECD5Eb290CEC81004e949E087b3eda6339_1618867()
+    simulate_market_22()

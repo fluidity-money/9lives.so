@@ -507,6 +507,12 @@ pub enum Error {
 
     // Subtraction underflow with a decimal function.
     CheckedSubOverflowD,
+
+    // We don't let you take out so much liquidity there's only a dollar left!
+    CannotRemoveAllLiquidity,
+
+    // Couldn't estimate the amount to sell of shares!
+    CouldntEstimateSharesBurn,
 }
 
 #[cfg(any(
