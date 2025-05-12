@@ -43,7 +43,6 @@ export default function CreateCampaignFormPicture({
           onChange: handlePicChange,
         })}
         ref={(el) => {
-          register("picture").ref(el);
           pictureInputRef.current = el;
         }}
         hidden

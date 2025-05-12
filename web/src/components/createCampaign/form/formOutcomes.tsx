@@ -136,7 +136,6 @@ export default function CreateCampaignFormOutcomes({
                       onChange: (e) => handleOutcomePicChange(e, idx),
                     })}
                     ref={(el) => {
-                      register(`outcomes.${idx}.picture`).ref(el);
                       if (customOutcomePicturesRef.current[idx])
                         customOutcomePicturesRef.current[idx].current = el;
                     }}

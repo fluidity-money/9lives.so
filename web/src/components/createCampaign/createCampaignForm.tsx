@@ -69,22 +69,22 @@ export default function CreateCampaignForm() {
   >([]);
   const [settlementType, setSettlementType] = useState<SettlementType>("AI");
   const pictureSchema = z
-    .custom<File | FileList>(
+    .custom<File | undefined>(
       (file) => {
-        if (file instanceof FileList && file.length === 0) return true;
+        if (!file) return true;
         return file instanceof File;
       },
       { message: "You have to upload a picture" },
     )
-    .refine((file) => file instanceof FileList || file.size <= 1024 * 1024, {
+    .refine((file) => (file ? file.size <= 1024 * 1024 : true), {
       message: "File size must be under 1MB",
     })
-    .refine((file) => file instanceof FileList || file.size > 0, {
+    .refine((file) => (file ? file.size > 0 : true), {
       message: "You have to upload a picture",
     })
     .refine(
       (file) => {
-        if (file instanceof FileList) return true;
+        if (!file) return true;
         const validExtensions = ["png", "jpg", "jpeg", "gif"];
         const fileExtension = file.name.split(".").pop()?.toLowerCase();
         return fileExtension && validExtensions.includes(fileExtension);
@@ -164,6 +164,7 @@ export default function CreateCampaignForm() {
     defaultValues: {
       desc: "",
       seed: randomValue4Uint8(),
+      picture: undefined,
       starting: new Date().toISOString().split("T")[0],
       outcomes: [
         {
