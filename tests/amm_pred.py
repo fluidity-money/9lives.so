@@ -220,6 +220,8 @@ class PredMarketNew:
         self.pool_wallet_usd -= fee # A portion of the "amount" transfer into the pool belong to the fee address. Thus, it must be transfer from the pool to fee address.
         amount_without_fee = amount - fee # Deduct the fee from the amount
 
+        print(f"amount without fee: {amount_without_fee}")
+
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
             self.shares[i] += amount_without_fee
@@ -233,6 +235,7 @@ class PredMarketNew:
         self.shares[outcome] = pow(self.liquidity, self.outcomes) / product
 
         # Outcome shares transferred from pool to user
+        print(f"Transferring some outcome shares to user: previous_shares[outcome] ({previous_shares[outcome]}) - self.shares[outcome] ({self.shares[outcome]})")
         self.user_outcome_shares[user][outcome] += (previous_shares[outcome] - self.shares[outcome])
 
         return self.shares
@@ -240,64 +243,66 @@ class PredMarketNew:
     def inverse_sell(self, outcome, shares_to_sell, user, tolerance=1e-6, max_iterations=1000):
         """
         Find how many USD you would receive for selling a specific number of shares.
-        
+
         Args:
             outcome: The outcome index
             shares_to_sell: Number of outcome shares the user wants to sell
             user: User identifier
             tolerance: Acceptable error in the result
             max_iterations: Maximum number of binary search iterations
-            
+
         Returns:
             The USD amount the user would receive
         """
         # Check if user has enough shares
         if shares_to_sell > self.user_outcome_shares[user][outcome]:
             raise ArithmeticError("Insufficient shares to sell")
-        
+
         # Initial lower and upper bounds for binary search
         # Start with reasonable bounds for the USD amount
         lower_bound = 0.0
         # Set upper bound assuming worst case scenario (1:1 exchange rate + fees)
         upper_bound = shares_to_sell * 2  # Generous upper bound
-        
+
         iteration = 0
         current_usd = (lower_bound + upper_bound) / 2
-        
+
         while iteration < max_iterations:
             # Create a deep copy of the market state to avoid modifying it
             market_copy = copy.deepcopy(self)
-            
+
+            print(f"current usd: {current_usd}")
+
             try:
                 # Call sell function and observe how many shares would be deducted
                 old_shares = market_copy.user_outcome_shares[user][outcome]
                 market_copy.sell(outcome, current_usd, user)
                 shares_deducted = old_shares - market_copy.user_outcome_shares[user][outcome]
-                
+
                 # Compare with our target
                 error = shares_deducted - shares_to_sell
-                
+
                 if abs(error) < tolerance:
                     # We've found a close enough solution
                     return current_usd
-                
+
                 if error > 0:  # We deducted too many shares
                     # This means our USD amount is too high
                     upper_bound = current_usd
                 else:  # We deducted too few shares
                     # This means our USD amount is too low
                     lower_bound = current_usd
-                    
+
                 # Update our guess
                 current_usd = (lower_bound + upper_bound) / 2
-                
+
             except ArithmeticError:
                 # If the sell operation fails, our USD amount is too high
                 upper_bound = current_usd
                 current_usd = (lower_bound + upper_bound) / 2
-                
+
             iteration += 1
-        
+
         # If we've reached the max iterations, return our best guess
         return current_usd
 
@@ -316,6 +321,7 @@ class PredMarketNew:
 
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
+            print(f"self shares[i] ({self.shares[i]}) - amount with fee ({amount_with_fee}): {self.shares[i] - amount_with_fee}")
             self.shares[i] -= amount_with_fee
             self.total_shares[i] -= amount_with_fee
 
@@ -1225,5 +1231,25 @@ def simulate_market_22():
     market.test_get_market_details()
     market.test_get_user_details(ERIK)
 
+def simulate_market_0xB4b096ECD5Eb290CEC81004e949E087b3eda6339_1618867():
+    market = PredMarketNew(liquidity=101000000, outcomes=4, fees=0*10)
+    market.outcome_prices = [250000, 250000, 250000, 250000]
+    market.shares = [150600000, 150600000, 30465660, 150600000]
+    market.total_shares = [150600000, 150600000, 150600000, 150600000]
+    market.user_outcome_shares["Alice"] = [0] * 4
+    market.user_outcome_shares["Alice"][2] = 120134340
+    market.user_liquidity_shares["Alice"] = 100000000
+    market.user_wallet_usd["Alice"] = 1185723629
+    market.pool_wallet_usd = 151000000
+    market.fees_collected_weighted = 0
+    market.fees_claimed["Alice"] = 0
+
+    market.buy(2, 50e6, "Alice")
+
+    market.test_get_market_details()
+    market.test_get_user_details("Alice")
+
+    print("sale estimation", market.inverse_sell(2, 120134340, "Alice"))
+
 if __name__ == "__main__":
-    simulate_market_22()
+    simulate_market_0xB4b096ECD5Eb290CEC81004e949E087b3eda6339_1618867()

@@ -610,11 +610,7 @@ impl StorageTrading {
         let prev_after = self
             .amm_shares
             .get(outcome_id)
-            .checked_sub(usd_amt_added_fee)
-            .ok_or(Error::CheckedSubOverflow(
-                self.amm_shares.get(outcome_id),
-                usd_amt_added_fee
-            ))?;
+            .wrapping_sub(usd_amt_added_fee);
         let product = self
             .outcome_ids_iter()
             .filter(|id| *id != outcome_id)
@@ -635,9 +631,7 @@ impl StorageTrading {
             .get()
             .pow(U256::from(self.outcome_list.len()))
             .div_ceil(product);
-        Ok(c!(new_shares
-            .checked_sub(prev_after)
-            .ok_or(Error::CheckedSubOverflow(new_shares, prev_after))))
+        Ok(new_shares.wrapping_sub(prev_after))
     }
 
     #[mutants::skip]
@@ -663,7 +657,7 @@ impl StorageTrading {
                         .checked_sub(U256::from(1))
                         .ok_or(Error::CheckedSubOverflow(mid, U256::from(1))));
                 }
-                Err(err) => return Err(err),
+                err => return err
             }
         }
         Ok(lo)

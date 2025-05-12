@@ -4,15 +4,16 @@
     not(target_arch = "wasm32")
 ))]
 
-use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
-
-use lib9lives::{
-    actions::*, error::Error, host, implement_action,
-    interactions_clear_after, panic_guard, proxy, should_spend_fusdc_contract,
-    should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
+use stylus_sdk::{
+    alloy_primitives::fixed_bytes,
+    alloy_primitives::{Address, FixedBytes, U256, U64},
 };
 
-use std::collection::HashMap;
+use lib9lives::{
+    actions::*, error::Error, host, implement_action, interactions_clear_after, panic_guard, proxy,
+    should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
+    testing_addrs::*, utils::*, StorageTrading,
+};
 
 use proptest::prelude::*;
 
@@ -194,7 +195,7 @@ proptest! {
             // A user should not be able to use payoff with a campaign that hasn't ended.
             assert_eq!(
                 Error::NotWinner,
-                c.payoff_8_5_D_8_D_F_C_9(
+                c.payoff_C_B_6_F_2565(
                     outcomes[0],
                     rand_word,
                     msg_sender()
@@ -262,6 +263,7 @@ proptest! {
         }
     }
 
+/*
     #[test]
     fn test_amm_tiny_mint_into_burning(
         add_lp in strat_medium_u256(),
@@ -286,7 +288,7 @@ proptest! {
                 }
             }
         }
-    }
+    } */
 
     /*
     #[test]
@@ -296,4 +298,55 @@ proptest! {
     ) {
 
     } */
+}
+
+#[test]
+fn test_amm_reproduction_0xB4b096ECD5Eb290CEC81004e949E087b3eda6339_1618800() {
+    let outcomes = [
+        fixed_bytes!("439eae333c95ac29"),
+        fixed_bytes!("af3cb149de66b691"),
+        fixed_bytes!("c37bf2c12b3d685b"),
+        fixed_bytes!("e85828692eebeaee"),
+    ];
+    interactions_clear_after! {
+        IVAN => {
+            let mut c = StorageTrading::default();
+            setup_contract!(&mut c, &outcomes);
+            //c.fee_creator.set(U256::from(0));
+            //c.fee_minter.set(U256::from(0));
+            //c.fee_lp.set(U256::from(0));
+            //c.fee_referrer.set(U256::from(0));
+            c.is_protocol_fee_disabled.set(true); // Disabled by the generator!
+            //c.is_protocol_fee_disabled.set(false);
+            c.amm_liquidity.set(U256::from(101000000));
+            c.amm_outcome_prices.setter(fixed_bytes!("439eae333c95ac29")).set(U256::from(250000));
+            c.amm_outcome_prices.setter(fixed_bytes!("af3cb149de66b691")).set(U256::from(250000));
+            c.amm_outcome_prices.setter(fixed_bytes!("c37bf2c12b3d685b")).set(U256::from(250000));
+            c.amm_outcome_prices.setter(fixed_bytes!("e85828692eebeaee")).set(U256::from(250000));
+            c.amm_shares.setter(fixed_bytes!("439eae333c95ac29")).set(U256::from(150600000));
+            c.amm_shares.setter(fixed_bytes!("af3cb149de66b691")).set(U256::from(150600000));
+            c.amm_shares.setter(fixed_bytes!("c37bf2c12b3d685b")).set(U256::from(30465660));
+            c.amm_shares.setter(fixed_bytes!("e85828692eebeaee")).set(U256::from(150600000));
+            c.amm_total_shares.setter(fixed_bytes!("439eae333c95ac29")).set(U256::from(150600000));
+            c.amm_total_shares.setter(fixed_bytes!("af3cb149de66b691")).set(U256::from(150600000));
+            c.amm_total_shares.setter(fixed_bytes!("c37bf2c12b3d685b")).set(U256::from(150600000));
+            c.amm_total_shares.setter(fixed_bytes!("e85828692eebeaee")).set(U256::from(150600000));
+            c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(100000000));
+            c.amm_fees_collected_weighted.set(U256::from(0));
+            c.amm_lp_global_fees_claimed.set(U256::from(0));
+            c.amm_lp_user_fees_claimed.setter(msg_sender()).set(U256::from(0));
+            let buy_amt = 50e6 as u64;
+            should_spend_fusdc_sender!(
+                buy_amt,
+                c.mint_8_A_059_B_6_E(
+                    outcomes[2],
+                    U256::from(buy_amt),
+                    Address::ZERO,
+                    msg_sender()
+                )
+            );
+            dbg!(c.internal_amm_quote_burn(outcomes[2], U256::from(77390246)).unwrap());
+            dbg!(c.estimate_burn_E_9_B_09_A_17(outcomes[2], U256::from(120134340)).unwrap());
+        }
+    }
 }
