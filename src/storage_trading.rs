@@ -8,7 +8,8 @@ use crate::utils::msg_sender;
         feature = "contract-trading-mint",
         feature = "contract-trading-extras",
         feature = "contract-trading-quotes",
-        feature = "contract-trading-price"
+        feature = "contract-trading-price",
+        feature = "contract-trading-dumper"
     ),
     stylus_sdk::prelude::entrypoint
 )]

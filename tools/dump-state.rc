@@ -4,3 +4,35 @@
 # it to the output using the stylus-interpreter.
 
 # https://9lives.so/campaign/0x8a2479b941608086
+
+pool=$1
+erik=0x88769789657055E5629b758124f3BC52f218A2C5
+
+if(~ $pool '') {
+	echo '$1' pool addr not set >[1=2]
+	exit 1
+}
+
+url=https://rpc.superposition.so
+
+# Copied from build-mainnet.sh (rev 5911e18)
+
+SPN_FUSDC_ADDR=0x6c030c5CC283F791B26816f325b9C632d964F8A1
+SPN_LONGTAIL_ADDR=0xF3334049A3ce7e890bd4f8C6a0FBC70e38fd3746
+SPN_STAKED_ARB_ADDR=0xA2555701754464d32D9624149E3fDb459F3c8DE4
+SPN_DAO_ADDR=0x12F23D2001A86e600369E6a6ABE1E6B932D0d70C
+SPN_SHARE_IMPL_ADDR=0x3e27e934344bf490457231Cb8F0c0eda7d60C362
+
+cargo build \
+	--features trading-backend-amm,contract-trading-dumper,harness-stylus-interpreter \
+	--target wasm32-unknown-unknown
+
+cast --abi-decode 'hello()(string)' `{
+	stylus-interpreter -a $pool -b `{cast bn --rpc-url $url} -u $url -s $erik \
+	target/wasm32-unknown-unknown/debug/ninelives.wasm `{
+		cast calldata 'dumpState()'
+	}
+} \
+	>[2=] \
+		| perl -pe 's/\\n/\n/g' \
+		| sed -s 's/\\//g'
