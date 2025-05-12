@@ -30,8 +30,12 @@ export default function RemoveLiquidityDialog({
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
+  const maxLiquidity = Number(formatFusdc(+liquidity, 6));
   const formSchema = z.object({
-    liquidity: z.preprocess((val) => Number(val), z.number().min(1)),
+    liquidity: z.preprocess(
+      (val) => Number(val),
+      z.number().min(0).max(maxLiquidity),
+    ),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
@@ -41,7 +45,7 @@ export default function RemoveLiquidityDialog({
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      liquidity: Number(formatFusdc(+liquidity, 6)),
+      liquidity: maxLiquidity,
     },
   });
   const { remove } = useLiquidity({
@@ -70,17 +74,17 @@ export default function RemoveLiquidityDialog({
       <p className="text-center font-chicago text-base">
         Remove Liquidity from The Campaign
       </p>
-      <p className="text-center font-chicago text-xl">{name}</p>
+      <p className="text-center font-chicago text-base">{name}</p>
       <p className="text-center text-xs">
-        You added {+formatFusdc(+liquidity, 6)} to the campaign. You can remove
-        liquidity and earn provider rewards.
+        You can remove your liquidity and earn provider rewards.
       </p>
+      <p className="text-center font-chicago text-xl">{`$${maxLiquidity}`}</p>
       <Field className={fieldClass}>
         <div className="flex gap-2.5">
           <Input
             {...register("liquidity")}
             type="number"
-            min={1}
+            min={0}
             className={combineClass(
               errors.liquidity && "border-2 border-red-500",
               "flex-1",
