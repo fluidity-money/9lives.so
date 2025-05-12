@@ -7,7 +7,7 @@ import { FormEvent, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { Account } from "thirdweb/wallets";
-import useAddLiquidity from "@/hooks/useAddLiquidity";
+import useLiquidity from "@/hooks/useLiquidity";
 
 export default function FundingLP({
   name,
@@ -37,14 +37,14 @@ export default function FundingLP({
       seedLiquidity: 1,
     },
   });
-  const { addLiquidity } = useAddLiquidity({
+  const { add } = useLiquidity({
     campaignId,
     tradingAddr,
   });
   const onSubmit = async (input: FormData, account: Account) => {
     try {
       setIsFunding(true);
-      await addLiquidity(account!, input.seedLiquidity.toString());
+      await add(account!, input.seedLiquidity.toString());
       close();
     } finally {
       setIsFunding(false);
