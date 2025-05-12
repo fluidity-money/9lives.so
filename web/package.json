@@ -41,7 +41,7 @@
     "posthog-js": "^1.186.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-hook-form": "^7.53.1",
+    "react-hook-form": "^7.56.3",
     "react-hot-toast": "^2.4.1",
     "sharp": "^0.33.5",
     "tailwind-merge": "^2.5.2",

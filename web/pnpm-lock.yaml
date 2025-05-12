@@ -16,7 +16,7 @@ importers:
         version: 0.2.1(tailwindcss@3.4.17)
       '@hookform/resolvers':
         specifier: ^3.9.0
-        version: 3.10.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 3.10.0(react-hook-form@7.56.3(react@19.0.0))
       '@next/third-parties':
         specifier: ^15.0.4
         version: 15.1.6(next@15.2.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(babel-plugin-macros@3.1.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
@@ -63,8 +63,8 @@ importers:
         specifier: 19.0.0
         version: 19.0.0(react@19.0.0)
       react-hook-form:
-        specifier: ^7.53.1
-        version: 7.54.2(react@19.0.0)
+        specifier: ^7.56.3
+        version: 7.56.3(react@19.0.0)
       react-hot-toast:
         specifier: ^2.4.1
         version: 2.5.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -4691,8 +4691,8 @@ packages:
     peerDependencies:
       react: ^19.0.0
 
-  react-hook-form@7.54.2:
-    resolution: {integrity: sha512-eHpAUgUjWbZocoQYUHposymRb4ZP6d0uwUnooL2uOybA9/3tPUvoAKqEWK1WaSiTxxOfTpffNZP7QwlnM3/gEg==}
+  react-hook-form@7.56.3:
+    resolution: {integrity: sha512-IK18V6GVbab4TAo1/cz3kqajxbDPGofdF0w7VHdCo0Nt8PrPlOZcuuDq9YYIV1BtjcX78x0XsldbQRQnQXWXmw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -6334,9 +6334,9 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.17
 
-  '@hookform/resolvers@3.10.0(react-hook-form@7.54.2(react@19.0.0))':
+  '@hookform/resolvers@3.10.0(react-hook-form@7.56.3(react@19.0.0))':
     dependencies:
-      react-hook-form: 7.54.2(react@19.0.0)
+      react-hook-form: 7.56.3(react@19.0.0)
 
   '@humanwhocodes/config-array@0.13.0':
     dependencies:
@@ -11246,7 +11246,7 @@ snapshots:
       react: 19.0.0
       scheduler: 0.25.0
 
-  react-hook-form@7.54.2(react@19.0.0):
+  react-hook-form@7.56.3(react@19.0.0):
     dependencies:
       react: 19.0.0
 
