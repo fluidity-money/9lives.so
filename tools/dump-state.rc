@@ -3,8 +3,6 @@
 # Use a different entrypoint that enumerates the state of each variable, and then prints
 # it to the output using the stylus-interpreter.
 
-# https://9lives.so/campaign/0x8a2479b941608086
-
 pool=$1
 erik=0x88769789657055E5629b758124f3BC52f218A2C5
 
