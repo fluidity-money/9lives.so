@@ -507,9 +507,6 @@ pub enum Error {
 
     // Subtraction underflow with a decimal function.
     CheckedSubOverflowD,
-
-    // Failed to estimate the burn amount.
-    FailedToEstimate,
 }
 
 #[cfg(any(

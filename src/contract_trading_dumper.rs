@@ -4,7 +4,7 @@ use stylus_sdk::block;
 
 use alloc::{format, string::String, string::ToString, vec::Vec};
 
-use crate::{fusdc_call, proxy, share_call, utils::*};
+use crate::{error::*, fusdc_call, proxy, share_call, utils::*};
 
 pub use crate::storage_trading::*;
 
@@ -12,7 +12,7 @@ use core::fmt::Write;
 
 #[cfg_attr(feature = "contract-trading-dumper", stylus_sdk::prelude::public)]
 impl StorageTrading {
-    pub fn dump_state(&self) -> String {
+    pub fn dump_state(&self) -> R<String> {
         let bn = block::number();
         let addr = contract_address();
         let outcome_len = self.outcome_list.len();
@@ -54,7 +54,7 @@ impl StorageTrading {
                 self.share_impl.get(),
                 outcome_id,
             );
-            let bal = share_call::balance_of(share_addr, sender).unwrap();
+            let bal = share_call::balance_of(share_addr, sender)?;
             if bal.is_zero() {
                 continue;
             }
@@ -65,8 +65,8 @@ impl StorageTrading {
             .unwrap();
         }
         let user_liquidity_shares = self.amm_user_liquidity_shares.get(sender);
-        let usd_bal_contract = fusdc_call::balance_of(contract_address()).unwrap();
-        let usd_bal_sender = fusdc_call::balance_of(sender).unwrap();
+        let usd_bal_contract = fusdc_call::balance_of(contract_address())?;
+        let usd_bal_sender = fusdc_call::balance_of(sender)?;
         let mut rust_amm_outcome_prices = String::new();
         for outcome_id in self.outcome_ids_iter() {
             write!(
@@ -107,7 +107,7 @@ impl StorageTrading {
             )
             .unwrap();
         }
-        format!(
+        Ok(format!(
             r#"
 // NOTE: we don't make any assumptions about the winner, or whether this
 // market has concluded. We also don't track the fees owed with the other
@@ -148,6 +148,6 @@ fn test_amm_reproduction_{addr}_{bn}() {{
     }}
 }}
 "#
-        )
+        ))
     }
 }
