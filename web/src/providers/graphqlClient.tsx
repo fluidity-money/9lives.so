@@ -291,3 +291,8 @@ export const storeCommitment = ({
   graph9Lives.mutation.revealCommitment({
     $: { tradingAddr, seed, sender, preferredOutcome },
   });
+
+export const requestUserLiquidity = (address: string, tradingAddr?: string) =>
+  graph9Lives.query.userLiquidity({
+    $: { address, tradingAddr },
+  });
