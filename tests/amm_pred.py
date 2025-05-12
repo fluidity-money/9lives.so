@@ -237,6 +237,70 @@ class PredMarketNew:
 
         return self.shares
 
+    def inverse_sell(self, outcome, shares_to_sell, user, tolerance=1e-6, max_iterations=1000):
+        """
+        Find how many USD you would receive for selling a specific number of shares.
+        
+        Args:
+            outcome: The outcome index
+            shares_to_sell: Number of outcome shares the user wants to sell
+            user: User identifier
+            tolerance: Acceptable error in the result
+            max_iterations: Maximum number of binary search iterations
+            
+        Returns:
+            The USD amount the user would receive
+        """
+        # Check if user has enough shares
+        if shares_to_sell > self.user_outcome_shares[user][outcome]:
+            raise ArithmeticError("Insufficient shares to sell")
+        
+        # Initial lower and upper bounds for binary search
+        # Start with reasonable bounds for the USD amount
+        lower_bound = 0.0
+        # Set upper bound assuming worst case scenario (1:1 exchange rate + fees)
+        upper_bound = shares_to_sell * 2  # Generous upper bound
+        
+        iteration = 0
+        current_usd = (lower_bound + upper_bound) / 2
+        
+        while iteration < max_iterations:
+            # Create a deep copy of the market state to avoid modifying it
+            market_copy = copy.deepcopy(self)
+            
+            try:
+                # Call sell function and observe how many shares would be deducted
+                old_shares = market_copy.user_outcome_shares[user][outcome]
+                market_copy.sell(outcome, current_usd, user)
+                shares_deducted = old_shares - market_copy.user_outcome_shares[user][outcome]
+                
+                # Compare with our target
+                error = shares_deducted - shares_to_sell
+                
+                if abs(error) < tolerance:
+                    # We've found a close enough solution
+                    return current_usd
+                
+                if error > 0:  # We deducted too many shares
+                    # This means our USD amount is too high
+                    upper_bound = current_usd
+                else:  # We deducted too few shares
+                    # This means our USD amount is too low
+                    lower_bound = current_usd
+                    
+                # Update our guess
+                current_usd = (lower_bound + upper_bound) / 2
+                
+            except ArithmeticError:
+                # If the sell operation fails, our USD amount is too high
+                upper_bound = current_usd
+                current_usd = (lower_bound + upper_bound) / 2
+                
+            iteration += 1
+        
+        # If we've reached the max iterations, return our best guess
+        return current_usd
+
     def sell(self, outcome, amount, user):
         self.only_when_market_not_resolved()
 
@@ -1141,5 +1205,25 @@ def simulate_market_21():
     market.test_get_market_details()
     market.test_get_user_details(ALICE)
 
+def simulate_market_22():
+    market = PredMarketNew(liquidity=1, outcomes=4, fees = 0.008)
+
+    ERIK = "Erik"
+    market.add_user(ERIK)
+
+    market.user_wallet_usd[ERIK] = 150
+    market.add_liquidity(100, ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
+    # Bob buy 294 USD worth of Outcome A shares (index 0)
+    market.buy(2, 50, ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
+    market.sell(2,market.inverse_sell(2,120.13434,ERIK),ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
 if __name__ == "__main__":
-    simulate_market_21()
+    simulate_market_22()
