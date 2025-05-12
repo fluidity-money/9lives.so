@@ -5,12 +5,12 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
 use std::{
+    cmp::*,
     process::{Command, Output},
     str::FromStr,
-    cmp::*
 };
 
-use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
+use stylus_sdk::alloy_primitives::U256;
 
 use proptest::prelude::*;
 

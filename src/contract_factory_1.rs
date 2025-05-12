@@ -9,11 +9,9 @@ use stylus_sdk::{
 #[cfg(target_arch = "wasm32")]
 use alloc::{string::String, vec::Vec};
 
-use crate::amm_call;
-
 use crate::{
-    error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy, share_call,
-    trading_call, utils::block_timestamp,
+    amm_call, error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy,
+    share_call, trading_call, utils::{block_timestamp, contract_address},
 };
 
 pub use crate::storage_factory::*;
@@ -56,21 +54,9 @@ impl StorageFactory {
 
         // Deploy the contract, and emit a log that it was created.
         let trading_addr = (if backend_is_dpm {
-            proxy::deploy_trading(
-                self.trading_dpm_extras_impl.get(),
-                self.trading_dpm_mint_impl.get(),
-                self.trading_dpm_quotes_impl.get(),
-                self.trading_dpm_price_impl.get(),
-                trading_id,
-            )
+            proxy::deploy_trading(contract_address(), true, trading_id)
         } else {
-            proxy::deploy_trading(
-                self.trading_amm_extras_impl.get(),
-                self.trading_amm_mint_impl.get(),
-                self.trading_amm_quotes_impl.get(),
-                self.trading_amm_price_impl.get(),
-                trading_id,
-            )
+            proxy::deploy_trading(contract_address(), false, trading_id)
         })
         .map_err(|_| Error::DeployError)?;
 

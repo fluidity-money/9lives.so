@@ -1,5 +1,6 @@
-// This trading proxy is a simple proxy that selects the function to
-// delegatecall to based on the selector of the function given.
+// This trading proxy is the original deployment of our proxy middleware.
+// We've since migrated to a new UpgradeableFourProxy implementation
+// based on Solidity (for now).
 
 #define macro MAIN() = takes(0) returns(0) {
 	calldatasize 0x0 0x0 calldatacopy

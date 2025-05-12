@@ -218,7 +218,7 @@ fn test_shares_edge_1() {
 mod proptesting {
     use super::*;
 
-    use crate::utils::{strat_medium_u256, strat_tiny_u256};
+    use crate::utils::strat_medium_u256;
 
     use proptest::prelude::*;
 
@@ -240,11 +240,6 @@ mod proptesting {
                 let r = mul_div_round_up(x, y, z).unwrap();
                 a == r || a == r - U256::from(1)
             })
-        }
-
-        #[test]
-        #[ignore]
-        fn test_large_pows(x in strat_medium_u256(), y in strat_tiny_u256()) {
         }
     }
 }

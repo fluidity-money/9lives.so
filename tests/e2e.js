@@ -107,10 +107,10 @@ describe("End to end tests", async () => {
     lockupProxyImpl: lockupProxyAddr,
     factoryProxy: factoryProxyAddr,
     optimisticInfraMarketImplementation: infraMarketImplAddr,
-    tradingDpmExtrasImplementation,
-    tradingDpmMintImplementation,
-    tradingDpmPriceImplementation,
-    tradingDpmQuotesImplementation,
+    tradingAmmExtrasImplementation,
+    tradingAmmMintImplementation,
+    tradingAmmPriceImplementation,
+    tradingAmmQuotesImplementation,
     shareImplementation
   } = (() => {
     try {

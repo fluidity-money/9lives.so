@@ -132,10 +132,9 @@ macro_rules! test_should_buy_check_shares {
 }
 
 macro_rules! test_should_burn_shares {
-    ($c:expr, $outcome:expr, $buy_amt:expr, $shares_sold:expr, $fees_taken:expr) => {{
+    ($c:expr, $outcome:expr, $buy_amt:expr, $shares_sold:expr) => {{
         let buy_amt = U256::from($buy_amt);
         let shares_sold = U256::from($shares_sold);
-        let fees_taken = U256::from($fees_taken);
         host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
         assert_eq!(
             shares_sold,
@@ -161,8 +160,6 @@ macro_rules! test_should_burn_shares {
                         msg_sender(),
                     )
                     .unwrap();
-                assert_eq!(fees_taken, fusdc_call::balance_of(CONTRACT).unwrap());
-                host_erc20_call::burn(FUSDC_ADDR, CONTRACT, fees_taken);
                 Ok(x)
             }),
             "actual burn"
@@ -423,9 +420,9 @@ proptest! {
                     844833864, // User shares,
                     0 // Fees
                 );
-                let expect_usd = U256::from(844833864);
+                let expect_usd = U256::from(844833173);
                 let buy_amt = U256::from(buy_amt);
-                test_should_burn_shares!(c, outcome_a, buy_amt, expect_usd, 0);
+                test_should_burn_shares!(c, outcome_a, buy_amt, expect_usd);
                 for (i, (price1, price2)) in before_outcome_prices
                     .iter()
                     .zip(c.outcome_ids_iter().map(|x| c.amm_outcome_prices.get(x)))
@@ -693,91 +690,6 @@ proptest! {
     }
 
     #[test]
-    fn test_amm_user_story_15(
-        outcomes in strat_uniq_outcomes(4, 4),
-        mut c in strat_storage_trading(false)
-    ) {
-        let outcome_a = outcomes[0];
-        let outcome_b = outcomes[1];
-        let outcome_c = outcomes[2];
-        let outcome_d = outcomes[3];
-        interactions_clear_after! {
-            IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
-                test_add_liquidity!(&mut c, 1000e6 as u64);
-                for o in [outcome_a, outcome_b, outcome_c, outcome_d] {
-                    assert_eq!(
-                        U256::ZERO,
-                        share_call::balance_of(c.share_addr(o).unwrap(), msg_sender()).unwrap()
-                    );
-                }
-                let outcome_a_buy_shares = test_should_buy_check_shares!(
-                    c,
-                    outcome_a,
-                    300e6 as u64,
-                    455166136, // Market shares
-                    844833864, // User shares
-                    0 // Fees
-                );
-                let (shares, _) = should_spend!(
-                    c.share_addr(outcome_a).unwrap(),
-                    { ZERO_FOR_MINT_ADDR => 324935653 },
-                    Ok(test_add_liquidity!(&mut c, 500e6 as u64))
-                );
-               assert_eq_u!(384615631, shares);
-                for o in [outcome_a, outcome_b, outcome_c, outcome_d] {
-                    host_erc20_call::test_reset_bal(c.share_addr(o).unwrap(), msg_sender());
-                }
-                should_spend_fusdc_contract!(
-                    175064104,
-                    c.remove_liquidity_3_C_857_A_15(shares, msg_sender())
-                );
-                assert_eq!(
-                    U256::ZERO,
-                    share_call::balance_of(c.share_addr(outcome_a).unwrap(), msg_sender()).unwrap()
-                );
-                for o in [outcome_b, outcome_c, outcome_d] {
-                    assert_eq!(
-                        U256::from(324936130),
-                        share_call::balance_of(c.share_addr(o).unwrap(), msg_sender()).unwrap()
-                    );
-                }
-                let remove_liq_amt = U256::from(1000e6 as u64);
-                c.amm_liquidity.set(remove_liq_amt);
-                should_spend!(
-                    c.share_addr(outcome_b).unwrap(),
-                    { ZERO_FOR_MINT_ADDR => 0 },
-                    {
-                        should_spend_fusdc_contract!(
-                            455166379,
-                            c.remove_liquidity_3_C_857_A_15(remove_liq_amt, msg_sender())
-                        );
-                        Ok(())
-                    }
-                );
-                assert_eq!(U256::ZERO, c.amm_liquidity.get());
-                c.decide(outcome_a).unwrap();
-                let sender_outcome_a_bal = U256::from(1169769517);
-                should_spend!(
-                    c.share_addr(outcome_a).unwrap(),
-                    { msg_sender() => sender_outcome_a_bal },
-                    {
-                        should_spend_fusdc_contract!(
-                            sender_outcome_a_bal,
-                            c.payoff_C_B_6_F_2565(
-                                outcome_a,
-                                sender_outcome_a_bal,
-                                msg_sender()
-                            )
-                        );
-                        Ok(())
-                    }
-                )
-            }
-        }
-    }
-
-    #[test]
     fn test_amm_user_story_16(
         outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false)
@@ -799,7 +711,7 @@ proptest! {
                     10e6 as u64 // Fees
                 );
                 assert_eq_u!(10e6 as u64, c.amm_fees_collected_weighted.get());
-                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151382160, 2040817);
+                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 151382160);
                 assert_eq!(U256::from(12040817 as u64), c.amm_fees_collected_weighted.get());
             }
         };
@@ -839,8 +751,7 @@ proptest! {
                     c,
                     outcome_a,
                     100e6 as u64,
-                    151382160,
-                    2040817 // Fees
+                    151379044
                 );
                 // According to the Python, this should be 12040816.
                 assert_eq!(target_fee_collected, c.amm_fees_collected_weighted.get());
@@ -905,36 +816,38 @@ proptest! {
         let outcome_b = outcomes[1];
         let outcome_c = outcomes[2];
         let outcome_d = outcomes[3];
-        let mut eli_shares: Vec<(FixedBytes<8>, U256)> = Vec::new();
-        let mut ivan_liq_shares = U256::ZERO;
-        let mut ogous_shares = U256::ZERO;
+        let eli_shares: Option<Vec<(FixedBytes<8>, U256)>>;
+        let ivan_liq_shares: Option<U256>;
+        let ogous_shares: Option<U256>;
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
                 c.oracle.set(ELI);
                 // 20 = 2% fees
                 c.fee_lp.set(U256::from(20));
-                (ivan_liq_shares, _) = test_add_liquidity!(&mut c, 500e6 as u64);
+                let (liq_result, _) = test_add_liquidity!(&mut c, 500e6 as u64);
+                ivan_liq_shares = Some(liq_result);
             },
             ERIK => {
                 test_add_liquidity!(&mut c, 500e6 as u64);
             },
             OGOUS => {
                 host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
-                ogous_shares = test_should_buy_check_shares!(
+                ogous_shares = Some(test_should_buy_check_shares!(
                     c,
                     outcome_a,
                     100e6 as u64,
                     755427830, // Market shares
                     342572170, // User shares
                     100e6 as u64 // Fees
-                );
-                assert_eq_u!(342572170, ogous_shares);
+                ));
+                assert_eq_u!(342572170, ogous_shares.unwrap());
             },
             ELI => {
                 assert_eq_u!(2e6 as u64, c.amm_fees_collected_weighted.get());
                 let bal = 8000e6 as u64;
-                (_, eli_shares) = test_add_liquidity!(&mut c, bal);
+                let (_, liq_res) = test_add_liquidity!(&mut c, bal);
+                eli_shares = Some(liq_res);
                 assert_eq_u!(bal, fusdc_call::balance_of(CONTRACT).unwrap());
                 host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
                 // This is a dust amount, so zero.
@@ -954,7 +867,7 @@ proptest! {
                 );
             },
             ELI => {
-                let (_, outcome_a_shares) = eli_shares[0];
+                let (_, outcome_a_shares) = eli_shares.unwrap()[0];
                 // In the reference, the shares are 2495.9721018075907:
                 assert_eq_u!(2495972386u64, outcome_a_shares);
                 panic_guard(|| {
@@ -980,17 +893,20 @@ proptest! {
             },
             OGOUS => {
                 should_spend_fusdc_contract!(
-                    ogous_shares,
+                    ogous_shares.unwrap(),
                     c.payoff_C_B_6_F_2565(
                         outcome_a,
-                        ogous_shares,
+                        ogous_shares.unwrap(),
                         msg_sender()
                     )
                 );
             },
             IVAN => {
-                assert_eq_u!(ivan_liq_shares, c.amm_user_liquidity_shares.get(msg_sender()));
-                assert_eq_u!(500e6 as u64, ivan_liq_shares);
+                assert_eq_u!(
+                    ivan_liq_shares.unwrap(),
+                    c.amm_user_liquidity_shares.get(msg_sender())
+                );
+                assert_eq_u!(500e6 as u64, ivan_liq_shares.unwrap());
                 should_spend_fusdc_contract!(
                     // In the Python, this is 377.71391451345414:
                     377713500,

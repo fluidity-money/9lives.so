@@ -250,19 +250,6 @@ proptest! {
         }
     }
 
-    #[test]
-    fn test_amm_ogous_frontend_1(
-        outcomes in strat_uniq_outcomes(5, 5),
-        mut c in strat_storage_trading(false)
-    ) {
-        interactions_clear_after! {
-            ERIK => {
-                setup_contract!(&mut c, &outcomes);
-                dbg!(test_add_liquidity(&mut c, 100_000e6 as u64));
-            }
-        }
-    }
-
 /*
     #[test]
     fn test_amm_tiny_mint_into_burning(
@@ -293,6 +280,7 @@ proptest! {
 }
 
 #[test]
+#[allow(non_snake_case)]
 fn test_amm_reproduction_0x276b5b896b088c5604E7333df90f7691d6FDE93A_1621096() {
     let outcomes = [
         fixed_bytes!("009380e6201ad444"),
@@ -328,7 +316,7 @@ fn test_amm_reproduction_0x276b5b896b088c5604E7333df90f7691d6FDE93A_1621096() {
             c.amm_lp_global_fees_claimed.set(U256::from(0));
             c.amm_lp_user_fees_claimed.setter(msg_sender()).set(U256::from(0));
 
-            dbg!(should_spend!(
+            assert_eq!((U256::from(5954797), U256::from(4959880)), should_spend!(
                 c.share_addr(fixed_bytes!("9cff5edbbb8ac0a9")).unwrap(),
                 { msg_sender() => 5954797 },
                 Ok(should_spend_fusdc_contract!(

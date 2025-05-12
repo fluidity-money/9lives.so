@@ -62,20 +62,13 @@ impl StorageFactory {
 
     pub fn dpm_trading_hash(&self) -> R<FixedBytes<32>> {
         Ok(FixedBytes::from_slice(&trading_proxy_hash(
-            self.trading_dpm_extras_impl.get(),
-            self.trading_dpm_mint_impl.get(),
-            self.trading_dpm_quotes_impl.get(),
-            self.trading_dpm_price_impl.get(),
+            contract_address(),
+            true,
         )))
     }
 
     pub fn amm_trading_hash(&self) -> R<FixedBytes<32>> {
-        Ok(FixedBytes::from_slice(&trading_proxy_hash(
-            self.trading_amm_extras_impl.get(),
-            self.trading_amm_mint_impl.get(),
-            self.trading_amm_quotes_impl.get(),
-            self.trading_amm_price_impl.get(),
-        )))
+        Ok(FixedBytes::from_slice(&trading_proxy_hash(contract_address(), false)))
     }
 
     pub fn trading_hashes(&self) -> R<(FixedBytes<32>, FixedBytes<32>)> {
@@ -213,5 +206,37 @@ impl StorageFactory {
             )));
         }
         Ok(())
+    }
+
+    pub fn mint_addr(&self, is_dpm: bool) -> Address {
+        if is_dpm {
+            self.trading_dpm_mint_impl.get()
+        } else {
+            self.trading_amm_mint_impl.get()
+        }
+    }
+
+    pub fn quotes_addr(&self, is_dpm: bool) -> Address {
+        if is_dpm {
+            self.trading_dpm_quotes_impl.get()
+        } else {
+            self.trading_amm_quotes_impl.get()
+        }
+    }
+
+    pub fn price_addr(&self, is_dpm: bool) -> Address {
+        if is_dpm {
+            self.trading_dpm_price_impl.get()
+        } else {
+            self.trading_amm_price_impl.get()
+        }
+    }
+
+    pub fn extras_addr(&self, is_dpm: bool) -> Address {
+        if is_dpm {
+            self.trading_dpm_extras_impl.get()
+        } else {
+            self.trading_amm_extras_impl.get()
+        }
     }
 }
