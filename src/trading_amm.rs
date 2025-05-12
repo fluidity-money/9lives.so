@@ -106,7 +106,7 @@ impl StorageTrading {
             .checked_sub(prev_liquidity)
             .ok_or(Error::CheckedSubOverflow(new_liq, prev_liquidity)));
         if !self.amm_liquidity.get().is_zero() {
-            self.rebalance_fees(msg_sender(), liq_shares_minted, true)?;
+            self.rebalance_fees(recipient, liq_shares_minted, true)?;
         }
         self.amm_liquidity.set(new_liq);
         // Time to mint the user some shares. For now, we're going to simply bump
@@ -114,8 +114,8 @@ impl StorageTrading {
         let add_user_liq = c!(self.amm_liquidity.get().checked_sub(prev_liquidity).ok_or(
             Error::CheckedSubOverflow(self.amm_liquidity.get(), prev_liquidity)
         ));
-        let user_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
-        self.amm_user_liquidity_shares.setter(msg_sender()).set(
+        let user_liq_shares = self.amm_user_liquidity_shares.get(recipient);
+        self.amm_user_liquidity_shares.setter(recipient).set(
             user_liq_shares
                 .checked_add(add_user_liq)
                 .ok_or(Error::CheckedAddOverflow)?,
@@ -237,7 +237,7 @@ impl StorageTrading {
             .map(|x| self.amm_shares.get(x))
             .product();
         let new_liq = c!(maths::rooti(product, self.outcome_list.len() as u32));
-        let lp_fees_earned = self.internal_amm_claim_lp_fees(recipient)?;
+        let lp_fees_earned = self.internal_amm_claim_lp_fees(msg_sender(), recipient)?;
         self.rebalance_fees(msg_sender(), amount, false)?;
         self.amm_liquidity.set(new_liq);
         {
@@ -428,7 +428,7 @@ impl StorageTrading {
         Ok(())
     }
 
-    pub fn internal_amm_claim_lp_fees(&mut self, recipient: Address) -> R<U256> {
+    pub fn internal_amm_claim_lp_fees(&mut self, spender: Address, recipient: Address) -> R<U256> {
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
         let entitled = maths::mul_div(
@@ -437,7 +437,7 @@ impl StorageTrading {
             self.amm_liquidity.get(),
         )?
         .0;
-        let claimed = self.amm_lp_user_fees_claimed.get(msg_sender());
+        let claimed = self.amm_lp_user_fees_claimed.get(spender);
         // Avoid a rounding error by clamping to 0 if we're off by 1.
         let fees = entitled.saturating_sub(claimed);
         if fees.is_zero() {
@@ -445,11 +445,11 @@ impl StorageTrading {
         }
         // Prevent people from double claiming.
         self.amm_lp_user_fees_claimed
-            .setter(msg_sender())
+            .setter(spender)
             .set(claimed.checked_add(fees).ok_or(Error::CheckedAddOverflow)?);
         fusdc_call::transfer(recipient, fees)?;
         evm::log(events::LPFeesClaimed {
-            sender: msg_sender(),
+            sender: spender,
             recipient,
             feesEarned: fees,
             senderLiquidityShares: sender_liq_shares,

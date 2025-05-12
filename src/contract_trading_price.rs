@@ -39,7 +39,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        self.internal_amm_claim_lp_fees(_recipient)
+        self.internal_amm_claim_lp_fees(msg_sender(), _recipient)
     }
 
     #[allow(non_snake_case)]

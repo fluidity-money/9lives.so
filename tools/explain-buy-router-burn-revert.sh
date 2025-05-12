@@ -19,16 +19,16 @@ referrer="$(echo $d | cut -f6 -d' ')"
 >&2 echo $trading_addr
 >&2 echo burned shares,fusdc returned
 
-cast --abi-decode 'burn()(uint256,uint256)' "$(stylus-interpreter \
+stylus-interpreter \
 	-u "$url" \
 	-a "$trading_addr" \
 	-s "$sender" \
 	-b "$(cast bn --rpc-url $url)" \
-	target/wasm32-unknown-unknown/release/ninelives.wasm \
+	contract-trading-amm-mint.wasm \
 	"$(cast calldata 'burn854CC96E(bytes8,uint256,bool,uint256,address,address)' \
 		"$outcome" \
 		"$max_share_out" \
 		true \
 		0 \
 		"$referrer" \
-		"$sender")")"
+		"$sender")"
