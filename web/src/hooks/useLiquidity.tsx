@@ -12,7 +12,7 @@ import {
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 
-export default function useAddLiquidity({
+export default function useLiquidity({
   tradingAddr,
   campaignId,
 }: {
@@ -20,7 +20,7 @@ export default function useAddLiquidity({
   campaignId: `0x${string}`;
 }) {
   const queryClient = useQueryClient();
-  const addLiquidity = async (account: Account, fusdc: string) =>
+  const add = async (account: Account, fusdc: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -92,5 +92,45 @@ export default function useAddLiquidity({
         error: "Failed to add.",
       },
     );
-  return { addLiquidity };
+  const remove = async (account: Account, fusdc: string) =>
+    toast.promise(
+      new Promise(async (res, rej) => {
+        try {
+          const amount = toUnits(fusdc, config.contracts.decimals.shares);
+          const tradingContract = getContract({
+            abi: tradingAbi,
+            address: tradingAddr,
+            client: config.thirdweb.client,
+            chain: config.chains.currentChain,
+          });
+          const removeLiquidityTx = prepareContractCall({
+            contract: tradingContract,
+            method: "removeLiquidity3C857A15",
+            params: [amount, account.address],
+          });
+          await sendTransaction({
+            transaction: removeLiquidityTx,
+            account,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["campaign", campaignId],
+          });
+          track(EVENTS.REMOVE_LIQUIDITY, {
+            wallet: account.address,
+            amount,
+            tradingAddr,
+            campaignId,
+          });
+          res(null);
+        } catch (e) {
+          rej(e);
+        }
+      }),
+      {
+        loading: "Removing liquidity...",
+        success: "Liquidity removed successfully!",
+        error: "Failed to remove.",
+      },
+    );
+  return { add, remove };
 }
