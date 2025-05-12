@@ -15,12 +15,15 @@ import { requestCampaignById } from "@/providers/graphqlClient";
 import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
 import useIsDpm from "@/hooks/useIsDpm";
+import useUserLiquidity from "@/hooks/useUserLiquidity";
+import { useActiveAccount } from "thirdweb/react";
 
 export default function DetailWrapper({
   initialData,
 }: {
   initialData: CampaignDetail;
 }) {
+  const account = useActiveAccount();
   const outcomeId = useSearchParams()?.get("outcomeId");
   const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcome>({
     id:
@@ -51,6 +54,10 @@ export default function DetailWrapper({
   });
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   const { data: isDpm } = useIsDpm(data.poolAddress);
+  const { data: userLiquidity } = useUserLiquidity({
+    address: account?.address,
+    tradingAddr: data.poolAddress,
+  });
   return (
     <section
       className={combineClass(
@@ -62,6 +69,7 @@ export default function DetailWrapper({
         <DetailHeader
           data={data}
           isEnded={isEnded}
+          userLiquidity={userLiquidity}
           isConcluded={isConcluded}
           isDpm={isDpm}
         />

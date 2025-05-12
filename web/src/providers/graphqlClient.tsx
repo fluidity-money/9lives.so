@@ -292,7 +292,13 @@ export const storeCommitment = ({
     $: { tradingAddr, seed, sender, preferredOutcome },
   });
 
-export const requestUserLiquidity = (address: string, tradingAddr?: string) =>
+export const requestUserLiquidity = ({
+  address,
+  tradingAddr,
+}: {
+  address: string;
+  tradingAddr?: string;
+}) =>
   graph9Lives.query.userLiquidity({
     $: { address, tradingAddr },
   });

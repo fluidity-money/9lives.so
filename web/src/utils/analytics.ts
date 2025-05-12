@@ -10,6 +10,7 @@ export const EVENTS = {
   OUTCOME_SELECT: "outcome_select",
   FUNDING_CLICKED: "funding_clicked",
   ADD_LIQUIDITY: "add_liquidity",
+  REMOVE_LIQUIDITY: "remove_liquidity",
   EMAIL_SUB: "email_sub",
 } as const;
 

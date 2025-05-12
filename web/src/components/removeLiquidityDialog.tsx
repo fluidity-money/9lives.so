@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import CreateCampaignFormLiquidity from "./createCampaign/form/formLiquidity";
 import Button from "./themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -8,23 +7,31 @@ import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { Account } from "thirdweb/wallets";
 import useLiquidity from "@/hooks/useLiquidity";
+import { Field } from "@headlessui/react";
+import { fieldClass } from "./createCampaign/createCampaignForm";
+import Input from "./themed/input";
+import { combineClass } from "@/utils/combineClass";
+import ErrorInfo from "./themed/errorInfo";
+import formatFusdc from "@/utils/formatFusdc";
 
-export default function AddLiquidityDialog({
+export default function RemoveLiquidityDialog({
   name,
   close,
   campaignId,
   tradingAddr,
+  liquidity,
 }: {
   name: string;
   close: () => void;
   campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
+  liquidity: string;
 }) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
-  const [isFunding, setIsFunding] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const formSchema = z.object({
-    seedLiquidity: z.preprocess((val) => Number(val), z.number().min(1)),
+    liquidity: z.preprocess((val) => Number(val), z.number().min(1)),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
@@ -34,20 +41,20 @@ export default function AddLiquidityDialog({
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      seedLiquidity: 1,
+      liquidity: Number(formatFusdc(+liquidity, 6)),
     },
   });
-  const { add } = useLiquidity({
+  const { remove } = useLiquidity({
     campaignId,
     tradingAddr,
   });
   const onSubmit = async (input: FormData, account: Account) => {
     try {
-      setIsFunding(true);
-      await add(account!, input.seedLiquidity.toString());
+      setIsLoading(true);
+      await remove(account!, input.liquidity.toString());
       close();
     } finally {
-      setIsFunding(false);
+      setIsLoading(false);
     }
   };
   const handleSubmitWithAccount = (e: FormEvent) => {
@@ -61,24 +68,32 @@ export default function AddLiquidityDialog({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-center font-chicago text-base">
-        Supply Liquidity to The Campaign
+        Remove Liquidity from The Campaign
       </p>
       <p className="text-center font-chicago text-xl">{name}</p>
       <p className="text-center text-xs">
-        Higher liquidty means better trading stability and lower slippage. You
-        can add liquidity to your campaign and earn provider rewards at any
-        time.
+        You added {+formatFusdc(+liquidity, 6)} to the campaign. You can remove
+        liquidity and earn provider rewards.
       </p>
-      <CreateCampaignFormLiquidity
-        renderLabel={false}
-        register={register}
-        error={errors.seedLiquidity}
-      />
+      <Field className={fieldClass}>
+        <div className="flex gap-2.5">
+          <Input
+            {...register("liquidity")}
+            type="number"
+            min={1}
+            className={combineClass(
+              errors.liquidity && "border-2 border-red-500",
+              "flex-1",
+            )}
+          />
+        </div>
+        {errors.liquidity && <ErrorInfo text={errors.liquidity.message} />}
+      </Field>
       <Button
-        intent={"yes"}
-        title={isFunding ? "Loading..." : "Add Liquidity"}
+        intent={"no"}
+        title={isLoading ? "Loading..." : "Remove Liquidity"}
         size={"xlarge"}
-        disabled={isFunding}
+        disabled={isLoading}
         onClick={handleSubmitWithAccount}
       />
     </div>

@@ -8,17 +8,20 @@ import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
-import FundingLPButton from "../fundingLPButton";
+import AddLiquidityButton from "../addLiquidityButton";
+import RemoveLiquidityButton from "../removeLiquidityButton";
 export default function DetailHeader({
   data,
   isEnded,
   isConcluded,
   isDpm,
+  userLiquidity,
 }: {
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
   isDpm?: boolean;
+  userLiquidity?: string;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -103,8 +106,16 @@ export default function DetailHeader({
           </span>
         ) : (
           <div className="flex items-center gap-2.5">
+            {userLiquidity && +userLiquidity > 0 ? (
+              <RemoveLiquidityButton
+                name={data.name}
+                campaignId={data.identifier}
+                tradingAddr={data.poolAddress}
+                liquidity={userLiquidity}
+              />
+            ) : null}
             {isDpm !== undefined && !isDpm && (
-              <FundingLPButton
+              <AddLiquidityButton
                 name={data.name}
                 campaignId={data.identifier}
                 tradingAddr={data.poolAddress}

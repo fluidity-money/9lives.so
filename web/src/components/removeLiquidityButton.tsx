@@ -1,31 +1,34 @@
 import { useState } from "react";
 import Button from "./themed/button";
 import Modal from "./themed/modal";
-import AddLiquidityDialog from "./addLiquidityDialog";
+import RemoveLiquidityDialog from "./removeLiquidityDialog";
 
-export default function AddLiquidityButton({
+export default function RemoveLiquidityButton({
   name,
   campaignId,
+  liquidity,
   tradingAddr,
 }: {
   name: string;
   campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
+  liquidity: string;
 }) {
   const [isLPModalOpen, setIsLPModalOpen] = useState(false);
   return (
     <>
       <Button
-        intent={"yes"}
-        title="Add Liquidity"
+        intent={"no"}
+        title={`Remove Liquidity`}
         onClick={() => setIsLPModalOpen(true)}
       />
       <Modal
         isOpen={isLPModalOpen}
         setIsOpen={setIsLPModalOpen}
-        title="ADD LIQUIDITY"
+        title="REMOVE LIQUIDITY"
       >
-        <AddLiquidityDialog
+        <RemoveLiquidityDialog
+          liquidity={liquidity}
           close={() => setIsLPModalOpen(false)}
           name={name}
           campaignId={campaignId}
