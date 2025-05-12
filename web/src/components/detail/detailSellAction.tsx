@@ -90,7 +90,7 @@ export default function DetailSellAction({
   });
   const { data: estimationMax } = useEstimateBurn({
     outcomeId: selectedOutcome.id as `0x${string}`,
-    share: ownedShares?.[0].balanceRaw,
+    share: ownedShares?.[0]?.balanceRaw,
     tradingAddr: data.poolAddress,
     account,
   });
@@ -231,7 +231,7 @@ export default function DetailSellAction({
               <div className="flex items-center gap-2">
                 <span className="font-geneva text-xs font-normal text-9black/50">
                   {formatUnits(
-                    ownedShares?.[0].balanceRaw ?? BigInt(0),
+                    ownedShares?.[0]?.balanceRaw ?? BigInt(0),
                     config.contracts.decimals.shares,
                   )}
                 </span>
