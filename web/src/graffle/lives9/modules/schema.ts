@@ -38,6 +38,7 @@ export namespace Schema {
       positionsHistory: Query.positionsHistory;
       userClaims: Query.userClaims;
       userProfile: Query.userProfile;
+      userLiquidity: Query.userLiquidity;
     };
   }
 
@@ -264,6 +265,29 @@ export namespace Schema {
       };
       inlineType: [0];
       namedType: $$NamedTypes.$$Profile;
+    }
+
+    /**
+     * Returns user's staked liquidity to the markets
+     */
+    export interface userLiquidity extends $.OutputField {
+      name: "userLiquidity";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        tradingAddr: {
+          kind: "InputField";
+          name: "tradingAddr";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
   }
 

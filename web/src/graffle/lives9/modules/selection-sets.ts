@@ -133,6 +133,14 @@ export interface Query<
   userProfile?:
     | Query.userProfile<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.userProfile<_$Scalars>>;
+  /**
+   *
+   * Select the `userLiquidity` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  userLiquidity?:
+    | Query.userLiquidity<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.userLiquidity<_$Scalars>>;
 
   /**
    *
@@ -543,6 +551,45 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<userProfile$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type userLiquidity<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = userLiquidity$SelectionSet<_$Scalars>;
+
+  export interface userLiquidity$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `userLiquidity` field. Some (1/2) arguments are required so you must include this.
+     */
+    $: userLiquidity$Arguments<_$Scalars>;
+  }
+
+  export interface userLiquidity$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    address: string;
+    tradingAddr?: string | undefined | null;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `userLiquidity` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type userLiquidity$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<userLiquidity$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

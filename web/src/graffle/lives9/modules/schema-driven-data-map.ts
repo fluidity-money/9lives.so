@@ -413,6 +413,18 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Profile, <-- Assigned later to avoid potential circular dependency.
     },
+    userLiquidity: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+        tradingAddr: {
+          nt: String,
+          it: [0],
+        },
+      },
+    },
   },
 };
 
