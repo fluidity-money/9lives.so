@@ -140,28 +140,28 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5` |
-| Factory 1 implementation      | `0xcae24871c4e581b8a2e7d19254e5cf423d1a4647` |
-| Factory 2 implementation      | `0x8fa9dcafdbecf164597ba4f7fb2b6a45f404df6f` |
-| Lockup implementation         | `0xcb96e461d6792ece719a59be0cc4fbeb52b2c550` |
-| Optimistic infra predict impl | `0x6d7505d41de749fc92e22105c22c4b676219fb8f` |
+| Factory 1 implementation      | `0x9e16b693e71d0be52da2158ac6dd2c3b75fbadf0` |
+| Factory 2 implementation      | `0xaca4f34b884969605e7922f44748b5c5a7fb2246` |
+| Lockup implementation         | `0x9733dd5d7e1b42f39b4227e4b0b0e17ff440b3c2` |
+| Optimistic infra predict impl | `0xe2175ab2ef7aa29ec61657e505e641a5ff509b72` |
 | Trading DPM mint impl         | `0x11a4b84a7d0979e906c8eaba7c16579a3bf48bf5` |
 | Trading DPM extras impl       | `0xbd03aff1a558d0806eed2e6e6af48453daf4de40` |
 | Trading DPM quotes impl       | `0xccf0aed8c4157cfbc41ad0cd78b23c6fd637271e` |
-| Trading DPM price impl        | `0x653b2142f0a1a2c74c8568f64e1b129fcecb6bda` |
-| Trading AMM mint impl         | `0x82e9d4005807b0be8abbe1428e315afd0c378494` |
-| Trading AMM extras impl       | `0xc19afda1236fbca573e22f1ccef5a7bb8b77eb6b` |
-| Trading AMM quotes impl       | `0x710eba29706cdf5c7888962828dc12c9c6477e6a` |
-| Trading AMM price impl        | `0xf51550db2a930fcec9b88ca9227d8b2c47f22db6` |
-| Share implementation          | `0x32178507636874814F61b5DF82883bcC17698433` |
-| Lockup token implementation   | `0xfC629F4d6AdfF23dC664cd0CE6396E6cD68aD582` |
-| Infrastructure market proxy   | `0x971faec2459c8bf9997664c542d759c307ebf6b7` |
-| Lockup proxy                  | `0xa591244c9d63d6b75812d12306696a6de1c65cdd` |
-| Lockup token proxy            | `0x536fb52640d1850330a4e47cdd137a39d58ce154` |
-| Factory proxy                 | `0xb4b0ad63b38125d9efe489879feea48af70fa144` |
-| Helper factory                | `0xaFf9412504C7899EB3Fb7123593934ae998a7515` |
-| LensesV1                      | `0x1d75C37ede0bAFD468Ee0F663D086ae2FEdaD138` |
-| Beauty contest implementation | `0x17bf9a9660373b3955bc69c38794cfed29735850` |
-| Beauty contest proxy          | `0x8ffae175f29bad429fa1e1fe7ff20555a83bd915` |
+| Trading DPM price impl        | `0x3c3363a60cf654c84915495f2efdd8dd4c3439af` |
+| Trading AMM mint impl         | `0x76c1127f1aa1b4f8b33e6137051df91c50d6eee6` |
+| Trading AMM extras impl       | `0xbf5776e6231d511af57a87141adc1217a695f58b` |
+| Trading AMM quotes impl       | `0x70a9500293622ff935aa9f65818b80fdbfd9157e` |
+| Trading AMM price impl        | `0x4b78c4f0ebeaa1ba42e0d48e7f0cd3c53e1796b9` |
+| Share implementation          | `0xC876Fc7ddd41ae072a8898445f83bBfcC903c195` |
+| Lockup token implementation   | `0xD813030d171026B42bd9D29aE44b3a5a600cFFf7` |
+| Infrastructure market proxy   | `0x1b508fb73912eb306f4ca29cab096c75074ceee4` |
+| Lockup proxy                  | `0x397420c66164632937a19768174ee7e21c0df3a2` |
+| Lockup token proxy            | `0xc9ca48f56454be7ce44b929506b32b61c0c8f6d9` |
+| Factory proxy                 | `0x48b9cf07bb9dedc7eb33868693b63b28b253f282` |
+| Helper factory                | `0x6E0fc15eFc574e17DC181753fdD5852A1c963D97` |
+| LensesV1                      | `0x61F92c803177c1060Ef7B360bD631d857B1545B9` |
+| Beauty contest implementation | `0x40e652ce259d6de7dd4058ce5c255a44785fc4e7` |
+| Beauty contest proxy          | `0xc3d76a0b0ca758648b56e2535712f4a9316cb709` |
 | Sarp AI Resolver              | `0x0000000000000000000000000000000000000000` |
-| Buy helper2                   | `0x0Fd540cfb40941dc47C3A6B6559F7ffEc2010180` |
+| Buy helper2                   | `0x491286b009F19300ac45ed5571e012F125AB9B9d` |
 | SARP Signaller                | `0x2137B4C506f0d7eF2A562B02Be9110a4a3A93bC9` |
