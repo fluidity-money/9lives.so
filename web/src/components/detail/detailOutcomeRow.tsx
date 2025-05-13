@@ -19,6 +19,7 @@ export default function DetailOutcomeRow({
   isWinner,
   isConcluded,
   displayQuickActions,
+  isDpm,
 }: {
   data: Outcome;
   price: string;
@@ -30,6 +31,7 @@ export default function DetailOutcomeRow({
   isWinner: boolean;
   isConcluded: boolean;
   displayQuickActions?: boolean;
+  isDpm?: boolean;
 }) {
   const borderStyle = "border-b border-b-gray-200";
   const isSelected = selectedOutcome.id === data.identifier;
@@ -99,14 +101,16 @@ export default function DetailOutcomeRow({
           {chance?.toFixed(0)}%
         </span>
       </td>
-      <td
-        className={combineClass(
-          borderStyle,
-          isSelected && "border-y border-y-9black",
-        )}
-      >
-        <span className="font-chicago text-xs font-normal">${amount}</span>
-      </td>
+      {isDpm ? (
+        <td
+          className={combineClass(
+            borderStyle,
+            isSelected && "border-y border-y-9black",
+          )}
+        >
+          <span className="font-chicago text-xs font-normal">${amount}</span>
+        </td>
+      ) : null}
       <td
         className={combineClass(
           borderStyle,

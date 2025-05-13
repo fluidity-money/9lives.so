@@ -75,6 +75,7 @@ export default function DetailWrapper({
         />
         <DetailOutcomeTable
           data={data}
+          isDpm={isDpm}
           sharePrices={sharePrices}
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
