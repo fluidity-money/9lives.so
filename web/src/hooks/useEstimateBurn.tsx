@@ -33,7 +33,7 @@ export default function useEstimateBurn({
       });
       const estimateTx = prepareContractCall({
         contract: tradingContract,
-        method: "estimateBurnC04425D3",
+        method: "estimateBurnE9B09A17",
         params: [outcomeId, share],
       });
       const [burnedShares, usdc] = await simulateTransaction({

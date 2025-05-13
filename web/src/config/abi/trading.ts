@@ -74,7 +74,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "claimAddressFees70938D8",
+    name: "claimAddressFeesB302CF6D",
     inputs: [
       {
         name: "recipient",
@@ -89,6 +89,32 @@ const tradingAbi = [
         internalType: "uint256",
       },
     ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "claimLiquidity9C391F85",
+    inputs: [
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "claimLpFees66980F36",
+    inputs: [
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
     stateMutability: "nonpayable",
   },
   {
@@ -217,7 +243,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "estimateBurnC04425D3",
+    name: "estimateBurnE9B09A17",
     inputs: [
       {
         name: "outcome",
@@ -241,7 +267,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "fees",
+    name: "fees62DAA154",
     inputs: [],
     outputs: [
       {
@@ -362,7 +388,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "payoff85D8DFC9",
+    name: "payoffCB6F2565",
     inputs: [
       {
         name: "outcomeId",
@@ -388,30 +414,6 @@ const tradingAbi = [
       },
     ],
     stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "payoffQuote1FA6DC28",
-    inputs: [
-      {
-        name: "outcomeId",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
-      {
-        name: "amount",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
   },
   {
     type: "function",
@@ -484,6 +486,25 @@ const tradingAbi = [
       },
       {
         name: "lpFeesEarned",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "rescue276DD9AB",
+    inputs: [
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
         type: "uint256",
         internalType: "uint256",
       },
@@ -566,6 +587,19 @@ const tradingAbi = [
       },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "version",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+        internalType: "string",
+      },
+    ],
+    stateMutability: "pure",
   },
 ] as const;
 
