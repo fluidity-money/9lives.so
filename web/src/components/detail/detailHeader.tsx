@@ -106,7 +106,7 @@ export default function DetailHeader({
           </span>
         ) : (
           <div className="flex items-center gap-2.5">
-            {userLiquidity && +userLiquidity > 0 ? (
+            {isConcluded && userLiquidity && +userLiquidity > 0 ? (
               <RemoveLiquidityButton
                 name={data.name}
                 campaignId={data.identifier}
