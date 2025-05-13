@@ -248,7 +248,10 @@ async fn main() -> Result<(), Error> {
                                 input: Some(Bytes::copy_from_slice(&code)),
                                 data: None,
                             };
-                            t.value = Some(U256::from(endowment));
+                            // We don't use any payable constructors, so we're commenting this out.
+                            /* if endowment > 0 {
+                                t.value = Some(U256::from(endowment));
+                            } */
                             t
                         },
                         BlockId::Number(BlockNumberOrTag::Number(*BLOCK.get().unwrap())),
@@ -343,6 +346,11 @@ async fn main() -> Result<(), Error> {
                     a => panic!("not calltracer in mux: {a:?}"),
                 };
                 if status == 0 {
+                    eprintln!(
+                        "success deploying {} to {}",
+                        const_hex::encode(&code),
+                        contract.unwrap()
+                    );
                     if let Some(c) = contract.clone() {
                         unsafe {
                             std::ptr::copy(
@@ -353,8 +361,10 @@ async fn main() -> Result<(), Error> {
                         }
                     }
                 } else {
+                    eprintln!("fail deploying {}", const_hex::encode(code));
                     // Since we reverted, we need to set the revert_data variable!
                     if let Some(d) = output {
+                        eprintln!("revert message for deploy: {d}");
                         unsafe {
                             std::ptr::copy(
                                 d.len().to_be_bytes().as_ptr(),
@@ -380,6 +390,7 @@ async fn main() -> Result<(), Error> {
          _contract: i32,
          _revert_data_len: i32| {
             // Use a similar process as create1.
+            unimplemented!()
         },
     )?;
     linker.func_wrap_async(

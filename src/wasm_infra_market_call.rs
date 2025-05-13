@@ -25,17 +25,19 @@ pub fn register(
     launch_ts: u64,
     deadline_ts: u64,
 ) -> Result<(), Error> {
-    RawCall::new()
-        .call(
-            infra_market,
-            &registerCall {
-                trading,
-                desc,
-                launchTs: launch_ts,
-                deadlineTs: deadline_ts,
-            }
-            .abi_encode(),
-        )
-        .map_err(Error::InfraMarketCallError)?;
+    unsafe {
+        RawCall::new()
+            .call(
+                infra_market,
+                &registerCall {
+                    trading,
+                    desc,
+                    launchTs: launch_ts,
+                    deadlineTs: deadline_ts,
+                }
+                .abi_encode(),
+            )
+            .map_err(Error::InfraMarketCallError)?;
+    }
     Ok(())
 }

@@ -49,6 +49,6 @@ contract UpgradeableFourProxy {
         if (uint8(msg.data[2]) == 1) directDelegate(BEACON.mintAddr(IS_DPM));
         else if (uint8(msg.data[2]) == 2) directDelegate(BEACON.quotesAddr(IS_DPM));
         else if (uint8(msg.data[2]) == 3) directDelegate(BEACON.priceAddr(IS_DPM));
-        else directDelegate(BEACON.priceAddr(IS_DPM));
+        else directDelegate(BEACON.extrasAddr(IS_DPM));
     }
 }

@@ -36,24 +36,22 @@ pub fn deploy_proxy(impl_addr: Address) -> Result<Address, Vec<u8>> {
 // Returns the address.
 #[cfg(not(feature = "harness-stylus-interpreter"))]
 pub fn deploy_trading(
-    factory: Address,
+    factory_addr: Address,
     is_dpm: bool,
     seed: FixedBytes<32>,
 ) -> Result<Address, Vec<u8>> {
     let d = RawDeploy::new().salt(seed);
-    let c = trading_proxy_code(factory, is_dpm);
+    let c = trading_proxy_code(factory_addr, is_dpm);
     unsafe { d.deploy(&c, U256::ZERO) }
 }
 
 #[cfg(feature = "harness-stylus-interpreter")]
 pub fn deploy_trading(
-    trading_extras: Address,
-    trading_mint: Address,
-    trading_quotes: Address,
-    trading_price: Address,
+    factory: Address,
+    is_dpm: bool,
     _seed: FixedBytes<32>,
 ) -> Result<Address, Vec<u8>> {
     let d = RawDeploy::new();
-    let c = trading_proxy_code(trading_extras, trading_mint, trading_quotes, trading_price);
+    let c = trading_proxy_code(factory, is_dpm);
     unsafe { d.deploy(&c, U256::ZERO) }
 }

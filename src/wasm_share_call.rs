@@ -17,23 +17,29 @@ sol! {
 // Construct the ERC20 with the description in bytes provided, and an
 // admin that can mint more tokens on request.
 pub fn ctor(addr: Address, name: String, admin: Address) -> Result<(), Error> {
-    RawCall::new()
-        .call(addr, &ctorCall { name, admin }.abi_encode())
-        .map_err(Error::ShareError)?;
+    unsafe {
+        RawCall::new()
+            .call(addr, &ctorCall { name, admin }.abi_encode())
+            .map_err(Error::ShareError)?
+    };
     Ok(())
 }
 
 pub fn mint(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
-    RawCall::new()
-        .call(addr, &mintCall { spender, amount }.abi_encode())
-        .map_err(Error::ShareError)?;
+    unsafe {
+        RawCall::new()
+            .call(addr, &mintCall { spender, amount }.abi_encode())
+            .map_err(Error::ShareError)?
+    };
     Ok(())
 }
 
 pub fn burn(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
-    RawCall::new()
-        .call(addr, &burnCall { spender, amount }.abi_encode())
-        .map_err(Error::ShareError)?;
+    unsafe {
+        RawCall::new()
+            .call(addr, &burnCall { spender, amount }.abi_encode())
+            .map_err(Error::ShareError)?
+    };
     Ok(())
 }
 

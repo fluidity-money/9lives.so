@@ -312,7 +312,7 @@ pub enum Error {
     NonexistentOutcome,
 
     /// Error deploying a contract!
-    DeployError,
+    DeployError(Vec<u8>),
 
     /// The called field is unset during our check in the timing functions
     CalledTimeUnset,
@@ -607,6 +607,10 @@ impl core::fmt::Debug for Error {
                     "{}: {:?}",
                     rename_addr(*addr),
                     String::from_utf8(msg.clone())
+                ),
+                Error::DeployError(reason) => format!(
+                    "error deploying: {}",
+                    String::from_utf8_lossy(reason)
                 ),
                 Error::TradingUnableToUnpack(addr, b) => format!(
                     "trading unable to unpack from call to {addr}: {}",

@@ -28,7 +28,6 @@ opt-level = "z"
 incremental = true
 
 [dependencies]
-stylus-sdk = "=0.7.0"
 tiny-keccak = "2.0.2"
 num-traits = { version = "0.2.19", default-features = false }
 alloy-sol-types = { version = "=0.8.14", default-features = false }
@@ -45,6 +44,16 @@ alloy-sol-macro-input = "=0.7.6"
 strum = { version = "0.26.3", default-features = false, features = ["derive"] }
 mutants = "0.0.3"
 ruint = { version = "1.14.0", default-features = false }
+
+[dependencies.stylus-sdk]
+# With the reentrant flag, Stylus SDK will be fully reentrant in our
+# codebase. We don't gauge this is a issue for us, owing to the lack of
+# callbacks in our code. We imagine it might be for our infra markets,
+# but that's a task on the backburner, as our deployment on mainnet is a
+# special version with a patch for the security issue that came up
+# involving reentrancy.
+version = "=0.7.0"
+features = ["reentrant"]
 
 [dev-dependencies]
 proptest = "1.5.0"

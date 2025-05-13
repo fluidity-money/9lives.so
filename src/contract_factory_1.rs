@@ -10,8 +10,14 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-    amm_call, error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy,
-    share_call, trading_call, utils::{block_timestamp, contract_address},
+    amm_call,
+    error::*,
+    events,
+    fees::*,
+    fusdc_call,
+    immutables::*,
+    infra_market_call, proxy, share_call, trading_call,
+    utils::{block_timestamp, contract_address},
 };
 
 pub use crate::storage_factory::*;
@@ -53,12 +59,12 @@ impl StorageFactory {
         };
 
         // Deploy the contract, and emit a log that it was created.
-        let trading_addr = (if backend_is_dpm {
+        let trading_addr = c!((if backend_is_dpm {
             proxy::deploy_trading(contract_address(), true, trading_id)
         } else {
             proxy::deploy_trading(contract_address(), false, trading_id)
         })
-        .map_err(|_| Error::DeployError)?;
+        .map_err(Error::DeployError));
 
         self.trading_owners.setter(trading_addr).set(fee_recipient);
         self.trading_backends
@@ -114,7 +120,7 @@ impl StorageFactory {
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
-                .map_err(|_| Error::DeployError)?;
+                .map_err(Error::DeployError)?;
 
             // Set up the share ERC20 asset, with the description.
             share_call::ctor(erc20_addr, outcome_name.clone(), trading_addr)?;
@@ -137,9 +143,9 @@ impl StorageFactory {
             });
         }
 
-        trading_call::ctor(
+        c!(trading_call::ctor(
             trading_addr,
-            outcome_ids,
+            outcome_ids.clone(),
             oracle,
             time_start,
             time_ending,
@@ -150,7 +156,7 @@ impl StorageFactory {
             fee_lp,
             fee_minter,
             fee_referrer,
-        )?;
+        ));
 
         // If the infra market wasn't chosen, then we assume that the caller has done
         // some setup work to ensure that this is fine. The caller should be very
