@@ -67,22 +67,10 @@ interface IEvents {
         uint256 liquidityShares
     );
 
-    event LiquidityAddedSharesSent(
-        bytes8 indexed outcome,
-        address indexed recipient,
-        uint256 indexed amount
-    );
-
     event LiquidityRemoved(
         uint256 indexed fusdcAmt,
         address indexed recipient,
         uint256 indexed liquidityAmt
-    );
-
-    event LiquidityRemovedSharesSent(
-        bytes8 indexed outcome,
-        address indexed recipient,
-        uint256 indexed amount
     );
 
     event LiquidityClaimed(

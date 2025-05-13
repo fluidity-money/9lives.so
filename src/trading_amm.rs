@@ -141,10 +141,12 @@ impl StorageTrading {
                         recipient,
                         outcome_shares_received,
                     )?;
-                    evm::log(events::LiquidityAddedSharesSent {
-                        outcome: outcome_id,
+                    evm::log(events::SharesMinted {
+                        identifier: outcome_id,
+                        shareAmount: outcome_shares_received,
+                        spender: msg_sender(),
                         recipient,
-                        amount: outcome_shares_received,
+                        fusdcSpent: U256::ZERO
                     });
                 }
                 Ok((outcome_id, outcome_shares_received))
@@ -272,10 +274,12 @@ impl StorageTrading {
                         recipient,
                         outcome_shares_received,
                     )?;
-                    evm::log(events::LiquidityRemovedSharesSent {
-                        outcome: outcome_id,
+                    evm::log(events::SharesMinted {
+                        identifier: outcome_id,
+                        shareAmount: outcome_shares_received,
+                        spender: msg_sender(),
                         recipient,
-                        amount: outcome_shares_received,
+                        fusdcSpent: U256::ZERO
                     });
                 }
                 Ok((outcome_id, outcome_shares_received))
