@@ -4,23 +4,22 @@ CREATE OR REPLACE FUNCTION ninelives_update_liquidity_on_campaign_creation_1()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN
 	UPDATE ninelives_campaigns_1
-	SET total_liquidity =
+	SET total_volume =
 		COALESCE(
 			(
 				SELECT sum(fusdc_amt) FROM ninelives_events_liquidity_added
-				WHERE emitter_addr=NEW.emitter_addr
+				WHERE emitter_addr = NEW.content->>'poolAddress'
 			),
 			0
 		)
 		- COALESCE(
 			(
 				SELECT sum(fusdc_amt) FROM ninelives_events_liquidity_removed
-				WHERE emitter_addr=NEW.emitter_addr
+				WHERE emitter_addr = NEW.content->>'poolAddress'
 			),
 			0
 		)
-	WHERE address = NEW.emitter_addr;
-
+	WHERE content->>'poolAddress' = NEW.content->>'poolAddress';
 	RETURN NEW;
 END;
 $$;
