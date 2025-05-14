@@ -180,7 +180,9 @@ async fn main() -> Result<(), Error> {
                 );
                 arr.set_len(len as usize);
             }
-            println!("0x{}", const_hex::encode(&arr))
+            let h = const_hex::encode(&arr);
+            println!("0x{h}");
+            eprintln!("0x{h}");
         },
     )?;
     linker.func_wrap(

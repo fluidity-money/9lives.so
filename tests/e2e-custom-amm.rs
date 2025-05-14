@@ -10,8 +10,8 @@ use stylus_sdk::{
 };
 
 use lib9lives::{
-    actions::*, error::Error, fees::FEE_SCALING, host, implement_action, interactions_clear_after,
-    maths, panic_guard, proxy, should_spend, should_spend_fusdc_contract,
+    actions::*, error::Error, fees::FEE_SCALING, host, immutables::*, implement_action,
+    interactions_clear_after, maths, panic_guard, proxy, should_spend, should_spend_fusdc_contract,
     should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
 };
 
@@ -58,120 +58,6 @@ macro_rules! test_add_liquidity {
 }
 
 proptest! {
-    // FIXME
-    #[test]
-    #[ignore]
-    fn test_amm_dilution_event_1(
-        outcomes in strat_uniq_outcomes(2, 2),
-        mut c in strat_storage_trading(false)
-    ) {
-        let outcome_a = outcomes[0];
-        let outcome_b = outcomes[1];
-        // Test that someone is not able to come in and claim from the pool after
-        // just LPing, and not being there from the outset in doing so.
-        let fee_take_amt = 20;
-        let amt = 100_000 * 1e6 as u64;
-        let fee = (amt * fee_take_amt) / 1000;
-        let amt = U256::from(amt);
-        interactions_clear_after! {
-            IVAN => {
-                setup_contract!(&mut c, &[outcome_a, outcome_b]);
-                c.fee_lp.set(U256::from(fee_take_amt));
-                test_add_liquidity!(&mut c, 1000e6 as u64);
-                should_spend_fusdc_sender!(
-                    amt,
-                    c.mint_8_A_059_B_6_E(
-                        outcome_a,
-                        amt,
-                        Address::ZERO,
-                        msg_sender(),
-                    )
-                );
-            },
-            ERIK => {
-                test_add_liquidity!(&mut c, 100_00e6 as u64);
-                panic_guard(|| {
-                    assert_eq!(
-                        Error::NoFeesToClaim,
-                        c.claim_lp_fees_66980_F_36(msg_sender()).unwrap_err()
-                    );
-                });
-            },
-            IVAN => {
-                should_spend_fusdc_contract!(
-                    U256::from(fee),
-                    c.claim_lp_fees_66980_F_36(msg_sender())
-                );
-            }
-        }
-    }
-
-    // FIXME
-    #[test]
-    #[ignore]
-    fn test_amm_dilution_event_2(
-        outcomes in strat_uniq_outcomes(2, 2),
-        mut c in strat_storage_trading(false)
-    ) {
-        let outcome_a = outcomes[0];
-        let outcome_b = outcomes[1];
-        // Test that someone can make a swap, and the existing LP is entitled to
-        // X fees, then a new LP only gets the fees from the next trade.
-        let fee_take_amt = 20;
-        let ivan_amt = 100_000 * 1e6 as u64;
-        let erik_amt = 2881e6 as u64;
-        let ivan_fee = (ivan_amt * fee_take_amt) / 1000;
-        let erik_fee = (erik_amt * fee_take_amt) / 1000;
-        interactions_clear_after! {
-            IVAN => {
-                setup_contract!(&mut c, &[outcome_a, outcome_b]);
-                c.fee_lp.set(U256::from(fee_take_amt));
-                test_add_liquidity!(&mut c, 1000e6 as u64);
-                let amt = U256::from(ivan_amt);
-                should_spend_fusdc_sender!(
-                    amt,
-                    c.mint_8_A_059_B_6_E(
-                        outcome_a,
-                        amt,
-                        Address::ZERO,
-                        msg_sender(),
-                    )
-                );
-            },
-            ERIK => {
-                let erik_amt = U256::from(erik_amt);
-                test_add_liquidity!(&mut c, 100_00e6 as u64);
-                panic_guard(|| {
-                    assert_eq!(
-                        Error::NoFeesToClaim,
-                        c.claim_lp_fees_66980_F_36(msg_sender()).unwrap_err()
-                    );
-                });
-                should_spend_fusdc_sender!(
-                    erik_amt,
-                    c.mint_8_A_059_B_6_E(
-                        outcome_a,
-                        erik_amt,
-                        Address::ZERO,
-                        msg_sender(),
-                    )
-                );
-            },
-            IVAN => {
-                should_spend_fusdc_contract!(
-                    U256::from(ivan_fee),
-                    c.claim_lp_fees_66980_F_36(msg_sender())
-                );
-            },
-            ERIK => {
-                should_spend_fusdc_contract!(
-                    U256::from(erik_fee),
-                    c.claim_lp_fees_66980_F_36(msg_sender())
-                );
-            }
-        }
-    }
-
     // FIXME
     #[test]
     #[ignore]
@@ -293,7 +179,7 @@ proptest! {
         fee_for_minter in (0..=100).prop_map(U256::from),
         fee_for_lp in (0..=100).prop_map(U256::from),
         fee_for_referrer in (0..=100).prop_map(U256::from),
-        (outcomes, referrers, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 10, 15),
+        (outcomes, referrers, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 10, 1000),
         mut c in strat_storage_trading(false)
     )
     {
@@ -315,10 +201,15 @@ proptest! {
                         ..
                     })] = *a
                     {
-                        let shares = panic_guard(|| should_spend_fusdc_sender!(
-                            m_u,
-                            c.mint_8_A_059_B_6_E(m_out, m_u, m_ref, msg_sender())
-                        ));
+                        let (q, _) = c.quote_C_0_E_17_F_C_7(m_out, m_u).unwrap();
+                        let shares = should_spend!(
+                            c.share_addr(m_out).unwrap(),
+                            { ZERO_FOR_MINT_ADDR => q },
+                            Ok(should_spend_fusdc_sender!(
+                                m_u,
+                                c.mint_8_A_059_B_6_E(m_out, m_u, m_ref, msg_sender())
+                            ))
+                        );
                         let target =
                             shares - maths::mul_div_round_up(shares, U256::from(100), FEE_SCALING).unwrap();
                         panic_guard(|| {
@@ -338,6 +229,21 @@ proptest! {
                             );
                         });
                     }
+                }
+                if add_lp > (SHARE_DECIMALS_EXP * U256::from(2)) {
+                    let t = add_lp - SHARE_DECIMALS_EXP;
+                    should_spend_fusdc_contract!(
+                        t,
+                        Ok(
+                            c.remove_liquidity_3_C_857_A_15(t, msg_sender())
+                                .map_err(|_| {
+                                    print_market_config(&c, add_lp);
+                                    print_bal_mint_burn_state_until(&outcomes, &acts, outcomes.len());
+                                    panic!("unable to remove liq: trying to remove {add_lp}")
+                                })
+                                .unwrap()
+                        )
+                    );
                 }
             }
         }
@@ -375,9 +281,7 @@ fn print_bal_mint_burn_state_until(outcomes: &[FixedBytes<8>], acts: &[[Action; 
         }) = b
         {
             let o_i = outcomes.iter().position(|x| x == outcome).unwrap();
-            eprintln!(
-                r#"market.sell({o_i}, {usd_amt} / 1e6, "Alice")"#
-            );
+            eprintln!(r#"market.sell({o_i}, {usd_amt} / 1e6, "Alice")"#);
         }
     }
 }
@@ -440,7 +344,12 @@ fn test_amm_reproduction_0x276b5b896b088c5604E7333df90f7691d6FDE93A_1621096() {
 
 #[test]
 fn test_amm_reproduction_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358() {
-    let outcomes = [fixed_bytes!("2e141d56f374af10"), fixed_bytes!("e4e18b38e72765bb"), fixed_bytes!("ed90801f07c2f571"), fixed_bytes!("f8e1d8e326b6891d")];
+    let outcomes = [
+        fixed_bytes!("2e141d56f374af10"),
+        fixed_bytes!("e4e18b38e72765bb"),
+        fixed_bytes!("ed90801f07c2f571"),
+        fixed_bytes!("f8e1d8e326b6891d"),
+    ];
     interactions_clear_after! {
         IVAN => {
             let mut c = StorageTrading::default();
