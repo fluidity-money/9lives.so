@@ -78,7 +78,7 @@ export default function ProposeOutcome({
         outcomes.find((o) => o.identifier !== propesedOutcome)!.identifier,
       );
     }
-  }, [infraStatus, propesedOutcome, outcomes]);
+  }, [infraState, propesedOutcome, outcomes]);
   useEffect(() => {
     (async function () {
       const proposed = await getProposedOutcome();
@@ -86,7 +86,7 @@ export default function ProposeOutcome({
       setPropesedOutcome(proposed);
       setDisputedOutcome(disputed);
     })();
-  }, []);
+  }, [getDisputedOutcome, getProposedOutcome]);
   if (isProposed)
     return (
       <div className="flex flex-col items-center justify-center gap-4">

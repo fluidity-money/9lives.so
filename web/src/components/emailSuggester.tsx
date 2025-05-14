@@ -49,10 +49,10 @@ export default function EmailSuggester() {
       refetch();
       track("email_sub");
     }
-  }, [isSuccess]);
+  }, [isSuccess, refetch]);
   useEffect(() => {
     if (account?.address) setValue("address", account?.address);
-  }, [account?.address]);
+  }, [account?.address, setValue]);
   useEffect(() => {
     if (account?.address && isProfileLoaded && !profile?.email) {
       setIsOpen(true);
