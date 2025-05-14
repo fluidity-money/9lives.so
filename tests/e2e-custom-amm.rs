@@ -253,13 +253,47 @@ proptest! {
     }
 
     #[test]
+    fn test_amm_simulate_swag(
+        o in strat_uniq_outcomes(2, 2),
+        mut c in strat_storage_trading(false)
+    ) {
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract!(&mut c, &o);
+                test_add_liquidity!(&mut c, 10_000e6);
+                should_spend_fusdc_sender!(
+                    1446413256,
+                    c.mint_8_A_059_B_6_E(
+                        o[0],
+                        U256::from(1446413256),
+                        Address::ZERO,
+                        msg_sender()
+                    )
+                );
+                should_spend!(
+                    c.share_addr(o[0]).unwrap(),
+                    { msg_sender() => 1078178763 },
+                    c.burn_854_C_C_96_E(
+                        o[0],
+                        U256::from(597244168),
+                        false,
+                        U256::ZERO,
+                        Address::ZERO,
+                        msg_sender()
+                    )
+                );
+            }
+        }
+    }
+
+    #[test]
     fn test_amm_tiny_mint_into_burning(
-        add_lp in strat_medium_u256(),
+        add_lp in strat_tiny_u256(),
         fee_for_creator in (0..=100).prop_map(U256::from),
         fee_for_minter in (0..=100).prop_map(U256::from),
         fee_for_lp in (0..=100).prop_map(U256::from),
         fee_for_referrer in (0..=100).prop_map(U256::from),
-        (outcomes, referrers, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 100, 1000),
+        (outcomes, referrers, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 10, 15),
         mut c in strat_storage_trading(false)
     )
     {
@@ -269,7 +303,7 @@ proptest! {
                 setup_contract!(&mut c, &outcomes);
                 test_add_liquidity!(&mut c, add_lp);
                 let cum_fee = fee_for_creator + fee_for_minter + fee_for_lp + fee_for_referrer;
-                for a in acts {
+                for (i, a) in acts.iter().enumerate() {
                     if let [Action::Mint(ActionMint {
                         outcome: m_out,
                         referrer: m_ref,
@@ -279,12 +313,12 @@ proptest! {
                         referrer: b_referrer,
                         usd_amt: b_amt,
                         ..
-                    })] = a
+                    })] = *a
                     {
-                        let shares = should_spend_fusdc_sender!(
+                        let shares = panic_guard(|| should_spend_fusdc_sender!(
                             m_u,
                             c.mint_8_A_059_B_6_E(m_out, m_u, m_ref, msg_sender())
-                        );
+                        ));
                         let target =
                             shares - maths::mul_div_round_up(shares, U256::from(100), FEE_SCALING).unwrap();
                         panic_guard(|| {
@@ -293,7 +327,11 @@ proptest! {
                                 {
                                     //target instead of U256::ZERO todo
                                     c.burn_854_C_C_96_E(b_out, b_amt, false, U256::ZERO, m_ref, msg_sender())
-                                        .map_err(|_| panic!("unable to burn: received shares {shares} from mint. minted {m_u} for outcome {m_out}. trying to burn {b_amt}, minimum {target}, outcome {b_out}"))
+                                        .map_err(|_| {
+                                            print_market_config(&c, add_lp);
+                                            print_bal_mint_burn_state_until(&outcomes, &acts, i);
+                                            panic!("unable to burn: received shares {shares} from mint. minted {m_u} for outcome {m_out}. trying to burn {b_amt}, minimum {target}, outcome {b_out}")
+                                        })
                                         .unwrap();
                                     Ok(())
                                 }
@@ -302,6 +340,44 @@ proptest! {
                     }
                 }
             }
+        }
+    }
+}
+
+fn print_market_config(c: &StorageTrading, liq: U256) {
+    eprintln!(
+        r#"market = PredMarketNew(liquidity={liq} / 1e6, outcomes={}, fees={})
+market.add_user("Alice")"#,
+        c.outcome_list.len(),
+        c.fee_creator.get() + c.fee_minter.get() + c.fee_lp.get() + c.fee_referrer.get()
+    )
+}
+
+fn print_bal_mint_burn_state_until(outcomes: &[FixedBytes<8>], acts: &[[Action; 2]], until: usize) {
+    let cum_ask = acts.iter().fold(U256::ZERO, |acc, [a, _]| {
+        if let Action::Mint(ActionMint { usd_amt, .. }) = a {
+            acc + usd_amt
+        } else {
+            unimplemented!()
+        }
+    });
+    eprintln!(r#"market.user_wallet_usd["Alice"] = {cum_ask} / 1e6"#);
+    for [m, b] in acts {
+        if let Action::Mint(ActionMint {
+            outcome, usd_amt, ..
+        }) = m
+        {
+            let o_i = outcomes.iter().position(|x| x == outcome).unwrap();
+            eprintln!(r#"market.buy({o_i}, {usd_amt} / 1e6, "Alice")"#);
+        }
+        if let Action::Burn(ActionBurn {
+            outcome, usd_amt, ..
+        }) = b
+        {
+            let o_i = outcomes.iter().position(|x| x == outcome).unwrap();
+            eprintln!(
+                r#"market.sell({o_i}, {usd_amt} / 1e6, "Alice")"#
+            );
         }
     }
 }
@@ -358,6 +434,58 @@ fn test_amm_reproduction_0x276b5b896b088c5604E7333df90f7691d6FDE93A_1621096() {
                     )
                 ))
             ));
+        }
+    }
+}
+
+#[test]
+fn test_amm_reproduction_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358() {
+    let outcomes = [fixed_bytes!("2e141d56f374af10"), fixed_bytes!("e4e18b38e72765bb"), fixed_bytes!("ed90801f07c2f571"), fixed_bytes!("f8e1d8e326b6891d")];
+    interactions_clear_after! {
+        IVAN => {
+            let mut c = StorageTrading::default();
+            setup_contract!(&mut c, &outcomes);
+            //c.fee_creator.set(U256::from(0));
+            //c.fee_minter.set(U256::from(0));
+            //c.fee_lp.set(U256::from(0));
+            //c.fee_referrer.set(U256::from(0));
+            c.is_protocol_fee_disabled.set(true); // Disabled by the generator!
+            //c.is_protocol_fee_disabled.set(false);
+            c.amm_liquidity.set(U256::from(10999997));
+            c.amm_outcome_prices.setter(fixed_bytes!("2e141d56f374af10")).set(U256::from(178478));
+            c.amm_outcome_prices.setter(fixed_bytes!("e4e18b38e72765bb")).set(U256::from(178478));
+            c.amm_outcome_prices.setter(fixed_bytes!("ed90801f07c2f571")).set(U256::from(262336));
+            c.amm_outcome_prices.setter(fixed_bytes!("f8e1d8e326b6891d")).set(U256::from(380706));
+            c.amm_shares.setter(fixed_bytes!("2e141d56f374af10")).set(U256::from(14637339));
+            c.amm_shares.setter(fixed_bytes!("e4e18b38e72765bb")).set(U256::from(14637339));
+            c.amm_shares.setter(fixed_bytes!("ed90801f07c2f571")).set(U256::from(9958385));
+            c.amm_shares.setter(fixed_bytes!("f8e1d8e326b6891d")).set(U256::from(6862101));
+            c.amm_total_shares.setter(fixed_bytes!("2e141d56f374af10")).set(U256::from(21705727));
+            c.amm_total_shares.setter(fixed_bytes!("e4e18b38e72765bb")).set(U256::from(21705727));
+            c.amm_total_shares.setter(fixed_bytes!("ed90801f07c2f571")).set(U256::from(21705727));
+            c.amm_total_shares.setter(fixed_bytes!("f8e1d8e326b6891d")).set(U256::from(21705727));
+            c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(11000000));
+            c.amm_fees_collected_weighted.set(U256::from(0));
+            c.amm_lp_global_fees_claimed.set(U256::from(0));
+            c.amm_lp_user_fees_claimed.setter(msg_sender()).set(U256::from(0));
+
+            let id = c.outcome_ids_iter().nth(3).unwrap();
+
+            should_spend!(
+                c.share_addr(id).unwrap(),
+                { msg_sender() => 14842486 },
+                Ok(should_spend_fusdc_contract!(
+                    3489925,
+                    c.burn_854_C_C_96_E(
+                        id,
+                        U256::from(14843000),
+                        true,
+                        U256::ZERO,
+                        msg_sender(),
+                        msg_sender()
+                    )
+                ))
+            );
         }
     }
 }

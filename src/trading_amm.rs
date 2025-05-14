@@ -312,26 +312,26 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
-            {
-                let shares = self.amm_shares.get(outcome_id).checked_sub(usd_amt).ok_or(
-                    Error::CheckedSubOverflow(self.amm_shares.get(outcome_id), usd_amt),
-                )?;
-                self.amm_shares.setter(outcome_id).set(shares);
+        let outcome_previous_shares = self.amm_shares.get(outcome_id);
+        for o in self.outcome_ids_iter().collect::<Vec<_>>() {
+            if outcome_id == o {
+                continue;
             }
             {
-                let total_shares = c!(self
-                    .amm_total_shares
-                    .get(outcome_id)
+                let shares = c!(self
+                    .amm_shares
+                    .get(o)
                     .checked_sub(usd_amt)
-                    .ok_or(Error::CheckedSubOverflow(
-                        self.amm_total_shares.get(outcome_id),
-                        usd_amt
-                    )));
-                self.amm_total_shares.setter(outcome_id).set(total_shares);
+                    .ok_or(Error::CheckedSubOverflow(self.amm_shares.get(o), usd_amt)));
+                self.amm_shares.setter(o).set(shares);
+            }
+            {
+                let total_shares = c!(self.amm_total_shares.get(o).checked_sub(usd_amt).ok_or(
+                    Error::CheckedSubOverflow(self.amm_total_shares.get(o), usd_amt)
+                ));
+                self.amm_total_shares.setter(o).set(total_shares);
             }
         }
-        let outcome_previous_shares = self.amm_shares.get(outcome_id);
         let product = self
             .outcome_ids_iter()
             .filter(|x| *x != outcome_id)
@@ -343,14 +343,16 @@ impl StorageTrading {
                 .pow(U256::from(self.outcome_list.len()))
                 .div_ceil(product),
         );
-        let burned_shares = self
+        let burned_shares = c!(self
             .amm_shares
             .get(outcome_id)
+            .checked_add(usd_amt)
+            .ok_or(Error::CheckedAddOverflow)?
             .checked_sub(outcome_previous_shares)
             .ok_or(Error::CheckedSubOverflow(
                 self.amm_shares.get(outcome_id),
                 outcome_previous_shares,
-            ))?;
+            )));
         assert_or!(
             burned_shares >= min_shares,
             Error::NotEnoughSharesBurned(min_shares, burned_shares)
@@ -605,9 +607,7 @@ impl StorageTrading {
         if self.amm_liquidity.get().is_zero() {
             return Ok(U256::ZERO);
         }
-        let prev_after = self.amm_shares.get(outcome_id).checked_sub(usd_amt).ok_or(
-            Error::CheckedSubOverflow(self.amm_shares.get(outcome_id), usd_amt),
-        )?;
+        let prev_after = self.amm_shares.get(outcome_id);
         let product = self
             .outcome_ids_iter()
             .filter(|id| *id != outcome_id)
@@ -626,6 +626,8 @@ impl StorageTrading {
             .pow(U256::from(self.outcome_list.len()))
             .div_ceil(product);
         new_shares
+            .checked_add(usd_amt)
+            .ok_or(Error::CheckedAddOverflow)?
             .checked_sub(prev_after)
             .ok_or(Error::CheckedSubOverflow(new_shares, prev_after))
     }
@@ -642,19 +644,29 @@ impl StorageTrading {
         let tolerance = U256::from(1000);
         for _ in 0..1000 {
             match self.internal_amm_quote_burn(outcome_id, current_usd) {
-                Ok(amt) if amt > shares_target => {
+                Ok(shares_sold) if shares_sold > shares_target => {
+                    if upper_bound == current_usd {
+                        current_usd = current_usd.saturating_sub(U256::from(1));
+                    }
+                    upper_bound = current_usd
+                }
+                Ok(shares_sold) if shares_target - shares_sold < tolerance => {
+                    return Ok(current_usd)
+                }
+                Err(Error::CheckedSubOverflow(_, _)) => {
                     upper_bound = current_usd;
                 }
-                Ok(amt) if tolerance > shares_target - amt => return Ok(current_usd),
                 Ok(_) => {
                     lower_bound = current_usd;
+                    if lower_bound == upper_bound {
+                        upper_bound = upper_bound.saturating_add(U256::from(1));
+                    }
                 }
-                Err(Error::CheckedSubOverflow(_, _)) => {}
                 Err(err) => return Err(err),
             }
             current_usd = (lower_bound + upper_bound) / U256::from(2);
         }
-        Err(Error::CouldntEstimateSharesBurn)
+        Ok(current_usd)
     }
 
     pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {

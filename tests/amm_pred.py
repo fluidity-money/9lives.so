@@ -59,6 +59,8 @@ class PredMarketNew:
         self.user_wallet_usd[user] += amount
         self.pool_wallet_usd -= amount
 
+        print(f"transferring to user {amount}")
+
         # Wallet balance can never be negative
         if self.user_wallet_usd[user] < 0 or self.pool_wallet_usd < 0:
             raise ArithmeticError("Underflow error: result is negative")
@@ -272,8 +274,11 @@ class PredMarketNew:
             market_copy = copy.deepcopy(self)
 
             print(f"current usd: {current_usd}")
+            print(f"TRYING: LOWER BOUND: {lower_bound}, UPPER BOUND: {upper_bound}")
+
 
             try:
+                print(f"TRYING with current usd {current_usd}")
                 # Call sell function and observe how many shares would be deducted
                 old_shares = market_copy.user_outcome_shares[user][outcome]
                 market_copy.sell(outcome, current_usd, user)
@@ -287,17 +292,22 @@ class PredMarketNew:
                     # We've found a close enough solution
                     return current_usd
 
+                print(f"TRYING ERR: {error}")
+
                 if error > 0:  # We deducted too many shares
                     # This means our USD amount is too high
+                    print("setting upper bound now")
                     upper_bound = current_usd
                 else:  # We deducted too few shares
                     # This means our USD amount is too low
+                    print("setting lower bound now")
                     lower_bound = current_usd
 
                 # Update our guess
                 current_usd = (lower_bound + upper_bound) / 2
 
             except ArithmeticError:
+                print(f"TRYING i failed to invoke quote. quote({current_usd})")
                 # If the sell operation fails, our USD amount is too high
                 upper_bound = current_usd
                 current_usd = (lower_bound + upper_bound) / 2
@@ -305,18 +315,20 @@ class PredMarketNew:
             iteration += 1
 
         # If we've reached the max iterations, return our best guess
-        return current_usd
+        raise Exception("Shit")
 
     def sell(self, outcome, amount, user):
         self.only_when_market_not_resolved()
 
+        previous_shares = self.shares.copy()
+
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
-            print(f" taking from shares[{i}]: {self.shares[i]} - {amount}")
-            self.shares[i] -= amount
-            self.total_shares[i] -= amount
-
-        previous_shares = self.shares.copy()
+            if (i != outcome):
+                self.shares[i] -= amount
+                self.total_shares[i] -= amount
+                if (self.shares[i] < 0 or self.total_shares[i] < 0):
+                    raise ArithmeticError("Underflow error: result is negative")
 
         # Product of all outcome shares except for the one to be bought
         product = math.prod([value for i, value in enumerate(self.shares) if i != outcome])
@@ -324,8 +336,9 @@ class PredMarketNew:
         self.shares[outcome] = pow(self.liquidity, self.outcomes) / product
 
         # Outcome shares transferred from user to pool
-        user_deducted_by = (self.shares[outcome] - previous_shares[outcome])
+        user_deducted_by = self.shares[outcome] + amount - previous_shares[outcome]
         if user_deducted_by > self.user_outcome_shares[user][outcome]:
+            print(f"user deducted by: {user_deducted_by}")
             raise ArithmeticError("Insufficient shares to sell")
 
         print(f"user outcome shares deducting user {user_deducted_by}")
@@ -1258,7 +1271,8 @@ def simulate_market_0x54067533FD2F9430454a687F94b8Fcb4e2Ce8D6a_1623132():
     print("sale estimation", market.sell(2, market.inverse_sell(2, 5955276 / 1e6, "Alice"), "Alice"))
 
 def simulate_market_22():
-    market = PredMarketNew(liquidity=1, outcomes=4, fees = 0.008)
+    market = PredMarketNew(liquidity=1, outcomes=4, fees = 0)
+    market.add_user("Alice")
 
     ERIK = "Erik"
     market.add_user(ERIK)
@@ -1273,5 +1287,59 @@ def simulate_market_22():
     market.test_get_market_details()
     market.test_get_user_details(ERIK)
 
+def simulate_swag():
+    market = PredMarketNew(liquidity=1, outcomes=2, fees=0)
+    market.add_user("Alice")
+    market.user_wallet_usd["Alice"] = 1446413256 / 1e6
+    market.buy(0, 1446413256 / 1e6, "Alice")
+    market.sell(0, 1446413256 / 1e6, "Alice")
+
+def simulate_market_22():
+    market = PredMarketNew(liquidity=1, outcomes=4, fees = 0.008)
+
+    ERIK = "Erik"
+    market.add_user(ERIK)
+
+    market.user_wallet_usd[ERIK] = 150
+    market.add_liquidity(20, ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
+    market.buy(0, 5, ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
+    market.buy(1, 2, ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
+    market.remove_liquidity(10, ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
+    market.sell(0,market.inverse_sell(0,14.843,ERIK), ERIK)
+    market.test_get_market_details()
+    market.test_get_user_details(ERIK)
+
+def simulate_market_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358():
+    # Note that fees are explicitly disabled!
+    market = PredMarketNew(liquidity=10999997 / 1e6, outcomes=4, fees=0)
+    market.outcome_prices = [n / 1e6 for n in [178478, 178478, 262336, 380706]]
+    market.shares = [n / 1e6 for n in [14637339, 14637339, 9958385, 6862101]]
+    market.total_shares = [n / 1e6 for n in [21705727, 21705727, 21705727, 21705727]]
+    market.user_outcome_shares["Alice"] = [0] * 4
+    market.user_outcome_shares["Alice"][0] = 7068388 / 1e6
+    market.user_outcome_shares["Alice"][1] = 7068388 / 1e6
+    market.user_outcome_shares["Alice"][2] = 11747342 / 1e6
+    market.user_outcome_shares["Alice"][3] = 14843626 / 1e6
+    market.user_liquidity_shares["Alice"] = 11000000 / 1e6
+    market.user_wallet_usd["Alice"] = 1713430211 / 1e6
+    market.pool_wallet_usd = 21761727 / 1e6
+    market.fees_collected_weighted = 0 / 1e6
+    market.fees_claimed["Alice"] = 0 / 1e6
+    print(f"market shares: {market.shares[3]}")
+
+    print("simulation result", market.sell(3, market.inverse_sell(3,14.843,"Alice"), "Alice"))
+
 if __name__ == "__main__":
-    simulate_market_22()
+    simulate_market_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358()

@@ -120,7 +120,7 @@ def simulate_market_{addr}_{bn}():
     market.shares = [n / 1e6 for n in [{shares}]]
     market.total_shares = [n / 1e6 for n in [{total_shares}]]
     market.user_outcome_shares["Alice"] = [0] * {outcome_len}
-{user_outcome_shares}    market.user_liquidity_shares["Alice"] = {user_liquidity_shares} / 1e6
+    market.user_liquidity_shares["Alice"] = {user_liquidity_shares} / 1e6
     market.user_wallet_usd["Alice"] = {usd_bal_sender} / 1e6
     market.pool_wallet_usd = {usd_bal_contract} / 1e6
     market.fees_collected_weighted = {amm_fees_collected_weighted} / 1e6
