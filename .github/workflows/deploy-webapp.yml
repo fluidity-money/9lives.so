@@ -59,7 +59,7 @@ jobs:
         run: pnpm add --global vercel@latest
 
       - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --yes --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --archive=tgz --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
