@@ -197,11 +197,6 @@ type Mutation {
     Should this be a fake execution as a dry run?
     """
     isFake: Boolean
-
-    """
-    Seed liquidity provided to the campaign
-    """
-    seedLiquidity: Int!
   ): Boolean
 
   """

@@ -299,7 +299,7 @@ func (r *claimResolver) CreatedAt(ctx context.Context, obj *types.Claim) (int, e
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, seedLiquidity int) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
@@ -516,7 +516,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			Telegram:          telegram,
 			Web:               web,
 		},
-		TotalVolume: seedLiquidity,
 	}
 	if isNotPrecommit {
 		err = r.DB.Table("ninelives_campaigns_1").Create(&campaign).Error
