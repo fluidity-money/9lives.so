@@ -492,10 +492,6 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: Boolean,
           it: [0],
         },
-        seedLiquidity: {
-          nt: Int,
-          it: [1],
-        },
       },
     },
     revealCommitment: {

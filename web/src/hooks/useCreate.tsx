@@ -36,7 +36,10 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
   const minOracleCreatePrice = BigInt(4e6);
   const minDefaultCreatePrice = BigInt(3e6);
-  const create = async (input: CampaignInput, account: Account) =>
+  const create = async (
+    { seedLiquidity, ...input }: CampaignInput,
+    account: Account,
+  ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -89,8 +92,8 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             //   const descBytes = toUtf8Bytes(input.oracleDescription);
             //   hashedDocumentation = keccak256(descBytes) as `0x${string}`;
             // }
-            const seedLiquidity = toUnits(
-              input.seedLiquidity.toString(),
+            const seedLiquidityBigInt = toUnits(
+              seedLiquidity.toString(),
               config.contracts.decimals.fusdc,
             );
             const allowanceHelperTx = prepareContractCall({
@@ -105,13 +108,13 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
               transaction: allowanceHelperTx,
               account,
             })) as bigint;
-            if (allowanceOfHelper < seedLiquidity) {
+            if (allowanceOfHelper < seedLiquidityBigInt) {
               const approveHelperTx = prepareContractCall({
                 contract: config.contracts.fusdc,
                 method: "approve",
                 params: [
                   clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-                  seedLiquidity,
+                  seedLiquidityBigInt,
                 ],
               });
               await sendTransaction({
@@ -135,7 +138,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
                   feeLp: BigInt(0),
                   feeMinter: BigInt(0),
                   feeReferrer: BigInt(0),
-                  seedLiquidity,
+                  seedLiquidity: seedLiquidityBigInt,
                 },
               ],
             });
@@ -145,11 +148,10 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             });
             // upsert campaign if on-chain campaign is created
             // so backend creation can be retried again
-            upsertCampaign(input);
+            upsertCampaign({ ...input, seedLiquidity });
           }
           await requestCreateCampaign({
             ...input,
-            seedLiquidity: 0, // add liquidity trigger onchain sets this value
             starting: Math.floor(new Date(input.starting).getTime() / 1000),
             ending: Math.floor(new Date(input.ending).getTime() / 1000),
             creator: account.address,

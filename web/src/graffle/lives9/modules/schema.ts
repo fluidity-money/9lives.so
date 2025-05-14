@@ -462,15 +462,6 @@ export namespace Schema {
           inlineType: [0];
           namedType: $$NamedTypes.$$Boolean;
         };
-        /**
-         * Seed liquidity provided to the campaign
-         */
-        seedLiquidity: {
-          kind: "InputField";
-          name: "seedLiquidity";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$Int;
-        };
       };
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;
