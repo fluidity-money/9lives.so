@@ -41,9 +41,8 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 8
-          run_install: |
-            - recursive: true
+          version: 10
+          run_install: true
 
       - uses: actions/cache@v4
         with:
@@ -59,5 +58,8 @@ jobs:
       - name: Install Vercel CLI
         run: pnpm add --global vercel@latest
 
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --archive=tgz --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --archive=tgz --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
