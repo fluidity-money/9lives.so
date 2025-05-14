@@ -314,7 +314,9 @@ impl StorageTrading {
         );
         for outcome_id in self.outcome_ids_iter().collect::<Vec<_>>() {
             {
-                let shares = self.amm_shares.get(outcome_id).wrapping_sub(usd_amt);
+                let shares = self.amm_shares.get(outcome_id).checked_sub(usd_amt).ok_or(
+                    Error::CheckedSubOverflow(self.amm_shares.get(outcome_id), usd_amt),
+                )?;
                 self.amm_shares.setter(outcome_id).set(shares);
             }
             {
@@ -344,7 +346,11 @@ impl StorageTrading {
         let burned_shares = self
             .amm_shares
             .get(outcome_id)
-            .wrapping_sub(outcome_previous_shares);
+            .checked_sub(outcome_previous_shares)
+            .ok_or(Error::CheckedSubOverflow(
+                self.amm_shares.get(outcome_id),
+                outcome_previous_shares,
+            ))?;
         assert_or!(
             burned_shares >= min_shares,
             Error::NotEnoughSharesBurned(min_shares, burned_shares)
@@ -599,18 +605,29 @@ impl StorageTrading {
         if self.amm_liquidity.get().is_zero() {
             return Ok(U256::ZERO);
         }
-        let prev_after = self.amm_shares.get(outcome_id).wrapping_sub(usd_amt);
+        let prev_after = self.amm_shares.get(outcome_id).checked_sub(usd_amt).ok_or(
+            Error::CheckedSubOverflow(self.amm_shares.get(outcome_id), usd_amt),
+        )?;
         let product = self
             .outcome_ids_iter()
             .filter(|id| *id != outcome_id)
-            .map(|id| self.amm_shares.get(id).wrapping_sub(usd_amt))
+            .map(|id| {
+                self.amm_shares
+                    .get(id)
+                    .checked_sub(usd_amt)
+                    .ok_or(Error::CheckedSubOverflow(self.amm_shares.get(id), usd_amt))
+            })
+            .collect::<R<Vec<_>>>()?
+            .iter()
             .product();
         let new_shares = self
             .amm_liquidity
             .get()
             .pow(U256::from(self.outcome_list.len()))
             .div_ceil(product);
-        Ok(new_shares.wrapping_sub(prev_after))
+        new_shares
+            .checked_sub(prev_after)
+            .ok_or(Error::CheckedSubOverflow(new_shares, prev_after))
     }
 
     #[mutants::skip]
