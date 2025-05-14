@@ -496,8 +496,9 @@ pub enum Error {
     // We hit the maximum uint256 for a muldiv operation!
     MulDivIsU256Max,
 
-    // Not enough shares were burned by the burn function!
-    NotEnoughSharesBurned,
+    // Not enough shares were burned by the burn function! Returns the target
+    // and the amount burned.
+    NotEnoughSharesBurned(U256, U256),
 
     // No fees are available to claim!
     NoFeesToClaim,
@@ -608,14 +609,14 @@ impl core::fmt::Debug for Error {
                     rename_addr(*addr),
                     String::from_utf8(msg.clone())
                 ),
-                Error::DeployError(reason) => format!(
-                    "error deploying: {}",
-                    String::from_utf8_lossy(reason)
-                ),
+                Error::DeployError(reason) =>
+                    format!("error deploying: {}", String::from_utf8_lossy(reason)),
                 Error::TradingUnableToUnpack(addr, b) => format!(
                     "trading unable to unpack from call to {addr}: {}",
                     const_hex::encode(b)
                 ),
+                Error::NotEnoughSharesBurned(target, burned) =>
+                    format!("burn target missed: target {target}, burned: {burned}"),
                 _ => "".to_owned(),
             }
         )

@@ -1,4 +1,5 @@
 use crate::{
+    decimal::MAX_UINT256,
     decimal::{
         fusdc_decimal_to_u256, fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal,
     },
@@ -55,6 +56,7 @@ impl StorageTrading {
         value: U256,
         recipient: Address,
     ) -> R<U256> {
+        assert_or!(value < MAX_UINT256, Error::U256TooLarge);
         // Make sure that the outcome exists by checking if we set this up with some shares.
         assert_or!(
             self.dpm_outcome_shares.get(outcome_id) > U256::ZERO,

@@ -11,7 +11,7 @@ interface IBeacon {
     function extrasAddr(bool isDpm) external view returns (address);
 }
 
-contract UpgradeableFourProxy {
+contract UpgradeableFourBeaconProxy {
     IBeacon immutable BEACON;
     bool immutable IS_DPM;
 

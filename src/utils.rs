@@ -109,14 +109,14 @@ pub fn msg_sender() -> Address {
     #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
     return crate::host::get_msg_sender();
     #[cfg(target_arch = "wasm32")]
-    return stylus_sdk::msg::sender()
+    return stylus_sdk::msg::sender();
 }
 
 pub fn contract_address() -> Address {
     #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
     return crate::host::get_contract_address();
     #[cfg(target_arch = "wasm32")]
-    return stylus_sdk::contract::address()
+    return stylus_sdk::contract::address();
 }
 
 #[derive(PartialEq)]
@@ -189,7 +189,10 @@ pub fn strat_fixed_bytes<const N: usize>() -> impl proptest::prelude::Strategy<V
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
-pub fn strat_uniq_outcomes(lower: usize, upper: usize) -> impl Strategy<Value = Vec<FixedBytes<8>>> {
+pub fn strat_uniq_outcomes(
+    lower: usize,
+    upper: usize,
+) -> impl Strategy<Value = Vec<FixedBytes<8>>> {
     proptest::collection::btree_set(any::<FixedBytes<8>>(), lower..=upper)
         .prop_map(|s| s.into_iter().collect())
 }

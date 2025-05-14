@@ -146,7 +146,7 @@ impl StorageTrading {
                         shareAmount: outcome_shares_received,
                         spender: msg_sender(),
                         recipient,
-                        fusdcSpent: U256::ZERO
+                        fusdcSpent: U256::ZERO,
                     });
                 }
                 Ok((outcome_id, outcome_shares_received))
@@ -279,7 +279,7 @@ impl StorageTrading {
                         shareAmount: outcome_shares_received,
                         spender: msg_sender(),
                         recipient,
-                        fusdcSpent: U256::ZERO
+                        fusdcSpent: U256::ZERO,
                     });
                 }
                 Ok((outcome_id, outcome_shares_received))
@@ -345,7 +345,10 @@ impl StorageTrading {
             .amm_shares
             .get(outcome_id)
             .wrapping_sub(outcome_previous_shares);
-        assert_or!(burned_shares >= min_shares, Error::NotEnoughSharesBurned);
+        assert_or!(
+            burned_shares >= min_shares,
+            Error::NotEnoughSharesBurned(min_shares, burned_shares)
+        );
         c!(share_call::burn(
             proxy::get_share_addr(
                 self.factory_addr.get(),
@@ -611,7 +614,7 @@ impl StorageTrading {
     }
 
     #[mutants::skip]
- pub fn internal_amm_estimate_burn(
+    pub fn internal_amm_estimate_burn(
         &self,
         outcome_id: FixedBytes<8>,
         shares_target: U256,
@@ -625,14 +628,12 @@ impl StorageTrading {
                 Ok(amt) if amt > shares_target => {
                     upper_bound = current_usd;
                 }
-                Ok(amt) if tolerance > shares_target - amt => {
-                    return Ok(current_usd)
-                }
+                Ok(amt) if tolerance > shares_target - amt => return Ok(current_usd),
                 Ok(_) => {
                     lower_bound = current_usd;
                 }
                 Err(Error::CheckedSubOverflow(_, _)) => {}
-                Err(err) => return Err(err)
+                Err(err) => return Err(err),
             }
             current_usd = (lower_bound + upper_bound) / U256::from(2);
         }

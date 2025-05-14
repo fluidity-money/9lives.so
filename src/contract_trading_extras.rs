@@ -7,7 +7,7 @@ use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
-use alloc::{string::String, borrow::ToOwned, vec::Vec};
+use alloc::{borrow::ToOwned, string::String, vec::Vec};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;

@@ -68,7 +68,10 @@ impl StorageFactory {
     }
 
     pub fn amm_trading_hash(&self) -> R<FixedBytes<32>> {
-        Ok(FixedBytes::from_slice(&trading_proxy_hash(contract_address(), false)))
+        Ok(FixedBytes::from_slice(&trading_proxy_hash(
+            contract_address(),
+            false,
+        )))
     }
 
     pub fn trading_hashes(&self) -> R<(FixedBytes<32>, FixedBytes<32>)> {

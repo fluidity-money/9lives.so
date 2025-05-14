@@ -10,9 +10,9 @@ use stylus_sdk::{
 };
 
 use lib9lives::{
-    actions::*, error::Error, host, implement_action, interactions_clear_after, panic_guard, proxy,
-    should_spend, should_spend_fusdc_contract, should_spend_fusdc_sender, strat_storage_trading,
-    testing_addrs::*, utils::*, StorageTrading,
+    actions::*, error::Error, fees::FEE_SCALING, host, implement_action, interactions_clear_after,
+    maths, panic_guard, proxy, should_spend, should_spend_fusdc_contract,
+    should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
 };
 
 use proptest::prelude::*;
@@ -50,9 +50,11 @@ macro_rules! setup_contract {
     };
 }
 
-fn test_add_liquidity(c: &mut StorageTrading, amt: u64) -> (U256, Vec<(FixedBytes<8>, U256)>) {
-    let buy_amt = U256::from(amt);
-    should_spend_fusdc_sender!(buy_amt, c.add_liquidity_test(buy_amt, msg_sender()))
+macro_rules! test_add_liquidity {
+    ($c:expr, $amt:expr) => {
+        let buy_amt = U256::from($amt);
+        should_spend_fusdc_sender!(buy_amt, $c.add_liquidity_test(buy_amt, msg_sender()))
+    };
 }
 
 proptest! {
@@ -75,7 +77,7 @@ proptest! {
             IVAN => {
                 setup_contract!(&mut c, &[outcome_a, outcome_b]);
                 c.fee_lp.set(U256::from(fee_take_amt));
-                test_add_liquidity(&mut c, 1000e6 as u64);
+                test_add_liquidity!(&mut c, 1000e6 as u64);
                 should_spend_fusdc_sender!(
                     amt,
                     c.mint_8_A_059_B_6_E(
@@ -87,7 +89,7 @@ proptest! {
                 );
             },
             ERIK => {
-                test_add_liquidity(&mut c, 100_00e6 as u64);
+                test_add_liquidity!(&mut c, 100_00e6 as u64);
                 panic_guard(|| {
                     assert_eq!(
                         Error::NoFeesToClaim,
@@ -124,7 +126,7 @@ proptest! {
             IVAN => {
                 setup_contract!(&mut c, &[outcome_a, outcome_b]);
                 c.fee_lp.set(U256::from(fee_take_amt));
-                test_add_liquidity(&mut c, 1000e6 as u64);
+                test_add_liquidity!(&mut c, 1000e6 as u64);
                 let amt = U256::from(ivan_amt);
                 should_spend_fusdc_sender!(
                     amt,
@@ -138,7 +140,7 @@ proptest! {
             },
             ERIK => {
                 let erik_amt = U256::from(erik_amt);
-                test_add_liquidity(&mut c, 100_00e6 as u64);
+                test_add_liquidity!(&mut c, 100_00e6 as u64);
                 panic_guard(|| {
                     assert_eq!(
                         Error::NoFeesToClaim,
@@ -219,7 +221,7 @@ proptest! {
         interactions_clear_after! {
             IVAN => {
                 setup_contract!(&mut c, &outcomes);
-                test_add_liquidity(&mut c, 1000e6 as u64);
+                test_add_liquidity!(&mut c, 1000e6 as u64);
             }
         }
     }
@@ -232,7 +234,7 @@ proptest! {
         interactions_clear_after! {
             IVAN => {
                 setup_contract!(&mut c, &outcomes);
-                test_add_liquidity(&mut c, 10e6 as u64);
+                test_add_liquidity!(&mut c, 10e6 as u64);
             }
         }
     }
@@ -245,12 +247,11 @@ proptest! {
         interactions_clear_after! {
             ERIK => {
                 setup_contract!(&mut c, &outcomes);
-                test_add_liquidity(&mut c, 100_000e6 as u64);
+                test_add_liquidity!(&mut c, 100_000e6 as u64);
             }
         }
     }
 
-/*
     #[test]
     fn test_amm_tiny_mint_into_burning(
         add_lp in strat_medium_u256(),
@@ -258,25 +259,51 @@ proptest! {
         fee_for_minter in (0..=100).prop_map(U256::from),
         fee_for_lp in (0..=100).prop_map(U256::from),
         fee_for_referrer in (0..=100).prop_map(U256::from),
-        (outcomes, referrers, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 100, 1000)
+        (outcomes, referrers, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 100, 1000),
+        mut c in strat_storage_trading(false)
     )
     {
         // Test up to a thousand mint and burn operations from a hundred minimum.
         interactions_clear_after! {
             IVAN => {
                 setup_contract!(&mut c, &outcomes);
-                test_add_liquidity(&mut c, add_lp);
-                let mut referrer_fees = HashMap::new::<Address, U256>();
+                test_add_liquidity!(&mut c, add_lp);
                 let cum_fee = fee_for_creator + fee_for_minter + fee_for_lp + fee_for_referrer;
                 for a in acts {
-                    match a {
-                        Action::
+                    if let [Action::Mint(ActionMint {
+                        outcome: m_out,
+                        referrer: m_ref,
+                        usd_amt: m_u,
+                    }), Action::Burn(ActionBurn {
+                        outcome: b_out,
+                        referrer: b_referrer,
+                        usd_amt: b_amt,
+                        ..
+                    })] = a
+                    {
+                        let shares = should_spend_fusdc_sender!(
+                            m_u,
+                            c.mint_8_A_059_B_6_E(m_out, m_u, m_ref, msg_sender())
+                        );
+                        let target =
+                            shares - maths::mul_div_round_up(shares, U256::from(100), FEE_SCALING).unwrap();
+                        panic_guard(|| {
+                            should_spend_fusdc_contract!(
+                                b_amt,
+                                {
+                                    //target instead of U256::ZERO todo
+                                    c.burn_854_C_C_96_E(b_out, b_amt, false, U256::ZERO, m_ref, msg_sender())
+                                        .map_err(|_| panic!("unable to burn: received shares {shares} from mint. minted {m_u} for outcome {m_out}. trying to burn {b_amt}, minimum {target}, outcome {b_out}"))
+                                        .unwrap();
+                                    Ok(())
+                                }
+                            );
+                        });
                     }
                 }
             }
         }
-    } */
-
+    }
 }
 
 #[test]

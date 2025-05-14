@@ -116,7 +116,7 @@ pub fn strat_tiny_mint_into_burn(
     // can do this to test if the contract ever runs a deficit.
     let refs1 = referrers.clone();
     let refs2 = referrers.clone();
-    (0..outcomes.len(), 0..refs1.len(), any::<u128>())
+    (0..outcomes.len(), 0..refs1.len(), any::<u64>())
         .prop_flat_map(move |(oi, ri_m, m)| {
             let out = outcomes[oi];
             let rm = refs1[ri_m];
