@@ -22,6 +22,9 @@ import AssetSelector from "../assetSelector";
 import Modal from "../themed/modal";
 import Funding from "../fundingBalanceDialog";
 import DownIcon from "#/icons/down-caret.svg";
+import useReturnValue from "@/hooks/useReturnValue";
+import useDpmChances from "@/hooks/useDpmChances";
+import formatFusdc from "@/utils/formatFusdc";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -39,8 +42,6 @@ export default function DetailBuyAction({
 }) {
   const [minimized, setMinimized] = useState(true);
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
-  const [share, setShare] = useState<number>(0);
-  const [fusdc, setFusdc] = useState<number>(0);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
   const outcome = selectedOutcome
@@ -49,15 +50,21 @@ export default function DetailBuyAction({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z.object({
-    share: z.coerce.number().gt(0, { message: "Invalid share to buy" }),
     fusdc: z.coerce
       .number()
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
-  const chance = Number(price) * 100;
+  const chanceAmm = Number(price) * 100;
+  const dpmChance = useDpmChances({
+    investmentAmounts: data.investmentAmounts,
+    totalVolume: data.totalVolume,
+    outcomeIds: [selectedOutcome.id as `0x${string}`],
+  })?.[0]?.chance;
+  const chance = isDpm ? dpmChance : chanceAmm;
   type FormData = z.infer<typeof formSchema>;
   const {
     register,
+    watch,
     handleSubmit,
     setValue,
     clearErrors,
@@ -66,10 +73,10 @@ export default function DetailBuyAction({
     disabled: shouldStopAction,
     resolver: zodResolver(formSchema),
     defaultValues: {
-      share: 0,
       fusdc: 0,
     },
   });
+  const fusdc = watch("fusdc");
   const { buy } = useBuy({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
@@ -77,29 +84,32 @@ export default function DetailBuyAction({
     outcomeId: outcome.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
-  const estimatedReturn = usePotentialReturn({
+  const { data: estimatedSharesToGet } = useReturnValue({
+    outcomeId: outcome.identifier,
+    shareAddr: outcome.share.address,
+    tradingAddr: data.poolAddress,
+    fusdc: fusdc,
+  });
+  const sharesToGet = formatFusdc(estimatedSharesToGet ?? 0, 2);
+  const estimatedWinForDpm = usePotentialReturn({
     totalInvestment: data.totalVolume,
     investmentAmounts: data.investmentAmounts,
     outcomeId: outcome.identifier,
     fusdc,
-    share,
+    share: Number(sharesToGet),
   });
-  const estimatedReturnPerc = (
-    ((estimatedReturn - fusdc) / fusdc) *
-    100
-  ).toFixed(2);
   const orderSummary = [
     {
       title: "AVG Price",
-      value: `$${price}`,
+      value: `$${(isNaN(fusdc / +sharesToGet) ? 0 : fusdc / +sharesToGet).toFixed(2)}`,
     },
     {
-      title: "Shares",
-      value: share,
+      title: "Shares To Get",
+      value: sharesToGet,
     },
     {
       title: "To Win 💵",
-      value: `$${isDpm !== undefined && !isDpm ? share : estimatedReturn}`,
+      value: `$${isDpm !== undefined && !isDpm ? sharesToGet : estimatedWinForDpm}`,
     },
   ];
   async function handleBuy({ fusdc }: FormData) {
@@ -122,21 +132,10 @@ export default function DetailBuyAction({
       }),
     })) as bigint;
     const maxfUSDC = +formatUnits(balance, config.contracts.decimals.fusdc);
-    const share = maxfUSDC / Number(price);
-    setShare(share);
-    setValue("share", share);
-    setFusdc(maxfUSDC);
     setValue("fusdc", maxfUSDC);
     if (maxfUSDC > 0) clearErrors();
   };
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
-
-  useEffect(() => {
-    setFusdc(0);
-    setShare(0);
-    setValue("fusdc", 0);
-    setValue("share", 0);
-  }, [price, setValue]);
 
   useEffect(() => {
     const floatingBtn = document.getElementById("degen-floating-button");
@@ -240,9 +239,6 @@ export default function DetailBuyAction({
                       ? Number.MAX_SAFE_INTEGER
                       : Number(e.target.value);
                   const share = fusdc / Number(price);
-                  setShare(share);
-                  setValue("share", share);
-                  setFusdc(fusdc);
                   setValue("fusdc", fusdc);
                   if (fusdc > 0) clearErrors();
                 }}
@@ -253,41 +249,6 @@ export default function DetailBuyAction({
               />
             </div>
             {errors.fusdc && <ErrorInfo text={errors.fusdc.message} />}
-          </div>
-          <div
-            className={combineClass(minimized && "hidden", "flex-col md:flex")}
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-chicago text-xs font-normal text-9black">
-                Shares to buy
-              </span>
-            </div>
-            <Input
-              {...register("share")}
-              type="number"
-              min={0}
-              max={Number.MAX_SAFE_INTEGER}
-              value={share}
-              placeholder="0"
-              onFocus={handleFocus}
-              onChange={(e) => {
-                const share =
-                  Number(e.target.value) >= Number.MAX_SAFE_INTEGER
-                    ? Number.MAX_SAFE_INTEGER
-                    : Number(e.target.value);
-                const fusdc = share * Number(price);
-                setShare(share);
-                setValue("share", share);
-                setFusdc(fusdc);
-                setValue("fusdc", fusdc);
-                if (share > 0) clearErrors();
-              }}
-              className={combineClass(
-                "mt-2 w-full flex-1 text-center",
-                errors.share && "border-2 border-red-500",
-              )}
-            />
-            {errors.share && <ErrorInfo text={errors.share.message} />}
           </div>
           <div
             className={combineClass(

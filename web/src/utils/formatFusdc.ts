@@ -1,7 +1,7 @@
 import config from "@/config";
-import { formatUnits } from "ethers";
+import { BigNumberish, formatUnits } from "ethers";
 
-export default function formatFusdc(amount: number, digits = 0) {
+export default function formatFusdc(amount: BigNumberish, digits = 0) {
   return Number(formatUnits(amount, config.contracts.decimals.fusdc)).toFixed(
     digits,
   );
