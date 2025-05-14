@@ -37,7 +37,6 @@ export default function useReturnValue({
       const returnValue = (await simulateTransaction({
         transaction: returnTx,
       })) as [bigint, bigint] | undefined;
-      console.log("returnValue", returnValue, "returnValue");
       return returnValue?.[0];
     },
     placeholderData: (prev) => prev,

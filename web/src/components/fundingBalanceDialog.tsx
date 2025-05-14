@@ -37,7 +37,6 @@ export default function Funding({
         >
           <Button
             onClick={() => {
-              console.log("triggered");
               track(EVENTS.FUNDING_CLICKED, {
                 type,
                 campaignTitle: title,
