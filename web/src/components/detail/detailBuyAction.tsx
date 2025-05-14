@@ -101,15 +101,15 @@ export default function DetailBuyAction({
   const orderSummary = [
     {
       title: "AVG Price",
-      value: `$${(isNaN(fusdc / +sharesToGet) ? 0 : fusdc / +sharesToGet).toFixed(2)}`,
+      value: `$${isDpm ? price : (isNaN(fusdc / +sharesToGet) ? 0 : fusdc / +sharesToGet).toFixed(2)}`,
     },
     {
       title: "Shares To Get",
-      value: sharesToGet,
+      value: isDpm ? (fusdc / Number(price)).toFixed(2) : sharesToGet,
     },
     {
       title: "To Win 💵",
-      value: `$${isDpm !== undefined && !isDpm ? sharesToGet : estimatedWinForDpm}`,
+      value: `$${isDpm ? estimatedWinForDpm : sharesToGet}`,
     },
   ];
   async function handleBuy({ fusdc }: FormData) {

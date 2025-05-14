@@ -39,6 +39,6 @@ export default function useReturnValue({
       })) as [bigint, bigint] | undefined;
       return returnValue?.[0];
     },
-    placeholderData: (prev) => prev,
+    placeholderData: (prev) => prev ?? BigInt(0),
   });
 }
