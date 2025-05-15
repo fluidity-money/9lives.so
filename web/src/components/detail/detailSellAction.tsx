@@ -36,14 +36,17 @@ export default function DetailSellAction({
   data,
   selectedOutcome,
   price,
+  minimized,
+  setMinimized,
 }: {
   shouldStopAction: boolean;
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
   price: string;
+  minimized: boolean;
+  setMinimized: React.Dispatch<boolean>;
 }) {
-  const [minimized, setMinimized] = useState(true);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
   const outcome = selectedOutcome
@@ -196,10 +199,20 @@ export default function DetailSellAction({
             </div>
           ) : null}
           <div className="flex flex-col gap-1">
-            <h3 className="font-chicago text-lg font-normal text-9black">
+            <h3
+              className={combineClass(
+                minimized ? "text-xs" : "text-md",
+                "font-chicago font-normal text-9black md:text-lg",
+              )}
+            >
               {outcome.name}
             </h3>
-            <div className="flex items-center gap-1 font-geneva text-xs uppercase">
+            <div
+              className={combineClass(
+                minimized ? "text-[10px]" : "text-sm",
+                "flex items-center gap-1 font-geneva uppercase",
+              )}
+            >
               <span>Chance</span>
               <span className="bg-9green px-1 py-0.5">
                 {chance?.toFixed(0) ?? "?"}%
@@ -243,7 +256,7 @@ export default function DetailSellAction({
                 max={Number.MAX_SAFE_INTEGER}
                 onFocus={handleFocus}
                 className={combineClass(
-                  "w-full flex-1 text-center",
+                  "h-[42px] w-full flex-1 text-center",
                   errors.shareToBurn && "border-2 border-red-500",
                 )}
               />

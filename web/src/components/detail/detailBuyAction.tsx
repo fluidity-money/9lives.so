@@ -32,6 +32,8 @@ export default function DetailBuyAction({
   selectedOutcome,
   price,
   isDpm,
+  minimized,
+  setMinimized,
 }: {
   shouldStopAction: boolean;
   selectedOutcome: SelectedOutcome;
@@ -39,8 +41,9 @@ export default function DetailBuyAction({
   data: CampaignDetail;
   price: string;
   isDpm?: boolean;
+  minimized: boolean;
+  setMinimized: React.Dispatch<boolean>;
 }) {
-  const [minimized, setMinimized] = useState(true);
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
@@ -193,10 +196,20 @@ export default function DetailBuyAction({
             </div>
           ) : null}
           <div className="flex flex-col gap-1">
-            <h3 className="font-chicago text-lg font-normal text-9black">
+            <h3
+              className={combineClass(
+                minimized ? "text-xs" : "text-md",
+                "font-chicago font-normal text-9black md:text-lg",
+              )}
+            >
               {outcome.name}
             </h3>
-            <div className="flex items-center gap-1 font-geneva text-xs uppercase">
+            <div
+              className={combineClass(
+                minimized ? "text-[10px]" : "text-sm",
+                "flex items-center gap-1 font-geneva uppercase",
+              )}
+            >
               <span>Chance</span>
               <span className="bg-9green px-1 py-0.5">
                 {chance?.toFixed(0) ?? "?"}%
@@ -224,7 +237,9 @@ export default function DetailBuyAction({
               />
             </div>
             <div className="flex gap-2.5">
-              <AssetSelector disabled />
+              <div className={combineClass(minimized && "hidden md:block")}>
+                <AssetSelector disabled />
+              </div>
               <Input
                 {...register("fusdc")}
                 type="number"
@@ -238,7 +253,6 @@ export default function DetailBuyAction({
                     Number(e.target.value) >= Number.MAX_SAFE_INTEGER
                       ? Number.MAX_SAFE_INTEGER
                       : Number(e.target.value);
-                  const share = fusdc / Number(price);
                   setValue("fusdc", fusdc);
                   if (fusdc > 0) clearErrors();
                 }}

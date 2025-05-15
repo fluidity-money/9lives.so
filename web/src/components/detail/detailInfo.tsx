@@ -30,7 +30,9 @@ export default function DetailInfo({ data }: { data: Campaign }) {
         {data.description ? (
           <div className="flex flex-col gap-2.5">
             <h5 className="font-chicago text-sm">Overview</h5>
-            <p className="ml-5 text-xs">{data.description}</p>
+            <p className="ml-5 text-xs" style={{ wordBreak: "break-word" }}>
+              {data.description}
+            </p>
           </div>
         ) : null}
         <div className="flex flex-col gap-2.5">

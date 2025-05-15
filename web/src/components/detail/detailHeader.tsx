@@ -86,7 +86,7 @@ export default function DetailHeader({
           </div>
         )}
       </div>
-      <div className="flex items-center justify-between gap-2.5">
+      <div className="flex flex-col items-center justify-between gap-2.5 md:flex-row">
         <span
           className={combineClass(
             isEnded ? "bg-[#CCC]" : "bg-9yellow",
@@ -105,7 +105,7 @@ export default function DetailHeader({
             Campaign {isConcluded ? "Concluded" : "Ended"}
           </span>
         ) : (
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-col items-center gap-2.5 md:flex-row">
             {userLiquidity && +userLiquidity > 0 ? (
               <RemoveLiquidityButton
                 name={data.name}
