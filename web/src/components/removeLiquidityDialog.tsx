@@ -76,9 +76,9 @@ export default function RemoveLiquidityDialog({
       </p>
       <p className="text-center font-chicago text-base">{name}</p>
       <p className="text-center text-xs">
-        You can remove your liquidity and earn provider rewards.
+        You can remove your liquidity shares and earn provider rewards.
       </p>
-      <p className="text-center font-chicago text-xl">{`$${maxLiquidity}`}</p>
+      <p className="text-center font-chicago text-xl">{`${maxLiquidity} Shares`}</p>
       <Field className={fieldClass}>
         <div className="flex gap-2.5">
           <Input
