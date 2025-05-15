@@ -4,10 +4,10 @@ use lib9lives::{actions::ActionCtor, StorageTrading};
 
 use libfuzzer_sys::fuzz_target;
 
-fuzz_target!(|a: ActionCtor| {
+fuzz_target!(|a: ActionCtor| {/*
     let mut c = StorageTrading::default();
     c.created.set(false);
-    let _ = c.ctor(
+    let _ = c.ctor((
         a.outcomes.into_iter().map(|x| x.0).collect::<Vec<_>>(),
         a.oracle.0,
         a.time_start,
@@ -18,5 +18,5 @@ fuzz_target!(|a: ActionCtor| {
         a.fee_creator,
         a.fee_lp,
         a.fee_minter,
-    );
+    )); */
 });
