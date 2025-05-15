@@ -945,17 +945,17 @@ func (r *queryResolver) UserLiquidity(ctx context.Context, address string, tradi
 	query := fmt.Sprintf(`
 		SELECT 
 			COALESCE((
-				SELECT SUM(fusdc_amt) 
+				SELECT SUM(liquidity_shares) 
 				FROM ninelives_events_liquidity_added 
 				WHERE recipient = ? %s
 			), 0)
 			-
 			COALESCE((
-				SELECT SUM(fusdc_amt) 
+				SELECT SUM(liquidity_shares) 
 				FROM ninelives_events_liquidity_removed 
 				WHERE recipient = ? %s
 			), 0) 
-		AS total_fusdc;
+		AS total_shares;
 	`, emitterCondition, emitterCondition)
 
 	var liquidity string
