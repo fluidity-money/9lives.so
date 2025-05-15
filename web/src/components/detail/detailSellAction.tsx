@@ -29,6 +29,7 @@ import { currentChain } from "@/config/chains";
 import thirdweb from "@/config/thirdweb";
 import usePositions from "@/hooks/usePositions";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
+import formatFusdc from "@/utils/formatFusdc";
 
 export default function DetailSellAction({
   shouldStopAction,
@@ -88,20 +89,12 @@ export default function DetailSellAction({
     tradingAddr: data.poolAddress,
     account,
   });
-  const { data: estimationMax } = useEstimateBurn({
-    outcomeId: selectedOutcome.id as `0x${string}`,
-    share: ownedShares?.[0]?.balanceRaw,
-    tradingAddr: data.poolAddress,
-    account,
-  });
-  useEffect(() => {
-    if (estimation && estimation[1] > BigInt(0)) {
-      setValue(
-        "minUsdcToGet",
-        Number(formatUnits(+estimation[1], config.contracts.decimals.fusdc)),
-      );
-    }
-  }, [estimation, setValue]);
+  // const { data: estimationMax } = useEstimateBurn({
+  //   outcomeId: selectedOutcome.id as `0x${string}`,
+  //   share: ownedShares?.[0]?.balanceRaw,
+  //   tradingAddr: data.poolAddress,
+  //   account,
+  // });
   const orderSummary = [
     {
       title: "AVG Price",
@@ -113,10 +106,7 @@ export default function DetailSellAction({
     },
     {
       title: "USDC to Get",
-      value: formatUnits(
-        estimation ? estimation[1] : BigInt(0),
-        config.contracts.decimals.fusdc,
-      ),
+      value: `$${formatFusdc(estimation ?? BigInt(0), 2)}`,
     },
   ];
   async function handleSell(input: FormData) {
@@ -251,7 +241,6 @@ export default function DetailSellAction({
                 type="number"
                 min={0}
                 max={Number.MAX_SAFE_INTEGER}
-                placeholder={`Max you can get ${estimationMax ? formatUnits(estimationMax[1], config.contracts.decimals.fusdc) : 0}`}
                 onFocus={handleFocus}
                 className={combineClass(
                   "w-full flex-1 text-center",

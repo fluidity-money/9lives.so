@@ -24,7 +24,7 @@ export default function useEstimateBurn({
     queryKey: ["estimateBurn", outcomeId, tradingAddr, Number(share), account],
     queryFn: async () => {
       if (!account) return 0;
-      if (!share || share <= BigInt(0)) return [0, 0];
+      if (!share || share <= BigInt(0)) return 0;
       const tradingContract = getContract({
         abi: tradingAbi,
         address: tradingAddr,
@@ -36,11 +36,11 @@ export default function useEstimateBurn({
         method: "estimateBurnE9B09A17",
         params: [outcomeId, share],
       });
-      const [burnedShares, usdc] = await simulateTransaction({
+      const usdc = (await simulateTransaction({
         transaction: estimateTx,
         account,
-      });
-      return [burnedShares, usdc];
+      })) as bigint;
+      return usdc;
     },
   });
 }
