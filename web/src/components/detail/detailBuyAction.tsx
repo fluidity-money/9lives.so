@@ -99,7 +99,7 @@ export default function DetailBuyAction({
     investmentAmounts: data.investmentAmounts,
     outcomeId: outcome.identifier,
     fusdc,
-    share: Number(sharesToGet),
+    share: fusdc / Number(price),
   });
   const orderSummary = [
     {
