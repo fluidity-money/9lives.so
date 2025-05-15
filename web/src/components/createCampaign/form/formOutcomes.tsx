@@ -72,6 +72,7 @@ export default function CreateCampaignFormOutcomes({
     rules: {
       required: outcomeType === "custom",
       minLength: 2,
+      maxLength: 10,
     },
   });
   const handleOutcomePicChange = (
@@ -219,9 +220,10 @@ export default function CreateCampaignFormOutcomes({
                   seed: randomValue4Uint8(),
                 });
               }}
+              disabled={outcomes.length >= 10}
               intent={"default"}
               size={"large"}
-              title="Add More Outcomes +"
+              title="Add More Outcome +"
             />
           </TabPanel>
         </TabPanels>
