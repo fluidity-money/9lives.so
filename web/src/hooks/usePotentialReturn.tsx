@@ -1,14 +1,13 @@
 import { CampaignDetail } from "@/types";
+import formatFusdc from "@/utils/formatFusdc";
 
 interface usePotentialReturnProps {
   investmentAmounts: CampaignDetail["investmentAmounts"];
   outcomeId: `0x${string}`;
   fusdc: number;
   share?: number;
-  totalInvestment: number;
 }
 export default function usePotentialReturn({
-  totalInvestment,
   investmentAmounts,
   outcomeId,
   fusdc,
@@ -18,8 +17,10 @@ export default function usePotentialReturn({
   if (!share) return 0;
   const sharesOfOutcome =
     investmentAmounts.find((t) => t.id === outcomeId)?.share || 0;
+  const totalInvestment = investmentAmounts.reduce((acc, v) => acc + v.usdc, 0);
   return (
-    ((Number(totalInvestment) + fusdc) / (Number(sharesOfOutcome) + share)) *
+    ((Number(formatFusdc(totalInvestment, 6)) + fusdc) /
+      (Number(formatFusdc(sharesOfOutcome, 2)) + share)) *
     share
   );
 }

@@ -95,7 +95,6 @@ export default function DetailBuyAction({
   });
   const sharesToGet = formatFusdc(estimatedSharesToGet ?? 0, 2);
   const estimatedWinForDpm = usePotentialReturn({
-    totalInvestment: data.totalVolume,
     investmentAmounts: data.investmentAmounts,
     outcomeId: outcome.identifier,
     fusdc,
@@ -112,7 +111,7 @@ export default function DetailBuyAction({
     },
     {
       title: "To Win 💵",
-      value: `$${isDpm ? estimatedWinForDpm : sharesToGet}`,
+      value: `$${isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet}`,
     },
   ];
   async function handleBuy({ fusdc }: FormData) {
