@@ -263,7 +263,7 @@ export default function DetailSellAction({
               <ErrorInfo text={errors.shareToBurn.message} />
             )}
           </div>
-          <div
+          {/* <div
             className={combineClass(minimized && "hidden", "flex-col md:flex")}
           >
             <div className="flex items-center justify-between">
@@ -286,7 +286,7 @@ export default function DetailSellAction({
             {errors.minUsdcToGet && (
               <ErrorInfo text={errors.minUsdcToGet.message} />
             )}
-          </div>
+          </div> */}
           <div
             className={combineClass(
               minimized && "hidden",
