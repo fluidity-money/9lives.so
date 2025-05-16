@@ -8,9 +8,9 @@ import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
-import ERC20Abi from "@/config/abi/erc20";
 import { track, EVENTS } from "@/utils/analytics";
 import { usePortfolioStore } from "@/stores/portfolioStore";
+import { useAllowanceCheck } from "./useAllowanceCheck";
 
 const useClaim = ({
   shareAddr,
@@ -27,6 +27,7 @@ const useClaim = ({
 }) => {
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);
+  const { checkAndAprove } = useAllowanceCheck();
   const claim = async (account: Account, accountShare?: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
@@ -37,17 +38,6 @@ const useClaim = ({
             accountShare,
             config.contracts.decimals.shares,
           );
-          const shareContract = getContract({
-            abi: ERC20Abi,
-            address: shareAddr,
-            client: config.thirdweb.client,
-            chain: config.chains.currentChain,
-          });
-          const approveTx = prepareContractCall({
-            contract: shareContract,
-            method: "approve",
-            params: [tradingAddr, MaxUint256],
-          });
           const tradingDpmContract = getContract({
             abi: tradingDpmAbi,
             address: tradingAddr,
@@ -70,9 +60,11 @@ const useClaim = ({
             method: "payoff91FA8C2E",
             params: [outcomeId, shares, account.address],
           });
-          await sendTransaction({
-            transaction: approveTx,
+          await checkAndAprove({
+            contractAddress: shareAddr,
+            spenderAddress: tradingAddr,
             account,
+            amount: MaxUint256,
           });
           await sendTransaction({
             transaction: isDpm ? claimDpmTx : claimTx,
