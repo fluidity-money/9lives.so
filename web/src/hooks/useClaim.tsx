@@ -11,6 +11,7 @@ import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import { useAllowanceCheck } from "./useAllowanceCheck";
+import { setContext } from "@sentry/nextjs";
 
 const useClaim = ({
   shareAddr,
@@ -66,8 +67,15 @@ const useClaim = ({
             account,
             amount: MaxUint256,
           });
+          const transaction = isDpm ? claimDpmTx : claimTx;
+          setContext("claim_tx", {
+            method: transaction.__preparedMethod?.name,
+            callData: transaction.data,
+            to: transaction.to,
+            address: account.address,
+          });
           await sendTransaction({
-            transaction: isDpm ? claimDpmTx : claimTx,
+            transaction,
             account,
           });
           const outcomeIds = outcomes.map((outcome) => outcome.identifier);
