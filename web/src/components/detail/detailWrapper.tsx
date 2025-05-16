@@ -60,6 +60,9 @@ export default function DetailWrapper({
     tradingAddr: data.poolAddress,
   });
   useEffect(() => {
+    setTag("tradingAddress", initialData.poolAddress);
+  }, []);
+  useEffect(() => {
     if (isDpmLoaded) {
       setTag("isDpm", isDpm);
     }
