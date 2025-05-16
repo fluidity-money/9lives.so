@@ -359,31 +359,6 @@
 	},
 	{
 		"type": "event",
-		"name": "LiquidityAddedSharesSent",
-		"inputs": [
-			{
-				"name": "outcome",
-				"type": "bytes8",
-				"indexed": true,
-				"internalType": "bytes8"
-			},
-			{
-				"name": "recipient",
-				"type": "address",
-				"indexed": true,
-				"internalType": "address"
-			},
-			{
-				"name": "amount",
-				"type": "uint256",
-				"indexed": true,
-				"internalType": "uint256"
-			}
-		],
-		"anonymous": false
-	},
-	{
-		"type": "event",
 		"name": "LiquidityClaimed",
 		"inputs": [
 			{
@@ -419,31 +394,6 @@
 			},
 			{
 				"name": "liquidityAmt",
-				"type": "uint256",
-				"indexed": true,
-				"internalType": "uint256"
-			}
-		],
-		"anonymous": false
-	},
-	{
-		"type": "event",
-		"name": "LiquidityRemovedSharesSent",
-		"inputs": [
-			{
-				"name": "outcome",
-				"type": "bytes8",
-				"indexed": true,
-				"internalType": "bytes8"
-			},
-			{
-				"name": "recipient",
-				"type": "address",
-				"indexed": true,
-				"internalType": "address"
-			},
-			{
-				"name": "amount",
 				"type": "uint256",
 				"indexed": true,
 				"internalType": "uint256"
@@ -640,6 +590,25 @@
 				"name": "fusdcReceived",
 				"type": "uint256",
 				"indexed": false,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "ReferrerEarnedFees",
+		"inputs": [
+			{
+				"name": "referrer",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "fees",
+				"type": "uint256",
+				"indexed": true,
 				"internalType": "uint256"
 			}
 		],
