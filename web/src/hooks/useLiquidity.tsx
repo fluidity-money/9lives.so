@@ -105,6 +105,21 @@ export default function useLiquidity({
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          const claimLiquidityTx = prepareContractCall({
+            contract: tradingContract,
+            method: "claimLiquidity9C391F85",
+            params: [account.address],
+          });
+          await sendTransaction({
+            transaction: claimLiquidityTx,
+            account,
+          });
+          track(EVENTS.CLAIM_LIQUIDITY, {
+            wallet: account.address,
+            tradingAddr,
+            campaignId,
+          });
+          res(null);
         } catch (e) {
           rej(e);
         }

@@ -10,6 +10,7 @@ import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
 import AddLiquidityButton from "../addLiquidityButton";
 import RemoveLiquidityButton from "../removeLiquidityButton";
+import ClaimLiquidityButton from "../claimLiquidityButton";
 export default function DetailHeader({
   data,
   isEnded,
@@ -107,14 +108,21 @@ export default function DetailHeader({
         ) : (
           <div className="flex flex-col items-center gap-2.5 md:flex-row">
             {userLiquidity && +userLiquidity > 0 ? (
-              <RemoveLiquidityButton
-                name={data.name}
-                campaignId={data.identifier}
-                tradingAddr={data.poolAddress}
-                liquidity={userLiquidity}
-              />
+              isConcluded ? (
+                <ClaimLiquidityButton
+                  campaignId={data.identifier}
+                  tradingAddr={data.poolAddress}
+                />
+              ) : (
+                <RemoveLiquidityButton
+                  name={data.name}
+                  campaignId={data.identifier}
+                  tradingAddr={data.poolAddress}
+                  liquidity={userLiquidity}
+                />
+              )
             ) : null}
-            {isDpm !== undefined && !isDpm && (
+            {!isConcluded && isDpm !== undefined && !isDpm && (
               <AddLiquidityButton
                 name={data.name}
                 campaignId={data.identifier}
