@@ -7,10 +7,10 @@ import {
   getContract,
   prepareContractCall,
   sendTransaction,
-  simulateTransaction,
   toUnits,
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
+import { useAllowanceCheck } from "./useAllowanceCheck";
 
 export default function useLiquidity({
   tradingAddr,
@@ -20,48 +20,23 @@ export default function useLiquidity({
   campaignId: `0x${string}`;
 }) {
   const queryClient = useQueryClient();
+  const tradingContract = getContract({
+    abi: tradingAbi,
+    address: tradingAddr,
+    client: config.thirdweb.client,
+    chain: config.chains.currentChain,
+  });
+  const { checkAndAprove } = useAllowanceCheck();
   const add = async (account: Account, fusdc: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
           const amount = toUnits(fusdc, config.contracts.decimals.shares);
-          const balanceOfTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "balanceOf",
-            params: [account.address],
-          });
-          const balance = await simulateTransaction({
-            transaction: balanceOfTx,
-            account: account,
-          });
-          if (amount > balance) {
-            rej("Insufficient balance");
-          }
-          const allowanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "allowance",
-            params: [account.address, tradingAddr],
-          });
-          const allowance = await simulateTransaction({
-            transaction: allowanceTx,
-            account: account,
-          });
-          if (amount > allowance) {
-            const approveTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "approve",
-              params: [tradingAddr, amount],
-            });
-            await sendTransaction({
-              transaction: approveTx,
-              account,
-            });
-          }
-          const tradingContract = getContract({
-            abi: tradingAbi,
-            address: tradingAddr,
-            client: config.thirdweb.client,
-            chain: config.chains.currentChain,
+          await checkAndAprove({
+            contractAddress: config.contracts.fusdc.address,
+            spenderAddress: tradingAddr,
+            account,
+            amount,
           });
           const addLiquidityTx = prepareContractCall({
             contract: tradingContract,
@@ -97,12 +72,6 @@ export default function useLiquidity({
       new Promise(async (res, rej) => {
         try {
           const amount = toUnits(fusdc, config.contracts.decimals.shares);
-          const tradingContract = getContract({
-            abi: tradingAbi,
-            address: tradingAddr,
-            client: config.thirdweb.client,
-            chain: config.chains.currentChain,
-          });
           const removeLiquidityTx = prepareContractCall({
             contract: tradingContract,
             method: "removeLiquidity3C857A15",
@@ -132,5 +101,19 @@ export default function useLiquidity({
         error: "Failed to remove.",
       },
     );
-  return { add, remove };
+  const claim = async (account: Account) =>
+    toast.promise(
+      new Promise(async (res, rej) => {
+        try {
+        } catch (e) {
+          rej(e);
+        }
+      }),
+      {
+        loading: "Claiming liquidity...",
+        success: "Liquidity claimed successfully!",
+        error: "Failed to claim.",
+      },
+    );
+  return { add, remove, claim };
 }
