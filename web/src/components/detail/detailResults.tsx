@@ -72,7 +72,9 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
     },
   ];
   const noClaim =
-    account && accountShares !== undefined && !(Number(accountShares) > 0);
+    account &&
+    ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
+      !accountShares);
   async function handleClaim() {
     if (!account) return connect();
     try {
