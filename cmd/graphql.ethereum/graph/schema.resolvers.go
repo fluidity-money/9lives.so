@@ -642,7 +642,9 @@ func (r *mutationResolver) SynchProfile(ctx context.Context, walletAddress strin
 
 // GenReferrer is the resolver for the genReferrer field.
 func (r *mutationResolver) GenReferrer(ctx context.Context, walletAddress string, code string) (string, error) {
-	panic(fmt.Errorf("not implemented: GenReferrer - genReferrer"))
+	// See if we can create the word the user asked for, then we
+	// associate it with them, and return it to them.
+	panic("unimplementd")
 }
 
 // AssociateReferral is the resolver for the associateReferral field.
@@ -671,6 +673,16 @@ func (r *positionResolver) Content(ctx context.Context, obj *types.Position) (*t
 		UpdatedAt: time.Unix(int64(obj.Content.Starting), 0),
 	}
 	return &campaign, nil
+}
+
+// Refererr is the resolver for the refererr field.
+func (r *profileResolver) Refererr(ctx context.Context, obj *types.Profile) (*string, error) {
+	panic(fmt.Errorf("not implemented: Refererr - refererr"))
+}
+
+// ReferrerAddress is the resolver for the referrerAddress field.
+func (r *profileResolver) ReferrerAddress(ctx context.Context, obj *types.Profile) (*string, error) {
+	panic(fmt.Errorf("not implemented: ReferrerAddress - referrerAddress"))
 }
 
 // Campaigns is the resolver for the campaigns field.
@@ -985,11 +997,6 @@ func (r *queryResolver) ReferrersForAddress(ctx context.Context, address string)
 	panic(fmt.Errorf("not implemented: ReferrersForAddress - referrersForAddress"))
 }
 
-// Refererr is the resolver for the refererr field.
-func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
-	panic(fmt.Errorf("not implemented: Refererr - refererr"))
-}
-
 // Activity returns ActivityResolver implementation.
 func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
 
@@ -1008,11 +1015,11 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Position returns PositionResolver implementation.
 func (r *Resolver) Position() PositionResolver { return &positionResolver{r} }
 
+// Profile returns ProfileResolver implementation.
+func (r *Resolver) Profile() ProfileResolver { return &profileResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
-
-// Settings returns SettingsResolver implementation.
-func (r *Resolver) Settings() SettingsResolver { return &settingsResolver{r} }
 
 type activityResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
@@ -1020,5 +1027,5 @@ type changelogResolver struct{ *Resolver }
 type claimResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type positionResolver struct{ *Resolver }
+type profileResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-type settingsResolver struct{ *Resolver }

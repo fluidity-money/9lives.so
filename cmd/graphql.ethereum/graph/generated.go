@@ -47,8 +47,8 @@ type ResolverRoot interface {
 	Claim() ClaimResolver
 	Mutation() MutationResolver
 	Position() PositionResolver
+	Profile() ProfileResolver
 	Query() QueryResolver
-	Settings() SettingsResolver
 }
 
 type DirectiveRoot struct {
@@ -141,9 +141,11 @@ type ComplexityRoot struct {
 	}
 
 	Profile struct {
-		Email         func(childComplexity int) int
-		Settings      func(childComplexity int) int
-		WalletAddress func(childComplexity int) int
+		Email           func(childComplexity int) int
+		Refererr        func(childComplexity int) int
+		ReferrerAddress func(childComplexity int) int
+		Settings        func(childComplexity int) int
+		WalletAddress   func(childComplexity int) int
 	}
 
 	Query struct {
@@ -163,7 +165,6 @@ type ComplexityRoot struct {
 
 	Settings struct {
 		Notification func(childComplexity int) int
-		Refererr     func(childComplexity int) int
 	}
 
 	Share struct {
@@ -227,6 +228,10 @@ type PositionResolver interface {
 	OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error)
 	Content(ctx context.Context, obj *types.Position) (*types.Campaign, error)
 }
+type ProfileResolver interface {
+	Refererr(ctx context.Context, obj *types.Profile) (*string, error)
+	ReferrerAddress(ctx context.Context, obj *types.Profile) (*string, error)
+}
 type QueryResolver interface {
 	Campaigns(ctx context.Context, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) ([]types.Campaign, error)
 	CampaignByID(ctx context.Context, id string) (*types.Campaign, error)
@@ -240,9 +245,6 @@ type QueryResolver interface {
 	UserProfile(ctx context.Context, address string) (*types.Profile, error)
 	UserLiquidity(ctx context.Context, address string, tradingAddr *string) (string, error)
 	ReferrersForAddress(ctx context.Context, address string) ([]string, error)
-}
-type SettingsResolver interface {
-	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
 }
 
 type executableSchema struct {
@@ -728,6 +730,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Profile.Email(childComplexity), true
 
+	case "Profile.refererr":
+		if e.complexity.Profile.Refererr == nil {
+			break
+		}
+
+		return e.complexity.Profile.Refererr(childComplexity), true
+
+	case "Profile.referrerAddress":
+		if e.complexity.Profile.ReferrerAddress == nil {
+			break
+		}
+
+		return e.complexity.Profile.ReferrerAddress(childComplexity), true
+
 	case "Profile.settings":
 		if e.complexity.Profile.Settings == nil {
 			break
@@ -882,13 +898,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Settings.Notification(childComplexity), true
-
-	case "Settings.refererr":
-		if e.complexity.Settings.Refererr == nil {
-			break
-		}
-
-		return e.complexity.Settings.Refererr(childComplexity), true
 
 	case "Share.address":
 		if e.complexity.Share.Address == nil {
@@ -4589,6 +4598,88 @@ func (ec *executionContext) fieldContext_Profile_email(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Profile_refererr(ctx context.Context, field graphql.CollectedField, obj *types.Profile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Profile_refererr(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Profile().Refererr(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Profile_refererr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Profile",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Profile_referrerAddress(ctx context.Context, field graphql.CollectedField, obj *types.Profile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Profile_referrerAddress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Profile().ReferrerAddress(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Profile_referrerAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Profile",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Profile_settings(ctx context.Context, field graphql.CollectedField, obj *types.Profile) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Profile_settings(ctx, field)
 	if err != nil {
@@ -4627,8 +4718,6 @@ func (ec *executionContext) fieldContext_Profile_settings(_ context.Context, fie
 			switch field.Name {
 			case "notification":
 				return ec.fieldContext_Settings_notification(ctx, field)
-			case "refererr":
-				return ec.fieldContext_Settings_refererr(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Settings", field.Name)
 		},
@@ -5328,6 +5417,10 @@ func (ec *executionContext) fieldContext_Query_userProfile(ctx context.Context, 
 				return ec.fieldContext_Profile_walletAddress(ctx, field)
 			case "email":
 				return ec.fieldContext_Profile_email(ctx, field)
+			case "refererr":
+				return ec.fieldContext_Profile_refererr(ctx, field)
+			case "referrerAddress":
+				return ec.fieldContext_Profile_referrerAddress(ctx, field)
 			case "settings":
 				return ec.fieldContext_Profile_settings(ctx, field)
 			}
@@ -5623,47 +5716,6 @@ func (ec *executionContext) fieldContext_Settings_notification(_ context.Context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Settings_refererr(ctx context.Context, field graphql.CollectedField, obj *types.Settings) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Settings_refererr(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Settings().Refererr(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Settings_refererr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Settings",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9106,13 +9158,79 @@ func (ec *executionContext) _Profile(ctx context.Context, sel ast.SelectionSet, 
 		case "walletAddress":
 			out.Values[i] = ec._Profile_walletAddress(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "email":
 			out.Values[i] = ec._Profile_email(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "refererr":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Profile_refererr(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "referrerAddress":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Profile_referrerAddress(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "settings":
 			out.Values[i] = ec._Profile_settings(ctx, field, obj)
 		default:
@@ -9459,39 +9577,6 @@ func (ec *executionContext) _Settings(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = graphql.MarshalString("Settings")
 		case "notification":
 			out.Values[i] = ec._Settings_notification(ctx, field, obj)
-		case "refererr":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Settings_refererr(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

@@ -67,16 +67,21 @@ type Settings {
   Multiple settings can be added here
   """
   notification: Boolean
-
-  """
-  Did the user click a referrer link that we should hint to the browser?
-  """
-  refererr: String
 }
 type Profile {
   walletAddress: String!
 
   email: String!
+
+  """
+  Did the user click a referrer link that we should hint to the browser?
+  """
+  refererr: String
+
+  """
+  The result of the referrer code to address, if there is one.
+  """
+  referrerAddress: String
 
   settings: Settings
 }

@@ -167,6 +167,14 @@ type (
 
 	Settings struct {
 		Notification bool `json:"notification"`
+
+		// Referrer is sent to the user with the string of the code that they
+		// clicked, which is used to get the address for the referrer to send
+		// on-chain.
+		Referrer string `json:"referrer"`
+
+		// ReferrerAddress result of the Referrer code lookup.
+		ReferrerAddress string `json:"referrerAddress"`
 	}
 
 	Profile struct {
