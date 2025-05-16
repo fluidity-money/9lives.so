@@ -17,8 +17,9 @@ import { combineClass } from "@/utils/combineClass";
 
 interface DetailResultsProps {
   data: CampaignDetail;
+  isDpm?: boolean;
 }
-export default function DetailResults({ data }: DetailResultsProps) {
+export default function DetailResults({ data, isDpm }: DetailResultsProps) {
   const account = useActiveAccount();
   const { connect, isConnecting } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
@@ -36,15 +37,16 @@ export default function DetailResults({ data }: DetailResultsProps) {
   )?.balance;
   const totalSharesOfWinner =
     data.investmentAmounts.find((i) => i.id === data.winner)?.share ?? 0;
-  const totalShares = data.investmentAmounts.reduce(
-    (acc, v) => acc + v.share,
-    0,
-  );
+  // const totalShares = data.investmentAmounts.reduce(
+  //   (acc, v) => acc + v.share,
+  //   0,
+  // );
   const { claim } = useClaim({
     shareAddr: winner.share.address,
     tradingAddr: data.poolAddress,
     outcomeId: winner.identifier,
     outcomes: data.outcomes,
+    isDpm,
   });
   const totalVolumeOfWinner =
     data.investmentAmounts.find((ia) => ia.id === data.winner)?.usdc ?? 0;

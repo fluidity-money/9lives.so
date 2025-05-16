@@ -1,5 +1,6 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
+import tradingDpmAbi from "@/config/abi/tradingDpm";
 import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { MaxUint256 } from "ethers";
@@ -16,11 +17,13 @@ const useClaim = ({
   tradingAddr,
   outcomeId,
   outcomes,
+  isDpm,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
   outcomes: Outcome[];
+  isDpm?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);
@@ -45,6 +48,12 @@ const useClaim = ({
             method: "approve",
             params: [tradingAddr, MaxUint256],
           });
+          const tradingDpmContract = getContract({
+            abi: tradingDpmAbi,
+            address: tradingAddr,
+            client: config.thirdweb.client,
+            chain: config.chains.currentChain,
+          });
           const tradingContract = getContract({
             abi: tradingAbi,
             address: tradingAddr,
@@ -56,12 +65,17 @@ const useClaim = ({
             method: "payoffCB6F2565",
             params: [outcomeId, shares, account.address],
           });
+          const claimDpmTx = prepareContractCall({
+            contract: tradingDpmContract,
+            method: "payoff91FA8C2E",
+            params: [outcomeId, shares, account.address],
+          });
           await sendTransaction({
             transaction: approveTx,
             account,
           });
           await sendTransaction({
-            transaction: claimTx,
+            transaction: isDpm ? claimDpmTx : claimTx,
             account,
           });
           const outcomeIds = outcomes.map((outcome) => outcome.identifier);
