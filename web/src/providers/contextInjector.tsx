@@ -6,11 +6,12 @@ import {
   useActiveWallet,
 } from "thirdweb/react";
 import { useEffect } from "react";
-import { setTag, setUser } from "@sentry/nextjs";
+import { setTag, setUser, setContext } from "@sentry/nextjs";
 import { useDegenStore } from "@/stores/degenStore";
 import { usePathname } from "next/navigation";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import posthog from "posthog-js";
+import config from "@/config";
 
 export default function ContextInjector() {
   const account = useActiveAccount();
@@ -19,6 +20,15 @@ export default function ContextInjector() {
   const degenModeEnabled = useDegenStore((state) => state.degenModeEnabled);
   const pathname = usePathname();
   const wallet = useActiveWallet();
+
+  // insert contractAddresses to Sentry
+  useEffect(() => {
+    const { decimals, ...contracts } = config.contracts;
+    const contractContexts = Object.fromEntries(
+      Object.entries(contracts).map(([key, value]) => [key, value.address]),
+    );
+    setContext("contracts", contractContexts);
+  }, [config.contracts]);
 
   useEffect(() => {
     if (account?.address) {
