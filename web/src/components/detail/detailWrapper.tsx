@@ -59,14 +59,6 @@ export default function DetailWrapper({
     address: account?.address,
     tradingAddr: data.poolAddress,
   });
-  useEffect(() => {
-    setTag("tradingAddress", initialData.poolAddress);
-  }, []);
-  useEffect(() => {
-    if (isDpmLoaded) {
-      setTag("isDpm", isDpm);
-    }
-  }, [isDpmLoaded, isDpm]);
   return (
     <section
       className={combineClass(
