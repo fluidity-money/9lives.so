@@ -4,7 +4,7 @@ import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
 import { SelectedOutcome } from "../../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSharePrices from "@/hooks/useSharePrices";
 import DetailInfo from "./detailInfo";
 import { useSearchParams } from "next/navigation";
@@ -17,6 +17,7 @@ import { combineClass } from "@/utils/combineClass";
 import useIsDpm from "@/hooks/useIsDpm";
 import useUserLiquidity from "@/hooks/useUserLiquidity";
 import { useActiveAccount } from "thirdweb/react";
+import { setTag } from "@sentry/nextjs";
 
 export default function DetailWrapper({
   initialData,
@@ -53,11 +54,16 @@ export default function DetailWrapper({
     initialData,
   });
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
-  const { data: isDpm } = useIsDpm(data.poolAddress);
+  const { data: isDpm, isSuccess: isDpmLoaded } = useIsDpm(data.poolAddress);
   const { data: userLiquidity } = useUserLiquidity({
     address: account?.address,
     tradingAddr: data.poolAddress,
   });
+  useEffect(() => {
+    if (isDpmLoaded) {
+      setTag("isDpm", isDpm);
+    }
+  }, [isDpmLoaded, isDpm]);
   return (
     <section
       className={combineClass(
