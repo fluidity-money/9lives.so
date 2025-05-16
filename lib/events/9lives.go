@@ -47,6 +47,8 @@ var (
 	TopicLiquidityRemovedSharesSent = abi.Events["LiquidityRemovedSharesSent"].ID
 	TopicLiquidityClaimed           = abi.Events["LiquidityClaimed"].ID
 	TopicLPFeesClaimed              = abi.Events["LPFeesClaimed"].ID
+	TopicAddressFeesClaimed         = abi.Events["AddressFeesClaimed"].ID
+	TopicReferrerEarnedFees         = abi.Events["ReferrerEarnedFees"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
@@ -356,6 +358,20 @@ func UnpackLPFeesClaimed(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*even
 		Recipient:             hashToAddr(topic2),
 		FeesEarned:            hashToNumber(topic3),
 		SenderLiquidityShares: events.NumberFromBig(shares),
+	}, nil
+}
+
+func UnpackAddressFeesClaimed(topic0, topic1 ethCommon.Hash) (*events.EventAddressFeesClaimed, error) {
+	return &events.EventAddressFeesClaimed{
+		Recipient: hashToAddr(topic0),
+		Amount:    hashToNumber(topic1),
+	}, nil
+}
+
+func UnpackReferrerEarnedFees(topic0, topic1 ethCommon.Hash) (*events.EventReferrerEarnedFees, error) {
+	return &events.EventReferrerEarnedFees{
+		Recipient: hashToAddr(topic0),
+		Fees:      hashToNumber(topic1),
 	}, nil
 }
 

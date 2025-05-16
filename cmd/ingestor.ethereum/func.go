@@ -53,6 +53,8 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicLiquidityRemovedSharesSent,
 	events.TopicLiquidityClaimed,
 	events.TopicLPFeesClaimed,
+	events.TopicAddressFeesClaimed,
+	events.TopicReferrerEarnedFees,
 }
 
 // Entry function, using the database to determine if polling should be
@@ -383,6 +385,16 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		a, err = events.UnpackLPFeesClaimed(topic1, topic2, topic3, data)
 		table = "ninelives_events_lp_fees_claimed"
 		logEvent("LPFeesClaimed")
+		fromTrading = true
+	case events.TopicAddressFeesClaimed:
+		a, err = events.UnpackAddressFeesClaimed(topic1, topic2)
+		table = "ninelives_events_address_fees_claimed"
+		logEvent("AddressFeesClaimed")
+		fromTrading = true
+	case events.TopicReferrerEarnedFees:
+		a, err = events.UnpackReferrerEarnedFees(topic1, topic2)
+		table = "ninelives_referrer_earned_fees"
+		logEvent("ReferrerEarnedFees")
 		fromTrading = true
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)

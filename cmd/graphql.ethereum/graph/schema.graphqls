@@ -53,12 +53,25 @@ type Query {
   """
   userLiquidity(address:String!, tradingAddr: String): String!
 
+
+
+  """
+  Though the user should only ever create a referrer once, we should assume there might be
+  more, so we'll return more here, and let the frontend decide.
+  """
+  referrersForAddress(address: String!): [String!]!
+
 }
 type Settings {
   """
   Multiple settings can be added here
   """
   notification: Boolean
+
+  """
+  Did the user click a referrer link that we should hint to the browser?
+  """
+  refererr: String
 }
 type Profile {
   walletAddress: String!
@@ -210,31 +223,31 @@ type Mutation {
   unless the frontend should be prompted to provide a signature.
   """
   revealCommitment(
-      """
-      In this highly simplified form, this is the Trading address to provide the
-      commitment for. This information will be kept until the contract goes into a state
-      of being able to be predicted (after the whinge is picked up on).
-      """
-      tradingAddr: String!,
+    """
+    In this highly simplified form, this is the Trading address to provide the
+    commitment for. This information will be kept until the contract goes into a state
+    of being able to be predicted (after the whinge is picked up on).
+    """
+    tradingAddr: String!,
 
-      """
-      The sender's address. This is needed to simulate and then send the call. If someone
-      were to abuse this permissionless process, the degraded form would be the frontend
-      needing to be prompted for a signature before accepting submissions. The backend
-      will deduplicate this once the time has begun.
-      """
-      sender: String!,
+    """
+    The sender's address. This is needed to simulate and then send the call. If someone
+    were to abuse this permissionless process, the degraded form would be the frontend
+    needing to be prompted for a signature before accepting submissions. The backend
+    will deduplicate this once the time has begun.
+    """
+    sender: String!,
 
-      """
-      The seed that's in use for this commitment. This is a large number, so this is in
-      base10 as a string, which is handled with Go.
-      """
-      seed: String!,
+    """
+    The seed that's in use for this commitment. This is a large number, so this is in
+    base10 as a string, which is handled with Go.
+    """
+    seed: String!,
 
-      """
-      The preferred outcome, hex identified, preceded with 0x.
-      """
-      preferredOutcome: String!,
+    """
+    The preferred outcome, hex identified, preceded with 0x.
+    """
+    preferredOutcome: String!,
   ): Boolean
 
   """
@@ -246,51 +259,101 @@ type Mutation {
   correct signature. True will always be returned here.
   """
   revealCommitment2(
-      """
-      In this highly simplified form, this is the Trading address to provide the
-      commitment for. This information will be kept until the contract goes into a state
-      of being able to be predicted (after the whinge is picked up on).
-      """
-      tradingAddr: String!,
+    """
+    In this highly simplified form, this is the Trading address to provide the
+    commitment for. This information will be kept until the contract goes into a state
+    of being able to be predicted (after the whinge is picked up on).
+    """
+    tradingAddr: String!,
 
-      """
-      The sender's address. This is needed to simulate and then send the call. If someone
-      were to abuse this permissionless process, the degraded form would be the frontend
-      needing to be prompted for a signature before accepting submissions. The backend
-      will deduplicate this once the time has begun.
-      """
-      sender: String!,
+    """
+    The sender's address. This is needed to simulate and then send the call. If someone
+    were to abuse this permissionless process, the degraded form would be the frontend
+    needing to be prompted for a signature before accepting submissions. The backend
+    will deduplicate this once the time has begun.
+    """
+    sender: String!,
 
-      """
-      The seed that's in use for this commitment. This is a large number, so this is in
-      base10 as a string, which is handled with Go.
-      """
-      seed: String!,
+    """
+    The seed that's in use for this commitment. This is a large number, so this is in
+    base10 as a string, which is handled with Go.
+    """
+    seed: String!,
 
-      """
-      The preferred outcome, hex identified, preceded with 0x.
-      """
-      preferredOutcome: String!,
+    """
+    The preferred outcome, hex identified, preceded with 0x.
+    """
+    preferredOutcome: String!,
 
-      """
-      The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
-      prefix.
-      """
-      rr: String!,
+    """
+    The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
+    prefix.
+    """
+    rr: String!,
 
-      """
-      The signature proof, derived from the private key and hash of this submission
-      concenated left to right. Hex encoded, with the 0x prefix.
-      """
-      s: String!,
+    """
+    The signature proof, derived from the private key and hash of this submission
+    concenated left to right. Hex encoded, with the 0x prefix.
+    """
+    s: String!,
 
-      """
-      The recovery ID (27) for the private key used for this signature. A Int.
-      """
-      v: String!
+    """
+    The recovery ID (27) for the private key used for this signature. A Int.
+    """
+    v: String!
   ): Boolean
 
   synchProfile(walletAddress: String!, email: String!): Boolean
+
+  """
+  Generate a referrer code, using the identifier that the user gave us.
+  """
+  genReferrer(
+    """
+    Wallet address to generate the code for.
+    """
+    walletAddress: String!,
+
+    """
+    The code that the user chose to associate with them.
+    """
+    code: String!
+  ): String!
+
+  """
+  Sign that the database should recommend to your browser that you're entitled to a
+  referral. Reconstructs this:
+
+  Referral(address sender,address referrer,uint256 deadline)
+  """
+  associateReferral(
+    """
+    The user's address to verify this for.
+    """
+    sender: String!,
+
+    """
+    The referrer string to use here.
+    """
+    referrer: String!
+
+    """
+    The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
+    prefix.
+    """
+    rr: String!,
+
+    """
+    The signature proof, derived from the private key and hash of this submission
+    concenated left to right. Hex encoded, with the 0x prefix.
+    """
+    s: String!,
+
+    """
+    The recovery ID (27) for the private key used for this signature. A Int.
+    """
+    v: String!
+  ): Boolean
 }
 
 """

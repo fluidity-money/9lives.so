@@ -640,6 +640,16 @@ func (r *mutationResolver) SynchProfile(ctx context.Context, walletAddress strin
 	return &res, nil
 }
 
+// GenReferrer is the resolver for the genReferrer field.
+func (r *mutationResolver) GenReferrer(ctx context.Context, walletAddress string, code string) (string, error) {
+	panic(fmt.Errorf("not implemented: GenReferrer - genReferrer"))
+}
+
+// AssociateReferral is the resolver for the associateReferral field.
+func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string, referrer string, rr string, s string, v string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: AssociateReferral - associateReferral"))
+}
+
 // OutcomeIds is the resolver for the outcomeIds field.
 func (r *positionResolver) OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error) {
 	if obj == nil {
@@ -943,18 +953,18 @@ func (r *queryResolver) UserLiquidity(ctx context.Context, address string, tradi
 	}
 
 	query := fmt.Sprintf(`
-		SELECT 
+		SELECT
 			COALESCE((
-				SELECT SUM(liquidity_shares) 
-				FROM ninelives_events_liquidity_added 
+				SELECT SUM(liquidity_shares)
+				FROM ninelives_events_liquidity_added
 				WHERE recipient = ? %s
 			), 0)
 			-
 			COALESCE((
-				SELECT SUM(liquidity_amt) 
-				FROM ninelives_events_liquidity_removed 
+				SELECT SUM(liquidity_amt)
+				FROM ninelives_events_liquidity_removed
 				WHERE recipient = ? %s
-			), 0) 
+			), 0)
 		AS total_shares;
 	`, emitterCondition, emitterCondition)
 
@@ -968,6 +978,16 @@ func (r *queryResolver) UserLiquidity(ctx context.Context, address string, tradi
 		return "", fmt.Errorf("error getting liquidity from database: %w", err)
 	}
 	return liquidity, nil
+}
+
+// ReferrersForAddress is the resolver for the referrersForAddress field.
+func (r *queryResolver) ReferrersForAddress(ctx context.Context, address string) ([]string, error) {
+	panic(fmt.Errorf("not implemented: ReferrersForAddress - referrersForAddress"))
+}
+
+// Refererr is the resolver for the refererr field.
+func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
+	panic(fmt.Errorf("not implemented: Refererr - refererr"))
 }
 
 // Activity returns ActivityResolver implementation.
@@ -991,6 +1011,9 @@ func (r *Resolver) Position() PositionResolver { return &positionResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// Settings returns SettingsResolver implementation.
+func (r *Resolver) Settings() SettingsResolver { return &settingsResolver{r} }
+
 type activityResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
 type changelogResolver struct{ *Resolver }
@@ -998,3 +1021,4 @@ type claimResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type positionResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type settingsResolver struct{ *Resolver }

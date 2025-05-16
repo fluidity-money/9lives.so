@@ -232,4 +232,18 @@ type (
 		FeesEarned            Number  `json:"fees_earned"`
 		SenderLiquidityShares Number  `json:"sender_liquidity_shares"`
 	}
+
+	EventAddressFeesClaimed struct {
+		Event
+
+		Recipient Address `json:"recipient"`
+		Amount    Number  `json:"amount"`
+	}
+
+	EventReferrerEarnedFees struct {
+		Event
+
+		Recipient Address `json:"recipient"`
+		Fees      Number  `json:"fees"`
+	}
 )

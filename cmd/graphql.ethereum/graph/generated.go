@@ -48,6 +48,7 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Position() PositionResolver
 	Query() QueryResolver
+	Settings() SettingsResolver
 }
 
 type DirectiveRoot struct {
@@ -118,7 +119,9 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		AssociateReferral func(childComplexity int, sender string, referrer string, rr string, s string, v string) int
 		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
+		GenReferrer       func(childComplexity int, walletAddress string, code string) int
 		RevealCommitment  func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string) int
 		RevealCommitment2 func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) int
 		SynchProfile      func(childComplexity int, walletAddress string, email string) int
@@ -148,6 +151,7 @@ type ComplexityRoot struct {
 		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) int
 		Changelog                 func(childComplexity int) int
 		PositionsHistory          func(childComplexity int, address string, outcomeIds []string) int
+		ReferrersForAddress       func(childComplexity int, address string) int
 		SuggestedHeadlines        func(childComplexity int) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
 		UserClaims                func(childComplexity int, address string, campaignID *string) int
@@ -159,6 +163,7 @@ type ComplexityRoot struct {
 
 	Settings struct {
 		Notification func(childComplexity int) int
+		Refererr     func(childComplexity int) int
 	}
 
 	Share struct {
@@ -215,6 +220,8 @@ type MutationResolver interface {
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
 	SynchProfile(ctx context.Context, walletAddress string, email string) (*bool, error)
+	GenReferrer(ctx context.Context, walletAddress string, code string) (string, error)
+	AssociateReferral(ctx context.Context, sender string, referrer string, rr string, s string, v string) (*bool, error)
 }
 type PositionResolver interface {
 	OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error)
@@ -232,6 +239,10 @@ type QueryResolver interface {
 	UserClaims(ctx context.Context, address string, campaignID *string) ([]*types.Claim, error)
 	UserProfile(ctx context.Context, address string) (*types.Profile, error)
 	UserLiquidity(ctx context.Context, address string, tradingAddr *string) (string, error)
+	ReferrersForAddress(ctx context.Context, address string) ([]string, error)
+}
+type SettingsResolver interface {
+	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
 }
 
 type executableSchema struct {
@@ -589,6 +600,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.InvestmentAmounts.USDC(childComplexity), true
 
+	case "Mutation.associateReferral":
+		if e.complexity.Mutation.AssociateReferral == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_associateReferral_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AssociateReferral(childComplexity, args["sender"].(string), args["referrer"].(string), args["rr"].(string), args["s"].(string), args["v"].(string)), true
+
 	case "Mutation.explainCampaign":
 		if e.complexity.Mutation.ExplainCampaign == nil {
 			break
@@ -600,6 +623,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(*string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string), args["isFake"].(*bool)), true
+
+	case "Mutation.genReferrer":
+		if e.complexity.Mutation.GenReferrer == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_genReferrer_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.GenReferrer(childComplexity, args["walletAddress"].(string), args["code"].(string)), true
 
 	case "Mutation.revealCommitment":
 		if e.complexity.Mutation.RevealCommitment == nil {
@@ -750,6 +785,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.PositionsHistory(childComplexity, args["address"].(string), args["outcomeIds"].([]string)), true
 
+	case "Query.referrersForAddress":
+		if e.complexity.Query.ReferrersForAddress == nil {
+			break
+		}
+
+		args, err := ec.field_Query_referrersForAddress_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ReferrersForAddress(childComplexity, args["address"].(string)), true
+
 	case "Query.suggestedHeadlines":
 		if e.complexity.Query.SuggestedHeadlines == nil {
 			break
@@ -835,6 +882,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Settings.Notification(childComplexity), true
+
+	case "Settings.refererr":
+		if e.complexity.Settings.Refererr == nil {
+			break
+		}
+
+		return e.complexity.Settings.Refererr(childComplexity), true
 
 	case "Share.address":
 		if e.complexity.Share.Address == nil {
@@ -975,6 +1029,57 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) field_Mutation_associateReferral_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["sender"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sender"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["sender"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["referrer"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("referrer"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["referrer"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["rr"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rr"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["rr"] = arg2
+	var arg3 string
+	if tmp, ok := rawArgs["s"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
+		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["s"] = arg3
+	var arg4 string
+	if tmp, ok := rawArgs["v"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
+		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["v"] = arg4
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1113,6 +1218,30 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 		}
 	}
 	args["isFake"] = arg14
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_genReferrer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["walletAddress"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("walletAddress"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["walletAddress"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["code"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["code"] = arg1
 	return args, nil
 }
 
@@ -1362,6 +1491,21 @@ func (ec *executionContext) field_Query_positionsHistory_args(ctx context.Contex
 		}
 	}
 	args["outcomeIds"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_referrersForAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["address"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["address"] = arg0
 	return args, nil
 }
 
@@ -3900,6 +4044,113 @@ func (ec *executionContext) fieldContext_Mutation_synchProfile(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_genReferrer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_genReferrer(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().GenReferrer(rctx, fc.Args["walletAddress"].(string), fc.Args["code"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_genReferrer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_genReferrer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_associateReferral(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_associateReferral(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AssociateReferral(rctx, fc.Args["sender"].(string), fc.Args["referrer"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_associateReferral(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_associateReferral_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Outcome_name(ctx context.Context, field graphql.CollectedField, obj *types.Outcome) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Outcome_name(ctx, field)
 	if err != nil {
@@ -4376,6 +4627,8 @@ func (ec *executionContext) fieldContext_Profile_settings(_ context.Context, fie
 			switch field.Name {
 			case "notification":
 				return ec.fieldContext_Settings_notification(ctx, field)
+			case "refererr":
+				return ec.fieldContext_Settings_refererr(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Settings", field.Name)
 		},
@@ -5150,6 +5403,61 @@ func (ec *executionContext) fieldContext_Query_userLiquidity(ctx context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_referrersForAddress(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_referrersForAddress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ReferrersForAddress(rctx, fc.Args["address"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_referrersForAddress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_referrersForAddress_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -5315,6 +5623,47 @@ func (ec *executionContext) fieldContext_Settings_notification(_ context.Context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Settings_refererr(ctx context.Context, field graphql.CollectedField, obj *types.Settings) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Settings_refererr(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Settings().Refererr(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Settings_refererr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Settings",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -8550,6 +8899,17 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_synchProfile(ctx, field)
 			})
+		case "genReferrer":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_genReferrer(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "associateReferral":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_associateReferral(ctx, field)
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9033,6 +9393,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "referrersForAddress":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_referrersForAddress(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -9077,6 +9459,39 @@ func (ec *executionContext) _Settings(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = graphql.MarshalString("Settings")
 		case "notification":
 			out.Values[i] = ec._Settings_notification(ctx, field, obj)
+		case "refererr":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Settings_refererr(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

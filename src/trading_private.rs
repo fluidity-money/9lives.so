@@ -209,10 +209,10 @@ impl StorageTrading {
                 .checked_add(fee_for_lp)
                 .ok_or(Error::CheckedAddOverflow)?,
         );
+        // If the referrer isn't set, then we send it to the DAO.
         {
-            // If the referrer was not provided, we send it to the protocol.
             let dao_fees = fee_for_protocol
-                + if !referrer.is_zero() {
+                + if referrer.is_zero() {
                     fee_for_referrer
                 } else {
                     U256::ZERO
@@ -224,8 +224,12 @@ impl StorageTrading {
                     .ok_or(Error::CheckedAddOverflow)?,
             );
         }
-        if !fee_for_referrer.is_zero() {
+        if !referrer.is_zero() && fee_for_referrer > U256::ZERO {
             let fees_so_far = self.fees_owed_addresses.get(referrer);
+            evm::log(events::ReferrerEarnedFees {
+                referrer,
+                fees: fee_for_referrer,
+            });
             self.fees_owed_addresses.setter(referrer).set(
                 fees_so_far
                     .checked_add(fee_for_referrer)

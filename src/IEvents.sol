@@ -90,6 +90,11 @@ interface IEvents {
         uint256 indexed amount
     );
 
+    event ReferrerEarnedFees(
+        address indexed referrer,
+        uint256 indexed fees
+    );
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

@@ -38,3 +38,6 @@ models:
   Changelog:
     model:
       - github.com/fluidity-money/9lives.so/lib/types/changelog.Changelog
+  Referrer:
+    model:
+      - github.com/fluidity-money/9lives.so/lib/types/referrer.Referrer
