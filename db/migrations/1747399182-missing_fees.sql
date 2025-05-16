@@ -1,6 +1,6 @@
 -- migrate:up
 
-CREATE ninelives_events_address_fees_claimed(
+CREATE TABLE ninelives_events_address_fees_claimed(
 	id SERIAL PRIMARY KEY,
 	created_by TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	block_hash HASH NOT NULL,
@@ -12,7 +12,7 @@ CREATE ninelives_events_address_fees_claimed(
 	amount HUGEINT NOT NULL
 );
 
-CREATE ninelives_referrer_earned_fees(
+CREATE TABLE ninelives_referrer_earned_fees(
 	id SERIAL PRIMARY KEY,
 	created_by TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	block_hash HASH NOT NULL,
