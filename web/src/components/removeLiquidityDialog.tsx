@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import Button from "./themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { Account } from "thirdweb/wallets";
@@ -28,6 +28,7 @@ export default function RemoveLiquidityDialog({
   liquidity: string;
 }) {
   const account = useActiveAccount();
+  const sliderRef = useRef<HTMLInputElement>(null);
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
   const maxLiquidity = Number(formatFusdc(+liquidity, 6));
@@ -40,12 +41,13 @@ export default function RemoveLiquidityDialog({
   type FormData = z.infer<typeof formSchema>;
   const {
     register,
+    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      liquidity: maxLiquidity,
+      liquidity: 0,
     },
   });
   const { remove } = useLiquidity({
@@ -79,10 +81,33 @@ export default function RemoveLiquidityDialog({
         You can remove your liquidity shares and earn provider rewards.
       </p>
       <p className="text-center font-chicago text-xl">{`${maxLiquidity} Shares`}</p>
+      <div className="flex items-center justify-between">
+        <span className="font-geneva text-xs text-9black">0%</span>
+        <span className="font-geneva text-xs text-9black">100%</span>
+      </div>
+      <Input
+        type="range"
+        ref={sliderRef}
+        onChange={(e) => {
+          setValue("liquidity", (+e.target.value / 100) * +maxLiquidity);
+        }}
+        defaultValue={0}
+        min={0}
+        max={100}
+        step={0.1}
+        className={"w-full"}
+      />
       <Field className={fieldClass}>
         <div className="flex gap-2.5">
           <Input
-            {...register("liquidity")}
+            {...register("liquidity", {
+              onChange: () => {
+                const slider = sliderRef.current;
+                if (slider) {
+                  slider.value = "0";
+                }
+              },
+            })}
             type="number"
             min={0}
             className={combineClass(
