@@ -58,6 +58,11 @@ type Query {
   more, so we'll return more here, and let the frontend decide. Returns the codes.
   """
   referrersForAddress(address: String!): [String!]!
+
+  """
+  Leaderboards for this week.
+  """
+  leaderboards: LeaderboardWeekly!
 }
 
 type Settings {
@@ -472,6 +477,31 @@ type Campaign {
   Campaigns can be tagged with multiple categories
   """
   categories: [String!]!
+}
+
+"""
+Leaderboard position that's sent via the UI.
+"""
+type LeaderboardPosition {
+  """
+  Address of the position participant.
+  """
+  address: String!
+
+  """
+  Accumulated volume that the user has created, rounded down in USDC.
+  """
+  volume: String!
+}
+
+"""
+Weekly leaderboard display that's sent via the leaderboard endpoint.
+"""
+type LeaderboardWeekly {
+  """
+  Top referrers. Only the top 25.
+  """
+  referrers: [LeaderboardPosition!]!
 }
 
 type InvestmentAmounts {

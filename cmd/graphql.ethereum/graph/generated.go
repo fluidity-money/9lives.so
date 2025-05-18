@@ -118,6 +118,15 @@ type ComplexityRoot struct {
 		USDC  func(childComplexity int) int
 	}
 
+	LeaderboardPosition struct {
+		Address func(childComplexity int) int
+		Volume  func(childComplexity int) int
+	}
+
+	LeaderboardWeekly struct {
+		Referrers func(childComplexity int) int
+	}
+
 	Mutation struct {
 		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v string) int
 		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
@@ -150,6 +159,7 @@ type ComplexityRoot struct {
 		CampaignByID              func(childComplexity int, id string) int
 		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) int
 		Changelog                 func(childComplexity int) int
+		Leaderboards              func(childComplexity int) int
 		PositionsHistory          func(childComplexity int, address string, outcomeIds []string) int
 		ReferrersForAddress       func(childComplexity int, address string) int
 		SuggestedHeadlines        func(childComplexity int) int
@@ -241,6 +251,7 @@ type QueryResolver interface {
 	UserProfile(ctx context.Context, address string) (*types.Profile, error)
 	UserLiquidity(ctx context.Context, address string, tradingAddr *string) (string, error)
 	ReferrersForAddress(ctx context.Context, address string) ([]string, error)
+	Leaderboards(ctx context.Context) (*model.LeaderboardWeekly, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -602,6 +613,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.InvestmentAmounts.USDC(childComplexity), true
 
+	case "LeaderboardPosition.address":
+		if e.complexity.LeaderboardPosition.Address == nil {
+			break
+		}
+
+		return e.complexity.LeaderboardPosition.Address(childComplexity), true
+
+	case "LeaderboardPosition.volume":
+		if e.complexity.LeaderboardPosition.Volume == nil {
+			break
+		}
+
+		return e.complexity.LeaderboardPosition.Volume(childComplexity), true
+
+	case "LeaderboardWeekly.referrers":
+		if e.complexity.LeaderboardWeekly.Referrers == nil {
+			break
+		}
+
+		return e.complexity.LeaderboardWeekly.Referrers(childComplexity), true
+
 	case "Mutation.associateReferral":
 		if e.complexity.Mutation.AssociateReferral == nil {
 			break
@@ -774,6 +806,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Changelog(childComplexity), true
+
+	case "Query.leaderboards":
+		if e.complexity.Query.Leaderboards == nil {
+			break
+		}
+
+		return e.complexity.Query.Leaderboards(childComplexity), true
 
 	case "Query.positionsHistory":
 		if e.complexity.Query.PositionsHistory == nil {
@@ -3845,6 +3884,144 @@ func (ec *executionContext) fieldContext_InvestmentAmounts_share(_ context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _LeaderboardPosition_address(ctx context.Context, field graphql.CollectedField, obj *model.LeaderboardPosition) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeaderboardPosition_address(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeaderboardPosition_address(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeaderboardPosition",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LeaderboardPosition_volume(ctx context.Context, field graphql.CollectedField, obj *model.LeaderboardPosition) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeaderboardPosition_volume(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Volume, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeaderboardPosition_volume(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeaderboardPosition",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LeaderboardWeekly_referrers(ctx context.Context, field graphql.CollectedField, obj *model.LeaderboardWeekly) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeaderboardWeekly_referrers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Referrers, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.LeaderboardPosition)
+	fc.Result = res
+	return ec.marshalNLeaderboardPosition2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐLeaderboardPositionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeaderboardWeekly_referrers(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeaderboardWeekly",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "address":
+				return ec.fieldContext_LeaderboardPosition_address(ctx, field)
+			case "volume":
+				return ec.fieldContext_LeaderboardPosition_volume(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LeaderboardPosition", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_explainCampaign(ctx, field)
 	if err != nil {
@@ -5465,6 +5642,54 @@ func (ec *executionContext) fieldContext_Query_referrersForAddress(ctx context.C
 	if fc.Args, err = ec.field_Query_referrersForAddress_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_leaderboards(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_leaderboards(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Leaderboards(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.LeaderboardWeekly)
+	fc.Result = res
+	return ec.marshalNLeaderboardWeekly2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐLeaderboardWeekly(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_leaderboards(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "referrers":
+				return ec.fieldContext_LeaderboardWeekly_referrers(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LeaderboardWeekly", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -8916,6 +9141,89 @@ func (ec *executionContext) _InvestmentAmounts(ctx context.Context, sel ast.Sele
 	return out
 }
 
+var leaderboardPositionImplementors = []string{"LeaderboardPosition"}
+
+func (ec *executionContext) _LeaderboardPosition(ctx context.Context, sel ast.SelectionSet, obj *model.LeaderboardPosition) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, leaderboardPositionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LeaderboardPosition")
+		case "address":
+			out.Values[i] = ec._LeaderboardPosition_address(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "volume":
+			out.Values[i] = ec._LeaderboardPosition_volume(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var leaderboardWeeklyImplementors = []string{"LeaderboardWeekly"}
+
+func (ec *executionContext) _LeaderboardWeekly(ctx context.Context, sel ast.SelectionSet, obj *model.LeaderboardWeekly) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, leaderboardWeeklyImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LeaderboardWeekly")
+		case "referrers":
+			out.Values[i] = ec._LeaderboardWeekly_referrers(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -9455,6 +9763,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_referrersForAddress(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "leaderboards":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_leaderboards(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -10321,6 +10651,68 @@ func (ec *executionContext) marshalNInvestmentAmounts2ᚕᚖgithubᚗcomᚋfluid
 	wg.Wait()
 
 	return ret
+}
+
+func (ec *executionContext) marshalNLeaderboardPosition2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐLeaderboardPosition(ctx context.Context, sel ast.SelectionSet, v model.LeaderboardPosition) graphql.Marshaler {
+	return ec._LeaderboardPosition(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLeaderboardPosition2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐLeaderboardPositionᚄ(ctx context.Context, sel ast.SelectionSet, v []model.LeaderboardPosition) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNLeaderboardPosition2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐLeaderboardPosition(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNLeaderboardWeekly2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐLeaderboardWeekly(ctx context.Context, sel ast.SelectionSet, v model.LeaderboardWeekly) graphql.Marshaler {
+	return ec._LeaderboardWeekly(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLeaderboardWeekly2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐLeaderboardWeekly(ctx context.Context, sel ast.SelectionSet, v *model.LeaderboardWeekly) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._LeaderboardWeekly(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNModification2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐModification(ctx context.Context, v interface{}) (model.Modification, error) {

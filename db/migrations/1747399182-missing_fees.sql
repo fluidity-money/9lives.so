@@ -21,7 +21,8 @@ CREATE TABLE ninelives_referrer_earned_fees(
 	emitter_addr ADDRESS NOT NULL,
 
 	recipient ADDRESS NOT NULL,
-	fees HUGEINT NOT NULL
+	fees HUGEINT NOT NULL,
+	volume HUGEINT NOT NULL
 );
 
 -- migrate:down

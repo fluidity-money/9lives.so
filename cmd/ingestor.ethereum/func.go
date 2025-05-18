@@ -392,7 +392,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		logEvent("AddressFeesClaimed")
 		fromTrading = true
 	case events.TopicReferrerEarnedFees:
-		a, err = events.UnpackReferrerEarnedFees(topic1, topic2)
+		a, err = events.UnpackReferrerEarnedFees(topic1, topic2, topic3)
 		table = "ninelives_referrer_earned_fees"
 		logEvent("ReferrerEarnedFees")
 		fromTrading = true

@@ -3,5 +3,6 @@
 	"display quick actions": false,
 	"ingestor should track trading first": false,
 	"ai for categories": true,
-	"admin features are enabled": true
+	"admin features are enabled": true,
+	"referrer needs to verify": false
 }

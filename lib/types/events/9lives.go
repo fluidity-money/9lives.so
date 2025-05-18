@@ -245,5 +245,6 @@ type (
 
 		Recipient Address `json:"recipient"`
 		Fees      Number  `json:"fees"`
+		Volume    Number  `json:"volume"`
 	}
 )

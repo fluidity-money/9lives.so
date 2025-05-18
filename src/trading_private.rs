@@ -229,6 +229,7 @@ impl StorageTrading {
             evm::log(events::ReferrerEarnedFees {
                 referrer,
                 fees: fee_for_referrer,
+                volume: value,
             });
             self.fees_owed_addresses.setter(referrer).set(
                 fees_so_far

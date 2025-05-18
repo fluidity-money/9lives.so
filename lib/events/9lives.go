@@ -368,10 +368,11 @@ func UnpackAddressFeesClaimed(topic0, topic1 ethCommon.Hash) (*events.EventAddre
 	}, nil
 }
 
-func UnpackReferrerEarnedFees(topic0, topic1 ethCommon.Hash) (*events.EventReferrerEarnedFees, error) {
+func UnpackReferrerEarnedFees(topic0, topic1, topic3 ethCommon.Hash) (*events.EventReferrerEarnedFees, error) {
 	return &events.EventReferrerEarnedFees{
 		Recipient: hashToAddr(topic0),
 		Fees:      hashToNumber(topic1),
+		Volume: hashToNumber(topic3),
 	}, nil
 }
 

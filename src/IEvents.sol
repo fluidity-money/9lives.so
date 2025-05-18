@@ -92,7 +92,8 @@ interface IEvents {
 
     event ReferrerEarnedFees(
         address indexed referrer,
-        uint256 indexed fees
+        uint256 indexed fees,
+        uint256 indexed volume
     );
 
     /* INFRASTRUCTURE MARKET */

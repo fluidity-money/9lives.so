@@ -8,6 +8,20 @@ import (
 	"strconv"
 )
 
+// Leaderboard position that's sent via the UI.
+type LeaderboardPosition struct {
+	// Address of the position participant.
+	Address string `json:"address"`
+	// Accumulated volume that the user has created, rounded down in USDC.
+	Volume string `json:"volume"`
+}
+
+// Weekly leaderboard display that's sent via the leaderboard endpoint.
+type LeaderboardWeekly struct {
+	// Top referrers. Only the top 25.
+	Referrers []LeaderboardPosition `json:"referrers"`
+}
+
 type Mutation struct {
 }
 

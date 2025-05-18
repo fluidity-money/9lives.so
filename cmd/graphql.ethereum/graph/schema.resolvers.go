@@ -671,6 +671,9 @@ func (r *mutationResolver) GenReferrer(ctx context.Context, walletAddress string
 
 // AssociateReferral is the resolver for the associateReferral field.
 func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v string) (*bool, error) {
+	if r.F.Is(features.FeatureReferrerNeedsToVerify) {
+		panic("unimplemented")
+	}
 	if !ethCommon.IsHexAddress(sender) {
 		return nil, fmt.Errorf("bad referrer associate")
 	}
@@ -1106,6 +1109,28 @@ func (r *queryResolver) ReferrersForAddress(ctx context.Context, address string)
 		xs[i] = codes[i].Code
 	}
 	return xs, nil
+}
+
+// Leaderboards is the resolver for the leaderboards field.
+func (r *queryResolver) Leaderboards(ctx context.Context) (*model.LeaderboardWeekly, error) {
+	var referrerLeaderboard []model.LeaderboardPosition
+	oneWeekAgo := time.Now().AddDate(0, 0, -7)
+	err := r.DB.Table("ninelives_referrer_earned_fees").
+		Select("recipient as address, SUM(volume) as volume").
+		Where("created_by >= ?", oneWeekAgo).
+		Group("recipient").
+		Order("volume DESC").
+		Limit(10).
+		Scan(&referrerLeaderboard).
+		Error
+	if err != nil {
+		slog.Error("Failed to get referrer leaderboard",
+			"error", err,
+		)
+		return nil, fmt.Errorf("failed to get leaderboard")
+	}
+	l := model.LeaderboardWeekly{referrerLeaderboard}
+	return &l, nil
 }
 
 // Refererr is the resolver for the refererr field.

@@ -11,4 +11,6 @@ const (
 	FeatureUseAIForCategories = "ai for categories"
 	// FeatureAdminFeaturesEnabled should be enabled if the admin features can be used with a secret.
 	FeatureAdminFeaturesEnabled = "admin features are enabled"
+	// FeatureReferrerNeedsToVerify using a signature
+	FeatureReferrerNeedsToVerify = "referrer needs to verify"
 )
