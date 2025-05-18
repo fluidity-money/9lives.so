@@ -20,6 +20,8 @@ type LeaderboardPosition struct {
 type LeaderboardWeekly struct {
 	// Top referrers. Only the top 25.
 	Referrers []LeaderboardPosition `json:"referrers"`
+	// Top volume. Only the top 10.
+	Volume []LeaderboardPosition `json:"volume"`
 }
 
 type Mutation struct {

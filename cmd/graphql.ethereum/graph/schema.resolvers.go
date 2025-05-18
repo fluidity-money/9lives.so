@@ -1113,14 +1113,17 @@ func (r *queryResolver) ReferrersForAddress(ctx context.Context, address string)
 
 // Leaderboards is the resolver for the leaderboards field.
 func (r *queryResolver) Leaderboards(ctx context.Context) (*model.LeaderboardWeekly, error) {
-	var referrerLeaderboard []model.LeaderboardPosition
+	var (
+		referrerLeaderboard []model.LeaderboardPosition
+		volumeLeaderboard   []model.LeaderboardPosition
+	)
 	oneWeekAgo := time.Now().AddDate(0, 0, -7)
 	err := r.DB.Table("ninelives_referrer_earned_fees").
 		Select("recipient as address, SUM(volume) as volume").
 		Where("created_by >= ?", oneWeekAgo).
 		Group("recipient").
 		Order("volume DESC").
-		Limit(10).
+		Limit(25).
 		Scan(&referrerLeaderboard).
 		Error
 	if err != nil {
@@ -1129,7 +1132,20 @@ func (r *queryResolver) Leaderboards(ctx context.Context) (*model.LeaderboardWee
 		)
 		return nil, fmt.Errorf("failed to get leaderboard")
 	}
-	l := model.LeaderboardWeekly{referrerLeaderboard}
+	err = r.DB.Table("ninelives_buys_and_sells_1").
+		Select("spender as address, SUM(from_amount) as volume").
+		Where("created_by >= ? AND from_symbol = 'fUSDC'", oneWeekAgo).
+		Group("address").
+		Order("volume DESC").
+		Limit(25).
+		Scan(&volumeLeaderboard).Error
+	if err != nil {
+		slog.Error("Failed to get referrer leaderboard",
+			"error", err,
+		)
+		return nil, fmt.Errorf("failed to get leaderboard")
+	}
+	l := model.LeaderboardWeekly{referrerLeaderboard, volumeLeaderboard}
 	return &l, nil
 }
 

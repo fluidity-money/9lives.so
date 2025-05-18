@@ -502,6 +502,11 @@ type LeaderboardWeekly {
   Top referrers. Only the top 25.
   """
   referrers: [LeaderboardPosition!]!
+
+  """
+  Top volume. Only the top 25.
+  """
+  volume: [LeaderboardPosition!]!
 }
 
 type InvestmentAmounts {
