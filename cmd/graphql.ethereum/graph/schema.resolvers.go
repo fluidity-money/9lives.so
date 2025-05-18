@@ -1116,6 +1116,7 @@ func (r *queryResolver) Leaderboards(ctx context.Context) (*model.LeaderboardWee
 	var (
 		referrerLeaderboard []model.LeaderboardPosition
 		volumeLeaderboard   []model.LeaderboardPosition
+		creatorLeaderboard  []model.LeaderboardPosition
 	)
 	oneWeekAgo := time.Now().AddDate(0, 0, -7)
 	err := r.DB.Table("ninelives_referrer_earned_fees").
@@ -1138,14 +1139,33 @@ func (r *queryResolver) Leaderboards(ctx context.Context) (*model.LeaderboardWee
 		Group("address").
 		Order("volume DESC").
 		Limit(25).
-		Scan(&volumeLeaderboard).Error
+		Scan(&volumeLeaderboard).
+		Error
 	if err != nil {
-		slog.Error("Failed to get referrer leaderboard",
+		slog.Error("Failed to get volume leaderboard",
 			"error", err,
 		)
 		return nil, fmt.Errorf("failed to get leaderboard")
 	}
-	l := model.LeaderboardWeekly{referrerLeaderboard, volumeLeaderboard}
+	err = r.DB.Table("ninelives_campaigns_1").
+		Select("content->'creator'->>'address' as address, SUM(total_volume) as volume").
+		Where("created_at >= ? AND content->'creator'->>'address' IS NOT NULL", oneWeekAgo).
+		Group("content->'creator'->>'address'").
+		Order("SUM(total_volume) DESC").
+		Limit(10).
+		Scan(&creatorLeaderboard).
+		Error
+	if err != nil {
+		slog.Error("Failed to get creator leaderboard",
+			"error", err,
+		)
+		return nil, fmt.Errorf("failed to get leaderboard")
+	}
+	l := model.LeaderboardWeekly{
+		Referrers: referrerLeaderboard,
+		Volume:    volumeLeaderboard,
+		Creators:  creatorLeaderboard,
+	}
 	return &l, nil
 }
 

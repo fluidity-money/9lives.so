@@ -507,6 +507,11 @@ type LeaderboardWeekly {
   Top volume. Only the top 25.
   """
   volume: [LeaderboardPosition!]!
+
+  """
+  Top campaign creators by volume. Only the top 25.
+  """
+  creators: [LeaderboardPosition!]!
 }
 
 type InvestmentAmounts {

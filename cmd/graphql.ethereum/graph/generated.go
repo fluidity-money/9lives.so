@@ -124,6 +124,7 @@ type ComplexityRoot struct {
 	}
 
 	LeaderboardWeekly struct {
+		Creators  func(childComplexity int) int
 		Referrers func(childComplexity int) int
 		Volume    func(childComplexity int) int
 	}
@@ -627,6 +628,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.LeaderboardPosition.Volume(childComplexity), true
+
+	case "LeaderboardWeekly.creators":
+		if e.complexity.LeaderboardWeekly.Creators == nil {
+			break
+		}
+
+		return e.complexity.LeaderboardWeekly.Creators(childComplexity), true
 
 	case "LeaderboardWeekly.referrers":
 		if e.complexity.LeaderboardWeekly.Referrers == nil {
@@ -4080,6 +4088,56 @@ func (ec *executionContext) fieldContext_LeaderboardWeekly_volume(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _LeaderboardWeekly_creators(ctx context.Context, field graphql.CollectedField, obj *model.LeaderboardWeekly) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeaderboardWeekly_creators(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Creators, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.LeaderboardPosition)
+	fc.Result = res
+	return ec.marshalNLeaderboardPosition2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐLeaderboardPositionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeaderboardWeekly_creators(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeaderboardWeekly",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "address":
+				return ec.fieldContext_LeaderboardPosition_address(ctx, field)
+			case "volume":
+				return ec.fieldContext_LeaderboardPosition_volume(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LeaderboardPosition", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_explainCampaign(ctx, field)
 	if err != nil {
@@ -5747,6 +5805,8 @@ func (ec *executionContext) fieldContext_Query_leaderboards(_ context.Context, f
 				return ec.fieldContext_LeaderboardWeekly_referrers(ctx, field)
 			case "volume":
 				return ec.fieldContext_LeaderboardWeekly_volume(ctx, field)
+			case "creators":
+				return ec.fieldContext_LeaderboardWeekly_creators(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type LeaderboardWeekly", field.Name)
 		},
@@ -9263,6 +9323,11 @@ func (ec *executionContext) _LeaderboardWeekly(ctx context.Context, sel ast.Sele
 			}
 		case "volume":
 			out.Values[i] = ec._LeaderboardWeekly_volume(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "creators":
+			out.Values[i] = ec._LeaderboardWeekly_creators(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
