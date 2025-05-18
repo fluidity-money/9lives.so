@@ -17,6 +17,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+
+	ethCommon "github.com/ethereum/go-ethereum/common"
 )
 
 // MaxImageSizeEncoded is 2 megabytes
@@ -84,4 +86,10 @@ func uploadTradingPicMaybePrecommit(ctx context.Context, uploadBucketName, pictu
 		return "", fmt.Errorf("error joining path: %v", err)
 	}
 	return concatPicUrl, nil
+}
+
+// validateReferralSig, returning the signer of the blob given. Currently
+// simply returns the sender.
+func validateReferralSig(sender, referrer ethCommon.Address, rr, s, v []byte) (ethCommon.Address, error) {
+	return sender, nil
 }

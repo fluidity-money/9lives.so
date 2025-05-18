@@ -6,6 +6,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
 	"github.com/fluidity-money/9lives.so/lib/features"
@@ -60,6 +61,8 @@ const (
 // ChangelogLen to send to the user at max on request for the changelog endpoint.
 const ChangelogLen = 10
 
+const XForwardedFor = "X-Forwarded-For"
+
 type corsMiddleware struct {
 	srv *handler.Server
 }
@@ -67,7 +70,17 @@ type corsMiddleware struct {
 func (m corsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
-	ctx := context.WithValue(r.Context(), "admin secret", r.Header.Get("Authorization"))
+	ctx := context.WithValue(
+		r.Context(),
+		"admin secret",
+		r.Header.Get("Authorization"),
+	)
+	ipAddrs := strings.Split(r.Header.Get("X-Forwarded-For"), ",")
+	var ipAddr string
+	if len(ipAddrs) > 0 {
+		ipAddr = ipAddrs[0]
+	}
+	ctx = context.WithValue(r.Context(), "ip addr", ipAddr)
 	m.srv.ServeHTTP(w, r.WithContext(ctx))
 }
 

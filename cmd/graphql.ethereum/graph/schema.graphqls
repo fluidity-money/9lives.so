@@ -53,25 +53,18 @@ type Query {
   """
   userLiquidity(address:String!, tradingAddr: String): String!
 
-
-
   """
   Though the user should only ever create a referrer once, we should assume there might be
-  more, so we'll return more here, and let the frontend decide.
+  more, so we'll return more here, and let the frontend decide. Returns the codes.
   """
   referrersForAddress(address: String!): [String!]!
-
 }
+
 type Settings {
   """
   Multiple settings can be added here
   """
   notification: Boolean
-}
-type Profile {
-  walletAddress: String!
-
-  email: String!
 
   """
   Did the user click a referrer link that we should hint to the browser?
@@ -82,6 +75,12 @@ type Profile {
   The result of the referrer code to address, if there is one.
   """
   referrerAddress: String
+}
+
+type Profile {
+  walletAddress: String!
+
+  email: String!
 
   settings: Settings
 }
@@ -338,9 +337,9 @@ type Mutation {
     sender: String!,
 
     """
-    The referrer string to use here.
+    The code the referrer generated here.
     """
-    referrer: String!
+    code: String!
 
     """
     The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x

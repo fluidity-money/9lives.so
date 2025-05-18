@@ -1,9 +1,7 @@
 package referrer
 
-import "github.com/fluidity-money/9lives.so/lib/types"
-
 type Referrer struct {
-	CreatedAt time.Time     `json:"created_at"`
-	Owner     types.Address `json:"owner"`
-	Code      string        `json:"code"`
+	Owner     string    `json:"owner"`
+	CreatorIp string    `json:"creator_ip"`
+	Code      string    `json:"code"`
 }

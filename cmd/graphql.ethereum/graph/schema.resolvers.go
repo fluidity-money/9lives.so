@@ -24,6 +24,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
 	commitment_reveal "github.com/fluidity-money/9lives.so/lib/types/commitment-reveal"
 	"github.com/fluidity-money/9lives.so/lib/types/events"
+	"github.com/fluidity-money/9lives.so/lib/types/referrer"
 	"gorm.io/gorm"
 )
 
@@ -633,7 +634,9 @@ func (r *mutationResolver) SynchProfile(ctx context.Context, walletAddress strin
 		res = false
 		slog.Error("Error synching profile",
 			"wallet address", walletAddress,
-			"email", email)
+			"email", email,
+			"err", err,
+		)
 		return &res, fmt.Errorf("error synching profile")
 	}
 	res = true
@@ -642,14 +645,109 @@ func (r *mutationResolver) SynchProfile(ctx context.Context, walletAddress strin
 
 // GenReferrer is the resolver for the genReferrer field.
 func (r *mutationResolver) GenReferrer(ctx context.Context, walletAddress string, code string) (string, error) {
-	// See if we can create the word the user asked for, then we
-	// associate it with them, and return it to them.
-	panic("unimplementd")
+	if walletAddress == "" || code == "" {
+		return "", fmt.Errorf("bad referrer or wallet")
+	}
+	if !ethCommon.IsHexAddress(walletAddress) {
+		return "", fmt.Errorf("not wallet address")
+	}
+	ipAddr := ctx.Value("ip addr").(string)
+	err := r.DB.Table("ninelives_referrer_1").Create(&referrer.Referrer{
+		Owner:     walletAddress,
+		CreatorIp: ipAddr,
+		Code:      code,
+	})
+	if err := err.Error; err != nil {
+		slog.Error("Failed to generate a referrer code from a user",
+			"ip addr", ipAddr,
+			"code", code,
+			"owner", walletAddress,
+			"error", err,
+		)
+		return "", fmt.Errorf("failed to generate code")
+	}
+	return code, nil
 }
 
 // AssociateReferral is the resolver for the associateReferral field.
-func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string, referrer string, rr string, s string, v string) (*bool, error) {
-	panic(fmt.Errorf("not implemented: AssociateReferral - associateReferral"))
+func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v string) (*bool, error) {
+	if !ethCommon.IsHexAddress(sender) {
+		return nil, fmt.Errorf("bad referrer associate")
+	}
+	sender = strings.ToLower(sender)
+	senderAddr := ethCommon.HexToAddress(sender)
+	rB, err := hex.DecodeString(rr)
+	if err != nil {
+		return nil, fmt.Errorf("unable to decode string")
+	}
+	sB, err := hex.DecodeString(s)
+	if err != nil {
+		return nil, fmt.Errorf("unable to decode s")
+	}
+	vB, err := hex.DecodeString(v)
+	if err != nil {
+		return nil, fmt.Errorf("unable to decode v")
+	}
+	var referrer string
+	err = r.DB.Raw(
+		"SELECT owner FROM ninelives_referrer_1 WHERE code = ?",
+		code,
+	).
+		Scan(&referrer).Error
+	if err != nil {
+		slog.Error("Failed to find referrer",
+			"code", code,
+			"error", err,
+		)
+		return nil, fmt.Errorf("failed to scan referrer")
+	}
+	if referrer == "" {
+		return nil, fmt.Errorf("referrer is empty")
+	}
+	referrerAddr := ethCommon.HexToAddress(referrer)
+	if senderAddr == referrerAddr {
+		return nil, fmt.Errorf("sender != referrer")
+	}
+	signer, err := validateReferralSig(senderAddr, referrerAddr, rB, sB, vB)
+	if err != nil {
+		slog.Error("Unable to validate referral sig",
+			"error", err,
+			"sender", sender,
+			"r", rr,
+			"s", s,
+			"v", v,
+			"signer", signer,
+		)
+		return nil, fmt.Errorf("unable to validate referral sig")
+	}
+	if signer != senderAddr {
+		slog.Error("Different signer for signature",
+			"signer", signer,
+			"sender", sender,
+		)
+		return nil, fmt.Errorf("different signer for sig")
+	}
+	err = r.DB.Exec(`
+UPDATE ninelives_users_1
+SET settings = jsonb_set(settings, '{referrer}', to_jsonb(?::text), true)
+WHERE wallet_address = ?`,
+		referrer,
+		sender,
+	).
+		Error
+	if err != nil {
+		slog.Error("Failed to update the referrer for a user",
+			"error", err,
+			"referrer", referrer,
+			"sender", sender,
+			"r", rr,
+			"s", s,
+			"v", v,
+		)
+		return nil, fmt.Errorf("update referrer for user")
+	}
+	t := true
+	return &t, nil
 }
 
 // OutcomeIds is the resolver for the outcomeIds field.
@@ -673,16 +771,6 @@ func (r *positionResolver) Content(ctx context.Context, obj *types.Position) (*t
 		UpdatedAt: time.Unix(int64(obj.Content.Starting), 0),
 	}
 	return &campaign, nil
-}
-
-// Refererr is the resolver for the refererr field.
-func (r *profileResolver) Refererr(ctx context.Context, obj *types.Profile) (*string, error) {
-	panic(fmt.Errorf("not implemented: Refererr - refererr"))
-}
-
-// ReferrerAddress is the resolver for the referrerAddress field.
-func (r *profileResolver) ReferrerAddress(ctx context.Context, obj *types.Profile) (*string, error) {
-	panic(fmt.Errorf("not implemented: ReferrerAddress - referrerAddress"))
 }
 
 // Campaigns is the resolver for the campaigns field.
@@ -994,7 +1082,43 @@ func (r *queryResolver) UserLiquidity(ctx context.Context, address string, tradi
 
 // ReferrersForAddress is the resolver for the referrersForAddress field.
 func (r *queryResolver) ReferrersForAddress(ctx context.Context, address string) ([]string, error) {
-	panic(fmt.Errorf("not implemented: ReferrersForAddress - referrersForAddress"))
+	if address == "" {
+		return nil, nil
+	}
+	var codes []struct {
+		Code string
+	}
+	err := r.DB.Table("ninelives_referrer_1").
+		Where("owner = ?", address).
+		Select("code").
+		Limit(10).
+		Scan(&codes).
+		Error
+	if err != nil {
+		slog.Error("Error getting codes for referrer",
+			"error", err,
+			"address", address,
+		)
+		return nil, fmt.Errorf("error getting codes for referrer")
+	}
+	xs := make([]string, len(codes))
+	for i := 0; i < len(xs); i++ {
+		xs[i] = codes[i].Code
+	}
+	return xs, nil
+}
+
+// Refererr is the resolver for the refererr field.
+func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Settings is nil")
+	}
+	return &obj.Referrer, nil
+}
+
+// ReferrerAddress is the resolver for the referrerAddress field.
+func (r *settingsResolver) ReferrerAddress(ctx context.Context, obj *types.Settings) (*string, error) {
+	panic(fmt.Errorf("not implemented: ReferrerAddress - referrerAddress"))
 }
 
 // Activity returns ActivityResolver implementation.
@@ -1015,11 +1139,11 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Position returns PositionResolver implementation.
 func (r *Resolver) Position() PositionResolver { return &positionResolver{r} }
 
-// Profile returns ProfileResolver implementation.
-func (r *Resolver) Profile() ProfileResolver { return &profileResolver{r} }
-
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
+// Settings returns SettingsResolver implementation.
+func (r *Resolver) Settings() SettingsResolver { return &settingsResolver{r} }
 
 type activityResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
@@ -1027,5 +1151,5 @@ type changelogResolver struct{ *Resolver }
 type claimResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type positionResolver struct{ *Resolver }
-type profileResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type settingsResolver struct{ *Resolver }
