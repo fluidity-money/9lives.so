@@ -1133,7 +1133,7 @@ func (r *queryResolver) Leaderboards(ctx context.Context) (*model.LeaderboardWee
 		return nil, fmt.Errorf("failed to get leaderboard")
 	}
 	err = r.DB.Table("ninelives_buys_and_sells_1").
-		Select("spender as address, SUM(from_amount) as volume").
+		Select("recipient as address, SUM(from_amount) as volume").
 		Where("created_by >= ? AND from_symbol = 'fUSDC'", oneWeekAgo).
 		Group("address").
 		Order("volume DESC").
