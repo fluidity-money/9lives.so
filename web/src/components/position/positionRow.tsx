@@ -30,6 +30,7 @@ export default function PositionRow({
     shareAddress: `0x${string}`;
     name: string;
     balance: string;
+    balanceRaw: bigint;
     campaignName: string;
     campaignId: `0x${string}`;
     outcomePic?: string;
@@ -130,7 +131,7 @@ export default function PositionRow({
     if (!account) return connect();
     try {
       setIsClaiming(true);
-      await claim(account, data.balance);
+      await claim(account, data.balanceRaw);
     } finally {
       setIsClaiming(false);
     }

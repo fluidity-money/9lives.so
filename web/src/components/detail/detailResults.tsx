@@ -32,6 +32,9 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
   const winner = data.outcomes.find(
     (item) => item.identifier === data.winner,
   )! as CampaignDetail["outcomes"][number];
+  const accountSharesRaw = positionData?.find(
+    (p) => p.id === data.winner,
+  )?.balanceRaw;
   const accountShares = positionData?.find(
     (p) => p.id === data.winner,
   )?.balance;
@@ -79,7 +82,7 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
     if (!account) return connect();
     try {
       setIsClaiming(true);
-      await claim(account, accountShares);
+      await claim(account, accountSharesRaw);
     } finally {
       setIsClaiming(false);
     }

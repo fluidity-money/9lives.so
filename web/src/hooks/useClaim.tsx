@@ -29,16 +29,12 @@ const useClaim = ({
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);
   const { checkAndAprove } = useAllowanceCheck();
-  const claim = async (account: Account, accountShare?: string) =>
+  const claim = async (account: Account, accountShare?: bigint) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
           if (!accountShare || isNaN(Number(accountShare)))
             throw new Error("Invalid winning shares");
-          const shares = toUnits(
-            accountShare,
-            config.contracts.decimals.shares,
-          );
           const tradingDpmContract = getContract({
             abi: tradingDpmAbi,
             address: tradingAddr,
@@ -54,18 +50,18 @@ const useClaim = ({
           const claimTx = prepareContractCall({
             contract: tradingContract,
             method: "payoffCB6F2565",
-            params: [outcomeId, shares, account.address],
+            params: [outcomeId, accountShare, account.address],
           });
           const claimDpmTx = prepareContractCall({
             contract: tradingDpmContract,
             method: "payoff91FA8C2E",
-            params: [outcomeId, shares, account.address],
+            params: [outcomeId, accountShare, account.address],
           });
           await checkAndAprove({
             contractAddress: shareAddr,
             spenderAddress: tradingAddr,
             account,
-            amount: shares,
+            amount: accountShare,
           });
           const transaction = isDpm ? claimDpmTx : claimTx;
           setContext("claim_tx", {

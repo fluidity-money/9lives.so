@@ -20,7 +20,7 @@ export function useAllowanceCheck() {
     spenderAddress,
     account,
     amount,
-    checkBalance = false,
+    checkBalance = true,
   }: AllowanceCheckProps) => {
     const erc20Contract = getContract({
       address: contractAddress,
@@ -34,11 +34,11 @@ export function useAllowanceCheck() {
         method: "balanceOf",
         params: [account.address],
       });
-      const balance = await simulateTransaction({
+      const balance = (await simulateTransaction({
         transaction: balanceOfTx,
         account: account,
-      });
-      if (amount > balance) {
+      })) as string;
+      if (amount > BigInt(balance)) {
         throw new Error("Insufficient balance");
       }
     }

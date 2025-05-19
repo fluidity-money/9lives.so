@@ -3,12 +3,12 @@ import ERC20Abi from "@/config/abi/erc20";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/formatFusdc";
 import { useQuery } from "@tanstack/react-query";
-import { zeroPadBytes, zeroPadValue } from "ethers";
+// import { zeroPadBytes, zeroPadValue } from "ethers";
 import {
   getContract,
   prepareContractCall,
   simulateTransaction,
-  ZERO_ADDRESS,
+  // ZERO_ADDRESS,
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 async function fetchPositions(
@@ -31,7 +31,7 @@ async function fetchPositions(
   //     ],
   //   }),
   // })) as bigint[];
-  const balances = await Promise.all<bigint>(
+  const balances = await Promise.all<string>(
     outcomes.map((o) =>
       simulateTransaction({
         transaction: prepareContractCall({
@@ -54,7 +54,7 @@ async function fetchPositions(
       shareAddress: outcome.share.address,
       name: outcome.name,
       balance: formatFusdc(Number(balances[idx]), 2),
-      balanceRaw: balances[idx],
+      balanceRaw: BigInt(balances[idx]),
     }))
     .filter((item) => item.balance !== "0.00");
 
