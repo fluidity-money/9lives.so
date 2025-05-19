@@ -65,7 +65,7 @@ const useClaim = ({
             contractAddress: shareAddr,
             spenderAddress: tradingAddr,
             account,
-            amount: MaxUint256,
+            amount: shares,
           });
           const transaction = isDpm ? claimDpmTx : claimTx;
           setContext("claim_tx", {

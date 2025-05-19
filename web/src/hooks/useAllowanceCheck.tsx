@@ -12,6 +12,7 @@ interface AllowanceCheckProps {
   spenderAddress: string;
   account: Account;
   amount: bigint;
+  checkBalance?: boolean;
 }
 export function useAllowanceCheck() {
   const check = async ({
@@ -19,6 +20,7 @@ export function useAllowanceCheck() {
     spenderAddress,
     account,
     amount,
+    checkBalance = true,
   }: AllowanceCheckProps) => {
     const erc20Contract = getContract({
       address: contractAddress,
@@ -26,17 +28,19 @@ export function useAllowanceCheck() {
       client: config.thirdweb.client,
       chain: config.chains.currentChain,
     });
-    const balanceOfTx = prepareContractCall({
-      contract: erc20Contract,
-      method: "balanceOf",
-      params: [account.address],
-    });
-    const balance = await simulateTransaction({
-      transaction: balanceOfTx,
-      account: account,
-    });
-    if (amount > balance) {
-      throw new Error("Insufficient balance");
+    if (checkBalance) {
+      const balanceOfTx = prepareContractCall({
+        contract: erc20Contract,
+        method: "balanceOf",
+        params: [account.address],
+      });
+      const balance = await simulateTransaction({
+        transaction: balanceOfTx,
+        account: account,
+      });
+      if (amount > balance) {
+        throw new Error("Insufficient balance");
+      }
     }
     const allowanceTx = prepareContractCall({
       contract: erc20Contract,
