@@ -59,7 +59,7 @@ export default function CampaignItemOutcomes({
     );
 
   return (
-    <ul className="flex h-20 flex-col gap-1 overflow-y-auto">
+    <ul className="flex h-20 flex-1 flex-col gap-1 overflow-y-auto">
       {outcomes.map((outcome) => (
         <li
           key={outcome.identifier}
