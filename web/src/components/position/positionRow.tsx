@@ -54,6 +54,7 @@ export default function PositionRow({
     outcomeId: data.id,
     tradingAddr,
     outcomes,
+    isDpm,
   });
   const { connect } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
