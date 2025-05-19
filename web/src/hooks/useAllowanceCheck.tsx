@@ -20,7 +20,7 @@ export function useAllowanceCheck() {
     spenderAddress,
     account,
     amount,
-    checkBalance = true,
+    checkBalance = false,
   }: AllowanceCheckProps) => {
     const erc20Contract = getContract({
       address: contractAddress,
