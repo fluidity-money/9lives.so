@@ -4,7 +4,7 @@ import { getCampaignsForSSG } from "@/serverData/getCampaigns";
 import { CampaignDetailDto } from "@/types";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-
+type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
 export const revalidate = 60;
 export async function generateStaticParams() {
@@ -13,7 +13,14 @@ export async function generateStaticParams() {
     id: campaign.identifier,
   }));
 }
-type Params = Promise<{ id: string }>;
+export async function generateMetadata({ params }: { params: Params }) {
+  const { id } = await params;
+  const response = await requestCampaignById(id);
+  return {
+    title: response?.name ?? "Predict on 9LIVES.so",
+    description: response?.description,
+  };
+}
 export default async function DetailPage({ params }: { params: Params }) {
   const { id } = await params;
   const response = await requestCampaignById(id);

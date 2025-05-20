@@ -62,6 +62,8 @@ const config: Config = {
         "9aiButtonEnabled":
           "1px 1px 0px 0px rgba(0, 0, 0, 0.25), -2px -2px 0px 0px rgba(68, 68, 68, 0.20) inset;",
         "9aiButtonDisabled": "2px 2px 0px 0px rgba(68, 68, 68, 0.20) inset;",
+        "9ogBox":
+          "-4px -4px 0px 0px rgba(0, 0, 0, 0.25) inset, 4px 4px 0px 0px rgba(255, 255, 255, 0.90) inset, 2px 2px 0px 0px rgba(12, 12, 12, 0.20)",
       },
       animation: {
         fade: "fade linear 2s;",
