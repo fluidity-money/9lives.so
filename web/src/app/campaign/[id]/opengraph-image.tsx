@@ -199,8 +199,8 @@ export default async function ImageOG({ params }: { params: Params }) {
                 "-4px -4px 0px 0px rgba(0, 0, 0, 0.25) inset, 4px 4px 0px 0px rgba(255, 255, 255, 0.90) inset, 2px 2px 0px 0px rgba(12, 12, 12, 0.20)",
             }}
           >
-            <div style={{ display: "flex", gap: "2.5rem" }}>
-              {!response?.picture || !outcomePic ? null : (
+            <div style={{ display: "flex", gap: "2.5rem", minHeight: 200 }}>
+              {outcomePic || response?.picture ? (
                 <div
                   style={{
                     display: "flex",
@@ -212,13 +212,13 @@ export default async function ImageOG({ params }: { params: Params }) {
                   }}
                 >
                   <img
-                    src={outcomePic || response?.picture}
+                    src={outcomePic || response?.picture || ""}
                     width={200}
                     height={200}
                     alt=""
                   />
                 </div>
-              )}
+              ) : null}
               <div
                 style={{
                   display: "flex",
@@ -276,7 +276,7 @@ export default async function ImageOG({ params }: { params: Params }) {
                 backgroundColor: "#B8F2AA",
                 padding: "1.75rem",
                 boxShadow:
-                  '"-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)',
+                  "-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)",
               }}
             >
               <span
