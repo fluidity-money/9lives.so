@@ -300,3 +300,19 @@ export const requestUserLiquidity = ({
   graph9Lives.query.userLiquidity({
     $: { address, tradingAddr },
   });
+
+export const requestLeaderboardCategories = () =>
+  graph9Lives.query.leaderboards({
+    referrers: {
+      address: true,
+      volume: true,
+    },
+    creators: {
+      address: true,
+      volume: true,
+    },
+    volume: {
+      address: true,
+      volume: true,
+    },
+  });
