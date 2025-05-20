@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 import { requestCampaignById } from "@/providers/graphqlClient";
-import Image from "next/image";
 import LogoPaw from "#/images/logo-paw.svg";
 import LogoText from "#/images/logo-text.svg";
 import LogoDot from "#/images/logo-dot.svg";
@@ -16,10 +15,11 @@ async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
     tradingAbi,
     provider,
   );
+  const priceFn = tradingContract.getFunction("priceA827ED27");
   const res = await Promise.all(
     outcomes.map(async (o) => {
       try {
-        const price = await tradingContract.priceA827ED27(o.identifier);
+        const price = await priceFn.staticCall(o.identifier);
         return { ...o, price: BigInt(price) };
       } catch (err) {
         console.error(`Error fetching price for ${o.name}:`, err);
@@ -42,9 +42,17 @@ type Params = Promise<{ id: string }>;
 export default async function ImageOG({ params }: { params: Params }) {
   const { id } = await params;
   const response = await requestCampaignById(id);
+  const baseUrl = config.metadata.metadataBase;
   if (!response)
     return new ImageResponse(
-      <Image src={LogoPaw} alt="9lives.so" width={1200} height={630} />,
+      (
+        <img
+          src={`${baseUrl}/${LogoText.src}`}
+          alt="9lives.so"
+          width={1200}
+          height={630}
+        />
+      ),
     );
 
   const outcomes = await getPrices(
@@ -53,11 +61,57 @@ export default async function ImageOG({ params }: { params: Params }) {
   );
   const borderList = new Array(6).fill(1);
   const TitleBorders = () => (
-    <div className="relative flex h-8 flex-1 flex-col justify-between gap-0.5 bg-[#DDD] py-0.5">
-      <div className="absolute inset-y-0 left-0 z-[1] w-px bg-[#EEE]" />
-      <div className="absolute inset-y-0 right-0 z-[1] w-px bg-[#EEE]" />
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        height: 32,
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: "space-between",
+        gap: 2,
+        backgroundColor: "#DDD",
+        paddingTop: 2,
+        paddingBottom: 2,
+      }}
+    >
+      {/* Left vertical line */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          left: 0,
+          zIndex: 1,
+          width: 1,
+          backgroundColor: "#EEE",
+        }}
+      />
+      {/* Right vertical line */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          right: 0,
+          zIndex: 1,
+          width: 1,
+          backgroundColor: "#EEE",
+        }}
+      />
+      {/* The list of horizontal bars */}
       {borderList.map((_, index) => (
-        <div key={index} className="relative z-[2] h-1 w-full bg-[#999]" />
+        <div
+          key={index}
+          style={{
+            position: "relative",
+            zIndex: 2,
+            height: 4,
+            width: "100%",
+            backgroundColor: "#999",
+            marginBottom: index === borderList.length - 1 ? 0 : 2,
+          }}
+        />
       ))}
     </div>
   );
@@ -67,63 +121,209 @@ export default async function ImageOG({ params }: { params: Params }) {
   const outcomePic = outcomes[0].picture;
   return new ImageResponse(
     (
-      <div className="flex flex-1 flex-col">
-        <div className="flex gap-2 bg-[#CCC] px-2 py-1">
+      <div style={{ display: "flex", flex: 1, flexDirection: "column" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "0.5rem",
+            backgroundColor: "#CCC",
+            padding: "0.25rem 0.5rem",
+          }}
+        >
           <TitleBorders />
-          <span className="font-chicago text-2xl uppercase">
+          <span
+            style={{
+              fontFamily: '"Chicago", sans-serif',
+              fontSize: "1.5rem",
+              textTransform: "uppercase",
+            }}
+          >
             Predict Outcome
           </span>
           <TitleBorders />
         </div>
-        <div className="flex flex-col gap-5 bg-9blueLight px-10 py-7">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Image src={LogoPaw} alt="9lives.so" height={60} />
-              <Image src={LogoText} alt="9lives.so" height={32} />
-              <Image src={LogoDot} alt="9lives.so" height={32} />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.25rem",
+            backgroundColor: "#DDEAEF",
+            padding: "1.75rem 2.5rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <img
+                src={`${baseUrl}/${LogoPaw.src}`}
+                alt="9lives.so"
+                height={60}
+              />
+              <img
+                src={`${baseUrl}/${LogoText.src}`}
+                alt="9lives.so"
+                height={32}
+              />
+              <img
+                src={`${baseUrl}/${LogoDot.src}`}
+                alt="9lives.so"
+                height={32}
+              />
             </div>
-            <span className="font-chicago text-3xl">PREDICTION MARKET</span>
+            <span
+              style={{
+                fontFamily: '"Chicago", sans-serif',
+                fontSize: "1.875rem",
+              }}
+            >
+              PREDICTION MARKET
+            </span>
           </div>
-          <div className="flex flex-col gap-5 rounded-[3px] border-2 border-9black bg-9layer p-10 shadow-9ogBox">
-            <div className="flex gap-10">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.25rem",
+              borderRadius: 3,
+              borderWidth: 2,
+              borderStyle: "solid",
+              borderColor: "#0C0C0C",
+              backgroundColor: "#F5F5F5",
+              padding: "2.5rem",
+              boxShadow:
+                "-4px -4px 0px 0px rgba(0, 0, 0, 0.25) inset, 4px 4px 0px 0px rgba(255, 255, 255, 0.90) inset, 2px 2px 0px 0px rgba(12, 12, 12, 0.20)",
+            }}
+          >
+            <div style={{ display: "flex", gap: "2.5rem" }}>
               {!response?.picture || !outcomePic ? null : (
-                <div className="flex items-center justify-between border-2 border-9black">
-                  <Image
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    borderWidth: 2,
+                    borderStyle: "solid",
+                    borderColor: "#0C0C0C",
+                  }}
+                >
+                  <img
                     src={outcomePic || response?.picture}
                     width={200}
                     height={200}
-                    alt={""}
+                    alt=""
                   />
                 </div>
               )}
-              <div className="flex flex-1 flex-col justify-between">
-                <p className="font-chicago text-4xl">
+              <div
+                style={{
+                  display: "flex",
+                  flex: 1,
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: '"Chicago", sans-serif',
+                    fontSize: "2.25rem",
+                  }}
+                >
                   {response?.name ?? "Predict on 9LIVES.so"}
                 </p>
-                <div className="flex items-center justify-between">
-                  <span className="bg-[#FFFD9B] px-2 py-1 font-chicago text-3xl">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#FFFD9B",
+                      padding: "0.25rem 0.5rem",
+                      fontFamily: '"Chicago", sans-serif',
+                      fontSize: "1.875rem",
+                    }}
+                  >
                     {chance}% CHANCE
                   </span>
-                  <span className="font-chicago text-3xl">
+                  <span
+                    style={{
+                      fontFamily: '"Chicago", sans-serif',
+                      fontSize: "1.875rem",
+                    }}
+                  >
                     END: {new Date(response.ending * 1000).toDateString()}
                   </span>
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-3 rounded-[3px] border border-9black bg-9green p-7 shadow-9btnPrimaryIdle">
-              <span className="text-uppercase font-geneva text-3xl">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.75rem",
+                borderRadius: 3,
+                borderWidth: 1,
+                borderStyle: "solid",
+                borderColor: "#0C0C0C",
+                backgroundColor: "#B8F2AA",
+                padding: "1.75rem",
+                boxShadow:
+                  '"-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)',
+              }}
+            >
+              <span
+                style={{
+                  textTransform: "uppercase",
+                  fontFamily: "Geneva, sans-serif",
+                  fontSize: "1.875rem",
+                }}
+              >
                 {outcomeName}
               </span>
-              <span className="text-uppercase bg-white/30 p-1 font-geneva text-3xl">
+              <span
+                style={{
+                  textTransform: "uppercase",
+                  backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  padding: "0.25rem 0.25rem",
+                  fontFamily: "Geneva, sans-serif",
+                  fontSize: "1.875rem",
+                }}
+              >
                 ${price}
               </span>
             </div>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-md font-geneva uppercase">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "1rem",
+                fontFamily: "Geneva, sans-serif",
+                textTransform: "uppercase",
+              }}
+            >
               Predict on 9lives.so
             </span>
-            <span className="text-md font-geneva uppercase">
+            <span
+              style={{
+                fontSize: "1rem",
+                fontFamily: "Geneva, sans-serif",
+                textTransform: "uppercase",
+              }}
+            >
               Predict on 9lives.so
             </span>
           </div>
