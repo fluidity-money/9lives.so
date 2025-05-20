@@ -117,6 +117,8 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 const Settings: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     notification: {},
+    refererr: {},
+    referrerAddress: {},
   },
 };
 
@@ -181,6 +183,27 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     },
     banners: {},
     categories: {},
+  },
+};
+
+const LeaderboardPosition: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    address: {},
+    volume: {},
+  },
+};
+
+const LeaderboardWeekly: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    referrers: {
+      // nt: LeaderboardPosition, <-- Assigned later to avoid potential circular dependency.
+    },
+    volume: {
+      // nt: LeaderboardPosition, <-- Assigned later to avoid potential circular dependency.
+    },
+    creators: {
+      // nt: LeaderboardPosition, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -425,6 +448,17 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    referrersForAddress: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
+    leaderboards: {
+      // nt: LeaderboardWeekly, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -558,6 +592,42 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    genReferrer: {
+      a: {
+        walletAddress: {
+          nt: String,
+          it: [1],
+        },
+        code: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
+    associateReferral: {
+      a: {
+        sender: {
+          nt: String,
+          it: [1],
+        },
+        code: {
+          nt: String,
+          it: [1],
+        },
+        rr: {
+          nt: String,
+          it: [1],
+        },
+        s: {
+          nt: String,
+          it: [1],
+        },
+        v: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 
@@ -584,6 +654,9 @@ Position.f[`content`]!.nt = Campaign;
 Campaign.f[`creator`]!.nt = Wallet;
 Campaign.f[`outcomes`]!.nt = Outcome;
 Campaign.f[`investmentAmounts`]!.nt = InvestmentAmounts;
+LeaderboardWeekly.f[`referrers`]!.nt = LeaderboardPosition;
+LeaderboardWeekly.f[`volume`]!.nt = LeaderboardPosition;
+LeaderboardWeekly.f[`creators`]!.nt = LeaderboardPosition;
 Outcome.f[`share`]!.nt = Share;
 Query.f[`campaigns`]!.nt = Campaign;
 Query.f[`campaignById`]!.nt = Campaign;
@@ -593,6 +666,7 @@ Query.f[`userParticipatedCampaigns`]!.nt = Position;
 Query.f[`positionsHistory`]!.nt = Activity;
 Query.f[`userClaims`]!.nt = Claim;
 Query.f[`userProfile`]!.nt = Profile;
+Query.f[`leaderboards`]!.nt = LeaderboardWeekly;
 
 //
 //
@@ -630,6 +704,8 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Claim,
     Position,
     Campaign,
+    LeaderboardPosition,
+    LeaderboardWeekly,
     InvestmentAmounts,
     Outcome,
     Wallet,

@@ -39,6 +39,8 @@ export namespace Schema {
       userClaims: Query.userClaims;
       userProfile: Query.userProfile;
       userLiquidity: Query.userLiquidity;
+      referrersForAddress: Query.referrersForAddress;
+      leaderboards: Query.leaderboards;
     };
   }
 
@@ -289,6 +291,34 @@ export namespace Schema {
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
+
+    /**
+     * Though the user should only ever create a referrer once, we should assume there might be
+     * more, so we'll return more here, and let the frontend decide. Returns the codes.
+     */
+    export interface referrersForAddress extends $.OutputField {
+      name: "referrersForAddress";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Leaderboards for this week.
+     */
+    export interface leaderboards extends $.OutputField {
+      name: "leaderboards";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$LeaderboardWeekly;
+    }
   }
 
   //                                              Mutation
@@ -303,6 +333,8 @@ export namespace Schema {
       revealCommitment: Mutation.revealCommitment;
       revealCommitment2: Mutation.revealCommitment2;
       synchProfile: Mutation.synchProfile;
+      genReferrer: Mutation.genReferrer;
+      associateReferral: Mutation.associateReferral;
     };
   }
 
@@ -633,6 +665,96 @@ export namespace Schema {
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;
     }
+
+    /**
+     * Generate a referrer code, using the identifier that the user gave us.
+     */
+    export interface genReferrer extends $.OutputField {
+      name: "genReferrer";
+      arguments: {
+        /**
+         * Wallet address to generate the code for.
+         */
+        walletAddress: {
+          kind: "InputField";
+          name: "walletAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The code that the user chose to associate with them.
+         */
+        code: {
+          kind: "InputField";
+          name: "code";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Sign that the database should recommend to your browser that you're entitled to a
+     * referral. Reconstructs this:
+     *
+     * Referral(address sender,address referrer,uint256 deadline)
+     */
+    export interface associateReferral extends $.OutputField {
+      name: "associateReferral";
+      arguments: {
+        /**
+         * The user's address to verify this for.
+         */
+        sender: {
+          kind: "InputField";
+          name: "sender";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The code the referrer generated here.
+         */
+        code: {
+          kind: "InputField";
+          name: "code";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
+         * prefix.
+         */
+        rr: {
+          kind: "InputField";
+          name: "rr";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The signature proof, derived from the private key and hash of this submission
+         * concenated left to right. Hex encoded, with the 0x prefix.
+         */
+        s: {
+          kind: "InputField";
+          name: "s";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The recovery ID (27) for the private key used for this signature. A Int.
+         */
+        v: {
+          kind: "InputField";
+          name: "v";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
+    }
   }
 
   //
@@ -660,6 +782,8 @@ export namespace Schema {
     fields: {
       __typename: Settings.__typename;
       notification: Settings.notification;
+      refererr: Settings.refererr;
+      referrerAddress: Settings.referrerAddress;
     };
   }
 
@@ -682,6 +806,26 @@ export namespace Schema {
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Did the user click a referrer link that we should hint to the browser?
+     */
+    export interface refererr extends $.OutputField {
+      name: "refererr";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * The result of the referrer code to address, if there is one.
+     */
+    export interface referrerAddress extends $.OutputField {
+      name: "referrerAddress";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
     }
   }
 
@@ -1106,6 +1250,113 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$String;
+    }
+  }
+
+  //                                        LeaderboardPosition
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Leaderboard position that's sent via the UI.
+   */
+  export interface LeaderboardPosition extends $.OutputObject {
+    name: "LeaderboardPosition";
+    fields: {
+      __typename: LeaderboardPosition.__typename;
+      address: LeaderboardPosition.address;
+      volume: LeaderboardPosition.volume;
+    };
+  }
+
+  export namespace LeaderboardPosition {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "LeaderboardPosition";
+      };
+    }
+
+    /**
+     * Address of the position participant.
+     */
+    export interface address extends $.OutputField {
+      name: "address";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Accumulated volume that the user has created, rounded down in USDC.
+     */
+    export interface volume extends $.OutputField {
+      name: "volume";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+  }
+
+  //                                         LeaderboardWeekly
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Weekly leaderboard display that's sent via the leaderboard endpoint.
+   */
+  export interface LeaderboardWeekly extends $.OutputObject {
+    name: "LeaderboardWeekly";
+    fields: {
+      __typename: LeaderboardWeekly.__typename;
+      referrers: LeaderboardWeekly.referrers;
+      volume: LeaderboardWeekly.volume;
+      creators: LeaderboardWeekly.creators;
+    };
+  }
+
+  export namespace LeaderboardWeekly {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "LeaderboardWeekly";
+      };
+    }
+
+    /**
+     * Top referrers. Only the top 25.
+     */
+    export interface referrers extends $.OutputField {
+      name: "referrers";
+      arguments: {};
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$LeaderboardPosition;
+    }
+
+    /**
+     * Top volume. Only the top 25.
+     */
+    export interface volume extends $.OutputField {
+      name: "volume";
+      arguments: {};
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$LeaderboardPosition;
+    }
+
+    /**
+     * Top campaign creators by volume. Only the top 25.
+     */
+    export interface creators extends $.OutputField {
+      name: "creators";
+      arguments: {};
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$LeaderboardPosition;
     }
   }
 
@@ -1825,6 +2076,8 @@ export namespace Schema {
     export type $$Claim = Claim;
     export type $$Position = Position;
     export type $$Campaign = Campaign;
+    export type $$LeaderboardPosition = LeaderboardPosition;
+    export type $$LeaderboardWeekly = LeaderboardWeekly;
     export type $$InvestmentAmounts = InvestmentAmounts;
     export type $$Outcome = Outcome;
     export type $$Wallet = Wallet;
@@ -1880,6 +2133,8 @@ export interface Schema<
     Claim: Schema.Claim;
     Position: Schema.Position;
     Campaign: Schema.Campaign;
+    LeaderboardPosition: Schema.LeaderboardPosition;
+    LeaderboardWeekly: Schema.LeaderboardWeekly;
     InvestmentAmounts: Schema.InvestmentAmounts;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;
@@ -1893,6 +2148,8 @@ export interface Schema<
     Claim: Schema.Claim;
     Position: Schema.Position;
     Campaign: Schema.Campaign;
+    LeaderboardPosition: Schema.LeaderboardPosition;
+    LeaderboardWeekly: Schema.LeaderboardWeekly;
     InvestmentAmounts: Schema.InvestmentAmounts;
     Outcome: Schema.Outcome;
     Wallet: Schema.Wallet;

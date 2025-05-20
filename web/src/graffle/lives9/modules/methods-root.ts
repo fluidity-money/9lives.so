@@ -274,6 +274,51 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Though the user should only ever create a referrer once, we should assume there might be
+   * more, so we'll return more here, and let the frontend decide. Returns the codes.
+   */
+  referrersForAddress: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.referrersForAddress<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { referrersForAddress: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "referrersForAddress"
+        >
+    >
+  >;
+  /**
+   * Leaderboards for this week.
+   */
+  leaderboards: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.leaderboards<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { leaderboards: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "leaderboards"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
@@ -402,6 +447,53 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
             $$Schema.Schema<$Context["scalars"]>
           >,
           "synchProfile"
+        >
+    >
+  >;
+  /**
+   * Generate a referrer code, using the identifier that the user gave us.
+   */
+  genReferrer: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.genReferrer<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { genReferrer: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "genReferrer"
+        >
+    >
+  >;
+  /**
+   * Sign that the database should recommend to your browser that you're entitled to a
+   * referral. Reconstructs this:
+   *
+   * Referral(address sender,address referrer,uint256 deadline)
+   */
+  associateReferral: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.associateReferral<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { associateReferral: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "associateReferral"
         >
     >
   >;

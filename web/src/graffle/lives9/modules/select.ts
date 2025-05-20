@@ -87,6 +87,20 @@ export namespace Select {
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Campaign"]
     >;
+  export type LeaderboardPosition<
+    $SelectionSet extends $$SelectionSets.LeaderboardPosition,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["LeaderboardPosition"]
+  >;
+  export type LeaderboardWeekly<
+    $SelectionSet extends $$SelectionSets.LeaderboardWeekly,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["LeaderboardWeekly"]
+  >;
   export type InvestmentAmounts<
     $SelectionSet extends $$SelectionSets.InvestmentAmounts,
   > = InferResult.OutputObjectLike<

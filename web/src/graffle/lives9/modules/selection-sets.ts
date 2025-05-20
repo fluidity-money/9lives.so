@@ -141,6 +141,22 @@ export interface Query<
   userLiquidity?:
     | Query.userLiquidity<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.userLiquidity<_$Scalars>>;
+  /**
+   *
+   * Select the `referrersForAddress` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  referrersForAddress?:
+    | Query.referrersForAddress<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.referrersForAddress<_$Scalars>>;
+  /**
+   *
+   * Select the `leaderboards` field on the `Query` object. Its type is `LeaderboardWeekly` (a `OutputObject` kind of type).
+   *
+   */
+  leaderboards?:
+    | Query.leaderboards$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.leaderboards<_$Scalars>>;
 
   /**
    *
@@ -590,6 +606,71 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<userLiquidity$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type referrersForAddress<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = referrersForAddress$SelectionSet<_$Scalars>;
+
+  export interface referrersForAddress$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `referrersForAddress` field. All arguments are required so you must include this.
+     */
+    $: referrersForAddress$Arguments<_$Scalars>;
+  }
+
+  export interface referrersForAddress$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    address: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `referrersForAddress` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type referrersForAddress$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<referrersForAddress$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type leaderboards<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = leaderboards$SelectionSet<_$Scalars>;
+
+  export interface leaderboards$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$LeaderboardWeekly<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `leaderboards` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type leaderboards$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<leaderboards$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -634,6 +715,22 @@ export interface Mutation<
   synchProfile?:
     | Mutation.synchProfile<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.synchProfile<_$Scalars>>;
+  /**
+   *
+   * Select the `genReferrer` field on the `Mutation` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  genReferrer?:
+    | Mutation.genReferrer<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.genReferrer<_$Scalars>>;
+  /**
+   *
+   * Select the `associateReferral` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  associateReferral?:
+    | Mutation.associateReferral<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.associateReferral<_$Scalars>>;
 
   /**
    *
@@ -938,6 +1035,110 @@ export namespace Mutation {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<synchProfile$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type genReferrer<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = genReferrer$SelectionSet<_$Scalars>;
+
+  export interface genReferrer$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `genReferrer` field. All arguments are required so you must include this.
+     */
+    $: genReferrer$Arguments<_$Scalars>;
+  }
+
+  export interface genReferrer$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    /**
+     * Wallet address to generate the code for.
+     */
+    walletAddress: string;
+    /**
+     * The code that the user chose to associate with them.
+     */
+    code: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `genReferrer` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type genReferrer$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<genReferrer$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type associateReferral<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = associateReferral$SelectionSet<_$Scalars>;
+
+  export interface associateReferral$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `associateReferral` field. All arguments are required so you must include this.
+     */
+    $: associateReferral$Arguments<_$Scalars>;
+  }
+
+  export interface associateReferral$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    /**
+     * The user's address to verify this for.
+     */
+    sender: string;
+    /**
+     * The code the referrer generated here.
+     */
+    code: string;
+    /**
+     * The X coordinate on the elliptic curve for the signature. Hex encoded, with the 0x
+     * prefix.
+     */
+    rr: string;
+    /**
+     * The signature proof, derived from the private key and hash of this submission
+     * concenated left to right. Hex encoded, with the 0x prefix.
+     */
+    s: string;
+    /**
+     * The recovery ID (27) for the private key used for this signature. A Int.
+     */
+    v: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `associateReferral` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type associateReferral$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<associateReferral$SelectionSet<_$Scalars>>;
 }
 
 //
@@ -1053,6 +1254,22 @@ export interface Settings<
   notification?:
     | Settings.notification$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Settings.notification<_$Scalars>>;
+  /**
+   *
+   * Select the `refererr` field on the `Settings` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  refererr?:
+    | Settings.refererr$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Settings.refererr<_$Scalars>>;
+  /**
+   *
+   * Select the `referrerAddress` field on the `Settings` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  referrerAddress?:
+    | Settings.referrerAddress$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Settings.referrerAddress<_$Scalars>>;
 
   /**
    *
@@ -1113,6 +1330,64 @@ export namespace Settings {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | notification$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type refererr<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | refererr$SelectionSet<_$Scalars>;
+
+  export interface refererr$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `refererr` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type refererr$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | refererr$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type referrerAddress<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | referrerAddress$SelectionSet<_$Scalars>;
+
+  export interface referrerAddress$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `referrerAddress` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type referrerAddress$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | referrerAddress$SelectionSet<_$Scalars>
   >;
 }
 
@@ -2448,6 +2723,279 @@ export namespace Campaign {
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | categories$SelectionSet<_$Scalars>
   >;
+}
+
+//                                        LeaderboardPosition
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+/**
+ * Leaderboard position that's sent via the UI.
+ */
+export interface LeaderboardPosition<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `address` field on the `LeaderboardPosition` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  address?:
+    | LeaderboardPosition.address$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<LeaderboardPosition.address<_$Scalars>>;
+  /**
+   *
+   * Select the `volume` field on the `LeaderboardPosition` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  volume?:
+    | LeaderboardPosition.volume$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<LeaderboardPosition.volume<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | LeaderboardPosition$FragmentInline<_$Scalars>
+    | LeaderboardPosition$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface LeaderboardPosition$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends LeaderboardPosition<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace LeaderboardPosition {
+  export type address<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | address$SelectionSet<_$Scalars>;
+
+  export interface address$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `address` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type address$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | address$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type volume<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | volume$SelectionSet<_$Scalars>;
+
+  export interface volume$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `volume` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type volume$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | volume$SelectionSet<_$Scalars>
+  >;
+}
+
+//                                         LeaderboardWeekly
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+/**
+ * Weekly leaderboard display that's sent via the leaderboard endpoint.
+ */
+export interface LeaderboardWeekly<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `referrers` field on the `LeaderboardWeekly` object. Its type is `LeaderboardPosition` (a `OutputObject` kind of type).
+   *
+   */
+  referrers?:
+    | LeaderboardWeekly.referrers$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<LeaderboardWeekly.referrers<_$Scalars>>;
+  /**
+   *
+   * Select the `volume` field on the `LeaderboardWeekly` object. Its type is `LeaderboardPosition` (a `OutputObject` kind of type).
+   *
+   */
+  volume?:
+    | LeaderboardWeekly.volume$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<LeaderboardWeekly.volume<_$Scalars>>;
+  /**
+   *
+   * Select the `creators` field on the `LeaderboardWeekly` object. Its type is `LeaderboardPosition` (a `OutputObject` kind of type).
+   *
+   */
+  creators?:
+    | LeaderboardWeekly.creators$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<LeaderboardWeekly.creators<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | LeaderboardWeekly$FragmentInline<_$Scalars>
+    | LeaderboardWeekly$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface LeaderboardWeekly$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends LeaderboardWeekly<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace LeaderboardWeekly {
+  export type referrers<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = referrers$SelectionSet<_$Scalars>;
+
+  export interface referrers$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$LeaderboardPosition<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `referrers` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type referrers$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<referrers$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type volume<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = volume$SelectionSet<_$Scalars>;
+
+  export interface volume$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$LeaderboardPosition<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `volume` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type volume$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<volume$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type creators<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = creators$SelectionSet<_$Scalars>;
+
+  export interface creators$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$LeaderboardPosition<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `creators` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type creators$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<creators$SelectionSet<_$Scalars>>;
 }
 
 //                                         InvestmentAmounts
@@ -3788,6 +4336,14 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = Campaign<_$Scalars>;
+  export type $LeaderboardPosition<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = LeaderboardPosition<_$Scalars>;
+  export type $LeaderboardWeekly<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = LeaderboardWeekly<_$Scalars>;
   export type $InvestmentAmounts<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
