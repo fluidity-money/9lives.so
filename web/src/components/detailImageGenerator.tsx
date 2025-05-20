@@ -8,6 +8,7 @@ import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/formatFusdc";
+
 async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
   const provider = new ethers.JsonRpcProvider(config.chains.currentChain.rpc);
   const tradingContract = new ethers.Contract(
@@ -33,14 +34,7 @@ async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
     return 0;
   });
 }
-export const size = {
-  width: 1200,
-  height: 630,
-};
-export const contentType = "image/png";
-type Params = Promise<{ id: string }>;
-export default async function ImageOG({ params }: { params: Params }) {
-  const { id } = await params;
+export default async function detailImageGenerator(id: string) {
   const response = await requestCampaignById(id);
   const baseUrl = config.metadata.metadataBase;
   if (!response)
