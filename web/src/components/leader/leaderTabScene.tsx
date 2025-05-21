@@ -3,16 +3,17 @@ import TabButton from "../tabButton";
 import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment } from "react";
 import LeaderTable from "./leaderTable";
-import Button from "../themed/button";
 import { combineClass } from "@/utils/combineClass";
+import useLeaderboard from "@/hooks/useLeaderboard";
+import useLeaderBoardCategories from "@/hooks/useLeaderBoardCategories";
 
 export default function LeaderTabScene({
-  scrollToAchievments,
   isDegenModeEnabled,
 }: {
-  scrollToAchievments: () => void;
   isDegenModeEnabled: boolean;
 }) {
+  const { data: generalData } = useLeaderboard();
+  const { data: categoriesData } = useLeaderBoardCategories();
   return (
     <TabGroup
       className={combineClass(
@@ -20,22 +21,32 @@ export default function LeaderTabScene({
         "inset-0",
       )}
     >
-      <TabList className="flex items-end justify-between">
+      <TabList className="flex items-center">
         <Tab as={Fragment}>
           {(props) => <TabButton title="Global" {...props} />}
         </Tab>
-        <Button
-          intent={"default"}
-          onClick={scrollToAchievments}
-          className={"md:hidden"}
-          title="Achievments"
-        />
+        <Tab as={Fragment}>
+          {(props) => <TabButton title="Referrers" {...props} />}
+        </Tab>
+        <Tab as={Fragment}>
+          {(props) => <TabButton title="Creators" {...props} />}
+        </Tab>
+        <Tab as={Fragment}>
+          {(props) => <TabButton title="Volume" {...props} />}
+        </Tab>
       </TabList>
       <TabPanels>
         <TabPanel>
-          <div className="">
-            <LeaderTable />
-          </div>
+          <LeaderTable data={generalData} />
+        </TabPanel>
+        <TabPanel>
+          <LeaderTable data={categoriesData?.referrers} />
+        </TabPanel>
+        <TabPanel>
+          <LeaderTable data={categoriesData?.creators} />
+        </TabPanel>
+        <TabPanel>
+          <LeaderTable data={categoriesData?.volume} />
         </TabPanel>
       </TabPanels>
     </TabGroup>

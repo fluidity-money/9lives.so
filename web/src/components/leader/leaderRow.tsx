@@ -32,7 +32,7 @@ export default function LeaderRow({ data }: { data?: Leader }) {
         </span>
       </td>
       <td className={combineClass(cellStyle)}>{data.scoring}</td>
-      <td className={combineClass(cellStyle)}></td>
+      {/* <td className={combineClass(cellStyle)}></td> */}
     </tr>
   );
 }

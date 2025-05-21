@@ -1,12 +1,16 @@
 import { combineClass } from "@/utils/combineClass";
 import React from "react";
 import LeaderRow from "./leaderRow";
-import useLeaderboard from "@/hooks/useLeaderboard";
 import { useActiveAccount } from "thirdweb/react";
+import { Leader } from "@/types";
 
-export default function LeaderTable() {
-  const titles = ["Rank", "User", "Score", "Profit"];
-  const { data } = useLeaderboard();
+export default function LeaderTable({ data }: { data?: Leader[] }) {
+  const titles = [
+    "Rank",
+    "User",
+    "Score",
+    //, "Profit"
+  ];
   const account = useActiveAccount();
   return (
     <table className="w-full border-separate border-spacing-0 overflow-auto">

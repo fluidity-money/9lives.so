@@ -2,6 +2,7 @@
 import AchievementGrid from "@/components/achievement/achievementGrid";
 import AchievementSuggestion from "@/components/achievement/achievementSuggestion";
 import LeaderTabScene from "@/components/leader/leaderTabScene";
+import Button from "@/components/themed/button";
 import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
 import { useRef } from "react";
@@ -18,7 +19,15 @@ export default function LeaderboardPage() {
   };
   return (
     <div className="flex flex-1 flex-col gap-5">
-      <h2 className="font-chicago text-2xl">Leaderboard</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="font-chicago text-2xl">Leaderboard</h2>
+        <Button
+          intent={"default"}
+          onClick={scrollToAchievments}
+          className={"md:hidden"}
+          title="Achievments"
+        />
+      </div>
       <div
         className={combineClass(
           "flex flex-col gap-10",
@@ -33,10 +42,7 @@ export default function LeaderboardPage() {
               : "md:overflow-y-scroll",
           )}
         >
-          <LeaderTabScene
-            isDegenModeEnabled={isDegenModeEnabled}
-            scrollToAchievments={scrollToAchievments}
-          />
+          <LeaderTabScene isDegenModeEnabled={isDegenModeEnabled} />
         </div>
         <div className="flex-1">
           <AchievementSuggestion />
