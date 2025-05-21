@@ -116,13 +116,82 @@ export default async function detailImageGenerator(id: string) {
       ))}
     </div>
   );
-  const price = formatFusdc(outcomes[0].price, 2);
+  const Button = ({
+    name,
+    price,
+    color,
+  }: {
+    name: string;
+    price: string;
+    color?: string;
+  }) => (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        alignSelf: "stretch",
+        justifyContent: "center",
+        gap: "0.75rem",
+        borderRadius: 3,
+        flex: 1,
+        borderWidth: 1,
+        borderStyle: "solid",
+        borderColor: "#0C0C0C",
+        backgroundColor: color ?? "#B8F2AA",
+        paddingLeft: "1.75rem",
+        paddingRight: "1.75rem",
+        paddingTop: "1.5rem",
+        paddingBottom: "1.5rem",
+        boxShadow:
+          "-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)",
+      }}
+    >
+      <span
+        style={{
+          textTransform: "uppercase",
+          fontFamily: "Geneva, sans-serif",
+          fontSize: "2rem",
+        }}
+      >
+        {name}
+      </span>
+      <span
+        style={{
+          textTransform: "uppercase",
+          backgroundColor: "rgba(255, 255, 255, 0.45)",
+          padding: "0.25rem 0.25rem",
+          fontFamily: "Geneva, sans-serif",
+          fontSize: "1.875rem",
+        }}
+      >
+        ${price}
+      </span>
+    </div>
+  );
+  const isYesNo =
+    outcomes?.length === 2 &&
+    outcomes.findIndex((outcome) => outcome.name === "Yes") !== -1 &&
+    outcomes.findIndex((outcome) => outcome.name === "No") !== -1;
+  const price = formatFusdc(
+    isYesNo
+      ? (outcomes.find((o) => o.name === "Yes")?.price ?? 0)
+      : outcomes[0].price,
+    2,
+  );
   const chance = Number(price) * 100;
   const outcomeName = outcomes[0].name;
   const outcomePic = outcomes[0].picture;
   return new ImageResponse(
     (
-      <div style={{ display: "flex", flex: 1, flexDirection: "column" }}>
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          height: "100%",
+          flexDirection: "column",
+          backgroundColor: "#DDEAEF",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -252,7 +321,7 @@ export default async function detailImageGenerator(id: string) {
                       fontSize: "1.75rem",
                     }}
                   >
-                    {chance}% CHANCE
+                    {chance.toFixed(0)}% CHANCE
                   </span>
                   <span
                     style={{
@@ -265,45 +334,35 @@ export default async function detailImageGenerator(id: string) {
                 </div>
               </div>
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "0.75rem",
-                borderRadius: 3,
-                borderWidth: 1,
-                borderStyle: "solid",
-                borderColor: "#0C0C0C",
-                backgroundColor: "#B8F2AA",
-                paddingLeft: "1.75rem",
-                paddingRight: "1.75rem",
-                paddingTop: "1.5rem",
-                paddingBottom: "1.5rem",
-                boxShadow:
-                  "-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)",
-              }}
-            >
-              <span
-                style={{
-                  textTransform: "uppercase",
-                  fontFamily: "Geneva, sans-serif",
-                  fontSize: "2rem",
-                }}
-              >
-                {outcomeName}
-              </span>
-              <span
-                style={{
-                  textTransform: "uppercase",
-                  backgroundColor: "rgba(255, 255, 255, 0.45)",
-                  padding: "0.25rem 0.25rem",
-                  fontFamily: "Geneva, sans-serif",
-                  fontSize: "1.875rem",
-                }}
-              >
-                ${price}
-              </span>
+            <div style={{ display: "flex" }}>
+              {isYesNo ? (
+                <div
+                  style={{
+                    display: "flex",
+                    flex: 1,
+                    alignItems: "center",
+                    gap: "1rem",
+                  }}
+                >
+                  <Button
+                    name={"YES"}
+                    price={formatFusdc(
+                      outcomes.find((o) => o.name === "Yes")?.price ?? 0,
+                      2,
+                    )}
+                  />
+                  <Button
+                    name={"NO"}
+                    price={formatFusdc(
+                      outcomes.find((o) => o.name === "No")?.price ?? 0,
+                      2,
+                    )}
+                    color="#FFB3B3"
+                  />
+                </div>
+              ) : (
+                <Button name={outcomeName} price={price} />
+              )}
             </div>
           </div>
           <div
