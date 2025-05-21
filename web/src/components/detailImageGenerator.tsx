@@ -8,6 +8,13 @@ import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/formatFusdc";
+import fs from "fs";
+import path from "path";
+
+const chicagoFont = fs.readFileSync(
+  path.resolve("./public/fonts/chicago-12.ttf"),
+);
+const genevaFont = fs.readFileSync(path.resolve("./public/fonts/geneva-9.ttf"));
 
 async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
   const provider = new ethers.JsonRpcProvider(config.chains.currentChain.rpc);
@@ -36,37 +43,19 @@ async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
 }
 export default async function detailImageGenerator(id: string) {
   const response = await requestCampaignById(id);
-  const baseUrl = config.metadata.metadataBase;
   if (!response)
     return new ImageResponse(
       (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100%",
-            width: "100%",
-            flexDirection: "row",
-            backgroundColor: "#DDEAEF",
-            gap: 16,
-          }}
-        >
-          <img
-            src={`${baseUrl}/${LogoText.src}`}
-            alt="9lives.so"
-            height={100}
-          />
-          <img
-            src={`${baseUrl}/${LogoDot.src}`}
-            alt="9lives.so"
-            height={100}
-            width={200}
-          />
-        </div>
+        <img
+          src={`https://9lives.so/opengraph-image.png`}
+          alt="9lives.so"
+          width={1200}
+          height={630}
+        />
       ),
     );
 
+  const baseUrl = config.metadata.metadataBase;
   const outcomes = await getPrices(
     response.poolAddress,
     response.outcomes as Outcome[],
@@ -145,7 +134,7 @@ export default async function detailImageGenerator(id: string) {
           <TitleBorders />
           <span
             style={{
-              fontFamily: '"Chicago", sans-serif',
+              fontFamily: "chicago, sans-serif",
               fontSize: "1.5rem",
               textTransform: "uppercase",
             }}
@@ -179,17 +168,18 @@ export default async function detailImageGenerator(id: string) {
               <img
                 src={`${baseUrl}/${LogoText.src}`}
                 alt="9lives.so"
-                height={32}
+                height={34}
               />
               <img
                 src={`${baseUrl}/${LogoDot.src}`}
                 alt="9lives.so"
-                height={32}
+                width={70}
+                height={34}
               />
             </div>
             <span
               style={{
-                fontFamily: '"Chicago", sans-serif',
+                fontFamily: "chicago, sans-serif",
                 fontSize: "1.875rem",
               }}
             >
@@ -202,7 +192,7 @@ export default async function detailImageGenerator(id: string) {
               flexDirection: "column",
               gap: "1.25rem",
               borderRadius: 3,
-              borderWidth: 2,
+              borderWidth: 1,
               borderStyle: "solid",
               borderColor: "#0C0C0C",
               backgroundColor: "#F5F5F5",
@@ -211,7 +201,7 @@ export default async function detailImageGenerator(id: string) {
                 "-4px -4px 0px 0px rgba(0, 0, 0, 0.25) inset, 4px 4px 0px 0px rgba(255, 255, 255, 0.90) inset, 2px 2px 0px 0px rgba(12, 12, 12, 0.20)",
             }}
           >
-            <div style={{ display: "flex", gap: "2.5rem", minHeight: 200 }}>
+            <div style={{ display: "flex", gap: "1.75rem", minHeight: 200 }}>
               {outcomePic || response?.picture ? (
                 <div
                   style={{
@@ -241,8 +231,8 @@ export default async function detailImageGenerator(id: string) {
               >
                 <p
                   style={{
-                    fontFamily: '"Chicago", sans-serif',
-                    fontSize: "2.25rem",
+                    fontFamily: "chicago, sans-serif",
+                    fontSize: "2.5rem",
                   }}
                 >
                   {response?.name ?? "Predict on 9LIVES.so"}
@@ -258,16 +248,16 @@ export default async function detailImageGenerator(id: string) {
                     style={{
                       backgroundColor: "#FFFD9B",
                       padding: "0.25rem 0.5rem",
-                      fontFamily: '"Chicago", sans-serif',
-                      fontSize: "1.875rem",
+                      fontFamily: "chicago, sans-serif",
+                      fontSize: "1.75rem",
                     }}
                   >
                     {chance}% CHANCE
                   </span>
                   <span
                     style={{
-                      fontFamily: '"Chicago", sans-serif',
-                      fontSize: "1.875rem",
+                      fontFamily: "chicago, sans-serif",
+                      fontSize: "1.75rem",
                     }}
                   >
                     END: {new Date(response.ending * 1000).toDateString()}
@@ -286,7 +276,10 @@ export default async function detailImageGenerator(id: string) {
                 borderStyle: "solid",
                 borderColor: "#0C0C0C",
                 backgroundColor: "#B8F2AA",
-                padding: "1.75rem",
+                paddingLeft: "1.75rem",
+                paddingRight: "1.75rem",
+                paddingTop: "1.5rem",
+                paddingBottom: "1.5rem",
                 boxShadow:
                   "-2px -2px 0 rgba(0,0,0,0.20) inset, 2px 2px 0 rgba(0, 0, 0, 0.25)",
               }}
@@ -295,7 +288,7 @@ export default async function detailImageGenerator(id: string) {
                 style={{
                   textTransform: "uppercase",
                   fontFamily: "Geneva, sans-serif",
-                  fontSize: "1.875rem",
+                  fontSize: "2rem",
                 }}
               >
                 {outcomeName}
@@ -303,7 +296,7 @@ export default async function detailImageGenerator(id: string) {
               <span
                 style={{
                   textTransform: "uppercase",
-                  backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  backgroundColor: "rgba(255, 255, 255, 0.45)",
                   padding: "0.25rem 0.25rem",
                   fontFamily: "Geneva, sans-serif",
                   fontSize: "1.875rem",
@@ -342,5 +335,19 @@ export default async function detailImageGenerator(id: string) {
         </div>
       </div>
     ),
+    {
+      fonts: [
+        {
+          name: "chicago",
+          data: chicagoFont,
+          style: "normal",
+        },
+        {
+          name: "Geneva",
+          data: genevaFont,
+          style: "normal",
+        },
+      ],
+    },
   );
 }
