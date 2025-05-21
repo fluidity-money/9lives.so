@@ -153,7 +153,7 @@ export default async function detailImageGenerator(id: string) {
           fontSize: "2rem",
         }}
       >
-        {name}
+        {name.length > 42 ? name.slice(0, 42) + "..." : name}
       </span>
       <span
         style={{
