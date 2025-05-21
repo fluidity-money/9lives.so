@@ -1,4 +1,4 @@
-use std::{collections::HashMap, future::Future, process, str::FromStr, sync::OnceLock};
+use std::{collections::HashMap, future::Future, io::stdin, process, str::FromStr, sync::OnceLock};
 
 use keccak_const::Keccak256;
 
@@ -6,7 +6,7 @@ use alloy_eips::{BlockId, BlockNumberOrTag};
 use alloy_network_primitives::BlockTransactionsKind;
 use alloy_primitives::{
     map::{AddressHashMap, FbBuildHasher},
-    Address, Bytes, TxKind, U256,
+    Address, Bytes, FixedBytes, TxKind, U256,
 };
 use alloy_provider::{ext::DebugApi, Provider, RootProvider};
 use alloy_rpc_types_eth::{
@@ -27,6 +27,8 @@ use url::Url;
 use wasmtime::*;
 
 use tokio::sync::Mutex;
+
+use rand::Rng;
 
 type Word = [u8; 32];
 
@@ -49,6 +51,14 @@ struct Args {
     addr: String,
     #[arg(short, long, default_value = "https://rpc.superposition.so")]
     url: String,
+    #[arg(long, default_value = "user_entrypoint")]
+    function_name: String,
+    #[arg(long)]
+    should_state_override: bool,
+    #[arg(short, long)]
+    verbose: bool,
+    #[arg(short, long, default_value = "1")]
+    invocation_count: usize,
 
     #[arg(required = true)]
     file: String,
@@ -65,6 +75,7 @@ async fn main() -> Result<(), Error> {
     static BLOCK: OnceLock<u64> = OnceLock::new();
     static ADDR: OnceLock<Address> = OnceLock::new();
     static TIMESTAMP: OnceLock<i64> = OnceLock::new();
+    static VERBOSE: OnceLock<bool> = OnceLock::new();
 
     SENDER
         .set(Address::from_str(&args.sender).unwrap())
@@ -82,6 +93,8 @@ async fn main() -> Result<(), Error> {
     static CHAINID: OnceLock<i64> = OnceLock::new();
 
     ADDR.set(Address::from_str(&args.addr).unwrap()).unwrap();
+
+    VERBOSE.set(args.verbose).unwrap();
 
     {
         let provider = PROVIDER.get().unwrap().lock().await;
@@ -130,6 +143,20 @@ async fn main() -> Result<(), Error> {
 
     static LAST_CALL_CALLDATA: OnceLock<Mutex<Option<Bytes>>> = OnceLock::new();
     LAST_CALL_CALLDATA.set(Mutex::new(None)).unwrap();
+
+    let mut rng = rand::rng();
+
+    let Args {
+        should_state_override,
+        invocation_count,
+        ..
+    } = args;
+
+    let default_state: AddressHashMap<HashMap<FixedBytes<32>, String>> = if should_state_override {
+        serde_json::from_reader(stdin()).unwrap()
+    } else {
+        AddressHashMap::with_hasher(FbBuildHasher::default())
+    };
 
     // State overrides set by calls, on a per contract address basis.
     static STATE_OVERRIDES: OnceLock<Mutex<AddressHashMap<AccountOverride>>> = OnceLock::new();
@@ -182,7 +209,9 @@ async fn main() -> Result<(), Error> {
             }
             let h = const_hex::encode(&arr);
             println!("0x{h}");
-            eprintln!("0x{h}");
+            if *VERBOSE.get().unwrap() {
+                eprintln!("0x{h}");
+            }
         },
     )?;
     linker.func_wrap(
@@ -348,11 +377,13 @@ async fn main() -> Result<(), Error> {
                     a => panic!("not calltracer in mux: {a:?}"),
                 };
                 if status == 0 {
-                    eprintln!(
-                        "success deploying {} to {}",
-                        const_hex::encode(&code),
-                        contract.unwrap()
-                    );
+                    if *VERBOSE.get().unwrap() {
+                        eprintln!(
+                            "success deploying {} to {}",
+                            const_hex::encode(&code),
+                            contract.unwrap()
+                        );
+                    }
                     if let Some(c) = contract.clone() {
                         unsafe {
                             std::ptr::copy(
@@ -363,10 +394,14 @@ async fn main() -> Result<(), Error> {
                         }
                     }
                 } else {
-                    eprintln!("fail deploying {}", const_hex::encode(code));
+                    if *VERBOSE.get().unwrap() {
+                        eprintln!("fail deploying {}", const_hex::encode(code));
+                    }
                     // Since we reverted, we need to set the revert_data variable!
                     if let Some(d) = output {
-                        eprintln!("revert message for deploy: {d}");
+                        if *VERBOSE.get().unwrap() {
+                            eprintln!("revert message for deploy: {d}");
+                        }
                         unsafe {
                             std::ptr::copy(
                                 d.len().to_be_bytes().as_ptr(),
@@ -437,11 +472,13 @@ async fn main() -> Result<(), Error> {
                         32,
                     );
                 }
-                eprintln!(
-                    "word: {}: {}",
-                    const_hex::encode(word),
-                    const_hex::encode(v)
-                );
+                if *VERBOSE.get().unwrap() {
+                    eprintln!(
+                        "word: {}: {}",
+                        const_hex::encode(word),
+                        const_hex::encode(v)
+                    );
+                }
             })
         },
     )?;
@@ -608,12 +645,14 @@ async fn main() -> Result<(), Error> {
                     }
                 }
                 let block = *BLOCK.get().unwrap();
-                eprintln!(
+                if *VERBOSE.get().unwrap() {
+                    eprintln!(
                     "spn call --block {block} --from {} {contract} {} # => status {status}: {:x}",
                     ADDR.get().unwrap(),
                     const_hex::encode(&calldata),
                     d.clone().unwrap_or_default()
                 );
+                }
                 *LAST_CALL_CALLDATA.get().unwrap().lock().await = d.clone();
                 status
             })
@@ -752,11 +791,13 @@ async fn main() -> Result<(), Error> {
                         32,
                     );
                 }
-                eprintln!(
-                    "written: {}: {}",
-                    const_hex::encode(key),
-                    const_hex::encode(val)
-                );
+                if *VERBOSE.get().unwrap() {
+                    eprintln!(
+                        "written: {}: {}",
+                        const_hex::encode(key),
+                        const_hex::encode(val)
+                    );
+                }
                 STORAGE_WRITTEN.get().unwrap().lock().await.insert(key, val);
             })
         }
@@ -793,16 +834,24 @@ async fn main() -> Result<(), Error> {
 
     // Handy console logging functions that Stylus gives us.
     linker.func_wrap("console", "log_f32", |_: Caller<_>, value: f32| {
-        eprintln!("log: {value}");
+        if *VERBOSE.get().unwrap() {
+            eprintln!("log: {value}");
+        }
     })?;
     linker.func_wrap("console", "log_f64", |_: Caller<_>, value: f64| {
-        eprintln!("log: {value}");
+        if *VERBOSE.get().unwrap() {
+            eprintln!("log: {value}");
+        }
     })?;
     linker.func_wrap("console", "log_i32", |_: Caller<_>, value: i32| {
-        eprintln!("log: {value}");
+        if *VERBOSE.get().unwrap() {
+            eprintln!("log: {value}");
+        }
     })?;
     linker.func_wrap("console", "log_i64", |_: Caller<_>, value: i64| {
-        eprintln!("log: {value}");
+        if *VERBOSE.get().unwrap() {
+            eprintln!("log: {value}");
+        }
     })?;
 
     linker.func_wrap(
@@ -819,7 +868,9 @@ async fn main() -> Result<(), Error> {
                 );
                 buf.set_len(len as usize);
             }
-            eprintln!("{}", String::from_utf8(buf).unwrap())
+            if *VERBOSE.get().unwrap() {
+                eprintln!("{}", String::from_utf8(buf).unwrap())
+            }
         },
     )?;
 
@@ -827,7 +878,9 @@ async fn main() -> Result<(), Error> {
         "stylus_interpreter",
         "simpledie",
         |_: Caller<_>, code: i32| {
-            eprintln!("simple die exit: {code}");
+            if *VERBOSE.get().unwrap() {
+                eprintln!("simple die exit: {code}");
+            }
             process::exit(code);
             #[allow(unused)]
             Ok(())
@@ -847,7 +900,9 @@ async fn main() -> Result<(), Error> {
                 );
                 buf.set_len(len as usize);
             }
-            eprintln!("exit: {}", String::from_utf8(buf).unwrap());
+            if *VERBOSE.get().unwrap() {
+                eprintln!("exit: {}", String::from_utf8(buf).unwrap());
+            }
             process::exit(code);
             #[allow(unused)]
             Ok(())
@@ -884,13 +939,74 @@ async fn main() -> Result<(), Error> {
 
     let instance = linker.instantiate_async(&mut store, &module).await?;
 
-    let entrypoint = instance.get_typed_func::<i32, i32>(&mut store, "user_entrypoint")?;
-    eprintln!(
-        "{}",
-        entrypoint
+    let entrypoint = instance.get_typed_func::<i32, i32>(&mut store, &args.function_name)?;
+    for i in 0..invocation_count {
+        let mut state_overrides = STATE_OVERRIDES.get().unwrap().lock().await;
+        let mut storage_written = STORAGE_WRITTEN.get().unwrap().lock().await;
+        // Start to unpack the hashmap that contains the storage here if the argument is set.
+        if should_state_override {
+            for (mut addr, v) in &default_state {
+                if addr.is_zero() {
+                    addr = ADDR.get().unwrap();
+                }
+                if addr == ADDR.get().unwrap() {
+                    // If the user sets the storage for this contract, then we need to
+                    // override the local storage, not the state forking config for calling
+                    // out.
+                    for (k, v) in v {
+                        let k: [u8; 32] = k.as_slice().try_into().unwrap();
+                        let v: [u8; 32] =
+                            FixedBytes::<32>::from_str(&replace_str(&mut rng, v.clone()))
+                                .unwrap()
+                                .as_slice()
+                                .try_into()
+                                .unwrap();
+                        storage_written.insert(k, v);
+                    }
+                } else {
+                    // If the contract address is different, then we'll set the call
+                    // overrides.
+                    let o = state_overrides.entry(*addr).or_insert_with(|| {
+                        let mut o = AccountOverride::default();
+                        let h: HashMap<FixedBytes<32>, FixedBytes<32>, _> =
+                            HashMap::with_hasher(FbBuildHasher::default());
+                        o.state_diff = Some(h);
+                        o
+                    });
+                    for (k, v) in v {
+                        let v =
+                            FixedBytes::<32>::from_str(&replace_str(&mut rng, v.clone())).unwrap();
+                        o.state_diff.as_mut().unwrap().insert(*k, v);
+                    }
+                }
+            }
+        }
+        if *VERBOSE.get().unwrap() {
+            eprintln!("state override for external calls by invocation {i}: {state_overrides:?}");
+            eprintln!("storage override for local running {i}: {storage_written:?}");
+        }
+        let rc = entrypoint
             .call_async(&mut store, calldata_len as i32)
-            .await?
-    );
-
+            .await?;
+        if *VERBOSE.get().unwrap() {
+            eprintln!("{rc}",);
+        }
+    }
     Ok(())
+}
+
+fn replace_str<T: Rng>(rng: &mut T, s: String) -> String {
+    s.chars()
+        .map(|c| {
+            if c == 'X' {
+                match rng.random_range(0..16) {
+                    0..=9 => (b'0' + rng.random_range(0..=9)) as char,
+                    10..=15 => (b'a' + rng.random_range(0..=5)) as char,
+                    _ => unreachable!(),
+                }
+            } else {
+                c
+            }
+        })
+        .collect::<String>()
 }

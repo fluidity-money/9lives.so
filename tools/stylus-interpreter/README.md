@@ -1,14 +1,26 @@
 
 # Stylus Interpreter (sid)
 
-The Stylus Interpreter is a f contract runner that runs the WASM contract that's provided
-as arguments, using state override calls to run calls on-chain on behalf of the user. It
-provides extra features to support providing extra info to the environment, and has no
-codesize restrictions for testing.
+The Stylus Interpreter is a configurable wasm runner that lets you override local state,
+simulate calls and persist the output, and more! It currently only supports CREATE1, some
+standard operations, and calls without static call.
 
-It can optionally run a test suite using decorators, and these will persist internally the
-state overrides from testing, so it can function similar to a forknet testing environment
-a la Hardhat.
+It has a few custom functions you can use to log interesting output. This simplifies
+testing! Be warned that this is a hacked together codebase, and is extremely messy and
+written without care!
 
-## Example usage
+## State overriding
 
+It's possible to override storage slots using the `--state-override` function is set from
+stdin! If the address 0x0000000000000000000000000000000000000000 is used, it'll override
+for the current contract that's in use, or you can specify the address to anything other than
+zero to use a different location.
+
+Any Xs in the string will be replaced with a random byte. This can be useful for fuzzing
+program state with repeated invocation with the same input.
+
+{
+	"<ADDRESS OF THE CONTRACT>":  {
+		"<SLOT TO OVERRIDE>": "<VALUE TO OVERRIDE>"
+	}
+}
