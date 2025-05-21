@@ -21,7 +21,7 @@ export default function LeaderTabScene({
         "inset-0",
       )}
     >
-      <TabList className="flex items-center">
+      <TabList className="flex items-center overflow-x-auto">
         <Tab as={Fragment}>
           {(props) => <TabButton title="Global" {...props} />}
         </Tab>
