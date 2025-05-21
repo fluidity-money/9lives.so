@@ -316,3 +316,42 @@ export const requestLeaderboardCategories = () =>
       volume: true,
     },
   });
+
+export const requestReferrersForAddress = (address: string) =>
+  graph9Lives.query.referrersForAddress({
+    $: { address },
+  });
+
+export const genReferrer = ({
+  address,
+  code,
+}: {
+  address: string;
+  code: string;
+}) =>
+  graph9Lives.mutation.genReferrer({
+    $: { walletAddress: address, code },
+  });
+
+export const associateReferral = ({
+  sender,
+  code,
+  s,
+  v,
+  rr,
+}: {
+  sender: string;
+  code: string;
+  s: string;
+  v: string;
+  rr: string;
+}) =>
+  graph9Lives.mutation.associateReferral({
+    $: {
+      sender,
+      code,
+      s,
+      v,
+      rr,
+    },
+  });
