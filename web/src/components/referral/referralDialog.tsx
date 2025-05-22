@@ -10,6 +10,7 @@ import Button from "../themed/button";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import TabButton from "../tabButton";
 import Input from "../themed/input";
+import toast from "react-hot-toast";
 
 export default function ReferralDialog() {
   const account = useActiveAccount();
@@ -31,6 +32,10 @@ export default function ReferralDialog() {
     } catch (error) {
       setGenError(error instanceof Error ? error.message : "Unknown error");
     }
+  }
+  function handleCopy() {
+    navigator.clipboard.writeText(`https://9lives.so/?referral=${code}`);
+    toast.success("Referral link copied");
   }
 
   useEffect(() => {
@@ -64,6 +69,7 @@ export default function ReferralDialog() {
         />
         <Button
           size={"xlarge"}
+          onClick={handleCopy}
           intent={"cta"}
           title="COPY LINK"
           className="w-full"
