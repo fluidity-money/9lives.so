@@ -5,7 +5,7 @@ import HeaderLogo from "./headerLogo";
 import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
 import DisclaimerButton from "./disclaimerButton";
 import DegenModeButton from "./degenMode/degenModeButton";
-import Clock from "./clock";
+import ReferralButton from "./referral/referralButton";
 import MobileMenu from "./mobileMenu";
 
 export default function Header() {
@@ -29,7 +29,7 @@ export default function Header() {
         <MobileMenu />
         <ConnectButton />
         <DegenModeButton />
-        <Clock />
+        <ReferralButton />
       </div>
     </header>
   );
