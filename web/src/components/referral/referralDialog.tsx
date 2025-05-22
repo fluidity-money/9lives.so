@@ -11,14 +11,14 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import TabButton from "../tabButton";
 
 export default function ReferralDialog() {
+  const account = useActiveAccount();
   const {
     data: code,
     isSuccess,
     error,
     isLoading,
     refetch,
-  } = useReferrerCode();
-  const account = useActiveAccount();
+  } = useReferrerCode(account?.address);
   const [genError, setGenError] = useState<string>();
   async function generateCode() {
     try {
@@ -31,6 +31,7 @@ export default function ReferralDialog() {
       setGenError(error instanceof Error ? error.message : "Unknown error");
     }
   }
+
   useEffect(() => {
     if (isSuccess && !code) {
       generateCode();
