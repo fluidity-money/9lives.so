@@ -19,6 +19,7 @@ type C struct {
 	FactoryAddress, InfraMarketAddress    string
 	BeautyContestAddress, SarpAiAddress   string
 	LockupAddress, SarpAiSignallerAddress string
+	LifiDiamondAddress                    string
 }
 
 // Get config by querying environment variables.
@@ -58,6 +59,10 @@ func Get() C {
 	if sarpAiSignallerAddr == "" {
 		setup.Exitf("SPN_SARP_AI_SIGNALLER_ADDR not set")
 	}
+	lifiDiamondAddr := strings.ToLower(os.Getenv("SPN_LIFI_DIAMOND_ADDR"))
+	if lifiDiamondAddr == "" {
+		setup.Exitf("SPN_LIFI_DIAMOND_ADDR not set")
+	}
 	return C{
 		GethUrls:               gethUrls,
 		TimescaleUrls:          timescaleUrls,
@@ -67,6 +72,7 @@ func Get() C {
 		SarpAiAddress:          sarpAiAddr,
 		LockupAddress:          lockupAddr,
 		SarpAiSignallerAddress: sarpAiSignallerAddr,
+		LifiDiamondAddress:     lifiDiamondAddr,
 	}
 }
 

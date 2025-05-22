@@ -1119,7 +1119,7 @@ func (r *queryResolver) Leaderboards(ctx context.Context) (*model.LeaderboardWee
 		creatorLeaderboard  []model.LeaderboardPosition
 	)
 	oneWeekAgo := time.Now().AddDate(0, 0, -7)
-	err := r.DB.Table("ninelives_referrer_earned_fees").
+	err := r.DB.Table("ninelives_events_referrer_earned_fees").
 		Select("recipient as address, SUM(volume) as volume").
 		Where("created_by >= ?", oneWeekAgo).
 		Group("recipient").

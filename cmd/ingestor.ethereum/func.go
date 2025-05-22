@@ -14,6 +14,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/setup"
 
 	"github.com/fluidity-money/9lives.so/lib/events"
+	"github.com/fluidity-money/9lives.so/lib/events/lifi"
 	"github.com/fluidity-money/9lives.so/lib/types"
 
 	"gorm.io/gorm"
@@ -55,6 +56,8 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicLPFeesClaimed,
 	events.TopicAddressFeesClaimed,
 	events.TopicReferrerEarnedFees,
+	// Lifi
+	lifi.TopicLifiGenericSwapCompleted,
 }
 
 // Entry function, using the database to determine if polling should be
@@ -66,6 +69,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 		infraMarketAddr        = ethCommon.HexToAddress(config.InfraMarketAddress)
 		lockupAddr             = ethCommon.HexToAddress(config.LockupAddress)
 		sarpAiSignallerAddress = ethCommon.HexToAddress(config.SarpAiSignallerAddress)
+		lifiDiamondAddress = ethCommon.HexToAddress(config.LifiDiamondAddress)
 	)
 	IngestPolling(
 		f,
@@ -77,6 +81,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 		infraMarketAddr,
 		lockupAddr,
 		sarpAiSignallerAddress,
+		lifiDiamondAddress,
 	)
 }
 
@@ -84,7 +89,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 // receive log updates. Checks the database first to determine where the
 // last point is before continuing. Assumes ethclient is HTTP.
 // Uses the IngestBlockRange function to do all the lifting.
-func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress, infraMarketAddress, lockupAddress, sarpAiSignallerAddress ethCommon.Address) {
+func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress, infraMarketAddress, lockupAddress, sarpAiSignallerAddress, lifiDiamondAddress ethCommon.Address) {
 	if ingestorPagination <= 0 {
 		panic("bad ingestor pagination")
 	}
@@ -107,6 +112,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 			infraMarketAddress,
 			lockupAddress,
 			sarpAiSignallerAddress,
+			lifiDiamondAddress,
 			from,
 			to,
 		)
@@ -122,7 +128,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 // funciton to write records found to the database. Assumes the ethclient
 // provided is a HTTP client. Also updates the underlying last block it
 // saw into the database checkpoints. Fatals if something goes wrong.
-func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr, infraMarket, lockupAddr, sarpSignallerAiAddr ethCommon.Address, from, to uint64) {
+func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr, infraMarket, lockupAddr, sarpSignallerAiAddr, lifiDiamondAddr ethCommon.Address, from, to uint64) {
 	latestBlockNo, err := c.BlockNumber(context.Background())
 	if err != nil {
 		setup.Exitf("failed to get latest block number: %v", err)
@@ -149,6 +155,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 				infraMarket,
 				lockupAddr,
 				sarpSignallerAiAddr,
+				lifiDiamondAddr,
 				l,
 			)
 			if err != nil {
@@ -175,12 +182,13 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 	}
 }
 
-func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAiAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
+func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAiAddr, lifiDiamondAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
 	return handleLogCallback(
 		factoryAddr,
 		infraMarketAddr,
 		lockupAddr,
 		sarpSignallerAiAddr,
+		lifiDiamondAddr,
 		l,
 		func(blockHash, txHash, addr string) error {
 			// Track this address as a trading contract.
@@ -204,7 +212,7 @@ func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAd
 		},
 	)
 }
-func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAiAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
+func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAiAddr, lifiDiamondAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
 	var topic1, topic2, topic3 ethCommon.Hash
 	topic0 := l.Topics[0]
 	if len(l.Topics) > 1 {
@@ -393,9 +401,13 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		fromTrading = true
 	case events.TopicReferrerEarnedFees:
 		a, err = events.UnpackReferrerEarnedFees(topic1, topic2, topic3)
-		table = "ninelives_referrer_earned_fees"
+		table = "ninelives_events_referrer_earned_fees"
 		logEvent("ReferrerEarnedFees")
 		fromTrading = true
+	case lifi.TopicLifiGenericSwapCompleted:
+		a, err = lifi.UnpackLifiGenericSwapCompleted(topic1, data)
+		table = "lifi_events_generic_swap_completed"
+		logEvent("LifiGenericSwapCompleted")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -419,11 +431,12 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		isInfraMarket   = infraMarketAddr == emitterAddr
 		isLockup        = lockupAddr == emitterAddr
 		isSarpSignaller = sarpSignallerAiAddr == emitterAddr
+		isLifi = lifiDiamondAddr == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
-	case isFactory || isInfraMarket || isLockup || isSarpSignaller:
+	case isFactory || isInfraMarket || isLockup || isSarpSignaller || isLifi:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to

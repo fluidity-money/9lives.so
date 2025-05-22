@@ -46,6 +46,7 @@ func TestSharesMinted(t *testing.T) {
 		factoryAddr, // Actually the infra market
 		factoryAddr, // Actually the lockup
 		factoryAddr, // Actually SARP's on-chain signaller.
+		factoryAddr, // Actually Lifi's diamond.
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -89,6 +90,7 @@ func TestOutcomeDecided(t *testing.T) {
 		factoryAddr, // Actually the infra market
 		factoryAddr, // Actually the lockup
 		factoryAddr, // Actually SARP's on-chain signaller.
+		factoryAddr, // Actually Lifi's diamond.
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -100,6 +102,49 @@ func TestOutcomeDecided(t *testing.T) {
 			assert.Equalf(t, "ninelives_events_outcome_decided", table, "table not equal")
 			_, ok := a.(*events.EventOutcomeDecided)
 			assert.Truef(t, ok, "EventOutcomeDecided type coercion not true")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}
+
+func TestLifiGenericSwapCompleted(t *testing.T) {
+	s := strings.NewReader(`{
+	"address": "0x03d55a7896097801b1de90b4e3e0392ce279180a",
+	"blockHash": "0xcbb276f172e0d4b444e829fabc14c57a92b12d88ad5dd7e8d3dfafa4bab9ff61",
+	"blockNumber": "0x19e451",
+	"data": "0x00000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000001200000000000000000000000006221a9c005f6e47eb398fd867784cacfdcfff4e700000000000000000000000000000000000000000000000000000000000000000000000000000000000000006c030c5cc283f791b26816f325b9c632d964f8a100000000000000000000000000000000000000000000000000352b7d97161ad80000000000000000000000000000000000000000000000000000000002371da7000000000000000000000000000000000000000000000000000000000000000e6e6578746a732d6578616d706c65000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002a30783030303030303030303030303030303030303030303030303030303030303030303030303030303000000000000000000000000000000000000000000000",
+	"logIndex": "0x9",
+	"removed": false,
+	"topics": [
+		"0x38eee76fd911eabac79da7af16053e809be0e12c8637f156e77e1af309b99537",
+		"0xe2ae770feb1e1259be2202f1f786013e6349604de44cb9cbbc0dab7184a1061d"
+	],
+	"transactionHash": "0x54607f676bf0f1fa47cadec765113cf89dc3664fa7416bfbc8ed08fac19f2a31",
+	"transactionIndex": "0x1"
+}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	lifiDiamond := ethCommon.HexToAddress("0x03d55A7896097801B1dE90b4E3E0392CE279180A")
+	_, err := handleLogCallback(
+		factoryAddr,
+		factoryAddr, // Actually the infra market
+		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
+		lifiDiamond,
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "lifi_events_generic_swap_completed", table, "table not equal")
 			wasRun = true
 			return nil
 		},

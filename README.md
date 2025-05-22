@@ -1,6 +1,16 @@
 
 # 9Lives
 
+You probably want to read [the guide](https://guide.9lives.so) as a developer!
+
+9lives is the most customisable and advanced prediction market in the web3 ecosystem, with
+an orderbook and AMM feature. We can support teams interested in releasing prediction
+markets themselves using 9lives, including hosting the graph for you. If you're interested
+in this, contact us at [this
+link](https://docs.google.com/forms/d/e/1FAIpQLSfYfgLuQ0GU8K5vGj-kU0PciqHHQCCD60T7NHtLLmewkNvldg/viewform?usp=dialog)!
+
+---
+
 9Lives is an Arbitrum Stylus smart contract implemented with a simple factory/pair
 pattern. A factory takes a list of outcomes, and creates a variable number of contracts
 with a minimal viable proxy pointing to share ERC20s, and a trading contract. It either

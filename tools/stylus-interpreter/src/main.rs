@@ -878,9 +878,7 @@ async fn main() -> Result<(), Error> {
         "stylus_interpreter",
         "simpledie",
         |_: Caller<_>, code: i32| {
-            if *VERBOSE.get().unwrap() {
-                eprintln!("simple die exit: {code}");
-            }
+            eprintln!("simple die exit: {code}");
             process::exit(code);
             #[allow(unused)]
             Ok(())
