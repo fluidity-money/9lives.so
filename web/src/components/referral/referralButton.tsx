@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Modal from "../themed/modal";
-import ReferralDialog from "./referralDialog";
+import ReferrerlDialog from "./referrerDialog";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 
@@ -26,7 +26,7 @@ export default function ReferralButton() {
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
       >
-        <ReferralDialog />
+        <ReferrerlDialog />
       </Modal>
     </>
   );

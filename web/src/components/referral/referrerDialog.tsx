@@ -12,7 +12,7 @@ import TabButton from "../tabButton";
 import Input from "../themed/input";
 import toast from "react-hot-toast";
 
-export default function ReferralDialog() {
+export default function ReferrerDialog() {
   const account = useActiveAccount();
   const {
     data: code,
