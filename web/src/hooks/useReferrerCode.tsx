@@ -7,7 +7,7 @@ export default function useReferrerCode(address?: string) {
     queryFn: async () => {
       if (!address) return null;
       const codes = await requestReferrersForAddress(address);
-      return codes[0];
+      return codes?.[0];
     },
   });
 }
