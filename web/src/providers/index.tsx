@@ -5,6 +5,7 @@ import ContextInjector from "./contextInjector";
 import { BuyAndSellResponse, Campaign, CreationResponse } from "@/types";
 import PostHogProvider from "./postHog";
 import WebSocketProvider from "./websocket";
+import ReferralHandler from "./referralHandler";
 
 export default function Providers({
   children,
@@ -23,6 +24,7 @@ export default function Providers({
       <ReactQueryProvider initialData={initialData}>
         <ContextInjector />
         <WebSocketProvider />
+        <ReferralHandler />
         <PostHogProvider>{children}</PostHogProvider>
       </ReactQueryProvider>
     </ThirdwebProvider>
