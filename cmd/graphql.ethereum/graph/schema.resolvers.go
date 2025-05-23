@@ -1169,6 +1169,22 @@ func (r *queryResolver) Leaderboards(ctx context.Context) (*model.LeaderboardWee
 	return &l, nil
 }
 
+// ReferrerByCode is the resolver for the referrerByCode field.
+func (r *queryResolver) ReferrerByCode(ctx context.Context, code string) (string, error) {
+	var owner string
+	err := r.DB.Table("ninelives_referrer_1").
+		Where("code = ?", code).
+		Select("owner").Scan(&owner).Error
+	if err != nil {
+		slog.Error("Error getting referrer by code",
+			"error", err,
+			"code", code,
+		)
+		return "", fmt.Errorf("error getting referrer by code")
+	}
+	return owner, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {

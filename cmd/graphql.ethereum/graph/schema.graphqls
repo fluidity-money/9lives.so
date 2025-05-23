@@ -63,6 +63,11 @@ type Query {
   Leaderboards for this week.
   """
   leaderboards: LeaderboardWeekly!
+
+  """
+  Get referrer address by its generated code.
+  """
+  referrerByCode(code: String!): String!
 }
 
 type Settings {
