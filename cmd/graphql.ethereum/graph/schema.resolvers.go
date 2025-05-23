@@ -26,6 +26,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 	"github.com/fluidity-money/9lives.so/lib/types/referrer"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // OutcomeName is the resolver for the outcomeName field.
@@ -629,7 +630,10 @@ func (r *mutationResolver) SynchProfile(ctx context.Context, walletAddress strin
 		},
 	}
 	var res bool
-	err := r.DB.Table("ninelives_users_1").Create(&profile).Error
+	err := r.DB.Table("ninelives_users_1").Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "wallet_address"}},
+		DoUpdates: clause.AssignmentColumns([]string{"email"}),
+	}).Create(&profile).Error
 	if err != nil {
 		res = false
 		slog.Error("Error synching profile",
@@ -730,14 +734,18 @@ func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string,
 		)
 		return nil, fmt.Errorf("different signer for sig")
 	}
-	err = r.DB.Exec(`
-UPDATE ninelives_users_1
-SET settings = jsonb_set(settings, '{referrer}', to_jsonb(?::text), true)
-WHERE wallet_address = ?`,
-		referrer,
-		sender,
-	).
-		Error
+	var profile = types.Profile{
+		WalletAddress: strings.ToLower(sender),
+		Email:         "",
+		Settings: types.Settings{
+			Notification: true,
+			Referrer:     strings.ToLower(referrer),
+		},
+	}
+	err = r.DB.Table("ninelives_users_1").Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "wallet_address"}},
+		DoUpdates: clause.AssignmentColumns([]string{"settings"}),
+	}).Create(&profile).Error
 	if err != nil {
 		slog.Error("Failed to update the referrer for a user",
 			"error", err,
