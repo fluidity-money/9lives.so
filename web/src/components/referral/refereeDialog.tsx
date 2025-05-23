@@ -9,24 +9,39 @@ import TabButton from "../tabButton";
 import toast from "react-hot-toast";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useSenderByCode from "@/hooks/useSenderByCode";
+import { signMessage } from "thirdweb/utils";
+import { associateReferral } from "@/providers/graphqlClient";
+import { Signature } from "ethers";
 
 export default function RefereeDialog({ code }: { code: string }) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const {
-    data: sender,
+    data: referrer,
     isSuccess,
     isError,
     error,
     isLoading,
   } = useSenderByCode(code);
   const [inProgress, setInProgress] = useState(false);
-  async function syncAndConfim() {
+  async function signAndConfim() {
     if (!account) return connect();
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          if (!referrer) throw new Error("Referrer not found");
           setInProgress(true);
+          const signature = await signMessage({ message: referrer, account });
+          if (!signature) throw new Error("Signature not found");
+          const { r: rr, s, v } = Signature.from(signature);
+          if (!rr || !s || !v) throw new Error("Signature can not be splitted");
+          await associateReferral({
+            sender: account.address,
+            code,
+            rr,
+            s,
+            v: v.toString(),
+          });
           res(null);
         } catch (error) {
           rej(error);
@@ -49,7 +64,7 @@ export default function RefereeDialog({ code }: { code: string }) {
       </div>
     );
 
-  if (isError || (isSuccess && !sender))
+  if (isError || (isSuccess && !referrer))
     return (
       <div className="flex h-20 items-center justify-center">
         <p className="font-chicago">Ups something went wrong</p>
@@ -62,13 +77,13 @@ export default function RefereeDialog({ code }: { code: string }) {
       <div className="flex flex-col items-center justify-center gap-2">
         <p className="font-geneva uppercase">You are referred by</p>
         <span className="bg-9yellow px-2 py-1 text-xs text-9black">
-          {sender}
+          {referrer}
         </span>
       </div>
       <Button
         size={"xlarge"}
         disabled={inProgress}
-        onClick={syncAndConfim}
+        onClick={signAndConfim}
         intent={"cta"}
         title={inProgress ? "Loading..." : "SIGN AND CONFIRM"}
         className="w-full"
