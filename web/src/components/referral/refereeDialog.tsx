@@ -13,7 +13,13 @@ import { signMessage } from "thirdweb/utils";
 import { associateReferral } from "@/providers/graphqlClient";
 import { Signature } from "ethers";
 
-export default function RefereeDialog({ code }: { code: string }) {
+export default function RefereeDialog({
+  code,
+  close,
+}: {
+  code: string;
+  close: () => void;
+}) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const {
@@ -46,6 +52,7 @@ export default function RefereeDialog({ code }: { code: string }) {
             v: v === 27 ? "00" : "01",
           });
           res(associated);
+          close();
         } catch (error) {
           rej(error);
         } finally {

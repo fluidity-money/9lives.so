@@ -30,7 +30,7 @@ export default function ReferralHandler() {
       isOpen={isModalOpen}
       setIsOpen={setIsModalOpen}
     >
-      <RefereeDialog code={code} />
+      <RefereeDialog code={code} close={() => setIsModalOpen(false)} />
     </Modal>
   );
 }
