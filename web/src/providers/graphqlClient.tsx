@@ -355,3 +355,8 @@ export const associateReferral = ({
       rr,
     },
   });
+
+export const requestSenderByCode = (code: string) =>
+  graph9Lives.query.referrerByCode({
+    $: { code },
+  });

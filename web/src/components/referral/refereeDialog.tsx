@@ -1,14 +1,14 @@
 "use client";
 
-import useReferrerCode from "@/hooks/useReferrerCode";
 import LoadingIndicator from "../loadingIndicator";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import Button from "../themed/button";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import TabButton from "../tabButton";
 import toast from "react-hot-toast";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import useSenderByCode from "@/hooks/useSenderByCode";
 
 export default function RefereeDialog({ code }: { code: string }) {
   const account = useActiveAccount();
@@ -19,15 +19,13 @@ export default function RefereeDialog({ code }: { code: string }) {
     isError,
     error,
     isLoading,
-  } = useReferrerCode(account?.address);
+  } = useSenderByCode(code);
   const [inProgress, setInProgress] = useState(false);
   async function syncAndConfim() {
+    if (!account) return connect();
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account) {
-            await connect();
-          }
           setInProgress(true);
           res(null);
         } catch (error) {
@@ -62,7 +60,10 @@ export default function RefereeDialog({ code }: { code: string }) {
   return (
     <div className="mx-auto flex w-[70%] flex-col items-center justify-center gap-5 pb-8">
       <div className="flex flex-col items-center justify-center gap-2">
-        <p className="font-geneva uppercase">You are referred by {code}</p>
+        <p className="font-geneva uppercase">You are referred by</p>
+        <span className="bg-9yellow px-2 py-1 text-xs text-9black">
+          {sender}
+        </span>
       </div>
       <Button
         size={"xlarge"}
