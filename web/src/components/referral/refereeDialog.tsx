@@ -35,14 +35,14 @@ export default function RefereeDialog({ code }: { code: string }) {
           if (!signature) throw new Error("Signature not found");
           const { r: rr, s, v } = Signature.from(signature);
           if (!rr || !s || !v) throw new Error("Signature can not be splitted");
-          await associateReferral({
+          const associated = await associateReferral({
             sender: account.address,
             code,
-            rr,
-            s,
+            rr: rr.slice(2),
+            s: s.slice(2),
             v: v.toString(),
           });
-          res(null);
+          res(associated);
         } catch (error) {
           rej(error);
         } finally {
@@ -52,7 +52,7 @@ export default function RefereeDialog({ code }: { code: string }) {
       {
         loading: "Loading...",
         success: "Referrer confirmed",
-        error: "Confirmation failed",
+        error: (e) => `Confirmation failed: ${e.message ?? "Unknown error"}`,
       },
     );
   }
