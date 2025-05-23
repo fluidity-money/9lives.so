@@ -41,6 +41,7 @@ export namespace Schema {
       userLiquidity: Query.userLiquidity;
       referrersForAddress: Query.referrersForAddress;
       leaderboards: Query.leaderboards;
+      referrerByCode: Query.referrerByCode;
     };
   }
 
@@ -318,6 +319,23 @@ export namespace Schema {
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$LeaderboardWeekly;
+    }
+
+    /**
+     * Get referrer address by its generated code.
+     */
+    export interface referrerByCode extends $.OutputField {
+      name: "referrerByCode";
+      arguments: {
+        code: {
+          kind: "InputField";
+          name: "code";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
   }
 

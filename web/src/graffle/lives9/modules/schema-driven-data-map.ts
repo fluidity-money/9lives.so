@@ -459,6 +459,14 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     leaderboards: {
       // nt: LeaderboardWeekly, <-- Assigned later to avoid potential circular dependency.
     },
+    referrerByCode: {
+      a: {
+        code: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 

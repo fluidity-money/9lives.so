@@ -157,6 +157,14 @@ export interface Query<
   leaderboards?:
     | Query.leaderboards$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.leaderboards<_$Scalars>>;
+  /**
+   *
+   * Select the `referrerByCode` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  referrerByCode?:
+    | Query.referrerByCode<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.referrerByCode<_$Scalars>>;
 
   /**
    *
@@ -671,6 +679,44 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<leaderboards$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type referrerByCode<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = referrerByCode$SelectionSet<_$Scalars>;
+
+  export interface referrerByCode$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `referrerByCode` field. All arguments are required so you must include this.
+     */
+    $: referrerByCode$Arguments<_$Scalars>;
+  }
+
+  export interface referrerByCode$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    code: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `referrerByCode` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type referrerByCode$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<referrerByCode$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
