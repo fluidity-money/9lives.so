@@ -31,7 +31,10 @@ export default function RefereeDialog({ code }: { code: string }) {
         try {
           if (!referrer) throw new Error("Referrer not found");
           setInProgress(true);
-          const signature = await signMessage({ message: referrer, account });
+          const signature = await signMessage({
+            message: referrer.toLowerCase(),
+            account,
+          });
           if (!signature) throw new Error("Signature not found");
           const { r: rr, s, v } = Signature.from(signature);
           if (!rr || !s || !v) throw new Error("Signature can not be splitted");
@@ -40,7 +43,7 @@ export default function RefereeDialog({ code }: { code: string }) {
             code,
             rr: rr.slice(2),
             s: s.slice(2),
-            v: v.toString(),
+            v: v === 27 ? "00" : "01",
           });
           res(associated);
         } catch (error) {
