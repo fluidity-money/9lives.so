@@ -19,6 +19,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
 	ethCommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 // MaxImageSizeEncoded is 2 megabytes
@@ -88,8 +89,26 @@ func uploadTradingPicMaybePrecommit(ctx context.Context, uploadBucketName, pictu
 	return concatPicUrl, nil
 }
 
-// validateReferralSig, returning the signer of the blob given. Currently
-// simply returns the sender.
-func validateReferralSig(sender, referrer ethCommon.Address, rr, s, v []byte) (ethCommon.Address, error) {
-	return sender, nil
+func validateReferralSig(sender, referrer ethCommon.Address, r, s, v []byte) (ethCommon.Address, error) {
+	if len(r) != 32 || len(s) != 32 || len(v) != 1 {
+		return ethCommon.Address{}, fmt.Errorf("invalid signature parameters")
+	}
+
+	// Ethereum signed message prefix
+	msg := fmt.Sprintf("\x19Ethereum Signed Message:\n20%s", referrer.Hex())
+	msgHash := ethCommon.BytesToHash(crypto.Keccak256([]byte(msg)))
+
+	sig := append(r, append(s, v[0])...)
+
+	pubKey, err := crypto.SigToPub(msgHash.Bytes(), sig)
+	if err != nil {
+		return ethCommon.Address{}, fmt.Errorf("recovering signature: %v", err)
+	}
+
+	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
+	if recoveredAddr != sender {
+		return ethCommon.Address{}, fmt.Errorf("signature does not match sender")
+	}
+
+	return recoveredAddr, nil
 }
