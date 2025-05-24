@@ -22,27 +22,28 @@ export default function ReferrerDialog() {
     refetch,
   } = useReferrerCode(account?.address);
   const [genError, setGenError] = useState<string>();
-  async function generateCode() {
-    try {
-      if (!account?.address)
-        throw new Error("Connect your wallet to generate a referral code");
-      const code = generateReferralCode();
-      await genReferrer({ address: account.address, code });
-      await refetch();
-    } catch (error) {
-      setGenError(error instanceof Error ? error.message : "Unknown error");
-    }
-  }
+
   function handleCopy() {
     navigator.clipboard.writeText(`https://9lives.so/?referral=${code}`);
     toast.success("Referral link copied");
   }
 
   useEffect(() => {
+    async function generateCode() {
+      try {
+        if (!account?.address)
+          throw new Error("Connect your wallet to generate a referral code");
+        const code = generateReferralCode();
+        await genReferrer({ address: account.address, code });
+        await refetch();
+      } catch (error) {
+        setGenError(error instanceof Error ? error.message : "Unknown error");
+      }
+    }
     if (isSuccess && !code) {
       generateCode();
     }
-  }, [code, isSuccess]);
+  }, [code, isSuccess, account?.address, refetch]);
 
   if (isLoading || (isSuccess && !code))
     return (

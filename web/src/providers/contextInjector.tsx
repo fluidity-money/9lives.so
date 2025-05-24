@@ -28,7 +28,7 @@ export default function ContextInjector() {
       Object.entries(contracts).map(([key, value]) => [key, value.address]),
     );
     setContext("contracts", contractContexts);
-  }, [config.contracts]);
+  }, []);
 
   useEffect(() => {
     if (account?.address) {
