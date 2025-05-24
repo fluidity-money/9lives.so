@@ -655,6 +655,7 @@ func (r *mutationResolver) GenReferrer(ctx context.Context, walletAddress string
 	if !ethCommon.IsHexAddress(walletAddress) {
 		return "", fmt.Errorf("not wallet address")
 	}
+	walletAddress = strings.ToLower(walletAddress)
 	ipAddr := ctx.Value("ip addr").(string)
 	err := r.DB.Table("ninelives_referrer_1").Create(&referrer.Referrer{
 		Owner:     walletAddress,
@@ -1096,6 +1097,7 @@ func (r *queryResolver) ReferrersForAddress(ctx context.Context, address string)
 	if address == "" {
 		return nil, nil
 	}
+	address = strings.ToLower(address)
 	var codes []struct {
 		Code string
 	}
