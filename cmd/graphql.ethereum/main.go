@@ -127,7 +127,7 @@ func main() {
 			}),
 			PicturesUriBase:         UploadTradingPicsUrl,
 			LambdaClient:            lambdaClient,
-			LambdaMiscAiBackendName: adminSecret,
+			LambdaMiscAiBackendName: os.Getenv(EnvLambdaMiscAiBackend),
 			AdminSecret:             adminSecret,
 		},
 	}))
