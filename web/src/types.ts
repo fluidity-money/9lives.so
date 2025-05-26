@@ -28,6 +28,7 @@ export type Campaign = Omit<
 };
 export type CampaignDetail = Campaign & {
   investmentAmounts: { id: string; usdc: number; share: number }[];
+  liquidityVested: number;
 };
 export type Outcome = {
   name: string;
@@ -217,9 +218,11 @@ export class CampaignDto implements Campaign {
 }
 export class CampaignDetailDto extends CampaignDto {
   investmentAmounts: { id: string; usdc: number; share: number }[];
+  liquidityVested: number;
   constructor(rc: Awaited<ReturnType<typeof requestCampaignById>>) {
     if (!rc) throw new Error("Campaign dto can not be null");
     super(rc);
+    this.liquidityVested = rc.liquidityVested;
     this.investmentAmounts = rc.investmentAmounts.filter((a) => !!a);
   }
 }

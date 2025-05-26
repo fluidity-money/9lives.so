@@ -77,13 +77,25 @@ export default function DetailHeader({
             </div>
           )
         ) : (
-          <div className="flex shrink-0 flex-col items-center justify-center gap-2.5 md:items-end">
-            <span className="font-geneva text-xs uppercase text-[#808080]">
-              Total Campaign Vol:
-            </span>
-            <span className="font-chicago text-xl">
-              $ {formatFusdc(data.totalVolume, 2)}
-            </span>
+          <div className="flex items-center gap-2.5">
+            {isDpm ? null : (
+              <div className="flex shrink-0 flex-col items-center justify-center gap-2.5 md:items-end">
+                <span className="font-geneva text-xs uppercase text-[#808080]">
+                  Liq:
+                </span>
+                <span className="font-chicago text-xl">
+                  $ {formatFusdc(data.liquidityVested, 2)}
+                </span>
+              </div>
+            )}
+            <div className="flex shrink-0 flex-col items-center justify-center gap-2.5 md:items-end">
+              <span className="font-geneva text-xs uppercase text-[#808080]">
+                Total Campaign Vol:
+              </span>
+              <span className="font-chicago text-xl">
+                $ {formatFusdc(data.totalVolume, 2)}
+              </span>
+            </div>
           </div>
         )}
       </div>

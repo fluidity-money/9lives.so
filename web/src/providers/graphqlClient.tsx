@@ -170,6 +170,7 @@ export const requestCampaignById = (id: string) =>
         address: true,
       },
     },
+    liquidityVested: true,
     ending: true,
     starting: true,
     winner: true,
