@@ -19,6 +19,7 @@ import {
 } from "../serverData/getActions";
 import DegenModeFloatingButton from "@/components/degenMode/degenModeFloatingButton";
 import EmailSuggester from "@/components/emailSuggester";
+import Changelog from "@/components/changelog";
 
 const chicago = localFont({
   src: [
@@ -99,6 +100,7 @@ export default async function RootLayout({
           <Footer />
           <DegenModeFloatingButton />
           <EmailSuggester />
+          <Changelog />
         </Providers>
         <CookieBanner />
         <CustomToaster />

@@ -360,3 +360,9 @@ export const requestSenderByCode = (code: string) =>
   graph9Lives.query.referrerByCode({
     $: { code },
   });
+
+export const requestChangelog = () =>
+  graph9Lives.query.changelog({
+    afterTs: true,
+    html: true,
+  });

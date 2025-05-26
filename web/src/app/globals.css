@@ -167,3 +167,25 @@ body:not(.degen-mode) main {
 body:not(.degen-mode) main > div:first-child {
   @apply max-w-screen-xl;
 }
+
+.changelog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.changelog h2:not(:first-child) {
+  margin-top: 16px;
+}
+.changelog h2 {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: "chicago", sans-serif;
+}
+
+.changelog ul,
+ol {
+  list-style: square;
+  list-style-position: inside;
+}
