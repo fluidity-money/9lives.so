@@ -464,9 +464,14 @@ type Campaign {
   winner: String
 
   """
-  It returns total invested amount as usd
+  It returns total volume (buys+sells+vested) as usd
   """
   totalVolume: Int!
+
+  """
+  It returns current vested amount as usd
+  """
+  liquidityVested: Int!
 
   """
   Represents investment results bytes8 ids to amounts.

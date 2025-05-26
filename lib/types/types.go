@@ -22,6 +22,7 @@ type (
 		Content           CampaignContent       `json:"content"`
 		TotalVolume       int                   `json:"totalVolume"`
 		InvestmentAmounts InvestmentAmountsList `json:"investmentAmounts" gorm:"type:jsonb"`
+		LiquidityVested   int                   `json:"liquidityVested"`
 	}
 
 	InvestmentAmounts struct {
