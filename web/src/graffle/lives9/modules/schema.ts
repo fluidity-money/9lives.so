@@ -1039,6 +1039,7 @@ export namespace Schema {
       web: Campaign.web;
       winner: Campaign.winner;
       totalVolume: Campaign.totalVolume;
+      liquidityVested: Campaign.liquidityVested;
       investmentAmounts: Campaign.investmentAmounts;
       banners: Campaign.banners;
       categories: Campaign.categories;
@@ -1231,10 +1232,20 @@ export namespace Schema {
     }
 
     /**
-     * It returns total invested amount as usd
+     * It returns total volume (buys+sells+vested) as usd
      */
     export interface totalVolume extends $.OutputField {
       name: "totalVolume";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * It returns current vested amount as usd
+     */
+    export interface liquidityVested extends $.OutputField {
+      name: "liquidityVested";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;

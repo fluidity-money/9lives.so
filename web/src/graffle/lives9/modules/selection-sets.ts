@@ -2126,6 +2126,14 @@ export interface Campaign<
     | $Select.SelectAlias.SelectAlias<Campaign.totalVolume<_$Scalars>>;
   /**
    *
+   * Select the `liquidityVested` field on the `Campaign` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  liquidityVested?:
+    | Campaign.liquidityVested$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.liquidityVested<_$Scalars>>;
+  /**
+   *
    * Select the `investmentAmounts` field on the `Campaign` object. Its type is `InvestmentAmounts` (a `OutputObject` kind of type).
    *
    */
@@ -2685,6 +2693,36 @@ export namespace Campaign {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | totalVolume$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type liquidityVested<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | liquidityVested$SelectionSet<_$Scalars>;
+
+  export interface liquidityVested$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `liquidityVested` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type liquidityVested$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | liquidityVested$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------

@@ -178,6 +178,7 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     web: {},
     winner: {},
     totalVolume: {},
+    liquidityVested: {},
     investmentAmounts: {
       // nt: InvestmentAmounts, <-- Assigned later to avoid potential circular dependency.
     },
