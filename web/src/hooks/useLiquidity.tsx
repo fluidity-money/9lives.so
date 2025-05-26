@@ -50,6 +50,9 @@ export default function useLiquidity({
           queryClient.invalidateQueries({
             queryKey: ["campaign", campaignId],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["userLiquidity", account.address, tradingAddr],
+          });
           track(EVENTS.ADD_LIQUIDITY, {
             wallet: account.address,
             amount,
@@ -82,7 +85,7 @@ export default function useLiquidity({
             account,
           });
           queryClient.invalidateQueries({
-            queryKey: ["campaign", campaignId],
+            queryKey: ["userLiquidity", account.address, tradingAddr],
           });
           track(EVENTS.REMOVE_LIQUIDITY, {
             wallet: account.address,
@@ -113,6 +116,9 @@ export default function useLiquidity({
           await sendTransaction({
             transaction: claimLiquidityTx,
             account,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["userLiquidity", account.address, tradingAddr],
           });
           track(EVENTS.CLAIM_LIQUIDITY, {
             wallet: account.address,
