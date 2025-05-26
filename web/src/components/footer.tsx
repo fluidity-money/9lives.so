@@ -1,3 +1,5 @@
+"use client";
+import { useModalStore } from "@/stores/modalStore";
 import Link from "next/link";
 const gitHash = process.env.NEXT_PUBLIC_GIT_HASH;
 const socials = [
@@ -56,6 +58,7 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
   </Link>
 );
 export default function Footer() {
+  const { setModal } = useModalStore();
   return (
     <footer className="flex flex-col items-center justify-between gap-4 self-stretch border-t-2 border-t-black bg-9blueLight px-4 py-8 md:mb-0 md:flex-row">
       <nav className="flex flex-col items-center justify-start gap-4 text-xs md:flex-row">
@@ -64,6 +67,12 @@ export default function Footer() {
         ))}
       </nav>
       <nav className="flex flex-col items-center justify-end gap-4 text-xs md:flex-row">
+        <div
+          className="cursor-pointer font-chicago text-neutral-800 hover:underline"
+          onClick={() => setModal(true)}
+        >
+          What’s New?
+        </div>
         {socials.map((item) => (
           <MenuItem item={item} key={item.title} />
         ))}
