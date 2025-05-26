@@ -22,7 +22,8 @@ export default function ReferrerDialog() {
     refetch,
   } = useReferrerCode(account?.address);
   const [genError, setGenError] = useState<string>();
-
+  const post1 = `https://twitter.com/intent/tweet?text=Got%20a%20hot%20take%20on%20the%20future%3F%0AOn%209Lives%2C%20you%20can%20create%20your%20own%20market%2C%20trade%20on%20predictions%2C%20and%20earn.%0A%0AIt%E2%80%99s%20open%2C%20permissionless%2C%20and%20built%20on%20Superposition.%0A%0AJoin%20me%20here%3A%20https://9lives.so/?referral=${code}`;
+  const post2 = `https://twitter.com/intent/tweet?text=Think%20you%E2%80%99ve%20got%209Lives%3F%0A%0AExplore%20prediction%20markets%2C%20trade%20on%20outcomes%2C%20and%20earn%20fees%20and%20points%20on%20markets%20you%20create!%0A%0AJoin%20me%20here%3A%20https://9lives.so/?referral=${code}`;
   function handleCopy() {
     navigator.clipboard.writeText(`https://9lives.so/?referral=${code}`);
     toast.success("Referral link copied");
@@ -78,7 +79,8 @@ export default function ReferrerDialog() {
         <p className="font-chicago text-xs font-normal">
           Share To:{" "}
           <a
-            href="#"
+            href={Math.random() > 0.5 ? post1 : post2}
+            rel="noreferrer"
             target="_blank"
             className="font-geneva uppercase underline"
           >
