@@ -395,19 +395,5 @@ export default async function detailImageGenerator(id: string) {
         </div>
       </div>
     ),
-    {
-      fonts: [
-        // {
-        //   name: "chicago",
-        //   data: chicagoFont,
-        //   style: "normal",
-        // },
-        // {
-        //   name: "Geneva",
-        //   data: genevaFont,
-        //   style: "normal",
-        // },
-      ],
-    },
   );
 }
