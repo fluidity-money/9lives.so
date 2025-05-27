@@ -9,11 +9,13 @@ import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/formatFusdc";
-import fs from "fs";
-import path from "path";
+// import fs from "fs";
+// import path from "path";
 
-const chicagoFont = fs.readFileSync(path.resolve("./fonts/chicago-12.ttf"));
-const genevaFont = fs.readFileSync(path.resolve("./fonts/geneva-9.ttf"));
+// const chicagoFont = fs.readFileSync(
+//   path.resolve("./public/fonts/chicago-12.ttf"),
+// );
+// const genevaFont = fs.readFileSync(path.resolve("./public/fonts/geneva-9.ttf"));
 
 async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
   const provider = new ethers.JsonRpcProvider(config.chains.currentChain.rpc);
@@ -395,16 +397,16 @@ export default async function detailImageGenerator(id: string) {
     ),
     {
       fonts: [
-        {
-          name: "chicago",
-          data: chicagoFont,
-          style: "normal",
-        },
-        {
-          name: "Geneva",
-          data: genevaFont,
-          style: "normal",
-        },
+        // {
+        //   name: "chicago",
+        //   data: chicagoFont,
+        //   style: "normal",
+        // },
+        // {
+        //   name: "Geneva",
+        //   data: genevaFont,
+        //   style: "normal",
+        // },
       ],
     },
   );
