@@ -12,10 +12,8 @@ import formatFusdc from "@/utils/formatFusdc";
 import fs from "fs";
 import path from "path";
 
-const chicagoFont = fs.readFileSync(
-  path.resolve("./public/fonts/chicago-12.ttf"),
-);
-const genevaFont = fs.readFileSync(path.resolve("./public/fonts/geneva-9.ttf"));
+const chicagoFont = fs.readFileSync(path.resolve("./fonts/chicago-12.ttf"));
+const genevaFont = fs.readFileSync(path.resolve("./fonts/geneva-9.ttf"));
 
 async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
   const provider = new ethers.JsonRpcProvider(config.chains.currentChain.rpc);
