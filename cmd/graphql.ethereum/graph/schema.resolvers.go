@@ -888,13 +888,13 @@ SELECT
     	nc.*,
 		ci.investment_amounts,
 		(
-			(SELECT SUM(fusdc_amt)
+			COALESCE((SELECT SUM(fusdc_amt)
 			FROM ninelives_events_liquidity_added nela 
-			WHERE emitter_addr = nc.content->>'poolAddress')
+			WHERE emitter_addr = nc.content->>'poolAddress')), 0)
         	-
-			(SELECT SUM(fusdc_amt)
+			COALESCE((SELECT SUM(fusdc_amt)
 			FROM ninelives_events_liquidity_removed nelr 
-			WHERE emitter_addr = nc.content->>'poolAddress')
+			WHERE emitter_addr = nc.content->>'poolAddress')), 0)
     	) AS liquidity_vested
 		FROM
 			ninelives_campaigns_1 nc
