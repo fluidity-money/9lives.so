@@ -76,28 +76,7 @@ export default function DetailHeader({
               </span>
             </div>
           )
-        ) : (
-          <div className="flex flex-col items-center gap-2.5">
-            {isDpm ? null : (
-              <div className="flex shrink-0 flex-row items-center justify-center gap-2.5">
-                <span className="font-geneva text-xs uppercase text-[#808080]">
-                  Liq:
-                </span>
-                <span className="font-chicago text-sm">
-                  ${formatFusdc(data.liquidityVested, 2)}
-                </span>
-              </div>
-            )}
-            <div className="flex shrink-0 flex-row items-center justify-center gap-2.5">
-              <span className="font-geneva text-xs uppercase text-[#808080]">
-                Vol:
-              </span>
-              <span className="font-chicago text-sm">
-                ${formatFusdc(data.totalVolume, 2)}
-              </span>
-            </div>
-          </div>
-        )}
+        ) : null}
       </div>
       <div className="flex flex-col items-center justify-between gap-2.5 md:flex-row">
         <span
@@ -119,31 +98,55 @@ export default function DetailHeader({
           </span>
         ) : (
           <div className="flex flex-col items-center gap-2.5 md:flex-row">
-            {userLiquidity && +userLiquidity > 0 ? (
-              isConcluded ? (
-                <ClaimLiquidityButton
-                  campaignId={data.identifier}
-                  tradingAddr={data.poolAddress}
-                />
-              ) : (
-                <RemoveLiquidityButton
-                  name={data.name}
-                  campaignId={data.identifier}
-                  tradingAddr={data.poolAddress}
-                  liquidity={userLiquidity}
-                />
-              )
-            ) : null}
-            {!isConcluded && isDpm !== undefined && !isDpm && (
-              <AddLiquidityButton
-                name={data.name}
-                campaignId={data.identifier}
-                tradingAddr={data.poolAddress}
-              />
-            )}
             <WatchlistButton data={data} />
           </div>
         )}
+      </div>
+      <div className="md::flex-row flex flex-col items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex shrink-0 flex-row items-center justify-start gap-2.5">
+            <span className="font-geneva text-xs uppercase text-[#808080]">
+              Volume:
+            </span>
+            <span className="font-chicago text-sm">
+              ${formatFusdc(data.totalVolume, 2)}
+            </span>
+          </div>
+          {isDpm ? null : (
+            <div className="flex shrink-0 flex-row items-center justify-start gap-2.5">
+              <span className="font-geneva text-xs uppercase text-[#808080]">
+                Liquidity:
+              </span>
+              <span className="font-chicago text-sm">
+                ${formatFusdc(data.liquidityVested, 2)}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2.5">
+          {userLiquidity && +userLiquidity > 0 ? (
+            isConcluded ? (
+              <ClaimLiquidityButton
+                campaignId={data.identifier}
+                tradingAddr={data.poolAddress}
+              />
+            ) : (
+              <RemoveLiquidityButton
+                name={data.name}
+                campaignId={data.identifier}
+                tradingAddr={data.poolAddress}
+                liquidity={userLiquidity}
+              />
+            )
+          ) : null}
+          {!isConcluded && isDpm !== undefined && !isDpm && (
+            <AddLiquidityButton
+              name={data.name}
+              campaignId={data.identifier}
+              tradingAddr={data.poolAddress}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
