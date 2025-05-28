@@ -25,6 +25,9 @@ import DownIcon from "#/icons/down-caret.svg";
 import useReturnValue from "@/hooks/useReturnValue";
 import useDpmChances from "@/hooks/useDpmChances";
 import formatFusdc from "@/utils/formatFusdc";
+import Zapper from "../zapper";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
+import useBuyWithZaps from "@/hooks/useBuyWithZaps";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -44,7 +47,9 @@ export default function DetailBuyAction({
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
+  const enabledLifiZaps = useFeatureFlag("enable lifi zaps");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
+  const [isZapModalOpen, setZapModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
   const outcome = selectedOutcome
@@ -57,6 +62,19 @@ export default function DetailBuyAction({
       .number()
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
+  const formSchemaWithZap = z.object({
+    fusdc: z.coerce
+      .number()
+      .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
+    toChain: z.number().min(0),
+    toToken: z.string(),
+    fromChain: z
+      .number({ message: "You need to select a chain to pay from" })
+      .min(0),
+    fromToken: z.string({ message: "You need to select a token to pay with" }),
+    fromTokenName: z.string().optional(),
+    fromChainName: z.string().optional(),
+  });
   const chanceAmm = Number(price) * 100;
   const dpmChance = useDpmChances({
     investmentAmounts: data.investmentAmounts,
@@ -64,7 +82,7 @@ export default function DetailBuyAction({
     outcomeIds: [selectedOutcome.id as `0x${string}`],
   })?.[0]?.chance;
   const chance = isDpm ? dpmChance : chanceAmm;
-  type FormData = z.infer<typeof formSchema>;
+  type FormData = z.infer<typeof formSchemaWithZap>;
   const {
     register,
     watch,
@@ -74,18 +92,26 @@ export default function DetailBuyAction({
     formState: { errors },
   } = useForm<FormData>({
     disabled: shouldStopAction,
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(enabledLifiZaps ? formSchemaWithZap : formSchema),
     defaultValues: {
       fusdc: 0,
     },
   });
   const fusdc = watch("fusdc");
+  const fromChain = watch("fromChainName");
+  const fromToken = watch("fromTokenName");
   const { buy } = useBuy({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
     campaignId: data.identifier,
     outcomeId: outcome.identifier,
     openFundModal: () => setFundModalOpen(true),
+  });
+  const { buyWithZaps } = useBuyWithZaps({
+    tradingAddr: data.poolAddress,
+    shareAddr: outcome.share.address,
+    campaignId: data.identifier,
+    outcomeId: outcome.identifier,
   });
   const { data: estimatedSharesToGet } = useReturnValue({
     outcomeId: outcome.identifier,
@@ -114,10 +140,14 @@ export default function DetailBuyAction({
       value: `$${isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet}`,
     },
   ];
-  async function handleBuy({ fusdc }: FormData) {
+  async function handleBuy({ fusdc, fromChain, fromToken }: FormData) {
     try {
       setIsMinting(true);
-      await buy(account!, fusdc, data.outcomes);
+      if (enabledLifiZaps) {
+        await buyWithZaps(account!, fusdc, fromChain, fromToken, data.outcomes);
+      } else {
+        await buy(account!, fusdc, data.outcomes);
+      }
     } finally {
       setIsMinting(false);
     }
@@ -218,23 +248,25 @@ export default function DetailBuyAction({
         </div>
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2.5">
-            <div
-              className={combineClass(
-                minimized ? "hidden" : "flex",
-                "items-center justify-between md:flex",
-              )}
-            >
-              <span className="font-chicago text-xs font-normal text-9black">
-                Asset to spend
-              </span>
-              <Button
-                disabled={shouldStopAction || !account}
-                onClick={setToMaxShare}
-                intent={"default"}
-                size={"small"}
-                title="Max"
-              />
-            </div>
+            {enabledLifiZaps ? null : (
+              <div
+                className={combineClass(
+                  minimized ? "hidden" : "flex",
+                  "items-center justify-between md:flex",
+                )}
+              >
+                <span className="font-chicago text-xs font-normal text-9black">
+                  Asset to spend
+                </span>
+                <Button
+                  disabled={shouldStopAction || !account}
+                  onClick={setToMaxShare}
+                  intent={"default"}
+                  size={"small"}
+                  title="Max"
+                />
+              </div>
+            )}
             <div className="flex gap-2.5">
               <div className={combineClass(minimized && "hidden md:block")}>
                 <AssetSelector disabled />
@@ -262,6 +294,47 @@ export default function DetailBuyAction({
               />
             </div>
             {errors.fusdc && <ErrorInfo text={errors.fusdc.message} />}
+            {enabledLifiZaps ? (
+              <>
+                <div
+                  className={combineClass(
+                    minimized ? "hidden" : "flex",
+                    "items-center justify-between md:flex",
+                  )}
+                >
+                  <span className="font-chicago text-xs font-normal text-9black">
+                    Pay with
+                  </span>
+                </div>
+                <div
+                  className="flex h-[42px] cursor-pointer items-center gap-2.5 border border-9black bg-9gray px-4 py-2 font-geneva text-sm shadow-9input focus:outline-none focus-visible:ring-1 focus-visible:ring-9black"
+                  onClick={() => setZapModalOpen(true)}
+                >
+                  {!fromChain && !fromToken ? (
+                    <span className="text-9black/50">
+                      Select a chain and token
+                    </span>
+                  ) : (
+                    <>
+                      <div className="flex gap-1">
+                        CHAIN:
+                        <span>{fromChain}</span>
+                      </div>
+                      <div className="flex gap-1">
+                        TOKEN:
+                        <span>{fromToken}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+                {errors.fromChain && (
+                  <ErrorInfo text={errors.fromChain.message} />
+                )}
+                {errors.fromToken && (
+                  <ErrorInfo text={errors.fromToken.message} />
+                )}
+              </>
+            ) : null}
           </div>
           <div
             className={combineClass(
@@ -304,6 +377,13 @@ export default function DetailBuyAction({
           title={data.name}
           fundToBuy={fusdc}
         />
+      </Modal>
+      <Modal
+        isOpen={isZapModalOpen}
+        setIsOpen={setZapModalOpen}
+        title="SELECT TO PAY WITH"
+      >
+        <Zapper setValue={setValue} close={() => setZapModalOpen(false)} />
       </Modal>
     </>
   );

@@ -27,7 +27,10 @@ export default function ReactQueryProvider({
     const client = new QueryClient();
 
     client.setQueryDefaults(["features"], {
-      queryFn: () => fetch(appConfig.NEXT_PUBLIC_FEATURES_URL),
+      queryFn: async () => {
+        const res = await fetch(appConfig.NEXT_PUBLIC_FEATURES_URL);
+        return await res.json();
+      },
     });
 
     client.setQueryData(
