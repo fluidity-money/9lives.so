@@ -1,4 +1,19 @@
 
+## 28-07-25 Leaderboards now include referrers, volume, and created volume
+
+🚀 Leaderboard Upgrade! 🎉
+
+The (Leaderboard tab)[https://9lives.so/leaderboard] just got even better—now you can
+track your earnings across three exciting new views:
+
+💸 Referral Fees Earned: See exactly how much you've made by referring others!
+
+📈 Your Volume: Check out the trading volume you've personally generated!
+
+🏟️ Market Volume: Discover how much action your markets have attracted!
+
+Get in there and see how you're stacking up! 🏆✨
+
 ## 25-07-25 Referrers released
 
 Welcome to the first changelog that we'll be displaying to users.
