@@ -3,7 +3,7 @@
 
 🚀 Leaderboard Upgrade! 🎉
 
-The (Leaderboard tab)[https://9lives.so/leaderboard] just got even better—now you can
+The [Leaderboard tab](https://9lives.so/leaderboard) just got even better—now you can
 track your earnings across three exciting new views:
 
 💸 Referral Fees Earned: See exactly how much you've made by referring others!
