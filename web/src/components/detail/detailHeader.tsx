@@ -106,7 +106,7 @@ export default function DetailHeader({
         <div className="flex items-center gap-2.5">
           <div className="flex shrink-0 flex-row items-center justify-start gap-2.5">
             <span className="font-geneva text-xs uppercase text-[#808080]">
-              Volume:
+              {isDpm ? "TVL:" : "Volume:"}
             </span>
             <span className="font-chicago text-sm">
               ${formatFusdc(data.totalVolume, 2)}
