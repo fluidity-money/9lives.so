@@ -7,6 +7,7 @@ on:
     paths:
       - 'lib/**'
       - 'cmd/graphql.ethereum/**'
+      - 'CHANGELOG.md'
   workflow_dispatch:
 
 jobs:
