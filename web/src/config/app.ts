@@ -1,6 +1,15 @@
-import { InfraMarketState } from "@/types";
 import z from "zod";
-
+enum InfraMarketState {
+  Callable,
+  Closable,
+  Whinging,
+  Predicting,
+  Revealing,
+  Declarable,
+  Sweeping,
+  Closed,
+  Loading,
+}
 const metadata = {
   title: "9Lives.so",
   description: "The most advanced prediction market",
