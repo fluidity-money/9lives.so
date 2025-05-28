@@ -102,7 +102,7 @@ export default function DetailHeader({
           </div>
         )}
       </div>
-      <div className="md::flex-row flex flex-col items-center justify-between gap-2.5">
+      <div className="flex flex-col items-center justify-between gap-2.5 md:flex-row">
         <div className="flex items-center gap-2.5">
           <div className="flex shrink-0 flex-row items-center justify-start gap-2.5">
             <span className="font-geneva text-xs uppercase text-[#808080]">
