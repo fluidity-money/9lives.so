@@ -366,8 +366,8 @@ export default function DetailBuyAction({
                         className={combineClass(
                           chain.id === fromChain
                             ? "border-2 border-9black"
-                            : "border border-9black/50",
-                          "size-6",
+                            : "border border-9black/50 grayscale",
+                          "size-8",
                         )}
                       />
                     </div>
