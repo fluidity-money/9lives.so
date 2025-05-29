@@ -8,7 +8,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract NinelivesCash is Initializable, ERC20Upgradeable, OwnableUpgradeable, ERC20PermitUpgradeable {
-    uint256 public mapping(address => uint256) debt;
+    mapping(address => uint256) public debt;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {

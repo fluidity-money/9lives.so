@@ -64,6 +64,8 @@ contract-trading-amm-extras: contract-trading-amm-extras.wasm
 contract-trading-amm-quotes: contract-trading-amm-quotes.wasm
 contract-trading-amm-price: contract-trading-amm-price.wasm
 
+contract-trading-amm-extras-admin: contract-trading-amm-extras-admin.wasm
+
 contract-lockup: contract-lockup.wasm
 
 contract-infra-market: contract-infra-market.wasm
@@ -142,6 +144,11 @@ contract-infra-market-testing.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-infra-market-testing${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-infra-market-testing.wasm
 
+contract-trading-amm-extras-admin.wasm: $(shell find src -type f -name '*.rs')
+	@rm -f contract-trading-amm-extras-admin.wasm
+	@${CARGO_BUILD_STYLUS} contract-trading-extras-admin${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-trading-amm-extras-admin.wasm
+
 clean:
 	@rm -rf \
 		contract-beauty-contest.wasm \
@@ -150,6 +157,7 @@ clean:
 		contract-infra-market.wasm \
 		contract-lockup.wasm \
 		contract-trading-amm-extras.wasm \
+		contract-trading-amm-extras-admin.wasm \
 		contract-trading-amm-mint.wasm \
 		contract-trading-dpm-extras.wasm \
 		contract-trading-dpm-mint.wasm \

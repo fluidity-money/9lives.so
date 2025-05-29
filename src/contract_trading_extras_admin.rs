@@ -1,0 +1,22 @@
+// This exports user_entrypoint, which we need to have the entrypoint code.
+pub use crate::storage_trading::*;
+
+#[cfg_attr(feature = "contract-trading-extras-admin", stylus_sdk::prelude::public)]
+impl StorageTrading {
+    // Shift drains what the team considers "junk" liquidity (a poorly
+    // made market that slipped through the cracks) during a promotion
+    // and sends it as liquidity to another market. It should be used
+    // with an excessive amounts of caution and communication. It
+    // will not liquidate any shares that the user would otherwise have
+    // received, making it inappropriate to be used in any circumstance
+    // other than a user has created a junk campaign with seed liquidity
+    // that we want to redistribute.
+    pub fn shift(&mut self, user: Address, target: Address) -> R<U256> {
+        assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
+        let (fusdc_amt, _, _) = self.internal_amm_remove_liquidity(
+            self.amm_user_liquidity_shares.get(user),
+            contract_address(),
+        )?;
+        trading_call::add_liquidity(target, fusdc_amt, user)
+    }
+}

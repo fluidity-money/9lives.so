@@ -3,27 +3,27 @@
 package ai
 
 import (
-	"fmt"
 	"context"
-	"strings"
-	"encoding/json"
 	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
 )
 
-// RequestCategorySuggestions, using the internal RPC endpoint for doing
-// so and the private model.
-func RequestCategorySuggestions(c *lambda.Client, ctx context.Context, fname, content string) (categories []string, err error) {
-	contentB, err := json.Marshal(struct{
+// RequestFromAI with the AI resolver using the Lambda given.
+func RequestFromAi(c *lambda.Client, ctx context.Context, fname, key, content string) (categories []string, err error) {
+	contentB, err := json.Marshal(struct {
+		Key     string `json:"key"`
 		Content string `json:"content"`
-	}{content})
+	}{key, content})
 	if err != nil {
 		return nil, fmt.Errorf("encoding json: %v", err)
 	}
 	resp, err := c.Invoke(ctx, &lambda.InvokeInput{
 		FunctionName: &fname,
-		Payload: contentB,
+		Payload:      contentB,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("invoke: %v", err)

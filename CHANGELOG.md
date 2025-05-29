@@ -1,4 +1,9 @@
 
+## 29-07-2025 Buy from any chain!
+
+Now you can seamlessly purchase outcomes using assets from any chain, Arbitrum, Ethereum,
+Bitcoin, and beyond! 🌐💸 No more juggling wallets, just effortless multi-chain action!
+
 ## 28-07-2025 Leaderboards now include referrers, volume, and created volume
 
 🚀 Leaderboard Upgrade! 🎉

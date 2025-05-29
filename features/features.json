@@ -5,5 +5,7 @@
 	"ai for categories": true,
 	"admin features are enabled": true,
 	"referrer needs to verify": false,
-	"enable lifi zaps": false
+	"enable lifi zaps": false,
+	"ai for asking if a campaign makes sense": false
 }
+

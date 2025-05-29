@@ -60,7 +60,7 @@ pub struct StorageTrading {
 
     /// Operator account that's able to drain funds from this campaign once
     /// it's concluded, as well as set the fee for SPN.
-    pub operator: StorageAddress,
+    pub __unused: StorageAddress,
 
     /// The current mint fee for the creator. 2 = 0.2%.
     pub fee_creator: StorageU256,

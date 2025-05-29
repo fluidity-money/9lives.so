@@ -144,6 +144,7 @@ The error table lives in ERRORS.md.
 | Helper factory                | `0x6e95B1fcca9aBb2D94213AE3ccFCaf5BB8406E6B` |
 | Buy helper2                   | `0xEBBfeAcbbD331466512A362BEa782e1f7CB45b57` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
+| Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
 
 ### Superposition testnet
 

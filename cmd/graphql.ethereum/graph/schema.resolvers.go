@@ -353,6 +353,26 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			return nil, fmt.Errorf("error retrieving oracle type")
 		}
 	}
+	err = r.F.On(features.FeatureUseAiForCheckingIfCampaignMakesSense, func() error {
+		_, err = ai.RequestFromAi(
+			r.LambdaClient,
+			ctx,
+			r.LambdaMiscAiBackendName,
+			"is legit",
+			name,
+		)
+		if err != nil {
+			slog.Error("Failed to look up a request for if a campaign is legit",
+				"name", name,
+				"err", err,
+			)
+			return fmt.Errorf("failed to look up request: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
 	// Create the campaign object
 	campaignId, _ := crypto.GetCampaignId(name, description, uint64(seed))
 	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
@@ -478,10 +498,11 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	}
 	var categories []string
 	err = r.F.On(features.FeatureUseAIForCategories, func() error {
-		categories, err = ai.RequestCategorySuggestions(
+		categories, err = ai.RequestFromAi(
 			r.LambdaClient,
 			ctx,
 			r.LambdaMiscAiBackendName,
+			"categories",
 			name,
 		)
 		if err != nil {
@@ -890,13 +911,13 @@ SELECT
 		(
     		COALESCE(
     		    (SELECT SUM(fusdc_amt)
-    		     FROM ninelives_events_liquidity_added nela 
+    		     FROM ninelives_events_liquidity_added nela
     		     WHERE emitter_addr = nc.content->>'poolAddress'), 0
     		)
     		-
     		COALESCE(
     		    (SELECT SUM(fusdc_amt)
-    		     FROM ninelives_events_liquidity_removed nelr 
+    		     FROM ninelives_events_liquidity_removed nelr
     		     WHERE emitter_addr = nc.content->>'poolAddress'), 0
     		)
 		) AS liquidity_vested

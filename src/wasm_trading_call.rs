@@ -99,3 +99,19 @@ pub fn time_ending(addr: Address) -> Result<u64, Error> {
     };
     unpack_u64(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
+
+pub fn add_liquidity(addr: Address, amt: U256, recipient: Address) -> Result<U256, Error> {
+    let b = unsafe {
+        RawCall::new()
+            .call(
+                addr,
+                &addLiquidityA975D995Call {
+                    liquidity: amt,
+                    recipient,
+                }
+                .abi_encode(),
+            )
+            .map_err(Error::TradingError)?
+    };
+    unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
+}

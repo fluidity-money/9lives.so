@@ -157,7 +157,8 @@ macro_rules! harness_dbg {
         let msg = alloc::format!("[{}:{}] {} = {:#?}\n", file!(), line!(), stringify!(($($vals),+)), &tup);
         unsafe { $crate::log_txt(msg.as_ptr(), msg.len()) };
         tup
-    }};}
+    }};
+}
 
 #[cfg(all(
     target_arch = "wasm32",
@@ -173,6 +174,9 @@ macro_rules! harness_dbg {
         feature = "contract-beauty-contest",
         feature = "contract-infra-market-testing",
         feature = "contract-trading-dumper",
+        // These are only enabled under special circumstances, and aren't
+        // included in the default scaffolding.
+        feature = "contract-trading-extras-admin"
     ))
 ))]
 compile_error!("one of the contract-* features must be enabled!");
