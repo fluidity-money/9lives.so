@@ -1,5 +1,5 @@
 import Button from "@/components/themed/button";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
@@ -48,7 +48,8 @@ export default function DetailBuyAction({
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
-  const enabledLifiZaps = useFeatureFlag("enable lifi zaps");
+  const state = useFeatureFlag("enable lifi zaps");
+  const enabledLifiZaps = !state;
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
@@ -190,7 +191,11 @@ export default function DetailBuyAction({
       };
     }
   }, []);
-
+  const handleNetworkChange = (id: number) => setValue("fromChain", id);
+  const handleTokenChange = useCallback(
+    (addr: string) => setValue("fromToken", addr),
+    [setValue],
+  );
   return (
     <>
       <ShadowCard
@@ -301,9 +306,7 @@ export default function DetailBuyAction({
                     isSuccess={isTokensSuccess}
                     fromToken={fromToken}
                     fromChain={fromChain}
-                    setValue={function setToken(addr: string) {
-                      setValue("fromToken", addr);
-                    }}
+                    setValue={handleTokenChange}
                   />
                 ) : (
                   <div
@@ -356,7 +359,7 @@ export default function DetailBuyAction({
                   {config.supportedCrossChains.map((chain) => (
                     <div
                       key={chain.id}
-                      onClick={() => setValue("fromChain", chain.id)}
+                      onClick={() => handleNetworkChange(chain.id)}
                       title={chain.name}
                       className="cursor-pointer"
                     >
