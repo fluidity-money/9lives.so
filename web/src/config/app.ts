@@ -1,4 +1,12 @@
 import z from "zod";
+import ETH from "#/images/chains/ethereum.svg";
+import SPN from "#/images/chains/superposition.svg";
+import ARB from "#/images/chains/arbitrum.svg";
+import OP from "#/images/chains/optimism.svg";
+import BSC from "#/images/chains/bsc.svg";
+import POL from "#/images/chains/polygon.svg";
+import BASE from "#/images/chains/base.svg";
+import AVAX from "#/images/chains/avax.svg";
 enum InfraMarketState {
   Callable,
   Closable,
@@ -98,7 +106,57 @@ const appSchema = z.object({
       "Jailtime.fun",
     ]),
   ),
+  supportedCrossChains: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      img: z.any(),
+    }),
+  ),
 });
+
+const supportedCrossChains = [
+  {
+    id: 55244,
+    name: "Superposition",
+    img: SPN,
+  },
+  {
+    id: 42161,
+    name: "Arbitrum One",
+    img: ARB,
+  },
+  {
+    id: 1,
+    name: "Ethereum Mainnet",
+    img: ETH,
+  },
+  {
+    id: 56,
+    name: "Binance Smart Chain",
+    img: BSC,
+  },
+  {
+    id: 43114,
+    name: "Avalanche C-Chain",
+    img: AVAX,
+  },
+  {
+    id: 10,
+    name: "Optimism",
+    img: OP,
+  },
+  {
+    id: 8453,
+    name: "Base",
+    img: BASE,
+  },
+  {
+    id: 137,
+    name: "Polygon",
+    img: POL,
+  },
+];
 
 const appVars = appSchema.safeParse({
   metadata,
@@ -108,6 +166,7 @@ const appVars = appSchema.safeParse({
     fees: infraMarketStateFees,
   },
   categories,
+  supportedCrossChains,
 });
 
 if (!appVars.success) {
