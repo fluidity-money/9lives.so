@@ -257,3 +257,14 @@ export type Activity = NonNullable<
 export type ClaimedRewards = NonNullable<
   Awaited<ReturnType<typeof requestUserClaims>>[number]
 >;
+
+export type Token = {
+  chainId: number;
+  address: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  priceUSD: string;
+  coinKey: string;
+  logoURI: string;
+};

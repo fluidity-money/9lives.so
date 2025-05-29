@@ -6,7 +6,7 @@ import OP from "#/images/chains/optimism.svg";
 import BSC from "#/images/chains/bsc.svg";
 import POL from "#/images/chains/polygon.svg";
 import BASE from "#/images/chains/base.svg";
-import AVAX from "#/images/chains/avax.svg";
+import AVAX from "#/images/chains/avalanche.svg";
 enum InfraMarketState {
   Callable,
   Closable,

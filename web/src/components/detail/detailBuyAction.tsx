@@ -25,9 +25,10 @@ import DownIcon from "#/icons/down-caret.svg";
 import useReturnValue from "@/hooks/useReturnValue";
 import useDpmChances from "@/hooks/useDpmChances";
 import formatFusdc from "@/utils/formatFusdc";
-import Zapper from "../zapper";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useBuyWithZaps from "@/hooks/useBuyWithZaps";
+import USDCImg from "#/images/usdc.svg";
+import useTokens from "@/hooks/useTokens";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -49,7 +50,6 @@ export default function DetailBuyAction({
 }) {
   const enabledLifiZaps = useFeatureFlag("enable lifi zaps");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
-  const [isZapModalOpen, setZapModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
   const outcome = selectedOutcome
@@ -58,12 +58,12 @@ export default function DetailBuyAction({
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z.object({
-    fusdc: z.coerce
+    supply: z.coerce
       .number()
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
   const formSchemaWithZap = z.object({
-    fusdc: z.coerce
+    supply: z.coerce
       .number()
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
     toChain: z.number().min(0),
@@ -72,8 +72,6 @@ export default function DetailBuyAction({
       .number({ message: "You need to select a chain to pay from" })
       .min(0),
     fromToken: z.string({ message: "You need to select a token to pay with" }),
-    fromTokenName: z.string().optional(),
-    fromChainName: z.string().optional(),
   });
   const chanceAmm = Number(price) * 100;
   const dpmChance = useDpmChances({
@@ -94,12 +92,17 @@ export default function DetailBuyAction({
     disabled: shouldStopAction,
     resolver: zodResolver(enabledLifiZaps ? formSchemaWithZap : formSchema),
     defaultValues: {
-      fusdc: 0,
+      supply: 0,
+      toChain: 55244,
+      toToken: config.NEXT_PUBLIC_FUSDC_ADDR,
+      fromChain: 55244,
+      fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
     },
   });
-  const fusdc = watch("fusdc");
-  const fromChain = watch("fromChainName");
-  const fromToken = watch("fromTokenName");
+  const supply = watch("supply");
+  const fromChain = watch("fromChain");
+  const fromToken = watch("fromToken");
+  const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
   const { buy } = useBuy({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
@@ -113,40 +116,50 @@ export default function DetailBuyAction({
     campaignId: data.identifier,
     outcomeId: outcome.identifier,
   });
+  const usdValue = tokens
+    ? supply *
+      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+    : supply;
   const { data: estimatedSharesToGet } = useReturnValue({
     outcomeId: outcome.identifier,
     shareAddr: outcome.share.address,
     tradingAddr: data.poolAddress,
-    fusdc: fusdc,
+    fusdc: usdValue,
   });
   const sharesToGet = formatFusdc(estimatedSharesToGet ?? 0, 2);
   const estimatedWinForDpm = usePotentialReturn({
     investmentAmounts: data.investmentAmounts,
     outcomeId: outcome.identifier,
-    fusdc,
-    share: fusdc / Number(price),
+    fusdc: usdValue,
+    share: supply / Number(price),
   });
   const orderSummary = [
     {
       title: "AVG Price",
-      value: `$${isDpm ? price : (isNaN(fusdc / +sharesToGet) ? 0 : fusdc / +sharesToGet).toFixed(2)}`,
+      value: `$${isDpm ? price : (isNaN(usdValue / +sharesToGet) ? 0 : usdValue / +sharesToGet).toFixed(2)}`,
     },
     {
       title: "Shares To Get",
-      value: isDpm ? (fusdc / Number(price)).toFixed(2) : sharesToGet,
+      value: isDpm ? (usdValue / Number(price)).toFixed(2) : sharesToGet,
     },
     {
       title: "To Win 💵",
       value: `$${isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet}`,
     },
   ];
-  async function handleBuy({ fusdc, fromChain, fromToken }: FormData) {
+  async function handleBuy({ supply, fromChain, fromToken }: FormData) {
     try {
       setIsMinting(true);
       if (enabledLifiZaps) {
-        await buyWithZaps(account!, fusdc, fromChain, fromToken, data.outcomes);
+        await buyWithZaps(
+          account!,
+          supply,
+          fromChain,
+          fromToken,
+          data.outcomes,
+        );
       } else {
-        await buy(account!, fusdc, data.outcomes);
+        await buy(account!, supply, data.outcomes);
       }
     } finally {
       setIsMinting(false);
@@ -164,11 +177,10 @@ export default function DetailBuyAction({
       }),
     })) as bigint;
     const maxfUSDC = +formatUnits(balance, config.contracts.decimals.fusdc);
-    setValue("fusdc", maxfUSDC);
+    setValue("supply", maxfUSDC);
     if (maxfUSDC > 0) clearErrors();
   };
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
-
   useEffect(() => {
     const floatingBtn = document.getElementById("degen-floating-button");
     if (floatingBtn) {
@@ -248,7 +260,21 @@ export default function DetailBuyAction({
         </div>
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2.5">
-            {enabledLifiZaps ? null : (
+            {enabledLifiZaps ? (
+              <div
+                className={combineClass(
+                  minimized ? "hidden" : "flex",
+                  "items-center justify-between md:flex",
+                )}
+              >
+                <span className="font-chicago text-xs font-normal text-9black">
+                  Supply
+                </span>
+                <span className="text-xs font-normal text-9black">
+                  USD Value: ${usdValue.toFixed(2)}
+                </span>
+              </div>
+            ) : (
               <div
                 className={combineClass(
                   minimized ? "hidden" : "flex",
@@ -269,72 +295,88 @@ export default function DetailBuyAction({
             )}
             <div className="flex gap-2.5">
               <div className={combineClass(minimized && "hidden md:block")}>
-                <AssetSelector disabled />
+                {enabledLifiZaps ? (
+                  <AssetSelector
+                    tokens={tokens}
+                    isSuccess={isTokensSuccess}
+                    fromToken={fromToken}
+                    fromChain={fromChain}
+                    setValue={function setToken(addr: string) {
+                      setValue("fromToken", addr);
+                    }}
+                  />
+                ) : (
+                  <div
+                    className={combineClass(
+                      "relative flex items-center gap-1 rounded-[3px] border border-9black py-2 pl-2.5 pr-8 shadow-9btnSecondaryIdle",
+                      "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
+                    )}
+                  >
+                    <Image src={USDCImg} alt="fusdc" width={20} />
+                    <span className="font-chicago">{"USDC"}</span>
+                  </div>
+                )}
               </div>
               <Input
-                {...register("fusdc")}
+                {...register("supply")}
                 type="number"
                 min={0}
                 max={Number.MAX_SAFE_INTEGER}
-                value={fusdc}
+                value={supply}
                 placeholder="0"
                 onFocus={handleFocus}
                 onChange={(e) => {
-                  const fusdc =
+                  const supply =
                     Number(e.target.value) >= Number.MAX_SAFE_INTEGER
                       ? Number.MAX_SAFE_INTEGER
                       : Number(e.target.value);
-                  setValue("fusdc", fusdc);
-                  if (fusdc > 0) clearErrors();
+                  setValue("supply", supply);
+                  if (supply > 0) clearErrors();
                 }}
                 className={combineClass(
                   "w-full flex-1 text-center",
-                  errors.fusdc && "border-2 border-red-500",
+                  errors.supply && "border-2 border-red-500",
                 )}
               />
             </div>
-            {errors.fusdc && <ErrorInfo text={errors.fusdc.message} />}
+            {errors.supply && <ErrorInfo text={errors.supply.message} />}
             {enabledLifiZaps ? (
-              <>
-                <div
-                  className={combineClass(
-                    minimized ? "hidden" : "flex",
-                    "items-center justify-between md:flex",
-                  )}
-                >
-                  <span className="font-chicago text-xs font-normal text-9black">
-                    Pay with
+              <div className="flex flex-col gap-1.5">
+                <span className="font-chicago text-xs font-normal text-9black">
+                  From{" "}
+                  <span className="underline">
+                    {
+                      config.supportedCrossChains.find(
+                        (chain) => chain.id === fromChain,
+                      )?.name
+                    }
                   </span>
+                </span>
+                <div className="flex items-center gap-1">
+                  {config.supportedCrossChains.map((chain) => (
+                    <div
+                      key={chain.id}
+                      onClick={() => setValue("fromChain", chain.id)}
+                      title={chain.name}
+                      className="cursor-pointer"
+                    >
+                      <Image
+                        alt={chain.name}
+                        src={chain.img}
+                        className={combineClass(
+                          chain.id === fromChain
+                            ? "border-2 border-9black"
+                            : "border border-9black/50",
+                          "size-6",
+                        )}
+                      />
+                    </div>
+                  ))}
                 </div>
-                <div
-                  className="flex h-[42px] cursor-pointer items-center gap-2.5 border border-9black bg-9gray px-4 py-2 font-geneva text-sm shadow-9input focus:outline-none focus-visible:ring-1 focus-visible:ring-9black"
-                  onClick={() => setZapModalOpen(true)}
-                >
-                  {!fromChain && !fromToken ? (
-                    <span className="text-9black/50">
-                      Select a chain and token
-                    </span>
-                  ) : (
-                    <>
-                      <div className="flex gap-1">
-                        CHAIN:
-                        <span>{fromChain}</span>
-                      </div>
-                      <div className="flex gap-1">
-                        TOKEN:
-                        <span>{fromToken}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-                {errors.fromChain && (
-                  <ErrorInfo text={errors.fromChain.message} />
-                )}
-                {errors.fromToken && (
-                  <ErrorInfo text={errors.fromToken.message} />
-                )}
-              </>
+              </div>
             ) : null}
+            {errors.fromChain && <ErrorInfo text={errors.fromChain.message} />}
+            {errors.fromToken && <ErrorInfo text={errors.fromToken.message} />}
           </div>
           <div
             className={combineClass(
@@ -375,15 +417,8 @@ export default function DetailBuyAction({
           closeModal={() => setFundModalOpen(false)}
           campaignId={data.identifier}
           title={data.name}
-          fundToBuy={fusdc}
+          fundToBuy={supply}
         />
-      </Modal>
-      <Modal
-        isOpen={isZapModalOpen}
-        setIsOpen={setZapModalOpen}
-        title="SELECT TO PAY WITH"
-      >
-        <Zapper setValue={setValue} close={() => setZapModalOpen(false)} />
       </Modal>
     </>
   );
