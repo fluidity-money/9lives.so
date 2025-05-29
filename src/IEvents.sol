@@ -96,6 +96,8 @@ interface IEvents {
         uint256 indexed volume
     );
 
+    event TimeExtension(uint256 indexed newDeadline);
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

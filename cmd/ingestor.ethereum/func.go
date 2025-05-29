@@ -15,6 +15,7 @@ import (
 
 	"github.com/fluidity-money/9lives.so/lib/events"
 	"github.com/fluidity-money/9lives.so/lib/events/lifi"
+	"github.com/fluidity-money/9lives.so/lib/events/stargate"
 	"github.com/fluidity-money/9lives.so/lib/types"
 
 	"gorm.io/gorm"
@@ -58,6 +59,8 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicReferrerEarnedFees,
 	// Lifi
 	lifi.TopicLifiGenericSwapCompleted,
+	// Stargate
+	stargate.TopicStargateOFTReceived,
 }
 
 // Entry function, using the database to determine if polling should be
@@ -263,7 +266,10 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		err   error
 		table string
 	)
-	var fromTrading bool
+	// There may be more Stargate OFTs in the future, so we insert everything
+	// we see with this topic, and we trust the consumer to validate that
+	// everything is correct themselves by verifying the emitter.
+	var fromTrading, isStargateOft bool
 	switch topic0 {
 	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
@@ -408,6 +414,11 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		a, err = lifi.UnpackLifiGenericSwapCompleted(topic1, data)
 		table = "lifi_events_generic_swap_completed"
 		logEvent("LifiGenericSwapCompleted")
+	case stargate.TopicStargateOFTReceived:
+		a, err = stargate.UnpackStargateOFTReceived(topic1, topic2, data)
+		table = "stargate_events_stargate_oft_received"
+		logEvent("OFTReceived")
+		isStargateOft = true
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -436,7 +447,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
-	case isFactory || isInfraMarket || isLockup || isSarpSignaller || isLifi:
+	case isFactory || isInfraMarket || isLockup || isSarpSignaller || isLifi || isStargateOft:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to

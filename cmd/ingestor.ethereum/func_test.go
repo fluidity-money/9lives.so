@@ -152,3 +152,46 @@ func TestLifiGenericSwapCompleted(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, wasRun)
 }
+
+func TestStargateOFTReceived(t *testing.T) {
+	s := strings.NewReader(`{
+	"address": "0x8ee21165ecb7562ba716c9549c1de751282b9b33",
+	"blockHash": "0x0ffa0e15b5e1b39cee90af47388b6cb714071313919fe196ffa2c53a7fce1e4f",
+	"blockNumber": "0x1a8166",
+	"data": "0x000000000000000000000000000000000000000000000000000000000000759e0000000000000000000000000000000000000000000000000000000000e20554",
+	"logIndex": "0x2",
+	"removed": false,
+	"topics": [
+		"0xefed6d3500546b29533b128a29e3a94d70788727f0507505ac12eaf2e578fd9c",
+		"0x667da173724a06521ddf40c31096fccabcb314fc91e8892d53dfe3f1837d12bd",
+		"0x00000000000000000000000012feae999fabba4b0086a257c9c5e350e62da0c9"
+	],
+	"transactionHash": "0xbed0282259ed65aa578c3d3dea59223b0a7fad583270cacfefc50c056de42969",
+	"transactionIndex": "0x1"
+}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	_, err := handleLogCallback(
+		factoryAddr,
+		factoryAddr, // Actually the infra market
+		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
+		factoryAddr,
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "stargate_events_stargate_oft_received", table, "table not equal")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}
