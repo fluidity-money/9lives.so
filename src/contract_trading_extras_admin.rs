@@ -1,5 +1,7 @@
 // This exports user_entrypoint, which we need to have the entrypoint code.
-pub use crate::storage_trading::*;
+pub use crate::{error::*, storage_trading::*};
+
+use stylus_sdk::alloy_primitives::*;
 
 #[cfg_attr(feature = "contract-trading-extras-admin", stylus_sdk::prelude::public)]
 impl StorageTrading {
@@ -12,11 +14,16 @@ impl StorageTrading {
     // other than a user has created a junk campaign with seed liquidity
     // that we want to redistribute.
     pub fn shift(&mut self, user: Address, target: Address) -> R<U256> {
-        assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
-        let (fusdc_amt, _, _) = self.internal_amm_remove_liquidity(
-            self.amm_user_liquidity_shares.get(user),
-            contract_address(),
-        )?;
-        trading_call::add_liquidity(target, fusdc_amt, user)
+        #[cfg(feature = "contract-trading-dpm")]
+        unimplemented!();
+        #[cfg(not(feature = "contract-trading-dpm"))]
+        {
+            assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
+            let (fusdc_amt, _, _) = self.internal_amm_remove_liquidity(
+                self.amm_user_liquidity_shares.get(user),
+                contract_address(),
+            )?;
+            return trading_call::add_liquidity(target, fusdc_amt, user);
+        }
     }
 }

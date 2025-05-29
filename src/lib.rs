@@ -99,6 +99,8 @@ pub mod storage_beauty_contest;
 
 pub mod contract_trading_dumper;
 
+pub mod contract_trading_extras_admin;
+
 #[cfg(not(target_arch = "wasm32"))]
 pub mod actions;
 
@@ -115,6 +117,7 @@ pub use contract_beauty_contest::*;
 pub use contract_infra_market::*;
 pub use contract_lockup::*;
 pub use contract_trading::*;
+pub use contract_trading_extras_admin::*;
 
 #[cfg(feature = "contract-infra-market-testing")]
 pub use contract_infra_market_testing::user_entrypoint;

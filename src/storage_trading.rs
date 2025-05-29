@@ -9,7 +9,9 @@ use crate::utils::msg_sender;
         feature = "contract-trading-extras",
         feature = "contract-trading-quotes",
         feature = "contract-trading-price",
-        feature = "contract-trading-dumper"
+        // These features are normally left off.
+        feature = "contract-trading-dumper",
+        feature = "contract-trading-extras-admin"
     ),
     stylus_sdk::prelude::entrypoint
 )]
