@@ -153,7 +153,7 @@ export default function DetailBuyAction({
       if (enabledLifiZaps) {
         await buyWithZaps(
           account!,
-          supply,
+          usdValue,
           fromChain,
           fromToken,
           data.outcomes,
