@@ -7,6 +7,7 @@ import BSC from "#/images/chains/bsc.svg";
 import POL from "#/images/chains/polygon.svg";
 import BASE from "#/images/chains/base.svg";
 import AVAX from "#/images/chains/avalanche.svg";
+import APE from "#/images/chains/apechain.svg";
 enum InfraMarketState {
   Callable,
   Closable,
@@ -130,6 +131,11 @@ const supportedCrossChains = [
     id: 1,
     name: "Ethereum Mainnet",
     img: ETH,
+  },
+  {
+    id: 33139,
+    name: "Apechain",
+    img: APE,
   },
   {
     id: 56,
