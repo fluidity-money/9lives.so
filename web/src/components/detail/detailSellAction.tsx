@@ -248,7 +248,6 @@ export default function DetailSellAction({
               </div>
             </div>
             <div className="flex gap-2.5">
-              {/* <AssetSelector oneShareItem={{ img: outcome.picture }} /> */}
               <Input
                 {...register("shareToBurn")}
                 type="number"
