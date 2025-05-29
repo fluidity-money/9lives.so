@@ -16,7 +16,7 @@ export default function Changelog() {
       }
       window.localStorage.setItem("changelog", data[0]?.afterTs.toString());
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, data, setModal]);
 
   return (
     <Modal title="Changelog" isOpen={isModalOpen} setIsOpen={setModal}>

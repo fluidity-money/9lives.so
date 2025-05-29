@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { combineClass } from "@/utils/combineClass";
 import {
   Listbox,
@@ -28,7 +29,7 @@ export default function AssetSelector({
     if (fromChain !== currentChain.id && isSuccess && tokens) {
       setValue(tokens[0].address);
     }
-  }, [fromChain, isSuccess, tokens]);
+  }, [fromChain, isSuccess, tokens, setValue]);
 
   return (
     <Listbox value={fromToken} onChange={(selected) => setValue(selected)}>
@@ -46,7 +47,7 @@ export default function AssetSelector({
             height={20}
           />
         ) : (
-          <div className="bg-gray/50 size-5 rounded-full" />
+          <div className="size-5 rounded-full bg-9gray" />
         )}
         <span className="font-chicago">
           {tokens?.find((t) => t.address === fromToken)?.symbol ?? "USDC"}
