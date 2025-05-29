@@ -334,16 +334,6 @@ export default function PositionRow({
         {isDpm !== undefined && !isDpm && (
           <td>
             <span className="font-chicago text-xs">${data.balance}</span>
-            {/* <SellButton
-              outcomeName={data.name}
-              campaignId={data.campaignId}
-              outcomeId={data.id}
-              shareAddr={data.shareAddress}
-              tradingAddr={tradingAddr}
-              maxShareAmount={data.balance}
-              maxUsdcValue={historicalValue}
-              outcomes={outcomes}
-            /> */}
           </td>
         )}
       </tr>
