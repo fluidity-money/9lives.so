@@ -36,7 +36,7 @@ export default function CampaignItemOutcomes({
         <Button
           intent={isYesNo ? "yes" : "default"}
           size={"large"}
-          title={isYesNo ? outcomes[0].name : `Predict ${outcomes[0].name}`}
+          title={outcomes[0].name}
           onClick={(e) => {
             e.stopPropagation();
             router.push(`/campaign/${campaignId}`);
@@ -46,7 +46,7 @@ export default function CampaignItemOutcomes({
         <Button
           intent={isYesNo ? "no" : "default"}
           size={"large"}
-          title={isYesNo ? outcomes[1].name : `Predict ${outcomes[1].name}`}
+          title={outcomes[1].name}
           onClick={(e) => {
             e.stopPropagation();
             router.push(
