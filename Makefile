@@ -146,7 +146,7 @@ contract-infra-market-testing.wasm: $(shell find src -type f -name '*.rs')
 
 contract-trading-amm-extras-admin.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-amm-extras-admin.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-extras-admin${CARGO_EXTRA_FEATURES}
+	@${CARGO_BUILD_STYLUS} contract-trading-extras-admin,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-trading-amm-extras-admin.wasm
 
 clean:
