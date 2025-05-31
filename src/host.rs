@@ -15,10 +15,9 @@ thread_local! {
     static MSG_SENDER: RefCell<Address> = const { RefCell::new(testing_addrs::MSG_SENDER) };
     static REGISTERED_ADDRESSES: RefCell<HashMap<Address, String>> =
         RefCell::new(HashMap::new());
+    static CONTRACT_ADDRESS: RefCell<Address> =
+        const { RefCell::new(testing_addrs::CONTRACT) };
 }
-
-// Helpful memory of the contract address of the currently executing contract.
-pub const CONTRACT_ADDRESS: Address = testing_addrs::CONTRACT;
 
 unsafe fn read_word(key: *const u8) -> Word {
     let mut res = Word::default();
@@ -289,7 +288,11 @@ pub fn reset_msg_sender() {
 }
 
 pub fn get_contract_address() -> Address {
-    CONTRACT_ADDRESS
+    CONTRACT_ADDRESS.with(|v| v.clone().into_inner())
+}
+
+pub fn set_contract_address(a: Address) {
+    CONTRACT_ADDRESS.with(|v| *v.borrow_mut() = a)
 }
 
 pub fn clear_storage() {

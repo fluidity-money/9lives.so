@@ -46,12 +46,14 @@ impl StorageTrading {
             .collect::<Vec<_>>()
             .join(", ");
         let sender = msg_sender();
+        let factory_addr = self.factory_addr.get();
+        let share_impl = self.share_impl.get();
         let mut user_outcome_shares = String::new();
         for (i, outcome_id) in self.outcome_ids_iter().enumerate() {
             let share_addr = proxy::get_share_addr(
-                self.factory_addr.get(),
+                factory_addr,
                 contract_address(),
-                self.share_impl.get(),
+                share_impl,
                 outcome_id,
             );
             let bal = share_call::balance_of(share_addr, sender)?;
@@ -128,11 +130,15 @@ def simulate_market_{addr}_{bn}():
 
 #[test]
 fn test_amm_reproduction_{addr}_{bn}() {{
+    use stylus_sdk::alloy_primitives::address;
     let outcomes = [{rust_outcomes}];
     interactions_clear_after! {{
         IVAN => {{
             let mut c = StorageTrading::default();
+            host::set_contract_address(address!({addr}));
             setup_contract!(&mut c, &outcomes);
+            c.factory_addr.set(address!("{factory_addr}"));
+            c.share_impl.set(address!("{share_impl}"));
             //c.fee_creator.set(U256::from({fee_creator}));
             //c.fee_minter.set(U256::from({fee_minter}));
             //c.fee_lp.set(U256::from({fee_lp}));

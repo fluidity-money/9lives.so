@@ -31,6 +31,5 @@ cast --abi-decode 'hello()(string)' `{
 		cast calldata 'dumpState()'
 	}
 } \
-	>[2=] \
 		| perl -pe 's/\\n/\n/g' \
 		| sed -s 's/\\//g'

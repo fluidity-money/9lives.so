@@ -4,10 +4,7 @@
     not(target_arch = "wasm32")
 ))]
 
-use stylus_sdk::{
-    alloy_primitives::fixed_bytes,
-    alloy_primitives::{Address, FixedBytes, U256, U64},
-};
+use stylus_sdk::alloy_primitives::{address, fixed_bytes, Address, FixedBytes, U256, U64};
 
 use lib9lives::{
     actions::*, error::Error, fees::FEE_SCALING, host, immutables::*, implement_action,
@@ -395,6 +392,169 @@ fn test_amm_reproduction_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358() {
                     )
                 ))
             );
+        }
+    }
+}
+
+#[test]
+fn test_amm_reproduction_0xbE42F0fb7C6e702be8C1DC11F04c7b5323bE93EE_1746439() {
+    let outcomes = [
+        fixed_bytes!("40b1a4e9694e8afe"),
+        fixed_bytes!("f67ded74e0613d6b"),
+    ];
+    let users = [
+        (
+            address!("2654ddf31e5d8dda52fe8c1d759be186d316d8a6"),
+            U256::from(2160845),
+        ),
+        (
+            address!("529f786b6cc026ce88ee866a0de859283c216e50"),
+            U256::from(11890776),
+        ),
+        (
+            address!("4df958df0aaa3e861b15b494015bef446deea678"),
+            U256::from(940738),
+        ),
+        (
+            address!("991bbd55e19ca1ee7fc3932ca41ab4b0257f703a"),
+            U256::from(1300296),
+        ),
+        (
+            address!("3100bcb013490faf41f468062eda05907009906f"),
+            U256::from(127172),
+        ),
+        (
+            address!("38ce8d007f1f7431664bfdc526b30e52ec1f53ca"),
+            U256::from(941779),
+        ),
+        (
+            address!("20a1e9b0f535ddbfe442d415119bdb3d58dae037"),
+            U256::from(5593743),
+        ),
+        (
+            address!("988236e5a0a27c62124d131c2b8de67189532100"),
+            U256::from(4826834),
+        ),
+        (
+            address!("88769789657055e5629b758124f3bc52f218a2c5"),
+            U256::from(11852232),
+        ),
+        (
+            address!("2719e4c5f93224f02d7b0ca9f86894a98f49e21b"),
+            U256::from(995590),
+        ),
+        (
+            address!("c1269b5614c6f5cc50affa5e62d403622c6cdb3f"),
+            U256::from(560),
+        ),
+        (
+            address!("f753a9eadef94a2c993a733e6bbf78722ca1894d"),
+            U256::from(940748),
+        ),
+        (
+            address!("f882c1d73c9ec6d86858e349392e15d0d681b899"),
+            U256::from(985683),
+        ),
+        (
+            address!("c2f8de2c509c6d9c8430af6925481955f47df022"),
+            U256::from(1024810),
+        ),
+        (
+            address!("e0743df3aac45cc748adb6c5497bb522995dbb9e"),
+            U256::from(731),
+        ),
+        (
+            address!("e6db30da03905b00dcbe207513e1853b8323d5c1"),
+            U256::from(1286118),
+        ),
+        (
+            address!("9cc50f63fa3e29163e8a66fe9bf46d75d151c159"),
+            U256::from(105028),
+        ),
+        (
+            address!("b80e22cf18bb8891e264592c32c936c033e6e41c"),
+            U256::from(1766384),
+        ),
+        (
+            address!("d815e592f4effcf76b1f4b4eb823c19afd13b5db"),
+            U256::from(102107),
+        ),
+        (
+            address!("dc415ac0683544dd78865ab686ba53e778ec5630"),
+            U256::from(101516200),
+        ),
+        (
+            address!("ff36da79cf472a3d0d60f95561adce920514630f"),
+            U256::from(102130),
+        ),
+    ];
+    let lps = [
+        (
+            address!("dc415ac0683544dd78865ab686ba53e778ec5630"),
+            U256::from(2252090),
+        ),
+        (
+            address!("f753a9eadef94a2c993a733e6bbf78722ca1894d"),
+            U256::from(243417),
+        ),
+        (
+            address!("f882c1d73c9ec6d86858e349392e15d0d681b899"),
+            U256::from(119654),
+        ),
+        (
+            address!("38ce8d007f1f7431664bfdc526b30e52ec1f53ca"),
+            U256::from(241290),
+        ),
+        (
+            address!("529f786b6cc026ce88ee866a0de859283c216e50"),
+            U256::from(119591),
+        ),
+        (
+            address!("988236e5a0a27c62124d131c2b8de67189532100"),
+            U256::from(930499),
+        ),
+        (
+            address!("4df958df0aaa3e861b15b494015bef446deea678"),
+            U256::from(243438),
+        ),
+    ];
+    interactions_clear_after! {
+        IVAN => {
+            let mut c = StorageTrading::default();
+            host::set_contract_address(address!("bE42F0fb7C6e702be8C1DC11F04c7b5323bE93EE"));
+            setup_contract!(&mut c, &outcomes);
+            c.factory_addr.set(address!("7dfe1fa7760131140cfc48b3ea99719203d8f00b"));
+            c.share_impl.set(address!("3e27e934344bf490457231Cb8F0c0eda7d60C362"));
+            c.amm_liquidity.set(U256::from(4149981));
+            c.amm_outcome_prices.setter(fixed_bytes!("40b1a4e9694e8afe")).set(U256::from(14115));
+            c.amm_outcome_prices.setter(fixed_bytes!("f67ded74e0613d6b")).set(U256::from(985884));
+            c.amm_shares.setter(fixed_bytes!("40b1a4e9694e8afe")).set(U256::from(24292265));
+            c.amm_shares.setter(fixed_bytes!("f67ded74e0613d6b")).set(U256::from(708965));
+            c.amm_total_shares.setter(fixed_bytes!("40b1a4e9694e8afe")).set(U256::from(680427248));
+            c.amm_total_shares.setter(fixed_bytes!("f67ded74e0613d6b")).set(U256::from(961237587));
+            c.winner.set(fixed_bytes!("f67ded74e0613d6b"));
+            c.when_decided.set(U64::from(1));
+            host::set_block_timestamp(2);
+            should_spend_fusdc_contract!(160300905, {
+                for (addr, amt) in users {
+                    host::set_msg_sender(addr);
+                    should_spend!(
+                        address!("f2cb56b265802a1f96ebd0ea169c7ffb35a19097"),
+                        { addr => amt },
+                        c.payoff_C_B_6_F_2565(c.winner.get(), amt, addr)
+                    );
+                }
+                let mut total_lp_yield = U256::ZERO;
+                for (addr, amt) in lps {
+                    c.amm_user_liquidity_shares.setter(addr).set(amt);
+                    host::set_msg_sender(addr);
+                    total_lp_yield += c.claim_liquidity_9_C_391_F_85(addr).unwrap();
+                }
+                dbg!(total_lp_yield);
+                host::set_msg_sender(DAO_ADDR);
+                dbg!(c.claim_address_fees_B_302_C_F_6_D(DAO_ADDR).unwrap());
+                Ok(())
+            });
         }
     }
 }

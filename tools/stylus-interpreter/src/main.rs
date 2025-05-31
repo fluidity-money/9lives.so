@@ -5,6 +5,7 @@ use keccak_const::Keccak256;
 use alloy_eips::{BlockId, BlockNumberOrTag};
 use alloy_network_primitives::BlockTransactionsKind;
 use alloy_primitives::{
+    address,
     map::{AddressHashMap, FbBuildHasher},
     Address, Bytes, FixedBytes, TxKind, U256,
 };
@@ -441,7 +442,6 @@ async fn main() -> Result<(), Error> {
                 // there, then use the RPC to load it, store it, then return it to the user here.
                 let mut word: [u8; 32] = [0_u8; 32];
                 let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
-                let mut storage_written = STORAGE_WRITTEN.get().unwrap().lock().await;
                 unsafe {
                     std::ptr::copy(
                         mem.data_ptr(&mut caller).offset(key_ptr as isize),
@@ -449,6 +449,7 @@ async fn main() -> Result<(), Error> {
                         32,
                     );
                 }
+                let mut storage_written = STORAGE_WRITTEN.get().unwrap().lock().await;
                 let v = if let Some(v) = storage_written.get(&word) {
                     *v
                 } else {
@@ -599,6 +600,10 @@ async fn main() -> Result<(), Error> {
                     PreStateTracer(PreStateFrame::Diff(DiffMode { post, .. })) => {
                         let mut state_overrides = STATE_OVERRIDES.get().unwrap().lock().await;
                         for (addr, state) in post {
+                            if *addr == address!("A4b05FffffFffFFFFfFFfffFfffFFfffFfFfFFFf") {
+                                eprintln!("refusing to set to arbos with a state override");
+                                continue;
+                            }
                             // It's not clear to me whether this is needed, but we're explicitly
                             // merging this anyway.
                             let o = state_overrides
@@ -939,8 +944,6 @@ async fn main() -> Result<(), Error> {
 
     let entrypoint = instance.get_typed_func::<i32, i32>(&mut store, &args.function_name)?;
     for i in 0..invocation_count {
-        let mut state_overrides = STATE_OVERRIDES.get().unwrap().lock().await;
-        let mut storage_written = STORAGE_WRITTEN.get().unwrap().lock().await;
         // Start to unpack the hashmap that contains the storage here if the argument is set.
         if should_state_override {
             for (mut addr, v) in &default_state {
@@ -959,11 +962,12 @@ async fn main() -> Result<(), Error> {
                                 .as_slice()
                                 .try_into()
                                 .unwrap();
-                        storage_written.insert(k, v);
+                        STORAGE_WRITTEN.get().unwrap().lock().await.insert(k, v);
                     }
                 } else {
                     // If the contract address is different, then we'll set the call
                     // overrides.
+                    let mut state_overrides = STATE_OVERRIDES.get().unwrap().lock().await;
                     let o = state_overrides.entry(*addr).or_insert_with(|| {
                         let mut o = AccountOverride::default();
                         let h: HashMap<FixedBytes<32>, FixedBytes<32>, _> =
@@ -980,8 +984,14 @@ async fn main() -> Result<(), Error> {
             }
         }
         if *VERBOSE.get().unwrap() {
-            eprintln!("state override for external calls by invocation {i}: {state_overrides:?}");
-            eprintln!("storage override for local running {i}: {storage_written:?}");
+            eprintln!(
+                "state override for external calls by invocation {i}: {:?}",
+                STATE_OVERRIDES.get().unwrap().lock().await
+            );
+            eprintln!(
+                "storage override for local running {i}: {:?}",
+                STORAGE_WRITTEN.get().unwrap().lock().await
+            );
         }
         let rc = entrypoint
             .call_async(&mut store, calldata_len as i32)

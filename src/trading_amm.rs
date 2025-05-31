@@ -374,6 +374,7 @@ impl StorageTrading {
         assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
         assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
+        self.internal_amm_claim_lp_fees(msg_sender(), recipient)?;
         let liq_price = maths::mul_div(
             self.amm_shares.get(self.winner.get()),
             SHARE_DECIMALS_EXP,
