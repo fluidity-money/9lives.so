@@ -32,9 +32,6 @@ pub use crate::contract_trading_price::user_entrypoint;
 #[cfg(feature = "contract-trading-dumper")]
 pub use crate::contract_trading_dumper::user_entrypoint;
 
-#[cfg(feature = "contract-trading-dumper")]
-pub use crate::contract_trading_dumper::user_entrypoint;
-
 #[cfg(feature = "contract-trading-extras-admin")]
 pub use crate::contract_trading_extras_admin::user_entrypoint;
 
