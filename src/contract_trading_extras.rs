@@ -1,7 +1,8 @@
-use stylus_sdk::alloy_primitives::*;
+use stylus_sdk::{evm, alloy_primitives::*};
 
 use crate::{
     error::*,
+    events,
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
@@ -141,6 +142,15 @@ impl StorageTrading {
 
     pub fn version(&self) -> String {
         CARGO_PKG_VERSION.to_owned()
+    }
+
+    pub fn extend_time(&mut self, new_ts: u64) -> R<()> {
+        assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
+        self.time_ending.set(U64::from(new_ts));
+        evm::log(events::TimeExtension {
+            newDeadline: new_ts,
+        });
+        Ok(())
     }
 }
 
