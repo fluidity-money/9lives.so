@@ -35,9 +35,14 @@ env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR", LONGTAIL);
 // Staked ARB address to use for taking amounts for Infrastructure Markets.
 env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
 
-// Address of the team fee recipient from the Trading contract (different
-// from the creator). Used as the moderation fee recipient.
-env_addr!(DAO_ADDR, "SPN_DAO_ADDR", DAO);
+// Address of the team fee recipient from the Trading contract. Used as the
+// recipient address for fees, but is unable to claim the fees! The operator
+// address must claim the fees, which are sent to this recipient.
+env_addr!(DAO_EARN_ADDR, "SPN_DAO_EARN_ADDR", DAO);
+
+// Trusted address that may use operations that will credit the DAO's earnings
+// address.
+env_addr!(DAO_OP_ADDR, "SPN_DAO_OP_ADDR", DAO);
 
 // Scaling amount for checking if a bad predictor went above 50% in their
 // incorrect bets relative ot the winning outcome.

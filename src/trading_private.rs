@@ -73,7 +73,7 @@ impl StorageTrading {
         self.share_impl.set(share_impl);
         // If the fee recipient is zero, then we set it to the DAO address.
         self.fee_recipient.set(if fee_recipient.is_zero() {
-            DAO_ADDR
+            DAO_EARN_ADDR
         } else {
             fee_recipient
         });
@@ -216,8 +216,8 @@ impl StorageTrading {
                 } else {
                     U256::ZERO
                 };
-            let fees_so_far = self.fees_owed_addresses.get(DAO_ADDR);
-            self.fees_owed_addresses.setter(DAO_ADDR).set(
+            let fees_so_far = self.fees_owed_addresses.get(DAO_EARN_ADDR);
+            self.fees_owed_addresses.setter(DAO_EARN_ADDR).set(
                 fees_so_far
                     .checked_add(dao_fees)
                     .ok_or(Error::CheckedAddOverflow)?,

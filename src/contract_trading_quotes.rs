@@ -7,7 +7,7 @@ use crate::{
     decimal::{fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal},
     error::*,
     events, fusdc_call,
-    immutables::DAO_ADDR,
+    immutables::DAO_OP_ADDR,
     maths,
     utils::{contract_address, msg_sender},
 };
@@ -90,7 +90,7 @@ impl StorageTrading {
         // The point of this function is that while we don't have upgrade powers,
         // we can rescue any funds if something goes wrong during our first batch
         // of usage.
-        assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
+        assert_or!(msg_sender() == DAO_OP_ADDR, Error::NotOperator);
         let bal = fusdc_call::balance_of(contract_address())?;
         fusdc_call::transfer(recipient, bal)?;
         Ok(bal)

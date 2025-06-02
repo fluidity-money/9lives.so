@@ -112,7 +112,7 @@ impl StorageFactory {
     }
 
     pub fn dao_addr(&self) -> R<Address> {
-        Ok(DAO_ADDR)
+        Ok(DAO_OP_ADDR)
     }
 
     pub fn update_infra_market(&mut self, addr: Address) -> R<()> {

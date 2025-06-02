@@ -145,7 +145,7 @@ impl StorageTrading {
     }
 
     pub fn extend_time(&mut self, new_ts: u64) -> R<()> {
-        assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
+        assert_or!(msg_sender() == DAO_OP_ADDR, Error::NotOperator);
         self.time_ending.set(U64::from(new_ts));
         evm::log(events::TimeExtension {
             newDeadline: new_ts,

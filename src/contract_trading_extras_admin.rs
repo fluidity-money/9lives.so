@@ -1,7 +1,7 @@
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::{
     error::*,
-    immutables::DAO_ADDR,
+    immutables::DAO_OP_ADDR,
     storage_trading::*,
     trading_call,
     utils::{contract_address, msg_sender},
@@ -27,7 +27,7 @@ impl StorageTrading {
         unimplemented!();
         #[cfg(not(feature = "trading-backend-dpm"))]
         {
-            assert_or!(msg_sender() == DAO_ADDR, Error::NotOperator);
+            assert_or!(msg_sender() == DAO_OP_ADDR, Error::NotOperator);
             let (fusdc_amt, _, _) = self.internal_amm_remove_liquidity(
                 self.amm_user_liquidity_shares.get(_user),
                 contract_address(),
