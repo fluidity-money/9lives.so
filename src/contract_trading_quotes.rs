@@ -7,7 +7,7 @@ use crate::{
     decimal::{fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal},
     error::*,
     events, fusdc_call,
-    immutables::DAO_OP_ADDR,
+    immutables::{DAO_EARN_ADDR, DAO_OP_ADDR},
     maths,
     utils::{contract_address, msg_sender},
 };
@@ -50,7 +50,15 @@ impl StorageTrading {
 
     #[allow(non_snake_case)]
     pub fn claim_address_fees_B_302_C_F_6_D(&mut self, recipient: Address) -> R<U256> {
-        let owed = self.fees_owed_addresses.get(msg_sender());
+        let sender = if msg_sender() == DAO_OP_ADDR {
+            DAO_EARN_ADDR
+        } else {
+            msg_sender()
+        };
+        if sender == DAO_EARN_ADDR {
+            assert_or!(recipient == DAO_EARN_ADDR, Error::IncorrectDAOClaiming);
+        }
+        let owed = self.fees_owed_addresses.get(sender);
         fusdc_call::transfer(recipient, owed)?;
         self.fees_owed_addresses
             .setter(msg_sender())

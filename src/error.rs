@@ -514,6 +514,9 @@ pub enum Error {
 
     // Couldn't estimate the amount to sell of shares!
     CouldntEstimateSharesBurn,
+
+    // Someone tried to claim the DAO funds correctly!
+    IncorrectDAOClaiming,
 }
 
 #[cfg(any(
