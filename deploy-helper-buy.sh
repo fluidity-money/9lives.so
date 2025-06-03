@@ -10,4 +10,5 @@ forge create --json \
 	"$SPN_LONGTAIL_ADDR" \
 	"$SPN_FUSDC_ADDR" \
 	"$SPN_WETH_ADDR" \
+	"$SPN_CAMELOT_SWAP_ROUTER" \
 		| jq -r .deployedTo

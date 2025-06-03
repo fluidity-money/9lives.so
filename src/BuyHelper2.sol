@@ -5,6 +5,7 @@ import "./INineLivesTrading.sol";
 import "./INineLivesFactory.sol";
 import "./ILongtail.sol";
 import "./IWETH10.sol";
+import  {ICamelotSwapRouter, ExactInputSingleParams} from "./ICamelotSwapRouter.sol";
 
 interface IERC20 {
     function transferFrom(
@@ -27,17 +28,20 @@ contract BuyHelper2 {
     ILongtail immutable LONGTAIL;
     IERC20 immutable FUSDC;
     IWETH10 immutable WETH;
+    ICamelotSwapRouter immutable CAMELOT_SWAP_ROUTER;
 
     constructor(
         INineLivesFactory _factory,
         ILongtail _longtail,
         address _fusdc,
-        IWETH10 _weth
+        IWETH10 _weth,
+        ICamelotSwapRouter _camelotSwapRouter
     ) {
         FACTORY = _factory;
         LONGTAIL = _longtail;
         FUSDC = IERC20(_fusdc);
         WETH = _weth;
+        CAMELOT_SWAP_ROUTER = _camelotSwapRouter;
     }
 
     /**
@@ -50,17 +54,31 @@ contract BuyHelper2 {
         bytes8 _outcome,
         uint256 _minShareOut,
         uint256 _amount,
-        address _referrer
+        address _referrer,
+        uint256 _rebate,
+        uint256 _deadline,
+        address _recipient
     ) external payable returns (uint256) {
+       uint256 wethAmt  = _amount - _rebate;
         if (_asset != address(0)) {
+            require(_rebate == 0, "rebate not possible for erc20");
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
         } else {
-            WETH.deposit{value: msg.value}();
+            require(_amount == msg.value, "inconsistent value");
+            WETH.deposit{value: wethAmt}();
+            _asset = address(WETH);
         }
         uint256 fusdc;
         if (_asset != address(FUSDC)) {
-            (int256 amount0, ) = LONGTAIL.swapIn32502CA71(_asset, _amount, 0);
-            fusdc = uint256(amount0);
+            fusdc = CAMELOT_SWAP_ROUTER.exactInputSingle(ExactInputSingleParams({
+                tokenIn: _asset,
+                tokenOut: address(FUSDC),
+                recipient: address(this),
+                deadline: _deadline,
+                amountIn: wethAmt,
+                amountOutMinimum: 0,
+                limitSqrtPrice: 1461446703485210103287273052203988822378723970342
+            }));
         } else {
             fusdc = _amount;
         }
@@ -72,7 +90,7 @@ contract BuyHelper2 {
              shares = DPMOld(address(t)).mintPermitE90275AB(
                 _outcome,
                 fusdc,
-                msg.sender,
+                _recipient,
                 0,
                 0,
                 bytes32(0),
@@ -83,10 +101,15 @@ contract BuyHelper2 {
                 _outcome,
                 fusdc,
                 _referrer,
-                msg.sender
+                _recipient
             );
         }
+        // This is enough to prevent slippage.
         require(shares >= _minShareOut, "not enough shares");
+        if (_rebate > 0) {
+            (bool rc,) = _recipient.call{value: _rebate}("");
+            require(rc, "recipient didn't receive");
+        }
         return shares;
     }
 
