@@ -341,6 +341,30 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Aggregates recent trading activity and liquidity data per pool.
+   * Combines liquidity changes, hourly volume, current liquidity, and buy/sell volume,
+   * then ranks pools and returns recent shown buy/sell events with these metrics.
+   */
+  featuredCampaign: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.featuredCampaign<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { featuredCampaign: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "featuredCampaign"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {

@@ -468,6 +468,19 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    featuredCampaign: {
+      a: {
+        count: {
+          nt: Int,
+          it: [0],
+        },
+        interval: {
+          nt: String,
+          it: [0],
+        },
+      },
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -676,6 +689,7 @@ Query.f[`positionsHistory`]!.nt = Activity;
 Query.f[`userClaims`]!.nt = Claim;
 Query.f[`userProfile`]!.nt = Profile;
 Query.f[`leaderboards`]!.nt = LeaderboardWeekly;
+Query.f[`featuredCampaign`]!.nt = Campaign;
 
 //
 //

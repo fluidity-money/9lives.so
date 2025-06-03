@@ -42,6 +42,7 @@ export namespace Schema {
       referrersForAddress: Query.referrersForAddress;
       leaderboards: Query.leaderboards;
       referrerByCode: Query.referrerByCode;
+      featuredCampaign: Query.featuredCampaign;
     };
   }
 
@@ -336,6 +337,31 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Aggregates recent trading activity and liquidity data per pool.
+     * Combines liquidity changes, hourly volume, current liquidity, and buy/sell volume,
+     * then ranks pools and returns recent shown buy/sell events with these metrics.
+     */
+    export interface featuredCampaign extends $.OutputField {
+      name: "featuredCampaign";
+      arguments: {
+        count: {
+          kind: "InputField";
+          name: "count";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
+        interval: {
+          kind: "InputField";
+          name: "interval";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$Campaign;
     }
   }
 

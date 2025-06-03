@@ -165,6 +165,14 @@ export interface Query<
   referrerByCode?:
     | Query.referrerByCode<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.referrerByCode<_$Scalars>>;
+  /**
+   *
+   * Select the `featuredCampaign` field on the `Query` object. Its type is `Campaign` (a `OutputObject` kind of type).
+   *
+   */
+  featuredCampaign?:
+    | Query.featuredCampaign$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.featuredCampaign<_$Scalars>>;
 
   /**
    *
@@ -717,6 +725,46 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<referrerByCode$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type featuredCampaign<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = featuredCampaign$SelectionSet<_$Scalars>;
+
+  export interface featuredCampaign$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Campaign<_$Scalars> {
+    /**
+     * Arguments for `featuredCampaign` field. No arguments are required so you may omit this.
+     */
+    $?: featuredCampaign$Arguments<_$Scalars>;
+  }
+
+  export interface featuredCampaign$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    count?: number | undefined | null;
+    interval?: string | undefined | null;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `featuredCampaign` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type featuredCampaign$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<featuredCampaign$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
