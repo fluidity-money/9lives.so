@@ -367,3 +367,37 @@ export const requestChangelog = () =>
     afterTs: true,
     html: true,
   });
+
+export const requestFeaturedCampaigns = ({
+  count = 12,
+  interval = "12 hours",
+}: {
+  count?: number;
+  interval?: string;
+}) =>
+  graph9Lives.query.featuredCampaign({
+    $: { count, interval },
+    name: true,
+    identifier: true,
+    description: true,
+    picture: true,
+    oracleDescription: true,
+    oracleUrls: true,
+    settlement: true,
+    poolAddress: true,
+    creator: {
+      address: true,
+    },
+    outcomes: {
+      identifier: true,
+      name: true,
+      picture: true,
+      share: {
+        address: true,
+      },
+    },
+    ending: true,
+    starting: true,
+    winner: true,
+    totalVolume: true,
+  });
