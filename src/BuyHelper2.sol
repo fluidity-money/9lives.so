@@ -59,25 +59,26 @@ contract BuyHelper2 {
         uint256 _deadline,
         address _recipient
     ) external payable returns (uint256) {
-       uint256 wethAmt  = _amount - _rebate;
+       uint256 amountIn  = _amount - _rebate;
         if (_asset != address(0)) {
             require(_rebate == 0, "rebate not possible for erc20");
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
         } else {
             require(_amount == msg.value, "inconsistent value");
-            WETH.deposit{value: wethAmt}();
+            WETH.deposit{value: amountIn}();
             _asset = address(WETH);
         }
         uint256 fusdc;
         if (_asset != address(FUSDC)) {
+            IERC20(_asset).approve(address(CAMELOT_SWAP_ROUTER), amountIn);
             fusdc = CAMELOT_SWAP_ROUTER.exactInputSingle(ExactInputSingleParams({
                 tokenIn: _asset,
                 tokenOut: address(FUSDC),
                 recipient: address(this),
                 deadline: _deadline,
-                amountIn: wethAmt,
+                amountIn: amountIn,
                 amountOutMinimum: 0,
-                limitSqrtPrice: 1461446703485210103287273052203988822378723970342
+                limitSqrtPrice: 0
             }));
         } else {
             fusdc = _amount;
