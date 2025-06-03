@@ -68,6 +68,13 @@ type Query {
   Get referrer address by its generated code.
   """
   referrerByCode(code: String!): String!
+
+  """
+  Aggregates recent trading activity and liquidity data per pool.
+  Combines liquidity changes, hourly volume, current liquidity, and buy/sell volume,
+  then ranks pools and returns recent shown buy/sell events with these metrics.
+  """
+  featuredCampaign(count: Int,interval:String): [Campaign!]!
 }
 
 type Settings {

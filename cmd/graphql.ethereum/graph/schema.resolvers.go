@@ -1229,6 +1229,34 @@ func (r *queryResolver) ReferrerByCode(ctx context.Context, code string) (string
 	return owner, nil
 }
 
+// FeaturedCampaign is the resolver for the featuredCampaign field.
+func (r *queryResolver) FeaturedCampaign(ctx context.Context, count *int, interval *string) ([]types.Campaign, error) {
+	var campaigns []types.Campaign
+	const (
+		defaultCount    = 12
+		defaultInterval = "12 hours"
+	)
+	n := defaultCount
+	if count != nil {
+		n = *count
+	}
+	iv := defaultInterval
+	if interval != nil {
+		iv = *interval
+	}
+	query := fmt.Sprintf("SELECT * FROM ninelives_get_featured_campaigns_1(INTERVAL '%s', ?)", iv)
+	err := r.DB.Raw(query, n).Scan(&campaigns).Error
+	if err != nil {
+		slog.Error("Error getting featured campaigns",
+			"error", err,
+			"count", n,
+			"interval", iv,
+		)
+		return nil, fmt.Errorf("error getting featured campaigns: %w", err)
+	}
+	return campaigns, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {
