@@ -9,10 +9,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Create release zip
-      run: zip -r release-${{ github.ref_name }}.zip .
+      - name: Create release zip
+        run: zip -r release-${{ github.ref_name }}.zip .
+
+      - name: release  tar
+        run: tar czf release-${{ github.ref_name }}.tar.gz .
+
+      - name: Extract release notes
+        id: changelog
+        run: |
+          notes=$(awk '/^## / {if(found) exit; if (!found) found=1; next} found' changelog.md)
+          notes="${notes//'%'/'%25'}"
+          notes="${notes//$'\n'/'%0A'}"
+          notes="${notes//$'\r'/'%0D'}"
+          echo "notes=$notes" >> $GITHUB_OUTPUT
 
     - name: Upload Release
       uses: softprops/action-gh-release@v2
