@@ -41,7 +41,7 @@ export default function CampaignItemOutcomes({
             e.stopPropagation();
             router.push(`/campaign/${campaignId}`);
           }}
-          className={"flex-1 overflow-hidden text-ellipsis whitespace-nowrap"}
+          className={"flex-1 truncate"}
         />
         <Button
           intent={isYesNo ? "no" : "default"}
@@ -53,7 +53,7 @@ export default function CampaignItemOutcomes({
               `/campaign/${campaignId}?outcomeId=${outcomes[1].identifier}`,
             );
           }}
-          className={"flex-1 overflow-hidden text-ellipsis whitespace-nowrap"}
+          className={"flex-1 truncate"}
         />
       </div>
     );
@@ -65,13 +65,8 @@ export default function CampaignItemOutcomes({
           key={outcome.identifier}
           className="flex items-center justify-between text-xs"
         >
-          <Link
-            href={`/campaign/${campaignId}`}
-            className="overflow-hidden text-ellipsis whitespace-nowrap"
-          >
-            <span className="overflow-hidden text-ellipsis whitespace-nowrap text-xs font-normal">
-              {outcome.name}
-            </span>
+          <Link href={`/campaign/${campaignId}`} className="truncate">
+            <span className="truncate text-xs font-normal">{outcome.name}</span>
           </Link>
           <div className="flex items-center gap-1">
             {/* <span className="font-chicago text-sm font-normal">{"%75"}</span> */}
