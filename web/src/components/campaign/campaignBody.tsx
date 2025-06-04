@@ -19,7 +19,7 @@ export default function CampaignBody({
         solo={data.outcomes.length === 1}
         soloRatio={32}
       />
-      <div className="flex flex-1 flex-col gap-2">
+      <div className="flex max-h-[110px] flex-col justify-end gap-2">
         <CampaignItemOutcomes
           isConcluded={Boolean(data.winner)}
           isYesNo={data.isYesNo}

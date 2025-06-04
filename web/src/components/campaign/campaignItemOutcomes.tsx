@@ -26,13 +26,13 @@ export default function CampaignItemOutcomes({
         size={"large"}
         title={"Claim rewards"}
         onClick={() => router.push(`/campaign/${campaignId}`)}
-        className={"my-5 flex-1"}
+        className={"flex-1"}
       />
     );
 
   if (outcomes.length === 2 || isYesNo)
     return (
-      <div className="my-5 flex flex-1 items-end gap-2">
+      <div className="flex flex-1 items-end gap-2">
         <Button
           intent={isYesNo ? "yes" : "default"}
           size={"large"}
@@ -41,7 +41,7 @@ export default function CampaignItemOutcomes({
             e.stopPropagation();
             router.push(`/campaign/${campaignId}`);
           }}
-          className={"flex-1"}
+          className={"flex-1 overflow-hidden text-ellipsis whitespace-nowrap"}
         />
         <Button
           intent={isYesNo ? "no" : "default"}
@@ -53,20 +53,25 @@ export default function CampaignItemOutcomes({
               `/campaign/${campaignId}?outcomeId=${outcomes[1].identifier}`,
             );
           }}
-          className={"flex-1"}
+          className={"flex-1 overflow-hidden text-ellipsis whitespace-nowrap"}
         />
       </div>
     );
 
   return (
-    <ul className="flex h-20 flex-1 flex-col gap-1 overflow-y-auto">
+    <ul className="flex grow flex-col gap-1 overflow-y-auto">
       {outcomes.map((outcome) => (
         <li
           key={outcome.identifier}
           className="flex items-center justify-between text-xs"
         >
-          <Link href={`/campaign/${campaignId}`}>
-            <span className="text-xs font-normal">{outcome.name}</span>
+          <Link
+            href={`/campaign/${campaignId}`}
+            className="overflow-hidden text-ellipsis whitespace-nowrap"
+          >
+            <span className="overflow-hidden text-ellipsis whitespace-nowrap text-xs font-normal">
+              {outcome.name}
+            </span>
           </Link>
           <div className="flex items-center gap-1">
             {/* <span className="font-chicago text-sm font-normal">{"%75"}</span> */}
