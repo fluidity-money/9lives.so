@@ -1,0 +1,20 @@
+name: Produce bundles
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Create release zip
+      run: zip -r release-${{ github.ref_name }}.zip .
+
+    - name: Upload Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: release-${{ github.ref_name }}.zip
