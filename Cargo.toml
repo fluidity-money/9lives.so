@@ -1,6 +1,6 @@
 [package]
 name = "ninelives"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 rust-version = "1.81"
 
@@ -52,7 +52,7 @@ ruint = { version = "1.14.0", default-features = false }
 # but that's a task on the backburner, as our deployment on mainnet is a
 # special version with a patch for the security issue that came up
 # involving reentrancy.
-version = "0.2.0"
+version = "0.3.0"
 features = ["reentrant"]
 
 [dev-dependencies]
