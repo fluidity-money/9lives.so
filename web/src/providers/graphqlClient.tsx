@@ -368,15 +368,14 @@ export const requestChangelog = () =>
     html: true,
   });
 
-export const requestFeaturedCampaigns = ({
-  count = 12,
-  interval = "12 hours",
-}: {
-  count?: number;
-  interval?: string;
-}) =>
+export const requestFeaturedCampaigns = (
+  props: { count: number; interval: string } = {
+    count: 32,
+    interval: "12 hours",
+  },
+) =>
   graph9Lives.query.featuredCampaign({
-    $: { count, interval },
+    $: { count: props.count, interval: props.interval },
     name: true,
     identifier: true,
     description: true,

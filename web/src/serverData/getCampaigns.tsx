@@ -1,6 +1,6 @@
 // import { requestCampaignList } from "@/providers/graphqlClient";
 import { unstable_cache } from "next/cache";
-import { CampaignDto } from "@/types";
+import { Campaign, CampaignDto } from "@/types";
 import appConfig from "@/config";
 const query = `
     query Campaigns {
@@ -62,7 +62,7 @@ export async function getCampaigns() {
   const campaigns = result.data.campaigns.map((c: any) =>
     JSON.parse(JSON.stringify(new CampaignDto(c))),
   );
-  return campaigns;
+  return campaigns as Campaign[];
 }
 export const getCachedCampaigns = unstable_cache(
   getCampaigns,

@@ -20,6 +20,7 @@ export default function ReactQueryProvider({
     totalUserCount?: number;
     degenBuysAndSells: BuyAndSellResponse;
     degenCreations: CreationResponse;
+    featuredCampaigns: Campaign[];
   };
 }) {
   const [queryClient] = useState(() => {
@@ -60,7 +61,10 @@ export default function ReactQueryProvider({
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       ),
     });
-
+    client.setQueryData(
+      ["featuredCampaigns"],
+      () => initialData.featuredCampaigns,
+    );
     return client;
   });
 

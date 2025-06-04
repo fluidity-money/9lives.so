@@ -13,6 +13,7 @@ import LoadingIndicator from "../loadingIndicator";
 import Button from "../themed/button";
 import config from "@/config";
 import useCampaigns from "@/hooks/useCampaigns";
+import ErrorIndicator from "../errorIndicator";
 
 export default function CampaignList({
   category,
@@ -27,8 +28,14 @@ export default function CampaignList({
 }) {
   const [searchTermInput, setSearchTermInput] = useState("");
   const [searcTermFilter, setSearcTermFilter] = useState("");
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useCampaigns({ category, orderBy, searchTerm: searcTermFilter, address });
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useCampaigns({ category, orderBy, searchTerm: searcTermFilter, address });
   const campaigns = data?.pages.flatMap((c) => c);
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   const orderByFilters: Array<[Required<CampaignFilters["orderBy"]>, string]> =
@@ -87,7 +94,9 @@ export default function CampaignList({
           ) : null}
         </div>
       </div>
-      {isLoading ? (
+      {isError ? (
+        <ErrorIndicator />
+      ) : isLoading ? (
         <LoadingIndicator />
       ) : campaigns?.length === 0 ? (
         <div className="flex items-center justify-center">
