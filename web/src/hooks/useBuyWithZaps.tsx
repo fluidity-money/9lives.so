@@ -23,6 +23,7 @@ const useBuyWithZaps = ({
   const buyWithZaps = async (
     account: Account,
     fromAmount: number,
+    usdValue: number,
     fromChain: number,
     fromToken: string,
     toChain: number,
@@ -68,7 +69,7 @@ const useBuyWithZaps = ({
             headers: { accept: "application/json" },
           };
           const fromAmountBigInt = toUnits(fromAmount.toString(), fromDecimals);
-          const urlGetQuote = `https://li.quest/v1/quote?fromChain=${fromChain}&toChain=${spnId}&fromToken=${fromToken}&toToken=${spnUSDC}&fromAddress=${account?.address}&fromAmount=${fromAmountBigInt}`;
+          const urlGetQuote = `https://li.quest/v1/quote?fromChain=${fromChain}&toChain=${toChain}&fromToken=${fromToken}&toToken=${toToken}&fromAddress=${account?.address}&fromAmount=${fromAmountBigInt}`;
           const toAmountRes = await fetch(urlGetQuote, optionsGet);
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.estimate.toAmount;
@@ -130,7 +131,13 @@ const useBuyWithZaps = ({
             queryKey: ["sharePrices", tradingAddr, outcomeIds],
           });
           queryClient.invalidateQueries({
-            queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
+            queryKey: [
+              "returnValue",
+              shareAddr,
+              tradingAddr,
+              outcomeId,
+              usdValue,
+            ],
           });
           queryClient.invalidateQueries({
             queryKey: ["campaign", campaignId],

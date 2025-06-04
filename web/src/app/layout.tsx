@@ -62,9 +62,6 @@ const arial = localFont({
 });
 export const metadata: Metadata = {
   ...appConfig.metadata,
-  other: {
-    "fc:frame": JSON.stringify(appConfig.frame),
-  },
 };
 
 export default async function RootLayout({

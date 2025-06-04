@@ -161,6 +161,7 @@ export default function DetailBuyAction({
         await buyWithZaps(
           account!,
           supply,
+          usdValue,
           fromChain,
           fromToken,
           toChain,
