@@ -48,8 +48,7 @@ export default function DetailBuyAction({
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
-  const state = useFeatureFlag("enable lifi zaps");
-  const enabledLifiZaps = !state;
+  const enabledLifiZaps = useFeatureFlag("enable lifi zaps");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
@@ -121,6 +120,7 @@ export default function DetailBuyAction({
     ? supply *
       +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : supply;
+  const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const { data: estimatedSharesToGet } = useReturnValue({
     outcomeId: outcome.identifier,
     shareAddr: outcome.share.address,
@@ -148,16 +148,25 @@ export default function DetailBuyAction({
       value: `$${isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet}`,
     },
   ];
-  async function handleBuy({ supply, fromChain, fromToken }: FormData) {
+  async function handleBuy({
+    supply,
+    fromChain,
+    fromToken,
+    toChain,
+    toToken,
+  }: FormData) {
     try {
       setIsMinting(true);
       if (enabledLifiZaps) {
         await buyWithZaps(
           account!,
-          usdValue,
+          supply,
           fromChain,
           fromToken,
+          toChain,
+          toToken,
           data.outcomes,
+          fromDecimals,
         );
       } else {
         await buy(account!, supply, data.outcomes);
