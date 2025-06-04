@@ -18,6 +18,9 @@ export default function useConnectWallet() {
         showThirdwebBranding:
           appConfig.thirdweb.connectModal.showThirdwebBranding,
         showAllWallets: false,
+        walletConnect: {
+          projectId: appConfig.NEXT_PUBLIC_THIRDWEB_ID,
+        },
       });
     } catch (error) {
       if (!error) console.error("Connection error:", error);
