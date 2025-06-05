@@ -3,10 +3,10 @@
 
 ## Dropboxes
 
-In the event of an urgent security vulnerability and a whitehat hack
-is needed, please send funds rescued to an administrative ledger at
-`0x9ef9F76e5CC9Ce656f03c69B56fb6bdA1875f652`. 10%
-of funds recovered will be paid to the attacker and sender as compensation.
+In the event of an urgent security vulnerability and a whitehat hack is needed, please
+send funds rescued to an administrative ledger at
+`0x9ef9F76e5CC9Ce656f03c69B56fb6bdA1875f652`. 10% of funds recovered will be paid to the
+attacker and sender as compensation.
 
 ## Urgent contacts
 
@@ -29,51 +29,95 @@ Alex or Ivan via either of these methods:
 | Discord        | Ivan | ISN (🌊,💸)#8511                             |
 | Email          | [ivan@fluidity.money](mailto:ivan@fluidity.money) |
 
+## Areas of concern
+
+The following are any areas of concern a security researcher might be interested in:
+
+1. Can the CPMM be griefed with dusted amounts? Are our estimation methods correct? Is our
+reference correctly implemented?
+
+2. Does the DPM scale correctly?
+
+3. Are there any unforeseen reentrancy bugs, since we have the feature disabled?
+
+4. Is all access control correct?
+
+## Considerations
+
+We always take USDC or an asset we have deployed as the token and make security guarantees
+about it. We use a router to do the swapping. The router can be imperfctly designed.
+
 ## Files of note
 
-The following files may be of interest to any would-be security researcher:
+The following files may be of interest to any would-be security researcher depending on
+the scope of your audit.
+
+**We recommend to auditors to explore the Trading and Factory contracts**. The infrastructure
+markets are not widely as used and have seen historically good coverage of testing, bar
+any theoretical concerns. The other contracts are much simpler comparatively and are more
+likely to break in ways that trigger application bugs without a financial impact.
+
+### Trading and Factory contracts
+
+At `5da2b7e`, 3111 nLOC:
 
 ```
-src/utils.rs
-src/trading-proxy.huff
-src/main.rs
-src/Share.sol
-src/fees.rs
-src/WordPackingLib.sol
-src/contract_lockup.rs
-src/contract_trading_extras.rs
-src/storage_factory.rs
-src/contract_trading_mint.rs
-src/UpgradeableInfraMarketProxy.sol
 src/contract_factory_1.rs
-src/timing_infra_market.rs
-src/LockupToken.sol
-src/error.rs
-src/storage_beauty_contest.rs
 src/contract_factory_2.rs
-src/storage_infra_market.rs
-src/storage_trading.rs
-src/UpgradeableTwoProxy.sol
+src/storage_factory.rs
+src/contract_trading_extras.rs
+src/contract_trading_mint.rs
 src/contract_trading_price.rs
-src/ILongtail.sol
-src/decimal.rs
-src/INineLivesFactory.sol
-src/NinelivesLockedARB.sol
-src/storage_lockup.rs
-src/IEvents.sol
-src/proxy.rs
-src/LensesV1.sol
-src/maths.rs
-src/contract_trading.rs
-src/contract_beauty_contest.rs
-src/lib.rs
-src/events.rs
-src/INineLivesTrading.sol
-src/immutables.rs
-src/DeployHelper.sol
-src/HelperFactory.sol
-src/IInfraMarket.sol
 src/contract_trading_quotes.rs
-src/contract_infra_market.rs
-src/ILockup.sol
+src/contract_trading.rs
+src/fees.rs
+src/maths.rs
+src/outcome.rs
+src/storage_lockup.rs
+src/storage_trading.rs
+src/trading_dpm.rs
+src/trading_amm.rs
+src/trading_private.rs
+src/Share.sol
 ```
+
+### Dynamic Pari-Mutuel Market model (trading only)
+
+At `5da2b7e`, 1841 nLOC:
+
+```
+src/contract_trading_extras.rs
+src/contract_trading_mint.rs
+src/contract_trading_price.rs
+src/contract_trading_quotes.rs
+src/contract_trading.rs
+src/fees.rs
+src/maths.rs
+src/outcome.rs
+src/storage_lockup.rs
+src/storage_trading.rs
+src/trading_dpm.rs
+src/trading_private.rs
+src/Share.sol
+```
+
+### Constant Product Market Maker model (trading only)
+
+At `5da2b7e`, 2397 nLOC:
+
+```
+src/contract_trading_extras.rs
+src/contract_trading_mint.rs
+src/contract_trading_price.rs
+src/contract_trading_quotes.rs
+src/contract_trading.rs
+src/fees.rs
+src/maths.rs
+src/outcome.rs
+src/storage_lockup.rs
+src/storage_trading.rs
+src/trading_amm.rs
+src/trading_private.rs
+src/Share.sol
+```
+
