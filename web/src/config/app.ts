@@ -35,6 +35,17 @@ const metadata = {
     "web3",
   ],
 };
+const frame = {
+  version: "next",
+  name: metadata.title,
+  iconUrl: `${metadata.metadataBase.origin}/images/logo-hero.svg`,
+  homeUrl: metadata.metadataBase.origin,
+  imageUrl: `${metadata.metadataBase.origin}/images/frame.png`,
+  buttonTitle: "Launch Frame",
+  splashImageUrl: `${metadata.metadataBase.origin}/images/logo-hero.svg`,
+  splashBackgroundColor: "#DDEAEF",
+  requiredChains: ["eip155:42161"],
+};
 const infraMarketStateTitles: Record<InfraMarketState, string> = {
   [InfraMarketState.Callable]: "Propose an outcome as a winner",
   [InfraMarketState.Closable]: "Close and collect rewards",
@@ -89,6 +100,7 @@ const appSchema = z.object({
     metadataBase: z.instanceof(URL),
     keywords: z.array(z.string()),
   }),
+  frame: z.any(),
   infraMarket: z.object({
     titles: z.record(z.string(), z.string()),
     colors: z.record(z.string(), z.string()),
@@ -166,6 +178,7 @@ const supportedCrossChains = [
 
 const appVars = appSchema.safeParse({
   metadata,
+  frame,
   infraMarket: {
     titles: infraMarketStateTitles,
     colors: infraMarketStateColors,
