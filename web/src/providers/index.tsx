@@ -18,6 +18,7 @@ export default function Providers({
     totalUserCount?: number;
     degenBuysAndSells: BuyAndSellResponse;
     degenCreations: CreationResponse;
+    featuredCampaigns: Campaign[];
   };
 }) {
   return (
