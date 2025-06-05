@@ -5,8 +5,8 @@
 
 In the event of an urgent security vulnerability and a whitehat hack is needed, please
 send funds rescued to an administrative ledger at
-`0x9ef9F76e5CC9Ce656f03c69B56fb6bdA1875f652`. 10% of funds recovered will be paid to the
-attacker and sender as compensation.
+`0x9ef9F76e5CC9Ce656f03c69B56fb6bdA1875f652` on Superposition chain (chain id 55244). 10%
+of funds recovered will be paid to the sender as compensation.
 
 ## Urgent contacts
 
