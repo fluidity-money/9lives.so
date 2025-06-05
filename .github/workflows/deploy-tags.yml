@@ -26,7 +26,7 @@ jobs:
           notes="${notes//$'\r'/'%0D'}"
           echo "notes=$notes" >> $GITHUB_OUTPUT
 
-    - name: Upload Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: release-${{ github.ref_name }}.zip
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-${{ github.ref_name }}.zip
