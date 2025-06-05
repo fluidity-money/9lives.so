@@ -52,6 +52,10 @@ about it. We use a router to do the swapping. The router can be imperfctly desig
 The following files may be of interest to any would-be security researcher depending on
 the scope of your audit.
 
+The DPM is implemented according to a reference at `tests/reference.py`. The AMM is
+implemented according to a reference at `tests/amm_pred.py`. Any differences that do not
+relate to scaling beneficial to the contract should be considered a bug.
+
 **We recommend to auditors to explore the Trading and Factory contracts**. The infrastructure
 markets are not widely as used and have seen historically good coverage of testing, bar
 any theoretical concerns. The other contracts are much simpler comparatively and are more
