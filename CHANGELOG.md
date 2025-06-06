@@ -1,3 +1,9 @@
+## 06-06-2025 Added trending page
+
+Discover your next favorite market faster than ever! 🚀 Our new algorithmic frontpage
+surfaces trending markets based on real-time activity, liquidity boosts, and trading
+volumes, keeping you in the heart of the action! 🌟
+
 ## 04-06-2025 Usability improvements
 
 We’ve leveled up your experience with sleeker page usability and supercharged our
