@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fluidity-money/snitch-client':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.3.0
+        version: 0.3.0
       '@headlessui/react':
         specifier: ^2.2.3
         version: 2.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -29,6 +29,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.76.1
         version: 5.77.0(react@19.0.0)
+      bowser:
+        specifier: ^2.11.0
+        version: 2.11.0
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -631,8 +634,8 @@ packages:
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
-  '@fluidity-money/snitch-client@0.2.0':
-    resolution: {integrity: sha512-sbNYYXVZyE0F3ozTSG+vhEBfITCcvdeQH5nU+RjeEWUa7UF+PhjxpvuR155aEbtEZWWE8A/Wa2E49vZ8yHZKmg==}
+  '@fluidity-money/snitch-client@0.3.0':
+    resolution: {integrity: sha512-5f8NqXXxB8iP6Y9cqnyaMvMxdpb9ZTj6viff6x9xS3v8mWIyjNH1lUZb1JG8602EUDOy/fz2luGBpIaTFKhizA==}
 
   '@graphql-typed-document-node/core@3.2.0':
     resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
@@ -2638,6 +2641,9 @@ packages:
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
+
+  bowser@2.11.0:
+    resolution: {integrity: sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -6646,7 +6652,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@fluidity-money/snitch-client@0.2.0': {}
+  '@fluidity-money/snitch-client@0.3.0': {}
 
   '@graphql-typed-document-node/core@3.2.0(graphql@16.11.0)':
     dependencies:
@@ -9507,6 +9513,8 @@ snapshots:
   big.js@6.2.2: {}
 
   binary-extensions@2.3.0: {}
+
+  bowser@2.11.0: {}
 
   brace-expansion@1.1.11:
     dependencies:

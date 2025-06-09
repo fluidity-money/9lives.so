@@ -23,13 +23,14 @@
     "codegen": "pnpm gen:9lives && pnpm gen:points"
   },
   "dependencies": {
-    "@fluidity-money/snitch-client": "^0.2.0",
+    "@fluidity-money/snitch-client": "^0.3.0",
     "@headlessui/react": "^2.2.3",
     "@headlessui/tailwindcss": "^0.2.2",
     "@hookform/resolvers": "^3.10.0",
     "@next/third-parties": "^15.3.2",
     "@sentry/nextjs": "^8.55.0",
     "@tanstack/react-query": "^5.76.1",
+    "bowser": "^2.11.0",
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
