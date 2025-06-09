@@ -47,7 +47,7 @@ env_addr!(DAO_OP_ADDR, "SPN_DAO_OP_ADDR", DAO);
 // Special role that can do batch claiming for a recipient.
 env_addr!(
     CLAIMANT_HELPER,
-    "SPN_CLAIMANT_HELPER",
+    "SPN_CLAIMANT_HELPER_ADDR",
     CLAIMANT
 );
 
