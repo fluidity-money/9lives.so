@@ -74,8 +74,10 @@ interface IEvents {
     );
 
     event LiquidityClaimed(
+        address indexed sender,
         address indexed recipient,
-        uint256 indexed fusdcAmt
+        uint256 indexed fusdcAmt,
+        uint256 sharesAmount
     );
 
     event LPFeesClaimed(

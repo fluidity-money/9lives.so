@@ -372,11 +372,12 @@ impl StorageTrading {
 
     pub fn internal_amm_claim_liquidity(
         &mut self,
+        sender: Address,
         sender_liq_shares: U256,
         recipient: Address,
     ) -> R<U256> {
         assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
-        let sender_max_shares = self.amm_user_liquidity_shares.get(msg_sender());
+        let sender_max_shares = self.amm_user_liquidity_shares.get(sender);
         let sender_liq_shares = if sender_liq_shares.is_zero() {
             sender_max_shares
         } else {
@@ -387,16 +388,22 @@ impl StorageTrading {
             sender_max_shares >= sender_liq_shares,
             Error::NotEnoughLiquidity
         );
-        self.internal_amm_claim_lp_fees(msg_sender(), recipient)?;
+        self.internal_amm_claim_lp_fees(sender, recipient)?;
         let liq_price = maths::mul_div(
             self.amm_shares.get(self.winner.get()),
             SHARE_DECIMALS_EXP,
             self.amm_liquidity.get(),
         )?
         .0;
-        let claimed_amt = maths::mul_div(sender_liq_shares, liq_price, SHARE_DECIMALS_EXP)?.0;
-        fusdc_call::transfer(recipient, claimed_amt)?;
-        self.amm_user_liquidity_shares.setter(msg_sender()).set(
+        let fusdc_amt = maths::mul_div(sender_liq_shares, liq_price, SHARE_DECIMALS_EXP)?.0;
+        evm::log(events::LiquidityClaimed {
+            sender,
+            recipient,
+            fusdcAmt: fusdc_amt,
+            sharesAmount: sender_liq_shares,
+        });
+        fusdc_call::transfer(recipient, fusdc_amt)?;
+        self.amm_user_liquidity_shares.setter(sender).set(
             sender_max_shares
                 .checked_sub(sender_liq_shares)
                 .ok_or(Error::CheckedSubOverflow(
@@ -404,7 +411,7 @@ impl StorageTrading {
                     sender_liq_shares,
                 ))?,
         );
-        Ok(claimed_amt)
+        Ok(fusdc_amt)
     }
 
     /// Rebalance the calculated user fee weight.

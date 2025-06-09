@@ -67,7 +67,7 @@ impl StorageTrading {
             Ok((fusdc_amt, fees_earned))
         } else {
             Ok((
-                self.internal_amm_claim_liquidity(_amount_liq, _recipient)?,
+                self.internal_amm_claim_liquidity(msg_sender(), _amount_liq, _recipient)?,
                 self.internal_amm_claim_lp_fees(msg_sender(), _recipient)?,
             ))
         }
