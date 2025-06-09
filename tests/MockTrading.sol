@@ -107,10 +107,6 @@ contract MockTrading is INineLivesTrading {
         ++counter_;
     }
 
-    function claimLpFees66980F36(address /* recipient */) external {
-        ++counter_;
-    }
-
     function addLiquidityA975D995(uint256 /* liquidity */, address /* recipient */) external returns (
         uint256 userLiquidity
     ) {
@@ -126,9 +122,7 @@ contract MockTrading is INineLivesTrading {
         return (liquidity, 0);
     }
 
-    function claimAddressFeesB302CF6D(
-        address /* recipient */
-    ) external returns (uint256) {
+    function claimAllFees71949EC8(address /* recipient */) external returns (uint256) {
         ++counter_;
         return counter_;
     }

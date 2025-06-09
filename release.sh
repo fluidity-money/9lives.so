@@ -28,10 +28,9 @@ if [ -z "$version" ]; then
 	version="$major.$minor.$patch"
 fi
 
-sed -i "s/^version = .*/version = \"$version\"/" Cargo.toml
 sed -i 's/\("version": *"\)[^"]*/\1'"$version"'/' package.json
 
-git add Cargo.toml package.json CHANGELOG.md
+git add package.json CHANGELOG.md
 
 git commit -m "Begin release $version"
 

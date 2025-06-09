@@ -551,8 +551,8 @@ fn test_amm_reproduction_0xbE42F0fb7C6e702be8C1DC11F04c7b5323bE93EE_1746439() {
                     total_lp_yield += c.claim_liquidity_9_C_391_F_85(addr).unwrap();
                 }
                 dbg!(total_lp_yield);
-                host::set_msg_sender(DAO_ADDR);
-                dbg!(c.claim_address_fees_B_302_C_F_6_D(DAO_ADDR).unwrap());
+                host::set_msg_sender(DAO_OP_ADDR);
+                dbg!(c.claim_all_fees_71949_E_C_8(DAO_EARN_ADDR).unwrap());
                 Ok(())
             });
         }

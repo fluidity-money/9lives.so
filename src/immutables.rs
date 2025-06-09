@@ -44,6 +44,13 @@ env_addr!(DAO_EARN_ADDR, "SPN_DAO_EARN_ADDR", DAO);
 // address.
 env_addr!(DAO_OP_ADDR, "SPN_DAO_OP_ADDR", DAO);
 
+// Special role that can do batch claiming for a recipient.
+env_addr!(
+    CLAIMANT_HELPER,
+    "SPN_CLAIMANT_HELPER",
+    CLAIMANT
+);
+
 // Scaling amount for checking if a bad predictor went above 50% in their
 // incorrect bets relative ot the winning outcome.
 pub const FIFTY_PCT_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);

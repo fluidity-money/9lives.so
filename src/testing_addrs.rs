@@ -24,6 +24,7 @@ defaults! {
     LOCKUP_CONTRACT,
     LOCKUP_TOKEN,
     ZERO_FOR_MINT_ADDR,
+    ADDRESS_CLAIMANT,
 
     IVAN,
     ERIK,

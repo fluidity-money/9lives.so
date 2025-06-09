@@ -8,7 +8,7 @@ use lib9lives::{
     erc20_call,
     fees::*,
     host::{ts_add_time, with_contract},
-    immutables::{DAO_ADDR, FUSDC_ADDR},
+    immutables::{DAO_EARN_ADDR, FUSDC_ADDR},
     interactions_clear_after, should_spend_fusdc_sender, strat_storage_trading, testing_addrs,
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_fixed_bytes, strat_tiny_u256},
@@ -77,7 +77,7 @@ proptest! {
             msg_sender(), // Whoever can call the oracle.
             block_timestamp() + 1,
             u64::MAX,
-            DAO_ADDR,  // The fee recipient.
+            DAO_EARN_ADDR,  // The fee recipient.
             testing_addrs::SHARE, // The share implementation
             false,
             fee_creator,

@@ -1,6 +1,7 @@
 use crate::{
     error::*, events, fusdc_call, immutables::*, maths, proxy, share_call, storage_trading::*,
     utils::*,
+    immutables,
 };
 
 use stylus_sdk::{alloy_primitives::*, evm};
@@ -633,7 +634,6 @@ impl StorageTrading {
             .ok_or(Error::CheckedSubOverflow(new_shares, prev_after))
     }
 
-    #[mutants::skip]
     pub fn internal_amm_estimate_burn(
         &self,
         outcome_id: FixedBytes<8>,
@@ -670,9 +670,35 @@ impl StorageTrading {
         Ok(current_usd)
     }
 
+    pub fn internal_amm_claim_addr_fees(&mut self, sender: Address, recipient: Address) -> R<U256> {
+        let owed = self.fees_owed_addresses.get(sender);
+        fusdc_call::transfer(recipient, owed)?;
+        self.fees_owed_addresses
+            .setter(msg_sender())
+            .set(U256::ZERO);
+        evm::log(events::AddressFeesClaimed {
+            recipient,
+            amount: owed,
+        });
+        Ok(owed)
+    }
+
     pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {
         self.internal_amm_get_prices()?;
         Ok(self.amm_outcome_prices.get(outcome))
+    }
+
+    pub fn internal_amm_claim_all_fees(&mut self, recipient: Address) -> R<U256> {
+        let sender = match msg_sender() {
+            immutables::DAO_OP_ADDR => DAO_EARN_ADDR,
+            immutables::CLAIMANT_HELPER => recipient,
+            sender => sender,
+        };
+        if sender == DAO_EARN_ADDR {
+            assert_or!(recipient == DAO_EARN_ADDR, Error::IncorrectDAOClaiming);
+        }
+        Ok(self.internal_amm_claim_lp_fees(sender, recipient)?
+            + self.internal_amm_claim_addr_fees(sender, recipient)?)
     }
 }
 

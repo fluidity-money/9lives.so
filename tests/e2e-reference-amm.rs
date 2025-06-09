@@ -749,21 +749,21 @@ proptest! {
             IVAN => {
                 should_spend_fusdc_contract!(
                     half_of_target_fee_collected,
-                    c.claim_lp_fees_66980_F_36(msg_sender())
+                    c.claim_all_fees_71949_E_C_8(msg_sender())
                 );
                 assert_eq!(
                     U256::ZERO,
-                    c.claim_lp_fees_66980_F_36(msg_sender()).unwrap()
+                    c.claim_all_fees_71949_E_C_8(msg_sender()).unwrap()
                 );
             },
             ERIK => {
                 should_spend_fusdc_contract!(
                     half_of_target_fee_collected,
-                    c.claim_lp_fees_66980_F_36(msg_sender())
+                    c.claim_all_fees_71949_E_C_8(msg_sender())
                 );
                 assert_eq!(
                     U256::ZERO,
-                    c.claim_lp_fees_66980_F_36(msg_sender()).unwrap()
+                    c.claim_all_fees_71949_E_C_8(msg_sender()).unwrap()
                 );
                 assert!(fusdc_call::balance_of(CONTRACT).unwrap().is_zero());
             },
@@ -841,19 +841,19 @@ proptest! {
                 assert_eq_u!(bal, fusdc_call::balance_of(CONTRACT).unwrap());
                 host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
                 // This is a dust amount, so zero.
-                c.claim_lp_fees_66980_F_36(msg_sender()).unwrap();
+                c.claim_all_fees_71949_E_C_8(msg_sender()).unwrap();
                 assert_eq_u!(U256::ZERO, fusdc_call::balance_of(msg_sender()).unwrap());
             },
             IVAN => {
                 should_spend_fusdc_contract!(
                     1e6 as u64,
-                    c.claim_lp_fees_66980_F_36(msg_sender())
+                    c.claim_all_fees_71949_E_C_8(msg_sender())
                 );
             },
             ERIK => {
                 should_spend_fusdc_contract!(
                     1e6 as u64,
-                    c.claim_lp_fees_66980_F_36(msg_sender())
+                    c.claim_all_fees_71949_E_C_8(msg_sender())
                 );
             },
             ELI => {

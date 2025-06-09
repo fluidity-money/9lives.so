@@ -73,7 +73,7 @@ interface INineLivesTrading {
 
     function claimLiquidity9C391F85(address recipient) external;
 
-    function claimLpFees66980F36(address recipient) external;
+    function claimAllFees71949EC8(address recipient) external returns (uint256);
 
     struct UserLiqAdded {
         bytes8 outcome;
@@ -93,11 +93,6 @@ interface INineLivesTrading {
         bytes8 outcome;
         uint256 sharesReceived;
     }
-
-    /// @notice Claim fees owed to a specific address, perhaps after they've
-    ///        been doing referrals.
-    /// @param recipient to send the rewards to.
-    function claimAddressFeesB302CF6D(address recipient) external returns (uint256);
 
     /// @notice Get the price of an outcome in fUSDC.
     /// @param outcome to test for
