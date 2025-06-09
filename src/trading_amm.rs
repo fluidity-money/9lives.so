@@ -396,9 +396,14 @@ impl StorageTrading {
         .0;
         let claimed_amt = maths::mul_div(sender_liq_shares, liq_price, SHARE_DECIMALS_EXP)?.0;
         fusdc_call::transfer(recipient, claimed_amt)?;
-        self.amm_user_liquidity_shares
-            .setter(msg_sender())
-            .set(U256::ZERO);
+        self.amm_user_liquidity_shares.setter(msg_sender()).set(
+            sender_max_shares
+                .checked_sub(sender_liq_shares)
+                .ok_or(Error::CheckedSubOverflow(
+                    sender_max_shares,
+                    sender_liq_shares,
+                ))?,
+        );
         Ok(claimed_amt)
     }
 
