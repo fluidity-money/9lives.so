@@ -5,13 +5,16 @@ import {
   useActiveWalletChain,
   useActiveWallet,
 } from "thirdweb/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setTag, setUser, setContext } from "@sentry/nextjs";
 import { useDegenStore } from "@/stores/degenStore";
 import { usePathname } from "next/navigation";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import posthog from "posthog-js";
 import config from "@/config";
+import { hitUser, tagUser } from "@fluidity-money/snitch-client";
+import Bowser from "bowser";
+import { currentChain } from "@/config/chains";
 
 export default function ContextInjector() {
   const account = useActiveAccount();
@@ -20,6 +23,7 @@ export default function ContextInjector() {
   const degenModeEnabled = useDegenStore((state) => state.degenModeEnabled);
   const pathname = usePathname();
   const wallet = useActiveWallet();
+  const [tagSnitch, setTagSnitch] = useState<string>();
 
   // insert contractAddresses to Sentry
   useEffect(() => {
@@ -73,6 +77,52 @@ export default function ContextInjector() {
       connect();
     }
   }, [pathname, account, connect]);
+
+  useEffect(() => {
+    const browser = Bowser.getParser(window.navigator.userAgent);
+    const browserName = browser.getBrowserName();
+    const os = browser.getOSName();
+    const platform = browser.getPlatform();
+    const path = window.location.pathname;
+    (async () => {
+      try {
+        const tag = await tagUser({
+          address: account?.address,
+          property: "9lives",
+          source: path,
+          tag: null,
+          facts: [
+            { key: "languages", value: [...navigator.languages] },
+            { key: "browser", value: [browserName] },
+            { key: "os", value: [os] },
+            { key: "platform", value: [platform.type?.toString() ?? ""] },
+            {
+              key: "screenResolution",
+              value: [`${screen.width}x${screen.height}`],
+            },
+            {
+              key: "timezone",
+              value: [Intl.DateTimeFormat().resolvedOptions().timeZone],
+            },
+            { key: "cookiesEnabled", value: [String(navigator.cookieEnabled)] },
+            { key: "chainId", value: [currentChain?.id.toString()] },
+          ],
+        });
+        setTagSnitch(tag);
+      } catch (e) {
+        console.error(e instanceof Error ? e.message : e);
+      }
+    })();
+  }, [account?.address]);
+
+  useEffect(() => {
+    if (tagSnitch)
+      hitUser({
+        page: pathname,
+        property: "9lives",
+        tag: tagSnitch,
+      });
+  }, [pathname, tagSnitch]);
 
   return null;
 }
