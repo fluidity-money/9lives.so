@@ -98,7 +98,7 @@ export default function DetailOutcomeRow({
         )}
       >
         <span className="font-chicago text-xs font-normal">
-          {chance?.toFixed(0)}%
+          {isWinner ? "100" : chance?.toFixed(0)}%
         </span>
       </td>
       {isDpm ? (
