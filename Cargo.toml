@@ -2,7 +2,7 @@
 name = "ninelives"
 version = "0.6.0"
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.85"
 
 [lib]
 name = "lib9lives"
@@ -15,7 +15,7 @@ name = "ninelives"
 codegen-units = 1
 opt-level = "z"
 strip = true
-lto = true
+lto = "fat"
 debug = false
 rpath = false
 debug-assertions = false
@@ -26,6 +26,17 @@ codegen-units = 16
 panic = "unwind"
 opt-level = "z"
 incremental = true
+
+[profile.dev-codesize]
+inherits = "dev"
+codegen-units = 1
+opt-level = "z"
+strip = false
+lto = true
+debug = false
+rpath = false
+debug-assertions = false
+incremental = false
 
 [dependencies]
 tiny-keccak = "2.0.2"

@@ -71,9 +71,7 @@ interface INineLivesTrading {
 
     function rescue276DD9AB(address recipient) external returns (uint256);
 
-    function claimLiquidity9C391F85(address recipient) external;
-
-    function claimAllFees71949EC8(address recipient) external returns (uint256);
+    function claimAllFees332D7968(address recipient) external returns (uint256);
 
     struct UserLiqAdded {
         bytes8 outcome;

@@ -2,10 +2,10 @@ use stylus_sdk::alloy_primitives::{aliases::*, *};
 
 use crate::error::*;
 
-pub use crate::{storage_trading::*, utils::msg_sender};
-
 #[cfg(feature = "contract-trading-price")]
 use alloc::vec::Vec;
+
+pub use crate::{storage_trading::*, utils::msg_sender};
 
 #[cfg(not(feature = "trading-backend-dpm"))]
 use crate::fusdc_call;
@@ -22,15 +22,6 @@ impl StorageTrading {
         return self.internal_dpm_price(id);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return self.internal_amm_price(id);
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    #[allow(non_snake_case)]
-    pub fn claim_liquidity_9_C_391_F_85(&mut self, _recipient: Address) -> R<U256> {
-        #[cfg(not(feature = "trading-backend-dpm"))]
-        return self.internal_amm_claim_liquidity(_recipient);
-        #[cfg(feature = "trading-backend-dpm")]
-        return Err(Error::AMMOnly);
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -64,8 +55,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        return {
-            self.require_not_done_predicting()?;
+        if self.is_not_done_predicting() {
             assert_or!(!_amount_liq.is_zero(), Error::ZeroShares);
             assert_or!(
                 self.amm_user_liquidity_shares.get(msg_sender()) >= _amount_liq,
@@ -75,7 +65,12 @@ impl StorageTrading {
                 self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
             fusdc_call::transfer(_recipient, fusdc_amt)?;
             Ok((fusdc_amt, fees_earned))
-        };
+        } else {
+            Ok((
+                self.internal_amm_claim_liquidity(_recipient)?,
+                self.internal_amm_claim_lp_fees(msg_sender(), _recipient)?,
+            ))
+        }
     }
 }
 

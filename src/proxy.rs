@@ -15,20 +15,21 @@ pub use crate::host_proxy::*;
 
 // Sort and concatenate the seeds given, ABI format them, then hash them,
 // using an online keccak256 calculation with the native operation.
-pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
+#[inline(never)]
+pub fn create_identifier(seeds: &mut [&[u8]]) -> FixedBytes<32> {
     // Sort the seeds in a new vector by length first, then by default.
-    let mut seeds = Vec::from(seeds);
     seeds.sort_by(|a, b| a.len().cmp(&b.len()).then(a.cmp(b)));
     crypto::keccak(seeds.concat())
 }
 
+#[inline(never)]
 pub fn get_trading_addr(
     factory_addr: Address,
     is_dpm: bool,
     outcome_ids: &[FixedBytes<8>],
 ) -> Address {
     let trading_id =
-        create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
+        create_identifier(&mut outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
     let mut b = [0_u8; 85];
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());
@@ -40,13 +41,14 @@ pub fn get_trading_addr(
 
 /// Get the share address, using the address of the deployed Trading
 /// contract, and the id associated with the winning outcome.
+#[inline(never)]
 pub fn get_share_addr(
     factory_addr: Address,
     trading_addr: Address,
     erc20_impl: Address,
     outcome_id: FixedBytes<8>,
 ) -> Address {
-    let erc20_id = create_identifier(&[trading_addr.as_slice(), outcome_id.as_slice()]);
+    let erc20_id = create_identifier(&mut [trading_addr.as_slice(), outcome_id.as_slice()]);
     let mut b = [0_u8; 85];
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());

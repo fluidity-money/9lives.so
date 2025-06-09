@@ -47,8 +47,9 @@ impl StorageFactory {
         let outcome_ids = outcomes.iter().map(|(c, _, _)| *c).collect::<Vec<_>>();
 
         // Create the trading identifier to derive the outcome addresses from.
-        let trading_id =
-            proxy::create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
+        let trading_id = proxy::create_identifier(
+            &mut outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>(),
+        );
 
         // For now, every backend will be the AMM form, until we have Longtail supported.
         let backend_is_dpm = false;
@@ -118,7 +119,7 @@ impl StorageFactory {
 
         for (outcome_identifier, _sqrt_price, outcome_name) in outcomes.iter() {
             let erc20_identifier =
-                proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
+                proxy::create_identifier(&mut [trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
                 .map_err(Error::DeployError)?;
 

@@ -104,13 +104,14 @@ impl StorageTrading {
         Ok(U256::ZERO)
     }
 
+    pub fn is_not_done_predicting(&self) -> bool {
+        self.when_decided.get().is_zero()
+            && !self.is_shutdown.get()
+            && self.time_ending.get() > U64::from(block_timestamp())
+    }
+
     pub fn require_not_done_predicting(&self) -> R<()> {
-        assert_or!(
-            self.when_decided.get().is_zero()
-                && !self.is_shutdown.get()
-                && self.time_ending.get() > U64::from(block_timestamp()),
-            Error::DoneVoting
-        );
+        assert_or!(self.is_not_done_predicting(), Error::DoneVoting);
         Ok(())
     }
 
