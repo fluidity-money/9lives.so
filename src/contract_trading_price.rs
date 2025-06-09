@@ -56,7 +56,7 @@ impl StorageTrading {
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         if self.is_not_done_predicting() {
-            assert_or!(!_amount_liq.is_zero(), Error::ZeroShares);
+            assert_or!(_amount_liq > U256::ZERO, Error::ZeroShares);
             assert_or!(
                 self.amm_user_liquidity_shares.get(msg_sender()) >= _amount_liq,
                 Error::NotEnoughLiquidity
@@ -67,7 +67,7 @@ impl StorageTrading {
             Ok((fusdc_amt, fees_earned))
         } else {
             Ok((
-                self.internal_amm_claim_liquidity(_recipient)?,
+                self.internal_amm_claim_liquidity(_amount_liq, _recipient)?,
                 self.internal_amm_claim_lp_fees(msg_sender(), _recipient)?,
             ))
         }
@@ -96,7 +96,7 @@ impl StorageTrading {
         _recipient: Address,
     ) -> R<(U256, U256, Vec<(FixedBytes<8>, U256)>)> {
         self.require_not_done_predicting()?;
-        assert_or!(!_amount_liq.is_zero(), Error::ZeroShares);
+        assert_or!(_amount_liq > U256::ZERO, Error::ZeroShares);
         assert_or!(
             self.amm_user_liquidity_shares.get(msg_sender()) >= _amount_liq,
             Error::NotEnoughLiquidity

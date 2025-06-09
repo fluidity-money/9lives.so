@@ -82,6 +82,10 @@ interface INineLivesTrading {
         uint256 userLiquidity
     );
 
+     /// @notice Remove liquidity, or claim it if the market has concluded. Will try to
+     /// claim the user's max LP position if the liquidity value is set to 0 and the market is
+     /// over. Trying to pass 0 to a market that has not concluded will cause the contrat
+     /// to revert, so setting this to 0 can replicate normal claim behaviour.
     function removeLiquidity3C857A15(uint256 liquidity, address recipient) external returns (
         uint256 fusdcAmount,
         uint256 lpFeesEarned

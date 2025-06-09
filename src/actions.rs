@@ -55,11 +55,7 @@ pub struct ActionBurn {
 
 #[cfg(feature = "trading-backend-amm")]
 #[derive(Clone, Debug, PartialEq, P, A)]
-pub struct ActionClaimLiquidity {}
-
-#[cfg(feature = "trading-backend-amm")]
-#[derive(Clone, Debug, PartialEq, P, A)]
-pub struct ActionClaimLpFees {}
+pub struct ActionClaimAllFees {}
 
 #[derive(Clone, Debug, PartialEq, P, A)]
 pub enum Action {
@@ -72,9 +68,7 @@ pub enum Action {
     #[cfg(feature = "trading-backend-amm")]
     Burn(ActionBurn),
     #[cfg(feature = "trading-backend-amm")]
-    ClaimLiquidity(ActionClaimLiquidity),
-    #[cfg(feature = "trading-backend-amm")]
-    ClaimLpFees(ActionClaimLpFees),
+    ClaimAllFees(ActionClaimAllFees),
 }
 
 pub fn strat_action() -> BoxedStrategy<Action> {
@@ -85,8 +79,7 @@ pub fn strat_action() -> BoxedStrategy<Action> {
         any::<ActionAddLiquidity>().prop_map(Action::AddLiquidity),
         any::<ActionRemoveLiquidity>().prop_map(Action::RemoveLiquidity),
         any::<ActionBurn>().prop_map(Action::Burn),
-        any::<ActionClaimLiquidity>().prop_map(Action::ClaimLiquidity),
-        any::<ActionClaimLpFees>().prop_map(Action::ClaimLpFees),
+        any::<ActionClaimAllFees>().prop_map(Action::ClaimAllFees),
     ]
     .boxed();
     #[cfg(not(feature = "trading-backend-amm"))]
@@ -248,11 +241,7 @@ macro_rules! implement_action {
                 );
             }
             #[cfg(feature = "trading-backend-amm")]
-            Action::ClaimLiquidity(a) => {
-                $c.claim_liquidity_9_C_391_F_85($sender).unwrap();
-            }
-            #[cfg(feature = "trading-backend-amm")]
-            Action::ClaimLpFees(a) => {
+            Action::ClaimAllFees(a) => {
                 $c.claim_all_fees_71949_E_C_8($sender).unwrap();
             }
         };

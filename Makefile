@@ -16,14 +16,9 @@ RELEASE_WASM_OPT_9LIVES := \
 		--dce \
 		--rse \
 		--signature-pruning \
+		--enable-bulk-memory \
 		--strip-debug \
 		--strip-producers \
-		--strip-target-features \
-		--remove-unused-names \
-		--remove-unused-module-elements \
-		--remove-unused-nonfunction-module-elements \
-		--merge-blocks \
-		--vacuum \
 		-Oz target/wasm32-unknown-unknown/release/ninelives.wasm \
 		-o
 

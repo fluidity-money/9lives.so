@@ -38,11 +38,11 @@ env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
 // Address of the team fee recipient from the Trading contract. Used as the
 // recipient address for fees, but is unable to claim the fees! The operator
 // address must claim the fees, which are sent to this recipient.
-env_addr!(DAO_EARN_ADDR, "SPN_DAO_EARN_ADDR", DAO);
+env_addr!(DAO_EARN_ADDR, "SPN_DAO_EARN_ADDR", DAO_EARN);
 
 // Trusted address that may use operations that will credit the DAO's earnings
 // address.
-env_addr!(DAO_OP_ADDR, "SPN_DAO_OP_ADDR", DAO);
+env_addr!(DAO_OP_ADDR, "SPN_DAO_OP_ADDR", DAO_OPS);
 
 // Special role that can do batch claiming for a recipient.
 env_addr!(

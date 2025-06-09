@@ -19,12 +19,13 @@ defaults! {
     FUSDC,
     LONGTAIL,
     STAKED_ARB,
-    DAO,
+    DAO_OPS,
+    DAO_EARN,
     SHARE,
     LOCKUP_CONTRACT,
     LOCKUP_TOKEN,
     ZERO_FOR_MINT_ADDR,
-    ADDRESS_CLAIMANT,
+    CLAIMANT,
 
     IVAN,
     ERIK,
@@ -35,13 +36,14 @@ defaults! {
     MARKO
 }
 
-pub const TESTING_ADDRS: [Address; 17] = [
+pub const TESTING_ADDRS: [Address; 18] = [
     MSG_SENDER,
     CONTRACT,
     FUSDC,
     LONGTAIL,
     STAKED_ARB,
-    DAO,
+    DAO_OPS,
+    DAO_EARN,
     SHARE,
     LOCKUP_CONTRACT,
     LOCKUP_TOKEN,

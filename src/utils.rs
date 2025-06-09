@@ -147,16 +147,16 @@ pub fn strat_fixed_bytes_sizeable<const N: usize>(
         let q = N / 3;
         if s == 2 && u == Uintsize::Large {
             for i in q * 2..N {
-                x[N - i - 1] = rng.gen();
+                x[N - i - 1] = rng.random();
             }
         }
         if s >= 1 && u != Uintsize::Small {
             for i in q..q * 2 {
-                x[N - i - 1] = rng.gen();
+                x[N - i - 1] = rng.random();
             }
         }
         for i in 0..q {
-            x[N - i - 1] = rng.gen();
+            x[N - i - 1] = rng.random();
         }
         FixedBytes::<N>::from(x)
     })

@@ -1,7 +1,6 @@
 use crate::{
-    error::*, events, fusdc_call, immutables::*, maths, proxy, share_call, storage_trading::*,
-    utils::*,
-    immutables,
+    error::*, events, fusdc_call, immutables, immutables::*, maths, proxy, share_call,
+    storage_trading::*, utils::*,
 };
 
 use stylus_sdk::{alloy_primitives::*, evm};
@@ -371,10 +370,23 @@ impl StorageTrading {
         Ok((burned_shares, usd_amt))
     }
 
-    pub fn internal_amm_claim_liquidity(&mut self, recipient: Address) -> R<U256> {
+    pub fn internal_amm_claim_liquidity(
+        &mut self,
+        sender_liq_shares: U256,
+        recipient: Address,
+    ) -> R<U256> {
         assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
-        let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
-        assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
+        let sender_max_shares = self.amm_user_liquidity_shares.get(msg_sender());
+        let sender_liq_shares = if sender_liq_shares.is_zero() {
+            sender_max_shares
+        } else {
+            sender_liq_shares
+        };
+        // Make sure the user can't drain more than they own.
+        assert_or!(
+            sender_max_shares >= sender_liq_shares,
+            Error::NotEnoughLiquidity
+        );
         self.internal_amm_claim_lp_fees(msg_sender(), recipient)?;
         let liq_price = maths::mul_div(
             self.amm_shares.get(self.winner.get()),

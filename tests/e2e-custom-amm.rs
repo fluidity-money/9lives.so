@@ -50,7 +50,7 @@ macro_rules! setup_contract {
 macro_rules! test_add_liquidity {
     ($c:expr, $amt:expr) => {
         let buy_amt = U256::from($amt);
-        should_spend_fusdc_sender!(buy_amt, $c.add_liquidity_test(buy_amt, msg_sender()))
+        should_spend_fusdc_sender!(buy_amt, $c.add_liquidity_A_975_D_995(buy_amt, msg_sender()))
     };
 }
 
@@ -87,9 +87,11 @@ proptest! {
                 ).unwrap_err()
             );
             // A user should not be able to claim liquidity from a campaign that hasn't ended.
+            // We can have claim-like behaviour by checking if the system reverts that zero
+            // shares were trying to be claimed.
             assert_eq!(
-                Error::NotDecided,
-                c.claim_liquidity_9_C_391_F_85(msg_sender()).unwrap_err()
+                Error::ZeroShares,
+                c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender()).unwrap_err()
             );
             // A user should not be able to add, remove, or mint liquidity for a
             // campaign that has ended.
@@ -172,11 +174,7 @@ proptest! {
     #[test]
     fn test_amm_tiny_mint_into_burning(
         add_lp in strat_tiny_u256(),
-        fee_for_creator in (0..=100).prop_map(U256::from),
-        fee_for_minter in (0..=100).prop_map(U256::from),
-        fee_for_lp in (0..=100).prop_map(U256::from),
-        fee_for_referrer in (0..=100).prop_map(U256::from),
-        (outcomes, referrers, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 10, 1000),
+        (outcomes, _, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 10, 1000),
         mut c in strat_storage_trading(false)
     )
     {
@@ -185,15 +183,13 @@ proptest! {
             IVAN => {
                 setup_contract!(&mut c, &outcomes);
                 test_add_liquidity!(&mut c, add_lp);
-                let cum_fee = fee_for_creator + fee_for_minter + fee_for_lp + fee_for_referrer;
-                for (i, a) in acts.iter().enumerate() {
+                for (_, a) in acts.iter().enumerate() {
                     if let [Action::Mint(ActionMint {
                         outcome: m_out,
                         referrer: m_ref,
                         usd_amt: m_u,
                     }), Action::Burn(ActionBurn {
                         outcome: b_out,
-                        referrer: b_referrer,
                         usd_amt: b_amt,
                         ..
                     })] = *a
@@ -217,7 +213,7 @@ proptest! {
                                     c.burn_854_C_C_96_E(b_out, b_amt, false, U256::ZERO, m_ref, msg_sender())
                                         .map_err(|_| {
                                             print_market_config(&c, add_lp);
-                                            print_bal_mint_burn_state_until(&outcomes, &acts, i);
+                                            print_bal_mint_burn_state_until(&outcomes, &acts);
                                             panic!("unable to burn: received shares {shares} from mint. minted {m_u} for outcome {m_out}. trying to burn {b_amt}, minimum {target}, outcome {b_out}")
                                         })
                                         .unwrap();
@@ -235,7 +231,7 @@ proptest! {
                             c.remove_liquidity_3_C_857_A_15(t, msg_sender())
                                 .map_err(|_| {
                                     print_market_config(&c, add_lp);
-                                    print_bal_mint_burn_state_until(&outcomes, &acts, outcomes.len());
+                                    print_bal_mint_burn_state_until(&outcomes, &acts);
                                     panic!("unable to remove liq: trying to remove {add_lp}")
                                 })
                                 .unwrap()
@@ -256,7 +252,7 @@ market.add_user("Alice")"#,
     )
 }
 
-fn print_bal_mint_burn_state_until(outcomes: &[FixedBytes<8>], acts: &[[Action; 2]], until: usize) {
+fn print_bal_mint_burn_state_until(outcomes: &[FixedBytes<8>], acts: &[[Action; 2]]) {
     let cum_ask = acts.iter().fold(U256::ZERO, |acc, [a, _]| {
         if let Action::Mint(ActionMint { usd_amt, .. }) = a {
             acc + usd_amt
@@ -340,6 +336,7 @@ fn test_amm_reproduction_0x276b5b896b088c5604E7333df90f7691d6FDE93A_1621096() {
 }
 
 #[test]
+#[allow(non_snake_case)]
 fn test_amm_reproduction_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358() {
     let outcomes = [
         fixed_bytes!("2e141d56f374af10"),
@@ -397,6 +394,7 @@ fn test_amm_reproduction_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358() {
 }
 
 #[test]
+#[allow(non_snake_case)]
 fn test_amm_reproduction_0xbE42F0fb7C6e702be8C1DC11F04c7b5323bE93EE_1746439() {
     let outcomes = [
         fixed_bytes!("40b1a4e9694e8afe"),
@@ -548,7 +546,7 @@ fn test_amm_reproduction_0xbE42F0fb7C6e702be8C1DC11F04c7b5323bE93EE_1746439() {
                 for (addr, amt) in lps {
                     c.amm_user_liquidity_shares.setter(addr).set(amt);
                     host::set_msg_sender(addr);
-                    total_lp_yield += c.claim_liquidity_9_C_391_F_85(addr).unwrap();
+                    total_lp_yield += c.remove_liquidity_3_C_857_A_15(U256::ZERO, addr).unwrap().1;
                 }
                 dbg!(total_lp_yield);
                 host::set_msg_sender(DAO_OP_ADDR);

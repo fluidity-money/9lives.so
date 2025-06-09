@@ -14,11 +14,11 @@ use stylus_sdk::alloy_primitives::U256;
 
 use proptest::prelude::*;
 
-use lib9lives::{immutables::SHARE_DECIMALS_EXP, maths, utils::strat_large_u256};
+use lib9lives::{immutables::SHARE_DECIMALS_EXP, maths};
 
 proptest! {
     #[test]
-    fn test_amm_rooti_against_python(l in strat_large_u256(), r in 2u32..10) {
+    fn test_amm_rooti_against_python(l in 1..<i128>::MAX, r in 2u32..10) {
         let c = Command::new("python3")
           .args(["tests/rooti_test.py", &l.to_string(), &r.to_string()])
             .output()
@@ -33,6 +33,7 @@ proptest! {
              .unwrap()
              .checked_div(SHARE_DECIMALS_EXP)
              .unwrap();
+         let l = U256::from(l);
          let res = maths::rooti(l, r).unwrap().checked_div(SHARE_DECIMALS_EXP).unwrap();
          let diff = max(expected, res) - min(expected, res);
          assert!(expected / U256::from(1000) >= diff, "diff with pow({l}, 1/{r})");

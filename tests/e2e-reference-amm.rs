@@ -60,7 +60,7 @@ fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut
         {
             should_spend_fusdc_sender!(
                 liquidity_amt,
-                c.add_liquidity_test(liquidity_amt, IVAN)
+                c.add_liquidity_A_975_D_995(liquidity_amt, IVAN)
             );
             Ok(())
         }
@@ -173,7 +173,7 @@ proptest! {
                 let liquidity_amt = U256::from(100e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_test(liquidity_amt, IVAN)
+                    c.add_liquidity_A_975_D_995(liquidity_amt, IVAN)
                 );
                 /*assert_eq!(
                     U256::from(100e6 as u64),
@@ -182,7 +182,7 @@ proptest! {
                 let liquidity_amt = U256::from(1000e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_test(liquidity_amt, IVAN)
+                    c.add_liquidity_A_975_D_995(liquidity_amt, IVAN)
                 );
                 assert_eq_u!(1100000000, c.amm_liquidity.get());
                 assert_eq_u!(1100000000, c.amm_shares.get(outcome_a));
@@ -231,7 +231,7 @@ proptest! {
                 let liquidity_amt = U256::from(1000e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_test(liquidity_amt, IVAN)
+                    c.add_liquidity_A_975_D_995(liquidity_amt, IVAN)
                 );
                 assert_eq_u!(1772800379, c.amm_liquidity.get());
                 assert_eq_u!(818199300, c.amm_shares.get(outcome_a));
@@ -471,7 +471,7 @@ proptest! {
                 );
                 should_spend_fusdc_contract!(
                     666666000,
-                    c.remove_liquidity_3_C_857_A_15(msg_sender())
+                    c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
             }
         }
@@ -514,7 +514,7 @@ proptest! {
                 );
                 should_spend_fusdc_contract!(
                     U256::from(578703000),
-                    c.remove_liquidity_3_C_857_A_15(msg_sender())
+                    c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
             }
         }
@@ -557,7 +557,7 @@ proptest! {
                 );
                 should_spend_fusdc_contract!(
                     U256::from(1200e6 as u64),
-                    c.remove_liquidity_3_C_857_A_15(msg_sender())
+                    c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
             }
         }
@@ -785,13 +785,13 @@ proptest! {
             IVAN => {
                 should_spend_fusdc_contract!(
                     360241000,
-                     c.remove_liquidity_3_C_857_A_15(msg_sender())
+                     c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
             },
             ERIK => {
                 should_spend_fusdc_contract!(
                     360241000,
-                    c.remove_liquidity_3_C_857_A_15(msg_sender())
+                    c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
             }
         };
@@ -900,19 +900,19 @@ proptest! {
                 should_spend_fusdc_contract!(
                     // In the Python, this is 377.71391451345414:
                     377713500,
-                    c.claim_liquidity_9_C_391_F_85(msg_sender())
+                    c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
             },
             ERIK => should_spend_fusdc_contract!(
                 // In the Python, this is 377.71391451345414:
                 377758000,
-                c.remove_liquidity_3_C_857_A_15(msg_sender())
+                c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
             ),
             ELI => {
                 should_spend_fusdc_contract!(
                     // In the Python, this is 5504.027898192409:
                     5503934060u64,
-                    c.remove_liquidity_3_C_857_A_15(msg_sender())
+                    c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
                 assert_eq!(U256::ZERO, fusdc_call::balance_of(CONTRACT).unwrap());
             }
