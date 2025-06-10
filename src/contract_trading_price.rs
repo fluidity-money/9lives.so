@@ -26,7 +26,7 @@ impl StorageTrading {
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
-    pub fn claim_all_fees_71949_E_C_8(&mut self, _recipient: Address) -> R<U256> {
+    pub fn claim_all_fees_332_D_7968(&mut self, _recipient: Address) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]

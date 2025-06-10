@@ -457,7 +457,9 @@ impl StorageTrading {
 
     pub fn internal_amm_claim_lp_fees(&mut self, spender: Address, recipient: Address) -> R<U256> {
         let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
-        assert_or!(!sender_liq_shares.is_zero(), Error::NotEnoughLiquidity);
+        if sender_liq_shares.is_zero() {
+            return Ok(U256::ZERO);
+        }
         let entitled = maths::mul_div(
             sender_liq_shares,
             self.amm_fees_collected_weighted.get(),

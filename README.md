@@ -127,7 +127,7 @@ The error table lives in ERRORS.md.
 | Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
 | Trading AMM mint impl         | `0x2314c906ebd852a0be249ce49b98ee804078b05e` |
 | Trading AMM extras impl       | `0x36978ddfd9eeb19054db0f40c6c4329723da83ac` |
-| Trading AMM price impl        | `0x281d1bfe8fe8dfafa440e6f9081a2783cedb01ca` |
+| Trading AMM price impl        | `0xe06eeaf6e30a7b0ac86c5cd393d5113260b6e4a1` |
 | Trading AMM quotes impl       | `0x09e99d6c0e57c2cdb715daf1dc66b98e43514fc3` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
@@ -145,7 +145,7 @@ The error table lives in ERRORS.md.
 | Buy helper2                   | `0xEBBfeAcbbD331466512A362BEa782e1f7CB45b57` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
-| Claimant helper               | `0x8120B675c5DC8b137619C0170b01abbED211185D` |
+| Claimant helper               | `0x00FA0a5d3b25Da03ef651045d42B9F7137486b03` |
 
 ### Superposition testnet
 
