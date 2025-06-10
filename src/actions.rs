@@ -242,7 +242,7 @@ macro_rules! implement_action {
             }
             #[cfg(feature = "trading-backend-amm")]
             Action::ClaimAllFees(a) => {
-                $c.claim_all_fees_71949_E_C_8($sender).unwrap();
+                $c.claim_all_fees_332_D_7968($sender).unwrap();
             }
         };
     }};

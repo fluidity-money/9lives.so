@@ -699,9 +699,7 @@ impl StorageTrading {
     pub fn internal_amm_claim_addr_fees(&mut self, sender: Address, recipient: Address) -> R<U256> {
         let owed = self.fees_owed_addresses.get(sender);
         fusdc_call::transfer(recipient, owed)?;
-        self.fees_owed_addresses
-            .setter(msg_sender())
-            .set(U256::ZERO);
+        self.fees_owed_addresses.setter(sender).set(U256::ZERO);
         evm::log(events::AddressFeesClaimed {
             recipient,
             amount: owed,
@@ -723,8 +721,9 @@ impl StorageTrading {
         if sender == DAO_EARN_ADDR {
             assert_or!(recipient == DAO_EARN_ADDR, Error::IncorrectDAOClaiming);
         }
-        Ok(self.internal_amm_claim_lp_fees(sender, recipient)?
-            + self.internal_amm_claim_addr_fees(sender, recipient)?)
+        let lp_fees = self.internal_amm_claim_lp_fees(sender, recipient)?;
+        let addr_fees = self.internal_amm_claim_addr_fees(sender, recipient)?;
+        Ok(lp_fees + addr_fees)
     }
 }
 
