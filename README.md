@@ -127,7 +127,7 @@ The error table lives in ERRORS.md.
 | Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
 | Trading AMM mint impl         | `0x2314c906ebd852a0be249ce49b98ee804078b05e` |
 | Trading AMM extras impl       | `0x36978ddfd9eeb19054db0f40c6c4329723da83ac` |
-| Trading AMM price impl        | `0xfd5cedcd03b2dd5170526383088a1d5d6ca64bd5` |
+| Trading AMM price impl        | `0x281d1bfe8fe8dfafa440e6f9081a2783cedb01ca` |
 | Trading AMM quotes impl       | `0x09e99d6c0e57c2cdb715daf1dc66b98e43514fc3` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |

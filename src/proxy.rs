@@ -15,13 +15,11 @@ pub use crate::host_proxy::*;
 
 // Sort and concatenate the seeds given, ABI format them, then hash them,
 // using an online keccak256 calculation with the native operation.
-#[macro_export]
-macro_rules! proxy_in_place_sort_and_create_id {
-    ($seeds:expr) => {{
-        // Sort the seeds in place by length first, then by default.
-        $seeds.sort_by(|a, b| a.len().cmp(&b.len()).then(a.cmp(b)));
-        stylus_sdk::crypto::keccak($seeds.concat())
-    }};
+pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
+    // Sort the seeds in a new vector by length first, then by default.
+    let mut seeds = Vec::from(seeds);
+    seeds.sort_by(|a, b| a.len().cmp(&b.len()).then(a.cmp(b)));
+    crypto::keccak(seeds.concat())
 }
 
 pub fn get_trading_addr(
@@ -30,7 +28,7 @@ pub fn get_trading_addr(
     outcome_ids: &[FixedBytes<8>],
 ) -> Address {
     let trading_id =
-        proxy_in_place_sort_and_create_id!(outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
+        create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
     let mut b = [0_u8; 85];
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());
@@ -48,8 +46,7 @@ pub fn get_share_addr(
     erc20_impl: Address,
     outcome_id: FixedBytes<8>,
 ) -> Address {
-    let erc20_id =
-        proxy_in_place_sort_and_create_id!([trading_addr.as_slice(), outcome_id.as_slice()]);
+    let erc20_id = create_identifier(&[trading_addr.as_slice(), outcome_id.as_slice()]);
     let mut b = [0_u8; 85];
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());
@@ -67,11 +64,11 @@ fn test_create_identifier() {
             &const_hex::decode("c27b300def7bb415cd56c150b2cb186e10a55980a39d974f8c6feb083f745514")
                 .unwrap()
         ),
-        proxy_in_place_sort_and_create_id!([
+        create_identifier(&[
             //bytes8(keccak256(abi.encodePacked("Yes", "", uint64(671424635701772))))
-            FixedBytes::<8>::from([0x72, 0xcf, 0xc9, 0x11, 0x63, 0x7a, 0xa0, 0xc4,]),
+            &[0x72, 0xcf, 0xc9, 0x11, 0x63, 0x7a, 0xa0, 0xc4,],
             //bytes8(keccak256(abi.encodePacked("No", "", uint64(4374720138937106))))
-            FixedBytes::<8>::from([0xd2, 0xcd, 0x4a, 0x70, 0xce, 0x68, 0x85, 0xd5,]),
+            &[0xd2, 0xcd, 0x4a, 0x70, 0xce, 0x68, 0x85, 0xd5,],
         ]),
     )
 }

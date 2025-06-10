@@ -546,11 +546,10 @@ fn test_amm_reproduction_0xbE42F0fb7C6e702be8C1DC11F04c7b5323bE93EE_1746439() {
                 for (addr, amt) in lps {
                     c.amm_user_liquidity_shares.setter(addr).set(amt);
                     host::set_msg_sender(addr);
+                    // Remove liquidity collects all fees now.
                     total_lp_yield += c.remove_liquidity_3_C_857_A_15(U256::ZERO, addr).unwrap().1;
                 }
-                dbg!(total_lp_yield);
                 host::set_msg_sender(DAO_OP_ADDR);
-                dbg!(c.claim_all_fees_71949_E_C_8(DAO_EARN_ADDR).unwrap());
                 Ok(())
             });
         }

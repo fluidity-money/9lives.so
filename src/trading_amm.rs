@@ -168,7 +168,7 @@ impl StorageTrading {
     ) -> R<(U256, U256, Vec<(FixedBytes<8>, U256)>)> {
         self.internal_amm_get_prices()?;
         assert_or!(
-            !self.amm_liquidity.get().is_zero(),
+            self.amm_liquidity.get() > U256::ZERO,
             Error::NotEnoughLiquidity
         );
         let (most_likely_amt, most_likely_outcome_id) = self
