@@ -11,6 +11,7 @@ import formatFusdc from "@/utils/formatFusdc";
 import AddLiquidityButton from "../addLiquidityButton";
 import RemoveLiquidityButton from "../removeLiquidityButton";
 import ClaimLiquidityButton from "../claimLiquidityButton";
+import ClaimFeesButton from "../claimFeesButton";
 export default function DetailHeader({
   data,
   isEnded,
@@ -146,6 +147,9 @@ export default function DetailHeader({
               tradingAddr={data.poolAddress}
             />
           )}
+          {isDpm !== undefined && !isDpm ? (
+            <ClaimFeesButton address={data.poolAddress} />
+          ) : null}
         </div>
       </div>
     </div>

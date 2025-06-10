@@ -120,7 +120,8 @@ export default function useLiquidity({
           queryClient.invalidateQueries({
             queryKey: ["userLiquidity", account.address, tradingAddr],
           });
-          track(EVENTS.CLAIM_LIQUIDITY, {
+          track(EVENTS.REMOVE_LIQUIDITY, {
+            amount: BigInt(0),
             wallet: account.address,
             tradingAddr,
             campaignId,
