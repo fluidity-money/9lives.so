@@ -66,6 +66,11 @@ const clientEnvSchema = z.object({
    * Blockchain network if mainnet or testnet
    */
   NEXT_PUBLIC_CHAIN: z.union([z.literal("mainnet"), z.literal("testnet")]),
+
+  /**
+   *  Helper for claiming all fees
+   */
+  NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: z.string().length(42),
 });
 
 type ClientEnvSchemaType = z.infer<typeof clientEnvSchema>;
@@ -93,6 +98,8 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
   NEXT_PUBLIC_CHAIN: process.env.NEXT_PUBLIC_CHAIN,
   NEXT_PUBLIC_SARP_SIGNALLER_ADDR: process.env.NEXT_PUBLIC_SARP_SIGNALLER_ADDR,
+  NEXT_PUBLIC_CLAIMANT_HELPER_ADDR:
+    process.env.NEXT_PUBLIC_CLAIMANT_HELPER_ADDR,
 });
 
 if (!clientEnv.success) {
