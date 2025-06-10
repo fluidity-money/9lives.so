@@ -10,12 +10,9 @@ export default function CreateCampaign() {
           <h2 className="font-chicago text-2xl">Create Campaign</h2>
         </div>
         <p className="text-center text-xs">
-          Create a campaign for other people to participate in! For creation
-          with infra markets, $4.20 is needed. For everything else, $3 is
-          needed.
+          Create a campaign for other people to participate in!
           <br />
-          <strong>Earn fees by creating markets:</strong> collect 0.2% of every
-          deposit created!
+          <strong>Earn fees by creating markets:</strong> collect 1% of all buy volume as the creator, and 1% as a LP.
         </p>
       </div>
       <div className="flex flex-1 gap-7">
