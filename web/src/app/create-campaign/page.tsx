@@ -12,7 +12,7 @@ export default function CreateCampaign() {
         <p className="text-center text-xs">
           Create a campaign for other people to participate in!
           <br />
-          <strong>Earn fees by creating markets:</strong> collect 1% of all buy volume as the creator, and 1% as a LP.
+          <strong>Earn fees by creating markets:</strong> collect 1% of all buy volume as the creator, and 1% as a LP. 1% goes to the DAO.
         </p>
       </div>
       <div className="flex flex-1 gap-7">
