@@ -74,7 +74,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "claimAddressFeesB302CF6D",
+    name: "claimAllFees332D7968",
     inputs: [
       {
         name: "recipient",
@@ -89,32 +89,6 @@ const tradingAbi = [
         internalType: "uint256",
       },
     ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "claimLiquidity9C391F85",
-    inputs: [
-      {
-        name: "recipient",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "claimLpFees66980F36",
-    inputs: [
-      {
-        name: "recipient",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [],
     stateMutability: "nonpayable",
   },
   {

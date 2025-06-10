@@ -110,8 +110,8 @@ export default function useLiquidity({
         try {
           const claimLiquidityTx = prepareContractCall({
             contract: tradingContract,
-            method: "claimLiquidity9C391F85",
-            params: [account.address],
+            method: "removeLiquidity3C857A15",
+            params: [BigInt(0), account.address],
           });
           await sendTransaction({
             transaction: claimLiquidityTx,
