@@ -31,7 +31,7 @@ jobs:
       NEXT_PUBLIC_CHAIN: "mainnet"
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       NEXT_PUBLIC_SNITCH_ENDPOINT: "https://snitch-superposition-so.stellate.sh"
-      NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: "0x8120B675c5DC8b137619C0170b01abbED211185D"
+      NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: "0x00FA0a5d3b25Da03ef651045d42B9F7137486b03"
     steps:
       - uses: actions/checkout@v3
         with:
