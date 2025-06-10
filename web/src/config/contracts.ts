@@ -106,6 +106,7 @@ const contractValidation = allContractSchema.safeParse({
   buyHelper,
   meowDomains,
   sarpSignaller,
+  claimantHelper,
 });
 
 type ContractsType = z.infer<typeof allContractSchema>;
