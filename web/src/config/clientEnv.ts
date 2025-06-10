@@ -68,6 +68,11 @@ const clientEnvSchema = z.object({
   NEXT_PUBLIC_CHAIN: z.union([z.literal("mainnet"), z.literal("testnet")]),
 
   /**
+   * Snitch tracking endpoint have to be declared
+   */
+  NEXT_PUBLIC_SNITCH_ENDPOINT: z.string().url(),
+
+  /**
    *  Helper for claiming all fees
    */
   NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: z.string().length(42),
@@ -98,6 +103,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
   NEXT_PUBLIC_CHAIN: process.env.NEXT_PUBLIC_CHAIN,
   NEXT_PUBLIC_SARP_SIGNALLER_ADDR: process.env.NEXT_PUBLIC_SARP_SIGNALLER_ADDR,
+  NEXT_PUBLIC_SNITCH_ENDPOINT: process.env.NEXT_PUBLIC_SNITCH_ENDPOINT,
   NEXT_PUBLIC_CLAIMANT_HELPER_ADDR:
     process.env.NEXT_PUBLIC_CLAIMANT_HELPER_ADDR,
 });
