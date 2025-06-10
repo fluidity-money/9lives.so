@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fluidity-money/snitch-client':
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.4.0
+        version: 0.4.0
       '@headlessui/react':
         specifier: ^2.2.3
         version: 2.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -634,8 +634,8 @@ packages:
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
-  '@fluidity-money/snitch-client@0.3.0':
-    resolution: {integrity: sha512-5f8NqXXxB8iP6Y9cqnyaMvMxdpb9ZTj6viff6x9xS3v8mWIyjNH1lUZb1JG8602EUDOy/fz2luGBpIaTFKhizA==}
+  '@fluidity-money/snitch-client@0.4.0':
+    resolution: {integrity: sha512-Fhhh/X6UMUBjx5D+b7+6X8JXOIYeHO7D38k2ZSM7VhJo0GrvsRBWsUUw/oJCrYa4oEMcMOVG5qSz1R6CP0qMRg==}
 
   '@graphql-typed-document-node/core@3.2.0':
     resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
@@ -6652,7 +6652,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@fluidity-money/snitch-client@0.3.0': {}
+  '@fluidity-money/snitch-client@0.4.0': {}
 
   '@graphql-typed-document-node/core@3.2.0(graphql@16.11.0)':
     dependencies:

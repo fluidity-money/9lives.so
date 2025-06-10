@@ -83,14 +83,11 @@ export default function ContextInjector() {
     const browserName = browser.getBrowserName();
     const os = browser.getOSName();
     const platform = browser.getPlatform();
-    const path = window.location.pathname;
     (async () => {
       try {
         const tag = await tagUser({
           address: account?.address,
           property: "9lives",
-          source: path,
-          tag: null,
           facts: [
             { key: "languages", value: [...navigator.languages] },
             { key: "browser", value: [browserName] },
@@ -121,6 +118,7 @@ export default function ContextInjector() {
         page: pathname,
         property: "9lives",
         tag: tagSnitch,
+        referrer: document.referrer,
       });
   }, [pathname, tagSnitch]);
 

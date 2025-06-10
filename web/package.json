@@ -23,7 +23,7 @@
     "codegen": "pnpm gen:9lives && pnpm gen:points"
   },
   "dependencies": {
-    "@fluidity-money/snitch-client": "^0.3.0",
+    "@fluidity-money/snitch-client": "^0.4.0",
     "@headlessui/react": "^2.2.3",
     "@headlessui/tailwindcss": "^0.2.2",
     "@hookform/resolvers": "^3.10.0",
