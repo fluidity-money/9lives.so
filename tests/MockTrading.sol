@@ -158,6 +158,8 @@ contract MockTrading is INineLivesTrading {
         return (100, 10_000, 19291, bytes8(uint64(1)));
     }
 
+     function outcomeList() external view returns (bytes8[] memory outcomes) {}
+
     function escape() external {
         ++counter_;
     }

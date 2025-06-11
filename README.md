@@ -126,7 +126,7 @@ The error table lives in ERRORS.md.
 | Trading DPM price impl        | `0x8fc31d39edec596e8089b313920c05642e86d549` |
 | Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
 | Trading AMM mint impl         | `0x2314c906ebd852a0be249ce49b98ee804078b05e` |
-| Trading AMM extras impl       | `0xA7375D71b606845cDB41D3300C2CA442cBBBe5D6` |
+| Trading AMM extras impl       | `0xeb96f0457b3f71805268b81b2ddd37ef86985338` |
 | Trading AMM price impl        | `0x204fE75dff363f6e700acf7A7651Aeee980971c5` |
 | Trading AMM quotes impl       | `0x09e99d6c0e57c2cdb715daf1dc66b98e43514fc3` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
@@ -137,7 +137,7 @@ The error table lives in ERRORS.md.
 | Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
 | Helper factory                | `0x2965aF7dD96D550d63be1577feC27ae26d2C46F7` |
-| LensesV1                      | `0x051648539bC4a1C247030EABCBC29cfD1887cd83` |
+| LensesV1                      | `0x3053BF8dDc44AABF17C37FB1701bF6a87E72E0e7` |
 | Beauty contest implementation | `0x3421264e413489b1e69ae84ace8c33c6cb7809ff` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |

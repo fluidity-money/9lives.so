@@ -159,4 +159,6 @@ interface INineLivesTrading {
     function fees62DAA154() external view returns (Fees memory);
 
     function userLiquidityShares(address spender) external view returns (uint256);
+
+    function outcomeList() external view returns (bytes8[] memory outcomes);
 }

@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "./INineLivesFactory.sol";
 import "./ILongtail.sol";
 import "./WordPackingLib.sol";
+import "./INineLivesTrading.sol";
 
 interface IERC20 {
     function balanceOf(address) external view returns (uint256);
@@ -54,6 +55,27 @@ contract LensesV1 {
             )),
             _hash
         )))));
+    }
+
+    struct BalancesForAll {
+        uint256 amount;
+        bytes8 id;
+    }
+
+    function balancesForAll(
+        INineLivesTrading[] calldata _pools
+    ) external view returns (BalancesForAll[] memory bals) {
+        bals = new BalancesForAll[](10 * _pools.length);
+        bytes32 hash = FACTORY.erc20Hash();
+        for (uint i = 0; i < _pools.length; ++i) {
+            bytes8[] memory outcomes = _pools[i].outcomeList();
+            // This should only ever return up to 10!
+            for (uint x = 0; x < outcomes.length; ++x) {
+                address share = getShareAddr(FACTORY, hash, address(_pools[i]), outcomes[x]);
+                bals[(i * 10) + x].amount = IERC20(share).balanceOf(msg.sender);
+                bals[(i * 10) + x].id = outcomes[x];
+            }
+        }
     }
 
     function balancesWithFactoryAndHash(
