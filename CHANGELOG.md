@@ -1,3 +1,11 @@
+## 11-06-2025 Batch created campaign fee claiming and personalisation features
+
+✨ Big updates alert! 🚀 We've supercharged our frontend customisation and curation tools,
+letting us deliver an even sleeker, personalised experience for you! 🎨💻
+
+PLUS: Market creators, rejoice! 🙌 You can now batch-claim your market fees in a single
+click: earning rewards quicker and easier than ever! 💸⚡️
+
 ## 06-06-2025 Added trending page
 
 Discover your next favorite market faster than ever! 🚀 Our new algorithmic frontpage
