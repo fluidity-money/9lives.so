@@ -470,12 +470,8 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     },
     featuredCampaign: {
       a: {
-        count: {
+        limit: {
           nt: Int,
-          it: [0],
-        },
-        interval: {
-          nt: String,
           it: [0],
         },
       },

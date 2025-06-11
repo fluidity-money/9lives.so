@@ -748,8 +748,7 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
-    count?: number | undefined | null;
-    interval?: string | undefined | null;
+    limit?: number | undefined | null;
   }
 
   // --- expanded ---

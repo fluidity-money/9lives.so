@@ -347,17 +347,11 @@ export namespace Schema {
     export interface featuredCampaign extends $.OutputField {
       name: "featuredCampaign";
       arguments: {
-        count: {
+        limit: {
           kind: "InputField";
-          name: "count";
+          name: "limit";
           inlineType: [0];
           namedType: $$NamedTypes.$$Int;
-        };
-        interval: {
-          kind: "InputField";
-          name: "interval";
-          inlineType: [0];
-          namedType: $$NamedTypes.$$String;
         };
       };
       inlineType: [1, [1]];

@@ -369,13 +369,12 @@ export const requestChangelog = () =>
   });
 
 export const requestFeaturedCampaigns = (
-  props: { count: number; interval: string } = {
-    count: 32,
-    interval: "12 hours",
+  props: { limit: number } = {
+    limit: 32,
   },
 ) =>
   graph9Lives.query.featuredCampaign({
-    $: { count: props.count, interval: props.interval },
+    $: { limit: props.limit },
     name: true,
     identifier: true,
     description: true,
