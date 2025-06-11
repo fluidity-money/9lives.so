@@ -26,7 +26,7 @@ export default function ClaimFeesButton({ address }: { address: string }) {
       if (!account) return;
       setShouldDisplay(await displayClaimFeesBtn(address, account));
     })();
-  }, []);
+  }, [account, address, displayClaimFeesBtn]);
 
   if (!shouldDisplay) return null;
 
