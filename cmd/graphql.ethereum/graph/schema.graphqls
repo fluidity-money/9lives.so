@@ -74,7 +74,7 @@ type Query {
   Combines liquidity changes, hourly volume, current liquidity, and buy/sell volume,
   then ranks pools and returns recent shown buy/sell events with these metrics.
   """
-  featuredCampaign(count: Int,interval:String): [Campaign!]!
+  featuredCampaign(limit: Int): [Campaign!]!
 }
 
 type Settings {

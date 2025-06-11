@@ -162,7 +162,7 @@ type ComplexityRoot struct {
 		CampaignByID              func(childComplexity int, id string) int
 		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) int
 		Changelog                 func(childComplexity int) int
-		FeaturedCampaign          func(childComplexity int, count *int, interval *string) int
+		FeaturedCampaign          func(childComplexity int, limit *int) int
 		Leaderboards              func(childComplexity int) int
 		PositionsHistory          func(childComplexity int, address string, outcomeIds []string) int
 		ReferrerByCode            func(childComplexity int, code string) int
@@ -258,7 +258,7 @@ type QueryResolver interface {
 	ReferrersForAddress(ctx context.Context, address string) ([]string, error)
 	Leaderboards(ctx context.Context) (*model.LeaderboardWeekly, error)
 	ReferrerByCode(ctx context.Context, code string) (string, error)
-	FeaturedCampaign(ctx context.Context, count *int, interval *string) ([]types.Campaign, error)
+	FeaturedCampaign(ctx context.Context, limit *int) ([]types.Campaign, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -845,7 +845,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.FeaturedCampaign(childComplexity, args["count"].(*int), args["interval"].(*string)), true
+		return e.complexity.Query.FeaturedCampaign(childComplexity, args["limit"].(*int)), true
 
 	case "Query.leaderboards":
 		if e.complexity.Query.Leaderboards == nil {
@@ -1574,23 +1574,14 @@ func (ec *executionContext) field_Query_featuredCampaign_args(ctx context.Contex
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *int
-	if tmp, ok := rawArgs["count"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("count"))
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
 		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["count"] = arg0
-	var arg1 *string
-	if tmp, ok := rawArgs["interval"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("interval"))
-		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["interval"] = arg1
+	args["limit"] = arg0
 	return args, nil
 }
 
@@ -6010,7 +6001,7 @@ func (ec *executionContext) _Query_featuredCampaign(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FeaturedCampaign(rctx, fc.Args["count"].(*int), fc.Args["interval"].(*string))
+		return ec.resolvers.Query().FeaturedCampaign(rctx, fc.Args["limit"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

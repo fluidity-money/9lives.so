@@ -1230,27 +1230,19 @@ func (r *queryResolver) ReferrerByCode(ctx context.Context, code string) (string
 }
 
 // FeaturedCampaign is the resolver for the featuredCampaign field.
-func (r *queryResolver) FeaturedCampaign(ctx context.Context, count *int, interval *string) ([]types.Campaign, error) {
+func (r *queryResolver) FeaturedCampaign(ctx context.Context, limit *int) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
-	const (
-		defaultCount    = 12
-		defaultInterval = "12 hours"
-	)
-	n := defaultCount
-	if count != nil {
-		n = *count
+	const defaultLimit = 12
+
+	n := defaultLimit
+	if limit != nil {
+		n = *limit
 	}
-	iv := defaultInterval
-	if interval != nil {
-		iv = *interval
-	}
-	query := fmt.Sprintf("SELECT * FROM ninelives_get_featured_campaigns_1(INTERVAL '%s', ?)", iv)
-	err := r.DB.Raw(query, n).Scan(&campaigns).Error
+	err := r.DB.Raw(`SELECT * FROM private_ninelives_campaigns_sorted_by_breakout_2 LIMIT ?`, n).Scan(&campaigns).Error
 	if err != nil {
 		slog.Error("Error getting featured campaigns",
 			"error", err,
-			"count", n,
-			"interval", iv,
+			"limit", n,
 		)
 		return nil, fmt.Errorf("error getting featured campaigns: %w", err)
 	}
