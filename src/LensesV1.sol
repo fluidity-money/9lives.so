@@ -8,6 +8,7 @@ import "./INineLivesTrading.sol";
 
 interface IERC20 {
     function balanceOf(address) external view returns (uint256);
+    function name() external view returns (string memory);
 }
 
 contract LensesV1 {
@@ -60,6 +61,7 @@ contract LensesV1 {
     struct BalancesForAll {
         uint256 amount;
         bytes8 id;
+        string name;
     }
 
     function balancesForAll(
@@ -71,8 +73,9 @@ contract LensesV1 {
             bytes8[] memory outcomes = _pools[i].outcomeList();
             // This should only ever return up to 10!
             for (uint x = 0; x < outcomes.length; ++x) {
-                address share = getShareAddr(FACTORY, hash, address(_pools[i]), outcomes[x]);
-                bals[(i * 10) + x].amount = IERC20(share).balanceOf(msg.sender);
+                IERC20 share = IERC20(getShareAddr(FACTORY, hash, address(_pools[i]), outcomes[x]));
+                bals[(i * 10) + x].amount = share.balanceOf(msg.sender);
+                bals[(i * 10) + x].name = share.name();
                 bals[(i * 10) + x].id = outcomes[x];
             }
         }
