@@ -43,6 +43,42 @@ const lensAbi = [
   },
   {
     type: "function",
+    name: "balancesForAll",
+    inputs: [
+      {
+        name: "_pools",
+        type: "address[]",
+        internalType: "contract INineLivesTrading[]",
+      },
+    ],
+    outputs: [
+      {
+        name: "bals",
+        type: "tuple[]",
+        internalType: "struct LensesV1.BalancesForAll[]",
+        components: [
+          {
+            name: "amount",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "id",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
+          {
+            name: "name",
+            type: "string",
+            internalType: "string",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "balancesWithFactoryAndHash",
     inputs: [
       {
