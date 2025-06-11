@@ -18,6 +18,7 @@ async function fetchPositions(
         method: "balancesForAll",
         params: [[tradingAddr]],
       }),
+      account,
     })) as { amount: string; id: `0x${string}`; name: string }[]
   ).filter((i) => BigInt(i.amount) > BigInt(0));
 
@@ -25,7 +26,7 @@ async function fetchPositions(
     id: b.id,
     shareAddress:
       outcomes.find((o) => o.identifier === b.id)?.share.address ?? "0x",
-    name: b.name,
+    name: outcomes.find((o) => o.identifier === b.id)?.name ?? b.name,
     balance: formatFusdc(Number(b.amount), 2),
     balanceRaw: BigInt(b.amount),
   }));
