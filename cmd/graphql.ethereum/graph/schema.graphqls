@@ -75,6 +75,16 @@ type Query {
   then ranks pools and returns recent shown buy/sell events with these metrics.
   """
   featuredCampaign(limit: Int): [Campaign!]!
+
+  """
+  Return users active liquidity staked to the campaigns
+  """
+  userLPs(address: String!): [LP!]!
+}
+
+type LP {
+  liquidity: String
+  campaign: Campaign
 }
 
 type Settings {

@@ -1254,6 +1254,41 @@ func (r *queryResolver) FeaturedCampaign(ctx context.Context, limit *int) ([]typ
 	return campaigns, nil
 }
 
+// UserLPs is the resolver for the userLPs field.
+func (r *queryResolver) UserLPs(ctx context.Context, address string) ([]types.LP, error) {
+	var lps []types.LP
+	err := r.DB.Raw(`
+	SELECT 
+    COALESCE(added.total_added, 0) - COALESCE(removed.total_removed, 0) AS liquidity,
+    nc.*
+	FROM 
+		(
+			SELECT emitter_addr, SUM(fusdc_amt) AS total_added
+			FROM ninelives_events_liquidity_added
+			WHERE sender = ?
+			GROUP BY emitter_addr
+		) AS added
+	LEFT JOIN 
+		(
+			SELECT emitter_addr, SUM(fusdc_amt) AS total_removed
+			FROM ninelives_events_liquidity_removed
+			WHERE recipient = ?
+			GROUP BY emitter_addr
+		) AS removed
+    ON added.emitter_addr = removed.emitter_addr
+	LEFT JOIN 
+    ninelives_campaigns_1 AS nc 
+    ON nc.content->>'poolAddress' = added.emitter_addr
+	`, address, address).Scan(&lps).Error
+	if err != nil {
+		slog.Error("Error getting user lps",
+			"error", err,
+		)
+		return nil, fmt.Errorf("error getting user lps: %w", err)
+	}
+	return lps, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {

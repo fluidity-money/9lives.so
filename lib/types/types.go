@@ -25,6 +25,11 @@ type (
 		LiquidityVested   int                   `json:"liquidityVested"`
 	}
 
+	LP struct {
+		Liquidity string `json:"liquidity"`
+		Campaign
+	}
+
 	InvestmentAmounts struct {
 		Id    string `json:"id"`
 		USDC  int    `json:"usdc"`
