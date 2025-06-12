@@ -11,10 +11,10 @@ export default function Changelog() {
   useEffect(() => {
     if (isSuccess && data && data[0]?.afterTs) {
       const prevTime = window.localStorage.getItem("changelog");
-      if (data[0].afterTs > Number(prevTime)) {
+      if (!prevTime || data[0].afterTs > Number(prevTime)) {
         setModal(true);
+        window.localStorage.setItem("changelog", data[0]?.afterTs.toString());
       }
-      window.localStorage.setItem("changelog", data[0]?.afterTs.toString());
     }
   }, [isSuccess, data, setModal]);
 
