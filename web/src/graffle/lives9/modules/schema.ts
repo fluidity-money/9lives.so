@@ -43,6 +43,7 @@ export namespace Schema {
       leaderboards: Query.leaderboards;
       referrerByCode: Query.referrerByCode;
       featuredCampaign: Query.featuredCampaign;
+      userLPs: Query.userLPs;
     };
   }
 
@@ -356,6 +357,23 @@ export namespace Schema {
       };
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$Campaign;
+    }
+
+    /**
+     * Return users active liquidity staked to the campaigns
+     */
+    export interface userLPs extends $.OutputField {
+      name: "userLPs";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$LP;
     }
   }
 
@@ -810,6 +828,45 @@ export namespace Schema {
   //
   //
   //
+
+  //                                                 LP
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface LP extends $.OutputObject {
+    name: "LP";
+    fields: {
+      __typename: LP.__typename;
+      liquidity: LP.liquidity;
+      campaign: LP.campaign;
+    };
+  }
+
+  export namespace LP {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "LP";
+      };
+    }
+
+    export interface liquidity extends $.OutputField {
+      name: "liquidity";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface campaign extends $.OutputField {
+      name: "campaign";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Campaign;
+    }
+  }
 
   //                                              Settings
   // --------------------------------------------------------------------------------------------------
@@ -2120,6 +2177,7 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$LP = LP;
     export type $$Settings = Settings;
     export type $$Profile = Profile;
     export type $$Claim = Claim;
@@ -2177,6 +2235,7 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    LP: Schema.LP;
     Settings: Schema.Settings;
     Profile: Schema.Profile;
     Claim: Schema.Claim;
@@ -2192,6 +2251,7 @@ export interface Schema<
     Activity: Schema.Activity;
   };
   objects: {
+    LP: Schema.LP;
     Settings: Schema.Settings;
     Profile: Schema.Profile;
     Claim: Schema.Claim;

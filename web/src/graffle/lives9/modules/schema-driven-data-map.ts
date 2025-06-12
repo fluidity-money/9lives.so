@@ -114,6 +114,15 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 
+const LP: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    liquidity: {},
+    campaign: {
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
+    },
+  },
+};
+
 const Settings: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     notification: {},
@@ -477,6 +486,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
+    userLPs: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: LP, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -666,6 +684,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 //
 
+LP.f[`campaign`]!.nt = Campaign;
 Profile.f[`settings`]!.nt = Settings;
 Claim.f[`content`]!.nt = Campaign;
 Position.f[`content`]!.nt = Campaign;
@@ -686,6 +705,7 @@ Query.f[`userClaims`]!.nt = Claim;
 Query.f[`userProfile`]!.nt = Profile;
 Query.f[`leaderboards`]!.nt = LeaderboardWeekly;
 Query.f[`featuredCampaign`]!.nt = Campaign;
+Query.f[`userLPs`]!.nt = LP;
 
 //
 //
@@ -718,6 +738,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     SettlementType,
     ActivityType,
     OutcomeInput,
+    LP,
     Settings,
     Profile,
     Claim,
