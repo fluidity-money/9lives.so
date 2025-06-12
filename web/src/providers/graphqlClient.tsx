@@ -399,3 +399,15 @@ export const requestFeaturedCampaigns = (
     winner: true,
     totalVolume: true,
   });
+
+export const requestUserLPs = (address: string) =>
+  graph9Lives.query.userLPs({
+    $: { address },
+    liquidity: true,
+    campaign: {
+      identifier: true,
+      name: true,
+      picture: true,
+      poolAddress: true,
+    },
+  });
