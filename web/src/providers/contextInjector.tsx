@@ -32,7 +32,7 @@ export default function ContextInjector() {
   useEffect(() => {
     const consent = window.localStorage.getItem("consentMode");
     setTrackingConsent(consent === JSON.stringify(grantedConsent));
-  }, []);
+  }, [setTrackingConsent]);
 
   // insert contractAddresses to Sentry
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function ContextInjector() {
   }, []);
 
   useEffect(() => {
-    if (account?.address) {
+    if (account?.address && trackingConsent) {
       // wallet address stored to local storage for GTM to use it
       window.localStorage.setItem("walletAddress", account.address);
       setUser({ id: account.address, walletId: wallet?.id ?? "unknown" });
@@ -56,8 +56,9 @@ export default function ContextInjector() {
       window.localStorage.removeItem("walletAddress");
       setUser(null);
       posthog.identify(undefined);
+      posthog.reset();
     }
-  }, [account?.address, wallet?.id]);
+  }, [account?.address, wallet?.id, trackingConsent]);
 
   useEffect(() => {
     setTag("chainId", chain?.id);
