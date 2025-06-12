@@ -10,6 +10,8 @@ interface UserStore {
   watchlist: WatchlistItem[];
   addToWatchlist: (campaign: Campaign) => void;
   removeFromWatchlist: (id: string) => void;
+  trackingConsent: boolean;
+  setTrackingConsent: (consent: boolean) => void;
 }
 export const useUserStore = create<UserStore>()(
   persist(
@@ -23,6 +25,9 @@ export const useUserStore = create<UserStore>()(
         set(({ watchlist }) => ({
           watchlist: watchlist.filter((c) => c.identifier !== id),
         })),
+      trackingConsent: false,
+      setTrackingConsent: (consent: boolean) =>
+        set({ trackingConsent: consent }),
     }),
     {
       name: "user-storage-v0.2",

@@ -15,6 +15,8 @@ import config from "@/config";
 import { hitUser, tagUser } from "@fluidity-money/snitch-client";
 import Bowser from "bowser";
 import { currentChain } from "@/config/chains";
+import { useUserStore } from "@/stores/userStore";
+import { grantedConsent } from "@/components/googleAnalytics";
 
 export default function ContextInjector() {
   const account = useActiveAccount();
@@ -24,6 +26,13 @@ export default function ContextInjector() {
   const pathname = usePathname();
   const wallet = useActiveWallet();
   const [tagSnitch, setTagSnitch] = useState<string>();
+  const trackingConsent = useUserStore((s) => s.trackingConsent);
+  const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
+
+  useEffect(() => {
+    const consent = window.localStorage.getItem("consentMode");
+    setTrackingConsent(consent === JSON.stringify(grantedConsent));
+  }, []);
 
   // insert contractAddresses to Sentry
   useEffect(() => {
@@ -79,48 +88,53 @@ export default function ContextInjector() {
   }, [pathname, account, connect]);
 
   useEffect(() => {
-    const browser = Bowser.getParser(window.navigator.userAgent);
-    const browserName = browser.getBrowserName();
-    const os = browser.getOSName();
-    const platform = browser.getPlatform();
-    (async () => {
-      try {
-        const tag = await tagUser({
-          address: account?.address,
-          property: "9lives",
-          facts: [
-            { key: "languages", value: [...navigator.languages] },
-            { key: "browser", value: [browserName] },
-            { key: "os", value: [os] },
-            { key: "platform", value: [platform.type?.toString() ?? ""] },
-            {
-              key: "screenResolution",
-              value: [`${screen.width}x${screen.height}`],
-            },
-            {
-              key: "timezone",
-              value: [Intl.DateTimeFormat().resolvedOptions().timeZone],
-            },
-            { key: "cookiesEnabled", value: [String(navigator.cookieEnabled)] },
-            { key: "chainId", value: [currentChain?.id.toString()] },
-          ],
-        });
-        setTagSnitch(tag);
-      } catch (e) {
-        console.error(e instanceof Error ? e.message : e);
-      }
-    })();
-  }, [account?.address]);
+    if (trackingConsent) {
+      const browser = Bowser.getParser(window.navigator.userAgent);
+      const browserName = browser.getBrowserName();
+      const os = browser.getOSName();
+      const platform = browser.getPlatform();
+      (async () => {
+        try {
+          const tag = await tagUser({
+            address: account?.address,
+            property: "9lives",
+            facts: [
+              { key: "languages", value: [...navigator.languages] },
+              { key: "browser", value: [browserName] },
+              { key: "os", value: [os] },
+              { key: "platform", value: [platform.type?.toString() ?? ""] },
+              {
+                key: "screenResolution",
+                value: [`${screen.width}x${screen.height}`],
+              },
+              {
+                key: "timezone",
+                value: [Intl.DateTimeFormat().resolvedOptions().timeZone],
+              },
+              {
+                key: "cookiesEnabled",
+                value: [String(navigator.cookieEnabled)],
+              },
+              { key: "chainId", value: [currentChain?.id.toString()] },
+            ],
+          });
+          setTagSnitch(tag);
+        } catch (e) {
+          console.error(e instanceof Error ? e.message : e);
+        }
+      })();
+    }
+  }, [account?.address, trackingConsent]);
 
   useEffect(() => {
-    if (tagSnitch)
+    if (tagSnitch && trackingConsent)
       hitUser({
         page: pathname,
         property: "9lives",
         tag: tagSnitch,
         referrer: document.referrer,
       });
-  }, [pathname, tagSnitch]);
+  }, [pathname, tagSnitch, trackingConsent]);
 
   return null;
 }

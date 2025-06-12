@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { deniedConsent, grantedConsent } from "@/components/googleAnalytics";
 import Button from "./themed/button";
+import { useUserStore } from "@/stores/userStore";
 
 function gtag(...args: any[]) {
   window.dataLayer = window.dataLayer || [];
@@ -12,17 +13,20 @@ function gtag(...args: any[]) {
 
 export default function CookieBanner() {
   const [showConsentDialog, setShowConsentDialog] = useState(false);
+  const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
 
   function denyCookies() {
     gtag("consent", "update", deniedConsent);
     window.localStorage.setItem("consentMode", JSON.stringify(deniedConsent));
     setShowConsentDialog(false);
+    setTrackingConsent(false);
   }
 
   function allowCookies() {
     gtag("consent", "update", grantedConsent);
     window.localStorage.setItem("consentMode", JSON.stringify(grantedConsent));
     setShowConsentDialog(false);
+    setTrackingConsent(true);
   }
 
   useEffect(() => {
