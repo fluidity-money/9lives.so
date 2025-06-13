@@ -12,6 +12,7 @@ import infraAbi from "./abi/infra";
 import meowDomainsAbi from "./abi/meowDomains";
 import sarpSignallerAbi from "./abi/sarpSignaller";
 import claimantAbi from "./abi/claimantHelper";
+import buyHelper2Abi from "./abi/buyHelper2";
 const contractSchema = z.object({
   abi: z.array(z.any()).optional(),
   address: z.string(),
@@ -75,6 +76,12 @@ const buyHelper = getContract({
   chain: currentChain,
   client: thirdweb.client,
 });
+const buyHelper2 = getContract({
+  abi: buyHelper2Abi,
+  address: clientEnv.NEXT_PUBLIC_BUY_HELPER2_ADDR,
+  chain: currentChain,
+  client: thirdweb.client,
+});
 const meowDomains = getContract({
   abi: meowDomainsAbi,
   address: clientEnv.NEXT_PUBLIC_MEOW_DOMAINS_ADDR,
@@ -107,6 +114,7 @@ const contractValidation = allContractSchema.safeParse({
   meowDomains,
   sarpSignaller,
   claimantHelper,
+  buyHelper2,
 });
 
 type ContractsType = z.infer<typeof allContractSchema>;
@@ -127,4 +135,5 @@ export default contractValidation.data as {
   meowDomains: typeof meowDomains;
   sarpSignaller: typeof sarpSignaller;
   claimantHelper: typeof claimantHelper;
+  buyHelper2: typeof buyHelper2;
 };

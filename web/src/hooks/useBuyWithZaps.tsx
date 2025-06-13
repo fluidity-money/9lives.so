@@ -1,12 +1,18 @@
 import config from "@/config";
-import { encode, prepareContractCall } from "thirdweb";
+import {
+  encode,
+  prepareContractCall,
+  sendTransaction,
+  simulateTransaction,
+} from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
-import { convertQuoteToRoute } from "../utils/convertToRoute";
+import { convertQuoteToRoute } from "@/utils/lifi/convertToRoute";
+import { executeRouteSteps } from "@/utils/lifi/executeLifiQuote";
 
 const useBuyWithZaps = ({
   shareAddr,
@@ -20,6 +26,7 @@ const useBuyWithZaps = ({
   campaignId: `0x${string}`;
 }) => {
   const queryClient = useQueryClient();
+  const rebateETHForGas = "0.00035";
   const buyWithZaps = async (
     account: Account,
     fromAmount: number,
@@ -34,35 +41,7 @@ const useBuyWithZaps = ({
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          // const allowanceTx = prepareContractCall({
-          //   contract: config.contracts.fusdc,
-          //   method: "allowance",
-          //   params: [account.address, config.contracts.buyHelper.address],
-          // });
-          // const allowance = (await simulateTransaction({
-          //   transaction: allowanceTx,
-          //   account,
-          // })) as bigint;
-          // if (amount > allowance) {
-          //   const approveTx = prepareContractCall({
-          //     contract: config.contracts.fusdc,
-          //     method: "approve",
-          //     params: [config.contracts.buyHelper.address, amount],
-          //   });
-          //   await sendTransaction({
-          //     transaction: approveTx,
-          //     account,
-          //   });
-          // }
-          // const return9lives = await simulateTransaction({
-          //   transaction: mintWith9LivesTx(),
-          //   account,
-          // });
-
           if (!fromDecimals) throw new Error("fromDecimals is undefined");
-
-          // sets minimum share to %90 of expected return shares
-          // const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
 
           const optionsGet = {
             method: "GET",
@@ -70,14 +49,41 @@ const useBuyWithZaps = ({
           };
           const fromAmountBigInt = toUnits(fromAmount.toString(), fromDecimals);
           const urlGetQuote = `https://li.quest/v1/quote?fromChain=${fromChain}&toChain=${toChain}&fromToken=${fromToken}&toToken=${toToken}&fromAddress=${account?.address}&fromAmount=${fromAmountBigInt}`;
+          const urlForRebate = `https://li.quest/v1/quote?fromChain=55244&toChain=55244&fromToken=0x0000000000000000000000000000000000000000&toToken=${config.NEXT_PUBLIC_FUSDC_ADDR}&fromAddress=${account?.address}&fromAmount=${rebateETHForGas}`;
+
           const toAmountRes = await fetch(urlGetQuote, optionsGet);
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.estimate.toAmount;
           console.log("toAmount", toAmount);
 
+          const rebateAmountRes = await fetch(urlForRebate, optionsGet);
+          const rebateAmountData = await rebateAmountRes.json();
+          const rebateAmount = rebateAmountData.estimate.toAmount;
+          console.log("rebateAmount", rebateAmount);
+
+          const allowanceTx = prepareContractCall({
+            contract: config.contracts.fusdc,
+            method: "allowance",
+            params: [account.address, config.contracts.buyHelper2.address],
+          });
+          const allowance = (await simulateTransaction({
+            transaction: allowanceTx,
+            account,
+          })) as bigint;
+          if (toAmount > allowance) {
+            const approveTx = prepareContractCall({
+              contract: config.contracts.fusdc,
+              method: "approve",
+              params: [config.contracts.buyHelper2.address, toAmount],
+            });
+            await sendTransaction({
+              transaction: approveTx,
+              account,
+            });
+          }
           const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
             prepareContractCall({
-              contract: config.contracts.buyHelper,
+              contract: config.contracts.buyHelper2,
               method: "mint",
               params: [
                 tradingAddr,
@@ -85,13 +91,24 @@ const useBuyWithZaps = ({
                 outcomeId,
                 minShareOut,
                 toAmount,
+                account.address, // referrer
+                rebateAmount,
+                BigInt(Math.floor(Date.now() / 1000) + 60 * 30), // deadline
                 account.address,
               ],
             });
-          const transaction = mintWith9LivesTx();
+          const return9lives = await simulateTransaction({
+            transaction: mintWith9LivesTx(),
+            account,
+          });
+          // sets minimum share to %90 of expected return shares
+          const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
+
+          const transaction = mintWith9LivesTx(minShareOut);
           console.log("transaction", transaction);
           const calldata = await encode(transaction);
           console.log("calldata", calldata);
+
           const url = "https://li.quest/v1/quote/contractCall";
           const options = {
             method: "POST",
@@ -122,6 +139,7 @@ const useBuyWithZaps = ({
           const route = convertQuoteToRoute(quote);
 
           console.log("route", route);
+          await executeRouteSteps(route, account);
 
           const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
