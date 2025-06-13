@@ -76,7 +76,7 @@ impl StorageTrading {
             fusdc_call::transfer(_recipient, fusdc_amt)?;
             Ok((fusdc_amt, fees_earned))
         } else {
-            let fees = self.internal_amm_claim_lp_fees(msg_sender(), _recipient)?;
+            let fees = self.internal_amm_claim_all_fees(msg_sender(), _recipient)?;
             Ok((
                 self.internal_amm_claim_liquidity(msg_sender(), _amount_liq, _recipient)?,
                 fees,

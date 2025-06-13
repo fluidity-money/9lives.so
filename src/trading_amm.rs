@@ -388,7 +388,6 @@ impl StorageTrading {
             sender_max_shares >= sender_liq_shares,
             Error::NotEnoughLiquidity
         );
-        self.internal_amm_claim_lp_fees(sender, recipient)?;
         let liq_price = maths::mul_div(
             self.amm_shares.get(self.winner.get()),
             SHARE_DECIMALS_EXP,
