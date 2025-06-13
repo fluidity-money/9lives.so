@@ -52,6 +52,7 @@ jobs:
           NEXT_PUBLIC_CHAIN: "mainnet"
           NEXT_PUBLIC_SNITCH_ENDPOINT: "https://snitch-superposition-so.stellate.sh"
           NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: "0x00FA0a5d3b25Da03ef651045d42B9F7137486b03"
+          NEXT_PUBLIC_BUY_HELPER2_ADDR: "0x20a5D83b3A7E475B0CCC482F236C475D39a29854"
         run: pnpm test:e2e
 
       - uses: actions/upload-artifact@v4
