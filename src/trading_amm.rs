@@ -1,5 +1,5 @@
 use crate::{
-    error::*, events, fusdc_call, immutables, immutables::*, maths, proxy, share_call,
+    error::*, events, fusdc_call, immutables::*, maths, proxy, share_call,
     storage_trading::*, utils::*,
 };
 
@@ -242,7 +242,7 @@ impl StorageTrading {
         if FUSDC_DECIMALS_EXP > new_liq {
             return Err(Error::CannotRemoveAllLiquidity);
         }
-        let lp_fees_earned = self.internal_amm_claim_lp_fees(msg_sender(), recipient)?;
+        let fees_earned = self.internal_amm_claim_all_fees(msg_sender(), recipient)?;
         self.rebalance_fees(msg_sender(), amount, false)?;
         self.amm_liquidity.set(new_liq);
         {
@@ -290,7 +290,7 @@ impl StorageTrading {
             recipient,
             liquidityAmt: liquidity_shares_val,
         });
-        Ok((liquidity_shares_val, lp_fees_earned, shares_received))
+        Ok((liquidity_shares_val, fees_earned, shares_received))
     }
 
     /// Sell the amount of shares, using the USD amount, returning the shares
@@ -712,15 +712,7 @@ impl StorageTrading {
         Ok(self.amm_outcome_prices.get(outcome))
     }
 
-    pub fn internal_amm_claim_all_fees(&mut self, recipient: Address) -> R<U256> {
-        let sender = match msg_sender() {
-            immutables::DAO_OP_ADDR => DAO_EARN_ADDR,
-            immutables::CLAIMANT_HELPER => recipient,
-            sender => sender,
-        };
-        if sender == DAO_EARN_ADDR {
-            assert_or!(recipient == DAO_EARN_ADDR, Error::IncorrectDAOClaiming);
-        }
+    pub fn internal_amm_claim_all_fees(&mut self, sender: Address, recipient: Address) -> R<U256> {
         let lp_fees = self.internal_amm_claim_lp_fees(sender, recipient)?;
         let addr_fees = self.internal_amm_claim_addr_fees(sender, recipient)?;
         Ok(lp_fees + addr_fees)

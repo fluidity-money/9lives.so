@@ -5,7 +5,7 @@ use crate::error::*;
 #[cfg(feature = "contract-trading-price")]
 use alloc::vec::Vec;
 
-pub use crate::{storage_trading::*, utils::msg_sender};
+pub use crate::{immutables, immutables::DAO_EARN_ADDR, storage_trading::*, utils::msg_sender};
 
 #[cfg(not(feature = "trading-backend-dpm"))]
 use crate::fusdc_call;
@@ -30,7 +30,17 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        self.internal_amm_claim_all_fees(_recipient)
+        return self.internal_amm_claim_all_fees(
+            match msg_sender() {
+                immutables::DAO_OP_ADDR => {
+                    assert_or!(_recipient == DAO_EARN_ADDR, Error::IncorrectDAOClaiming);
+                    DAO_EARN_ADDR
+                }
+                immutables::CLAIMANT_HELPER => _recipient,
+                sender => sender,
+            },
+            _recipient,
+        );
     }
 
     #[allow(non_snake_case)]
