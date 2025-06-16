@@ -269,6 +269,9 @@ export const requestProfile = (address: string) =>
   graph9Lives.query.userProfile({
     $: { address },
     email: true,
+    settings: {
+      refererr: true,
+    },
   });
 
 export const synchProfile = (address: string, email: string) =>

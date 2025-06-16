@@ -36,6 +36,7 @@ const useBuyWithZaps = ({
     toChain: number,
     toToken: string,
     outcomes: Outcome[],
+    referrer: string,
     fromDecimals?: number,
   ) =>
     toast.promise(
@@ -91,7 +92,7 @@ const useBuyWithZaps = ({
                 outcomeId,
                 minShareOut,
                 toAmount,
-                account.address, // referrer
+                referrer,
                 rebateAmount,
                 BigInt(Math.floor(Date.now() / 1000) + 60 * 30), // deadline
                 account.address,

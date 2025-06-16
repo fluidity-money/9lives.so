@@ -29,6 +29,7 @@ import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useBuyWithZaps from "@/hooks/useBuyWithZaps";
 import USDCImg from "#/images/usdc.svg";
 import useTokens from "@/hooks/useTokens";
+import useProfile from "@/hooks/useProfile";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -48,10 +49,12 @@ export default function DetailBuyAction({
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
-  const enabledLifiZaps = useFeatureFlag("enable lifi zaps");
+  const state = useFeatureFlag("enable lifi zaps");
+  const enabledLifiZaps = !state;
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
+  const { data: profile } = useProfile();
   const outcome = selectedOutcome
     ? data.outcomes.find((o) => o.identifier === selectedOutcome.id)!
     : data.outcomes[0];
@@ -167,6 +170,7 @@ export default function DetailBuyAction({
           toChain,
           toToken,
           data.outcomes,
+          profile?.settings?.refererr ?? "",
           fromDecimals,
         );
       } else {
