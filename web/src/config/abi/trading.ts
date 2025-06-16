@@ -362,6 +362,19 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "outcomeList",
+    inputs: [],
+    outputs: [
+      {
+        name: "outcomes",
+        type: "bytes8[]",
+        internalType: "bytes8[]",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "payoffCB6F2565",
     inputs: [
       {
