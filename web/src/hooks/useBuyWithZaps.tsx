@@ -13,6 +13,7 @@ import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { convertQuoteToRoute } from "@/utils/lifi/convertToRoute";
 import { executeRouteSteps } from "@/utils/lifi/executeLifiQuote";
+import { formatUnits } from "ethers";
 
 const useBuyWithZaps = ({
   shareAddr,
@@ -50,7 +51,7 @@ const useBuyWithZaps = ({
           };
           const fromAmountBigInt = toUnits(fromAmount.toString(), fromDecimals);
           const urlGetQuote = `https://li.quest/v1/quote?fromChain=${fromChain}&toChain=${toChain}&fromToken=${fromToken}&toToken=${toToken}&fromAddress=${account?.address}&fromAmount=${fromAmountBigInt}`;
-          const urlForRebate = `https://li.quest/v1/quote?fromChain=55244&toChain=55244&fromToken=0x0000000000000000000000000000000000000000&toToken=${config.NEXT_PUBLIC_FUSDC_ADDR}&fromAddress=${account?.address}&fromAmount=${rebateETHForGas}`;
+          const urlForRebate = `https://li.quest/v1/quote?fromChain=55244&toChain=55244&fromToken=0x0000000000000000000000000000000000000000&toToken=${config.NEXT_PUBLIC_FUSDC_ADDR}&fromAddress=${account?.address}&fromAmount=${formatUnits(rebateETHForGas)}`;
 
           const toAmountRes = await fetch(urlGetQuote, optionsGet);
           const toAmountData = await toAmountRes.json();

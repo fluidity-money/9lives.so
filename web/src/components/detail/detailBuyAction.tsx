@@ -49,8 +49,7 @@ export default function DetailBuyAction({
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
-  const state = useFeatureFlag("enable lifi zaps");
-  const enabledLifiZaps = !state;
+  const enabledLifiZaps = useFeatureFlag("enable lifi zaps");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
