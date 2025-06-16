@@ -38,6 +38,7 @@ const allContractSchema = z.object({
   meowDomains: contractSchema,
   sarpSignaller: contractSchema,
   claimantHelper: contractSchema,
+  buyHelper2: contractSchema,
 });
 
 const fusdc = getContract({
