@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 import "./INineLivesTrading.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
-    keccak256("NineLivesPaymaster(address owner,address spender,uint256 nonce,uint256 deadline,uint8 typ,bytes32 permitR,bytes32 permitS,uint8 permitV,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,bytes calldata)");
+    keccak256("NineLivesPaymaster(address owner,address spender,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,bytes calldata)");
 
 enum PaymasterType {
     MINT,
@@ -94,9 +94,6 @@ contract Paymaster {
                             nonces[op.owner],
                             op.deadline,
                             uint8(op.typ),
-                            op.permitR,
-                            op.permitS,
-                            op.permitV,
                             op.market,
                             op.maximumFee,
                             op.amountToSpend,
