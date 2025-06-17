@@ -13,7 +13,6 @@ import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { convertQuoteToRoute } from "@/utils/lifi/convertToRoute";
 import { executeRouteSteps } from "@/utils/lifi/executeLifiQuote";
-import { parseUnits } from "ethers";
 
 const useBuyWithZaps = ({
   shareAddr,
@@ -27,7 +26,6 @@ const useBuyWithZaps = ({
   campaignId: `0x${string}`;
 }) => {
   const queryClient = useQueryClient();
-  const rebateETHForGas = "0.00035";
   const buyWithZaps = async (
     account: Account,
     fromAmount: number,
@@ -51,17 +49,11 @@ const useBuyWithZaps = ({
           };
           const fromAmountBigInt = toUnits(fromAmount.toString(), fromDecimals);
           const urlGetQuote = `https://li.quest/v1/quote?fromChain=${fromChain}&toChain=${toChain}&fromToken=${fromToken}&toToken=${toToken}&fromAddress=${account?.address}&fromAmount=${fromAmountBigInt}`;
-          const urlForRebate = `https://li.quest/v1/quote?fromChain=55244&toChain=55244&fromToken=0x0000000000000000000000000000000000000000&toToken=${config.NEXT_PUBLIC_FUSDC_ADDR}&fromAddress=${account?.address}&fromAmount=${parseUnits(rebateETHForGas)}`;
 
           const toAmountRes = await fetch(urlGetQuote, optionsGet);
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.estimate.toAmount;
           console.log("toAmount", toAmount);
-
-          const rebateAmountRes = await fetch(urlForRebate, optionsGet);
-          const rebateAmountData = await rebateAmountRes.json();
-          const rebateAmount = rebateAmountData.estimate.toAmount;
-          console.log("rebateAmount", rebateAmount);
 
           const allowanceTx = prepareContractCall({
             contract: config.contracts.fusdc,
@@ -94,24 +86,24 @@ const useBuyWithZaps = ({
                 minShareOut,
                 toAmount,
                 referrer,
-                rebateAmount,
+                BigInt(0), //rebate
                 BigInt(Math.floor(Date.now() / 1000) + 60 * 30), // deadline
                 account.address,
               ],
             });
-          const return9lives = await simulateTransaction({
-            transaction: mintWith9LivesTx(),
-            account,
-          });
+          // const return9lives = await simulateTransaction({
+          //   transaction: mintWith9LivesTx(),
+          //   account,
+          // });
           // sets minimum share to %90 of expected return shares
-          const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
+          // const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
 
-          const transaction = mintWith9LivesTx(minShareOut);
+          const transaction = mintWith9LivesTx();
           console.log("transaction", transaction);
           const calldata = await encode(transaction);
           console.log("calldata", calldata);
 
-          const url = "https://li.quest/v1/quote/contractCall";
+          const url = "https://li.quest/v1/quote/contractCalls";
           const options = {
             method: "POST",
             headers: {
@@ -119,15 +111,21 @@ const useBuyWithZaps = ({
               "content-type": "application/json",
             },
             body: JSON.stringify({
-              toChain,
-              toToken,
               fromChain,
               fromToken,
-              toAmount,
               fromAddress: account.address,
-              toContractAddress: transaction.to,
-              toContractCallData: calldata,
-              toContractGasLimit: 900000,
+              toChain,
+              toToken,
+              toAmount,
+              contractCalls: [
+                {
+                  fromAmount: toAmount,
+                  fromTokenAddress: toToken,
+                  toContractAddress: transaction.to,
+                  toContractCallData: calldata,
+                  toContractGasLimit: 900000,
+                },
+              ],
               integrator: "superposition",
               // referrer: 'superposition',
               // slippage: 0.005,
