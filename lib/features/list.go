@@ -18,6 +18,10 @@ const (
 	// FeatureReferrerNeedsToVerify using a signature
 	FeatureReferrerNeedsToVerify = "referrer needs to verify"
 
-	// FeatureUseAiForCheckingIfCampaignMakesSense on every campaign listing in lambda
+	// FeatureUseAiForCheckingIfCampaignMakesSense on every campaign listing in lambda.
 	FeatureUseAiForCheckingIfCampaignMakesSense = "ai for asking if a campaign makes sense"
+
+	// FeatureShouldPriceCalldata to test whether the maximum fee is accurate
+	// before submittting with Paymaster.
+	FeatureShouldPriceCalldata = "paymaster should price"
 )

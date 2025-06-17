@@ -87,6 +87,51 @@ func (e Modification) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+type PaymasterOperation string
+
+const (
+	PaymasterOperationMint            PaymasterOperation = "MINT"
+	PaymasterOperationSell            PaymasterOperation = "SELL"
+	PaymasterOperationAddLiquidity    PaymasterOperation = "ADD_LIQUIDITY"
+	PaymasterOperationRemoveLiquidity PaymasterOperation = "REMOVE_LIQUIDITY"
+)
+
+var AllPaymasterOperation = []PaymasterOperation{
+	PaymasterOperationMint,
+	PaymasterOperationSell,
+	PaymasterOperationAddLiquidity,
+	PaymasterOperationRemoveLiquidity,
+}
+
+func (e PaymasterOperation) IsValid() bool {
+	switch e {
+	case PaymasterOperationMint, PaymasterOperationSell, PaymasterOperationAddLiquidity, PaymasterOperationRemoveLiquidity:
+		return true
+	}
+	return false
+}
+
+func (e PaymasterOperation) String() string {
+	return string(e)
+}
+
+func (e *PaymasterOperation) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PaymasterOperation(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PaymasterOperation", str)
+	}
+	return nil
+}
+
+func (e PaymasterOperation) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
 // Defines the method used to determine the winner of a campaign.
 type SettlementType string
 

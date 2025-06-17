@@ -300,6 +300,11 @@ func (r *claimResolver) CreatedAt(ctx context.Context, obj *types.Claim) (int, e
 	return int(obj.CreatedAt.Unix()), nil
 }
 
+// RequsetPaymaster is the resolver for the requsetPaymaster field.
+func (r *mutationResolver) RequsetPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) (*string, error) {
+	panic(fmt.Errorf("not implemented: RequsetPaymaster - requsetPaymaster"))
+}
+
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake

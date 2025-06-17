@@ -158,7 +158,89 @@ input OutcomeInput {
   picture: String
 }
 
+enum PaymasterOperation {
+    MINT,
+    SELL,
+    ADD_LIQUIDITY,
+    REMOVE_LIQUIDITY
+}
+
 type Mutation {
+  """
+  Request that the Paymaster service this request and deduct funds from the user's USDC
+  EOA using a Permit blob.
+  """
+  requsetPaymaster(
+      """
+      Ticket number of the Paymaster operation (if any). This could be used to delete it
+      from the request pool if needed.
+      """
+      ticket: Int,
+
+      """
+      Type of modification to the Paymaster operation.
+      """
+      type: Modification!,
+
+      """
+      Nonce of the operation to bump with.
+      """
+      nonce: String!,
+
+      """
+      Execution deadline of the Paymaster operation.
+      """
+      deadline: String!,
+
+      """
+      Arguments for this will be reconstructed based on the arguments to the Paymaster.
+      """
+      permitV: Int!,
+
+      permitR: String!,
+
+      permitS: String!,
+
+      """
+      Type of Paymaster operation to perform.
+      """
+      operation: PaymasterOperation!,
+
+      """
+      Owner to do this operation for (the sender's address).
+      """
+      owner: String!,
+
+      """
+      Market to perform this operation for.
+      """
+      market: String!,
+
+      """
+      Quoted fee to denominate from the user's USDC asset. Should be based on a quote
+      from Camelot using a quote.
+      """
+      maximumFee: String!,
+
+      """
+      Amount of the base asset spend for the operation. This could be the amount to sell
+      if selling, or USDC if buying.
+      """
+      amountToSpend: String!,
+
+      """
+      Minimum number the replacement asset to receive back, if any. This could be USDC if
+      selling, or USDC if buying.
+      """
+      minimumBack: String!,
+
+      rr: String!,
+
+      s: String!,
+
+      v: Int!
+  ): String
+
   """
   "Explain" a campaign, so an on-chain campaign creation is listed in the frontend.
   Campaign is then spooled in a would-be frontend aggregation table.
