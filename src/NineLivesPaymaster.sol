@@ -113,15 +113,16 @@ contract Paymaster {
         if (op.owner != recoverAddress(op)) return false;
         nonces[op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
-        USDC.permit(
-            op.owner,
-            address(this),
-            amountInclusiveOfFee,
-            op.deadline,
-            op.permitV,
-            op.permitR,
-            op.permitS
-        );
+        if (permitV != bytes32(0))
+            USDC.permit(
+                op.owner,
+                address(this),
+                amountInclusiveOfFee,
+                op.deadline,
+                op.permitV,
+                op.permitR,
+                op.permitS
+            );
         USDC.approve(address(op.market), op.amountToSpend);
         address market = address(op.market);
         if (op.typ == PaymasterType.MINT) {
