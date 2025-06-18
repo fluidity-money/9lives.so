@@ -228,14 +228,14 @@ fn test_cant_recreate() {
 mod proptesting {
     use super::*;
 
-    use crate::{strat_storage_trading, utils::strat_fixed_bytes};
+    use crate::{strat_storage_trading, utils::strat_uniq_outcomes};
 
     use proptest::prelude::*;
 
     proptest! {
         #[test]
         fn test_fee_addition_cant_be_excessive(
-            outcomes in proptest::collection::vec(strat_fixed_bytes::<8>(), 2),
+            outcomes in strat_uniq_outcomes(2, 2),
             share_impl in any::<Address>(),
             fee_for_creator in 100u64..,
             fee_for_lp in 100u64..,
