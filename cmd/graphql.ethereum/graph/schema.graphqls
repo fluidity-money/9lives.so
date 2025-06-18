@@ -170,7 +170,7 @@ type Mutation {
   Request that the Paymaster service this request and deduct funds from the user's USDC
   EOA using a Permit blob.
   """
-  requsetPaymaster(
+  requestPaymaster(
       """
       Ticket number of the Paymaster operation (if any). This could be used to delete it
       from the request pool if needed.

@@ -139,7 +139,7 @@ type ComplexityRoot struct {
 		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v string) int
 		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
 		GenReferrer       func(childComplexity int, walletAddress string, code string) int
-		RequsetPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) int
+		RequestPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) int
 		RevealCommitment  func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string) int
 		RevealCommitment2 func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) int
 		SynchProfile      func(childComplexity int, walletAddress string, email string) int
@@ -239,7 +239,7 @@ type ClaimResolver interface {
 	CreatedAt(ctx context.Context, obj *types.Claim) (int, error)
 }
 type MutationResolver interface {
-	RequsetPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) (*string, error)
+	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) (*string, error)
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
@@ -721,17 +721,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.GenReferrer(childComplexity, args["walletAddress"].(string), args["code"].(string)), true
 
-	case "Mutation.requsetPaymaster":
-		if e.complexity.Mutation.RequsetPaymaster == nil {
+	case "Mutation.requestPaymaster":
+		if e.complexity.Mutation.RequestPaymaster == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_requsetPaymaster_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_requestPaymaster_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.RequsetPaymaster(childComplexity, args["ticket"].(*int), args["type"].(model.Modification), args["nonce"].(string), args["deadline"].(string), args["permitV"].(int), args["permitR"].(string), args["permitS"].(string), args["operation"].(model.PaymasterOperation), args["owner"].(string), args["market"].(string), args["maximumFee"].(string), args["amountToSpend"].(string), args["minimumBack"].(string), args["rr"].(string), args["s"].(string), args["v"].(int)), true
+		return e.complexity.Mutation.RequestPaymaster(childComplexity, args["ticket"].(*int), args["type"].(model.Modification), args["nonce"].(string), args["deadline"].(string), args["permitV"].(int), args["permitR"].(string), args["permitS"].(string), args["operation"].(model.PaymasterOperation), args["owner"].(string), args["market"].(string), args["maximumFee"].(string), args["amountToSpend"].(string), args["minimumBack"].(string), args["rr"].(string), args["s"].(string), args["v"].(int)), true
 
 	case "Mutation.revealCommitment":
 		if e.complexity.Mutation.RevealCommitment == nil {
@@ -1392,7 +1392,7 @@ func (ec *executionContext) field_Mutation_genReferrer_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_requsetPaymaster_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_requestPaymaster_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *int
@@ -4590,8 +4590,8 @@ func (ec *executionContext) fieldContext_LeaderboardWeekly_creators(_ context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_requsetPaymaster(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_requsetPaymaster(ctx, field)
+func (ec *executionContext) _Mutation_requestPaymaster(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_requestPaymaster(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4604,7 +4604,7 @@ func (ec *executionContext) _Mutation_requsetPaymaster(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().RequsetPaymaster(rctx, fc.Args["ticket"].(*int), fc.Args["type"].(model.Modification), fc.Args["nonce"].(string), fc.Args["deadline"].(string), fc.Args["permitV"].(int), fc.Args["permitR"].(string), fc.Args["permitS"].(string), fc.Args["operation"].(model.PaymasterOperation), fc.Args["owner"].(string), fc.Args["market"].(string), fc.Args["maximumFee"].(string), fc.Args["amountToSpend"].(string), fc.Args["minimumBack"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
+		return ec.resolvers.Mutation().RequestPaymaster(rctx, fc.Args["ticket"].(*int), fc.Args["type"].(model.Modification), fc.Args["nonce"].(string), fc.Args["deadline"].(string), fc.Args["permitV"].(int), fc.Args["permitR"].(string), fc.Args["permitS"].(string), fc.Args["operation"].(model.PaymasterOperation), fc.Args["owner"].(string), fc.Args["market"].(string), fc.Args["maximumFee"].(string), fc.Args["amountToSpend"].(string), fc.Args["minimumBack"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4618,7 +4618,7 @@ func (ec *executionContext) _Mutation_requsetPaymaster(ctx context.Context, fiel
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_requsetPaymaster(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_requestPaymaster(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -4635,7 +4635,7 @@ func (ec *executionContext) fieldContext_Mutation_requsetPaymaster(ctx context.C
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_requsetPaymaster_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_requestPaymaster_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -10143,9 +10143,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "requsetPaymaster":
+		case "requestPaymaster":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_requsetPaymaster(ctx, field)
+				return ec._Mutation_requestPaymaster(ctx, field)
 			})
 		case "explainCampaign":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {

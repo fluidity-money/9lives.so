@@ -4,31 +4,23 @@ CREATE TABLE ninelives_paymaster_poll_1 (
 	id SERIAL PRIMARY KEY,
 	created_by TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-	-- Resolved is whether the request for the Paymaster has been resolved by the
-	-- paymaster.ethereum worker.
-	resolved BOOLEAN NOT NULL DEFAULT FALSE,
-
-	-- Attempts to conclude this in the past using the returned ticket system.
-	-- Will hit a number of 5 then give up.
-	attempts INTEGER NOT NULL DEFAULT 0,
-
 	-- Owner of the request.
 	owner ADDRESS NOT NULL,
 
 	-- Deadline of the request.
 	deadline INTEGER NOT NULL,
 
-	-- Type of the request (stringified).
-	typ VARCHAR NOT NULL,
+	-- Type of the request (converted from enum literally).
+	typ INTEGER NOT NULL,
 
 	-- R part of the Permit signature.
-	permitR BYTES32 NOT NULL,
+	permitR BYTES32,
 
 	-- S part of the Permit signature.
-	permitS BYTES32 NOT NULL,
+	permitS BYTES32,
 
 	-- V part of the Permit signature.
-	permitV INTEGER NOT NULL,
+	permitV INTEGER,
 
 	-- The market to Paymaster this calldata for.
 	market ADDRESS NOT NULL,
@@ -40,38 +32,27 @@ CREATE TABLE ninelives_paymaster_poll_1 (
 	amount_to_spend HUGEINT NOT NULL,
 
 	-- The amount to receive back as a minimum amount.
-	minimum_back HUGEINT NOT NULL,
-
-	-- The calldata in bytes.
-	calldata VARCHAR NOT NULL,
+	minimum_back HUGEINT,
 
 	-- The R part of the signature to reconstruct for the operation.
 	r BYTES32 NOT NULL,
 
 	s BYTES32 NOT NULL,
 
-	v INTEGER NOT NULL
-);
+	v INTEGER NOT NULL,
 
-CREATE VIEW ninelives_paymaster_poll_outstanding_1 AS
-	SELECT
-		id,
-		owner,
-		deadline,
-		typ,
-		permitR,
-		permitS,
-		permitV,
-		market,
-		maximum_fee,
-		amount_to_spend,
-		minimum_back,
-		calldata,
-		r,
-		s,
-		v
-	FROM
-		ninelives_paymaster_poll_1
-	WHERE attempts < 5 AND NOT resolved;
+	-- The referrer that would be submitted alongside the request depending on the
+	-- type.
+	referrer ADDRESS,
+
+	-- The outcome to use this interaction for, if any.
+	outcome BYTES8,
+
+	-- The originating chain id to use for the domain.
+	originating_chain_id HUGEINT NOT NULL,
+
+	-- The nonce associated with this chain combination.
+	nonce HUGEINT NOT NULL
+);
 
 -- migrate:down

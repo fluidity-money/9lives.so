@@ -49,7 +49,7 @@ interface IERC20 {
     function approve(address spender, uint256 amount) external;
 }
 
-contract Paymaster {
+contract NineLivesPaymaster {
     /// @dev NAME here is a concatenation of the chain id as well! We don't
     /// intend to deploy this anywhere else, but we want cross-chain signing
     /// functionality, so we reuse the domain separator to discover nonces

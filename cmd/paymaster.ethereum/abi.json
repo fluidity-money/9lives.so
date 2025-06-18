@@ -1,0 +1,110 @@
+{
+	"abi": [
+		{
+			"type": "function",
+			"name": "multicall",
+			"inputs": [
+				{
+					"name": "operations",
+					"type": "tuple[]",
+					"internalType": "struct Operation[]",
+					"components": [
+						{
+							"name": "owner",
+							"type": "address",
+							"internalType": "address"
+						},
+						{
+							"name": "originatingChainId",
+							"type": "uint256",
+							"internalType": "uint256"
+						},
+						{
+							"name": "nonce",
+							"type": "uint256",
+							"internalType": "uint256"
+						},
+						{
+							"name": "deadline",
+							"type": "uint256",
+							"internalType": "uint256"
+						},
+						{
+							"name": "typ",
+							"type": "uint8",
+							"internalType": "enum PaymasterType"
+						},
+						{
+							"name": "permitR",
+							"type": "bytes32",
+							"internalType": "bytes32"
+						},
+						{
+							"name": "permitS",
+							"type": "bytes32",
+							"internalType": "bytes32"
+						},
+						{
+							"name": "permitV",
+							"type": "uint8",
+							"internalType": "uint8"
+						},
+						{
+							"name": "market",
+							"type": "address",
+							"internalType": "contract INineLivesTrading"
+						},
+						{
+							"name": "maximumFee",
+							"type": "uint256",
+							"internalType": "uint256"
+						},
+						{
+							"name": "amountToSpend",
+							"type": "uint256",
+							"internalType": "uint256"
+						},
+						{
+							"name": "minimumBack",
+							"type": "uint256",
+							"internalType": "uint256"
+						},
+						{
+							"name": "referrer",
+							"type": "address",
+							"internalType": "address"
+						},
+						{
+							"name": "outcome",
+							"type": "bytes8",
+							"internalType": "bytes8"
+						},
+						{
+							"name": "v",
+							"type": "uint8",
+							"internalType": "uint8"
+						},
+						{
+							"name": "r",
+							"type": "bytes32",
+							"internalType": "bytes32"
+						},
+						{
+							"name": "s",
+							"type": "bytes32",
+							"internalType": "bytes32"
+						}
+					]
+				}
+			],
+			"outputs": [
+				{
+					"name": "statuses",
+					"type": "bool[]",
+					"internalType": "bool[]"
+				}
+			],
+			"stateMutability": "nonpayable"
+		}
+	]
+}

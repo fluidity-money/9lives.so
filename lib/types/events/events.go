@@ -58,6 +58,9 @@ func (x *Bytes) UnmarshalJSON(b []byte) (err error) {
 func (b Bytes) String() string {
 	return hex.EncodeToString([]byte(b.b))
 }
+func (b Bytes) Bytes() []byte {
+	return b.b
+}
 func (b Bytes) Value() (sqlDriver.Value, error) {
 	return b.String(), nil
 }
@@ -92,6 +95,10 @@ func NumberFromBig(x *big.Int) Number {
 }
 func (n Number) String() string {
 	return n.i.String()
+}
+// Big underlying number without a copy.
+func (n Number) Big() *big.Int {
+	return n.i
 }
 func (n Number) Int64() int64 {
 	return n.i.Int64()
