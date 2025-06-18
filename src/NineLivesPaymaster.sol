@@ -8,7 +8,7 @@ bytes32 constant PAYMASTER_TYPEHASH =
 
 enum PaymasterType {
     MINT,
-    SELL,
+    BURN,
     ADD_LIQUIDITY,
     REMOVE_LIQUIDITY
 }
@@ -47,52 +47,61 @@ interface IERC20 {
 }
 
 contract Paymaster {
+    /// @dev NAME here is a concatenation of the chain id as well! We don't
+    /// intend to deploy this anywhere else, but we want cross-chain signing
+    /// functionality, so we reuse the domain separator to discover nonces
+    /// that we supply to this contract relative to the chain id here.
     string constant NAME = "NineLivesPaymaster";
 
     IERC20 immutable USDC;
 
-    uint256 internal immutable INITIAL_CHAIN_ID;
+    uint256 public immutable INITIAL_CHAIN_ID;
 
-    bytes32 internal immutable INITIAL_DOMAIN_SEPARATOR;
+    mapping(bytes32 domain => mapping(address addr => uint256 nonce)) public nonces;
 
-    mapping(address => uint256) public nonces;
+    mapping(uint256 => bytes32) public domainSeparators;
 
     constructor(address _erc20) {
         USDC = IERC20(_erc20);
-
         INITIAL_CHAIN_ID = block.chainid;
-        INITIAL_DOMAIN_SEPARATOR = computeDomainSeparator();
+        domainSeparators[INITIAL_CHAIN_ID] = computeDomainSeparator(
+            INITIAL_CHAIN_ID
+        );
     }
 
-    function DOMAIN_SEPARATOR() public view virtual returns (bytes32) {
-        return block.chainid == INITIAL_CHAIN_ID ? INITIAL_DOMAIN_SEPARATOR : computeDomainSeparator();
+    function DOMAIN_SEPARATOR(uint256 _chainId) public returns (bytes32 sep) {
+        sep = domainSeparators[_chainId];
+        if (sep == bytes32(0)) {
+            domainSeparators[_chainId] = computeDomainSeparator(_chainId);
+            sep = domainSeparators[_chainId];
+        }
     }
 
-    function computeDomainSeparator() internal view virtual returns (bytes32) {
+    function computeDomainSeparator(uint256 _chainId) internal view virtual returns (bytes32) {
         return
             keccak256(
                 abi.encode(
                     keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
                     keccak256(bytes(NAME)),
-                    keccak256("1"),
-                    block.chainid,
+                    keccak256(abi.encode(INITIAL_CHAIN_ID)),
+                    _chainId,
                     address(this)
                 )
             );
     }
 
-    function recoverAddress(Operation calldata op) public view returns (address) {
+    function recoverAddress(bytes32 domain, Operation calldata op) public view returns (address) {
         return ecrecover(
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
-                    DOMAIN_SEPARATOR(),
+                    domain,
                     keccak256(
                         abi.encode(
                             PAYMASTER_TYPEHASH,
                             op.owner,
                             address(this),
-                            nonces[op.owner],
+                            nonces[domain][op.owner],
                             op.deadline,
                             uint8(op.typ),
                             op.market,
@@ -113,8 +122,9 @@ contract Paymaster {
 
     function execute(Operation calldata op) public returns (bool) {
         if (op.deadline < block.timestamp) return false;
-        if (op.owner != recoverAddress(op)) return false;
-        nonces[op.owner]++;
+        bytes32 domain = DOMAIN_SEPARATOR(block.chainid);
+        if (op.owner != recoverAddress(domain, op)) return false;
+        nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
         if (op.permitV != 0)
             USDC.permit(
@@ -126,12 +136,23 @@ contract Paymaster {
                 op.permitR,
                 op.permitS
             );
-        USDC.approve(address(op.market), op.amountToSpend);
         address market = address(op.market);
         if (op.typ == PaymasterType.MINT) {
+            USDC.approve(address(op.market), op.amountToSpend);
             (bool rc,) = market.call(abi.encodeWithSelector(
                 INineLivesTrading.mint8A059B6E.selector,
                 op.amountToSpend,
+                op.referrer,
+                op.owner
+            ));
+            return rc;
+        } else if (op.typ == PaymasterType.BURN) {
+            (bool rc,) = market.call(abi.encodeWithSelector(
+                INineLivesTrading.burn854CC96E.selector,
+                op.outcome,
+                op.amountToSpend,
+                true,
+                op.minimumBack,
                 op.referrer,
                 op.owner
             ));
