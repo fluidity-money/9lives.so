@@ -104,7 +104,7 @@ L:
 		}
 		if len(items) == 0 {
 			cancelCtx()
-			sleep()
+			sleep(sleepSecs)
 			continue
 		}
 		operations := make([]Operation, 0, len(items))
@@ -163,7 +163,11 @@ L:
 			x := operations[len(operations)-len(badIds)]
 			operations[i] = x
 		}
-		logBadIds(db)
+		goodIds := make([]int, 0, len(items) - len(badIds))
+		for _, item := range items {
+			goodIds = append(goodIds, item.ID)
+		}
+		logIds(db, badIds, goodIds)
 		// We need to regenerate the calldata now with the trimmed ids.
 		cd, err = abi.Pack("multicall", operations[:len(badIds)])
 		if err != nil {
@@ -191,15 +195,15 @@ L:
 				setup.Exitf("ran outside context window: %v", err)
 			default:
 				slog.Info("Submitted transaction", "tx", tx)
-				sleep()
+				sleep(sleepSecs)
 				continue L
 			}
 		}
 	}
 }
 
-func logBadIds(db *gorm.DB) {
-
+func logIds(db *gorm.DB, badIds, goodIds []int) {
+	// Generate the template that uses the function to take a id as having a failure.
 }
 
 func addrToEthAddr(x events.Address) ethCommon.Address {
@@ -237,8 +241,8 @@ func maybeBytesToBytes8(x *events.Bytes) (b [8]byte) {
 	return bytesToBytes8(*x)
 }
 
-func sleep() {
-	time.Sleep(5 * time.Second)
+func sleep(secs int) {
+	time.Sleep(time.Duration(secs) * time.Second)
 }
 
 type Operation struct {
