@@ -5,12 +5,12 @@ import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
 import { CampaignDetail, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useSwitchActiveWalletChain } from "thirdweb/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
+import { Chain, prepareContractCall, simulateTransaction } from "thirdweb";
 import config from "@/config";
 import { formatUnits } from "ethers";
 import ShadowCard from "../cardShadow";
@@ -65,9 +65,7 @@ export default function DetailBuyAction({
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
   const formSchemaWithZap = z.object({
-    supply: z.coerce
-      .number()
-      .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
+    supply: z.coerce.number().gte(0, { message: "Invalid amount to spend" }),
     toChain: z.number().min(0),
     toToken: z.string(),
     fromChain: z
@@ -101,6 +99,7 @@ export default function DetailBuyAction({
       fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
     },
   });
+  const switchChain = useSwitchActiveWalletChain();
   const supply = watch("supply");
   const fromChain = watch("fromChain");
   const fromToken = watch("fromToken");
@@ -204,7 +203,10 @@ export default function DetailBuyAction({
       };
     }
   }, []);
-  const handleNetworkChange = (id: number) => setValue("fromChain", id);
+  const handleNetworkChange = async (chain: Chain) => {
+    await switchChain(chain);
+    setValue("fromChain", chain.id);
+  };
   const handleTokenChange = useCallback(
     (addr: string) => setValue("fromToken", addr),
     [setValue],
@@ -372,7 +374,7 @@ export default function DetailBuyAction({
                   {Object.values(config.chains).map((chain) => (
                     <div
                       key={chain.id}
-                      onClick={() => handleNetworkChange(chain.id)}
+                      onClick={() => handleNetworkChange(chain)}
                       title={chain.name}
                       className="cursor-pointer"
                     >
