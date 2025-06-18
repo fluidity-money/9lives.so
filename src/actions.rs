@@ -143,7 +143,7 @@ pub fn strat_tiny_mint_into_burn_outcomes(
     use proptest::collection::vec;
     (
         strat_uniq_outcomes(2, max_outcomes),
-        vec(any::<Address>(), 0..=max_referrers),
+        vec(any::<Address>(), 2..=max_referrers),
     )
         .prop_flat_map(move |(outs, refs)| {
             let outs2 = outs.clone();

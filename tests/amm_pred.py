@@ -1342,4 +1342,4 @@ def simulate_market_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358():
     print("simulation result", market.sell(3, market.inverse_sell(3,14.843,"Alice"), "Alice"))
 
 if __name__ == "__main__":
-    simulate_market_16()
+    simulate_market_3()

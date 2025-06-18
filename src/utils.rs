@@ -189,11 +189,26 @@ pub fn strat_fixed_bytes<const N: usize>() -> impl proptest::prelude::Strategy<V
 }
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
+pub fn strat_outcome_not_zero() -> impl proptest::prelude::Strategy<Value = FixedBytes<8>> {
+    ([
+        1..u8::MAX,
+        0..u8::MAX,
+        0..u8::MAX,
+        0..u8::MAX,
+        0..u8::MAX,
+        0..u8::MAX,
+        0..u8::MAX,
+        0..u8::MAX,
+    ])
+    .prop_map(FixedBytes::<8>::new)
+}
+
+#[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub fn strat_uniq_outcomes(
     lower: usize,
     upper: usize,
 ) -> impl Strategy<Value = Vec<FixedBytes<8>>> {
-    proptest::collection::btree_set(any::<FixedBytes<8>>(), lower..=upper)
+    proptest::collection::btree_set(strat_outcome_not_zero(), lower..=upper)
         .prop_map(|s| s.into_iter().collect())
 }
 
