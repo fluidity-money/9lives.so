@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 import "./INineLivesTrading.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
-    keccak256("NineLivesPaymaster(address owner,address spender,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,bytes calldata)");
+    keccak256("NineLivesPaymaster(address owner,address spender,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
 
 enum PaymasterType {
     MINT,
@@ -25,7 +25,8 @@ struct Operation {
     uint256 maximumFee;
     uint256 amountToSpend;
     uint256 minimumBack;
-    bytes cd;
+    address referrer;
+    bytes8 outcome;
     uint8 v;
     bytes32 r;
     bytes32 s;
@@ -97,7 +98,9 @@ contract Paymaster {
                             op.market,
                             op.maximumFee,
                             op.amountToSpend,
-                            op.minimumBack
+                            op.minimumBack,
+                            op.referrer,
+                            op.outcome
                         )
                     )
                 )
@@ -113,7 +116,7 @@ contract Paymaster {
         if (op.owner != recoverAddress(op)) return false;
         nonces[op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
-        if (permitV != bytes32(0))
+        if (op.permitV != 0)
             USDC.permit(
                 op.owner,
                 address(this),
@@ -126,9 +129,11 @@ contract Paymaster {
         USDC.approve(address(op.market), op.amountToSpend);
         address market = address(op.market);
         if (op.typ == PaymasterType.MINT) {
-            (bool rc,) = market.call(abi.encodePacked(
+            (bool rc,) = market.call(abi.encodeWithSelector(
                 INineLivesTrading.mint8A059B6E.selector,
-                op.cd
+                op.amountToSpend,
+                op.referrer,
+                op.owner
             ));
             return rc;
         } else {
