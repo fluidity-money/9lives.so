@@ -26,7 +26,7 @@ export default function LiFiProvider({
             switchChain: async (chainId) => {
               const chainList = Object.values(config.chains);
               const targetChain = chainList.find((c) => c.id === chainId);
-              switchChainThirdweb(targetChain ?? config.destinationChain);
+              await switchChainThirdweb(targetChain ?? config.destinationChain);
               return viemAdapter.wallet.toViem({
                 client: config.thirdweb.client,
                 chain: targetChain ?? config.destinationChain,
