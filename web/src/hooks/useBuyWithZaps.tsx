@@ -56,7 +56,6 @@ const useBuyWithZaps = ({
           const toAmountRes = await fetch(urlGetQuote, optionsGet);
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.estimate.toAmount;
-          console.log("toAmount", toAmount);
 
           const allowanceTx = prepareContractCall({
             contract: config.contracts.fusdc,
@@ -102,9 +101,8 @@ const useBuyWithZaps = ({
           // const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
 
           const transaction = mintWith9LivesTx();
-          console.log("transaction", transaction);
+
           const calldata = await encode(transaction);
-          console.log("calldata", calldata);
 
           const contractCallsQuoteRequest = {
             fromChain,
@@ -128,11 +126,9 @@ const useBuyWithZaps = ({
             // fee: 0.01
           };
           const quote = await getContractCallsQuote(contractCallsQuoteRequest);
-          console.log("quote", quote);
 
           const route = convertQuoteToRoute(quote);
 
-          console.log("route", route);
           await executeRoute(route);
 
           const outcomeIds = outcomes.map((o) => o.identifier);
