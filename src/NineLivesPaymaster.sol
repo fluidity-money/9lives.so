@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 import "./INineLivesTrading.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
-    keccak256("NineLivesPaymaster(address owner,address spender,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
+    keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
 
 enum PaymasterType {
     MINT,
@@ -15,7 +15,10 @@ enum PaymasterType {
 
 struct Operation {
     address owner;
-    address nonce;
+    /// @dev originatingChainId is used to avoid asking users to change their
+    ///      wallet for a native experience regardless where they are.
+    uint256 originatingChainId;
+    uint256 nonce;
     uint256 deadline;
     PaymasterType typ;
     bytes32 permitR;
@@ -83,8 +86,8 @@ contract Paymaster {
                 abi.encode(
                     keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
                     keccak256(bytes(NAME)),
-                    keccak256(abi.encode(INITIAL_CHAIN_ID)),
-                    _chainId,
+                    abi.encode(_chainId),
+                    INITIAL_CHAIN_ID,
                     address(this)
                 )
             );
@@ -100,7 +103,6 @@ contract Paymaster {
                         abi.encode(
                             PAYMASTER_TYPEHASH,
                             op.owner,
-                            address(this),
                             nonces[domain][op.owner],
                             op.deadline,
                             uint8(op.typ),
@@ -122,7 +124,7 @@ contract Paymaster {
 
     function execute(Operation calldata op) public returns (bool) {
         if (op.deadline < block.timestamp) return false;
-        bytes32 domain = DOMAIN_SEPARATOR(block.chainid);
+        bytes32 domain = DOMAIN_SEPARATOR(op.originatingChainId);
         if (op.owner != recoverAddress(domain, op)) return false;
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;

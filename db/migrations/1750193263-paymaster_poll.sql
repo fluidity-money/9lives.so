@@ -55,6 +55,7 @@ CREATE TABLE ninelives_paymaster_poll_1 (
 
 CREATE VIEW ninelives_paymaster_poll_outstanding_1 AS
 	SELECT
+		id,
 		owner,
 		deadline,
 		typ,
