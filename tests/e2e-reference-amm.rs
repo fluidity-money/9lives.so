@@ -242,7 +242,7 @@ proptest! {
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_b));
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_c));
                 assert_eq_u!(172303, c.amm_outcome_prices.get(outcome_d));
-                assert_eq_u!(772000000, c.amm_user_liquidity_shares.get(msg_sender()));
+                assert_eq_u!(772800379, c.amm_user_liquidity_shares.get(msg_sender()));
             },
         }
     }
@@ -714,7 +714,7 @@ proptest! {
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let target_fee_collected = U256::from(12040817);
+        let target_fee_collected = U256::from(10000000);
         let half_of_target_fee_collected = target_fee_collected / U256::from(2);
         interactions_clear_after! {
             IVAN => {
@@ -774,7 +774,7 @@ proptest! {
                 c.decide(outcome_a).unwrap();
                 let win_amt = U256::from(667476901);
                 should_spend_fusdc_contract!(
-                    667476900,
+                    667476901,
                     c.payoff_C_B_6_F_2565(
                         outcome_a,
                         win_amt,
@@ -784,13 +784,13 @@ proptest! {
             },
             IVAN => {
                 should_spend_fusdc_contract!(
-                    360241000,
+                    359712000,
                      c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
             },
             ERIK => {
                 should_spend_fusdc_contract!(
-                    360241000,
+                    359712000,
                     c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
             }
@@ -905,13 +905,13 @@ proptest! {
             },
             ERIK => should_spend_fusdc_contract!(
                 // In the Python, this is 377.71391451345414:
-                377758000,
+                377713500,
                 c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
             ),
             ELI => {
                 should_spend_fusdc_contract!(
                     // In the Python, this is 5504.027898192409:
-                    5503934060u64,
+                    5504021786u64,
                     c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender())
                 );
                 assert_eq!(U256::ZERO, fusdc_call::balance_of(CONTRACT).unwrap());
