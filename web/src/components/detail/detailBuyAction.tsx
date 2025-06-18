@@ -65,7 +65,7 @@ export default function DetailBuyAction({
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
   const formSchemaWithZap = z.object({
-    supply: z.coerce.number().gte(0, { message: "Invalid amount to spend" }),
+    supply: z.coerce.number().gt(0, { message: "Invalid amount to spend" }),
     toChain: z.number().min(0),
     toToken: z.string(),
     fromChain: z
