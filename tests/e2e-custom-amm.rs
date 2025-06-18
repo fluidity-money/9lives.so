@@ -90,7 +90,7 @@ proptest! {
             // We can have claim-like behaviour by checking if the system reverts that zero
             // shares were trying to be claimed.
             assert_eq!(
-                Error::ZeroShares,
+                Error::NotEnoughLiquidity,
                 c.remove_liquidity_3_C_857_A_15(U256::ZERO, msg_sender()).unwrap_err()
             );
             // A user should not be able to add, remove, or mint liquidity for a
