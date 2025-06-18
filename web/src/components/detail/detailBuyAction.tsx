@@ -204,7 +204,8 @@ export default function DetailBuyAction({
     }
   }, []);
   const handleNetworkChange = async (chain: Chain) => {
-    await switchChain(chain);
+    // lifi auto switch handle this for now
+    // await switchChain(chain);
     setValue("fromChain", chain.id);
   };
   const handleTokenChange = useCallback(
