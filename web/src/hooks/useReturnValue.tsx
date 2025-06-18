@@ -27,7 +27,7 @@ export default function useReturnValue({
         abi: tradingAbi,
         address: tradingAddr,
         client: config.thirdweb.client,
-        chain: config.chains.currentChain,
+        chain: config.destinationChain,
       });
       const returnTx = prepareContractCall({
         contract: tradingContract,

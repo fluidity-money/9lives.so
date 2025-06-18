@@ -26,7 +26,7 @@ export function useAllowanceCheck() {
       address: contractAddress,
       abi: ERC20Abi,
       client: config.thirdweb.client,
-      chain: config.chains.currentChain,
+      chain: config.destinationChain,
     });
     if (checkBalance) {
       const balanceOfTx = prepareContractCall({
@@ -63,7 +63,7 @@ export function useAllowanceCheck() {
       address: contractAddress,
       abi: ERC20Abi,
       client: config.thirdweb.client,
-      chain: config.chains.currentChain,
+      chain: config.destinationChain,
     });
     const approveTx = prepareContractCall({
       contract: erc20Contract,

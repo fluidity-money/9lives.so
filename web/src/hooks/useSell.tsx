@@ -42,7 +42,7 @@ const useSell = ({
             abi: ERC20Abi,
             address: shareAddr,
             client: config.thirdweb.client,
-            chain: config.chains.currentChain,
+            chain: config.destinationChain,
           });
 
           const minShareOut = BigInt(Math.floor(Number(shareAmount) * 0.95));

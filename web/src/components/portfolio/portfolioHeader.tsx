@@ -21,7 +21,7 @@ export default function PortfolioHeader() {
     address: account?.address,
     tokenAddress: config.NEXT_PUBLIC_FUSDC_ADDR,
     client: config.thirdweb.client,
-    chain: config.chains.currentChain,
+    chain: config.destinationChain,
   });
   const domainOrAddress = useMeowDomains(account?.address);
   const { connect } = useConnectWallet();

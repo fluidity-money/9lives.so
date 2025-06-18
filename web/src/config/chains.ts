@@ -1,8 +1,24 @@
 import { defineChain } from "thirdweb/chains";
 import z from "zod";
-import "thirdweb/utils";
-// import { arbitrum } from "thirdweb/chains";
+import {
+  ethereum,
+  arbitrum,
+  optimism,
+  bsc,
+  polygon,
+  base,
+  avalanche,
+} from "thirdweb/chains";
 import clientEnv from "./clientEnv";
+import ETH from "#/images/chains/ethereum.svg";
+import SPN from "#/images/chains/superposition.svg";
+import ARB from "#/images/chains/arbitrum.svg";
+import OP from "#/images/chains/optimism.svg";
+import BSC from "#/images/chains/bsc.svg";
+import POL from "#/images/chains/polygon.svg";
+import BASE from "#/images/chains/base.svg";
+import AVAX from "#/images/chains/avalanche.svg";
+import APE from "#/images/chains/apechain.svg";
 
 export const networkSchema = z.object({
   id: z.number(),
@@ -22,10 +38,10 @@ export const networkSchema = z.object({
     }),
   ),
   testnet: z.boolean().optional(),
-  icon: z.string().optional(),
+  icon: z.any().optional(),
 });
 
-export const superpositionTestnet = defineChain({
+const superpositionTestnet = defineChain({
   name: "Superposition Testnet",
   id: 98985,
   nativeCurrency: { name: "Superposition", symbol: "SPN", decimals: 18 },
@@ -37,8 +53,9 @@ export const superpositionTestnet = defineChain({
     },
   ],
   testnet: true,
+  icon: SPN,
 });
-export const superpositionMainnet = defineChain({
+const superposition = defineChain({
   name: "Superposition",
   id: 55244,
   nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
@@ -49,21 +66,50 @@ export const superpositionMainnet = defineChain({
       url: "https://explorer.superposition.so",
     },
   ],
+  icon: SPN,
+});
+const apechain = defineChain({
+  name: "ApeChain",
+  id: 33139,
+  nativeCurrency: {
+    name: "ApeCoin",
+    symbol: "APE",
+    decimals: 18,
+  },
+  rpc: "https://apechain.calderachain.xyz/http",
+  blockExplorers: [
+    {
+      name: "ApeScan",
+      url: "https://apechain.calderaexplorer.xyz",
+    },
+  ],
+  icon: APE,
 });
 
-// validate all chains
-const chainValidation = z
-  .array(networkSchema)
-  .safeParse([superpositionTestnet, superpositionMainnet]);
+const chainList = {
+  superposition: { ...superposition, icon: SPN },
+  arbitrum: { ...arbitrum, icon: ARB },
+  ethereum: { ...ethereum, icon: ETH },
+  apechain: { ...apechain, icon: APE },
+  bsc: { ...bsc, icon: BSC },
+  avalanche: { ...avalanche, icon: AVAX },
+  optimism: { ...optimism, icon: OP },
+  base: { ...base, icon: BASE },
+  polygon: { ...polygon, icon: POL },
+} as const;
 
-if (!chainValidation.success) {
-  console.error("Invalid chain: ", chainValidation.error.name);
-  throw new Error(chainValidation.error.message);
+const supportedCrossChainSchema = z.record(z.string(), networkSchema);
+
+// validate all chains
+const chains = supportedCrossChainSchema.safeParse(chainList);
+
+if (!chains.success) {
+  console.error("Invalid chain: ", chains.error.name);
+  throw new Error(chains.error.message);
 }
 
-// export const currentChain = arbitrum
-// export const currentChain = superpositionTestnet;
-export const currentChain =
+export default chains.data as typeof chainList;
+export const destinationChain =
   clientEnv.NEXT_PUBLIC_CHAIN === "mainnet"
-    ? superpositionMainnet
+    ? superposition
     : superpositionTestnet;

@@ -39,13 +39,13 @@ const useClaim = ({
             abi: tradingDpmAbi,
             address: tradingAddr,
             client: config.thirdweb.client,
-            chain: config.chains.currentChain,
+            chain: config.destinationChain,
           });
           const tradingContract = getContract({
             abi: tradingAbi,
             address: tradingAddr,
             client: config.thirdweb.client,
-            chain: config.chains.currentChain,
+            chain: config.destinationChain,
           });
           const claimTx = prepareContractCall({
             contract: tradingContract,

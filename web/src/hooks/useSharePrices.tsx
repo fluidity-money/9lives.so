@@ -21,7 +21,7 @@ export default function useSharePrices({
         abi: tradingAbi,
         address: tradingAddr,
         client: config.thirdweb.client,
-        chain: config.chains.currentChain,
+        chain: config.destinationChain,
       });
       const res = await Promise.all<bigint>(
         outcomeIds.map((outcomeId) =>

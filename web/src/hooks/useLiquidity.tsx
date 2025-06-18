@@ -24,7 +24,7 @@ export default function useLiquidity({
     abi: tradingAbi,
     address: tradingAddr,
     client: config.thirdweb.client,
-    chain: config.chains.currentChain,
+    chain: config.destinationChain,
   });
   const { checkAndAprove } = useAllowanceCheck();
   const add = async (account: Account, fusdc: string) =>

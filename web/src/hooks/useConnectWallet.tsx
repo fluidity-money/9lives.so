@@ -11,7 +11,7 @@ export default function useConnectWallet() {
     try {
       result = await connect({
         client: appConfig.thirdweb.client,
-        chain: appConfig.thirdweb.chain,
+        chains: Object.values(appConfig.chains),
         appMetadata: appConfig.thirdweb.metadata,
         wallets: appConfig.thirdweb.wallets,
         theme: appConfig.thirdweb.theme,

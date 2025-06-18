@@ -7,6 +7,7 @@ import PostHogProvider from "./postHog";
 import WebSocketProvider from "./websocket";
 import ReferralHandler from "./referralHandler";
 import { Suspense } from "react";
+import LiFiProvider from "./lifi";
 
 export default function Providers({
   children,
@@ -29,7 +30,9 @@ export default function Providers({
         <Suspense>
           <ReferralHandler />
         </Suspense>
-        <PostHogProvider>{children}</PostHogProvider>
+        <PostHogProvider>
+          <LiFiProvider>{children}</LiFiProvider>
+        </PostHogProvider>
       </ReactQueryProvider>
     </ThirdwebProvider>
   );

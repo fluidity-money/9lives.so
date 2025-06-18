@@ -7,7 +7,7 @@ import helperFactoryAbi from "./abi/helperFactory";
 import buyHelperAbi from "./abi/buyHelper";
 import clientEnv from "./clientEnv";
 import lensAbi from "./abi/lens";
-import { currentChain } from "./chains";
+import { destinationChain } from "./chains";
 import infraAbi from "./abi/infra";
 import meowDomainsAbi from "./abi/meowDomains";
 import sarpSignallerAbi from "./abi/sarpSignaller";
@@ -44,61 +44,61 @@ const allContractSchema = z.object({
 const fusdc = getContract({
   abi: ERC20Abi,
   address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const amm = getContract({
   abi: ammAbi,
   address: clientEnv.NEXT_PUBLIC_AMM_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const lens = getContract({
   abi: lensAbi,
   address: clientEnv.NEXT_PUBLIC_LENS_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const helperFactory = getContract({
   abi: helperFactoryAbi,
   address: clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const infra = getContract({
   abi: infraAbi,
   address: clientEnv.NEXT_PUBLIC_INFRA_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const buyHelper = getContract({
   abi: buyHelperAbi,
   address: clientEnv.NEXT_PUBLIC_BUY_HELPER_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const buyHelper2 = getContract({
   abi: buyHelper2Abi,
   address: clientEnv.NEXT_PUBLIC_BUY_HELPER2_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const meowDomains = getContract({
   abi: meowDomainsAbi,
   address: clientEnv.NEXT_PUBLIC_MEOW_DOMAINS_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const sarpSignaller = getContract({
   abi: sarpSignallerAbi,
   address: clientEnv.NEXT_PUBLIC_SARP_SIGNALLER_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const claimantHelper = getContract({
   abi: claimantAbi,
   address: clientEnv.NEXT_PUBLIC_CLAIMANT_HELPER_ADDR,
-  chain: currentChain,
+  chain: destinationChain,
   client: thirdweb.client,
 });
 const contractValidation = allContractSchema.safeParse({

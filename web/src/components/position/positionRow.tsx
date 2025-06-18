@@ -214,7 +214,7 @@ export default function PositionRow({
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    href={`${config.chains.currentChain.blockExplorers![0].url}/token/${data.shareAddress}`}
+                    href={`${config.destinationChain.blockExplorers![0].url}/token/${data.shareAddress}`}
                     target="_blank"
                     className="inline self-start"
                   >

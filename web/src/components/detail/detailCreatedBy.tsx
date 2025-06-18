@@ -12,7 +12,7 @@ export default function DetailCreatedBy({
       <a
         rel="noopener noreferrer"
         target="_blank"
-        href={`${config.chains.currentChain.blockExplorers![0].url}/address/${address}`}
+        href={`${config.destinationChain.blockExplorers![0].url}/address/${address}`}
       >
         Created by{" "}
         {domain?.startsWith("0x")

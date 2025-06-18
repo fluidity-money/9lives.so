@@ -18,7 +18,7 @@ import formatFusdc from "@/utils/formatFusdc";
 // const genevaFont = fs.readFileSync(path.resolve("./public/fonts/geneva-9.ttf"));
 
 async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
-  const provider = new ethers.JsonRpcProvider(config.chains.currentChain.rpc);
+  const provider = new ethers.JsonRpcProvider(config.destinationChain.rpc);
   const tradingContract = new ethers.Contract(
     tradingAddr,
     tradingAbi,

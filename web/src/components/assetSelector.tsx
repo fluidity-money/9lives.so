@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
-import { currentChain } from "../config/chains";
+import { destinationChain } from "../config/chains";
 import { Token } from "@/types";
 export default function AssetSelector({
   fromChain,
@@ -26,7 +26,7 @@ export default function AssetSelector({
   tokens?: Token[];
 }) {
   useEffect(() => {
-    if (fromChain !== currentChain.id && isSuccess && tokens) {
+    if (fromChain !== destinationChain.id && isSuccess && tokens) {
       setValue(tokens[0].address);
     }
   }, [fromChain, isSuccess, tokens, setValue]);

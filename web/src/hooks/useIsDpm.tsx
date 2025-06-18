@@ -1,5 +1,5 @@
 import tradingAbi from "@/config/abi/trading";
-import { currentChain } from "@/config/chains";
+import { destinationChain } from "@/config/chains";
 import thirdweb from "@/config/thirdweb";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -17,7 +17,7 @@ export default function useIsDpm(
       const tradingContract = getContract({
         abi: tradingAbi,
         address: tradingAddr,
-        chain: currentChain,
+        chain: destinationChain,
         client: thirdweb.client,
       });
       const isDpmTx = prepareContractCall({

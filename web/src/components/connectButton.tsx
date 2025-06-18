@@ -12,7 +12,7 @@ export default function ConnectButton() {
     <div className="flex items-center justify-center border-l-2 border-l-black">
       <ThirdWebButton
         client={appConfig.thirdweb.client}
-        chain={appConfig.chains.currentChain}
+        chains={Object.values(appConfig.chains)}
         appMetadata={appConfig.thirdweb.metadata}
         detailsModal={appConfig.thirdweb.detailsModal}
         wallets={appConfig.thirdweb.wallets}

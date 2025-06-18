@@ -11,8 +11,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
-import { convertQuoteToRoute } from "@/utils/lifi/convertToRoute";
-import { executeRouteSteps } from "@/utils/lifi/executeLifiQuote";
+import {
+  convertQuoteToRoute,
+  executeRoute,
+  getContractCallsQuote,
+} from "@lifi/sdk";
 
 const useBuyWithZaps = ({
   shareAddr,
@@ -103,43 +106,34 @@ const useBuyWithZaps = ({
           const calldata = await encode(transaction);
           console.log("calldata", calldata);
 
-          const url = "https://li.quest/v1/quote/contractCalls";
-          const options = {
-            method: "POST",
-            headers: {
-              accept: "application/json",
-              "content-type": "application/json",
-            },
-            body: JSON.stringify({
-              fromChain,
-              fromToken,
-              fromAddress: account.address,
-              toChain,
-              toToken,
-              toAmount,
-              contractCalls: [
-                {
-                  fromAmount: toAmount,
-                  fromTokenAddress: toToken,
-                  toContractAddress: transaction.to,
-                  toContractCallData: calldata,
-                  toContractGasLimit: 900000,
-                },
-              ],
-              integrator: "superposition",
-              // referrer: 'superposition',
-              // slippage: 0.005,
-              // fee: 0.01
-            }),
+          const contractCallsQuoteRequest = {
+            fromChain,
+            fromToken,
+            fromAddress: account.address!,
+            toChain,
+            toToken,
+            toAmount,
+            contractCalls: [
+              {
+                fromAmount: toAmount,
+                fromTokenAddress: toToken,
+                toContractAddress: config.contracts.buyHelper2.address,
+                toContractCallData: calldata,
+                toContractGasLimit: "900000",
+              },
+            ],
+            integrator: "superposition",
+            // referrer: 'superposition',
+            // slippage: 0.005,
+            // fee: 0.01
           };
-          const quoteResponse = await fetch(url, options);
-          const quote = await quoteResponse.json();
+          const quote = await getContractCallsQuote(contractCallsQuoteRequest);
           console.log("quote", quote);
 
           const route = convertQuoteToRoute(quote);
 
           console.log("route", route);
-          await executeRouteSteps(route, account);
+          await executeRoute(route);
 
           const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({

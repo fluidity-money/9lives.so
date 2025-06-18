@@ -35,7 +35,7 @@ export default function ActivityRow({
             {data.outcomeName}
           </p>
           <Link
-            href={`${config.chains.currentChain.blockExplorers![0].url}/tx/${data.txHash}`}
+            href={`${config.destinationChain.blockExplorers![0].url}/tx/${data.txHash}`}
             target="_blank"
           >
             <span className="font-geneva text-[10px] uppercase text-[#808080] underline">

@@ -14,7 +14,6 @@ import posthog from "posthog-js";
 import config from "@/config";
 import { hitUser, tagUser } from "@fluidity-money/snitch-client";
 import Bowser from "bowser";
-import { currentChain } from "@/config/chains";
 import { useUserStore } from "@/stores/userStore";
 import { grantedConsent } from "@/components/googleAnalytics";
 
@@ -116,7 +115,10 @@ export default function ContextInjector() {
                 key: "cookiesEnabled",
                 value: [String(navigator.cookieEnabled)],
               },
-              { key: "chainId", value: [currentChain?.id.toString()] },
+              {
+                key: "chainId",
+                value: [config.destinationChain?.id.toString()],
+              },
             ],
           });
           setTagSnitch(tag);

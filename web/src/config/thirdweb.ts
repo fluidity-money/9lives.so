@@ -1,8 +1,8 @@
 import z from "zod";
-import { createThirdwebClient } from "thirdweb";
+import { Chain, createThirdwebClient } from "thirdweb";
 import clientEnv from "./clientEnv";
 import appConfig from "./app";
-import { networkSchema, currentChain } from "./chains";
+import chains from "./chains";
 import { inAppWallet, createWallet } from "thirdweb/wallets";
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 const thirdwebClient = createThirdwebClient({
@@ -16,7 +16,6 @@ const thirdwebSchema = z.object({
     url: z.string().url(),
     logoUrl: z.string().url(),
   }),
-  chain: networkSchema,
   theme: z.literal("light"),
   detailsButton: z.object({
     displayBalanceToken: z.record(z.string()),
@@ -40,16 +39,7 @@ const thirdwebSchema = z.object({
     label: z.string(),
   }),
 });
-const wallets = [
-  inAppWallet({
-    smartAccount: {
-      chain: currentChain,
-      sponsorGas: true,
-    },
-  }),
-  createWallet("io.metamask"),
-  createWallet("io.rabby"),
-];
+const wallets = [createWallet("io.metamask"), createWallet("io.rabby")];
 const thirdwebValidation = thirdwebSchema.safeParse({
   metadata: {
     name: appConfig.metadata.title,
@@ -57,12 +47,11 @@ const thirdwebValidation = thirdwebSchema.safeParse({
     url: appConfig.metadata.metadataBase.href,
     logoUrl: appConfig.metadata.metadataBase.origin + "/images/logo.svg",
   },
-  chain: currentChain,
   wallets,
   theme: "light",
   detailsButton: {
     displayBalanceToken: {
-      [currentChain.id]: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
+      [chains.superposition.id]: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
     },
     style: {
       backgroundColor: "transparent",
@@ -78,7 +67,7 @@ const thirdwebValidation = thirdwebSchema.safeParse({
   detailsModal: {
     payOptions: {
       prefillBuy: {
-        chain: currentChain,
+        chain: chains.superposition,
         token: {
           symbol: "USDC",
           address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
@@ -128,7 +117,7 @@ if (!thirdwebValidation.success) {
 }
 const thirdweb = {
   ...(thirdwebValidation.data as ThirdwebSchemaType & {
-    chain: typeof currentChain;
+    chain: Chain;
     wallets: typeof wallets;
   }),
   client: thirdwebClient,

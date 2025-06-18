@@ -102,7 +102,7 @@ export default function ProposeOutcome({
         <div className="flex items-center gap-1 bg-9green px-1 py-0.5">
           <Image src={LinkIcon} alt="" width={14} />
           <Link
-            href={`${config.chains.currentChain.blockExplorers![0].url}/tx/${txHash}`}
+            href={`${config.destinationChain.blockExplorers![0].url}/tx/${txHash}`}
             className="font-geneva text-xs uppercase text-9black underline"
           >
             Tx Hash:{txHash!.slice(0, 6)}...{txHash!.slice(-6)}

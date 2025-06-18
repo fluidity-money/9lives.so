@@ -21,11 +21,9 @@ import ShadowCard from "../cardShadow";
 import ErrorInfo from "../themed/errorInfo";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
-import AssetSelector from "../assetSelector";
 import DownIcon from "#/icons/down-caret.svg";
 import useSell from "@/hooks/useSell";
 import ERC20Abi from "@/config/abi/erc20";
-import { currentChain } from "@/config/chains";
 import thirdweb from "@/config/thirdweb";
 import usePositions from "@/hooks/usePositions";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
@@ -129,7 +127,7 @@ export default function DetailSellAction({
         contract: getContract({
           abi: ERC20Abi,
           address: outcome.share.address,
-          chain: currentChain,
+          chain: config.destinationChain,
           client: thirdweb.client,
         }),
         method: "balanceOf",

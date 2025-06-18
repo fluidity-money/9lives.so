@@ -362,14 +362,14 @@ export default function DetailBuyAction({
                   From{" "}
                   <span className="underline">
                     {
-                      config.supportedCrossChains.find(
+                      Object.values(config.chains).find(
                         (chain) => chain.id === fromChain,
                       )?.name
                     }
                   </span>
                 </span>
                 <div className="flex items-center gap-1">
-                  {config.supportedCrossChains.map((chain) => (
+                  {Object.values(config.chains).map((chain) => (
                     <div
                       key={chain.id}
                       onClick={() => handleNetworkChange(chain.id)}
@@ -377,8 +377,8 @@ export default function DetailBuyAction({
                       className="cursor-pointer"
                     >
                       <Image
-                        alt={chain.name}
-                        src={chain.img}
+                        alt={chain.name ?? ""}
+                        src={chain.icon}
                         className={combineClass(
                           chain.id === fromChain
                             ? "border-2 border-9black"
