@@ -195,3 +195,46 @@ func TestStargateOFTReceived(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, wasRun)
 }
+
+func TestOnchainGm(t *testing.T) {
+	s := strings.NewReader(`{
+	"address": "0x8510ac40bea1b4261c0b08100f5bff186a00388c",
+	"blockHash": "0x5776b1559fb4e627855cd65f92a40ac616790d81cc78a690dc1ad3e353381690",
+	"blockNumber": "0x1cd01b",
+	"data": "0x",
+	"logIndex": "0x0",
+	"removed": false,
+	"topics": [
+		"0x9290e8f5ba7fa69269d601e86762855088f9a24d834db4d6b3e603d7a522e56a",
+		"0x00000000000000000000000078a2beebd9a01461662a56c397c74bd4356bd61b",
+		"0x0000000000000000000000000000000000000000000000000000000000000000"
+	],
+	"transactionHash": "0x97a44120cbd43d4a256ef656a94240ed43365144e3e088253f57e8202d45fb08",
+	"transactionIndex": "0x1"
+}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	_, err := handleLogCallback(
+		factoryAddr,
+		factoryAddr, // Actually the infra market
+		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
+		factoryAddr,
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "onchaingm_events_onchaingmevent", table, "table not equal")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}

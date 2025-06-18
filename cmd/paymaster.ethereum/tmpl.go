@@ -2,5 +2,6 @@ package main
 
 import "text/template"
 
-var Tmpl = `
+var LogIdsTmpl = `
+
 `

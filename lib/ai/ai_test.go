@@ -19,10 +19,11 @@ func TestRequestCategorySuggestions(t *testing.T) {
 	if fname == "" {
 		t.FailNow()
 	}
-	c, err := RequestCategorySuggestions(
+	c, err := RequestFromAi(
 		lambdaClient,
 		context.TODO(),
 		fname,
+		"categories",
 		"Will Bitcoin pass $100,000?",
 	)
 	assert.NoError(t, err)
