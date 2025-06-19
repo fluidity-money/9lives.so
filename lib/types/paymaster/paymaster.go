@@ -22,11 +22,11 @@ type Poll struct {
 	MaximumFee         events.Number   `json:"maximumFee"`
 	AmountToSpend      events.Number   `json:"amountToSepnd"`
 	MinimumBack        events.Number   `json:"minimumBack"`
+	Referrer           *events.Address `json:"referrer"`
+	Outcome            *events.Bytes   `json:"outcome"`
 	V                  uint8           `json:"v"`
 	R                  events.Bytes    `json:"r"`
 	S                  events.Bytes    `json:"s"`
-	Referrer           *events.Address `json:"referrer"`
-	Outcome            *events.Bytes   `json:"outcome"`
 	OriginatingChainId events.Number   `json:"originatingChainId"`
 	Nonce              events.Number   `json:"nonce"`
 }

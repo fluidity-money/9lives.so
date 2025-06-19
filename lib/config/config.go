@@ -12,6 +12,9 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/setup"
 )
 
+// DefaultChainId to use for all interactions.
+const DefaultChainId = 55244
+
 // C is configuration for each service, and globally.
 type C struct {
 	GethUrls                              []string
@@ -20,6 +23,7 @@ type C struct {
 	BeautyContestAddress, SarpAiAddress   string
 	LockupAddress, SarpAiSignallerAddress string
 	LifiDiamondAddress                    string
+	ChainId                               int
 }
 
 // Get config by querying environment variables.
@@ -73,6 +77,7 @@ func Get() C {
 		LockupAddress:          lockupAddr,
 		SarpAiSignallerAddress: sarpAiSignallerAddr,
 		LifiDiamondAddress:     lifiDiamondAddr,
+		ChainId:                DefaultChainId,
 	}
 }
 

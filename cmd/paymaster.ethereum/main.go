@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"fmt"
 	"log/slog"
-	"math/big"
 	"os"
 	"strconv"
 	"time"
@@ -16,6 +15,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/types/events"
+	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
 
 	_ "github.com/lib/pq"
@@ -107,24 +107,9 @@ L:
 			sleep(sleepSecs)
 			continue
 		}
-		operations := make([]Operation, 0, len(items))
+		operations := make([]crypto.PaymasterOperation, 0, len(items))
 		for _, x := range items {
-			operations = append(operations, Operation{
-				Owner:              addrToEthAddr(x.Owner),
-				OriginatingChainId: x.OriginatingChainId.Big(),
-				Nonce:              x.Nonce.Big(),
-				Deadline:           new(big.Int).SetInt64(int64(x.Deadline)),
-				PaymasterType:      x.Typ,
-				PermitR:            maybeBytesToBytes32(x.PermitR),
-				PermitS:            maybeBytesToBytes32(x.PermitS),
-				PermitV:            x.PermitV,
-				Market:             addrToEthAddr(x.Market),
-				MaximumFee:         x.MaximumFee.Big(),
-				AmountToSpend:      x.AmountToSpend.Big(),
-				MinimumBack:        x.MinimumBack.Big(),
-				Referrer:           maybeAddrToEthAddr(x.Referrer),
-				Outcome:            maybeBytesToBytes8(x.Outcome),
-			})
+			operations = append(operations, crypto.PollToPaymasterOperation(x))
 		}
 		// Now that we've packed the data, let's simulate the cumulative data
 		// here, and see if any transactions won't execute. If they won't, then
@@ -206,55 +191,6 @@ func logIds(db *gorm.DB, badIds, goodIds []int) {
 	// Generate the template that uses the function to take a id as having a failure.
 }
 
-func addrToEthAddr(x events.Address) ethCommon.Address {
-	return ethCommon.HexToAddress(x.String())
-}
-
-func maybeAddrToEthAddr(x *events.Address) ethCommon.Address {
-	if x == nil {
-		return ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
-	}
-	return addrToEthAddr(*x)
-}
-
-func bytesToBytes32(x events.Bytes) (b [32]byte) {
-	copy(b[:], x.Bytes())
-	return
-}
-
-func maybeBytesToBytes32(x *events.Bytes) (b [32]byte) {
-	if x == nil {
-		return
-	}
-	return bytesToBytes32(*x)
-}
-
-func bytesToBytes8(x events.Bytes) (b [8]byte) {
-	copy(b[:], x.Bytes())
-	return
-}
-
-func maybeBytesToBytes8(x *events.Bytes) (b [8]byte) {
-	if x == nil {
-		return
-	}
-	return bytesToBytes8(*x)
-}
-
 func sleep(secs int) {
 	time.Sleep(time.Duration(secs) * time.Second)
-}
-
-type Operation struct {
-	Owner                                  ethCommon.Address
-	OriginatingChainId, Nonce, Deadline    *big.Int
-	PaymasterType                          uint8
-	PermitR, PermitS                       [32]byte
-	PermitV                                uint8
-	Market                                 ethCommon.Address
-	MaximumFee, AmountToSpend, MinimumBack *big.Int
-	Referrer                               ethCommon.Address
-	Outcome                                [8]byte
-	V                                      uint8
-	R, S                                   [32]byte
 }

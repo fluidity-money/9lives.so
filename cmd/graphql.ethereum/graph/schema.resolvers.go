@@ -316,16 +316,12 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	if r.F.Is(features.FeatureShouldCheckPaymasterNonce) {
 		panic("unimplemented")
 	}
-	// Validate their signature.
-	if r.F.Is(features.FeatureShouldValidatePaymasterSig) {
-		panic("unimplemented")
-	}
 	var typ uint8
 	switch operation {
 	case model.PaymasterOperationMint:
 		typ = paymaster.PaymasterTypeMint
 	case model.PaymasterOperationSell:
-		typ = paymaster.PaymasterTypeSell
+		typ = paymaster.PaymasterTypeBurn
 	case model.PaymasterOperationAddLiquidity:
 		typ = paymaster.PaymasterTypeAddLiquidity
 	case model.PaymasterOperationRemoveLiquidity:
@@ -392,6 +388,32 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 			return nil, fmt.Errorf("outcome")
 		}
 		p.Outcome = outcome_
+	}
+	spnChainId := new(big.Int).SetInt64(int64(r.C.ChainId))
+	originatingChainId, ok := new(big.Int).SetString(originatingChainID, 16)
+	if !ok {
+		return nil, fmt.Errorf("chain id")
+	}
+	// Validate their signature.
+	if r.F.Is(features.FeatureShouldValidatePaymasterSig) {
+		owner, err := crypto.EcrecoverPaymasterOperation(
+			spnChainId,
+			originatingChainId,
+			r.PaymasterAddr,
+			crypto.PollToPaymasterOperation(p),
+		)
+		if err != nil {
+			slog.Error("Error verifying a signature", "op", p, "err", err)
+			return nil, fmt.Errorf("signature error")
+		}
+		if a := ethCommon.HexToAddress(p.Owner.String()); *owner != a {
+			slog.Error("Supplied signature different",
+				"owner", p.Owner,
+				"other address", a,
+				"err", err,
+			)
+			return nil, fmt.Errorf("owner addr")
+		}
 	}
 	if err := r.DB.Table("").Create(&p).Error; err != nil {
 		slog.Error("Error inserting new paymaster operation", "err", err)

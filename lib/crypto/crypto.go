@@ -7,6 +7,9 @@ import (
 	"math/big"
 	"sort"
 
+	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
+	"github.com/fluidity-money/9lives.so/lib/types/events"
+
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	ethMath "github.com/ethereum/go-ethereum/common/math"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
@@ -74,28 +77,49 @@ func GetMarketId(outcomes []Outcome) []byte {
 }
 
 type PaymasterOperation struct {
-	Owner, VerifyingContract                        ethCommon.Address
-	SpnChainId, OriginatingChainId, Nonce, Deadline *big.Int
-	Typ                                             uint8
-	Market                                          ethCommon.Address
-	MaximumFee, AmountToSpend, MinimumBack          *big.Int
-	Referrer                                        ethCommon.Address
-	Outcome                                         [8]byte
-	V                                               uint8
-	R, S                                            *big.Int
+	Owner                                  ethCommon.Address
+	OriginatingChainId, Nonce, Deadline    *big.Int
+	PaymasterType                          uint8
+	PermitR, PermitS                       [32]byte
+	PermitV                                uint8
+	Market                                 ethCommon.Address
+	MaximumFee, AmountToSpend, MinimumBack *big.Int
+	Referrer                               ethCommon.Address
+	Outcome                                [8]byte
+	V                                      uint8
+	R, S                                   [32]byte
 }
 
-func EcrecoverPaymasterOperation(op PaymasterOperation) (*ethCommon.Address, error) {
-	sig := make([]byte, 65)
-	op.R.FillBytes(sig[:32])
-	op.S.FillBytes(sig[32:64])
-	sig[64] = op.V
-	if len(sig) == 65 {
-		sig[64] -= 27
+func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
+	return PaymasterOperation{
+		Owner:              addrToEthAddr(x.Owner),
+		OriginatingChainId: x.OriginatingChainId.Big(),
+		Nonce:              x.Nonce.Big(),
+		Deadline:           new(big.Int).SetInt64(int64(x.Deadline)),
+		PaymasterType:      x.Typ,
+		PermitR:            maybeBytesToBytes32(x.PermitR),
+		PermitS:            maybeBytesToBytes32(x.PermitS),
+		PermitV:            x.PermitV,
+		Market:             addrToEthAddr(x.Market),
+		MaximumFee:         x.MaximumFee.Big(),
+		AmountToSpend:      x.AmountToSpend.Big(),
+		MinimumBack:        x.MinimumBack.Big(),
+		Referrer:           maybeAddrToEthAddr(x.Referrer),
+		Outcome:            maybeBytesToBytes8(x.Outcome),
+		V: x.V,
+		R: bytesToBytes32(x.R),
+		S: bytesToBytes32(x.S),
 	}
+}
+
+func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verifyingContract ethCommon.Address, op PaymasterOperation) (*ethCommon.Address, error) {
+	sig := make([]byte, 65)
+	copy(sig[:32], op.R[:])
+	copy(sig[32:64], op.S[:])
+	sig[64] = op.V - 27
 	// We set the chain id to be the originating chain so there are
 	// no issues involving warnings on the client side for the users.
-	chainId := ethMath.HexOrDecimal256(*op.OriginatingChainId)
+	chainId := ethMath.HexOrDecimal256(*originatingChainId)
 	typedData := ethApiTypes.TypedData{
 		Types: ethApiTypes.Types{
 			"EIP712Domain": {
@@ -120,15 +144,15 @@ func EcrecoverPaymasterOperation(op PaymasterOperation) (*ethCommon.Address, err
 		PrimaryType: "NineLivesPaymaster",
 		Domain: ethApiTypes.TypedDataDomain{
 			Name:              "NineLivesPaymaster",
-			Version:           op.SpnChainId.String(),
+			Version:           spnChainId.String(),
 			ChainId:           &chainId,
-			VerifyingContract: op.VerifyingContract.String(),
+			VerifyingContract: verifyingContract.String(),
 		},
 		Message: ethApiTypes.TypedDataMessage{
 			"owner":         op.Owner.String(),
 			"nonce":         op.Nonce,
 			"deadline":      op.Deadline,
-			"typ":           new(big.Int).SetInt64(int64(op.Typ)),
+			"typ":           new(big.Int).SetInt64(int64(op.PaymasterType)),
 			"market":        op.Market.String(),
 			"maximumFee":    op.MaximumFee,
 			"amountToSpend": op.AmountToSpend,
@@ -162,4 +186,39 @@ func EcrecoverPaymasterOperation(op PaymasterOperation) (*ethCommon.Address, err
 	}
 	addr := ethCrypto.PubkeyToAddress(*publicKey)
 	return &addr, nil
+}
+
+func maybeAddrToEthAddr(x *events.Address) ethCommon.Address {
+	if x == nil {
+		return ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	}
+	return addrToEthAddr(*x)
+}
+
+func addrToEthAddr(x events.Address) ethCommon.Address {
+	return ethCommon.HexToAddress(x.String())
+}
+
+func bytesToBytes32(x events.Bytes) (b [32]byte) {
+	copy(b[:], x.Bytes())
+	return
+}
+
+func maybeBytesToBytes32(x *events.Bytes) (b [32]byte) {
+	if x == nil {
+		return
+	}
+	return bytesToBytes32(*x)
+}
+
+func bytesToBytes8(x events.Bytes) (b [8]byte) {
+	copy(b[:], x.Bytes())
+	return
+}
+
+func maybeBytesToBytes8(x *events.Bytes) (b [8]byte) {
+	if x == nil {
+		return
+	}
+	return bytesToBytes8(*x)
 }
