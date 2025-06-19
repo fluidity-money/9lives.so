@@ -5,7 +5,7 @@ import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
 import { CampaignDetail, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
-import { useActiveAccount, useSwitchActiveWalletChain } from "thirdweb/react";
+import { useActiveAccount } from "thirdweb/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -99,7 +99,6 @@ export default function DetailBuyAction({
       fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
     },
   });
-  const switchChain = useSwitchActiveWalletChain();
   const supply = watch("supply");
   const fromChain = watch("fromChain");
   const fromToken = watch("fromToken");
