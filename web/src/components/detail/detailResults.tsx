@@ -55,7 +55,9 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
     data.investmentAmounts.find((ia) => ia.id === data.winner)?.usdc ?? 0;
   const winnerChance = (totalVolumeOfWinner / data.totalVolume) * 100;
   const avgPrice = data.totalVolume / totalSharesOfWinner;
-  const userReward = accountShares ? +accountShares * avgPrice : 0;
+  const userRewardDpm = accountShares ? +accountShares * avgPrice : 0;
+  const userRewardAmm = accountShares ? +accountShares : 0;
+  const reward = isDpm ? userRewardDpm : userRewardAmm;
   const rewardBreakdown = [
     {
       title: "Your Shares",
@@ -157,9 +159,7 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
         <div className="flex items-center justify-between">
           <span className="font-chicago uppercase">Claimable Rewards</span>
           <div className="flex items-center gap-1">
-            <span className="font-chicago text-2xl">
-              ${account ? userReward.toFixed(2) : "?"}
-            </span>
+            <span className="font-chicago text-2xl">${+reward.toFixed(2)}</span>
             <Image src={SparkleImg} alt="" width={23} className="h-auto" />
           </div>
         </div>

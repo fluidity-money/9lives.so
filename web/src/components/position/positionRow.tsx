@@ -106,7 +106,9 @@ export default function PositionRow({
             campaign.investmentAmounts.find((i) => i?.id === data.id)?.share ??
             0;
           const avgPrice = campaign.totalVolume / totalSharesOfWinner;
-          const reward = data.balance ? +data.balance * avgPrice : 0;
+          const rewardDpm = data.balance ? +data.balance * avgPrice : 0;
+          const rewardAmm = data.balance ? +data.balance : 0;
+          const reward = isDpm ? rewardDpm : rewardAmm;
           setReward(reward);
           addPosition({
             outcomeId: data.id,
