@@ -120,6 +120,7 @@ func main() {
 			InfraMarketAddr:    ethCommon.HexToAddress(config.InfraMarketAddress),
 			BeautyContestAddr:  ethCommon.HexToAddress(config.BeautyContestAddress),
 			SarpAiAddr:         ethCommon.HexToAddress(config.SarpAiAddress),
+			PaymasterAddr: ethCommon.HexToAddress(config.PaymasterAddress),
 			ChangelogItems:     Changelog[:min(ChangelogLen, len(Changelog))],
 			S3UploadBucketName: S3UploadBucketName,
 			S3UploadManager: s3manager.NewUploader(s3Client, func(u *s3manager.Uploader) {

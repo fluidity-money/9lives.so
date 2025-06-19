@@ -316,6 +316,10 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	if r.F.Is(features.FeatureShouldCheckPaymasterNonce) {
 		panic("unimplemented")
 	}
+	// Check that the market exists according to our internal database.
+	if r.F.Is(features.FeatureShouldValidateMarketExistence) {
+		panic("unimplemented")
+	}
 	var typ uint8
 	switch operation {
 	case model.PaymasterOperationMint:

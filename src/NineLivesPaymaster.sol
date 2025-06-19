@@ -47,9 +47,22 @@ interface IERC20 {
     ) external;
 
     function approve(address spender, uint256 amount) external;
+
+    function transferFrom(address owner, address spender, uint256 amount) external;
+
+    function transfer(address owner, uint256 amount) external;
 }
 
 contract NineLivesPaymaster {
+    event PaymasterPaidFor(
+        address indexed owner,
+        uint256 indexed maximumFee,
+        uint256 indexed amountToSpend,
+        uint256 feeTaken,
+        address referrer,
+        bytes8 outcome
+    );
+
     /// @dev NAME here is a concatenation of the chain id as well! We don't
     /// intend to deploy this anywhere else, but we want cross-chain signing
     /// functionality, so we reuse the domain separator to discover nonces
@@ -86,8 +99,8 @@ contract NineLivesPaymaster {
                 abi.encode(
                     keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
                     keccak256(bytes(NAME)),
-                    INITIAL_CHAIN_ID,
-                    abi.encode(_chainId),
+                    abi.encode(INITIAL_CHAIN_ID),
+                    _chainId,
                     address(this)
                 )
             );
@@ -122,10 +135,12 @@ contract NineLivesPaymaster {
         );
     }
 
-    function execute(Operation calldata op) public returns (bool) {
-        if (op.deadline < block.timestamp) return false;
+    function execute(Operation calldata op) public returns (uint256, bool) {
+        if (op.deadline < block.timestamp)
+            return (op.maximumFee, false);
         bytes32 domain = NEW_DOMAIN_SEPARATOR(op.originatingChainId);
-        if (op.owner != recoverAddress(domain, op)) return false;
+        if (op.owner != recoverAddress(domain, op))
+            return (op.maximumFee, false);
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
         if (op.permitV != 0)
@@ -140,6 +155,7 @@ contract NineLivesPaymaster {
             );
         address market = address(op.market);
         if (op.typ == PaymasterType.MINT) {
+            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(op.market), op.amountToSpend);
             (bool rc,) = market.call(abi.encodeWithSelector(
                 INineLivesTrading.mint8A059B6E.selector,
@@ -147,8 +163,9 @@ contract NineLivesPaymaster {
                 op.referrer,
                 op.owner
             ));
-            return rc;
+            return (op.maximumFee, rc);
         } else if (op.typ == PaymasterType.BURN) {
+            if (op.minimumBack < op.maximumFee) return (op.maximumFee, false);
             (bool rc,) = market.call(abi.encodeWithSelector(
                 INineLivesTrading.burn854CC96E.selector,
                 op.outcome,
@@ -156,12 +173,12 @@ contract NineLivesPaymaster {
                 true,
                 op.minimumBack,
                 op.referrer,
-                op.owner
+                msg.sender
             ));
-            return rc;
+            return (op.maximumFee, rc);
         } else {
             // TODO
-            return false;
+            return (0, false);
         }
     }
 
@@ -169,8 +186,22 @@ contract NineLivesPaymaster {
         Operation[] calldata operations
     ) external returns (bool[] memory statuses) {
         statuses = new bool[](operations.length);
+        uint256 acc;
         for (uint i = 0; i < operations.length; ++i) {
-            statuses[i] = execute(operations[i]);
+            (uint256 amt, bool rd) = execute(operations[i]);
+            statuses[i] = rd;
+            if (rd) {
+                emit PaymasterPaidFor(
+                    operations[i].owner,
+                    operations[i].maximumFee,
+                    operations[i].amountToSpend,
+                    operations[i].maximumFee,
+                    operations[i].referrer,
+                    operations[i].outcome
+                );
+            }
+            acc += amt;
         }
+        USDC.transfer(msg.sender, acc);
     }
 }

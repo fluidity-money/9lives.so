@@ -146,6 +146,7 @@ The error table lives in ERRORS.md.
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
 | Claimant helper               | `0x00FA0a5d3b25Da03ef651045d42B9F7137486b03` |
+| Paymaster                     | `0xFe6b36DDb8e72EC5F1c1dC9da99075edCC9833e8` |
 
 ### Superposition testnet
 

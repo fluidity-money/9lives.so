@@ -33,4 +33,7 @@ const (
 
 	// FeatureShouldValidatePaymasterSig before accepting calldata to the graph for Paymaster.
 	FeatureShouldValidatePaymasterSig = "paymaster should check sig"
+
+	// FeatureShouldValidateMarketExistence before accepting a request to the Paymaster.
+	FeatureShouldValidateMarketExistence = "paymaster should check trading addr"
 )

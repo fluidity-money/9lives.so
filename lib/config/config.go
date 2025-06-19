@@ -22,7 +22,7 @@ type C struct {
 	FactoryAddress, InfraMarketAddress    string
 	BeautyContestAddress, SarpAiAddress   string
 	LockupAddress, SarpAiSignallerAddress string
-	LifiDiamondAddress                    string
+	LifiDiamondAddress, PaymasterAddress   string
 	ChainId                               int
 }
 
@@ -67,6 +67,10 @@ func Get() C {
 	if lifiDiamondAddr == "" {
 		setup.Exitf("SPN_LIFI_DIAMOND_ADDR not set")
 	}
+	paymasterAddr := strings.ToLower(os.Getenv("SPN_PAYMASTER_ADDR"))
+	if paymasterAddr == "" {
+		setup.Exitf("SPN_PAYMASTER_ADDR not set")
+	}
 	return C{
 		GethUrls:               gethUrls,
 		TimescaleUrls:          timescaleUrls,
@@ -77,6 +81,7 @@ func Get() C {
 		LockupAddress:          lockupAddr,
 		SarpAiSignallerAddress: sarpAiSignallerAddr,
 		LifiDiamondAddress:     lifiDiamondAddr,
+		PaymasterAddress:       paymasterAddr,
 		ChainId:                DefaultChainId,
 	}
 }
