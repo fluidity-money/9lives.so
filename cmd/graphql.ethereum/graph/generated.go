@@ -139,7 +139,7 @@ type ComplexityRoot struct {
 		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v string) int
 		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
 		GenReferrer       func(childComplexity int, walletAddress string, code string) int
-		RequestPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline int, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, rr string, s string, v int) int
+		RequestPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) int
 		RevealCommitment  func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string) int
 		RevealCommitment2 func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) int
 		SynchProfile      func(childComplexity int, walletAddress string, email string) int
@@ -239,7 +239,7 @@ type ClaimResolver interface {
 	CreatedAt(ctx context.Context, obj *types.Claim) (int, error)
 }
 type MutationResolver interface {
-	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, rr string, s string, v int) (*string, error)
+	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) (*string, error)
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
@@ -731,7 +731,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.RequestPaymaster(childComplexity, args["ticket"].(*int), args["type"].(model.Modification), args["nonce"].(string), args["deadline"].(int), args["permitV"].(int), args["permitR"].(string), args["permitS"].(string), args["operation"].(model.PaymasterOperation), args["owner"].(string), args["outcome"].(*string), args["referrer"].(*string), args["market"].(string), args["maximumFee"].(string), args["amountToSpend"].(string), args["minimumBack"].(string), args["originatingChainId"].(string), args["rr"].(string), args["s"].(string), args["v"].(int)), true
+		return e.complexity.Mutation.RequestPaymaster(childComplexity, args["ticket"].(*int), args["type"].(model.Modification), args["nonce"].(string), args["deadline"].(string), args["permitV"].(int), args["permitR"].(string), args["permitS"].(string), args["operation"].(model.PaymasterOperation), args["owner"].(string), args["market"].(string), args["maximumFee"].(string), args["amountToSpend"].(string), args["minimumBack"].(string), args["rr"].(string), args["s"].(string), args["v"].(int)), true
 
 	case "Mutation.revealCommitment":
 		if e.complexity.Mutation.RevealCommitment == nil {
@@ -1422,10 +1422,10 @@ func (ec *executionContext) field_Mutation_requestPaymaster_args(ctx context.Con
 		}
 	}
 	args["nonce"] = arg2
-	var arg3 int
+	var arg3 string
 	if tmp, ok := rawArgs["deadline"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deadline"))
-		arg3, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg3, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1476,96 +1476,69 @@ func (ec *executionContext) field_Mutation_requestPaymaster_args(ctx context.Con
 		}
 	}
 	args["owner"] = arg8
-	var arg9 *string
-	if tmp, ok := rawArgs["outcome"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outcome"))
-		arg9, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["outcome"] = arg9
-	var arg10 *string
-	if tmp, ok := rawArgs["referrer"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("referrer"))
-		arg10, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["referrer"] = arg10
-	var arg11 string
+	var arg9 string
 	if tmp, ok := rawArgs["market"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("market"))
+		arg9, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["market"] = arg9
+	var arg10 string
+	if tmp, ok := rawArgs["maximumFee"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maximumFee"))
+		arg10, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["maximumFee"] = arg10
+	var arg11 string
+	if tmp, ok := rawArgs["amountToSpend"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amountToSpend"))
 		arg11, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["market"] = arg11
+	args["amountToSpend"] = arg11
 	var arg12 string
-	if tmp, ok := rawArgs["maximumFee"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maximumFee"))
+	if tmp, ok := rawArgs["minimumBack"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("minimumBack"))
 		arg12, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["maximumFee"] = arg12
+	args["minimumBack"] = arg12
 	var arg13 string
-	if tmp, ok := rawArgs["amountToSpend"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amountToSpend"))
+	if tmp, ok := rawArgs["rr"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rr"))
 		arg13, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["amountToSpend"] = arg13
+	args["rr"] = arg13
 	var arg14 string
-	if tmp, ok := rawArgs["minimumBack"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("minimumBack"))
+	if tmp, ok := rawArgs["s"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
 		arg14, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["minimumBack"] = arg14
-	var arg15 string
-	if tmp, ok := rawArgs["originatingChainId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("originatingChainId"))
-		arg15, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["originatingChainId"] = arg15
-	var arg16 string
-	if tmp, ok := rawArgs["rr"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rr"))
-		arg16, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["rr"] = arg16
-	var arg17 string
-	if tmp, ok := rawArgs["s"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
-		arg17, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["s"] = arg17
-	var arg18 int
+	args["s"] = arg14
+	var arg15 int
 	if tmp, ok := rawArgs["v"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
-		arg18, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg15, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["v"] = arg18
+	args["v"] = arg15
 	return args, nil
 }
 
@@ -4631,7 +4604,7 @@ func (ec *executionContext) _Mutation_requestPaymaster(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().RequestPaymaster(rctx, fc.Args["ticket"].(*int), fc.Args["type"].(model.Modification), fc.Args["nonce"].(string), fc.Args["deadline"].(int), fc.Args["permitV"].(int), fc.Args["permitR"].(string), fc.Args["permitS"].(string), fc.Args["operation"].(model.PaymasterOperation), fc.Args["owner"].(string), fc.Args["outcome"].(*string), fc.Args["referrer"].(*string), fc.Args["market"].(string), fc.Args["maximumFee"].(string), fc.Args["amountToSpend"].(string), fc.Args["minimumBack"].(string), fc.Args["originatingChainId"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
+		return ec.resolvers.Mutation().RequestPaymaster(rctx, fc.Args["ticket"].(*int), fc.Args["type"].(model.Modification), fc.Args["nonce"].(string), fc.Args["deadline"].(string), fc.Args["permitV"].(int), fc.Args["permitR"].(string), fc.Args["permitS"].(string), fc.Args["operation"].(model.PaymasterOperation), fc.Args["owner"].(string), fc.Args["market"].(string), fc.Args["maximumFee"].(string), fc.Args["amountToSpend"].(string), fc.Args["minimumBack"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
