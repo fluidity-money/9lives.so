@@ -68,29 +68,29 @@ const superposition = defineChain({
   ],
   icon: SPN,
 });
-const apechain = defineChain({
-  name: "ApeChain",
-  id: 33139,
-  nativeCurrency: {
-    name: "ApeCoin",
-    symbol: "APE",
-    decimals: 18,
-  },
-  rpc: "https://apechain.calderachain.xyz/http",
-  blockExplorers: [
-    {
-      name: "ApeScan",
-      url: "https://apechain.calderaexplorer.xyz",
-    },
-  ],
-  icon: APE,
-});
+// const apechain = defineChain({
+//   name: "ApeChain",
+//   id: 33139,
+//   nativeCurrency: {
+//     name: "ApeCoin",
+//     symbol: "APE",
+//     decimals: 18,
+//   },
+//   rpc: "https://apechain.calderachain.xyz/http",
+//   blockExplorers: [
+//     {
+//       name: "ApeScan",
+//       url: "https://apechain.calderaexplorer.xyz",
+//     },
+//   ],
+//   icon: APE,
+// });
 
 const chainList = {
   superposition: { ...superposition, icon: SPN },
   arbitrum: { ...arbitrum, icon: ARB },
   ethereum: { ...ethereum, icon: ETH },
-  apechain: { ...apechain, icon: APE },
+  // apechain: { ...apechain, icon: APE },
   bsc: { ...bsc, icon: BSC },
   avalanche: { ...avalanche, icon: AVAX },
   optimism: { ...optimism, icon: OP },
