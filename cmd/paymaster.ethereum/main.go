@@ -26,9 +26,9 @@ import (
 
 	"github.com/ethereum/go-ethereum"
 	ethAbi "github.com/ethereum/go-ethereum/accounts/abi"
-	ethCrypto "github.com/ethereum/go-ethereum/crypto"
 	ethAbiBind "github.com/ethereum/go-ethereum/accounts/abi/bind/v2"
 	ethCommon "github.com/ethereum/go-ethereum/common"
+	ethCrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -36,7 +36,7 @@ const (
 	EnvPrivateKey       = "SPN_SUPERPOSITION_KEY"
 	EnvPaymasterAddr    = "SPN_PAYMASTER_ADDR"
 	EnvPollLifeTimeSecs = "SPN_POLL_LIFE_TIME_SECS"
-	EnvSleepTimeSecs = "SPN_SLEEP_SECS"
+	EnvSleepTimeSecs    = "SPN_SLEEP_SECS"
 )
 
 //go:embed abi.json
@@ -163,7 +163,7 @@ L:
 			x := operations[len(operations)-len(badIds)]
 			operations[i] = x
 		}
-		goodIds := make([]int, 0, len(items) - len(badIds))
+		goodIds := make([]int, 0, len(items)-len(badIds))
 		for _, item := range items {
 			goodIds = append(goodIds, item.ID)
 		}

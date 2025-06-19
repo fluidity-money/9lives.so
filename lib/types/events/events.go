@@ -93,9 +93,17 @@ func (a *Address) UnmarshalJSON(b []byte) error {
 func NumberFromBig(x *big.Int) Number {
 	return Number{x}
 }
+func NumberFromString(s string) (*Number, error) {
+	i, ok := new(big.Int).SetString(s, 10)
+	if !ok {
+		return nil, fmt.Errorf("not number: %v", s)
+	}
+	return &Number{i}, nil
+}
 func (n Number) String() string {
 	return n.i.String()
 }
+
 // Big underlying number without a copy.
 func (n Number) Big() *big.Int {
 	return n.i

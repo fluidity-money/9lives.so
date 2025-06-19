@@ -24,6 +24,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
 	commitment_reveal "github.com/fluidity-money/9lives.so/lib/types/commitment-reveal"
 	"github.com/fluidity-money/9lives.so/lib/types/events"
+	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/types/referrer"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -301,8 +302,101 @@ func (r *claimResolver) CreatedAt(ctx context.Context, obj *types.Claim) (int, e
 }
 
 // RequestPaymaster is the resolver for the requestPaymaster field.
-func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) (*string, error) {
-	panic(fmt.Errorf("not implemented: RequestPaymaster - requestPaymaster"))
+func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, rr string, s string, v int) (*string, error) {
+	// Verify the user has the amount to spend that they're requesting.
+	if r.F.Is(features.FeatureShouldCheckErc20Balance) {
+		panic("unimplemented")
+	}
+	// Check that the maximum fee is above the limit, or estimate the
+	// cost if we have the feature enabled.
+	if r.F.Is(features.FeatureShouldPriceCalldata) {
+		panic("unimplemented")
+	}
+	// Check their nonce is the latest.
+	if r.F.Is(features.FeatureShouldCheckPaymasterNonce) {
+		panic("unimplemented")
+	}
+	// Validate their signature.
+	if r.F.Is(features.FeatureShouldValidatePaymasterSig) {
+		panic("unimplemented")
+	}
+	var typ uint8
+	switch operation {
+	case model.PaymasterOperationMint:
+		typ = 0
+	case model.PaymasterOperationSell:
+		typ = 1
+	case model.PaymasterOperationAddLiquidity:
+		typ = 2
+	case model.PaymasterOperationRemoveLiquidity:
+		typ = 3
+	default:
+		return nil, fmt.Errorf("bad type")
+	}
+	p := paymaster.Poll{
+		Deadline: deadline,
+		Typ:      typ,
+		PermitV:  uint8(permitV),
+		V:        uint8(v),
+	}
+	owner_, err := events.MaybeAddressFromString(owner)
+	if err != nil {
+		return nil, fmt.Errorf("owner")
+	}
+	p.Owner = *owner_
+	if permitR != "" {
+		if p.PermitR, err = events.BytesFromHex(permitR); err != nil {
+			return nil, fmt.Errorf("permitr")
+		}
+	}
+	if permitS != "" {
+		if p.PermitS, err = events.BytesFromHex(permitS); err != nil {
+			return nil, fmt.Errorf("permits")
+		}
+	}
+	market_, err := events.MaybeAddressFromString(market)
+	if err != nil {
+		return nil, fmt.Errorf("market")
+	}
+	p.Market = *market_
+	maximumFee_, err := events.NumberFromString(maximumFee)
+	if err != nil {
+		return nil, fmt.Errorf("maximum fee")
+	}
+	p.MaximumFee = *maximumFee_
+	amountToSpend_, err := events.NumberFromString(amountToSpend)
+	if err != nil {
+		return nil, fmt.Errorf("amount to spend")
+	}
+	p.AmountToSpend = *amountToSpend_
+	rr_, err := events.BytesFromHex(rr)
+	if err != nil {
+		return nil, fmt.Errorf("r value")
+	}
+	p.R = *rr_
+	s_, err := events.BytesFromHex(s)
+	if err != nil {
+		return nil, fmt.Errorf("s value")
+	}
+	p.S = *s_
+	if referrer != nil {
+		referrer_, err := events.MaybeAddressFromString(*referrer)
+		if err != nil {
+			return nil, fmt.Errorf("referrer")
+		}
+		p.Referrer = referrer_
+	}
+	if outcome != nil {
+		outcome_, err := events.BytesFromHex(*outcome)
+		if err != nil {
+			return nil, fmt.Errorf("outcome")
+		}
+		p.Outcome = outcome_
+	}
+	if err := r.DB.Table("").Create(&p).Error; err != nil {
+		slog.Error("Error inserting new paymaster operation", "err", err)
+	}
+	return nil, nil
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
@@ -1263,17 +1357,17 @@ func (r *queryResolver) FeaturedCampaign(ctx context.Context, limit *int) ([]typ
 func (r *queryResolver) UserLPs(ctx context.Context, address string) ([]types.LP, error) {
 	var lps []types.LP
 	err := r.DB.Raw(`
-	SELECT 
+	SELECT
     COALESCE(added.total_added, 0) - COALESCE(removed.total_removed, 0) AS liquidity,
     nc.*
-	FROM 
+	FROM
 		(
 			SELECT emitter_addr, SUM(fusdc_amt) AS total_added
 			FROM ninelives_events_liquidity_added
 			WHERE sender = ?
 			GROUP BY emitter_addr
 		) AS added
-	LEFT JOIN 
+	LEFT JOIN
 		(
 			SELECT emitter_addr, SUM(fusdc_amt) AS total_removed
 			FROM ninelives_events_liquidity_removed
@@ -1281,8 +1375,8 @@ func (r *queryResolver) UserLPs(ctx context.Context, address string) ([]types.LP
 			GROUP BY emitter_addr
 		) AS removed
     ON added.emitter_addr = removed.emitter_addr
-	LEFT JOIN 
-    ninelives_campaigns_1 AS nc 
+	LEFT JOIN
+    ninelives_campaigns_1 AS nc
     ON nc.content->>'poolAddress' = added.emitter_addr
 	`, address, address).Scan(&lps).Error
 	if err != nil {
@@ -1339,13 +1433,3 @@ type mutationResolver struct{ *Resolver }
 type positionResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type settingsResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) RequsetPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, market string, maximumFee string, amountToSpend string, minimumBack string, rr string, s string, v int) (*string, error) {
-	panic(fmt.Errorf("not implemented: RequsetPaymaster - requsetPaymaster"))
-}

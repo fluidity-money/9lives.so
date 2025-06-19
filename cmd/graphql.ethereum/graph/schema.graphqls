@@ -190,7 +190,7 @@ type Mutation {
       """
       Execution deadline of the Paymaster operation.
       """
-      deadline: String!,
+      deadline: Int!,
 
       """
       Arguments for this will be reconstructed based on the arguments to the Paymaster.
@@ -210,6 +210,16 @@ type Mutation {
       Owner to do this operation for (the sender's address).
       """
       owner: String!,
+
+      """
+      Outcome to use, if any.
+      """
+      outcome: String,
+
+      """
+      Referrer of the user (if any).
+      """
+      referrer: String
 
       """
       Market to perform this operation for.
@@ -233,6 +243,11 @@ type Mutation {
       selling, or USDC if buying.
       """
       minimumBack: String!,
+
+      """
+      The originating chain ID for this signature.
+      """
+      originatingChainId: String!,
 
       rr: String!,
 

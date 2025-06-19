@@ -24,4 +24,13 @@ const (
 	// FeatureShouldPriceCalldata to test whether the maximum fee is accurate
 	// before submittting with Paymaster.
 	FeatureShouldPriceCalldata = "paymaster should price"
+
+	// FeatureShouldCheckErc20Balance for Paymaster operation.
+	FeatureShouldCheckErc20Balance = "paymaster graphql should check erc20"
+
+	// FeatureShouldCheckPaymasterNonce before accepting calldata for the Paymaster.
+	FeatureShouldCheckPaymasterNonce = "paymaster should check nonce"
+
+	// FeatureShouldValidatePaymasterSig before accepting calldata to the graph for Paymaster.
+	FeatureShouldValidatePaymasterSig = "paymaster should check sig"
 )
