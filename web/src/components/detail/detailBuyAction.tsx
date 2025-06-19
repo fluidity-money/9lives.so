@@ -157,7 +157,7 @@ export default function DetailBuyAction({
   }: FormData) {
     try {
       setIsMinting(true);
-      if (enabledLifiZaps) {
+      if (enabledLifiZaps && fromToken != toToken) {
         await buyWithZaps(
           account!,
           supply,
