@@ -342,15 +342,8 @@ export default function DetailBuyAction({
                 max={Number.MAX_SAFE_INTEGER}
                 value={supply}
                 placeholder="0"
+                step="any"
                 onFocus={handleFocus}
-                onChange={(e) => {
-                  const supply =
-                    Number(e.target.value) >= Number.MAX_SAFE_INTEGER
-                      ? Number.MAX_SAFE_INTEGER
-                      : Number(e.target.value);
-                  setValue("supply", supply);
-                  if (supply > 0) clearErrors();
-                }}
                 className={combineClass(
                   "w-full flex-1 text-center",
                   errors.supply && "border-2 border-red-500",

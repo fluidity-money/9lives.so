@@ -250,6 +250,7 @@ export default function DetailSellAction({
                 {...register("shareToBurn")}
                 type="number"
                 min={0}
+                step="any"
                 max={Number.MAX_SAFE_INTEGER}
                 onFocus={handleFocus}
                 className={combineClass(
