@@ -13,13 +13,6 @@ import (
 	ethApiTypes "github.com/ethereum/go-ethereum/signer/core/apitypes"
 )
 
-const (
-	PaymasterTypeMint = uint8(iota)
-	PaymasterTypeBurn
-	PaymasterTypeAddLiquidity
-	PaymasterTypeRemoveLiquidity
-)
-
 type Outcome struct {
 	Name string
 	Seed uint64
@@ -81,11 +74,9 @@ func GetMarketId(outcomes []Outcome) []byte {
 }
 
 type PaymasterOperation struct {
-	Owner, Spender                                  ethCommon.Address
+	Owner, VerifyingContract                        ethCommon.Address
 	SpnChainId, OriginatingChainId, Nonce, Deadline *big.Int
 	Typ                                             uint8
-	PermitR, PermitS                                *big.Int
-	PermitV                                         uint8
 	Market                                          ethCommon.Address
 	MaximumFee, AmountToSpend, MinimumBack          *big.Int
 	Referrer                                        ethCommon.Address
@@ -102,7 +93,9 @@ func EcrecoverPaymasterOperation(op PaymasterOperation) (*ethCommon.Address, err
 	if len(sig) == 65 {
 		sig[64] -= 27
 	}
-	chainId := ethMath.HexOrDecimal256(*op.SpnChainId)
+	// We set the chain id to be the originating chain so there are
+	// no issues involving warnings on the client side for the users.
+	chainId := ethMath.HexOrDecimal256(*op.OriginatingChainId)
 	typedData := ethApiTypes.TypedData{
 		Types: ethApiTypes.Types{
 			"EIP712Domain": {
@@ -113,7 +106,6 @@ func EcrecoverPaymasterOperation(op PaymasterOperation) (*ethCommon.Address, err
 			},
 			"NineLivesPaymaster": {
 				{Name: "owner", Type: "address"},
-				{Name: "spender", Type: "address"},
 				{Name: "nonce", Type: "uint256"},
 				{Name: "deadline", Type: "uint256"},
 				{Name: "typ", Type: "uint8"},
@@ -128,16 +120,16 @@ func EcrecoverPaymasterOperation(op PaymasterOperation) (*ethCommon.Address, err
 		PrimaryType: "NineLivesPaymaster",
 		Domain: ethApiTypes.TypedDataDomain{
 			Name:              "NineLivesPaymaster",
-			Version:           op.OriginatingChainId.String(),
+			Version:           op.SpnChainId.String(),
 			ChainId:           &chainId,
-			VerifyingContract: op.Spender.String(),
+			VerifyingContract: op.VerifyingContract.String(),
 		},
 		Message: ethApiTypes.TypedDataMessage{
 			"owner":         op.Owner.String(),
 			"nonce":         op.Nonce,
 			"deadline":      op.Deadline,
-			"typ":           op.Typ,
-			"market":        op.Market,
+			"typ":           new(big.Int).SetInt64(int64(op.Typ)),
+			"market":        op.Market.String(),
 			"maximumFee":    op.MaximumFee,
 			"amountToSpend": op.AmountToSpend,
 			"minimumBack":   op.MinimumBack,

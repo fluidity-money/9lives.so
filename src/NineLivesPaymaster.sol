@@ -72,7 +72,7 @@ contract NineLivesPaymaster {
         );
     }
 
-    function DOMAIN_SEPARATOR(uint256 _chainId) public returns (bytes32 sep) {
+    function NEW_DOMAIN_SEPARATOR(uint256 _chainId) public returns (bytes32 sep) {
         sep = domainSeparators[_chainId];
         if (sep == bytes32(0)) {
             domainSeparators[_chainId] = computeDomainSeparator(_chainId);
@@ -86,8 +86,8 @@ contract NineLivesPaymaster {
                 abi.encode(
                     keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
                     keccak256(bytes(NAME)),
-                    abi.encode(_chainId),
                     INITIAL_CHAIN_ID,
+                    abi.encode(_chainId),
                     address(this)
                 )
             );
@@ -124,7 +124,7 @@ contract NineLivesPaymaster {
 
     function execute(Operation calldata op) public returns (bool) {
         if (op.deadline < block.timestamp) return false;
-        bytes32 domain = DOMAIN_SEPARATOR(op.originatingChainId);
+        bytes32 domain = NEW_DOMAIN_SEPARATOR(op.originatingChainId);
         if (op.owner != recoverAddress(domain, op)) return false;
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;

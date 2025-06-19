@@ -323,13 +323,13 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	var typ uint8
 	switch operation {
 	case model.PaymasterOperationMint:
-		typ = 0
+		typ = paymaster.PaymasterTypeMint
 	case model.PaymasterOperationSell:
-		typ = 1
+		typ = paymaster.PaymasterTypeSell
 	case model.PaymasterOperationAddLiquidity:
-		typ = 2
+		typ = paymaster.PaymasterTypeAddLiquidity
 	case model.PaymasterOperationRemoveLiquidity:
-		typ = 3
+		typ = paymaster.PaymasterTypeAddLiquidity
 	default:
 		return nil, fmt.Errorf("bad type")
 	}

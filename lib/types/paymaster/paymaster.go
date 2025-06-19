@@ -2,6 +2,13 @@ package paymaster
 
 import "github.com/fluidity-money/9lives.so/lib/types/events"
 
+const (
+	PaymasterTypeMint = uint8(iota)
+	PaymasterTypeBurn
+	PaymasterTypeAddLiquidity
+	PaymasterTypeRemoveLiquidity
+)
+
 type Poll struct {
 	ID       int            `gorm:"primaryKey"`
 	Owner    events.Address `json:"owner"`
