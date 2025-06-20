@@ -40,10 +40,10 @@ func TestEcrecoverPaymasterOperation(t *testing.T) {
 	var outcome [8]byte
 	copy(outcome[:], o)
 	var R, S [32]byte
-	r, ok := new(big.Int).SetString("ce9998f2caf2ea6aa710a260fa3fdc62300e1110bdd215411c84bcc458f11d65", 16)
+	r, ok := new(big.Int).SetString("237856b47873650d4d31c405dae33fb851ec773b1716fbb93e5a4ba22f48554e", 16)
 	assert.True(t, ok)
 	r.FillBytes(R[:])
-	s, ok := new(big.Int).SetString("46f7280619c325a7bd719f6f591ee718e47c1000be2ad588b6322c113cbdf090", 16)
+	s, ok := new(big.Int).SetString("6f024a5f55b6733783a49ce27e8be04f8ef0e768a4e2f83b68224174e64abc5d", 16)
 	assert.True(t, ok)
 	s.FillBytes(S[:])
 	spnChainId := new(big.Int).SetInt64(55244)
@@ -51,19 +51,19 @@ func TestEcrecoverPaymasterOperation(t *testing.T) {
 	addr, err := EcrecoverPaymasterOperation(
 		spnChainId,
 		originatingChainId,
-		ethCommon.HexToAddress("0x0000000000000000000000000000000000000000"),
+		ethCommon.HexToAddress("0x2e234DAe75C793f67A35089C9d99245E1C58470b"),
 		PaymasterOperation{
 			Owner:         ethCommon.HexToAddress("0x63177184B8b5e1229204067a76Ec4c635009CBD2"),
 			Nonce:         new(big.Int).SetInt64(0),
 			Deadline:      new(big.Int).SetInt64(1750418163),
 			PaymasterType: paymaster.PaymasterTypeMint,
-			Market:        ethCommon.HexToAddress("0x2Ef8FE80F525BfeCA66Cd16Bd9e8af5556f40b11"),
+			Market:        ethCommon.HexToAddress("0x2ef8fe80f525bfeca66cd16bd9e8af5556f40b11"),
 			MaximumFee:    new(big.Int).SetInt64(0),
 			AmountToSpend: new(big.Int).SetInt64(1000000),
 			MinimumBack:   new(big.Int).SetInt64(0),
 			Referrer:      ethCommon.HexToAddress("0x0000000000000000000000000000000000000000"),
 			Outcome:       outcome,
-			V:             28,
+			V:             27,
 			R:             R,
 			S:             S,
 		},

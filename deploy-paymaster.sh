@@ -1,7 +1,6 @@
 #!/bin/sh -eu
 
 cat >/dev/null <<EOF
-$SPN_ADMIN_ADDR
 $SPN_FUSDC_ADDR
 EOF
 

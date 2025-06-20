@@ -176,7 +176,7 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 		typedData.Domain.Map(),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("domain separator: %v", err)
+		return nil, fmt.Errorf("domain separator: %x", err)
 	}
 	typedDataHash, err := typedData.HashStruct(
 		typedData.PrimaryType,
