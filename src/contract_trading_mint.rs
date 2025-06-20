@@ -6,7 +6,7 @@ use stylus_sdk::{
 use crate::{
     error::*,
     events, fusdc_call,
-    immutables::*,
+    immutables::{self, THREE_HOURS_SECS},
     utils::{block_timestamp, msg_sender},
 };
 
@@ -84,8 +84,17 @@ impl StorageTrading {
             } else {
                 _amount
             };
-            let (burned_shares, fusdc_to_return) =
-                self.internal_amm_burn(_outcome, fusdc, _min_shares)?;
+            // If the paymaster was the one to submit this transaction, then we can
+            // assume that the recipient was the true sender of the signed blob.
+            let (burned_shares, fusdc_to_return) = self.internal_amm_burn(
+                match msg_sender() {
+                    immutables::PAYMASTER_ADDR => _recipient,
+                    _ => msg_sender(),
+                },
+                _outcome,
+                fusdc,
+                _min_shares,
+            )?;
             fusdc_call::transfer(_recipient, fusdc_to_return)?;
             evm::log(events::SharesBurned {
                 identifier: _outcome,

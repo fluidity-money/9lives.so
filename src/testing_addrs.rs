@@ -26,6 +26,7 @@ defaults! {
     LOCKUP_TOKEN,
     ZERO_FOR_MINT_ADDR,
     CLAIMANT,
+    PAYMASTER,
 
     IVAN,
     ERIK,

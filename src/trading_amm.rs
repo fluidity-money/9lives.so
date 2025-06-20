@@ -298,6 +298,7 @@ impl StorageTrading {
     /// to do the selling.
     pub fn internal_amm_burn(
         &mut self,
+        sender: Address,
         outcome_id: FixedBytes<8>,
         usd_amt: U256,
         min_shares: U256,
@@ -364,7 +365,7 @@ impl StorageTrading {
                 self.share_impl.get(),
                 outcome_id,
             ),
-            msg_sender(),
+            sender,
             burned_shares
         ));
         Ok((burned_shares, usd_amt))
