@@ -10,6 +10,5 @@ forge create --json \
 	--broadcast \
 	src/NineLivesPaymaster.sol:NineLivesPaymaster \
 	--constructor-args \
-	"$SPN_ADMIN_ADDR" \
 	"$SPN_FUSDC_ADDR" \
 		| jq -r .deployedTo

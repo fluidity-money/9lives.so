@@ -33,7 +33,6 @@ import (
 
 const (
 	EnvPrivateKey       = "SPN_SUPERPOSITION_KEY"
-	EnvPaymasterAddr    = "SPN_PAYMASTER_ADDR"
 	EnvPollLifeTimeSecs = "SPN_POLL_LIFE_TIME_SECS"
 	EnvSleepTimeSecs    = "SPN_SLEEP_SECS"
 )
@@ -58,10 +57,7 @@ func main() {
 	if err != nil {
 		setup.Exitf("sleep secs: %v", err)
 	}
-	if !ethCommon.IsHexAddress(os.Getenv(EnvPaymasterAddr)) {
-		setup.Exitf("SPN_PAYMASTER_ADDR not set")
-	}
-	paymasterAddr := ethCommon.HexToAddress(os.Getenv(EnvPaymasterAddr))
+	paymasterAddr := ethCommon.HexToAddress(config.PaymasterAddress)
 	c, err := ethclient.Dial(config.PickGethUrl())
 	if err != nil {
 		setup.Exitf("geth dial: %v", err)
