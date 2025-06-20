@@ -101,8 +101,8 @@ contract NineLivesPaymaster {
                 abi.encode(
                     keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)"),
                     keccak256(bytes(NAME)),
+                    keccak256("1"),
                     _chainId,
-                    "1",
                     address(this),
                     INITIAL_SALT
                 )

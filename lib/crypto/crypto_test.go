@@ -36,14 +36,14 @@ func TestGetMarketId(t *testing.T) {
 }
 
 func TestEcrecoverPaymasterOperation(t *testing.T) {
-	o, _ := hex.DecodeString("a9fc8624b9a93049")
+	o, _ := hex.DecodeString("3757cf75e4508cae")
 	var outcome [8]byte
 	copy(outcome[:], o)
 	var R, S [32]byte
-	r, ok := new(big.Int).SetString("ed077dd9d9ff110d5bf47091b3341ecd2baabdbc647761ab79022c68080edc54", 16)
+	r, ok := new(big.Int).SetString("ce9998f2caf2ea6aa710a260fa3fdc62300e1110bdd215411c84bcc458f11d65", 16)
 	assert.True(t, ok)
 	r.FillBytes(R[:])
-	s, ok := new(big.Int).SetString("29c6c2304ef97e8b77a0c122c613ad3718211e33f4dd65d728b67b0ab17a0857", 16)
+	s, ok := new(big.Int).SetString("46f7280619c325a7bd719f6f591ee718e47c1000be2ad588b6322c113cbdf090", 16)
 	assert.True(t, ok)
 	s.FillBytes(S[:])
 	spnChainId := new(big.Int).SetInt64(55244)
@@ -55,9 +55,9 @@ func TestEcrecoverPaymasterOperation(t *testing.T) {
 		PaymasterOperation{
 			Owner:         ethCommon.HexToAddress("0x63177184B8b5e1229204067a76Ec4c635009CBD2"),
 			Nonce:         new(big.Int).SetInt64(0),
-			Deadline:      new(big.Int).SetInt64(1750347566),
+			Deadline:      new(big.Int).SetInt64(1750418163),
 			PaymasterType: paymaster.PaymasterTypeMint,
-			Market:        ethCommon.HexToAddress("0x7ab5ec0c59332a5c993468357c70e96b348aeb62"),
+			Market:        ethCommon.HexToAddress("0x2Ef8FE80F525BfeCA66Cd16Bd9e8af5556f40b11"),
 			MaximumFee:    new(big.Int).SetInt64(0),
 			AmountToSpend: new(big.Int).SetInt64(1000000),
 			MinimumBack:   new(big.Int).SetInt64(0),
@@ -71,6 +71,6 @@ func TestEcrecoverPaymasterOperation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t,
 		ethCommon.HexToAddress("0x63177184B8b5e1229204067a76Ec4c635009CBD2"),
-		addr,
+		*addr,
 	)
 }
