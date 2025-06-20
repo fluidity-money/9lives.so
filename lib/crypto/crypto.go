@@ -3,6 +3,7 @@ package crypto
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"sort"
@@ -113,7 +114,7 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 }
 
 func hashChainId(x *big.Int) string {
-	return "0x"+hex.EncodeString(ethCrypto.Keccak256(x.Bytes()))
+	return "0x" + hex.EncodeToString(ethCrypto.Keccak256(x.Bytes()))
 }
 
 func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verifyingContract ethCommon.Address, op PaymasterOperation) (*ethCommon.Address, error) {
