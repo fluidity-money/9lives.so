@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"sort"
 
-	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/types/events"
+	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
 
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	ethMath "github.com/ethereum/go-ethereum/common/math"
@@ -106,9 +106,9 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		MinimumBack:        x.MinimumBack.Big(),
 		Referrer:           maybeAddrToEthAddr(x.Referrer),
 		Outcome:            maybeBytesToBytes8(x.Outcome),
-		V: x.V,
-		R: bytesToBytes32(x.R),
-		S: bytesToBytes32(x.S),
+		V:                  x.V,
+		R:                  bytesToBytes32(x.R),
+		S:                  bytesToBytes32(x.S),
 	}
 }
 
@@ -120,6 +120,7 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 	// We set the chain id to be the originating chain so there are
 	// no issues involving warnings on the client side for the users.
 	chainId := ethMath.HexOrDecimal256(*originatingChainId)
+	salt := hashChainId(spnChainId)
 	typedData := ethApiTypes.TypedData{
 		Types: ethApiTypes.Types{
 			"EIP712Domain": {
@@ -144,9 +145,10 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 		PrimaryType: "NineLivesPaymaster",
 		Domain: ethApiTypes.TypedDataDomain{
 			Name:              "NineLivesPaymaster",
-			Version:           spnChainId.String(),
+			Version:           "1",
 			ChainId:           &chainId,
 			VerifyingContract: verifyingContract.String(),
+			Salt:              salt,
 		},
 		Message: ethApiTypes.TypedDataMessage{
 			"owner":         op.Owner.String(),

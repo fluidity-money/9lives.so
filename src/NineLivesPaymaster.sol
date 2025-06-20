@@ -97,11 +97,12 @@ contract NineLivesPaymaster {
         return
             keccak256(
                 abi.encode(
-                    keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+                    keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)"),
                     keccak256(bytes(NAME)),
                     abi.encode(INITIAL_CHAIN_ID),
-                    _chainId,
-                    address(this)
+                    "1",
+                    address(this),
+                    bytes32(uint256(keccak256(abi.encode(_chainId))) - 1)
                 )
             );
     }
