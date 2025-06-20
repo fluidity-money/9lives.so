@@ -26,7 +26,7 @@ contract TestNineLivesPaymaster is Test {
             owner: 0x63177184B8b5e1229204067a76Ec4c635009CBD2,
             originatingChainId: 55244,
             nonce: 0,
-            deadline: 1750416437,
+            deadline: 1750418163,
             typ: PaymasterType.MINT,
             permitR: bytes32(0),
             permitS: bytes32(0),
