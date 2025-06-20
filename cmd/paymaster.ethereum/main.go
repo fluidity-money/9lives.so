@@ -147,7 +147,7 @@ L:
 		for _, item := range items {
 			goodIds = append(goodIds, item.ID)
 		}
-		logIds(db, badIds, goodIds)
+		logIds(db, ctx, badIds, goodIds)
 		// We need to regenerate the calldata now with the trimmed ids.
 		cd, err = abi.Pack("multicall", operations[:len(badIds)])
 		if err != nil {
@@ -182,8 +182,18 @@ L:
 	}
 }
 
-func logIds(db *gorm.DB, badIds, goodIds []int) {
+func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int) {
 	// Generate the template that uses the function to take a id as having a failure.
+	logIds := make([]LogId, 0, len(badIds) + len(goodIds))
+	for _, b := range badIds {
+		logIds = append(logIds, LogId{b, false})
+	}
+	for _, g := range goodIds {
+		logIds = append(logIds, LogId{g, true})
+	}
+	if err := db.Exec(GenLogIds(logIds...)).Error; err != nil {
+		setup.Exitf("inserting tracked ids: %v", err)
+	}
 }
 
 func sleep(secs int) {

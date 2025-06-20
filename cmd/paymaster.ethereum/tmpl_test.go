@@ -7,5 +7,4 @@ func TestGenIds(t *testing.T) {
 		LogId{0, true},
 		LogId{1, false},
 	))
-	t.Fail()
 }
