@@ -112,6 +112,12 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 	}
 }
 
+func hashChainId(x *big.Int) string {
+	y := new(big.Int).SetBytes(ethCrypto.Keccak256(x.Bytes()))
+	y.Sub(y, new(big.Int).SetInt64(1))
+	return y.Text(16)
+}
+
 func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verifyingContract ethCommon.Address, op PaymasterOperation) (*ethCommon.Address, error) {
 	sig := make([]byte, 65)
 	copy(sig[:32], op.R[:])
@@ -128,6 +134,7 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 				{Name: "version", Type: "string"},
 				{Name: "chainId", Type: "uint256"},
 				{Name: "verifyingContract", Type: "address"},
+				{Name: "salt", Type: "bytes32"},
 			},
 			"NineLivesPaymaster": {
 				{Name: "owner", Type: "address"},
@@ -148,7 +155,7 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 			Version:           "1",
 			ChainId:           &chainId,
 			VerifyingContract: verifyingContract.String(),
-			Salt:              salt,
+			Salt:              "0x"+salt,
 		},
 		Message: ethApiTypes.TypedDataMessage{
 			"owner":         op.Owner.String(),
