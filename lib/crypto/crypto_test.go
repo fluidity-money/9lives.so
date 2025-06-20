@@ -47,7 +47,7 @@ func TestEcrecoverPaymasterOperation(t *testing.T) {
 	assert.True(t, ok)
 	s.FillBytes(S[:])
 	spnChainId := new(big.Int).SetInt64(55244)
-	originatingChainId := new(big.Int).SetInt64(1)
+	originatingChainId := new(big.Int).SetInt64(55244)
 	addr, err := EcrecoverPaymasterOperation(
 		spnChainId,
 		originatingChainId,

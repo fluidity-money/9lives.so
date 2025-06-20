@@ -72,6 +72,7 @@ contract NineLivesPaymaster {
     IERC20 immutable USDC;
 
     uint256 public immutable INITIAL_CHAIN_ID;
+    bytes32 public immutable INITIAL_SALT;
 
     mapping(bytes32 domain => mapping(address addr => uint256 nonce)) public nonces;
 
@@ -80,6 +81,7 @@ contract NineLivesPaymaster {
     constructor(address _erc20) {
         USDC = IERC20(_erc20);
         INITIAL_CHAIN_ID = block.chainid;
+        INITIAL_SALT = keccak256(abi.encode(INITIAL_CHAIN_ID));
         domainSeparators[INITIAL_CHAIN_ID] = computeDomainSeparator(
             INITIAL_CHAIN_ID
         );
@@ -102,7 +104,7 @@ contract NineLivesPaymaster {
                     _chainId,
                     "1",
                     address(this),
-                    keccak256(abi.encode(INITIAL_CHAIN_ID))
+                    INITIAL_SALT
                 )
             );
     }

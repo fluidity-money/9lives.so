@@ -114,7 +114,9 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 }
 
 func hashChainId(x *big.Int) string {
-	return "0x" + hex.EncodeToString(ethCrypto.Keccak256(x.Bytes()))
+	b := make([]byte, 32)
+	x.FillBytes(b)
+	return "0x" + hex.EncodeToString(ethCrypto.Keccak256(b))
 }
 
 func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verifyingContract ethCommon.Address, op PaymasterOperation) (*ethCommon.Address, error) {
