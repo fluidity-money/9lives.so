@@ -57,26 +57,6 @@ const useBuyWithZaps = ({
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.estimate.toAmount;
 
-          const allowanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "allowance",
-            params: [account.address, config.contracts.buyHelper2.address],
-          });
-          const allowance = (await simulateTransaction({
-            transaction: allowanceTx,
-            account,
-          })) as bigint;
-          if (toAmount > allowance) {
-            const approveTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "approve",
-              params: [config.contracts.buyHelper2.address, toAmount],
-            });
-            await sendTransaction({
-              transaction: approveTx,
-              account,
-            });
-          }
           const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
             prepareContractCall({
               contract: config.contracts.buyHelper2,
