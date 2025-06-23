@@ -1,6 +1,8 @@
 package graph
 
 import (
+	"math/big"
+
 	"gorm.io/gorm"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
@@ -31,5 +33,6 @@ type Resolver struct {
 	PicturesUriBase         string                // base URL for image hosting domain
 	LambdaClient            *lambda.Client        // Lambda client
 	LambdaMiscAiBackendName string                // Lambda function name
-	AdminSecret             string                // Administrative secret needed for some admin paths
+	AdminSecret             string                // administrative secret needed for some admin paths
+	PaymasterMinimumUSDCGas *big.Int              // minimum to ask user for in maximum gas
 }

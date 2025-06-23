@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"os"
 	"strings"
@@ -56,6 +57,10 @@ const (
 	// EnvAdminSecret to use for using any trusted paths (currently, only
 	// campaign explanation).
 	EnvAdminSecret = "SPN_ADMIN_SECRET"
+
+	// EnvPaymasterMinimumFee to use as the minimum amount for maximum
+	// fee. Should be 200000 for 20 cents (the current fee for a sell).
+	EnvPaymasterMinimumFee = "SPN_PAYMASTER_MIN_FEE"
 )
 
 // ChangelogLen to send to the user at max on request for the changelog endpoint.
@@ -110,6 +115,10 @@ func main() {
 	if f.Is(features.FeatureAdminFeaturesEnabled) && adminSecret == "" {
 		setup.Exitf("admin feature is enabled, but secret not set")
 	}
+	paymasterMinFee, ok := new(big.Int).SetString(os.Getenv(EnvPaymasterMinimumFee), 10)
+	if !ok {
+		setup.Exitf("SPN_PAYMASTER_MIN_FEE incorrectly set")
+	}
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
 			DB:                 db,
@@ -130,6 +139,7 @@ func main() {
 			LambdaClient:            lambdaClient,
 			LambdaMiscAiBackendName: os.Getenv(EnvLambdaMiscAiBackend),
 			AdminSecret:             adminSecret,
+			PaymasterMinimumUSDCGas: paymasterMinFee,
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})

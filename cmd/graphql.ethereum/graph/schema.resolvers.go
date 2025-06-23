@@ -307,11 +307,6 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	if r.F.Is(features.FeatureShouldCheckErc20Balance) {
 		panic("unimplemented")
 	}
-	// Check that the maximum fee is above the limit, or estimate the
-	// cost if we have the feature enabled.
-	if r.F.Is(features.FeatureShouldPriceCalldata) {
-		panic("unimplemented")
-	}
 	// Check their nonce is the latest.
 	if r.F.Is(features.FeatureShouldCheckPaymasterNonce) {
 		panic("unimplemented")
@@ -364,6 +359,13 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		return nil, fmt.Errorf("maximum fee")
 	}
 	p.MaximumFee = *maximumFee_
+	// Check that the maximum fee is above the limit, or estimate the
+	// cost if we have the feature enabled.
+	if r.F.Is(features.FeatureShouldPriceCalldata) {
+		panic("unimplemented")
+	} else if r.PaymasterMinimumUSDCGas.Cmp(maximumFee_.Big()) < 0 {
+		return nil, fmt.Errorf("too low maximum fee")
+	}
 	amountToSpend_, err := events.NumberFromString(amountToSpend)
 	if err != nil {
 		return nil, fmt.Errorf("amount to spend")
