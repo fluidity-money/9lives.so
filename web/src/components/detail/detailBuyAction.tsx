@@ -30,6 +30,7 @@ import useBuyWithZaps from "@/hooks/useBuyWithZaps";
 import USDCImg from "#/images/usdc.svg";
 import useTokens from "@/hooks/useTokens";
 import useProfile from "@/hooks/useProfile";
+import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -50,6 +51,7 @@ export default function DetailBuyAction({
   setMinimized: React.Dispatch<boolean>;
 }) {
   const enabledLifiZaps = useFeatureFlag("enable lifi zaps");
+  const enabledPaymaster = useFeatureFlag("enable paymaster");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
@@ -104,6 +106,13 @@ export default function DetailBuyAction({
   const fromToken = watch("fromToken");
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
   const { buy } = useBuy({
+    tradingAddr: data.poolAddress,
+    shareAddr: outcome.share.address,
+    campaignId: data.identifier,
+    outcomeId: outcome.identifier,
+    openFundModal: () => setFundModalOpen(true),
+  });
+  const { buy: buyWithPaymaster } = useBuyWithPaymaster({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
     campaignId: data.identifier,
@@ -171,7 +180,8 @@ export default function DetailBuyAction({
           fromDecimals,
         );
       } else {
-        await buy(account!, supply, data.outcomes);
+        let action = enabledPaymaster ? buyWithPaymaster : buy;
+        await action(account!, supply, data.outcomes);
       }
     } finally {
       setIsMinting(false);
