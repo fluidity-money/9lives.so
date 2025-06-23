@@ -414,3 +414,57 @@ export const requestUserLPs = (address: string) =>
       poolAddress: true,
     },
   });
+
+export const requestPaymaster = ({
+  opType,
+  amountToSpend,
+  tradingAddr,
+  nonce,
+  originatingChainId,
+  outcome,
+  owner,
+  permitR,
+  permitS,
+  permitV,
+  r,
+  s,
+  v,
+  referrer,
+}: {
+  opType: Lives9.SelectionSets.PaymasterOperation;
+  amountToSpend: string;
+  tradingAddr: string;
+  nonce: string;
+  originatingChainId: string;
+  outcome?: string;
+  owner: string;
+  permitR: string;
+  permitS: string;
+  permitV: number;
+  r: string;
+  s: string;
+  v: number;
+  referrer?: string;
+}) =>
+  graph9Lives.mutation.requestPaymaster({
+    $: {
+      $type: "PUT",
+      $operation: opType,
+      amountToSpend,
+      deadline: Math.floor(Date.now() / 1000) + 3600,
+      market: tradingAddr,
+      maximumFee: "0",
+      minimumBack: "0",
+      nonce,
+      originatingChainId,
+      outcome,
+      owner,
+      permitR,
+      permitS,
+      permitV,
+      referrer,
+      rr: r,
+      s,
+      v,
+    },
+  });
