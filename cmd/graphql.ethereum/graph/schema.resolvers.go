@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math/big"
+	"strconv"
 	"strings"
 	"time"
 
@@ -421,10 +422,11 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 			return nil, fmt.Errorf("owner addr")
 		}
 	}
-	if err := r.DB.Table("").Create(&p).Error; err != nil {
+	if err := r.DB.Table("ninelives_paymaster_poll_1").Create(&p).Error; err != nil {
 		slog.Error("Error inserting new paymaster operation", "err", err)
 	}
-	return nil, nil
+	id := strconv.Itoa(p.ID)
+	return &id, nil
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
