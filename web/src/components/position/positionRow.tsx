@@ -189,7 +189,7 @@ export default function PositionRow({
                     )}
                     {data.winner && data.winner !== data.id && (
                       <span className="ml-1 bg-9red p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
-                        Defeated
+                        Lost
                       </span>
                     )}
                   </p>
