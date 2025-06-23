@@ -68,9 +68,7 @@ const ChangelogLen = 10
 
 const XForwardedFor = "X-Forwarded-For"
 
-type corsMiddleware struct {
-	srv *handler.Server
-}
+type corsMiddleware struct{ srv *handler.Server }
 
 func (m corsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -129,7 +127,7 @@ func main() {
 			InfraMarketAddr:    ethCommon.HexToAddress(config.InfraMarketAddress),
 			BeautyContestAddr:  ethCommon.HexToAddress(config.BeautyContestAddress),
 			SarpAiAddr:         ethCommon.HexToAddress(config.SarpAiAddress),
-			PaymasterAddr: ethCommon.HexToAddress(config.PaymasterAddress),
+			PaymasterAddr:      ethCommon.HexToAddress(config.PaymasterAddress),
 			ChangelogItems:     Changelog[:min(ChangelogLen, len(Changelog))],
 			S3UploadBucketName: S3UploadBucketName,
 			S3UploadManager: s3manager.NewUploader(s3Client, func(u *s3manager.Uploader) {
