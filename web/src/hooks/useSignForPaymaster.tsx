@@ -1,8 +1,8 @@
 import { ethers, Signature } from "ethers";
 import { destinationChain } from "@/config/chains";
-import { PaymasterType } from "@/types";
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import { ZERO_ADDRESS } from "thirdweb";
+import { PaymasterOperation } from "@/graffle/lives9/modules/selection-sets";
 
 export default function useSignForPaymaster() {
   const chain = useActiveWalletChain();
@@ -28,7 +28,7 @@ export default function useSignForPaymaster() {
       { name: "outcome", type: "bytes8" },
     ],
   };
-  const signForPermit = async ({
+  const signForPaymaster = async ({
     tradingAddr,
     amountToSpend,
     referrer = ZERO_ADDRESS,
@@ -39,8 +39,8 @@ export default function useSignForPaymaster() {
     tradingAddr: string;
     referrer?: string;
     amountToSpend: BigInt;
-    outcomeId: string;
-    type: PaymasterType;
+    outcomeId?: string;
+    type: PaymasterOperation;
     minimumBack: BigInt;
   }) => {
     if (!chain) throw new Error("No chain is detected");
@@ -73,5 +73,5 @@ export default function useSignForPaymaster() {
     return { r, s, v };
   };
 
-  return { signForPermit };
+  return { signForPaymaster };
 }

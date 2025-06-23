@@ -268,10 +268,3 @@ export type Token = {
   coinKey: string;
   logoURI: string;
 };
-
-export enum PaymasterType {
-  MINT,
-  BURN,
-  ADD_LIQUIDITY,
-  REMOVE_LIQUIDITY,
-}

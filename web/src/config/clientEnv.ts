@@ -77,6 +77,11 @@ const clientEnvSchema = z.object({
    *  Helper for claiming all fees
    */
   NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: z.string().length(42),
+
+  /**
+   *  Paymaster address
+   */
+  NEXT_PUBLIC_PAYMASTER_ADDR: z.string().length(42),
 });
 
 type ClientEnvSchemaType = z.infer<typeof clientEnvSchema>;
@@ -108,6 +113,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_SNITCH_ENDPOINT: process.env.NEXT_PUBLIC_SNITCH_ENDPOINT,
   NEXT_PUBLIC_CLAIMANT_HELPER_ADDR:
     process.env.NEXT_PUBLIC_CLAIMANT_HELPER_ADDR,
+  NEXT_PUBLIC_PAYMASTER_ADDR: process.env.NEXT_PUBLIC_PAYMASTER_ADDR,
 });
 
 if (!clientEnv.success) {
