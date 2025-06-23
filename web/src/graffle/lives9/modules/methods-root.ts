@@ -420,6 +420,29 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
+   * Request that the Paymaster service this request and deduct funds from the user's USDC
+   * EOA using a Permit blob.
+   */
+  requestPaymaster: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.requestPaymaster<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { requestPaymaster: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "requestPaymaster"
+        >
+    >
+  >;
+  /**
    * "Explain" a campaign, so an on-chain campaign creation is listed in the frontend.
    * Campaign is then spooled in a would-be frontend aggregation table.
    */

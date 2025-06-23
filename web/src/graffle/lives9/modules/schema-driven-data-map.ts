@@ -58,6 +58,11 @@ const ID = $$Scalar.ID;
 //
 //
 
+const PaymasterOperation: $$Utilities.SchemaDrivenDataMap.Enum = {
+  k: "enum",
+  n: "PaymasterOperation",
+};
+
 const Modification: $$Utilities.SchemaDrivenDataMap.Enum = {
   k: "enum",
   n: "Modification",
@@ -500,6 +505,86 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 
 const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
+    requestPaymaster: {
+      a: {
+        ticket: {
+          nt: Int,
+          it: [0],
+        },
+        type: {
+          nt: Modification,
+          it: [1],
+        },
+        nonce: {
+          nt: String,
+          it: [1],
+        },
+        deadline: {
+          nt: Int,
+          it: [1],
+        },
+        permitV: {
+          nt: Int,
+          it: [1],
+        },
+        permitR: {
+          nt: String,
+          it: [1],
+        },
+        permitS: {
+          nt: String,
+          it: [1],
+        },
+        operation: {
+          nt: PaymasterOperation,
+          it: [1],
+        },
+        owner: {
+          nt: String,
+          it: [1],
+        },
+        outcome: {
+          nt: String,
+          it: [0],
+        },
+        referrer: {
+          nt: String,
+          it: [0],
+        },
+        market: {
+          nt: String,
+          it: [1],
+        },
+        maximumFee: {
+          nt: String,
+          it: [1],
+        },
+        amountToSpend: {
+          nt: String,
+          it: [1],
+        },
+        minimumBack: {
+          nt: String,
+          it: [1],
+        },
+        originatingChainId: {
+          nt: String,
+          it: [1],
+        },
+        rr: {
+          nt: String,
+          it: [1],
+        },
+        s: {
+          nt: String,
+          it: [1],
+        },
+        v: {
+          nt: Int,
+          it: [1],
+        },
+      },
+    },
     explainCampaign: {
       a: {
         type: {
@@ -734,6 +819,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Int,
     Boolean,
     ID,
+    PaymasterOperation,
     Modification,
     SettlementType,
     ActivityType,

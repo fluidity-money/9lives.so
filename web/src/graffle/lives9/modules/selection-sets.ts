@@ -825,6 +825,14 @@ export interface Mutation<
 > {
   /**
    *
+   * Select the `requestPaymaster` field on the `Mutation` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  requestPaymaster?:
+    | Mutation.requestPaymaster<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.requestPaymaster<_$Scalars>>;
+  /**
+   *
    * Select the `explainCampaign` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
    *
    */
@@ -907,6 +915,108 @@ export interface Mutation$FragmentInline<
 // ----------------------------------------| Fields |
 
 export namespace Mutation {
+  export type requestPaymaster<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = requestPaymaster$SelectionSet<_$Scalars>;
+
+  export interface requestPaymaster$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `requestPaymaster` field. Some (16/19) arguments are required so you must include this.
+     */
+    $: requestPaymaster$Arguments<_$Scalars>;
+  }
+
+  export interface requestPaymaster$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    /**
+     * Ticket number of the Paymaster operation (if any). This could be used to delete it
+     * from the request pool if needed.
+     */
+    ticket?: number | undefined | null;
+    /**
+     * Type of modification to the Paymaster operation.
+     */
+    $type: $NamedTypes.$Modification;
+    /**
+     * Nonce of the operation to bump with.
+     */
+    nonce: string;
+    /**
+     * Execution deadline of the Paymaster operation.
+     */
+    deadline: number;
+    /**
+     * Arguments for this will be reconstructed based on the arguments to the Paymaster.
+     */
+    permitV: number;
+    permitR: string;
+    permitS: string;
+    /**
+     * Type of Paymaster operation to perform.
+     */
+    $operation: $NamedTypes.$PaymasterOperation;
+    /**
+     * Owner to do this operation for (the sender's address).
+     */
+    owner: string;
+    /**
+     * Outcome to use, if any.
+     */
+    outcome?: string | undefined | null;
+    /**
+     * Referrer of the user (if any).
+     */
+    referrer?: string | undefined | null;
+    /**
+     * Market to perform this operation for.
+     */
+    market: string;
+    /**
+     * Quoted fee to denominate from the user's USDC asset. Should be based on a quote
+     * from Camelot using a quote.
+     */
+    maximumFee: string;
+    /**
+     * Amount of the base asset spend for the operation. This could be the amount to sell
+     * if selling, or USDC if buying.
+     */
+    amountToSpend: string;
+    /**
+     * Minimum number the replacement asset to receive back, if any. This could be USDC if
+     * selling, or USDC if buying.
+     */
+    minimumBack: string;
+    /**
+     * The originating chain ID for this signature.
+     */
+    originatingChainId: string;
+    rr: string;
+    s: string;
+    v: number;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `requestPaymaster` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type requestPaymaster$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<requestPaymaster$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
   export type explainCampaign<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
@@ -1296,6 +1406,12 @@ export namespace Mutation {
 //
 //
 //
+
+export type PaymasterOperation =
+  | "MINT"
+  | "SELL"
+  | "ADD_LIQUIDITY"
+  | "REMOVE_LIQUIDITY";
 
 /**
  * HTTP-like interface for mutation. Either a delete, a logical update, or a put for the
@@ -4601,6 +4717,7 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = Mutation<_$Scalars>;
+  export type $PaymasterOperation = PaymasterOperation;
   export type $Modification = Modification;
   export type $SettlementType = SettlementType;
   export type $ActivityType = ActivityType;

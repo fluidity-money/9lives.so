@@ -385,6 +385,7 @@ export namespace Schema {
     name: "Mutation";
     fields: {
       __typename: Mutation.__typename;
+      requestPaymaster: Mutation.requestPaymaster;
       explainCampaign: Mutation.explainCampaign;
       revealCommitment: Mutation.revealCommitment;
       revealCommitment2: Mutation.revealCommitment2;
@@ -403,6 +404,178 @@ export namespace Schema {
         kind: "__typename";
         value: "Mutation";
       };
+    }
+
+    /**
+     * Request that the Paymaster service this request and deduct funds from the user's USDC
+     * EOA using a Permit blob.
+     */
+    export interface requestPaymaster extends $.OutputField {
+      name: "requestPaymaster";
+      arguments: {
+        /**
+         * Ticket number of the Paymaster operation (if any). This could be used to delete it
+         * from the request pool if needed.
+         */
+        ticket: {
+          kind: "InputField";
+          name: "ticket";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
+        /**
+         * Type of modification to the Paymaster operation.
+         */
+        type: {
+          kind: "InputField";
+          name: "type";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Modification;
+        };
+        /**
+         * Nonce of the operation to bump with.
+         */
+        nonce: {
+          kind: "InputField";
+          name: "nonce";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Execution deadline of the Paymaster operation.
+         */
+        deadline: {
+          kind: "InputField";
+          name: "deadline";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+        /**
+         * Arguments for this will be reconstructed based on the arguments to the Paymaster.
+         */
+        permitV: {
+          kind: "InputField";
+          name: "permitV";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+        permitR: {
+          kind: "InputField";
+          name: "permitR";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        permitS: {
+          kind: "InputField";
+          name: "permitS";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Type of Paymaster operation to perform.
+         */
+        operation: {
+          kind: "InputField";
+          name: "operation";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$PaymasterOperation;
+        };
+        /**
+         * Owner to do this operation for (the sender's address).
+         */
+        owner: {
+          kind: "InputField";
+          name: "owner";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Outcome to use, if any.
+         */
+        outcome: {
+          kind: "InputField";
+          name: "outcome";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Referrer of the user (if any).
+         */
+        referrer: {
+          kind: "InputField";
+          name: "referrer";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Market to perform this operation for.
+         */
+        market: {
+          kind: "InputField";
+          name: "market";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Quoted fee to denominate from the user's USDC asset. Should be based on a quote
+         * from Camelot using a quote.
+         */
+        maximumFee: {
+          kind: "InputField";
+          name: "maximumFee";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Amount of the base asset spend for the operation. This could be the amount to sell
+         * if selling, or USDC if buying.
+         */
+        amountToSpend: {
+          kind: "InputField";
+          name: "amountToSpend";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * Minimum number the replacement asset to receive back, if any. This could be USDC if
+         * selling, or USDC if buying.
+         */
+        minimumBack: {
+          kind: "InputField";
+          name: "minimumBack";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
+         * The originating chain ID for this signature.
+         */
+        originatingChainId: {
+          kind: "InputField";
+          name: "originatingChainId";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        rr: {
+          kind: "InputField";
+          name: "rr";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        s: {
+          kind: "InputField";
+          name: "s";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        v: {
+          kind: "InputField";
+          name: "v";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
     }
 
     /**
@@ -2044,6 +2217,16 @@ export namespace Schema {
   //
   //
 
+  //                                         PaymasterOperation
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface PaymasterOperation extends $.Enum {
+    name: "PaymasterOperation";
+    members: ["MINT", "SELL", "ADD_LIQUIDITY", "REMOVE_LIQUIDITY"];
+    membersUnion: "MINT" | "SELL" | "ADD_LIQUIDITY" | "REMOVE_LIQUIDITY";
+  }
+
   //                                            Modification
   // --------------------------------------------------------------------------------------------------
   //
@@ -2192,6 +2375,7 @@ export namespace Schema {
     export type $$Changelog = Changelog;
     export type $$Activity = Activity;
     export type $$OutcomeInput = OutcomeInput;
+    export type $$PaymasterOperation = PaymasterOperation;
     export type $$Modification = Modification;
     export type $$SettlementType = SettlementType;
     export type $$ActivityType = ActivityType;
@@ -2232,6 +2416,7 @@ export interface Schema<
   allTypes: {
     Query: Schema.Query;
     Mutation: Schema.Mutation;
+    PaymasterOperation: Schema.PaymasterOperation;
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
