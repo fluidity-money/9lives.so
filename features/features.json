@@ -6,5 +6,6 @@
 	"admin features are enabled": true,
 	"referrer needs to verify": false,
 	"enable lifi zaps": true,
+	"enable paymaster": false,
 	"ai for asking if a campaign makes sense": false
 }
