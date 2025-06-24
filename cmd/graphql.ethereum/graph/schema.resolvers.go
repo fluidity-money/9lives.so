@@ -333,9 +333,13 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	p := paymaster.Poll{
 		Deadline: deadline,
 		Typ:      typ,
-		PermitV:  uint8(permitV),
-		V:        uint8(v),
 	}
+	nonce_, err := events.NumberFromString(nonce)
+	if err != nil {
+		return nil, fmt.Errorf("nonce")
+	}
+	p.Nonce = *nonce_
+
 	owner_, err := events.MaybeAddressFromString(owner)
 	if err != nil {
 		return nil, fmt.Errorf("owner")
@@ -414,6 +418,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	if !ok {
 		return nil, fmt.Errorf("chain id")
 	}
+	p.OriginatingChainId = events.NumberFromBig(originatingChainId)
 	// Validate their signature.
 	if r.F.Is(features.FeatureShouldValidatePaymasterSig) {
 		owner, err := crypto.EcrecoverPaymasterOperation(
