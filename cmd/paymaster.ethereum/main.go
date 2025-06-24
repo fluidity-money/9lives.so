@@ -40,7 +40,7 @@ const (
 //go:embed abi.json
 var abiB []byte
 
-var abi, _ = ethAbi.JSON(bytes.NewReader(abiB))
+var abi, abiErr = ethAbi.JSON(bytes.NewReader(abiB))
 
 func main() {
 	defer setup.Flush()
@@ -198,4 +198,10 @@ func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int) {
 
 func sleep(secs int) {
 	time.Sleep(time.Duration(secs) * time.Second)
+}
+
+func init() {
+	if abiErr != nil {
+		panic(abiErr)
+	}
 }
