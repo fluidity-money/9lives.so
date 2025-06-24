@@ -14,13 +14,13 @@ CREATE TABLE ninelives_paymaster_poll_1 (
 	typ INTEGER NOT NULL,
 
 	-- R part of the Permit signature.
-	permitR BYTES32,
+	permit_r BYTES32,
 
 	-- S part of the Permit signature.
-	permitS BYTES32,
+	permit_s BYTES32,
 
 	-- V part of the Permit signature.
-	permitV INTEGER,
+	permit_v INTEGER,
 
 	-- The market to Paymaster this calldata for.
 	market ADDRESS NOT NULL,
