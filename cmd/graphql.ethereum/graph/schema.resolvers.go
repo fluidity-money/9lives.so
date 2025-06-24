@@ -351,6 +351,9 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 			return nil, fmt.Errorf("permits")
 		}
 	}
+	if permitV > math.MaxUint8 && permitV < 0 {
+		return nil, fmt.Errorf("permit v value")
+	}
 	market_, err := events.MaybeAddressFromString(market)
 	if err != nil {
 		return nil, fmt.Errorf("market")
