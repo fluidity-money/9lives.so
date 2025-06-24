@@ -63,6 +63,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	lifi.TopicLifiGenericSwapCompleted,
 	// Stargate
 	stargate.TopicStargateOFTReceived,
+	stargate.TopicStargateOFTSent,
 	// Onchain GM
 	onchaingm.TopicOnchainGm,
 	// Layerzero
@@ -72,8 +73,6 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	layerzero.TopicPacketSent,
 	layerzero.TopicPacketVerified,
 	// Dinero
-	dinero.TopicOFTReceived,
-	dinero.TopicOFTSent,
 	dinero.TopicOwnershipTransferred,
 }
 
@@ -411,6 +410,11 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		table = "stargate_events_stargate_oft_received"
 		logEvent("OFTReceived")
 		isStargateOft = true
+	case stargate.TopicStargateOFTSent:
+		a, err = stargate.UnpackStargateOFTSent(topic1, topic2, data)
+		table = "stargate_events_stargate_oft_sent"
+		logEvent("OFTSent")
+		isStargateOft = true
 	case onchaingm.TopicOnchainGm:
 		a, err = onchaingm.UnpackOnchainGm(topic1, topic2)
 		table = "onchaingm_events_onchaingmevent"
@@ -436,14 +440,6 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		a, err = layerzero.UnpackPacketVerified(data)
 		table = "layerzero_events_packet_verified"
 		logEvent("PacketVerified")
-	case dinero.TopicOFTReceived:
-		a, err = dinero.UnpackOFTReceived(topic1, topic2, data)
-		table = "dinero_events_oft_received"
-		logEvent("OFTReceived")
-	case dinero.TopicOFTSent:
-		a, err = dinero.UnpackOFTSent(topic1, topic2, data)
-		table = "dinero_events_oft_sent"
-		logEvent("OFTSent")
 	case dinero.TopicOwnershipTransferred:
 		a, err = dinero.UnpackOwnershipTransferred(topic1, topic2, data)
 		table = "dinero_events_ownership_transferred"
