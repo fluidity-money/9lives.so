@@ -124,6 +124,9 @@ func (n Number) String() string {
 func (n Number) Big() *big.Int {
 	return n.i
 }
+func (n Number) Int64() int64 {
+	return n.i.Int64()
+}
 func (n Number) Value() (sqlDriver.Value, error) {
 	if n.i == nil {
 		return "0", nil
