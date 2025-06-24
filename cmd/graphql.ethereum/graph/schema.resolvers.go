@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"math/big"
 	"strconv"
 	"strings"
@@ -387,6 +388,10 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		return nil, fmt.Errorf("s value")
 	}
 	p.S = *s_
+	if v > math.MaxUint8 && v < 0 {
+		return nil, fmt.Errorf("v value")
+	}
+	p.V = uint8(v)
 	if referrer != nil {
 		referrer_, err := events.MaybeAddressFromString(*referrer)
 		if err != nil {
