@@ -6,6 +6,7 @@ import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import useSignForPermit from "./useSignForPermit";
 import useSignForPaymaster from "./useSignForPaymaster";
 import useProfile from "./useProfile";
+import { PaymasterType } from "@/types";
 export default function useRequestPaymaster() {
   type MutationType = Parameters<typeof requestPaymasterMutation>[0];
   type InputType = Pick<
@@ -45,24 +46,31 @@ export default function useRequestPaymaster() {
         permitV = v;
       }
     }
+    const convertOpTypeToEnum: Record<InputType["opType"], PaymasterType> = {
+      MINT: PaymasterType.MINT,
+      ADD_LIQUIDITY: PaymasterType.ADD_LIQUIDITY,
+      REMOVE_LIQUIDITY: PaymasterType.REMOVE_LIQUIDITY,
+      SELL: PaymasterType.BURN,
+    } as const;
     const { r, s, v } = await signForPaymaster({
       tradingAddr: params.tradingAddr,
       amountToSpend: BigInt(params.amountToSpend),
-      referrer: profile?.settings?.refererr ?? ZeroAddress,
+      referrer: profile?.settings?.refererr || ZeroAddress,
       outcomeId: params.outcome,
       minimumBack: BigInt(0),
-      type: params.opType,
+      type: convertOpTypeToEnum[params.opType],
     });
     const provider = new ethers.JsonRpcProvider(chain.rpc);
     const nonce = await provider.getTransactionCount(account.address);
     const ticketId = await requestPaymasterMutation({
-      r,
-      s,
+      r: r.slice(2),
+      s: s.slice(2),
       v,
-      permitR,
-      permitS,
+      permitR: permitR ? permitR.slice(2) : "",
+      permitS: permitS ? permitS.slice(2) : "",
       permitV,
       owner,
+      outcome: params.outcome ? params.outcome.slice(2) : undefined,
       originatingChainId,
       opType: params.opType,
       amountToSpend: params.amountToSpend,

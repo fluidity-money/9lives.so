@@ -8,10 +8,14 @@ export default function useConnectWallet() {
   const { connect, isConnecting } = useConnectModal();
   const handleConnect = useCallback(async () => {
     let result: Wallet | null = null;
+    const chains =
+      appConfig.NEXT_PUBLIC_CHAIN === "mainnet"
+        ? Object.values(appConfig.chains)
+        : [appConfig.destinationChain];
     try {
       result = await connect({
         client: appConfig.thirdweb.client,
-        chains: Object.values(appConfig.chains),
+        chains,
         appMetadata: appConfig.thirdweb.metadata,
         wallets: appConfig.thirdweb.wallets,
         theme: appConfig.thirdweb.theme,

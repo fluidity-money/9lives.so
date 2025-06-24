@@ -50,7 +50,9 @@ export default function DetailBuyAction({
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
-  const enabledLifiZaps = useFeatureFlag("enable lifi zaps");
+  const enabledLifiZaps =
+    useFeatureFlag("enable lifi zaps") &&
+    config.NEXT_PUBLIC_CHAIN !== "testnet";
   const enabledPaymaster = useFeatureFlag("enable paymaster");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
