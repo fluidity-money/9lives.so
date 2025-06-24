@@ -16,8 +16,9 @@ import (
 
 	"github.com/fluidity-money/9lives.so/lib/events"
 	"github.com/fluidity-money/9lives.so/lib/events/lifi"
-	"github.com/fluidity-money/9lives.so/lib/events/stargate"
+	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
 	"github.com/fluidity-money/9lives.so/lib/events/onchaingm"
+	"github.com/fluidity-money/9lives.so/lib/events/stargate"
 
 	"gorm.io/gorm"
 
@@ -64,6 +65,12 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	stargate.TopicStargateOFTReceived,
 	// Onchain GM
 	onchaingm.TopicOnchainGm,
+	// Layerzero
+	layerzero.TopicPacketBurnt,
+	layerzero.TopicPacketDelivered,
+	layerzero.TopicPacketNilified,
+	layerzero.TopicPacketSent,
+	layerzero.TopicPacketVerified,
 }
 
 // Entry function, using the database to determine if polling should be
@@ -75,7 +82,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 		infraMarketAddr        = ethCommon.HexToAddress(config.InfraMarketAddress)
 		lockupAddr             = ethCommon.HexToAddress(config.LockupAddress)
 		sarpAiSignallerAddress = ethCommon.HexToAddress(config.SarpAiSignallerAddress)
-		lifiDiamondAddress = ethCommon.HexToAddress(config.LifiDiamondAddress)
+		lifiDiamondAddress     = ethCommon.HexToAddress(config.LifiDiamondAddress)
 	)
 	IngestPolling(
 		f,
@@ -272,7 +279,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 	// There may be more Stargate OFTs in the future, so we insert everything
 	// we see with this topic, and we trust the consumer to validate that
 	// everything is correct themselves by verifying the emitter.
-	var fromTrading, isStargateOft, isOnchainGm bool
+	var fromTrading, isStargateOft, isOnchainGm, isLayerzero bool
 	switch topic0 {
 	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
@@ -427,6 +434,31 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		table = "onchaingm_events_onchaingmevent"
 		logEvent("OnChainGMEvent")
 		isOnchainGm = true
+	case layerzero.TopicPacketBurnt:
+		a, err = layerzero.UnpackPacketBurnt(data)
+		table = "layerzero_events_packet_burnt"
+		logEvent("PacketBurnt")
+		isLayerzero = true
+	case layerzero.TopicPacketDelivered:
+		a, err = layerzero.UnpackPacketDelivered(data)
+		table = "layerzero_events_packet_delivered"
+		logEvent("PacketDelivered")
+		isLayerzero = true
+	case layerzero.TopicPacketNilified:
+		a, err = layerzero.UnpackPacketNilified(data)
+		table = "layerzero_events_packet_nilified"
+		logEvent("PacketNilified")
+		isLayerzero = true
+	case layerzero.TopicPacketSent:
+		a, err = layerzero.UnpackPacketSent(data)
+		table = "layerzero_events_packet_sent"
+		logEvent("PacketSent")
+		isLayerzero = true
+	case layerzero.TopicPacketVerified:
+		a, err = layerzero.UnpackPacketVerified(data)
+		table = "layerzero_events_packet_verified"
+		logEvent("PacketVerified")
+		isLayerzero = true
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -450,18 +482,18 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		isInfraMarket   = infraMarketAddr == emitterAddr
 		isLockup        = lockupAddr == emitterAddr
 		isSarpSignaller = sarpSignallerAiAddr == emitterAddr
-		isLifi = lifiDiamondAddr == emitterAddr
+		isLifi          = lifiDiamondAddr == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
-	case isFactory, isInfraMarket,  isLockup, isSarpSignaller, isLifi, isStargateOft,
-		isOnchainGm:
+	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
+		isOnchainGm, isLayerzero:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to
 		// disregard this event.
-		slog.Info("We disregarded an event that wasn't created by a trading contract",
+		slog.Info("We disregarded an event that wasn't created by a contract",
 			"emitter", emitterAddr,
 			"event", a,
 		)

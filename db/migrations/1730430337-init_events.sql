@@ -22,7 +22,6 @@ BEGIN
 		CREATE DOMAIN HASH AS CHAR(66);
 	END IF;
 
-
 	IF NOT EXISTS (
 		SELECT 1 FROM pg_type WHERE typname = 'bytes8'
 	) THEN

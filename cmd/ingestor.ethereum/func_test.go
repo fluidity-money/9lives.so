@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 
 	"github.com/stretchr/testify/assert"
@@ -231,6 +232,149 @@ func TestOnchainGm(t *testing.T) {
 		},
 		func(table string, a any) error {
 			assert.Equalf(t, "onchaingm_events_onchaingmevent", table, "table not equal")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}
+
+func TestLayerzeroPacketDelivered(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0x6f475642a6e85809b1c36fa62763669b1b48dd5b",
+		"blockHash": "0xae142369c9aca0f0bc5bd75edca2e4f1c398990491ce24f881012c8499dd3866",
+		"blockNumber": "0x1d74ee",
+		"data": "0x00000000000000000000000000000000000000000000000000000000000075e80000000000000000000000005634c4a5fed09819e3c46d86a965dd9447d86e4700000000000000000000000000000000000000000000000000000000000032e000000000000000000000000006eb48763f117c7be887296cdcdfad2e4092739c",
+		"logIndex": "0x6",
+		"removed": false,
+		"topics": [
+			"0x3cd5e48f9730b129dc7550f0fcea9c767b7be37837cd10e55eb35f734f4bca04"
+		],
+		"transactionHash": "0x48f8637fd6175b93e9e6784c91653a5fc136f0b1ff53e426696d1b72c6acf968",
+		"transactionIndex": "0x1"
+	}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	_, err := handleLogCallback(
+		factoryAddr,
+		factoryAddr, // Actually the infra market
+		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
+		factoryAddr,
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "layerzero_events_packet_delivered", table, "table not equal")
+			p, _ := a.(*layerzero.EventPacketDelivered)
+			assert.Equal(t, uint32(30184), p.OriginSrcEid)
+			assert.Equal(t,
+				"0000000000000000000000005634c4a5fed09819e3c46d86a965dd9447d86e47",
+				p.OriginSender.String(),
+			)
+			assert.Equal(t, uint64(13024), p.OriginNonce)
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}
+
+func TestLayerzeroPacketSent(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0x6f475642a6e85809b1c36fa62763669b1b48dd5b",
+		"blockHash": "0x06895f5c23b4f8f284a71cabe8c38c1aeabc4ed5e03641e860c5929c7c05090c",
+		"blockNumber": "0x1d74c5",
+		"data": "0x00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000140000000000000000000000000c39161c743d0307eb9bcc9fef03eeb9dc4802de700000000000000000000000000000000000000000000000000000000000000bd010000000000000cac0000767700000000000000000000000006eb48763f117c7be887296cdcdfad2e4092739c0000759f000000000000000000000000f1fcb4cbd57b67d683972a59b6a7b1e2e8bf27e6314aadf7bd79cd2deabf3ecdbf306df0f53934691c42d22667d8acc01324079d0200000000000000000000000000000000000000000000000000001b48eb57e0000001000000000000000000000000d0319771f95375b161006fb2481fde74eb80ccf4000000000502804700000000000000000000000000000000000000000000000000000000000000000000002a0003010011010000000000000000000000000000c350010011010000000000000000000000000000d6d800000000000000000000000000000000000000000000",
+		"logIndex": "0x2",
+		"removed": false,
+		"topics": [
+			"0x1ab700d4ced0c005b164c0f789fd09fcbb0156d4c2041b8a3bfbcd961cd1567f"
+		],
+		"transactionHash": "0x4842504634edb75c4146d572bed11e8945de668d2889447aa43aa6e605c2c788",
+		"transactionIndex": "0x1"
+	}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	_, err := handleLogCallback(
+		factoryAddr,
+		factoryAddr, // Actually the infra market
+		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
+		factoryAddr,
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "layerzero_events_packet_sent", table, "table not equal")
+			p, _ := a.(*layerzero.EventPacketSent)
+			assert.Equal(t,
+				"010000000000000cac0000767700000000000000000000000006eb48763f117c7be887296cdcdfad2e4092739c0000759f000000000000000000000000f1fcb4cbd57b67d683972a59b6a7b1e2e8bf27e6314aadf7bd79cd2deabf3ecdbf306df0f53934691c42d22667d8acc01324079d0200000000000000000000000000000000000000000000000000001b48eb57e0000001000000000000000000000000d0319771f95375b161006fb2481fde74eb80ccf4000000000502804700",
+				p.EncodedPayload.String(),
+			)
+			assert.Equal(t,
+				"0003010011010000000000000000000000000000c350010011010000000000000000000000000000d6d8",
+				p.Options.String(),
+			)
+			assert.Equal(t,
+				"0xc39161c743d0307eb9bcc9fef03eeb9dc4802de7",
+				p.SendLibrary.String(),
+			)
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}
+
+func TestLayerzeroPacketVerified(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0x6f475642a6e85809b1c36fa62763669b1b48dd5b",
+		"blockHash": "0x244816652f9a0cbe0954ae7c3b6de8ca67045f262573401b665ff89651268b70",
+		"blockNumber": "0x1d747d",
+		"data": "0x000000000000000000000000000000000000000000000000000000000000759e000000000000000000000000896e3a0f5c499c72ded0cd59a6c0162a5172c1e40000000000000000000000000000000000000000000000000000000000002155000000000000000000000000cee9b58c2cdb01b8bf75a27e96ec09bf885ef55ad8bf06400f12b0a4da2c4fa069b04b6106d52f5bdb2c0db14a0cd89e95b16578",
+		"logIndex": "0x0",
+		"removed": false,
+		"topics": [
+			"0x0d87345f3d1c929caba93e1c3821b54ff3512e12b66aa3cfe54b6bcbc17e59b4"
+		],
+		"transactionHash": "0x1d9a583ccc1a1706d58e77f098186089e651c13991d9f138fb801a9e57b77858",
+		"transactionIndex": "0x1"
+	}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	_, err := handleLogCallback(
+		factoryAddr,
+		factoryAddr, // Actually the infra market
+		factoryAddr, // Actually the lockup
+		factoryAddr, // Actually SARP's on-chain signaller.
+		factoryAddr,
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "layerzero_events_packet_verified", table, "table not equal")
 			wasRun = true
 			return nil
 		},
