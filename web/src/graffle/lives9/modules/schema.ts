@@ -1051,7 +1051,6 @@ export namespace Schema {
       __typename: Settings.__typename;
       notification: Settings.notification;
       refererr: Settings.refererr;
-      referrerAddress: Settings.referrerAddress;
     };
   }
 
@@ -1081,16 +1080,6 @@ export namespace Schema {
      */
     export interface refererr extends $.OutputField {
       name: "refererr";
-      arguments: {};
-      inlineType: [0];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    /**
-     * The result of the referrer code to address, if there is one.
-     */
-    export interface referrerAddress extends $.OutputField {
-      name: "referrerAddress";
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$String;

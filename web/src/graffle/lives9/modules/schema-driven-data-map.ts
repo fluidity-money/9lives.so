@@ -132,7 +132,6 @@ const Settings: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     notification: {},
     refererr: {},
-    referrerAddress: {},
   },
 };
 

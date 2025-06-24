@@ -1632,14 +1632,6 @@ export interface Settings<
   refererr?:
     | Settings.refererr$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Settings.refererr<_$Scalars>>;
-  /**
-   *
-   * Select the `referrerAddress` field on the `Settings` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  referrerAddress?:
-    | Settings.referrerAddress$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Settings.referrerAddress<_$Scalars>>;
 
   /**
    *
@@ -1728,36 +1720,6 @@ export namespace Settings {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | refererr$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type referrerAddress<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $Select.Indicator.NoArgsIndicator
-    | referrerAddress$SelectionSet<_$Scalars>;
-
-  export interface referrerAddress$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `referrerAddress` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type referrerAddress$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | referrerAddress$SelectionSet<_$Scalars>
   >;
 }
 
