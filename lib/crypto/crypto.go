@@ -123,7 +123,9 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 	sig := make([]byte, 65)
 	copy(sig[:32], op.R[:])
 	copy(sig[32:64], op.S[:])
-	sig[64] = op.V - 27
+	if sig[64] == 27 || sig[64] == 28 {
+		sig[64] -= 27
+	}
 	// We set the chain id to be the originating chain so there are
 	// no issues involving warnings on the client side for the users.
 	chainId := ethMath.HexOrDecimal256(*originatingChainId)
