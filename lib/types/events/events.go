@@ -112,6 +112,9 @@ func (n Number) Int64() int64 {
 	return n.i.Int64()
 }
 func (n Number) Value() (sqlDriver.Value, error) {
+	if n.i == nil {
+		return "0", nil
+	}
 	return n.String(), nil
 }
 func (n *Number) UnmarshalJSON(b []byte) error {
