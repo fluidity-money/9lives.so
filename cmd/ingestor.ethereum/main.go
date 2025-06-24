@@ -15,6 +15,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	ethCommon "github.com/ethereum/go-ethereum/common"
+
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -55,10 +57,18 @@ func main() {
 	)
 	Entry(
 		features.Get(),
-		config,
 		ingestorPagination,
 		DefaultPaginationPollWait,
 		c,
 		db,
+		IngestorArgs{
+			Factory:         ethCommon.HexToAddress(config.FactoryAddress),
+			InfraMarket:     ethCommon.HexToAddress(config.InfraMarketAddress),
+			Lockup:          ethCommon.HexToAddress(config.LockupAddress),
+			SarpSignallerAi: ethCommon.HexToAddress(config.SarpAiSignallerAddress),
+			LifiDiamond:     ethCommon.HexToAddress(config.LifiDiamondAddress),
+			Layerzero:       ethCommon.HexToAddress(config.LayerzeroEndpointAddress),
+			Dinero:          ethCommon.HexToAddress(config.DineroAddress),
+		},
 	)
 }

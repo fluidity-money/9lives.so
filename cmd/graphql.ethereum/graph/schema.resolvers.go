@@ -1426,11 +1426,6 @@ func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*
 	return &obj.Referrer, nil
 }
 
-// ReferrerAddress is the resolver for the referrerAddress field.
-func (r *settingsResolver) ReferrerAddress(ctx context.Context, obj *types.Settings) (*string, error) {
-	panic(fmt.Errorf("not implemented: ReferrerAddress - referrerAddress"))
-}
-
 // Activity returns ActivityResolver implementation.
 func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
 

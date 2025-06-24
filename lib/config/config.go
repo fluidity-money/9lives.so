@@ -17,13 +17,14 @@ const DefaultChainId = 55244
 
 // C is configuration for each service, and globally.
 type C struct {
-	GethUrls                              []string
-	TimescaleUrls                         []string
-	FactoryAddress, InfraMarketAddress    string
-	BeautyContestAddress, SarpAiAddress   string
-	LockupAddress, SarpAiSignallerAddress string
-	LifiDiamondAddress, PaymasterAddress   string
-	ChainId                               int
+	GethUrls                                []string
+	TimescaleUrls                           []string
+	FactoryAddress, InfraMarketAddress      string
+	BeautyContestAddress, SarpAiAddress     string
+	LockupAddress, SarpAiSignallerAddress   string
+	LifiDiamondAddress, PaymasterAddress    string
+	LayerzeroEndpointAddress, DineroAddress string
+	ChainId                                 int
 }
 
 // Get config by querying environment variables.
@@ -71,18 +72,28 @@ func Get() C {
 	if paymasterAddr == "" {
 		setup.Exitf("SPN_PAYMASTER_ADDR not set")
 	}
+	layerzeroEndpointAddr := strings.ToLower(os.Getenv("SPN_LAYERZERO_ENDPOINT_ADDR"))
+	if layerzeroEndpointAddr == "" {
+		setup.Exitf("SPN_LAYERZERO_ENDPOINT_ADDR not set")
+	}
+	dineroAddr := strings.ToLower(os.Getenv("SPN_DINERO_ADDR"))
+	if dineroAddr == "" {
+		setup.Exitf("SPN_DINERO_ADDR not set")
+	}
 	return C{
-		GethUrls:               gethUrls,
-		TimescaleUrls:          timescaleUrls,
-		FactoryAddress:         factoryAddr,
-		InfraMarketAddress:     infraMarketAddr,
-		BeautyContestAddress:   beautyContestAddr,
-		SarpAiAddress:          sarpAiAddr,
-		LockupAddress:          lockupAddr,
-		SarpAiSignallerAddress: sarpAiSignallerAddr,
-		LifiDiamondAddress:     lifiDiamondAddr,
-		PaymasterAddress:       paymasterAddr,
-		ChainId:                DefaultChainId,
+		GethUrls:                 gethUrls,
+		TimescaleUrls:            timescaleUrls,
+		FactoryAddress:           factoryAddr,
+		InfraMarketAddress:       infraMarketAddr,
+		BeautyContestAddress:     beautyContestAddr,
+		SarpAiAddress:            sarpAiAddr,
+		LockupAddress:            lockupAddr,
+		SarpAiSignallerAddress:   sarpAiSignallerAddr,
+		LifiDiamondAddress:       lifiDiamondAddr,
+		PaymasterAddress:         paymasterAddr,
+		LayerzeroEndpointAddress: layerzeroEndpointAddr,
+		DineroAddress:            dineroAddr,
+		ChainId:                  DefaultChainId,
 	}
 }
 

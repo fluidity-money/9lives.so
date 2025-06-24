@@ -1,10 +1,13 @@
 -- migrate:up
 
-IF NOT EXISTS (
-	SELECT 1 FROM pg_type WHERE typname = 'bytes'
-) THEN
-	CREATE DOMAIN BYTES AS VARCHAR;
-END IF;
+DO $$
+	BEGIN
+	IF NOT EXISTS (
+		SELECT 1 FROM pg_type WHERE typname = 'bytes'
+	) THEN
+		CREATE DOMAIN BYTES AS VARCHAR;
+	END IF;
+END $$;
 
 CREATE TABLE layerzero_events_packet_burnt (
 	id SERIAL PRIMARY KEY,
@@ -63,7 +66,7 @@ CREATE TABLE layerzero_events_packet_sent (
 	send_library ADDRESS NOT NULL
 );
 
-CREATE TABLE layerzero_events_packet_sent (
+CREATE TABLE layerzero_events_packet_verified (
 	id SERIAL PRIMARY KEY,
 	created_by TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	block_hash HASH NOT NULL,

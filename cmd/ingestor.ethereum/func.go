@@ -8,15 +8,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fluidity-money/9lives.so/lib/config"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/types"
 
 	"github.com/fluidity-money/9lives.so/lib/events"
-	"github.com/fluidity-money/9lives.so/lib/events/lifi"
+	"github.com/fluidity-money/9lives.so/lib/events/dinero"
 	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
+	"github.com/fluidity-money/9lives.so/lib/events/lifi"
 	"github.com/fluidity-money/9lives.so/lib/events/onchaingm"
 	"github.com/fluidity-money/9lives.so/lib/events/stargate"
 
@@ -71,30 +71,28 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	layerzero.TopicPacketNilified,
 	layerzero.TopicPacketSent,
 	layerzero.TopicPacketVerified,
+	// Dinero
+	dinero.TopicOFTReceived,
+	dinero.TopicOFTSent,
+	dinero.TopicOwnershipTransferred,
+}
+
+type IngestorArgs struct {
+	Factory, InfraMarket, Lockup, SarpSignallerAi ethCommon.Address
+	LifiDiamond, Layerzero, Dinero                ethCommon.Address
 }
 
 // Entry function, using the database to determine if polling should be
 // used exclusively to receive logs, polling only for catchup, or
 // exclusively websockets.
-func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, c *ethclient.Client, db *gorm.DB) {
-	var (
-		factoryAddr            = ethCommon.HexToAddress(config.FactoryAddress)
-		infraMarketAddr        = ethCommon.HexToAddress(config.InfraMarketAddress)
-		lockupAddr             = ethCommon.HexToAddress(config.LockupAddress)
-		sarpAiSignallerAddress = ethCommon.HexToAddress(config.SarpAiSignallerAddress)
-		lifiDiamondAddress     = ethCommon.HexToAddress(config.LifiDiamondAddress)
-	)
+func Entry(f features.F, ingestorPagination int, pollWait int, c *ethclient.Client, db *gorm.DB, ingestorArgs IngestorArgs) {
 	IngestPolling(
 		f,
 		c,
 		db,
 		ingestorPagination,
 		pollWait,
-		factoryAddr,
-		infraMarketAddr,
-		lockupAddr,
-		sarpAiSignallerAddress,
-		lifiDiamondAddress,
+		ingestorArgs,
 	)
 }
 
@@ -102,7 +100,7 @@ func Entry(f features.F, config config.C, ingestorPagination int, pollWait int, 
 // receive log updates. Checks the database first to determine where the
 // last point is before continuing. Assumes ethclient is HTTP.
 // Uses the IngestBlockRange function to do all the lifting.
-func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, factoryAddress, infraMarketAddress, lockupAddress, sarpAiSignallerAddress, lifiDiamondAddress ethCommon.Address) {
+func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagination, ingestorPollWait int, ingestorArgs IngestorArgs) {
 	if ingestorPagination <= 0 {
 		panic("bad ingestor pagination")
 	}
@@ -121,11 +119,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 			f,
 			c,
 			db,
-			factoryAddress,
-			infraMarketAddress,
-			lockupAddress,
-			sarpAiSignallerAddress,
-			lifiDiamondAddress,
+			ingestorArgs,
 			from,
 			to,
 		)
@@ -141,7 +135,7 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 // funciton to write records found to the database. Assumes the ethclient
 // provided is a HTTP client. Also updates the underlying last block it
 // saw into the database checkpoints. Fatals if something goes wrong.
-func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAddr, infraMarket, lockupAddr, sarpSignallerAiAddr, lifiDiamondAddr ethCommon.Address, from, to uint64) {
+func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorArgs IngestorArgs, from, to uint64) {
 	latestBlockNo, err := c.BlockNumber(context.Background())
 	if err != nil {
 		setup.Exitf("failed to get latest block number: %v", err)
@@ -161,16 +155,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 			err        error
 		)
 		for _, l := range logs {
-			hasChanged, err = handleLog(
-				f,
-				db,
-				factoryAddr,
-				infraMarket,
-				lockupAddr,
-				sarpSignallerAiAddr,
-				lifiDiamondAddr,
-				l,
-			)
+			hasChanged, err = handleLog(f, db, ingestorArgs, l)
 			if err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
@@ -195,13 +180,9 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, factoryAdd
 	}
 }
 
-func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAiAddr, lifiDiamondAddr ethCommon.Address, l ethTypes.Log) (bool, error) {
+func handleLog(f features.F, db *gorm.DB, ingestorArgs IngestorArgs, l ethTypes.Log) (bool, error) {
 	return handleLogCallback(
-		factoryAddr,
-		infraMarketAddr,
-		lockupAddr,
-		sarpSignallerAiAddr,
-		lifiDiamondAddr,
+		ingestorArgs,
 		l,
 		func(blockHash, txHash, addr string) error {
 			// Track this address as a trading contract.
@@ -225,7 +206,8 @@ func handleLog(f features.F, db *gorm.DB, factoryAddr, infraMarketAddr, lockupAd
 		},
 	)
 }
-func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAiAddr, lifiDiamondAddr ethCommon.Address, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
+
+func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract func(blockHash, txHash, addr string) error, cbIsTrading func(addr string) (bool, error), cbInsert func(table string, l any) error) (bool, error) {
 	var topic1, topic2, topic3 ethCommon.Hash
 	topic0 := l.Topics[0]
 	if len(l.Topics) > 1 {
@@ -279,7 +261,7 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 	// There may be more Stargate OFTs in the future, so we insert everything
 	// we see with this topic, and we trust the consumer to validate that
 	// everything is correct themselves by verifying the emitter.
-	var fromTrading, isStargateOft, isOnchainGm, isLayerzero bool
+	var fromTrading, isStargateOft, isOnchainGm bool
 	switch topic0 {
 	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
@@ -438,27 +420,34 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		a, err = layerzero.UnpackPacketBurnt(data)
 		table = "layerzero_events_packet_burnt"
 		logEvent("PacketBurnt")
-		isLayerzero = true
 	case layerzero.TopicPacketDelivered:
 		a, err = layerzero.UnpackPacketDelivered(data)
 		table = "layerzero_events_packet_delivered"
 		logEvent("PacketDelivered")
-		isLayerzero = true
 	case layerzero.TopicPacketNilified:
 		a, err = layerzero.UnpackPacketNilified(data)
 		table = "layerzero_events_packet_nilified"
 		logEvent("PacketNilified")
-		isLayerzero = true
 	case layerzero.TopicPacketSent:
 		a, err = layerzero.UnpackPacketSent(data)
 		table = "layerzero_events_packet_sent"
 		logEvent("PacketSent")
-		isLayerzero = true
 	case layerzero.TopicPacketVerified:
 		a, err = layerzero.UnpackPacketVerified(data)
 		table = "layerzero_events_packet_verified"
 		logEvent("PacketVerified")
-		isLayerzero = true
+	case dinero.TopicOFTReceived:
+		a, err = dinero.UnpackOFTReceived(topic1, topic2, data)
+		table = "dinero_events_oft_received"
+		logEvent("OFTReceived")
+	case dinero.TopicOFTSent:
+		a, err = dinero.UnpackOFTSent(topic1, topic2, data)
+		table = "dinero_events_oft_sent"
+		logEvent("OFTSent")
+	case dinero.TopicOwnershipTransferred:
+		a, err = dinero.UnpackOwnershipTransferred(topic1, topic2, data)
+		table = "dinero_events_ownership_transferred"
+		logEvent("OwnershipTransferred")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -466,29 +455,25 @@ func handleLogCallback(factoryAddr, infraMarketAddr, lockupAddr, sarpSignallerAi
 		return false, fmt.Errorf("failed to process topic for table %#v: %v", table, err)
 	}
 	emitterAddrS := strings.ToLower(emitterAddr.String())
-	setEventFields(
-		&a,
-		blockHash,
-		transactionHash,
-		blockNumber,
-		emitterAddrS,
-	)
+	setEventFields( &a, blockHash, transactionHash, blockNumber, emitterAddrS)
 	isTradingAddr, err := cbIsTrading(emitterAddrS)
 	if err != nil {
 		return false, fmt.Errorf("finding trading addr: %v", err)
 	}
 	var (
-		isFactory       = factoryAddr == emitterAddr
-		isInfraMarket   = infraMarketAddr == emitterAddr
-		isLockup        = lockupAddr == emitterAddr
-		isSarpSignaller = sarpSignallerAiAddr == emitterAddr
-		isLifi          = lifiDiamondAddr == emitterAddr
+		isFactory       = r.Factory == emitterAddr
+		isInfraMarket   = r.InfraMarket == emitterAddr
+		isLockup        = r.Lockup == emitterAddr
+		isSarpSignaller = r.SarpSignallerAi == emitterAddr
+		isLifi          = r.LifiDiamond == emitterAddr
+		isLayerzero     = r.Layerzero == emitterAddr
+		isDinero        = r.Dinero == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
-		isOnchainGm, isLayerzero:
+		isOnchainGm, isLayerzero, isDinero:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to

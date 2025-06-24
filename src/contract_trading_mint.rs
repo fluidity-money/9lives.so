@@ -6,9 +6,12 @@ use stylus_sdk::{
 use crate::{
     error::*,
     events, fusdc_call,
-    immutables::{self, THREE_HOURS_SECS},
+    immutables::THREE_HOURS_SECS,
     utils::{block_timestamp, msg_sender},
 };
+
+#[cfg(not(feature = "trading-backend-dpm"))]
+use crate::immutables;
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;

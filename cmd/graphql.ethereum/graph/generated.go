@@ -184,9 +184,8 @@ type ComplexityRoot struct {
 	}
 
 	Settings struct {
-		Notification    func(childComplexity int) int
-		Refererr        func(childComplexity int) int
-		ReferrerAddress func(childComplexity int) int
+		Notification func(childComplexity int) int
+		Refererr     func(childComplexity int) int
 	}
 
 	Share struct {
@@ -271,7 +270,6 @@ type QueryResolver interface {
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
-	ReferrerAddress(ctx context.Context, obj *types.Settings) (*string, error)
 }
 
 type executableSchema struct {
@@ -1029,13 +1027,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Settings.Refererr(childComplexity), true
-
-	case "Settings.referrerAddress":
-		if e.complexity.Settings.ReferrerAddress == nil {
-			break
-		}
-
-		return e.complexity.Settings.ReferrerAddress(childComplexity), true
 
 	case "Share.address":
 		if e.complexity.Share.Address == nil {
@@ -5464,8 +5455,6 @@ func (ec *executionContext) fieldContext_Profile_settings(_ context.Context, fie
 				return ec.fieldContext_Settings_notification(ctx, field)
 			case "refererr":
 				return ec.fieldContext_Settings_refererr(ctx, field)
-			case "referrerAddress":
-				return ec.fieldContext_Settings_referrerAddress(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Settings", field.Name)
 		},
@@ -6767,47 +6756,6 @@ func (ec *executionContext) _Settings_refererr(ctx context.Context, field graphq
 }
 
 func (ec *executionContext) fieldContext_Settings_refererr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Settings",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Settings_referrerAddress(ctx context.Context, field graphql.CollectedField, obj *types.Settings) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Settings_referrerAddress(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Settings().ReferrerAddress(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Settings_referrerAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Settings",
 		Field:      field,
@@ -10848,39 +10796,6 @@ func (ec *executionContext) _Settings(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Settings_refererr(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "referrerAddress":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Settings_referrerAddress(ctx, field, obj)
 				return res
 			}
 

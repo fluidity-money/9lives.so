@@ -14,6 +14,14 @@ import (
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
 )
 
+func testIngestorArgs(x ethCommon.Address) IngestorArgs {
+	return IngestorArgs{x, x, x, x, x, x, x}
+}
+
+func testIngestorArgsZero() IngestorArgs {
+	return testIngestorArgs(ethCommon.HexToAddress("0x0000000000000000000000000000000000000000"))
+}
+
 func TestTopicsAreOkay(t *testing.T) {
 	var z [32]byte
 	assert.NotContains(t, z[:], FilterTopics)
@@ -43,11 +51,7 @@ func TestSharesMinted(t *testing.T) {
 	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 
 	handleLogCallback(
-		factoryAddr,
-		factoryAddr, // Actually the infra market
-		factoryAddr, // Actually the lockup
-		factoryAddr, // Actually SARP's on-chain signaller.
-		factoryAddr, // Actually Lifi's diamond.
+		testIngestorArgs(factoryAddr),
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -87,11 +91,7 @@ func TestOutcomeDecided(t *testing.T) {
 	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 
 	_, err := handleLogCallback(
-		factoryAddr,
-		factoryAddr, // Actually the infra market
-		factoryAddr, // Actually the lockup
-		factoryAddr, // Actually SARP's on-chain signaller.
-		factoryAddr, // Actually Lifi's diamond.
+		testIngestorArgs(factoryAddr),
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -129,14 +129,9 @@ func TestLifiGenericSwapCompleted(t *testing.T) {
 	var l ethTypes.Log
 	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
 	wasRun := false
-	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 	lifiDiamond := ethCommon.HexToAddress("0x03d55A7896097801B1dE90b4E3E0392CE279180A")
 	_, err := handleLogCallback(
-		factoryAddr,
-		factoryAddr, // Actually the infra market
-		factoryAddr, // Actually the lockup
-		factoryAddr, // Actually SARP's on-chain signaller.
-		lifiDiamond,
+		IngestorArgs{LifiDiamond: lifiDiamond},
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -173,13 +168,8 @@ func TestStargateOFTReceived(t *testing.T) {
 	var l ethTypes.Log
 	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
 	wasRun := false
-	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 	_, err := handleLogCallback(
-		factoryAddr,
-		factoryAddr, // Actually the infra market
-		factoryAddr, // Actually the lockup
-		factoryAddr, // Actually SARP's on-chain signaller.
-		factoryAddr,
+		testIngestorArgsZero(),
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -216,13 +206,8 @@ func TestOnchainGm(t *testing.T) {
 	var l ethTypes.Log
 	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
 	wasRun := false
-	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 	_, err := handleLogCallback(
-		factoryAddr,
-		factoryAddr, // Actually the infra market
-		factoryAddr, // Actually the lockup
-		factoryAddr, // Actually SARP's on-chain signaller.
-		factoryAddr,
+		testIngestorArgsZero(),
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -257,13 +242,10 @@ func TestLayerzeroPacketDelivered(t *testing.T) {
 	var l ethTypes.Log
 	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
 	wasRun := false
-	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 	_, err := handleLogCallback(
-		factoryAddr,
-		factoryAddr, // Actually the infra market
-		factoryAddr, // Actually the lockup
-		factoryAddr, // Actually SARP's on-chain signaller.
-		factoryAddr,
+		IngestorArgs{
+			Layerzero: ethCommon.HexToAddress("0x6f475642a6e85809b1c36fa62763669b1b48dd5b"),
+		},
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -305,13 +287,10 @@ func TestLayerzeroPacketSent(t *testing.T) {
 	var l ethTypes.Log
 	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
 	wasRun := false
-	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 	_, err := handleLogCallback(
-		factoryAddr,
-		factoryAddr, // Actually the infra market
-		factoryAddr, // Actually the lockup
-		factoryAddr, // Actually SARP's on-chain signaller.
-		factoryAddr,
+		IngestorArgs{
+			Layerzero: ethCommon.HexToAddress("0x6f475642a6e85809b1c36fa62763669b1b48dd5b"),
+		},
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.
@@ -359,13 +338,48 @@ func TestLayerzeroPacketVerified(t *testing.T) {
 	var l ethTypes.Log
 	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
 	wasRun := false
-	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 	_, err := handleLogCallback(
-		factoryAddr,
-		factoryAddr, // Actually the infra market
-		factoryAddr, // Actually the lockup
-		factoryAddr, // Actually SARP's on-chain signaller.
-		factoryAddr,
+		IngestorArgs{
+			Layerzero: ethCommon.HexToAddress("0x6f475642a6e85809b1c36fa62763669b1b48dd5b"),
+		},
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "layerzero_events_packet_verified", table, "table not equal")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}
+
+func TestDineroOFTReceived(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0x6f475642a6e85809b1c36fa62763669b1b48dd5b",
+		"blockHash": "0x244816652f9a0cbe0954ae7c3b6de8ca67045f262573401b665ff89651268b70",
+		"blockNumber": "0x1d747d",
+		"data": "0x000000000000000000000000000000000000000000000000000000000000759e000000000000000000000000896e3a0f5c499c72ded0cd59a6c0162a5172c1e40000000000000000000000000000000000000000000000000000000000002155000000000000000000000000cee9b58c2cdb01b8bf75a27e96ec09bf885ef55ad8bf06400f12b0a4da2c4fa069b04b6106d52f5bdb2c0db14a0cd89e95b16578",
+		"logIndex": "0x0",
+		"removed": false,
+		"topics": [
+			"0x0d87345f3d1c929caba93e1c3821b54ff3512e12b66aa3cfe54b6bcbc17e59b4"
+		],
+		"transactionHash": "0x1d9a583ccc1a1706d58e77f098186089e651c13991d9f138fb801a9e57b77858",
+		"transactionIndex": "0x1"
+	}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	_, err := handleLogCallback(
+		IngestorArgs{
+			Layerzero: ethCommon.HexToAddress("0x6f475642a6e85809b1c36fa62763669b1b48dd5b"),
+		},
 		l,
 		func(blockHash, txHash, addr string) error {
 			return nil // Unused for this test.

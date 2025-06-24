@@ -97,11 +97,6 @@ type Settings {
   Did the user click a referrer link that we should hint to the browser?
   """
   refererr: String
-
-  """
-  The result of the referrer code to address, if there is one.
-  """
-  referrerAddress: String
 }
 
 type Profile {
