@@ -412,7 +412,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		isStargateOft = true
 	case stargate.TopicStargateOFTSent:
 		a, err = stargate.UnpackStargateOFTSent(topic1, topic2, data)
-		table = "stargate_events_stargate_oft_sent"
+		table = "stargate_events_oft_sent"
 		logEvent("OFTSent")
 		isStargateOft = true
 	case onchaingm.TopicOnchainGm:
