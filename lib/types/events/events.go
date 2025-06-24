@@ -64,6 +64,14 @@ func (b Bytes) Bytes() []byte {
 func (b Bytes) Value() (sqlDriver.Value, error) {
 	return b.String(), nil
 }
+func (b *Bytes) Scan(a any) (err error) {
+	s, ok := a.(string)
+	if !ok {
+		return fmt.Errorf("unmarshal %T, wanted string", a)
+	}
+	b, err = BytesFromHex(s)
+	return err
+}
 
 func AddressFromString(s string) Address {
 	return Address(strings.ToLower(s))
@@ -89,6 +97,14 @@ func (a *Address) UnmarshalJSON(b []byte) error {
 	*a = AddressFromString(s)
 	return nil
 }
+func (r *Address) Scan(a any) (err error) {
+	s, ok := a.(string)
+	if !ok {
+		return fmt.Errorf("unmarshal %T, wanted string", a)
+	}
+	r, err = MaybeAddressFromString(s)
+	return err
+}
 
 func NumberFromBig(x *big.Int) Number {
 	return Number{x}
@@ -108,14 +124,19 @@ func (n Number) String() string {
 func (n Number) Big() *big.Int {
 	return n.i
 }
-func (n Number) Int64() int64 {
-	return n.i.Int64()
-}
 func (n Number) Value() (sqlDriver.Value, error) {
 	if n.i == nil {
 		return "0", nil
 	}
 	return n.String(), nil
+}
+func (n *Number) Scan(a any) (err error) {
+	s, ok := a.(string)
+	if !ok {
+		return fmt.Errorf("unmarshal %T, wanted string", a)
+	}
+	n, err = NumberFromString(s)
+	return err
 }
 func (n *Number) UnmarshalJSON(b []byte) error {
 	var s string
