@@ -26,7 +26,7 @@ CREATE TABLE dinero_events_oft_sent (
 	dst_eid INTEGER NOT NULL,
 	from_address ADDRESS NOT NULL,
 	amount_sent_ld HUGEINT NOT NULL,
-	amount_received_ld HUGEINT NOT NULL,
+	amount_received_ld HUGEINT NOT NULL
 );
 
 CREATE TABLE dinero_events_ownership_transferred (

@@ -1,8 +1,6 @@
 -- migrate:up
 
-DROP VIEW IF EXISTS ninelives_frontpage_delta_view_1;
-
-CREATE OR REPLACE FUNCTION ninelives_get_featured_campaigns_1(
+CREATE FUNCTION ninelives_get_featured_campaigns_1(
     interval_value INTERVAL,
     limit_count INTEGER
     )
@@ -45,7 +43,7 @@ BEGIN
         GROUP BY pool
     ),
     campaigns_with_liquidity AS (
-        SELECT 
+        SELECT
             c.*,
             COALESCE(cl.total_liquidity, 0)::HUGEINT AS total_liquidity,
             COALESCE(hc.liquidity_last_hour, 0)::HUGEINT AS liquidity_last_hour
