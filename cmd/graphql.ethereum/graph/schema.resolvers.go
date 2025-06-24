@@ -1369,7 +1369,7 @@ func (r *queryResolver) FeaturedCampaign(ctx context.Context, limit *int) ([]typ
 	}
 	err := r.DB.Raw(`
 	SELECT *
-	FROM private_ninelives_campaigns_sorted_by_breakout_2
+	FROM private_ninelives_campaigns_sorted_by_breakout_3
 	WHERE content->>'winner' IS NULL
 	LIMIT ?
 	`, n).Scan(&campaigns).Error
