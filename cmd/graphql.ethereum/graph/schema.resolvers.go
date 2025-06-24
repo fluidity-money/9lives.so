@@ -372,6 +372,11 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		return nil, fmt.Errorf("amount to spend")
 	}
 	p.AmountToSpend = *amountToSpend_
+	minimumBack_, err := events.NumberFromString(minimumBack)
+	if err != nil {
+		return nil, fmt.Errorf("minimum back")
+	}
+	p.MinimumBack = *minimumBack_
 	rr_, err := events.BytesFromHex(rr)
 	if err != nil {
 		return nil, fmt.Errorf("r value")
