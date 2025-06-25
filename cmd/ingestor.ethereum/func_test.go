@@ -358,3 +358,40 @@ func TestLayerzeroPacketVerified(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, wasRun)
 }
+
+func TestVendorBorrow(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0x389dbaad12259f5865b63c52eb254ed9231e5476",
+		"blockHash": "0x8167878bc26b91ac6664ab6e3166a6a086ca2da1f9f7a7b7297828ac584d79a3",
+		"blockNumber": "0x1d8c8e",
+		"data": "0x00000000000000000000000000000000000000000000000000000c4736b45800000000000000000000000000000000000000000000000000000051dac207a0000000000000000000000000000000000000000000000000000000000000004e200000000000000000000000000000000000000000000000000011c37937e08000000000000000000000000000000000000000000000000000000ffcb9e57d4000",
+		"logIndex": "0x6",
+		"removed": false,
+		"topics": [
+			"0x1f1f246d28cf134f9cd6749340babdf184db7363b6754c5de8fd9ecf4b410cc7",
+			"0x00000000000000000000000088769789657055e5629b758124f3bc52f218a2c5"
+		],
+		"transactionHash": "0x244302dd8baa554b0f9848860f913c97e28a0325786510e8667dc1147f09a1c6",
+		"transactionIndex": "0x1"
+	}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	_, err := handleLogCallback(
+		testIngestorArgsZero(),
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "vendor_events_borrow", table, "table not equal")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}

@@ -267,7 +267,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 	// There may be more Stargate OFTs in the future, so we insert everything
 	// we see with this topic, and we trust the consumer to validate that
 	// everything is correct themselves by verifying the emitter.
-	var fromTrading, isStargateOft, isOnchainGm bool
+	var fromTrading, isStargateOft, isOnchainGm, isVendor bool
 	switch topic0 {
 	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
@@ -455,22 +455,27 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		a, err = vendor.UnpackBorrow(topic1, data)
 		table = "vendor_events_borrow"
 		logEvent("Borrow")
+		isVendor = true
 	case vendor.TopicDeposit:
 		a, err = vendor.UnpackDeposit(topic1, data)
 		table = "vendor_events_deposit"
 		logEvent("Deposit")
+		isVendor = true
 	case vendor.TopicRepay:
 		a, err = vendor.UnpackRepay(topic1, data)
 		table = "vendor_events_repay"
 		logEvent("Repay")
+		isVendor = true
 	case vendor.TopicRollIn:
 		a, err = vendor.UnpackRollIn(topic1, data)
 		table = "vendor_events_roll_in"
 		logEvent("RollIn")
+		isVendor = true
 	case vendor.TopicWithdraw:
 		a, err = vendor.UnpackWithdraw(topic1, data)
 		table = "vendor_events_withdraw"
 		logEvent("Withdraw")
+		isVendor = true
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -496,7 +501,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
-		isOnchainGm, isLayerzero, isDinero:
+		isOnchainGm, isLayerzero, isDinero, isVendor:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to

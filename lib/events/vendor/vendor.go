@@ -32,7 +32,7 @@ type (
 		Borrower            events.Address `json:"borrower"`
 		VendorFees          events.Number  `json:"vendor_fees"`
 		LenderFees          events.Number  `json:"lender_fees"`
-		BorrowRate          int            `json:"borrow_rate"`
+		BorrowRate          events.Number            `json:"borrow_rate"`
 		AdditionalColAmount events.Number  `json:"additional_col_amount"`
 		AdditionalDebt      events.Number  `json:"additional_debt"`
 	}
@@ -93,7 +93,7 @@ func UnpackBorrow(topic1 ethCommon.Hash, d []byte) (*EventBorrow, error) {
 	if !ok {
 		return nil, fmt.Errorf("lenderFees: %T", i[1])
 	}
-	borrowRate, ok := i[2].(int)
+	borrowRate, ok := i[2].(*big.Int)
 	if !ok {
 		return nil, fmt.Errorf("borrowRate: %T", i[2])
 	}
@@ -109,7 +109,7 @@ func UnpackBorrow(topic1 ethCommon.Hash, d []byte) (*EventBorrow, error) {
 		Borrower:            hashToAddr(topic1),
 		VendorFees:          events.NumberFromBig(vendorFees),
 		LenderFees:          events.NumberFromBig(lenderFees),
-		BorrowRate:          borrowRate,
+		BorrowRate:          events.NumberFromBig(borrowRate),
 		AdditionalColAmount: events.NumberFromBig(additionalColAmount),
 		AdditionalDebt:      events.NumberFromBig(additionalDebt),
 	}, nil
