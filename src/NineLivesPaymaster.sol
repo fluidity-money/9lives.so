@@ -213,5 +213,6 @@ contract NineLivesPaymaster {
             acc += amt;
         }
         USDC.transfer(msg.sender, acc);
+        return statuses;
     }
 }

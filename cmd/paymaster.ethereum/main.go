@@ -4,18 +4,19 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
+	"encoding/hex"
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 	"strconv"
+	"crypto/ecdsa"
 	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
+	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	"github.com/fluidity-money/9lives.so/lib/setup"
-	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
 
 	_ "github.com/lib/pq"
@@ -50,6 +51,13 @@ func main() {
 	if err != nil {
 		setup.Exitf("private key: %v", err)
 	}
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		setup.Exitf("error casting public key")
+	}
+	// Generate the Ethereum address from the public key
+	fromAddr := ethCrypto.PubkeyToAddress(*publicKeyECDSA)
 	pollLifetimeSecs, err := strconv.Atoi(os.Getenv(EnvPollLifeTimeSecs))
 	if err != nil {
 		setup.Exitf("poll life time strconv: %v", err)
@@ -107,19 +115,24 @@ L:
 		for _, x := range items {
 			operations = append(operations, crypto.PollToPaymasterOperation(x))
 		}
-		log.Print("operations: %v, items: %v", operations, items)
 		// Now that we've packed the data, let's simulate the cumulative data
 		// here, and see if any transactions won't execute. If they won't, then
 		// we remove them from the array that we have, and prune the results,
 		// then send. And we hit the database function that indicates we had a
 		// failure to submit this.
+		callCd := packOperations(operations...)
 		callRes, err := c.CallContract(ctx, ethereum.CallMsg{
 			To:   &paymasterAddr,
-			Data: packOperations(operations...),
+			From: fromAddr,
+			Data: callCd,
 		}, nil)
 		if err != nil {
 			setup.Exitf("call result: %v", err)
 		}
+		if len(callRes) == 0 {
+			setup.Exitf("error calling: %x", callCd)
+		}
+		slog.Info("response", "resp", callRes, "data", hex.EncodeToString(packOperations(operations...)))
 		// These are the bad ids we need to call with our function to remove.
 		callResI, err := abi.Unpack("multicall", callRes)
 		if err != nil {
@@ -150,6 +163,7 @@ L:
 		// Start to swap around the values that aren't going to work properly.
 		gas, err := c.EstimateGas(ctx, ethereum.CallMsg{
 			To:   &paymasterAddr,
+			From: fromAddr,
 			Data: packOperations(operations[:len(badIds)]...),
 		})
 		if err != nil {
@@ -178,7 +192,7 @@ L:
 
 func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int) {
 	// Generate the template that uses the function to take a id as having a failure.
-	logIds := make([]LogId, 0, len(badIds) + len(goodIds))
+	logIds := make([]LogId, 0, len(badIds)+len(goodIds))
 	for _, b := range badIds {
 		logIds = append(logIds, LogId{b, false})
 	}
