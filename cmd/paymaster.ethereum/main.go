@@ -111,13 +111,9 @@ L:
 		// we remove them from the array that we have, and prune the results,
 		// then send. And we hit the database function that indicates we had a
 		// failure to submit this.
-		cd, err := abi.Pack("multicall", operations)
-		if err != nil {
-			setup.Exitf("packing error: %v", err)
-		}
 		callRes, err := c.CallContract(ctx, ethereum.CallMsg{
 			To:   &paymasterAddr,
-			Data: cd,
+			Data: packOperations(operations...),
 		}, nil)
 		if err != nil {
 			setup.Exitf("call result: %v", err)
@@ -149,14 +145,10 @@ L:
 		}
 		logIds(db, ctx, badIds, goodIds)
 		// We need to regenerate the calldata now with the trimmed ids.
-		cd, err = abi.Pack("multicall", operations[:len(badIds)])
-		if err != nil {
-			setup.Exitf("new operation count packing error: %v", err)
-		}
 		// Start to swap around the values that aren't going to work properly.
 		gas, err := c.EstimateGas(ctx, ethereum.CallMsg{
 			To:   &paymasterAddr,
-			Data: cd,
+			Data: packOperations(operations[:len(badIds)]...),
 		})
 		if err != nil {
 			setup.Exitf("estimate gas: %v", err)

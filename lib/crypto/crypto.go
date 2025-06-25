@@ -78,17 +78,23 @@ func GetMarketId(outcomes []Outcome) []byte {
 }
 
 type PaymasterOperation struct {
-	Owner                                  ethCommon.Address
-	OriginatingChainId, Nonce, Deadline    *big.Int
-	PaymasterType                          uint8
-	PermitR, PermitS                       [32]byte
-	PermitV                                uint8
-	Market                                 ethCommon.Address
-	MaximumFee, AmountToSpend, MinimumBack *big.Int
-	Referrer                               ethCommon.Address
-	Outcome                                [8]byte
-	V                                      uint8
-	R, S                                   [32]byte
+	Owner              ethCommon.Address `abi:"owner"`
+	OriginatingChainId *big.Int          `abi:"originatingChainId"`
+	Nonce              *big.Int          `abi:"nonce"`
+	Deadline           *big.Int          `abi:"deadline"`
+	Typ                uint8             `abi:"typ"`
+	PermitR            [32]byte          `abi:"permitR"`
+	PermitS            [32]byte          `abi:"permitS"`
+	PermitV            uint8             `abi:"permitV"`
+	Market             ethCommon.Address `abi:"market"`
+	MaximumFee         *big.Int          `abi:"maximumFee"`
+	AmountToSpend      *big.Int          `abi:"amountToSpend"`
+	MinimumBack        *big.Int          `abi:"minimumBack"`
+	Referrer           ethCommon.Address `abi:"referrer"`
+	Outcome            [8]byte           `abi:"outcome"`
+	V                  uint8             `abi:"v"`
+	R                  [32]byte          `abi:"r"`
+	S                  [32]byte          `abi:"s"`
 }
 
 func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
@@ -97,7 +103,7 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		OriginatingChainId: x.OriginatingChainId.Big(),
 		Nonce:              x.Nonce.Big(),
 		Deadline:           new(big.Int).SetInt64(int64(x.Deadline)),
-		PaymasterType:      x.Typ,
+		Typ:                x.Typ,
 		PermitR:            maybeBytesToBytes32(x.PermitR),
 		PermitS:            maybeBytesToBytes32(x.PermitS),
 		PermitV:            x.PermitV,
@@ -106,10 +112,10 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		AmountToSpend:      x.AmountToSpend.Big(),
 		MinimumBack:        x.MinimumBack.Big(),
 		Referrer:           maybeAddrToEthAddr(x.Referrer),
-		Outcome:            maybeBytesToBytes8(x.Outcome),
 		V:                  x.V,
 		R:                  bytesToBytes32(x.R),
 		S:                  bytesToBytes32(x.S),
+		Outcome:            maybeBytesToBytes8(x.Outcome),
 	}
 }
 
@@ -164,7 +170,7 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 			"owner":         op.Owner.String(),
 			"nonce":         op.Nonce,
 			"deadline":      op.Deadline,
-			"typ":           new(big.Int).SetInt64(int64(op.PaymasterType)),
+			"typ":           new(big.Int).SetInt64(int64(op.Typ)),
 			"market":        op.Market.String(),
 			"maximumFee":    op.MaximumFee,
 			"amountToSpend": op.AmountToSpend,
