@@ -107,6 +107,9 @@ func (r *Address) Scan(a any) (err error) {
 }
 
 func NumberFromBig(x *big.Int) Number {
+	if x == nil {
+		x = new(big.Int)
+	}
 	return Number{x}
 }
 func NumberFromString(s string) (*Number, error) {

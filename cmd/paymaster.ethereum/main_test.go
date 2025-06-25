@@ -40,6 +40,9 @@ func addr(s int64) events.Address {
 }
 
 func number(s int64) events.Number {
+	if s == 0 {
+		return events.NumberFromBig(nil)
+	}
 	return events.NumberFromBig(new(big.Int).SetBytes(b(s, 32)))
 }
 
