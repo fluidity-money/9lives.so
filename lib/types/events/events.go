@@ -64,12 +64,16 @@ func (b Bytes) Bytes() []byte {
 func (b Bytes) Value() (sqlDriver.Value, error) {
 	return b.String(), nil
 }
-func (b *Bytes) Scan(a any) (err error) {
+func (b *Bytes) Scan(a any) error {
 	s, ok := a.(string)
 	if !ok {
 		return fmt.Errorf("unmarshal %T, wanted string", a)
 	}
-	b, err = BytesFromHex(s)
+	x, err := BytesFromHex(s)
+	if err != nil {
+		return err
+	}
+	*b = *x
 	return err
 }
 
@@ -102,7 +106,11 @@ func (r *Address) Scan(a any) (err error) {
 	if !ok {
 		return fmt.Errorf("unmarshal %T, wanted string", a)
 	}
-	r, err = MaybeAddressFromString(s)
+	x, err := MaybeAddressFromString(s)
+	if err != nil {
+		return err
+	}
+	*r = *x
 	return err
 }
 
@@ -136,12 +144,16 @@ func (n Number) Value() (sqlDriver.Value, error) {
 	}
 	return n.String(), nil
 }
-func (n *Number) Scan(a any) (err error) {
+func (n *Number) Scan(a any) error {
 	s, ok := a.(string)
 	if !ok {
 		return fmt.Errorf("unmarshal %T, wanted string", a)
 	}
-	n, err = NumberFromString(s)
+	x, err := NumberFromString(s)
+	if err != nil {
+		return err
+	}
+	*n = *x
 	return err
 }
 func (n *Number) UnmarshalJSON(b []byte) error {

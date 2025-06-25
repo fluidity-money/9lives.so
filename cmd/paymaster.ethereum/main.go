@@ -5,6 +5,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"log"
 	"log/slog"
 	"os"
 	"strconv"
@@ -106,6 +107,7 @@ L:
 		for _, x := range items {
 			operations = append(operations, crypto.PollToPaymasterOperation(x))
 		}
+		log.Print("operations: %v, items: %v", operations, items)
 		// Now that we've packed the data, let's simulate the cumulative data
 		// here, and see if any transactions won't execute. If they won't, then
 		// we remove them from the array that we have, and prune the results,
