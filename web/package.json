@@ -23,6 +23,7 @@
     "codegen": "pnpm gen:9lives && pnpm gen:points"
   },
   "dependencies": {
+    "@farcaster/frame-sdk": "^0.0.64",
     "@fluidity-money/snitch-client": "^0.4.0",
     "@headlessui/react": "^2.2.3",
     "@headlessui/tailwindcss": "^0.2.2",
