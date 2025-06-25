@@ -18,6 +18,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
 	"github.com/fluidity-money/9lives.so/lib/events/lifi"
 	"github.com/fluidity-money/9lives.so/lib/events/onchaingm"
+	"github.com/fluidity-money/9lives.so/lib/events/vendor"
 	"github.com/fluidity-money/9lives.so/lib/events/stargate"
 
 	"gorm.io/gorm"
@@ -74,6 +75,12 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	layerzero.TopicPacketVerified,
 	// Dinero
 	dinero.TopicOwnershipTransferred,
+	// Vendor
+	vendor.TopicBorrow,
+	vendor.TopicDeposit,
+	vendor.TopicRepay,
+	vendor.TopicRollIn,
+	vendor.TopicWithdraw,
 }
 
 type IngestorArgs struct {
@@ -444,6 +451,26 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		a, err = dinero.UnpackOwnershipTransferred(topic1, topic2, data)
 		table = "dinero_events_ownership_transferred"
 		logEvent("OwnershipTransferred")
+	case vendor.TopicBorrow:
+		a, err = vendor.UnpackBorrow(topic1, data)
+		table = "vendor_events_borrow"
+		logEvent("Borrow")
+	case vendor.TopicDeposit:
+		a, err = vendor.UnpackDeposit(topic1, data)
+		table = "vendor_events_deposit"
+		logEvent("Deposit")
+	case vendor.TopicRepay:
+		a, err = vendor.UnpackRepay(topic1, data)
+		table = "vendor_events_repay"
+		logEvent("Repay")
+	case vendor.TopicRollIn:
+		a, err = vendor.UnpackRollIn(topic1, data)
+		table = "vendor_events_roll_in"
+		logEvent("RollIn")
+	case vendor.TopicWithdraw:
+		a, err = vendor.UnpackWithdraw(topic1, data)
+		table = "vendor_events_withdraw"
+		logEvent("Withdraw")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
