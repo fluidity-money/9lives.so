@@ -12,22 +12,28 @@ interface UserStore {
   removeFromWatchlist: (id: string) => void;
   trackingConsent: boolean;
   setTrackingConsent: (consent: boolean) => void;
+  isInMiniApp: boolean;
+  setIsInMiniApp: (state: boolean) => void;
 }
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
       watchlist: [],
-      addToWatchlist: (c: Campaign) =>
+      addToWatchlist: (campaign) =>
         set(({ watchlist }) => ({
-          watchlist: [...watchlist, { ...c, totalVolume: 0, winner: null }],
+          watchlist: [
+            ...watchlist,
+            { ...campaign, totalVolume: 0, winner: null },
+          ],
         })),
-      removeFromWatchlist: (id: string) =>
+      removeFromWatchlist: (id) =>
         set(({ watchlist }) => ({
           watchlist: watchlist.filter((c) => c.identifier !== id),
         })),
       trackingConsent: false,
-      setTrackingConsent: (consent: boolean) =>
-        set({ trackingConsent: consent }),
+      setTrackingConsent: (consent) => set({ trackingConsent: consent }),
+      isInMiniApp: false,
+      setIsInMiniApp: (state) => set({ isInMiniApp: state }),
     }),
     {
       name: "user-storage-v0.2",

@@ -8,6 +8,7 @@ import WebSocketProvider from "./websocket";
 import ReferralHandler from "./referralHandler";
 import { Suspense } from "react";
 import LiFiProvider from "./lifi";
+import FarcasterProvider from "./farcaster";
 
 export default function Providers({
   children,
@@ -27,6 +28,7 @@ export default function Providers({
       <ReactQueryProvider initialData={initialData}>
         <ContextInjector />
         <WebSocketProvider />
+        <FarcasterProvider />
         <Suspense>
           <ReferralHandler />
         </Suspense>

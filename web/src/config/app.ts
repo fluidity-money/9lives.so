@@ -1,4 +1,5 @@
 import z from "zod";
+import { farcasterChains } from "./chains";
 enum InfraMarketState {
   Callable,
   Closable,
@@ -98,8 +99,22 @@ const appSchema = z.object({
       "Jailtime.fun",
     ]),
   ),
+  frame: z.any(),
 });
-
+const requiredChains = Object.values(farcasterChains).map(
+  (chain) => `eip155:${chain.id}`,
+);
+const frame = {
+  version: "next",
+  name: metadata.title,
+  iconUrl: `${metadata.metadataBase.origin}/images/logo-hero.svg`,
+  homeUrl: metadata.metadataBase.origin,
+  imageUrl: `${metadata.metadataBase.origin}/images/frame.png`,
+  buttonTitle: "Launch Frame",
+  splashImageUrl: `${metadata.metadataBase.origin}/images/logo-hero.svg`,
+  splashBackgroundColor: "#DDEAEF",
+  requiredChains,
+};
 const appVars = appSchema.safeParse({
   metadata,
   infraMarket: {
@@ -108,6 +123,7 @@ const appVars = appSchema.safeParse({
     fees: infraMarketStateFees,
   },
   categories,
+  frame,
 });
 
 if (!appVars.success) {

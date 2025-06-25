@@ -85,17 +85,19 @@ const superposition = defineChain({
 //   ],
 //   icon: APE,
 // });
-
-const chainList = {
-  superposition: { ...superposition, icon: SPN },
+const farcasterList = {
   arbitrum: { ...arbitrum, icon: ARB },
   ethereum: { ...ethereum, icon: ETH },
-  // apechain: { ...apechain, icon: APE },
-  bsc: { ...bsc, icon: BSC },
-  avalanche: { ...avalanche, icon: AVAX },
   optimism: { ...optimism, icon: OP },
   base: { ...base, icon: BASE },
   polygon: { ...polygon, icon: POL },
+} as const;
+const chainList = {
+  superposition: { ...superposition, icon: SPN },
+  ...farcasterList,
+  // apechain: { ...apechain, icon: APE },
+  bsc: { ...bsc, icon: BSC },
+  avalanche: { ...avalanche, icon: AVAX },
 } as const;
 
 const supportedCrossChainSchema = z.record(z.string(), networkSchema);
@@ -107,8 +109,8 @@ if (!chains.success) {
   console.error("Invalid chain: ", chains.error.name);
   throw new Error(chains.error.message);
 }
-
 export default chains.data as typeof chainList;
+export { farcasterList as farcasterChains };
 export const destinationChain =
   clientEnv.NEXT_PUBLIC_CHAIN === "mainnet"
     ? superposition

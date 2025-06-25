@@ -31,6 +31,7 @@ import USDCImg from "#/images/usdc.svg";
 import useTokens from "@/hooks/useTokens";
 import useProfile from "@/hooks/useProfile";
 import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
+import { useUserStore } from "@/stores/userStore";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -103,6 +104,7 @@ export default function DetailBuyAction({
       fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
     },
   });
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const supply = watch("supply");
   const fromChain = watch("fromChain");
   const fromToken = watch("fromToken");
@@ -369,14 +371,16 @@ export default function DetailBuyAction({
                   From{" "}
                   <span className="underline">
                     {
-                      Object.values(config.chains).find(
-                        (chain) => chain.id === fromChain,
-                      )?.name
+                      Object.values(
+                        isInMiniApp ? config.farcasterChains : config.chains,
+                      ).find((chain) => chain.id === fromChain)?.name
                     }
                   </span>
                 </span>
                 <div className="flex items-center gap-1">
-                  {Object.values(config.chains).map((chain) => (
+                  {Object.values(
+                    isInMiniApp ? config.farcasterChains : config.chains,
+                  ).map((chain) => (
                     <div
                       key={chain.id}
                       onClick={() => handleNetworkChange(chain)}

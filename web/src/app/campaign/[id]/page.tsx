@@ -1,4 +1,5 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
+import config from "@/config";
 import { requestCampaignById } from "@/providers/graphqlClient";
 import { getCampaignsForSSG } from "@/serverData/getCampaigns";
 import { CampaignDetailDto } from "@/types";
@@ -19,6 +20,9 @@ export async function generateMetadata({ params }: { params: Params }) {
   return {
     title: response?.name ?? "Predict on 9LIVES.so",
     description: response?.description,
+    other: {
+      "fc:frame": JSON.stringify(config.frame),
+    },
   };
 }
 export default async function DetailPage({ params }: { params: Params }) {
