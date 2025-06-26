@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { type Context, sdk } from "@farcaster/frame-sdk";
 import { useUserStore } from "@/stores/userStore";
-import useConnectWithFarcaster from "@/hooks/useConnetWithFarcaster";
+import useConnectWallet from "@/hooks/useConnectWallet";
 export default function FarcasterProvider() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const setIsInMiniApp = useUserStore((s) => s.setIsInMiniApp);
   const [_, setContext] = useState<Context.FrameContext>();
-  const { connectWallet } = useConnectWithFarcaster();
+  const { connect } = useConnectWallet();
   useEffect(() => {
     const load = async () => {
       const isInMiniApp = await sdk.isInMiniApp();
@@ -15,7 +15,7 @@ export default function FarcasterProvider() {
         setIsInMiniApp(true);
         sdk.actions.ready({});
         if (sdk.wallet) {
-          connectWallet();
+          connect(isInMiniApp);
         }
       }
     };
@@ -23,6 +23,6 @@ export default function FarcasterProvider() {
       setIsSDKLoaded(true);
       load();
     }
-  }, [isSDKLoaded, connectWallet]);
+  }, [isSDKLoaded, connect]);
   return null;
 }

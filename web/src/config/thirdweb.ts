@@ -3,7 +3,8 @@ import { Chain, createThirdwebClient } from "thirdweb";
 import clientEnv from "./clientEnv";
 import appConfig from "./app";
 import chains from "./chains";
-import { inAppWallet, createWallet } from "thirdweb/wallets";
+import { createWallet, EIP1193 } from "thirdweb/wallets";
+import sdk from "@farcaster/frame-sdk";
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 const thirdwebClient = createThirdwebClient({
   clientId: thirdwebClientId,
@@ -22,6 +23,7 @@ const thirdwebSchema = z.object({
     style: z.any(),
   }),
   wallets: z.array(z.any()),
+  farcasterWallet: z.any(),
   connectButton: z.object({
     label: z.string(),
     style: z.any(),
@@ -39,6 +41,9 @@ const thirdwebSchema = z.object({
     label: z.string(),
   }),
 });
+const farcasterWallet = EIP1193.fromProvider({
+  provider: sdk.wallet.ethProvider,
+});
 const wallets = [createWallet("io.metamask"), createWallet("io.rabby")];
 const thirdwebValidation = thirdwebSchema.safeParse({
   metadata: {
@@ -48,6 +53,7 @@ const thirdwebValidation = thirdwebSchema.safeParse({
     logoUrl: appConfig.metadata.metadataBase.origin + "/images/logo.svg",
   },
   wallets,
+  farcasterWallet,
   theme: "light",
   detailsButton: {
     displayBalanceToken: {
