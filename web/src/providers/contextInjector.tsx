@@ -88,7 +88,7 @@ export default function ContextInjector() {
   }, [pathname, account, connect]);
 
   useEffect(() => {
-    if (trackingConsent) {
+    if (trackingConsent && config.NEXT_PUBLIC_CHAIN !== "testnet") {
       const browser = Bowser.getParser(window.navigator.userAgent);
       const browserName = browser.getBrowserName();
       const os = browser.getOSName();
@@ -130,7 +130,7 @@ export default function ContextInjector() {
   }, [account?.address, trackingConsent]);
 
   useEffect(() => {
-    if (tagSnitch && trackingConsent)
+    if (tagSnitch && trackingConsent && config.NEXT_PUBLIC_CHAIN !== "testnet")
       hitUser({
         page: pathname,
         property: "9lives",
