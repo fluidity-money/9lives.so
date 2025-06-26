@@ -155,7 +155,6 @@ L:
 				operations[i] = x
 			}
 		}
-		slog.Info("operations", "operations", operations)
 		logIds(db, ctx, badIds, goodIds)
 		if len(operations)-len(badIds) == 0 {
 			// There weren't any ids we should continue with! Don't do anything.
@@ -201,7 +200,6 @@ func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int) {
 	for _, g := range goodIds {
 		logIds = append(logIds, LogId{g, true})
 	}
-	slog.Info("results", "good ids", goodIds, "bad ids", badIds)
 	if err := db.Exec(GenLogIds(logIds...)).Error; err != nil {
 		setup.Exitf("inserting tracked ids: %v", err)
 	}
