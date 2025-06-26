@@ -3,13 +3,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/ecdsa"
 	_ "embed"
 	"encoding/hex"
 	"fmt"
 	"log/slog"
 	"os"
 	"strconv"
-	"crypto/ecdsa"
 	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
@@ -143,22 +143,24 @@ L:
 			setup.Exitf("call results: %T", callResI[0])
 		}
 		// Start to swap and then track the bad instances here.
-		var badIds []int
+		var badIds, goodIds []int
 		for i, r := range callResResults {
 			if r {
-				continue
+				goodIds = append(goodIds, items[i].ID)
+			} else {
+				// Looks like we had a bad result here. We need to replace it with the
+				// end then track. Later, we'll use the length of the bad ids to pop.
+				badIds = append(badIds, items[i].ID)
+				x := operations[len(operations)-len(badIds)]
+				operations[i] = x
 			}
-			// Looks like we had a bad result here. We need to replace it with the
-			// end then track. Later, we'll use the length of the bad ids to pop.
-			badIds = append(badIds, items[i].ID)
-			x := operations[len(operations)-len(badIds)]
-			operations[i] = x
 		}
-		goodIds := make([]int, 0, len(items)-len(badIds))
-		for _, item := range items {
-			goodIds = append(goodIds, item.ID)
-		}
+		slog.Info("operations", "operations", operations)
 		logIds(db, ctx, badIds, goodIds)
+		if len(operations)-len(badIds) == 0 {
+			// There weren't any ids we should continue with! Don't do anything.
+			continue L
+		}
 		// We need to regenerate the calldata now with the trimmed ids.
 		// Start to swap around the values that aren't going to work properly.
 		gas, err := c.EstimateGas(ctx, ethereum.CallMsg{
@@ -199,6 +201,7 @@ func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int) {
 	for _, g := range goodIds {
 		logIds = append(logIds, LogId{g, true})
 	}
+	slog.Info("results", "good ids", goodIds, "bad ids", badIds)
 	if err := db.Exec(GenLogIds(logIds...)).Error; err != nil {
 		setup.Exitf("inserting tracked ids: %v", err)
 	}
