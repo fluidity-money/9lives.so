@@ -26,7 +26,7 @@ export default function AssetSelector({
   tokens?: Token[];
 }) {
   useEffect(() => {
-    if (fromChain !== destinationChain.id && isSuccess && tokens) {
+    if (isSuccess && tokens?.length) {
       setValue(tokens[0].address);
     }
   }, [fromChain, isSuccess, tokens, setValue]);

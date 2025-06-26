@@ -1,3 +1,4 @@
+import config from "@/config";
 import { Token } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,6 +19,15 @@ export default function useTokens(fromChain: number) {
         };
       };
       const items = data.tokens[fromChain];
+      if (fromChain === config.chains.superposition.id) {
+        return [
+          items.find(
+            (t) =>
+              t.address.toLowerCase() ===
+              config.NEXT_PUBLIC_FUSDC_ADDR.toLowerCase(),
+          )!,
+        ];
+      }
       return items;
     },
     placeholderData: (previousData) => previousData,

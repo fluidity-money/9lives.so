@@ -372,14 +372,36 @@ export default function DetailBuyAction({
                   <span className="underline">
                     {
                       Object.values(
-                        isInMiniApp ? config.farcasterChains : config.chains,
+                        isInMiniApp
+                          ? {
+                              superposition: config.chains.superposition,
+                              ...config.farcasterChains,
+                            }
+                          : config.chains,
                       ).find((chain) => chain.id === fromChain)?.name
                     }
+                    <span
+                      className="md:hidden"
+                      onClick={() => setIsMinting(false)}
+                    >
+                      /{tokens?.find((t) => t.address === fromToken)?.symbol}{" "}
+                      <Image
+                        src={DownIcon}
+                        className="inline rotate-180"
+                        width={16}
+                        alt=""
+                      />
+                    </span>
                   </span>
                 </span>
                 <div className="flex items-center gap-1">
                   {Object.values(
-                    isInMiniApp ? config.farcasterChains : config.chains,
+                    isInMiniApp
+                      ? {
+                          superposition: config.chains.superposition,
+                          ...config.farcasterChains,
+                        }
+                      : config.chains,
                   ).map((chain) => (
                     <div
                       key={chain.id}
