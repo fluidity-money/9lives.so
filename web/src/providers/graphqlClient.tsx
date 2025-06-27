@@ -3,6 +3,7 @@ import { Lives9 } from "@/graffle/lives9/__";
 import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
 import { CampaignFilters, OutcomeInput } from "@/types";
+import { MaxUint256 } from "ethers";
 
 const graph9Lives = Lives9.create().transport({
   url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
@@ -420,6 +421,8 @@ export const requestPaymaster = ({
   amountToSpend,
   tradingAddr,
   nonce,
+  minimumBack,
+  deadline,
   originatingChainId,
   outcome,
   owner,
@@ -435,6 +438,8 @@ export const requestPaymaster = ({
   amountToSpend: string;
   tradingAddr: string;
   nonce: string;
+  minimumBack: string;
+  deadline: number;
   originatingChainId: string;
   outcome?: string;
   owner: string;
@@ -451,10 +456,10 @@ export const requestPaymaster = ({
       $type: "PUT",
       $operation: opType,
       amountToSpend,
-      deadline: Math.floor(Date.now() / 1000) + 3600,
+      deadline,
       market: tradingAddr,
       maximumFee: "0",
-      minimumBack: "0",
+      minimumBack,
       nonce,
       originatingChainId,
       outcome,
@@ -462,6 +467,7 @@ export const requestPaymaster = ({
       permitR,
       permitS,
       permitV,
+      permitAmount: MaxUint256.toString(),
       referrer,
       rr: r,
       s,
