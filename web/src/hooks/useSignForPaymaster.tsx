@@ -8,6 +8,7 @@ import {
 } from "thirdweb";
 import { PaymasterType } from "@/types";
 import config from "@/config";
+import { hashChainId } from "@/utils/hashChainId";
 
 export default function useSignForPaymaster() {
   const chain = useActiveWalletChain();
@@ -52,10 +53,18 @@ export default function useSignForPaymaster() {
   }) => {
     if (!chain) throw new Error("No chain is detected");
     if (!account) throw new Error("No account is connected");
+    const domainTx = prepareContractCall({
+      contract: config.contracts.paymaster,
+      method: "domainSeparators",
+      params: [BigInt(destinationChain.id)],
+    });
+    const domainSeparator = await simulateTransaction({
+      transaction: domainTx,
+    });
     const nonceTx = prepareContractCall({
-      contract: config.contracts.fusdc,
+      contract: config.contracts.paymaster,
       method: "nonces",
-      params: [account.address],
+      params: [domainSeparator, account.address],
     });
     const nonce = await simulateTransaction({ transaction: nonceTx });
     const message = {
