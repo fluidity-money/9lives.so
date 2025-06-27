@@ -177,5 +177,5 @@ The error table lives in ERRORS.md.
 | Beauty contest proxy          | `0xf08510da798567e6d6029699c6d9b75b739b2913` |
 | Sarp AI Resolver              | `0x0000000000000000000000000000000000000000` |
 | Claimant helper               | `0xE443aEae0a0704991dfa6b10dA40303931804Dc6` |
-| Paymaster                     | `0xf5F80C6a6140b0eAcBb2D75BBedD2bA81a6D8d7d` |
+| Paymaster                     | `0xe798EB2FB969E6F439F89A8b9490b47Edc1010cf` |
 | buy helper                    | `0xC05472e906907aF0b36573f7D7B15AcB47806cC2` |
