@@ -10,19 +10,39 @@ import {TestERC20} from "./TestERC20.sol";
 
 contract TestNineLivesPaymaster is Test {
     TestERC20 erc20;
-    TestERC20 shareAddr;
     NineLivesPaymaster p;
     MockTrading m;
 
+    bytes8 OUTCOME = bytes8(keccak256(abi.encodePacked(uint256(123))));
+
     function setUp() external {
         erc20 = new TestERC20();
-        shareAddr = new TestERC20();
         vm.chainId(55244);
         p = new NineLivesPaymaster(address(erc20));
-        m = new MockTrading(address(erc20), address(shareAddr));
+        m = new MockTrading(address(erc20));
+        bytes8[] memory outcomes = new bytes8[](2);
+        outcomes[0] = OUTCOME;
+        outcomes[1] = bytes8(keccak256(abi.encodePacked(block.timestamp)));
+        m.ctor(CtorArgs({
+            outcomes: outcomes,
+            oracle: address(0),
+            timeStart: 0,
+            timeEnding: type(uint64).max,
+            feeRecipient: address(0),
+            shareImpl: address(0),
+            shouldBufferTime: false,
+            feeCreator: 0,
+            feeMinter: 0,
+            feeLp: 0,
+            feeReferrer: 0
+        }));
     }
 
-    function computePermit(uint256 nonce, uint256 value) internal view returns (bytes32 hash) {
+    function computePermit(
+        address sender,
+        uint256 nonce,
+        uint256 value
+    ) internal view returns (bytes32 hash) {
         bytes32 domainSeparator = erc20.DOMAIN_SEPARATOR();
         hash = keccak256(
             abi.encodePacked(
@@ -33,7 +53,7 @@ contract TestNineLivesPaymaster is Test {
                         keccak256(
                             "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
                         ),
-                        msg.sender,
+                        sender,
                         address(p),
                         value,
                         nonce,
@@ -45,6 +65,7 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function computePaymasterSig(
+        address sender,
         uint256 nonce,
         uint8 typ,
         address market,
@@ -64,7 +85,7 @@ contract TestNineLivesPaymaster is Test {
                         keccak256(
                             "NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)"
                         ),
-                        msg.sender,
+                        sender,
                         nonce,
                         type(uint256).max,
                         typ,
@@ -82,11 +103,11 @@ contract TestNineLivesPaymaster is Test {
 
     function testEndToEnd() external {
         (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
-        vm.prank(ivan);
+        erc20.transfer(ivan, 1e6);
         PaymasterType typ = PaymasterType.MINT;
-        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(0, 1e6));
-        bytes8 outcome = bytes8(keccak256(abi.encodePacked(block.timestamp)));
+        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(ivan, 0, 1e6));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, computePaymasterSig(
+            ivan,
             0,
             uint8(typ),
             address(m),
@@ -94,11 +115,11 @@ contract TestNineLivesPaymaster is Test {
             1e6, // Amount to spend (no stack)
             0,
             address(0), // Refererr (no stack)
-            outcome
+            OUTCOME
         ));
         Operation[] memory ops = new Operation[](1);
         ops[0] = Operation({
-            owner: msg.sender,
+            owner: ivan,
             originatingChainId: block.chainid,
             nonce: 0,
             typ: typ,
@@ -111,11 +132,13 @@ contract TestNineLivesPaymaster is Test {
             amountToSpend: 1e6,
             minimumBack: 0,
             referrer: address(0),
-            outcome: outcome,
+            outcome: OUTCOME,
             v: v,
             r: r,
             s: s
         });
+        (,address recovered) = p.recoverAddressNewChain(ops[0]);
+        assertEq(ivan, recovered);
         bool[] memory statuses = p.multicall(ops);
         assert(statuses[0]);
     }

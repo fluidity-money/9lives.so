@@ -5,6 +5,10 @@ import "../src/Share.sol";
 
 import "../src/INineLivesTrading.sol";
 
+import {
+    TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+
+
 interface IERC20TransferFrom {
     function transfer(address recipient, uint256 value) external;
     function transferFrom(address sender, address recipient, uint256 value) external;
@@ -13,7 +17,6 @@ interface IERC20TransferFrom {
 contract MockTrading is INineLivesTrading {
     mapping(bytes8 => Share) shares_;
     address immutable FUSDC_ADDR;
-    IERC20 immutable SHARE_ADDR;
     uint256 counter_;
 
     bytes8 public calledOutcome_;
@@ -23,9 +26,8 @@ contract MockTrading is INineLivesTrading {
     uint256 timeEnding_;
     address feeRecipient_;
 
-    constructor(address _fusdc, address _shareAddr) {
+    constructor(address _fusdc) {
         FUSDC_ADDR = _fusdc;
-        SHARE_ADDR = IERC20(_shareAddr);
     }
 
     function ctor(CtorArgs calldata _a) external {
@@ -33,12 +35,16 @@ contract MockTrading is INineLivesTrading {
         // We track some things to set up to prevent abuse in testing, but we don't
         // track the oracles that were created.
         for (uint i = 0; i < _a.outcomes.length; ++i) {
-            shares_[_a.outcomes[i]] = new Share();
-            shares_[_a.outcomes[i]].ctor("", address(this));
+            Share s = Share(address(new TransparentUpgradeableProxy(
+                address(new Share()),
+                msg.sender,
+                ""
+            )));
+            s.ctor("Test Share", address(this));
+            shares_[_a.outcomes[i]] = s;
         }
         oracle_ = _a.oracle;
         timeStart_ = _a.timeStart;
-        require(timeStart_ > block.timestamp, "start in the past");
         timeEnding_ = _a.timeEnding;
         require(timeEnding_ > block.timestamp, "ending in the past");
         require(timeEnding_ > timeStart_, "starting in the past");

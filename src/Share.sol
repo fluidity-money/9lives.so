@@ -42,24 +42,6 @@ contract Share is
         __ERC20Permit_init(newName);
     }
 
-    /*function _spendAllowance(
-        address owner,
-        address spender,
-        uint256 value
-    ) internal override virtual {
-        // Allow all spending by the admin.
-        if (spender == admin) return;
-        uint256 currentAllowance = allowance(owner, spender);
-        if (currentAllowance < type(uint256).max) {
-            if (currentAllowance < value) {
-                revert ERC20InsufficientAllowance(spender, currentAllowance, value);
-            }
-            unchecked {
-                _approve(owner, spender, currentAllowance - value, false);
-            }
-        }
-    }*/
-
     function decimals() public override pure returns (uint8) {
         return 6;
     }

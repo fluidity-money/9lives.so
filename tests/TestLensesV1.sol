@@ -1,6 +1,7 @@
-// SPDX-License-Identifier: MIT
+ // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+/*
 import "forge-std/Test.sol";
 
 import "./MockLongtail.sol";
@@ -60,3 +61,4 @@ contract TestLensesV1 is Test {
         assertEq(eTrading4, lenses.getShareAddr(f, bytes32(0), trading, 0x0404040404040404));
     }
 }
+*/

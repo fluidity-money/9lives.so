@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+
 import "./INineLivesTrading.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
@@ -163,29 +164,38 @@ contract NineLivesPaymaster {
                 op.permitR,
                 op.permitS
             );
-        address market = address(op.market);
         if (op.typ == PaymasterType.MINT) {
-            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
+            try USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee) {}
+            catch {
+                return (0, false);
+            }
             USDC.approve(address(op.market), op.amountToSpend);
-            (bool rc,) = market.call(abi.encodeWithSelector(
-                INineLivesTrading.mint8A059B6E.selector,
-                op.amountToSpend,
-                op.referrer,
-                op.owner
-            ));
-            return (op.maximumFee, rc);
+            try
+                op.market.mint8A059B6E(
+                    op.outcome,
+                    op.amountToSpend,
+                    op.referrer,
+                    op.owner
+                )
+            {} catch {
+                return (op.maximumFee, false);
+            }
+            return (op.maximumFee, true);
         } else if (op.typ == PaymasterType.BURN) {
             if (op.minimumBack < op.maximumFee) return (op.maximumFee, false);
-            (bool rc,) = market.call(abi.encodeWithSelector(
-                INineLivesTrading.burn854CC96E.selector,
-                op.outcome,
-                op.amountToSpend,
-                true,
-                op.minimumBack,
-                op.referrer,
-                msg.sender
-            ));
-            return (op.maximumFee, rc);
+            try
+                op.market.burn854CC96E(
+                    op.outcome,
+                    op.amountToSpend,
+                    true,
+                    op.minimumBack,
+                    op.referrer,
+                    msg.sender
+                )
+            {} catch {
+                return (op.maximumFee, false);
+            }
+            return (op.maximumFee, true);
         } else {
             // TODO
             return (0, false);

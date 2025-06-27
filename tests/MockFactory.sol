@@ -7,11 +7,9 @@ import "./MockTrading.sol";
 
 contract MockFactory is INineLivesFactory {
     address immutable ADDR_FUSDC;
-    address immutable ADDR_SHARE;
 
-    constructor(address _fusdc, address _share) {
+    constructor(address _fusdc) {
         ADDR_FUSDC = _fusdc;
-        ADDR_SHARE = _share;
     }
 
     function ctor(
@@ -36,7 +34,7 @@ contract MockFactory is INineLivesFactory {
         uint64 /* feeMinter */,
         uint64 /* feeReferrer */
     ) external returns (address) {
-        MockTrading t = new MockTrading(ADDR_FUSDC, ADDR_SHARE);
+        MockTrading t = new MockTrading(ADDR_FUSDC);
         bytes8[] memory outcomes = new bytes8[](_outcomes.length);
         for (uint i = 0; i < _outcomes.length; ++i) {
             outcomes[i] = _outcomes[i].identifier;
