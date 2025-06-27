@@ -18,15 +18,15 @@ export default function useTokens(fromChain: number) {
           [fromChain]: Token[];
         };
       };
-      const items = data.tokens[fromChain];
+      const items = data.tokens?.[fromChain];
+      if (!items) return [];
+      // only display usdce if network is SPN
       if (fromChain === config.chains.superposition.id) {
-        return [
-          items.find(
-            (t) =>
-              t.address.toLowerCase() ===
-              config.NEXT_PUBLIC_FUSDC_ADDR.toLowerCase(),
-          )!,
-        ];
+        return items.filter(
+          (t) =>
+            t.address.toLowerCase() ===
+            config.NEXT_PUBLIC_FUSDC_ADDR.toLowerCase(),
+        );
       }
       return items;
     },
