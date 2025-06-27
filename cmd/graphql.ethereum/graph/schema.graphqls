@@ -188,6 +188,11 @@ type Mutation {
       deadline: Int!,
 
       """
+      The amount the user supplied with this Permit signature.
+      """
+      permitAmount: String!,
+
+      """
       Arguments for this will be reconstructed based on the arguments to the Paymaster.
       """
       permitV: Int!,

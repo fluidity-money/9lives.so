@@ -103,12 +103,12 @@ contract TestNineLivesPaymaster is Test {
 
     function testEndToEnd() external {
         (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
-        erc20.transfer(ivan, 1e6);
+        erc20.transfer(ivan, 2e6);
         PaymasterType typ = PaymasterType.MINT;
-        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(ivan, 0, 1e6));
+        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(ivan, 0, 2e6));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, computePaymasterSig(
             ivan,
-            0,
+            0, // Nonce
             uint8(typ),
             address(m),
             0, // Max fee (no stack)
@@ -117,13 +117,25 @@ contract TestNineLivesPaymaster is Test {
             address(0), // Refererr (no stack)
             OUTCOME
         ));
-        Operation[] memory ops = new Operation[](1);
+        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(ivanPk, computePaymasterSig(
+            ivan,
+            1, // Nonce
+            uint8(typ),
+            address(m),
+            0, // Max fee (no stack)
+            1e6, // Amount to spend (no stack)
+            0,
+            address(0), // Refererr (no stack)
+            OUTCOME
+        ));
+        Operation[] memory ops = new Operation[](2);
         ops[0] = Operation({
             owner: ivan,
             originatingChainId: block.chainid,
             nonce: 0,
             typ: typ,
             deadline: type(uint256).max,
+            permitAmount: 2e6,
             permitR: permitR,
             permitS: permitS,
             permitV: permitV,
@@ -137,9 +149,29 @@ contract TestNineLivesPaymaster is Test {
             r: r,
             s: s
         });
+        ops[1] = Operation({
+            owner: ivan,
+            originatingChainId: block.chainid,
+            nonce: 1,
+            typ: typ,
+            deadline: type(uint256).max,
+            permitAmount: 0,
+            permitR: bytes32(0),
+            permitS: bytes32(0),
+            permitV: 0,
+            market: m,
+            maximumFee: 0,
+            amountToSpend: 1e6,
+            minimumBack: 0,
+            referrer: address(0),
+            outcome: OUTCOME,
+            v: v2,
+            r: r2,
+            s: s2
+        });
         (,address recovered) = p.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
         bool[] memory statuses = p.multicall(ops);
-        assert(statuses[0]);
+        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
     }
 }

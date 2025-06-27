@@ -83,6 +83,7 @@ type PaymasterOperation struct {
 	Nonce              *big.Int          `abi:"nonce"`
 	Deadline           *big.Int          `abi:"deadline"`
 	Typ                uint8             `abi:"typ"`
+	PermitAmount *big.Int `abi:"permitAmount"`
 	PermitR            [32]byte          `abi:"permitR"`
 	PermitS            [32]byte          `abi:"permitS"`
 	PermitV            uint8             `abi:"permitV"`
@@ -104,6 +105,7 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		Nonce:              x.Nonce.Big(),
 		Deadline:           new(big.Int).SetInt64(int64(x.Deadline)),
 		Typ:                x.Typ,
+		PermitAmount: maybeNumberToBig(x.PermitAmount),
 		PermitR:            maybeBytesToBytes32(x.PermitR),
 		PermitS:            maybeBytesToBytes32(x.PermitS),
 		PermitV:            x.PermitV,
@@ -117,6 +119,13 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		S:                  bytesToBytes32(x.S),
 		Outcome:            maybeBytesToBytes8(x.Outcome),
 	}
+}
+
+func maybeNumberToBig(x *events.Number) *big.Int {
+	if x == nil {
+		return new(big.Int)
+	}
+	return x.Big()
 }
 
 func hashChainId(x *big.Int) string {

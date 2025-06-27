@@ -13,6 +13,9 @@ CREATE TABLE ninelives_paymaster_poll_1 (
 	-- Type of the request (converted from enum literally).
 	typ INTEGER NOT NULL,
 
+	-- Amount that was used in the Permit signature.
+	permit_amount HUGEINT,
+
 	-- R part of the Permit signature.
 	permit_r BYTES32,
 

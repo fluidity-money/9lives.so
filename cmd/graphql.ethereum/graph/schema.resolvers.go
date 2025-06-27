@@ -304,7 +304,7 @@ func (r *claimResolver) CreatedAt(ctx context.Context, obj *types.Claim) (int, e
 }
 
 // RequestPaymaster is the resolver for the requestPaymaster field.
-func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, rr string, s string, v int) (*string, error) {
+func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, rr string, s string, v int) (*string, error) {
 	// Verify the user has the amount to spend that they're requesting.
 	if r.F.Is(features.FeatureShouldCheckErc20Balance) {
 		panic("unimplemented")
@@ -388,6 +388,11 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	if err != nil {
 		return nil, fmt.Errorf("r value")
 	}
+	permitAmt, err := events.NumberFromString(permitAmount)
+	if err != nil {
+		return nil, fmt.Errorf("permit amount")
+	}
+	p.PermitAmount = permitAmt
 	p.R = *rr_
 	s_, err := events.BytesFromHex(s)
 	if err != nil {

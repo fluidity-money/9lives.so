@@ -14,6 +14,7 @@ type Poll struct {
 	Owner              events.Address  `json:"owner"`
 	Deadline           int             `json:"deadline"`
 	Typ                uint8           `json:"typ"`
+	PermitAmount       *events.Number  `json:"permitAmount"`
 	PermitR            *events.Bytes   `json:"permitR"`
 	PermitS            *events.Bytes   `json:"permitS"`
 	PermitV            uint8           `json:"permitV"`

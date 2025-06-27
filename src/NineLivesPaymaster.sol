@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-
 import "./INineLivesTrading.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
@@ -22,6 +21,7 @@ struct Operation {
     uint256 nonce;
     uint256 deadline;
     PaymasterType typ;
+    uint256 permitAmount;
     bytes32 permitR;
     bytes32 permitS;
     uint8 permitV;
@@ -158,7 +158,7 @@ contract NineLivesPaymaster {
             USDC.permit(
                 op.owner,
                 address(this),
-                amountInclusiveOfFee,
+                op.permitAmount,
                 op.deadline,
                 op.permitV,
                 op.permitR,
