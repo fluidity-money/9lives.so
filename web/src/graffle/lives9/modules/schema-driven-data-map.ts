@@ -522,6 +522,10 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: Int,
           it: [1],
         },
+        permitAmount: {
+          nt: String,
+          it: [1],
+        },
         permitV: {
           nt: Int,
           it: [1],

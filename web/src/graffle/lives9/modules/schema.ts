@@ -451,6 +451,15 @@ export namespace Schema {
           namedType: $$NamedTypes.$$Int;
         };
         /**
+         * The amount the user supplied with this Permit signature.
+         */
+        permitAmount: {
+          kind: "InputField";
+          name: "permitAmount";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        /**
          * Arguments for this will be reconstructed based on the arguments to the Paymaster.
          */
         permitV: {

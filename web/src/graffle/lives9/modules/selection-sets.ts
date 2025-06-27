@@ -925,7 +925,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `requestPaymaster` field. Some (16/19) arguments are required so you must include this.
+     * Arguments for `requestPaymaster` field. Some (17/20) arguments are required so you must include this.
      */
     $: requestPaymaster$Arguments<_$Scalars>;
   }
@@ -951,6 +951,10 @@ export namespace Mutation {
      * Execution deadline of the Paymaster operation.
      */
     deadline: number;
+    /**
+     * The amount the user supplied with this Permit signature.
+     */
+    permitAmount: string;
     /**
      * Arguments for this will be reconstructed based on the arguments to the Paymaster.
      */
