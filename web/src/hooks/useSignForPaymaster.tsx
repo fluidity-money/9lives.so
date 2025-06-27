@@ -17,7 +17,7 @@ export default function useSignForPaymaster() {
     version: "1",
     chainId: chain?.id ?? destinationChain.id,
     verifyingContract: process.env.NEXT_PUBLIC_PAYMASTER_ADDR,
-    salt: "0xef419a398191b394af29abded5df52227ff67c663241114807427bc44bb152fb" as `0x${string}`, //keccak of superposition chain id
+    salt: hashChainId(destinationChain.id),
   };
   const types = {
     NineLivesPaymaster: [
