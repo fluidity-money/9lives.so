@@ -95,7 +95,7 @@ contract NineLivesPaymaster {
         }
     }
 
-    function computeDomainSeparator(uint256 _chainId) internal view virtual returns (bytes32) {
+    function computeDomainSeparator(uint256 _chainId) public view virtual returns (bytes32) {
         return
             keccak256(
                 abi.encode(

@@ -10,7 +10,7 @@ import "./MockLensesV1.sol";
 import {LensesV1} from "../src/LensesV1.sol";
 import {ILongtail} from "../src/ILongtail.sol";
 
-contract TestShare is Test {
+contract TestLensesV1 is Test {
     MockLongtail longtail;
     INineLivesFactory factory;
     LensesV1 lenses;
