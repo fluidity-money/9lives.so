@@ -339,7 +339,6 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		return nil, fmt.Errorf("nonce")
 	}
 	p.Nonce = *nonce_
-
 	owner_, err := events.MaybeAddressFromString(owner)
 	if err != nil {
 		return nil, fmt.Errorf("owner")
@@ -414,7 +413,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		p.Outcome = outcome_
 	}
 	spnChainId := new(big.Int).SetInt64(int64(r.C.ChainId))
-	originatingChainId, ok := new(big.Int).SetString(originatingChainID, 16)
+	originatingChainId, ok := new(big.Int).SetString(originatingChainID, 10)
 	if !ok {
 		return nil, fmt.Errorf("chain id")
 	}

@@ -130,7 +130,7 @@ L:
 			setup.Exitf("call result: %v", err)
 		}
 		if len(callRes) == 0 {
-			setup.Exitf("error calling: %x", callCd)
+			setup.Exitf("error calling, sender: %v: %x", fromAddr, callCd)
 		}
 		slog.Info("response", "resp", callRes, "data", hex.EncodeToString(packOperations(operations...)))
 		// These are the bad ids we need to call with our function to remove.
