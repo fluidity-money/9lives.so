@@ -1,8 +1,13 @@
-import { ethers, Signature } from "ethers";
+import { Signature } from "ethers";
 import { destinationChain } from "@/config/chains";
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
-import { ZERO_ADDRESS } from "thirdweb";
+import {
+  prepareContractCall,
+  simulateTransaction,
+  ZERO_ADDRESS,
+} from "thirdweb";
 import { PaymasterType } from "@/types";
+import config from "@/config";
 
 export default function useSignForPaymaster() {
   const chain = useActiveWalletChain();
@@ -12,7 +17,7 @@ export default function useSignForPaymaster() {
     version: "1",
     chainId: chain?.id ?? destinationChain.id,
     verifyingContract: process.env.NEXT_PUBLIC_PAYMASTER_ADDR,
-    salt: "0x83e46451d84d0dee47dc069730514d369f8cccfecdb0852ecd036d7aa3ee5476" as `0x${string}`, //keccak of superposition chain id
+    salt: "0xef419a398191b394af29abded5df52227ff67c663241114807427bc44bb152fb" as `0x${string}`, //keccak of superposition chain id
   };
   const types = {
     NineLivesPaymaster: [
@@ -31,6 +36,7 @@ export default function useSignForPaymaster() {
   const signForPaymaster = async ({
     tradingAddr,
     amountToSpend,
+    deadline,
     referrer = ZERO_ADDRESS,
     minimumBack,
     outcomeId,
@@ -39,19 +45,23 @@ export default function useSignForPaymaster() {
     tradingAddr: string;
     referrer?: string;
     amountToSpend: BigInt;
+    deadline: number;
     outcomeId?: string;
     type: PaymasterType;
     minimumBack: BigInt;
   }) => {
     if (!chain) throw new Error("No chain is detected");
     if (!account) throw new Error("No account is connected");
-    const provider = new ethers.JsonRpcProvider(chain.rpc);
-    const nonce = await provider.getTransactionCount(account.address);
-
+    const nonceTx = prepareContractCall({
+      contract: config.contracts.fusdc,
+      method: "nonces",
+      params: [account.address],
+    });
+    const nonce = await simulateTransaction({ transaction: nonceTx });
     const message = {
       owner: account.address,
       nonce,
-      deadline: Math.floor(Date.now() / 1000) + 3600,
+      deadline,
       typ: type,
       market: tradingAddr,
       maximumFee: BigInt(0),

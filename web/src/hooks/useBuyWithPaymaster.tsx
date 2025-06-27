@@ -49,6 +49,7 @@ const useBuyWithPaymaster = ({
             outcome: outcomeId,
             opType: "MINT",
             tradingAddr: tradingAddr,
+            minimumBack: "0",
           });
           const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({

@@ -1,6 +1,8 @@
-import { ethers, Signature } from "ethers";
+import { Signature } from "ethers";
 import { destinationChain } from "@/config/chains";
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
+import { prepareContractCall, simulateTransaction } from "thirdweb";
+import config from "@/config";
 
 export default function useSignForPermit() {
   const chain = useActiveWalletChain();
@@ -29,8 +31,12 @@ export default function useSignForPermit() {
   }) => {
     if (!chain) throw new Error("No chain is detected");
     if (!account) throw new Error("No account is connected");
-    const provider = new ethers.JsonRpcProvider(chain.rpc);
-    const nonce = await provider.getTransactionCount(account.address);
+    const nonceTx = prepareContractCall({
+      contract: config.contracts.fusdc,
+      method: "nonces",
+      params: [account.address],
+    });
+    const nonce = await simulateTransaction({ transaction: nonceTx });
 
     const message = {
       owner: account.address,
