@@ -37,7 +37,7 @@ func BytesFromSlice(x []byte) Bytes {
 	return Bytes{x}
 }
 func BytesFromHex(s string) (*Bytes, error) {
-	h, err := hex.DecodeString(s)
+	h, err := hex.DecodeString(strings.TrimPrefix(s, "0x"))
 	if err != nil {
 		return nil, err
 	}

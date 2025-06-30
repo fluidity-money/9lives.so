@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/ecdsa"
+	"database/sql"
 	_ "embed"
 	"fmt"
 	"log/slog"
@@ -154,10 +155,10 @@ L:
 				operations[i] = x
 			}
 		}
-		logIds(db, ctx, badIds, goodIds)
 		goodLen := len(operations) - len(badIds)
 		if goodLen == 0 {
 			// There weren't any ids we should continue with! Don't do anything.
+			logIds(db, ctx, badIds, goodIds, "")
 			continue L
 		}
 		// We need to regenerate the calldata now with the trimmed ids.
@@ -185,6 +186,7 @@ L:
 				setup.Exitf("ran outside context window: %v", err)
 			default:
 				slog.Info("Submitted transaction", "tx", tx)
+				logIds(db, ctx, badIds, goodIds, tx.Hash().String())
 				sleep(sleepSecs)
 				continue L
 			}
@@ -192,14 +194,15 @@ L:
 	}
 }
 
-func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int) {
+func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int, h string) {
 	// Generate the template that uses the function to take a id as having a failure.
 	logIds := make([]LogId, 0, len(badIds)+len(goodIds))
+	tx := sql.NullString{h, false}
 	for _, b := range badIds {
-		logIds = append(logIds, LogId{b, false})
+		logIds = append(logIds, LogId{b, false, tx})
 	}
 	for _, g := range goodIds {
-		logIds = append(logIds, LogId{g, true})
+		logIds = append(logIds, LogId{g, true, tx})
 	}
 	if err := db.Exec(GenLogIds(logIds...)).Error; err != nil {
 		setup.Exitf("inserting tracked ids: %v", err)

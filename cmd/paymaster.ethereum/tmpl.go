@@ -3,6 +3,7 @@ package main
 import (
 	"strings"
 	"text/template"
+	"database/sql"
 )
 
 var logIdsTmpl = template.Must(
@@ -15,9 +16,9 @@ WITH function_calls AS (
 	SELECT
 		poll_id,
 		success,
-		ninelives_paymaster_track_result_1(poll_id, success)
+		ninelives_paymaster_track_result_2(poll_id, success, hash)
 	FROM (
-		VALUES {{range $i, $v := .}}({{ .Id}}, {{ .Success }}){{if not (eq (add $i 1) (len $))}},{{end}}{{end}}
+		VALUES {{range $i, $v := .}}({{ .Id}}, {{ .Success }}{{ .Hash }}){{if not (eq (add $i 1) (len $))}},{{end}}{{end}}
 	) AS params(poll_id, success)
 )
 SELECT poll_id, success FROM function_calls;
@@ -26,6 +27,7 @@ SELECT poll_id, success FROM function_calls;
 type LogId struct {
 	Id      int
 	Success bool
+	Hash    sql.NullString
 }
 
 func GenLogIds(x ...LogId) string {
