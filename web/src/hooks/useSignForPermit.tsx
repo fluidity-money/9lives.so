@@ -7,12 +7,6 @@ import config from "@/config";
 export default function useSignForPermit() {
   const chain = useActiveWalletChain();
   const account = useActiveAccount();
-  const domain = {
-    name: "Bridged USDC (Stargate)",
-    version: "1",
-    chainId: destinationChain.id,
-    verifyingContract: process.env.NEXT_PUBLIC_FUSDC_ADDR,
-  };
   const types = {
     Permit: [
       { name: "owner", type: "address" },
@@ -25,25 +19,39 @@ export default function useSignForPermit() {
   const signForPermit = async ({
     spender,
     amountToSpend,
+    deadline,
   }: {
     spender: string;
     amountToSpend: BigInt;
+    deadline: number;
   }) => {
     if (!chain) throw new Error("No chain is detected");
     if (!account) throw new Error("No account is connected");
+    const nameTx = prepareContractCall({
+      contract: config.contracts.fusdc,
+      method: "name",
+      params: [account.address],
+    });
+    const name = await simulateTransaction({ transaction: nameTx });
     const nonceTx = prepareContractCall({
       contract: config.contracts.fusdc,
       method: "nonces",
       params: [account.address],
     });
     const nonce = await simulateTransaction({ transaction: nonceTx });
+    const domain = {
+      name,
+      version: "1",
+      chainId: destinationChain.id,
+      verifyingContract: process.env.NEXT_PUBLIC_FUSDC_ADDR,
+    };
 
     const message = {
       owner: account.address,
       spender,
       value: amountToSpend,
       nonce,
-      deadline: Math.floor(Date.now() / 1000) + 3600,
+      deadline,
     };
 
     const signature = await account.signTypedData({
