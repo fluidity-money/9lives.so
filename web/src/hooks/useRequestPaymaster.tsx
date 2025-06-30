@@ -26,6 +26,7 @@ export default function useRequestPaymaster() {
     let permitR = "";
     let permitS = "";
     let permitV = 0;
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
     if (params.amountToSpend) {
       const allowanceTx = prepareContractCall({
         contract: config.contracts.fusdc,
@@ -40,6 +41,7 @@ export default function useRequestPaymaster() {
         const { r, s, v } = await signForPermit({
           spender: config.NEXT_PUBLIC_PAYMASTER_ADDR,
           amountToSpend: MaxUint256,
+          deadline,
         });
         permitR = r;
         permitS = s;
@@ -52,7 +54,6 @@ export default function useRequestPaymaster() {
       REMOVE_LIQUIDITY: PaymasterType.REMOVE_LIQUIDITY,
       SELL: PaymasterType.BURN,
     } as const;
-    const deadline = Math.floor(Date.now() / 1000) + 3600;
     const { r, s, v, nonce } = await signForPaymaster({
       tradingAddr: params.tradingAddr,
       amountToSpend: BigInt(params.amountToSpend),
