@@ -147,14 +147,12 @@ contract NineLivesPaymaster {
     }
 
     function execute(Operation calldata op) internal returns (uint256, bool) {
-        if (op.deadline < block.timestamp)
-            return (op.maximumFee, false);
+        if (op.deadline < block.timestamp) return (0, false);
         (bytes32 domain, address recovered) = recoverAddressNewChain(op);
-        if (op.owner != recovered)
-            return (op.maximumFee, false);
+        if (op.owner != recovered) return (op.maximumFee, false);
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
-        if (op.permitV != 0)
+        if (op.permitR != bytes32(0))
             USDC.permit(
                 op.owner,
                 address(this),
@@ -165,10 +163,7 @@ contract NineLivesPaymaster {
                 op.permitS
             );
         if (op.typ == PaymasterType.MINT) {
-            try USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee) {}
-            catch {
-                return (0, false);
-            }
+            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(op.market), op.amountToSpend);
             try
                 op.market.mint8A059B6E(
@@ -176,23 +171,23 @@ contract NineLivesPaymaster {
                     op.amountToSpend,
                     op.referrer,
                     op.owner
-                )
-            {} catch {
+                ) {}
+            catch {
                 return (op.maximumFee, false);
             }
             return (op.maximumFee, true);
         } else if (op.typ == PaymasterType.BURN) {
             if (op.minimumBack < op.maximumFee) return (op.maximumFee, false);
-            try
-                op.market.burn854CC96E(
-                    op.outcome,
-                    op.amountToSpend,
-                    true,
-                    op.minimumBack,
-                    op.referrer,
-                    msg.sender
-                )
-            {} catch {
+                try
+                    op.market.burn854CC96E(
+                        op.outcome,
+                        op.amountToSpend,
+                        true,
+                        op.minimumBack,
+                        op.referrer,
+                        msg.sender
+                    ) {}
+            catch {
                 return (op.maximumFee, false);
             }
             return (op.maximumFee, true);

@@ -65,7 +65,7 @@ contract TestNineLivesPaymaster is Test {
         );
     }
 
-    function computePaymasterSig(
+    function computePaymasterHash(
         address p,
         uint256 _originatingChain,
         address sender,
@@ -113,7 +113,7 @@ contract TestNineLivesPaymaster is Test {
             0,
             2e6
         ));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, computePaymasterSig(
+        bytes32 hash = computePaymasterHash(
             address(P),
             block.chainid,
             ivan,
@@ -125,8 +125,9 @@ contract TestNineLivesPaymaster is Test {
             0,
             address(0), // Refererr (no stack)
             OUTCOME
-        ));
-        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(ivanPk, computePaymasterSig(
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
+        hash = computePaymasterHash(
             address(P),
             block.chainid,
             ivan,
@@ -138,7 +139,8 @@ contract TestNineLivesPaymaster is Test {
             0,
             address(0), // Refererr (no stack)
             OUTCOME
-        ));
+        );
+        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(ivanPk, hash);
         Operation[] memory ops = new Operation[](2);
         ops[0] = Operation({
             owner: ivan,

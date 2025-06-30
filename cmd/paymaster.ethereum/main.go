@@ -5,7 +5,6 @@ import (
 	"context"
 	"crypto/ecdsa"
 	_ "embed"
-	"encoding/hex"
 	"fmt"
 	"log/slog"
 	"os"
@@ -101,6 +100,7 @@ L:
 		var items []paymaster.Poll
 		err = db.WithContext(ctx).
 			Table("ninelives_paymaster_poll_outstanding_1").
+			Limit(200).
 			Scan(&items).
 			Error
 		if err != nil {
@@ -132,7 +132,6 @@ L:
 		if len(callRes) == 0 {
 			setup.Exitf("error calling, sender: %v: %x", fromAddr, callCd)
 		}
-		slog.Info("response", "resp", callRes, "data", hex.EncodeToString(packOperations(operations...)))
 		// These are the bad ids we need to call with our function to remove.
 		callResI, err := abi.Unpack("multicall", callRes)
 		if err != nil {
