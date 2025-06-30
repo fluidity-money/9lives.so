@@ -156,16 +156,18 @@ L:
 			}
 		}
 		logIds(db, ctx, badIds, goodIds)
-		if len(operations)-len(badIds) == 0 {
+		goodLen := len(operations) - len(badIds)
+		if goodLen == 0 {
 			// There weren't any ids we should continue with! Don't do anything.
 			continue L
 		}
 		// We need to regenerate the calldata now with the trimmed ids.
 		// Start to swap around the values that aren't going to work properly.
+		sendCd := packOperations(operations[:goodLen]...)
 		gas, err := c.EstimateGas(ctx, ethereum.CallMsg{
 			To:   &paymasterAddr,
 			From: fromAddr,
-			Data: packOperations(operations[:len(badIds)]...),
+			Data: sendCd,
 		})
 		if err != nil {
 			setup.Exitf("estimate gas: %v", err)
@@ -174,7 +176,7 @@ L:
 		bc := ethAbiBind.NewBoundContract(paymasterAddr, abi, c, c, c)
 		// Get a safe upper bound for the gas amount.
 		gas = uint64(float64(gas) * 1.25)
-		tx, err := bc.Transact(transactOpts, "multicall", operations[:len(badIds)])
+		tx, err := bc.Transact(transactOpts, "multicall", operations[:goodLen])
 		if err != nil {
 			setup.Exitf("transact failure: %v", err)
 		}
