@@ -113,6 +113,7 @@ export default function DetailBuyAction({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
     campaignId: data.identifier,
+    outcomes: data.outcomes,
     outcomeId: outcome.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
@@ -121,6 +122,7 @@ export default function DetailBuyAction({
     shareAddr: outcome.share.address,
     campaignId: data.identifier,
     outcomeId: outcome.identifier,
+    outcomes: data.outcomes,
     openFundModal: () => setFundModalOpen(true),
   });
   const { buyWithZaps } = useBuyWithZaps({
@@ -185,7 +187,7 @@ export default function DetailBuyAction({
         );
       } else {
         let action = enabledPaymaster ? buyWithPaymaster : buy;
-        await action(account!, supply, data.outcomes);
+        await action(supply);
       }
     } finally {
       setIsMinting(false);

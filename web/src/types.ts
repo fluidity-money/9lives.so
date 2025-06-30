@@ -275,3 +275,11 @@ export enum PaymasterType {
   ADD_LIQUIDITY,
   REMOVE_LIQUIDITY,
 }
+
+export type MintedPosition = {
+  id: `0x${string}`;
+  shareAddress: `0x${string}`;
+  name: string;
+  balance: string;
+  balanceRaw: bigint;
+};

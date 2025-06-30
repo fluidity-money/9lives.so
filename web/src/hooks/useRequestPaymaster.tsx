@@ -80,7 +80,7 @@ export default function useRequestPaymaster() {
       tradingAddr: params.tradingAddr,
       nonce: nonce.toString(),
     });
-    return ticketId;
+    return { ticketId, amount: params.amountToSpend };
   };
   return { requestPaymaster };
 }

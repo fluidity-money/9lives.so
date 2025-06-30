@@ -5,30 +5,34 @@ import {
   simulateTransaction,
 } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
-import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
+import { useActiveAccount } from "thirdweb/react";
 
 const useBuy = ({
   shareAddr,
   tradingAddr,
   campaignId,
   outcomeId,
+  outcomes,
   openFundModal,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
+  outcomes: Outcome[];
   campaignId: `0x${string}`;
   openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();
-  const buy = async (account: Account, fusdc: number, outcomes: Outcome[]) =>
+  const account = useActiveAccount();
+  const buy = async (fusdc: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          if (!account) throw new Error("No active account");
           const amount = toUnits(
             fusdc.toString(),
             config.contracts.decimals.fusdc,
