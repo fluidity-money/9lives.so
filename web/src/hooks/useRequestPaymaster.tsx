@@ -53,7 +53,7 @@ export default function useRequestPaymaster() {
       SELL: PaymasterType.BURN,
     } as const;
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const { r, s, v } = await signForPaymaster({
+    const { r, s, v, nonce } = await signForPaymaster({
       tradingAddr: params.tradingAddr,
       amountToSpend: BigInt(params.amountToSpend),
       referrer: profile?.settings?.refererr || ZeroAddress,
@@ -62,8 +62,6 @@ export default function useRequestPaymaster() {
       minimumBack: BigInt(0),
       type: convertOpTypeToEnum[params.opType],
     });
-    const provider = new ethers.JsonRpcProvider(chain.rpc);
-    const nonce = await provider.getTransactionCount(account.address);
     const ticketId = await requestPaymasterMutation({
       r: r.slice(2),
       s: s.slice(2),

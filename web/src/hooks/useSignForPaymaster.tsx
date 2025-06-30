@@ -89,7 +89,7 @@ export default function useSignForPaymaster() {
 
     const { r, s, v } = Signature.from(signature);
 
-    return { r, s, v };
+    return { r, s, v, nonce };
   };
 
   return { signForPaymaster };
