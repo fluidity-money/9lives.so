@@ -107,28 +107,29 @@ const useBuyWithPaymaster = ({
       }
     },
     onSettled: (result, err) => {
-      const outcomeIds = outcomes.map((o) => o.identifier);
-      queryClient.invalidateQueries({
-        queryKey: ["positions", tradingAddr, outcomes, account],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["sharePrices", tradingAddr, outcomeIds],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [
-          "returnValue",
-          shareAddr,
-          tradingAddr,
-          outcomeId,
-          result?.amount,
-        ],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["campaign", campaignId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["positionHistory", outcomeIds],
-      });
+      // invalidate queries not here but, after reading paymaster ticket ids
+      // const outcomeIds = outcomes.map((o) => o.identifier);
+      // queryClient.invalidateQueries({
+      //   queryKey: ["positions", tradingAddr, outcomes, account],
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["sharePrices", tradingAddr, outcomeIds],
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: [
+      //     "returnValue",
+      //     shareAddr,
+      //     tradingAddr,
+      //     outcomeId,
+      //     result?.amount,
+      //   ],
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["campaign", campaignId],
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["positionHistory", outcomeIds],
+      // });
     },
   });
   const buy = async (fusdc: number) =>
