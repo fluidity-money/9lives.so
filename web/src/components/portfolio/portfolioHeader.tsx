@@ -53,7 +53,7 @@ export default function PortfolioHeader() {
           ) : (
             <Button
               title="Connect your wallet"
-              onClick={connect}
+              onClick={() => connect()}
               className={"md:self-start"}
             />
           )}

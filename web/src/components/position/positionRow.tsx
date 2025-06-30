@@ -122,6 +122,7 @@ export default function PositionRow({
     }
   }, [
     price,
+    isDpm,
     data.id,
     data.balance,
     addPosition,

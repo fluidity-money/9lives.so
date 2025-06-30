@@ -46,7 +46,7 @@ export default function useConnectWallet() {
         console.error("Failed to track wallet connection:", error);
       }
     },
-    [connect],
+    [connect, isInMiniApp],
   );
   return { connect: handleConnect, isConnecting };
 }

@@ -23,6 +23,6 @@ export default function FarcasterProvider() {
       setIsSDKLoaded(true);
       load();
     }
-  }, [isSDKLoaded, connect]);
+  }, [isSDKLoaded, connect, setIsInMiniApp]);
   return null;
 }
