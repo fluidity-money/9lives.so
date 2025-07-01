@@ -12,7 +12,7 @@ import z from "zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { Chain, prepareContractCall, simulateTransaction } from "thirdweb";
 import config from "@/config";
-import { formatUnits } from "ethers";
+import { formatUnits, ZeroAddress } from "ethers";
 import ShadowCard from "../cardShadow";
 import ErrorInfo from "../themed/errorInfo";
 import usePotentialReturn from "@/hooks/usePotentialReturn";
@@ -99,9 +99,9 @@ export default function DetailBuyAction({
     defaultValues: {
       supply: 0,
       toChain: 55244,
-      toToken: config.NEXT_PUBLIC_FUSDC_ADDR,
+      toToken: ZeroAddress,
       fromChain: 55244,
-      fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
+      fromToken: ZeroAddress,
     },
   });
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);

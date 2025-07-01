@@ -1,10 +1,5 @@
 import config from "@/config";
-import {
-  encode,
-  prepareContractCall,
-  sendTransaction,
-  simulateTransaction,
-} from "thirdweb";
+import { encode, prepareContractCall } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
@@ -16,6 +11,7 @@ import {
   executeRoute,
   getContractCallsQuote,
 } from "@lifi/sdk";
+import { ZeroAddress } from "ethers";
 
 const useBuyWithZaps = ({
   shareAddr,
@@ -63,7 +59,7 @@ const useBuyWithZaps = ({
               method: "mint",
               params: [
                 tradingAddr,
-                config.contracts.fusdc.address,
+                ZeroAddress, // buy with eth native token
                 outcomeId,
                 minShareOut,
                 toAmount,

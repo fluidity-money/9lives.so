@@ -10,7 +10,6 @@ import Image from "next/image";
 import { useEffect } from "react";
 import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
-import { destinationChain } from "../config/chains";
 import { Token } from "@/types";
 export default function AssetSelector({
   fromChain,
@@ -50,7 +49,7 @@ export default function AssetSelector({
           <div className="size-5 rounded-full bg-9gray" />
         )}
         <span className="font-chicago">
-          {tokens?.find((t) => t.address === fromToken)?.symbol ?? "USDC"}
+          {tokens?.find((t) => t.address === fromToken)?.symbol ?? "ETH"}
         </span>
         <Image
           src={DownIcon}
