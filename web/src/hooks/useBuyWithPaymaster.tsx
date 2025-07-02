@@ -109,7 +109,8 @@ const useBuyWithPaymaster = ({
       }
     },
     onSettled: (result, err) => {
-      // invalidate queries not here but, after reading paymaster ticket ids
+      // invalidate queries not here but, after reading paymaster tickets
+      // check providers/websocket.tsx
       // const outcomeIds = outcomes.map((o) => o.identifier);
       // queryClient.invalidateQueries({
       //   queryKey: ["positions", tradingAddr, outcomes, account],
