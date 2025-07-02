@@ -98,10 +98,10 @@ export default function DetailBuyAction({
     resolver: zodResolver(enabledLifiZaps ? formSchemaWithZap : formSchema),
     defaultValues: {
       supply: 0,
-      toChain: 55244,
+      toChain: config.chains.superposition.id,
       toToken: ZeroAddress,
-      fromChain: 55244,
-      fromToken: ZeroAddress,
+      fromChain: config.chains.superposition.id,
+      fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
     },
   });
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
@@ -120,7 +120,6 @@ export default function DetailBuyAction({
   const { buy: buyWithPaymaster } = useBuyWithPaymaster({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
-    campaignId: data.identifier,
     outcomeId: outcome.identifier,
     outcomes: data.outcomes,
     openFundModal: () => setFundModalOpen(true),
@@ -172,7 +171,7 @@ export default function DetailBuyAction({
   }: FormData) {
     try {
       setIsMinting(true);
-      if (enabledLifiZaps && fromToken != toToken) {
+      if (enabledLifiZaps && fromChain !== config.chains.superposition.id) {
         await buyWithZaps(
           account!,
           supply,

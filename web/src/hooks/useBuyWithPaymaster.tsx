@@ -12,7 +12,6 @@ import formatFusdc from "@/utils/formatFusdc";
 const useBuyWithPaymaster = ({
   shareAddr,
   tradingAddr,
-  campaignId,
   outcomeId,
   outcomes,
   openFundModal,
@@ -20,7 +19,6 @@ const useBuyWithPaymaster = ({
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
-  campaignId: `0x${string}`;
   outcomes: Outcome[];
   openFundModal: () => void;
 }) => {
@@ -154,7 +152,7 @@ const useBuyWithPaymaster = ({
             openFundModal();
             throw new Error("You dont have enough USDC.");
           }
-          const ticketId = await requestPaymasterOptimistically({
+          const result = await requestPaymasterOptimistically({
             amountToSpend: amount,
             outcome: outcomeId,
             opType: "MINT",
@@ -164,12 +162,12 @@ const useBuyWithPaymaster = ({
 
           track(EVENTS.MINT, {
             wallet: account.address,
-            amount: fusdc,
+            amount: result.amount,
             outcomeId,
             shareAddr,
             tradingAddr,
           });
-          res(ticketId);
+          res(result.ticketId);
         } catch (e) {
           rej(e);
         }

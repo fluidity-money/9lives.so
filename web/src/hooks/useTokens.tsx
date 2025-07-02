@@ -1,7 +1,6 @@
 import config from "@/config";
 import { Token } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { ZeroAddress } from "ethers";
 
 export default function useTokens(fromChain: number) {
   return useQuery({
@@ -21,10 +20,12 @@ export default function useTokens(fromChain: number) {
       };
       const items = data.tokens?.[fromChain];
       if (!items) return [];
-      // only display native token if network is SPN
+      // only display usdc if selected chain is SPN
       if (fromChain === config.chains.superposition.id) {
         return items.filter(
-          (t) => t.address.toLowerCase() === ZeroAddress.toLowerCase(),
+          (t) =>
+            t.address.toLowerCase() ===
+            config.NEXT_PUBLIC_FUSDC_ADDR.toLowerCase(),
         );
       }
       return items;
