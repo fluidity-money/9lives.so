@@ -3,28 +3,32 @@ import { prepareContractCall, simulateTransaction } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { MintedPosition, Outcome } from "@/types";
+import { CampaignDetail, MintedPosition, Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
 import { useActiveAccount } from "thirdweb/react";
 import formatFusdc from "@/utils/formatFusdc";
+import { usePaymasterStore } from "@/stores/paymasterStore";
 
 const useBuyWithPaymaster = ({
   shareAddr,
   tradingAddr,
   outcomeId,
+  data,
   outcomes,
   openFundModal,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
+  data: CampaignDetail;
   outcomes: Outcome[];
   openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();
   const account = useActiveAccount();
   const { requestPaymaster } = useRequestPaymaster();
+  const createTicket = usePaymasterStore((s) => s.createTicket);
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
     mutationFn: ({
       amountToSpend,
@@ -159,15 +163,26 @@ const useBuyWithPaymaster = ({
             tradingAddr: tradingAddr,
             minimumBack: "0",
           });
-
-          track(EVENTS.MINT, {
-            wallet: account.address,
-            amount: result.amount,
-            outcomeId,
-            shareAddr,
-            tradingAddr,
-          });
-          res(result.ticketId);
+          if (result && result.ticketId) {
+            createTicket({
+              id: result.ticketId,
+              amount: result.amount,
+              data,
+              outcomeId,
+              account,
+            });
+            track(EVENTS.MINT, {
+              wallet: account.address,
+              amount: result.amount,
+              outcomeId,
+              shareAddr,
+              type: "buyWithPaymaster",
+              tradingAddr,
+            });
+            res(result.ticketId);
+          } else {
+            rej("Something went wrong!");
+          }
         } catch (e) {
           rej(e);
         }

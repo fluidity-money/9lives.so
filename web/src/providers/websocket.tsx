@@ -7,9 +7,13 @@ import {
   ActionFromBuysAndSells,
   ActionFromCreation,
   CreationResponse,
+  PaymasterAttempt,
+  PaymasterAttemptResponse,
 } from "@/types";
 import { BuyAndSellResponse } from "../types";
 import { mergeSortedActions } from "@/utils/mergeSortedActions";
+import { usePaymasterStore } from "@/stores/paymasterStore";
+import toast from "react-hot-toast";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -47,9 +51,21 @@ subscription {
   }
 }
 `;
-
+const subTenLatestPaymasterAttempts = `
+subscription($ticketIds: [Int!]!) {
+  ninelives_paymaster_attempts_2(order_by: {created_by: desc}, where: {poll_id: {_in: $ticketIds}}) {
+    id
+    created_by
+    poll_id
+    transaction_hash
+    success
+  }
+}
+`;
 export default function WebSocketProvider() {
   const queryClient = useQueryClient();
+  const tickets = usePaymasterStore((s) => s.tickets);
+  const closeTicket = usePaymasterStore((s) => s.closeTicket);
   useEffect(() => {
     const unsubCreateEvents = wsClient.subscribe<CreationResponse>(
       { query: subTenLatestCreate },
@@ -100,6 +116,95 @@ export default function WebSocketProvider() {
       unsubBuyAndSellEvents();
     };
   }, [queryClient]);
+
+  useEffect(() => {
+    if (tickets.length > 0) {
+      const unsubPaymasterEvents = wsClient.subscribe<PaymasterAttemptResponse>(
+        {
+          query: subTenLatestPaymasterAttempts,
+          variables: { ticketIds: tickets.map((t) => t.id) },
+        },
+        {
+          next: async ({ data }) => {
+            const attempts = data?.ninelives_paymaster_attempts_2;
+            if (!attempts) return;
+
+            const grouped = new Map<number, PaymasterAttempt[]>();
+            for (const attempt of attempts) {
+              if (!grouped.has(attempt.poll_id)) {
+                grouped.set(attempt.poll_id, []);
+              }
+              grouped.get(attempt.poll_id)!.push(attempt);
+            }
+
+            const filteredAttempts: PaymasterAttempt[] = [];
+
+            for (const [poll_id, group] of grouped.entries()) {
+              const successItem = group.find((a) => a.success);
+              if (successItem) {
+                filteredAttempts.push(successItem);
+              } else {
+                const failedAttempts = group.filter((a) => !a.success);
+                if (failedAttempts.length >= 5) {
+                  // Add one representative failed attempt
+                  filteredAttempts.push(failedAttempts[0]);
+                }
+              }
+            }
+            filteredAttempts.forEach((a) => {
+              const ticket = tickets.find((t) => a.poll_id === +t.id)!;
+              const selectedOutcome = ticket.data.outcomes.find(
+                (o) => o.identifier === ticket.outcomeId,
+              )!;
+              const outcomeIds = ticket.data.outcomes.map((o) => o.identifier);
+              if (!a.success) {
+                toast.error(
+                  `Failed to buy outcome id ${selectedOutcome.name} with ticket id ${ticket.id}`,
+                );
+              }
+              queryClient.invalidateQueries({
+                queryKey: [
+                  "positions",
+                  ticket.data.poolAddress,
+                  ticket.data.outcomes,
+                  ticket.account,
+                ],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["sharePrices", ticket.data.poolAddress, outcomeIds],
+              });
+              queryClient.invalidateQueries({
+                queryKey: [
+                  "returnValue",
+                  selectedOutcome.share.address,
+                  ticket.data.poolAddress,
+                  ticket.outcomeId,
+                  ticket.amount,
+                ],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["campaign", ticket.data.identifier],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["positionHistory", outcomeIds],
+              });
+              // close Ticket
+              closeTicket(ticket.id);
+            });
+          },
+          error: (error) => {
+            console.error("WebSocket error for paymaster:", error);
+          },
+          complete: () => {
+            console.log("WebSocket paymaster subscription closed.");
+          },
+        },
+      );
+      return () => {
+        unsubPaymasterEvents();
+      };
+    }
+  }, [queryClient, tickets]);
 
   return null;
 }

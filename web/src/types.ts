@@ -8,6 +8,7 @@ import {
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
 import formatFusdc from "./utils/formatFusdc";
+import { Account } from "thirdweb/wallets";
 
 export interface CampaignFilters {
   category?: typeof config.categories;
@@ -282,4 +283,22 @@ export type MintedPosition = {
   name: string;
   balance: string;
   balanceRaw: bigint;
+};
+export type PaymasterAttemptResponse = {
+  ninelives_paymaster_attempts_2: PaymasterAttempt[];
+};
+export type PaymasterAttempt = {
+  id: string;
+  created_by: string;
+  poll_id: number;
+  transaction_hash: string;
+  success: boolean;
+};
+
+export type Ticket = {
+  id: string;
+  amount: string;
+  account: Account;
+  outcomeId: string;
+  data: CampaignDetail;
 };
