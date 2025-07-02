@@ -121,6 +121,7 @@ export default function DetailBuyAction({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
     outcomeId: outcome.identifier,
+    data,
     outcomes: data.outcomes,
     openFundModal: () => setFundModalOpen(true),
   });
