@@ -27,7 +27,7 @@ CREATE FUNCTION ninelives_paymaster_track_result_2(
 	hash HASH
 ) RETURNS VOID AS $$
 BEGIN
-	INSERT INTO ninelives_paymaster_attempts_2 (poll_id, success, hash)
+	INSERT INTO ninelives_paymaster_attempts_2 (poll_id, success, transaction_hash)
 	VALUES (p_poll_id, p_success, hash);
 END;
 $$ LANGUAGE plpgsql;
