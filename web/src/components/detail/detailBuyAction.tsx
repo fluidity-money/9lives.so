@@ -330,27 +330,25 @@ export default function DetailBuyAction({
               </div>
             )}
             <div className="flex gap-2.5">
-              <div className={combineClass(minimized && "hidden md:block")}>
-                {enabledLifiZaps ? (
-                  <AssetSelector
-                    tokens={tokens}
-                    isSuccess={isTokensSuccess}
-                    fromToken={fromToken}
-                    fromChain={fromChain}
-                    setValue={handleTokenChange}
-                  />
-                ) : (
-                  <div
-                    className={combineClass(
-                      "relative flex items-center gap-1 rounded-[3px] border border-9black py-2 pl-2.5 pr-8 shadow-9btnSecondaryIdle",
-                      "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
-                    )}
-                  >
-                    <Image src={USDCImg} alt="fusdc" width={20} />
-                    <span className="font-chicago">{"USDC"}</span>
-                  </div>
-                )}
-              </div>
+              {enabledLifiZaps ? (
+                <AssetSelector
+                  tokens={tokens}
+                  isSuccess={isTokensSuccess}
+                  fromToken={fromToken}
+                  fromChain={fromChain}
+                  setValue={handleTokenChange}
+                />
+              ) : (
+                <div
+                  className={combineClass(
+                    "relative flex items-center gap-1 rounded-[3px] border border-9black py-2 pl-2.5 pr-8 shadow-9btnSecondaryIdle",
+                    "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
+                  )}
+                >
+                  <Image src={USDCImg} alt="fusdc" width={20} />
+                  <span className="font-chicago">{"USDC"}</span>
+                </div>
+              )}
               <Input
                 {...register("supply")}
                 type="number"
@@ -382,18 +380,6 @@ export default function DetailBuyAction({
                           : config.chains,
                       ).find((chain) => chain.id === fromChain)?.name
                     }
-                    <span
-                      className="md:hidden"
-                      onClick={() => setIsMinting(false)}
-                    >
-                      /{tokens?.find((t) => t.address === fromToken)?.symbol}{" "}
-                      <Image
-                        src={DownIcon}
-                        className="inline rotate-180"
-                        width={16}
-                        alt=""
-                      />
-                    </span>
                   </span>
                 </span>
                 <div className="flex items-center gap-1">
