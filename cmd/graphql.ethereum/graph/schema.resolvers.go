@@ -18,6 +18,7 @@ import (
 
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
+	"github.com/fluidity-money/9lives.so/lib/ai"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
@@ -504,26 +505,26 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			return nil, fmt.Errorf("error retrieving oracle type")
 		}
 	}
-	// err = r.F.On(features.FeatureUseAiForCheckingIfCampaignMakesSense, func() error {
-	// 	_, err = ai.RequestFromAi(
-	// 		r.LambdaClient,
-	// 		ctx,
-	// 		r.LambdaMiscAiBackendName,
-	// 		"is legit",
-	// 		name,
-	// 	)
-	// 	if err != nil {
-	// 		slog.Error("Failed to look up a request for if a campaign is legit",
-	// 			"name", name,
-	// 			"err", err,
-	// 		)
-	// 		return fmt.Errorf("failed to look up request: %v", err)
-	// 	}
-	// 	return nil
-	// })
-	// if err != nil {
-	// 	return nil, err
-	// }
+	err = r.F.On(features.FeatureUseAiForCheckingIfCampaignMakesSense, func() error {
+		_, err = ai.RequestFromAi(
+			r.LambdaClient,
+			ctx,
+			r.LambdaMiscAiBackendName,
+			"is legit",
+			name,
+		)
+		if err != nil {
+			slog.Error("Failed to look up a request for if a campaign is legit",
+				"name", name,
+				"err", err,
+			)
+			return fmt.Errorf("failed to look up request: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
 	// Create the campaign object
 	campaignId, _ := crypto.GetCampaignId(name, description, uint64(seed))
 	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
@@ -648,26 +649,26 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		tradingPicUrl = &img
 	}
 	var categories []string
-	// err = r.F.On(features.FeatureUseAIForCategories, func() error {
-	// 	categories, err = ai.RequestFromAi(
-	// 		r.LambdaClient,
-	// 		ctx,
-	// 		r.LambdaMiscAiBackendName,
-	// 		"categories",
-	// 		name,
-	// 	)
-	// 	if err != nil {
-	// 		slog.Error("Failed to look up a request for categories",
-	// 			"name", name,
-	// 			"err", err,
-	// 		)
-	// 		return fmt.Errorf("failed to look up request: %v", err)
-	// 	}
-	// 	return nil
-	// })
-	// if err != nil {
-	// 	return nil, err
-	// }
+	err = r.F.On(features.FeatureUseAIForCategories, func() error {
+		categories, err = ai.RequestFromAi(
+			r.LambdaClient,
+			ctx,
+			r.LambdaMiscAiBackendName,
+			"categories",
+			name,
+		)
+		if err != nil {
+			slog.Error("Failed to look up a request for categories",
+				"name", name,
+				"err", err,
+			)
+			return fmt.Errorf("failed to look up request: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
 	campaign := types.CampaignInsertion{
 		ID: hexCampaignId,
 		Content: types.CampaignContent{
