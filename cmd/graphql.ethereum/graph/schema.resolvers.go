@@ -18,7 +18,6 @@ import (
 
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
-	"github.com/fluidity-money/9lives.so/lib/ai"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
@@ -649,26 +648,26 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		tradingPicUrl = &img
 	}
 	var categories []string
-	err = r.F.On(features.FeatureUseAIForCategories, func() error {
-		categories, err = ai.RequestFromAi(
-			r.LambdaClient,
-			ctx,
-			r.LambdaMiscAiBackendName,
-			"categories",
-			name,
-		)
-		if err != nil {
-			slog.Error("Failed to look up a request for categories",
-				"name", name,
-				"err", err,
-			)
-			return fmt.Errorf("failed to look up request: %v", err)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
+	// err = r.F.On(features.FeatureUseAIForCategories, func() error {
+	// 	categories, err = ai.RequestFromAi(
+	// 		r.LambdaClient,
+	// 		ctx,
+	// 		r.LambdaMiscAiBackendName,
+	// 		"categories",
+	// 		name,
+	// 	)
+	// 	if err != nil {
+	// 		slog.Error("Failed to look up a request for categories",
+	// 			"name", name,
+	// 			"err", err,
+	// 		)
+	// 		return fmt.Errorf("failed to look up request: %v", err)
+	// 	}
+	// 	return nil
+	// })
+	// if err != nil {
+	// 	return nil, err
+	// }
 	campaign := types.CampaignInsertion{
 		ID: hexCampaignId,
 		Content: types.CampaignContent{
