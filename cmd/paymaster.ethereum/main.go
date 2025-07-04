@@ -131,7 +131,7 @@ L:
 			Data: callCd,
 		}, nil)
 		if err != nil {
-			setup.Exitf("call result: %v", err)
+			setup.Exitf("call result, address: %v, calldata: %x: %v", paymasterAddr, callCd, err)
 		}
 		if len(callRes) == 0 {
 			setup.Exitf("error calling, sender: %v: %x", fromAddr, callCd)
