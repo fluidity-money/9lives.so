@@ -202,6 +202,9 @@ func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int, h string) {
 	// Generate the template that uses the function to take a id as having a failure.
 	logIds := make([]LogId, 0, len(badIds)+len(goodIds))
 	tx := sql.NullString{h, false}
+	if h != "" {
+		tx.Valid = true
+	}
 	for _, b := range badIds {
 		logIds = append(logIds, LogId{b, false, tx})
 	}
