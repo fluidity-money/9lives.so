@@ -53,7 +53,7 @@ subscription {
 `;
 const subTenLatestPaymasterAttempts = `
 subscription($ticketIds: [Int!]!) {
-  ninelives_paymaster_attempts_2(order_by: {created_by: desc}, where: {poll_id: {_in: $ticketIds}}) {
+  ninelives_paymaster_attempts_2(where: {poll_id: {_in: $ticketIds}}) {
     id
     created_by
     poll_id
@@ -119,10 +119,11 @@ export default function WebSocketProvider() {
 
   useEffect(() => {
     if (tickets.length > 0) {
+      const ticketIds = tickets.map((t) => Number(t.id));
       const unsubPaymasterEvents = wsClient.subscribe<PaymasterAttemptResponse>(
         {
           query: subTenLatestPaymasterAttempts,
-          variables: { ticketIds: tickets.map((t) => t.id) },
+          variables: { ticketIds },
         },
         {
           next: async ({ data }) => {
@@ -158,9 +159,7 @@ export default function WebSocketProvider() {
               )!;
               const outcomeIds = ticket.data.outcomes.map((o) => o.identifier);
               if (!a.success) {
-                toast.error(
-                  `Failed to buy outcome id ${selectedOutcome.name} with ticket id ${ticket.id}`,
-                );
+                toast.error(`Failed to buy outcome ${selectedOutcome.name}`);
               }
               queryClient.invalidateQueries({
                 queryKey: [
@@ -188,8 +187,7 @@ export default function WebSocketProvider() {
               queryClient.invalidateQueries({
                 queryKey: ["positionHistory", outcomeIds],
               });
-              // close Ticket
-              closeTicket(ticket.id);
+              closeTicket(a.poll_id.toString());
             });
           },
           error: (error) => {
