@@ -18,7 +18,7 @@ WITH function_calls AS (
 		success,
 		ninelives_paymaster_track_result_2(poll_id, success, hash)
 	FROM (
-		VALUES {{range $i, $v := .}}({{ .Id}}, {{ .Success }}{{ .Hash }}){{if not (eq (add $i 1) (len $))}},{{end}}{{end}}
+		VALUES {{range $i, $v := .}}({{ .Id}}, {{ .Success }}, '{{ .Hash.String }}'){{if not (eq (add $i 1) (len $))}},{{end}}{{end}}
 	) AS params(poll_id, success)
 )
 SELECT poll_id, success FROM function_calls;
