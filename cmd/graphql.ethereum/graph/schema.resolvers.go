@@ -447,6 +447,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	}
 	if err := r.DB.Table("ninelives_paymaster_poll_1").Create(&p).Error; err != nil {
 		slog.Error("Error inserting new paymaster operation", "err", err)
+		return nil, fmt.Errorf("insert paymaster op")
 	}
 	id := strconv.Itoa(p.ID)
 	return &id, nil
