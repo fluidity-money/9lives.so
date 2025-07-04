@@ -56,7 +56,7 @@ func TestEcrecoverPaymasterOperation(t *testing.T) {
 			Owner:         ethCommon.HexToAddress("0x63177184B8b5e1229204067a76Ec4c635009CBD2"),
 			Nonce:         new(big.Int).SetInt64(0),
 			Deadline:      new(big.Int).SetInt64(1750418163),
-			PaymasterType: paymaster.PaymasterTypeMint,
+			Typ: paymaster.PaymasterTypeMint,
 			Market:        ethCommon.HexToAddress("0x2ef8fe80f525bfeca66cd16bd9e8af5556f40b11"),
 			MaximumFee:    new(big.Int).SetInt64(0),
 			AmountToSpend: new(big.Int).SetInt64(1000000),

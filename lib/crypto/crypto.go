@@ -83,7 +83,7 @@ type PaymasterOperation struct {
 	Nonce              *big.Int          `abi:"nonce"`
 	Deadline           *big.Int          `abi:"deadline"`
 	Typ                uint8             `abi:"typ"`
-	PermitAmount *big.Int `abi:"permitAmount"`
+	PermitAmount       *big.Int          `abi:"permitAmount"`
 	PermitR            [32]byte          `abi:"permitR"`
 	PermitS            [32]byte          `abi:"permitS"`
 	PermitV            uint8             `abi:"permitV"`
@@ -105,7 +105,7 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		Nonce:              x.Nonce.Big(),
 		Deadline:           new(big.Int).SetInt64(int64(x.Deadline)),
 		Typ:                x.Typ,
-		PermitAmount: maybeNumberToBig(x.PermitAmount),
+		PermitAmount:       maybeNumberToBig(x.PermitAmount),
 		PermitR:            maybeBytesToBytes32(x.PermitR),
 		PermitS:            maybeBytesToBytes32(x.PermitS),
 		PermitV:            x.PermitV,
@@ -138,6 +138,7 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 	sig := make([]byte, 65)
 	copy(sig[:32], op.R[:])
 	copy(sig[32:64], op.S[:])
+	sig[64] = op.V
 	if sig[64] == 27 || sig[64] == 28 {
 		sig[64] -= 27
 	}
