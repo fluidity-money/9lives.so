@@ -10,4 +10,5 @@ func TestGenIds(t *testing.T) {
 		LogId{0, true, sql.NullString{"", true}},
 		LogId{1, false, sql.NullString{"swag", true}},
 	))
+	t.Fail()
 }
