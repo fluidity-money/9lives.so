@@ -107,13 +107,16 @@ const requiredChains = Object.values(farcasterChains).map(
 const frame = {
   version: "next",
   name: metadata.title,
-  iconUrl: `${metadata.metadataBase.origin}/images/logo-hero.svg`,
+  iconUrl: `${metadata.metadataBase.origin}/images/icon-farcaster.png`,
   homeUrl: metadata.metadataBase.origin,
   imageUrl: `${metadata.metadataBase.origin}/images/frame.png`,
   buttonTitle: "Launch Frame",
-  splashImageUrl: `${metadata.metadataBase.origin}/images/logo-hero.svg`,
+  splashImageUrl: `${metadata.metadataBase.origin}/images/splash-farcaster.png`,
   splashBackgroundColor: "#DDEAEF",
   requiredChains,
+  description: metadata.description,
+  primaryCategory: "finance",
+  tags: metadata.keywords,
 };
 const appVars = appSchema.safeParse({
   metadata,
