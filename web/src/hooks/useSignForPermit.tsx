@@ -30,7 +30,7 @@ export default function useSignForPermit() {
     const nameTx = prepareContractCall({
       contract: config.contracts.fusdc,
       method: "name",
-      params: [account.address],
+      params: [],
     });
     const name = await simulateTransaction({ transaction: nameTx });
     const nonceTx = prepareContractCall({
@@ -41,7 +41,7 @@ export default function useSignForPermit() {
     const nonce = await simulateTransaction({ transaction: nonceTx });
     const domain = {
       name,
-      version: "1",
+      version: "2",
       chainId: destinationChain.id,
       verifyingContract: process.env.NEXT_PUBLIC_FUSDC_ADDR,
     };

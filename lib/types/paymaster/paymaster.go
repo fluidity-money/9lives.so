@@ -15,9 +15,9 @@ type Poll struct {
 	Deadline           int             `json:"deadline"`
 	Typ                uint8           `json:"typ"`
 	PermitAmount       *events.Number  `json:"permitAmount"`
-	PermitR            *events.Bytes   `json:"permitR"`
-	PermitS            *events.Bytes   `json:"permitS"`
-	PermitV            uint8           `json:"permitV"`
+	PermitR            *events.Bytes   `json:"permitR",gorm:"column:permit_r"`
+	PermitS            *events.Bytes   `json:"permitS",gorm:"column:permit_s"`
+	PermitV            uint8           `json:"permitV",gorm:"column:permit_v"`
 	Market             events.Address  `json:"market"`
 	MaximumFee         events.Number   `json:"maximumFee"`
 	AmountToSpend      events.Number   `json:"amountToSepnd"`
