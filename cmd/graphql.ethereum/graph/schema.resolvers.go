@@ -437,9 +437,10 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 			slog.Error("Error verifying a signature", "op", p, "err", err)
 			return nil, fmt.Errorf("signature error")
 		}
-		if a := ethCommon.HexToAddress(p.Owner.String()); !bytes.Equal(owner.Bytes(), a.Bytes()) {
+		a := ethCommon.HexToAddress(p.Owner.String())
+		if !bytes.Equal(owner.Bytes(), a.Bytes()) {
 			slog.Error("Supplied signature different",
-				"owner", p.Owner,
+				"owner", owner,
 				"other address", a,
 				"err", err,
 			)
