@@ -100,13 +100,16 @@ L:
 		}
 		var items []paymaster.Poll
 		err = db.WithContext(ctx).
-			Table("ninelives_paymaster_poll_outstanding_1").
+			Table("ninelives_paymaster_poll_outstanding_2").
 			Limit(200).
 			Scan(&items).
 			Error
 		if err != nil {
 			setup.Exitf("scan outstanding polls: %v", err)
 		}
+		slog.Debug("About to process outstanding polls",
+			"polls", items,
+		)
 		if len(items) == 0 {
 			cancelCtx()
 			sleep(sleepSecs)
@@ -156,6 +159,7 @@ L:
 			}
 		}
 		goodLen := len(operations) - len(badIds)
+		slog.Debug("Id separation", "good ids", goodIds, "bad ids", badIds)
 		if goodLen == 0 {
 			// There weren't any ids we should continue with! Don't do anything.
 			logIds(db, ctx, badIds, goodIds, "")
