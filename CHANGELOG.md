@@ -1,3 +1,9 @@
+## 04-07-2025 Paymaster and seamless cross-chain purchasing
+
+We’ve added Farcaster support 🎯 and seamless cross-chain purchasing 🌉!
+Now you can instantly buy shares from anywhere! ⚡ No need to switch chains if you've got
+assets on SPN 💰✨
+
 ## 11-06-2025 Batch created campaign fee claiming and personalisation features
 
 ✨ Big updates alert! 🚀 We've supercharged our frontend customisation and curation tools,
