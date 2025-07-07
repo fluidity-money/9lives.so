@@ -16,10 +16,8 @@ const metadata = {
   description: "The most advanced prediction market",
   metadataBase: new URL("https://9lives.so"),
   keywords: [
-    "prediction-market",
+    "prediction market",
     "bet",
-    "stream",
-    "cats",
     "onchain",
     "superposition",
     "blockchain",
@@ -104,6 +102,13 @@ const appSchema = z.object({
 const requiredChains = Object.values(farcasterChains).map(
   (chain) => `eip155:${chain.id}`,
 );
+const farcasterTags = [
+  "bet",
+  "predict",
+  "prediction",
+  "prediction-market",
+  "defi",
+];
 const frame = {
   version: "next",
   name: metadata.title,
@@ -116,7 +121,7 @@ const frame = {
   requiredChains,
   description: metadata.description,
   primaryCategory: "finance",
-  tags: metadata.keywords,
+  tags: farcasterTags,
 };
 const appVars = appSchema.safeParse({
   metadata,
