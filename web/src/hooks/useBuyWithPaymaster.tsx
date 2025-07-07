@@ -191,7 +191,7 @@ const useBuyWithPaymaster = ({
       {
         loading: "Buying shares...",
         success: "Shares bought successfully!",
-        error: (e) => `Create failed. ${e?.message ?? "Unknown error"}`,
+        error: (e) => `${e?.message ?? "Unknown error"}`,
       },
     );
 

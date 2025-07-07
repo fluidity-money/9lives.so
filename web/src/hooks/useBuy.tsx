@@ -125,8 +125,7 @@ const useBuy = ({
       {
         loading: "Buying shares...",
         success: "Shares bought successfully!",
-        error: (e: unknown) =>
-          `Create failed. ${e instanceof Error ? e.message : e instanceof String ? e : `Unknown error: ${JSON.stringify(e)}`}`,
+        error: (e) => `${e?.message ?? "Unknown error"}`,
       },
     );
 
