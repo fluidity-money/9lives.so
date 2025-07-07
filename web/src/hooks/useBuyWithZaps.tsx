@@ -59,7 +59,7 @@ const useBuyWithZaps = ({
               method: "mint",
               params: [
                 tradingAddr,
-                toToken, // buy with eth native token
+                toToken,
                 outcomeId,
                 minShareOut,
                 toAmount,
@@ -87,7 +87,6 @@ const useBuyWithZaps = ({
             toChain,
             toToken,
             toAmount,
-            allowBridges: ["relay"],
             contractCalls: [
               {
                 fromAmount: toAmount,

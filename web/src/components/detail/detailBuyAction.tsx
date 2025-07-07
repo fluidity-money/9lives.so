@@ -99,7 +99,7 @@ export default function DetailBuyAction({
     defaultValues: {
       supply: 0,
       toChain: config.chains.superposition.id,
-      toToken: ZeroAddress,
+      toToken: config.NEXT_PUBLIC_FUSDC_ADDR,
       fromChain: config.chains.superposition.id,
       fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
     },
