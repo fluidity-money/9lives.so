@@ -86,7 +86,6 @@ const superposition = defineChain({
 //   icon: APE,
 // });
 const farcasterList = {
-  arbitrum: { ...arbitrum, icon: ARB },
   ethereum: { ...ethereum, icon: ETH },
   optimism: { ...optimism, icon: OP },
   base: { ...base, icon: BASE },
@@ -94,6 +93,7 @@ const farcasterList = {
 } as const;
 const chainList = {
   superposition: { ...superposition, icon: SPN },
+  arbitrum: { ...arbitrum, icon: ARB },
   ...farcasterList,
   // apechain: { ...apechain, icon: APE },
   bsc: { ...bsc, icon: BSC },
