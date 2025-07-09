@@ -110,7 +110,7 @@ const farcasterTags = [
   "defi",
 ];
 const frame = {
-  version: "next",
+  version: "1",
   name: metadata.title,
   iconUrl: `${metadata.metadataBase.origin}/images/icon-farcaster.png`,
   homeUrl: metadata.metadataBase.origin,
