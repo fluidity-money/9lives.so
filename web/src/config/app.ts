@@ -125,7 +125,10 @@ const frame = {
     title: "Predict",
     action: {
       type: "launch_miniapp",
+      name: metadata.title,
       url: metadata.metadataBase.origin,
+      splashImageUrl: `${metadata.metadataBase.origin}/images/splash-farcaster.png`,
+      splashBackgroundColor: "#DDEAEF",
     },
   },
 };

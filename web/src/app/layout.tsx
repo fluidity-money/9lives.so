@@ -67,8 +67,6 @@ export const metadata: Metadata = {
       version: appConfig.frame.version,
       imageUrl: appConfig.frame.imageUrl,
       button: appConfig.frame.button,
-      splashImageUrl: appConfig.frame.splashImageUrl,
-      splashBackgroundColor: appConfig.frame.splashBackgroundColor,
     }),
   },
 };
