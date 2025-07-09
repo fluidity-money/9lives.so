@@ -125,6 +125,7 @@ const frame = {
     title: "Predict",
     action: {
       type: "launch_miniapp",
+      url: metadata.metadataBase.origin,
     },
   },
 };
