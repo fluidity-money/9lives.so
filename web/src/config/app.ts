@@ -115,13 +115,18 @@ const frame = {
   iconUrl: `${metadata.metadataBase.origin}/images/icon-farcaster.png`,
   homeUrl: metadata.metadataBase.origin,
   imageUrl: `${metadata.metadataBase.origin}/images/frame.png`,
-  buttonTitle: "Launch Frame",
   splashImageUrl: `${metadata.metadataBase.origin}/images/splash-farcaster.png`,
   splashBackgroundColor: "#DDEAEF",
   requiredChains,
   description: metadata.description,
   primaryCategory: "finance",
   tags: farcasterTags,
+  button: {
+    title: "Predict",
+    action: {
+      type: "launch_miniapp",
+    },
+  },
 };
 const appVars = appSchema.safeParse({
   metadata,
