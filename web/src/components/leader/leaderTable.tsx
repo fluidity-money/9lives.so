@@ -31,7 +31,9 @@ export default function LeaderTable({ data }: { data?: Leader[] }) {
       </thead>
       <tbody className="w-full">
         {account?.address ? null : <LeaderRow />}
-        {data?.map((item) => <LeaderRow key={item.wallet} data={item} />)}
+        {data?.map((item) => (
+          <LeaderRow key={item.wallet} data={item} />
+        ))}
       </tbody>
     </table>
   );

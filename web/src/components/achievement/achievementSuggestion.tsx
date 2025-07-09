@@ -12,15 +12,13 @@ export default function AchievementSuggestion() {
   return (
     <RetroCard title="Get started here" position="middle">
       <div className="flex flex-col gap-4">
-        {data
-          ?.slice(0, 4)
-          .map((item) => (
-            <AchievementItem
-              data={item}
-              key={item.id}
-              totalUserCount={totalUserCount}
-            />
-          ))}
+        {data?.slice(0, 4).map((item) => (
+          <AchievementItem
+            data={item}
+            key={item.id}
+            totalUserCount={totalUserCount}
+          />
+        ))}
       </div>
     </RetroCard>
   );

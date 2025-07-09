@@ -159,7 +159,7 @@ export class ActionFromBuysAndSells implements Action {
   constructor(
     response: BuyAndSellResponse["ninelives_buys_and_sells_1"][number],
   ) {
-    (this.id = response.transaction_hash),
+    ((this.id = response.transaction_hash),
       (this.type = response.type),
       (this.campaignId = response.campaign_id),
       (this.campaignName = response.campaign_content.name),
@@ -174,7 +174,7 @@ export class ActionFromBuysAndSells implements Action {
       )),
       (this.outcomeName = response.campaign_content.outcomes.find(
         (o) => o.identifier === `0x${response.outcome_id}`,
-      )?.name);
+      )?.name));
   }
 }
 export class CampaignDto implements Campaign {

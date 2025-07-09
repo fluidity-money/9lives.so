@@ -19,7 +19,9 @@ export default function WatchList() {
         !isDegenModeEnabled && "sm:grid-cols-2",
       )}
     >
-      {watchlist?.map((c) => <CampaignItem key={c.identifier} data={c} />)}
+      {watchlist?.map((c) => (
+        <CampaignItem key={c.identifier} data={c} />
+      ))}
     </div>
   );
 }
