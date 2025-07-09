@@ -63,7 +63,13 @@ const arial = localFont({
 export const metadata: Metadata = {
   ...appConfig.metadata,
   other: {
-    "fc:miniapp": JSON.stringify(appConfig.frame),
+    "fc:miniapp": JSON.stringify({
+      version: appConfig.frame.version,
+      imageUrl: appConfig.frame.imageUrl,
+      button: appConfig.frame.button,
+      splashImageUrl: appConfig.frame.splashImageUrl,
+      splashBackgroundColor: appConfig.frame.splashBackgroundColor,
+    }),
   },
 };
 
