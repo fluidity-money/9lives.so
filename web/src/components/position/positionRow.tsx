@@ -336,7 +336,9 @@ export default function PositionRow({
         </td>
         {isDpm !== undefined && !isDpm && (
           <td>
-            <span className="font-chicago text-xs">${data.balance}</span>
+            <span className="font-chicago text-xs">
+              ${data.winner && data.winner !== data.id ? 0 : data.balance}
+            </span>
           </td>
         )}
       </tr>
