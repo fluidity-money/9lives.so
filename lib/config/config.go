@@ -35,7 +35,7 @@ func Get() C {
 	if gethUrl == "" {
 		setup.Exitf("SPN_SUPERPOSITION_URL not set")
 	}
-	timescaleUrl := os.Getenv("SPN_TIMESCALE_URL")
+	timescaleUrl := os.Getenv("SPN_TIMESCALE")
 	if timescaleUrl == "" {
 		setup.Exitf("SPN_TIMESCALE_URL not set")
 	}
