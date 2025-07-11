@@ -9,6 +9,7 @@ import ReferralHandler from "./referralHandler";
 import { Suspense } from "react";
 import LiFiProvider from "./lifi";
 import FarcasterProvider from "./farcaster";
+import RelayProvider from "./relay";
 
 export default function Providers({
   children,
@@ -29,6 +30,7 @@ export default function Providers({
         <ContextInjector />
         <WebSocketProvider />
         <FarcasterProvider />
+        <RelayProvider />
         <Suspense>
           <ReferralHandler />
         </Suspense>

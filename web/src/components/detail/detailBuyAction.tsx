@@ -32,6 +32,7 @@ import useTokens from "@/hooks/useTokens";
 import useProfile from "@/hooks/useProfile";
 import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
 import { useUserStore } from "@/stores/userStore";
+import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -99,7 +100,7 @@ export default function DetailBuyAction({
     defaultValues: {
       supply: 0,
       toChain: config.chains.superposition.id,
-      toToken: config.NEXT_PUBLIC_FUSDC_ADDR,
+      toToken: ZeroAddress,
       fromChain: config.chains.superposition.id,
       fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
     },
@@ -125,7 +126,7 @@ export default function DetailBuyAction({
     outcomes: data.outcomes,
     openFundModal: () => setFundModalOpen(true),
   });
-  const { buyWithZaps } = useBuyWithZaps({
+  const { buyWithRelay } = useBuyWithRelay({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
     campaignId: data.identifier,
@@ -173,7 +174,7 @@ export default function DetailBuyAction({
     try {
       setIsMinting(true);
       if (enabledLifiZaps && fromChain !== config.chains.superposition.id) {
-        await buyWithZaps(
+        await buyWithRelay(
           account!,
           supply,
           usdValue,
