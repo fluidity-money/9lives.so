@@ -16,7 +16,7 @@ export default function RelayTxToaster({
         <CloseButton size="size-4" onClick={close} />
       </div>
       <a
-        className="font-chicago underline"
+        className="m-4 block font-chicago text-xs underline"
         target="_black"
         href={`https://relay.link/transaction/${tx}`}
       >
