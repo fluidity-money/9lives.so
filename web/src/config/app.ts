@@ -124,7 +124,7 @@ const frame = {
   button: {
     title: "Predict",
     action: {
-      type: "launch_miniapp",
+      type: "launch_frame",
       name: metadata.title,
       url: metadata.metadataBase.origin,
       splashImageUrl: `${metadata.metadataBase.origin}/images/splash-farcaster.png`,
