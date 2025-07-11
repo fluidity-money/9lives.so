@@ -13,6 +13,7 @@ import {
   useActiveWalletChain,
   useSwitchActiveWalletChain,
 } from "thirdweb/react";
+import RelayTxToaster from "@/components/relayTxToaster";
 
 const useBuyWithRelay = ({
   shareAddr,
@@ -132,39 +133,44 @@ const useBuyWithRelay = ({
             chain: targetChain,
             wallet,
           });
-
+          let requestId: string | undefined;
           await relayClient.actions.execute({
             quote,
             wallet: adaptViemWallet(walletClient as any),
             onProgress: ({ currentStep, currentStepItem }) => {
               if (currentStep && currentStepItem) {
-                const currentToasterId = currentStep?.requestId;
-                if (currentStepItem.status === "incomplete") {
-                  if (currentStepItem.error) {
-                    toast.error(
-                      `${currentStep.action}: ${currentStepItem.errorData?.cause?.shortMessage ?? currentStepItem.error}`,
-                      { id: currentToasterId },
-                    );
-                  } else {
-                    toast.loading(
-                      `${currentStep.action}: ${currentStepItem.progressState}`,
-                      { id: currentToasterId },
-                    );
-                    console.log(
-                      "currentStepItem.progressState",
-                      currentStepItem.progressState,
-                    );
-                    console.log(
-                      "currentStepItem.checkStatus",
-                      currentStepItem.checkStatus,
-                    );
-                  }
+                requestId = currentStep?.requestId;
+                if (currentStepItem.error) {
+                  toast.error(
+                    `${currentStep.action}: ${currentStepItem.errorData?.cause?.shortMessage ?? currentStepItem.error}`,
+                    { id: requestId },
+                  );
+                } else if (currentStepItem.checkStatus === "success") {
+                  toast.success(currentStep.description, { id: requestId });
                 } else {
-                  toast.success(currentStep.action, { id: currentToasterId });
+                  toast.loading(
+                    `${currentStep.action}: ${currentStepItem.progressState}`,
+                    { id: requestId },
+                  );
                 }
               }
             },
           });
+
+          if (requestId) {
+            toast.custom(
+              (t) => (
+                <RelayTxToaster
+                  tx={requestId!}
+                  close={() => toast.dismiss(t.id)}
+                />
+              ),
+              {
+                duration: Infinity,
+                position: "bottom-right",
+              },
+            );
+          }
 
           const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
