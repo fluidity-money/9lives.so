@@ -15,7 +15,7 @@ import (
 )
 
 func testIngestorArgs(x ethCommon.Address) IngestorArgs {
-	return IngestorArgs{x, x, x, x, x, x, x}
+	return IngestorArgs{x, x, x, x, x, x, x, x}
 }
 
 func testIngestorArgsZero() IngestorArgs {
@@ -388,6 +388,43 @@ func TestVendorBorrow(t *testing.T) {
 		},
 		func(table string, a any) error {
 			assert.Equalf(t, "vendor_events_borrow", table, "table not equal")
+			wasRun = true
+			return nil
+		},
+	)
+	assert.NoError(t, err)
+	assert.True(t, wasRun)
+}
+
+func TestSudoswapPairCreated(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0x705fd2868348df3ea3f560e52b00c4c3df6aeed2",
+		"blockHash": "0x1ab51a48d6230dfa4da55786f77fb11bbad0e3cc6b4276d17b54f84aaf071e45",
+		"blockNumber": "0x1eec55",
+		"data": "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002",
+		"logIndex": "0x1",
+		"removed": false,
+		"topics": [
+			"0xe8e1cee58c33f242c87d563bbc00f2ac82eb90f10a252b0ba8498ae6c1dc241a",
+			"0x00000000000000000000000043c1fd85f31af0becedf748c5987f6d5c65d53cd"
+		],
+		"transactionHash": "0xfe92e31920441df3de2055170505ee0ac7bd07dbabb5b8c19787f2dc538655e0",
+		"transactionIndex": "0x1"
+	}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	_, err := handleLogCallback(
+		testIngestorArgs(ethCommon.HexToAddress("0x705fd2868348df3ea3f560e52b00c4c3df6aeed2")),
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return true, nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "sudoswap_new_erc721pair", table, "table not equal")
 			wasRun = true
 			return nil
 		},

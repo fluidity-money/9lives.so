@@ -1,50 +1,12 @@
 package main
 
 import (
-	"math/big"
-	"os"
 	"testing"
 
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-
 	"github.com/stretchr/testify/assert"
 )
-
-func db(t *testing.T, stmts ...string) *gorm.DB {
-	db, err := gorm.Open(postgres.Open(os.Getenv("SPN_TIMESCALE_URL")))
-	if err != nil {
-		t.Fatalf("db: %v", err)
-	}
-	for _, stmt := range stmts {
-		if err := db.Exec(stmt).Error; err != nil {
-			t.Fatalf("exec:[ %v", err)
-		}
-	}
-	return db
-}
-
-func hd(s string) events.Bytes {
-	h, _ := events.BytesFromHex(s)
-	return *h
-}
-
-func addr(s string) events.Address {
-	return events.AddressFromString(s)
-}
-
-func no(s string) events.Number {
-	i, _ := new(big.Int).SetString(s, 10)
-	return events.NumberFromBig(i)
-}
-
-func cleardb(t *testing.T, db *gorm.DB) {
-	assert.NoError(t,
-		db.Exec("DELETE FROM test_1751030119_reading").Error,
-	)
-}
 
 func TestScanning(t *testing.T) {
 	var input []struct {
@@ -53,7 +15,7 @@ func TestScanning(t *testing.T) {
 		Number                 events.Number
 	}
 	d := db(t,
-		`DROP TABLE test_1751030119_reading`,
+		`DROP TABLE IF EXISTS test_1751030119_reading`,
 		`CREATE TABLE test_1751030119_reading(
 			bytes BYTES,
 			bytes8 BYTES8,
@@ -88,7 +50,7 @@ func TestScanning(t *testing.T) {
 		no("192381281818181818181818181282828"),
 		input[0].Number,
 	)
-	var input2 []struct {
+	var 2 []struct {
 		Bytes, Bytes8, Bytes32 *events.Bytes
 		Address                *events.Address
 		Number                 *events.Number

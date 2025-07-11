@@ -18,8 +18,9 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
 	"github.com/fluidity-money/9lives.so/lib/events/lifi"
 	"github.com/fluidity-money/9lives.so/lib/events/onchaingm"
-	"github.com/fluidity-money/9lives.so/lib/events/vendor"
 	"github.com/fluidity-money/9lives.so/lib/events/stargate"
+	"github.com/fluidity-money/9lives.so/lib/events/sudoswap"
+	"github.com/fluidity-money/9lives.so/lib/events/vendor"
 
 	"gorm.io/gorm"
 
@@ -81,11 +82,13 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	vendor.TopicRepay,
 	vendor.TopicRollIn,
 	vendor.TopicWithdraw,
+	// Sudoswap
+	sudoswap.TopicNewERC721Pair,
 }
 
 type IngestorArgs struct {
-	Factory, InfraMarket, Lockup, SarpSignallerAi ethCommon.Address
-	LifiDiamond, Layerzero, Dinero                ethCommon.Address
+	Factory, InfraMarket, Lockup, SarpSignallerAi   ethCommon.Address
+	LifiDiamond, Layerzero, Dinero, SudoswapFactory ethCommon.Address
 }
 
 // Entry function, using the database to determine if polling should be
@@ -476,6 +479,11 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		table = "vendor_events_withdraw"
 		logEvent("Withdraw")
 		isVendor = true
+	case sudoswap.TopicNewERC721Pair:
+		a, err = sudoswap.UnpackNewERC721Pair(topic1, data)
+		table = "sudoswap_new_erc721pair"
+		logEvent("NewERC721Pair")
+
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -483,7 +491,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		return false, fmt.Errorf("failed to process topic for table %#v: %v", table, err)
 	}
 	emitterAddrS := strings.ToLower(emitterAddr.String())
-	setEventFields( &a, blockHash, transactionHash, blockNumber, emitterAddrS)
+	setEventFields(&a, blockHash, transactionHash, blockNumber, emitterAddrS)
 	isTradingAddr, err := cbIsTrading(emitterAddrS)
 	if err != nil {
 		return false, fmt.Errorf("finding trading addr: %v", err)
@@ -496,12 +504,13 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		isLifi          = r.LifiDiamond == emitterAddr
 		isLayerzero     = r.Layerzero == emitterAddr
 		isDinero        = r.Dinero == emitterAddr
+		isSudoswap      = r.SudoswapFactory == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
-		isOnchainGm, isLayerzero, isDinero, isVendor:
+		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to

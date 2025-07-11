@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/big"
 	"regexp"
+	"log"
 	"strings"
 	"time"
 )
@@ -24,6 +25,8 @@ type (
 		i *big.Int
 	}
 )
+
+type NumberSlice []Number
 
 type Event struct {
 	CreatedBy       time.Time `json:"created_by"`
@@ -156,6 +159,10 @@ func (n *Number) Scan(a any) error {
 	*n = *x
 	return err
 }
+func (n *Number) MarshalJSON() ([]byte, error) {
+	// This needs to be explicitly implemented thanks to Gorm...
+	return json.Marshal(n.String())
+}
 func (n *Number) UnmarshalJSON(b []byte) error {
 	var s string
 	if err := json.Unmarshal(b, &s); err != nil {
@@ -166,5 +173,25 @@ func (n *Number) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("not number: %v", s)
 	}
 	*n = Number{i}
+	return nil
+}
+
+func (x NumberSlice) Value() (sqlDriver.Value, error) {
+	b, err := json.Marshal(x)
+	if err != nil {
+		return "", fmt.Errorf("number slice marshal: %v", err)
+	}
+	log.Printf("marshalled: %s", string(b))
+	log.Printf("should've been: %v", x)
+	return string(b), nil
+}
+func (x NumberSlice) Scan(a any) error {
+	b, ok := a.([]byte)
+	if !ok {
+		return fmt.Errorf("number slice scan type: %T", a)
+	}
+	if err := json.Unmarshal(b, &x); err != nil {
+		return fmt.Errorf("unmarshal number slice: %v", err)
+	}
 	return nil
 }

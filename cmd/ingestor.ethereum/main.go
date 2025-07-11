@@ -69,6 +69,7 @@ func main() {
 			LifiDiamond:     ethCommon.HexToAddress(config.LifiDiamondAddress),
 			Layerzero:       ethCommon.HexToAddress(config.LayerzeroEndpointAddress),
 			Dinero:          ethCommon.HexToAddress(config.DineroAddress),
+			SudoswapFactory: ethCommon.HexToAddress(config.SudoswapFactoryAddress),
 		},
 	)
 }

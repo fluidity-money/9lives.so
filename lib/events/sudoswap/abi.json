@@ -1,0 +1,21 @@
+[
+	{
+		"type": "event",
+		"name": "NewERC721Pair",
+		"inputs": [
+			{
+				"name": "poolAddress",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "initialIds",
+				"type": "uint256[]",
+				"indexed": false,
+				"internalType": "uint256[]"
+			}
+		],
+		"anonymous": false
+	}
+]

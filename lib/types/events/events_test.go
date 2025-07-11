@@ -1,8 +1,6 @@
 package events
 
 import (
-	"encoding/hex"
-	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -24,6 +24,7 @@ type C struct {
 	LockupAddress, SarpAiSignallerAddress   string
 	LifiDiamondAddress, PaymasterAddress    string
 	LayerzeroEndpointAddress, DineroAddress string
+	SudoswapFactoryAddress                  string
 	ChainId                                 int
 }
 
@@ -34,9 +35,9 @@ func Get() C {
 	if gethUrl == "" {
 		setup.Exitf("SPN_SUPERPOSITION_URL not set")
 	}
-	timescaleUrl := os.Getenv("SPN_TIMESCALE")
+	timescaleUrl := os.Getenv("SPN_TIMESCALE_URL")
 	if timescaleUrl == "" {
-		setup.Exitf("SPN_TIMESCALE not set")
+		setup.Exitf("SPN_TIMESCALE_URL not set")
 	}
 	gethUrls := strings.Split(gethUrl, ",")
 	timescaleUrls := strings.Split(timescaleUrl, ",")
@@ -79,6 +80,10 @@ func Get() C {
 	dineroAddr := strings.ToLower(os.Getenv("SPN_DINERO_ADDR"))
 	if dineroAddr == "" {
 		setup.Exitf("SPN_DINERO_ADDR not set")
+	}
+	sudoswapFactoryAddr := strings.ToLower(os.Getenv("SPN_SUDOSWAP_FACTORY_ADDR"))
+	if sudoswapFactoryAddr == "" {
+		setup.Exitf("SPN_SUDOSWAP_FACTORY_ADDR not set")
 	}
 	return C{
 		GethUrls:                 gethUrls,
