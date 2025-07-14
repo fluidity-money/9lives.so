@@ -68,34 +68,34 @@ const superposition = defineChain({
   ],
   icon: SPN,
 });
-// const apechain = defineChain({
-//   name: "ApeChain",
-//   id: 33139,
-//   nativeCurrency: {
-//     name: "ApeCoin",
-//     symbol: "APE",
-//     decimals: 18,
-//   },
-//   rpc: "https://apechain.calderachain.xyz/http",
-//   blockExplorers: [
-//     {
-//       name: "ApeScan",
-//       url: "https://apechain.calderaexplorer.xyz",
-//     },
-//   ],
-//   icon: APE,
-// });
+const apechain = defineChain({
+  name: "ApeChain",
+  id: 33139,
+  nativeCurrency: {
+    name: "ApeCoin",
+    symbol: "APE",
+    decimals: 18,
+  },
+  rpc: "https://apechain.calderachain.xyz/http",
+  blockExplorers: [
+    {
+      name: "ApeScan",
+      url: "https://apechain.calderaexplorer.xyz",
+    },
+  ],
+  icon: APE,
+});
 const farcasterList = {
+  arbitrum: { ...arbitrum, icon: ARB },
+  apechain: { ...apechain, icon: APE },
+} as const;
+const chainList = {
+  superposition: { ...superposition, icon: SPN },
+  ...farcasterList,
   ethereum: { ...ethereum, icon: ETH },
   optimism: { ...optimism, icon: OP },
   base: { ...base, icon: BASE },
   polygon: { ...polygon, icon: POL },
-} as const;
-const chainList = {
-  superposition: { ...superposition, icon: SPN },
-  arbitrum: { ...arbitrum, icon: ARB },
-  ...farcasterList,
-  // apechain: { ...apechain, icon: APE },
   bsc: { ...bsc, icon: BSC },
   avalanche: { ...avalanche, icon: AVAX },
 } as const;
