@@ -101,8 +101,8 @@ export default function DetailBuyAction({
       supply: 0,
       toChain: config.chains.superposition.id,
       toToken: ZeroAddress,
-      fromChain: config.chains.superposition.id,
-      fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
+      fromChain: config.chains.arbitrum.id,
+      fromToken: ZeroAddress,
     },
   });
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
