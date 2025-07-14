@@ -14,6 +14,7 @@ function gtag(...args: any[]) {
 export default function CookieBanner() {
   const [showConsentDialog, setShowConsentDialog] = useState(false);
   const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
 
   function denyCookies() {
     gtag("consent", "update", deniedConsent);
@@ -44,7 +45,7 @@ export default function CookieBanner() {
     }
   }, []);
 
-  if (!showConsentDialog) return null;
+  if (!showConsentDialog || isInMiniApp) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 mx-auto my-10 flex max-w-max flex-col items-center justify-between gap-4 border border-9black bg-9yellow p-3 text-xs text-9black shadow-9cookieCard sm:flex-row md:max-w-[480px] md:px-4">

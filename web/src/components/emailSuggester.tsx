@@ -14,10 +14,12 @@ import { combineClass } from "@/utils/combineClass";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { track } from "@/utils/analytics";
 import posthog from "posthog-js";
+import { useUserStore } from "@/stores/userStore";
 
 export default function EmailSuggester() {
   const [isOpen, setIsOpen] = useState(false);
   const account = useActiveAccount();
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const {
     data: profile,
     isSuccess: isProfileLoaded,
@@ -54,10 +56,15 @@ export default function EmailSuggester() {
     if (account?.address) setValue("address", account?.address);
   }, [account?.address, setValue]);
   useEffect(() => {
-    if (account?.address && isProfileLoaded && !profile?.email) {
+    if (
+      account?.address &&
+      isProfileLoaded &&
+      !profile?.email &&
+      !isInMiniApp
+    ) {
       setIsOpen(true);
     }
-  }, [account?.address, profile, isProfileLoaded]);
+  }, [account?.address, profile, isProfileLoaded, isInMiniApp]);
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen} title="Never Miss an Update!">
       <div className="flex flex-col items-center gap-4">
