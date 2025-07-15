@@ -41,9 +41,12 @@ export default function CookieBanner() {
       | typeof deniedConsent;
     if (consentMode.ad_storage === "denied") {
       setShowConsentDialog(true);
-      return;
     }
   }, []);
+
+  useEffect(() => {
+    if (isInMiniApp) allowCookies();
+  }, [isInMiniApp]);
 
   if (!showConsentDialog || isInMiniApp) return null;
 
