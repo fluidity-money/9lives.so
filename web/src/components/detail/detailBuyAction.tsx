@@ -112,6 +112,12 @@ export default function DetailBuyAction({
   const fromToken = watch("fromToken");
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
   const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
+  const selectedTokenBalance = tokensWithBalances?.find(
+    (t) =>
+      t.token_address.toLowerCase() === fromToken.toLowerCase() ||
+      (fromToken === ZeroAddress &&
+        t.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+  )?.balance;
   const { buy } = useBuy({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
@@ -299,6 +305,9 @@ export default function DetailBuyAction({
         </div>
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2.5">
+            <span className="font-chicago text-xs font-normal text-9black">
+              Supply
+            </span>
             {enabledLifiZaps ? (
               <div
                 className={combineClass(
@@ -306,11 +315,13 @@ export default function DetailBuyAction({
                   "items-center justify-between md:flex",
                 )}
               >
-                <span className="font-chicago text-xs font-normal text-9black">
-                  Supply
+                <span className="text-xs font-normal text-9black/50">
+                  {selectedTokenBalance
+                    ? formatUnits(selectedTokenBalance, fromDecimals)
+                    : 0}
                 </span>
-                <span className="text-xs font-normal text-9black">
-                  USD Value: ${usdValue.toFixed(2)}
+                <span className="text-xs font-normal text-9black/50">
+                  ${usdValue.toFixed(2)}
                 </span>
               </div>
             ) : (
