@@ -26,6 +26,7 @@ export default function ContextInjector() {
   const wallet = useActiveWallet();
   const [tagSnitch, setTagSnitch] = useState<string>();
   const trackingConsent = useUserStore((s) => s.trackingConsent);
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function ContextInjector() {
       posthog.identify(account.address);
       posthog.people.set({
         walletId: wallet?.id ?? "unknown",
+        farcaster: isInMiniApp,
       });
     } else {
       window.localStorage.removeItem("walletAddress");
@@ -57,7 +59,7 @@ export default function ContextInjector() {
       posthog.identify(undefined);
       posthog.reset();
     }
-  }, [account?.address, wallet?.id, trackingConsent]);
+  }, [account?.address, wallet?.id, trackingConsent, isInMiniApp]);
 
   useEffect(() => {
     setTag("chainId", chain?.id);
@@ -116,6 +118,10 @@ export default function ContextInjector() {
                 value: [String(navigator.cookieEnabled)],
               },
               {
+                key: "farcaster",
+                value: [String(isInMiniApp)],
+              },
+              {
                 key: "chainId",
                 value: [config.destinationChain?.id.toString()],
               },
@@ -127,7 +133,7 @@ export default function ContextInjector() {
         }
       })();
     }
-  }, [account?.address, trackingConsent]);
+  }, [account?.address, trackingConsent, isInMiniApp]);
 
   useEffect(() => {
     if (tagSnitch && trackingConsent && config.NEXT_PUBLIC_CHAIN !== "testnet")

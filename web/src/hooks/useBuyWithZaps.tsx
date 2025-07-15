@@ -137,7 +137,7 @@ const useBuyWithZaps = ({
             outcomeId,
             shareAddr,
             tradingAddr,
-            buyWithZaps: true,
+            type: "buyWithZaps",
           });
           res(null);
         } catch (e) {
