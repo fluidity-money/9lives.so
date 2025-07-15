@@ -202,7 +202,7 @@ const useBuyWithRelay = ({
             outcomeId,
             shareAddr,
             tradingAddr,
-            buyWithZaps: true,
+            type: "buyWithRelay",
           });
           res(null);
         } catch (e) {
