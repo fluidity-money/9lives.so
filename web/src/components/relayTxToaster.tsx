@@ -17,7 +17,7 @@ export default function RelayTxToaster({
       </div>
       <a
         className="m-4 block font-chicago text-xs underline"
-        target="_black"
+        target="_blank"
         href={`https://relay.link/transaction/${tx}`}
       >
         Click to check your tx details
