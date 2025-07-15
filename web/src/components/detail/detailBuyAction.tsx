@@ -33,6 +33,7 @@ import useProfile from "@/hooks/useProfile";
 import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
 import { useUserStore } from "@/stores/userStore";
 import useBuyWithRelay from "@/hooks/useBuyWithRelay";
+import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -110,6 +111,7 @@ export default function DetailBuyAction({
   const fromChain = watch("fromChain");
   const fromToken = watch("fromToken");
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
+  const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
   const { buy } = useBuy({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
@@ -334,6 +336,7 @@ export default function DetailBuyAction({
               {enabledLifiZaps ? (
                 <AssetSelector
                   tokens={tokens}
+                  tokensWithBalances={tokensWithBalances}
                   isSuccess={isTokensSuccess}
                   fromToken={fromToken}
                   fromChain={fromChain}

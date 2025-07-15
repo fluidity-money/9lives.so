@@ -11,24 +11,44 @@ import { useEffect } from "react";
 import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
 import { Token } from "@/types";
+import { formatUnits, ZeroAddress } from "ethers";
 export default function AssetSelector({
   fromChain,
   fromToken,
   setValue,
   isSuccess,
   tokens,
+  tokensWithBalances,
 }: {
   fromChain: number;
   fromToken: string;
   setValue: (addr: string) => void;
   isSuccess: boolean;
   tokens?: Token[];
+  tokensWithBalances?: { balance: string; token_address: string }[];
 }) {
   useEffect(() => {
     if (isSuccess && tokens?.length) {
       setValue(tokens[0].address);
     }
   }, [fromChain, isSuccess, tokens, setValue]);
+
+  const enrichedTokens = tokens
+    ?.map((t) => {
+      const tokenWithBalance = tokensWithBalances?.find(
+        (tb) =>
+          tb.token_address.toLowerCase() === t.address.toLowerCase() ||
+          (tb.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" &&
+            t.address === ZeroAddress),
+      );
+      return {
+        ...t,
+        balance: tokenWithBalance
+          ? +formatUnits(tokenWithBalance.balance, t.decimals)
+          : 0,
+      };
+    })
+    .sort((a, b) => b.balance - a.balance);
 
   return (
     <Listbox value={fromToken} onChange={(selected) => setValue(selected)}>
@@ -67,30 +87,37 @@ export default function AssetSelector({
           "z-30 transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0",
         )}
       >
-        {tokens?.map((token) => (
+        {enrichedTokens?.map((token) => (
           <ListboxOption
             key={token.address}
             value={token.address}
-            className="group flex cursor-default select-none items-center gap-2 px-3 py-1.5 data-[focus]:bg-9blueLight"
+            disabled={!token.balance}
+            className={combineClass(
+              !token.balance && "opacity-50",
+              "group flex cursor-default select-none items-center justify-between gap-2 px-3 py-1.5 data-[focus]:bg-9blueLight",
+            )}
           >
-            {token.logoURI ? (
-              <img
-                src={token.logoURI}
-                alt={token.name}
-                width={20}
-                height={20}
+            <div className="flex items-center gap-2">
+              {token.logoURI ? (
+                <img
+                  src={token.logoURI}
+                  alt={token.name}
+                  width={20}
+                  height={20}
+                />
+              ) : null}
+              <div className="font-chicago">
+                {token.name.slice(0, 20)}
+                {token.name.length > 20 && "..."}
+              </div>
+              <Image
+                src={CheckIcon}
+                className="invisible size-4 group-data-[selected]:visible"
+                alt=""
+                width={16}
               />
-            ) : null}
-            <div className="font-chicago">
-              {token.name.slice(0, 20)}
-              {token.name.length > 20 && "..."}
             </div>
-            <Image
-              src={CheckIcon}
-              className="invisible size-4 group-data-[selected]:visible"
-              alt=""
-              width={16}
-            />
+            <span className="font-geneva text-xs">{token.balance}</span>
           </ListboxOption>
         ))}
       </ListboxOptions>
