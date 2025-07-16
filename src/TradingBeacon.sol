@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "./ITradingBeacon.sol";
+import { ITradingBeacon } from "./ITradingBeacon.sol";
 
 contract TradingBeacon is ITradingBeacon {
     address public admin;

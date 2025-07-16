@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "./ITradingBeacon.sol";
+import { ITradingBeacon } from "./ITradingBeacon.sol";
 
 bytes32 constant SLOT_BEACON = bytes32(uint256(keccak256('eip1967.proxy.beacon')) - 1);
 

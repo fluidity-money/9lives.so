@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 
-import "../src/NineLivesPaymaster.sol";
+import {
+    NineLivesPaymaster,
+    PaymasterType,
+    Operation } from "../src/NineLivesPaymaster.sol";
 
-import {MockTrading} from "./MockTrading.sol";
-import {TestERC20} from "./TestERC20.sol";
+import { CtorArgs } from "../src/INineLivesTrading.sol";
+
+import { MockTrading } from "./MockTrading.sol";
+import { TestERC20 } from "./TestERC20.sol";
 
 contract TestNineLivesPaymaster is Test {
     TestERC20 ERC20;

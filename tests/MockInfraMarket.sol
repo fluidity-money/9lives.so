@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "../src/IInfraMarket.sol";
+import { IInfraMarket, InfraMarketState } from "../src/IInfraMarket.sol";
 
 contract MockCallInfraMarket is IInfraMarket {
     mapping(address => bytes8) public winner;

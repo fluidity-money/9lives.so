@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "./ExtrasBeacon.sol";
+import { ExtrasBeacon } from "./ExtrasBeacon.sol";
 
 contract ExtrasBeaconProxy {
     ExtrasBeacon immutable BEACON;

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "./InfraMarketState.sol";
+import { InfraMarketState } from "./InfraMarketState.sol";
 
 interface IInfraMarket {
     function ctor(

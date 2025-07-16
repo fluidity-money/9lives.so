@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 
-import "../src/UpgradeableTwoProxy.sol";
+import { UpgradeableTwoProxy } from "../src/UpgradeableTwoProxy.sol";
 
 contract MockImpl1_1 {
     uint256[50] __empty;

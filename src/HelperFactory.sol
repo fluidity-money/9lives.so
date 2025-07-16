@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.20;
 
-import "./INineLivesFactory.sol";
-import "./INineLivesTrading.sol";
+import { INineLivesFactory, FactoryOutcome } from "./INineLivesFactory.sol";
+import { INineLivesTrading } from "./INineLivesTrading.sol";
 
 interface IERC20Permit {
     function permit(

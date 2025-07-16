@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 
-import "../src/TradingBeaconProxyDeployHelperFactory.sol";
-import "../src/TradingBeaconProxy.sol";
-
-import "./TestERC20.sol";
+import { TradingBeacon } from "../src/TradingBeacon.sol";
+import { TradingBeaconProxyDeployHelperFactory } from "../src/TradingBeaconProxyDeployHelperFactory.sol";
+import { TradingBeaconProxy } from "../src/TradingBeaconProxy.sol";
 
 contract TestLocation1 {
     function printC8657AC3() external pure returns (bool) {

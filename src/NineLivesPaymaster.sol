@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "./INineLivesTrading.sol";
+import { INineLivesTrading } from "./INineLivesTrading.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
     keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
@@ -10,7 +10,8 @@ enum PaymasterType {
     MINT,
     BURN,
     ADD_LIQUIDITY,
-    REMOVE_LIQUIDITY
+    REMOVE_LIQUIDITY,
+    CLAIM_LIQUIDITY
 }
 
 struct Operation {
@@ -181,6 +182,11 @@ contract NineLivesPaymaster {
             }
             return (op.maximumFee, true);
         } else if (op.typ == PaymasterType.BURN) {
+            try
+                USDC.transferFrom(op.owner, address(this), op.maximumFee) {}
+            catch {
+                return (op.maximumFee, false);
+            }
             if (op.minimumBack < op.maximumFee) return (op.maximumFee, false);
                 try
                     op.market.burn854CC96E(
@@ -189,16 +195,38 @@ contract NineLivesPaymaster {
                         true,
                         op.minimumBack,
                         op.referrer,
-                        msg.sender
+                        op.owner
                     ) {}
             catch {
                 return (op.maximumFee, false);
             }
             return (op.maximumFee, true);
-        } else {
-            // TODO
-            return (0, false);
+        } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
+            try
+                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee) {}
+            catch {
+                return (op.maximumFee, false);
+            }
+            try
+                op.market.addLiquidityA975D995(op.amountToSpend, op.owner) {}
+            catch {
+                return (op.maximumFee, false);
+            }
+            return (op.maximumFee, true);
+        } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY) {
+            try
+                USDC.transferFrom(op.owner, address(this), op.maximumFee) {}
+            catch {
+                return (op.maximumFee, false);
+            }
+            try
+                op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner) {}
+            catch {
+                return (op.maximumFee, false);
+            }
+            return (op.maximumFee, true);
         }
+        return (0, false);
     }
 
     function multicall(

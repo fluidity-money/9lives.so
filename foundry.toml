@@ -6,3 +6,12 @@ test = "tests"
 via_ir = false
 optimizer = false # TODO
 optimizer_runs = 10
+
+[lint]
+exclude_lints = [
+	"mixed-case-function",
+	"asm-keccak256",
+	"erc20-unchecked-transfer",
+	"mixed-case-variable",
+	"pascal-case-struct"
+]

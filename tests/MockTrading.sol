@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import "../src/Share.sol";
+import { Share } from "../src/Share.sol";
 
-import "../src/INineLivesTrading.sol";
+import { INineLivesTrading, CtorArgs } from "../src/INineLivesTrading.sol";
 
 import {
     TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";

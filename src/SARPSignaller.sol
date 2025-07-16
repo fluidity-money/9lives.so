@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "./IEvents.sol";
+import { IEvents } from "./IEvents.sol";
 
 /**
  * @notice SARPSignaller is a on-chain system with a bond that allows a user to formally

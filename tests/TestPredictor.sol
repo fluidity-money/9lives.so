@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "../src/ILockup.sol";
-import "../src/IInfraMarket.sol";
+import { ILockup } from "../src/ILockup.sol";
+import { IInfraMarket } from "../src/IInfraMarket.sol";
 
 interface IERC20 {
     function transferFrom(address, address, uint256) external;

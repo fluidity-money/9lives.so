@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./INineLivesFactory.sol";
-import "./ILongtail.sol";
-import "./WordPackingLib.sol";
-import "./INineLivesTrading.sol";
+import { INineLivesFactory } from "./INineLivesFactory.sol";
+import { ILongtail } from "./ILongtail.sol";
+import { WordPackingLib } from "./WordPackingLib.sol";
+import { INineLivesTrading } from "./INineLivesTrading.sol";
 
 interface IERC20 {
     function balanceOf(address) external view returns (uint256);

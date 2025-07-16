@@ -1,11 +1,11 @@
 // SPDX-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "./INineLivesTrading.sol";
-import "./INineLivesFactory.sol";
-import "./ILongtail.sol";
-import "./IWETH10.sol";
-import  {ICamelotSwapRouter, ExactInputSingleParams} from "./ICamelotSwapRouter.sol";
+import { INineLivesTrading } from "./INineLivesTrading.sol";
+import { INineLivesFactory } from "./INineLivesFactory.sol";
+import { ILongtail } from "./ILongtail.sol";
+import { IWETH10 } from "./IWETH10.sol";
+import  { ICamelotSwapRouter, ExactInputSingleParams } from "./ICamelotSwapRouter.sol";
 
 interface IERC20 {
     function transferFrom(
@@ -23,25 +23,93 @@ interface DPMOld {
     function mintPermitE90275AB(bytes8,uint256,address,uint256,uint8,bytes32,bytes32) external returns (uint256);
 }
 
+struct SendParam {
+    uint32 dstEid; // Destination endpoint ID.
+    bytes32 to; // Recipient address.
+    uint256 amountLD; // Amount to send in local decimals.
+    uint256 minAmountLD; // Minimum amount to send in local decimals.
+    bytes extraOptions; // Additional options supplied by the caller to be used in the LayerZero message.
+    bytes composeMsg; // The composed message for the send() operation.
+    bytes oftCmd; // The OFT command to be executed, unused in default OFT implementations.
+}
+
+struct OFTReceipt {
+    uint256 amountSentLD; // Amount of tokens ACTUALLY debited from the sender in local decimals.
+    // @dev In non-default implementations, the amountReceivedLD COULD differ from this value.
+    uint256 amountReceivedLD; // Amount of tokens to be received on the remote side.
+}
+
+struct MessagingReceipt {
+    bytes32 guid;
+    uint64 nonce;
+    MessagingFee fee;
+}
+
+struct MessagingFee {
+    uint256 nativeFee;
+    uint256 lzTokenFee;
+}
+
+enum StargateType {
+    Pool,
+    OFT
+}
+
+/// @notice Ticket data for bus ride.
+struct Ticket {
+    uint72 ticketId;
+    bytes passengerBytes;
+}
+
+struct OFTLimit {
+    uint256 minAmountLD; // Minimum amount in local decimals that can be sent to the recipient.
+    uint256 maxAmountLD; // Maximum amount in local decimals that can be sent to the recipient.
+}
+
+struct OFTFeeDetail {
+    int256 feeAmountLD; // Amount of the fee in local decimals.
+    string description; // Description of the fee.
+}
+
+interface IStargate {
+    /// @dev This function is same as `send` in OFT interface but returns the ticket data if in the bus ride mode,
+    /// which allows the caller to ride and drive the bus in the same transaction.
+    function sendToken(
+        SendParam calldata _sendParam,
+        MessagingFee calldata _fee,
+        address _refundAddress
+    ) external payable returns (MessagingReceipt memory msgReceipt, OFTReceipt memory oftReceipt, Ticket memory ticket);
+
+    /// @notice Returns the Stargate implementation type.
+    function stargateType() external pure returns (StargateType);
+
+    function quoteOFT(
+        SendParam calldata _sendParam
+    ) external view returns (OFTLimit memory limit, OFTFeeDetail[] memory oftFeeDetails, OFTReceipt memory receipt);
+}
+
 contract BuyHelper2 {
-    INineLivesFactory immutable FACTORY;
-    ILongtail immutable LONGTAIL;
-    IERC20 immutable FUSDC;
-    IWETH10 immutable WETH;
-    ICamelotSwapRouter immutable CAMELOT_SWAP_ROUTER;
+    INineLivesFactory immutable public FACTORY;
+    ILongtail immutable public LONGTAIL;
+    IERC20 immutable public FUSDC;
+    IWETH10 immutable public WETH;
+    ICamelotSwapRouter immutable public CAMELOT_SWAP_ROUTER;
+    IStargate immutable public STARGATE;
 
     constructor(
         INineLivesFactory _factory,
         ILongtail _longtail,
         address _fusdc,
         IWETH10 _weth,
-        ICamelotSwapRouter _camelotSwapRouter
+        ICamelotSwapRouter _camelotSwapRouter,
+        IStargate _stargate
     ) {
         FACTORY = _factory;
         LONGTAIL = _longtail;
         FUSDC = IERC20(_fusdc);
         WETH = _weth;
         CAMELOT_SWAP_ROUTER = _camelotSwapRouter;
+        STARGATE = _stargate;
     }
 
     /**
@@ -138,5 +206,42 @@ contract BuyHelper2 {
         uint256 toSend = shareAddr.balanceOf(address(this));
         if (toSend > 0) shareAddr.transfer(msg.sender, toSend);
         return (burnedShares, fusdcReturned);
+    }
+
+    function burnWithStargate(
+        address _tradingAddr,
+        bytes8 _outcome,
+        uint256 _minFusdc,
+        uint256 _maxShareOut,
+        uint256 _minShareOut,
+        address _referrer,
+        uint32 _dstEid,
+        address _receiver
+    ) external returns (uint256, uint256) {
+        // In the normal router, this should be possible to get offline.
+        INineLivesTrading tradingAddr = INineLivesTrading(_tradingAddr);
+        IERC20 shareAddr = IERC20(tradingAddr.shareAddr(_outcome));
+        shareAddr.transferFrom(msg.sender, address(this), _maxShareOut);
+        (uint256 burnedShares, uint256 fusdcReturned) = tradingAddr.burn854CC96E(
+            _outcome,
+            _maxShareOut,
+            true,
+            _minShareOut,
+            _referrer,
+            address(this)
+        );
+        require(fusdcReturned >= _minFusdc, "not enough fusdc returned");
+        uint256 toSend = shareAddr.balanceOf(address(this));
+        // Use Stargate to send the amounts here.
+        SendParam memory sendParam = SendParam({
+            dstEid: _dstEid,
+            to: bytes32(uint256(uint160(_receiver))),
+            amountLD: fusdcReturned, // Not sent with local decimals.
+            minAmountLD: 0,
+            extraOptions: new bytes(0),
+            composeMsg: new bytes(0),
+            oftCmd: ""                  // Empty for taxi mode
+        });
+        (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
     }
 }

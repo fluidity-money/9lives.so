@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./TwoProxyAdmin.sol";
+import { TwoProxyAdmin, IProxy } from "./TwoProxyAdmin.sol";
 
 bytes32 constant ADMIN_SLOT = bytes32(uint256(keccak256('eip1967.proxy.admin')) - 1);
 bytes32 constant IMPL_1_SLOT = bytes32(uint256(keccak256('eip1967.proxy.implementation.1')) - 1);
@@ -27,11 +27,11 @@ contract UpgradeableTwoProxy {
     event Upgraded2(address impl);
     event AdminChanged(address previousAdmin, address newAdmin);
 
-    address private immutable admin_;
+    address private immutable ADMIN;
 
     constructor(address _admin, address _impl1, address _impl2, bytes memory _data) {
         address admin = address(new TwoProxyAdmin(_admin));
-        admin_ = admin;
+        ADMIN = admin;
         require(_impl1.code.length > 0, "empty impl1");
         require(_impl2.code.length > 0, "empty impl2");
         // So we're compatible with ERC1967.

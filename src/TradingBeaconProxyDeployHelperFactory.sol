@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "./TradingBeacon.sol";
-import "./TradingBeaconProxy.sol";
+import { TradingBeacon } from "./TradingBeacon.sol";
+import { TradingBeaconProxy } from  "./TradingBeaconProxy.sol";
 
-import "./INineLivesTrading.sol";
-import "./ITradingBeacon.sol";
+import { INineLivesTrading, CtorArgs } from "./INineLivesTrading.sol";
+import { ITradingBeacon } from "./ITradingBeacon.sol";
 
 // TradingBeaconProxyDeployHelperFactory deploys a single AMM trading
 // contract with upgradeablility features in the proxy. Useful for

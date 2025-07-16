@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import "../src/WordPackingLib.sol";
+import { WordPackingLib } from "../src/WordPackingLib.sol";
 
 contract MockLensesV1 {
     using WordPackingLib for bytes32;

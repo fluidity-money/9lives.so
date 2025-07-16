@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import "../src/INineLivesFactory.sol";
+import {
+    INineLivesFactory,
+    FactoryOutcome } from "../src/INineLivesFactory.sol";
 
-import "./MockTrading.sol";
+import { CtorArgs } from "../src/INineLivesTrading.sol";
+
+import { MockTrading } from "./MockTrading.sol";
 
 contract MockFactory is INineLivesFactory {
     address immutable ADDR_FUSDC;
