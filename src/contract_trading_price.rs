@@ -36,7 +36,7 @@ impl StorageTrading {
                     assert_or!(_recipient == DAO_EARN_ADDR, Error::IncorrectDAOClaiming);
                     DAO_EARN_ADDR
                 }
-                immutables::CLAIMANT_HELPER => _recipient,
+                immutables::CLAIMANT_HELPER | immutables::PAYMASTER_ADDR => _recipient,
                 sender => sender,
             },
             _recipient,
@@ -65,22 +65,28 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
-        if self.is_not_done_predicting() {
-            //dbg!(self.amm_user_liquidity_shares.get(msg_sender()), _amount_liq);
-            assert_or!(
-                self.amm_user_liquidity_shares.get(msg_sender()) >= _amount_liq,
-                Error::NotEnoughLiquidity
-            );
-            let (fusdc_amt, fees_earned, _) =
-                self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
-            fusdc_call::transfer(_recipient, fusdc_amt)?;
-            Ok((fusdc_amt, fees_earned))
-        } else {
-            let fees = self.internal_amm_claim_all_fees(msg_sender(), _recipient)?;
-            Ok((
-                self.internal_amm_claim_liquidity(msg_sender(), _amount_liq, _recipient)?,
-                fees,
-            ))
+        {
+            let sender = if msg_sender() == immutables::PAYMASTER_ADDR {
+                _recipient
+            } else {
+                msg_sender()
+            };
+            if self.is_not_done_predicting() {
+                assert_or!(
+                    self.amm_user_liquidity_shares.get(sender) >= _amount_liq,
+                    Error::NotEnoughLiquidity
+                );
+                let (fusdc_amt, fees_earned, _) =
+                    self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
+                fusdc_call::transfer(_recipient, fusdc_amt)?;
+                Ok((fusdc_amt, fees_earned))
+            } else {
+                let fees = self.internal_amm_claim_all_fees(sender, _recipient)?;
+                Ok((
+                    self.internal_amm_claim_liquidity(sender, _amount_liq, _recipient)?,
+                    fees,
+                ))
+            }
         }
     }
 }

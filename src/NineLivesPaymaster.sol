@@ -167,7 +167,7 @@ contract NineLivesPaymaster {
             try
                 USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee) {}
             catch {
-                return (op.maximumFee, false);
+                return (0, false);
             }
             USDC.approve(address(op.market), op.amountToSpend);
             try
@@ -185,7 +185,7 @@ contract NineLivesPaymaster {
             try
                 USDC.transferFrom(op.owner, address(this), op.maximumFee) {}
             catch {
-                return (op.maximumFee, false);
+                return (0, false);
             }
             if (op.minimumBack < op.maximumFee) return (op.maximumFee, false);
                 try
@@ -205,7 +205,7 @@ contract NineLivesPaymaster {
             try
                 USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee) {}
             catch {
-                return (op.maximumFee, false);
+                return (0, false);
             }
             try
                 op.market.addLiquidityA975D995(op.amountToSpend, op.owner) {}
@@ -217,7 +217,7 @@ contract NineLivesPaymaster {
             try
                 USDC.transferFrom(op.owner, address(this), op.maximumFee) {}
             catch {
-                return (op.maximumFee, false);
+                return (0, false);
             }
             try
                 op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner) {}
