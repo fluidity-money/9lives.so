@@ -217,6 +217,12 @@ export default function DetailBuyAction({
     setValue("supply", maxfUSDC);
     if (maxfUSDC > 0) clearErrors();
   };
+  const setToMaxShare2 = async () => {
+    if (!selectedTokenBalance) return;
+    const maxBalance = +formatUnits(selectedTokenBalance, fromDecimals);
+    setValue("supply", maxBalance);
+    if (maxBalance > 0) clearErrors();
+  };
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
   useEffect(() => {
     const floatingBtn = document.getElementById("degen-floating-button");
@@ -315,11 +321,22 @@ export default function DetailBuyAction({
                   "items-center justify-between md:flex",
                 )}
               >
-                <span className="text-xs font-normal text-9black/50">
-                  {selectedTokenBalance
-                    ? formatUnits(selectedTokenBalance, fromDecimals)
-                    : 0}
-                </span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-normal text-9black/50">
+                    {selectedTokenBalance
+                      ? formatUnits(selectedTokenBalance, fromDecimals)
+                      : 0}
+                  </span>
+                  <Button
+                    disabled={
+                      shouldStopAction || !account || !selectedTokenBalance
+                    }
+                    onClick={setToMaxShare2}
+                    intent={"default"}
+                    size={"small"}
+                    title="Max"
+                  />
+                </div>
                 <span className="text-xs font-normal text-9black/50">
                   ${usdValue.toFixed(2)}
                 </span>
