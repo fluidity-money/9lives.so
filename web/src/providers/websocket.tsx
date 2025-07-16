@@ -202,7 +202,7 @@ export default function WebSocketProvider() {
         unsubPaymasterEvents();
       };
     }
-  }, [queryClient, tickets]);
+  }, [queryClient, tickets, closeTicket]);
 
   return null;
 }

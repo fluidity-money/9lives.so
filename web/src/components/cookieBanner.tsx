@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { deniedConsent, grantedConsent } from "@/components/googleAnalytics";
 import Button from "./themed/button";
 import { useUserStore } from "@/stores/userStore";
@@ -23,12 +23,12 @@ export default function CookieBanner() {
     setTrackingConsent(false);
   }
 
-  function allowCookies() {
+  const allowCookies = useCallback(() => {
     gtag("consent", "update", grantedConsent);
     window.localStorage.setItem("consentMode", JSON.stringify(grantedConsent));
     setShowConsentDialog(false);
     setTrackingConsent(true);
-  }
+  }, [setTrackingConsent]);
 
   useEffect(() => {
     const consent = window.localStorage.getItem("consentMode");
@@ -46,7 +46,7 @@ export default function CookieBanner() {
 
   useEffect(() => {
     if (isInMiniApp) allowCookies();
-  }, [isInMiniApp]);
+  }, [isInMiniApp, allowCookies]);
 
   if (!showConsentDialog || isInMiniApp) return null;
 

@@ -44,6 +44,6 @@ export default function RelayProvider() {
           ? LogLevel.Error
           : LogLevel.Verbose,
     });
-  }, []);
+  }, [relayChains]);
   return null;
 }
