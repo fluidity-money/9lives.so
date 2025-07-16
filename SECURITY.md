@@ -63,7 +63,7 @@ likely to break in ways that trigger application bugs without a financial impact
 
 ### Trading and Factory contracts
 
-At `a4460fe`, 3135 nLOC:
+At `9ea3dba`, 3141 nLOC:
 
 ```
 src/contract_factory_1.rs
@@ -87,7 +87,7 @@ src/Share.sol
 
 ### Dynamic Pari-Mutuel Market model (trading only)
 
-At `a4460fe`, 1894 nLOC:
+At `9ea3dba`, 1900 nLOC:
 
 ```
 src/contract_trading_extras.rs
@@ -107,7 +107,7 @@ src/Share.sol
 
 ### Constant Product Market Maker model (trading only)
 
-At `a4460fe`, 2419 nLOC:
+At `9ea3dba`, 2425 nLOC:
 
 ```
 src/contract_trading_extras.rs
