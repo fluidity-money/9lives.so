@@ -42,7 +42,10 @@ async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
     return 0;
   });
 }
-export default async function detailImageGenerator(id: string) {
+export default async function detailImageGenerator(
+  id: string,
+  size: { width: number; height: number },
+) {
   const response = await requestCampaignById(id);
   if (!response)
     return new ImageResponse(
@@ -50,8 +53,8 @@ export default async function detailImageGenerator(id: string) {
         <img
           src={`https://9lives.so/opengraph-image.png`}
           alt="9lives.so"
-          width={1200}
-          height={630}
+          width={size.width}
+          height={size.height}
         />
       ),
     );
@@ -188,6 +191,7 @@ export default async function detailImageGenerator(id: string) {
         style={{
           display: "flex",
           flex: 1,
+          width: "100%",
           height: "100%",
           flexDirection: "column",
           backgroundColor: "#DDEAEF",
