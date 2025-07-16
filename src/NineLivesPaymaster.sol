@@ -11,7 +11,7 @@ enum PaymasterType {
     BURN,
     ADD_LIQUIDITY,
     REMOVE_LIQUIDITY,
-    CLAIM_LIQUIDITY
+    BURN_SEND_OUT
 }
 
 struct Operation {
@@ -35,6 +35,7 @@ struct Operation {
     uint8 v;
     bytes32 r;
     bytes32 s;
+    uint256 outgoingChain;
 }
 
 interface IERC20 {
@@ -76,17 +77,23 @@ contract NineLivesPaymaster {
     uint256 public immutable INITIAL_CHAIN_ID;
     bytes32 public immutable INITIAL_SALT;
 
+    // An admin isn't needed in this contract, but it provides us with a
+    // way to have some assurance against abuse if there's a signature
+    // issue.
+    address public immutable ADMIN;
+
     mapping(bytes32 domain => mapping(address addr => uint256 nonce)) public nonces;
 
     mapping(uint256 => bytes32) public domainSeparators;
 
-    constructor(address _erc20) {
+    constructor(address _erc20, address _admin) {
         USDC = IERC20(_erc20);
         INITIAL_CHAIN_ID = block.chainid;
         INITIAL_SALT = keccak256(abi.encode(INITIAL_CHAIN_ID));
         domainSeparators[INITIAL_CHAIN_ID] = computeDomainSeparator(
             INITIAL_CHAIN_ID
         );
+        ADMIN = _admin;
     }
 
     function NEW_DOMAIN_SEPARATOR(uint256 _chainId) internal returns (bytes32 sep) {
@@ -182,49 +189,36 @@ contract NineLivesPaymaster {
             }
             return (op.maximumFee, true);
         } else if (op.typ == PaymasterType.BURN) {
+            // For selling, we don't take a fee.
             try
-                USDC.transferFrom(op.owner, address(this), op.maximumFee) {}
+                op.market.burn854CC96E(
+                    op.outcome,
+                    op.amountToSpend,
+                    true,
+                    op.minimumBack,
+                    op.referrer,
+                    op.owner
+                ) {}
             catch {
                 return (0, false);
             }
-            if (op.minimumBack < op.maximumFee) return (op.maximumFee, false);
-                try
-                    op.market.burn854CC96E(
-                        op.outcome,
-                        op.amountToSpend,
-                        true,
-                        op.minimumBack,
-                        op.referrer,
-                        op.owner
-                    ) {}
-            catch {
-                return (op.maximumFee, false);
-            }
-            return (op.maximumFee, true);
+            return (0, false);
         } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
-            try
-                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee) {}
-            catch {
-                return (0, false);
-            }
+            // For adding liquidity, we don't take a fee.
             try
                 op.market.addLiquidityA975D995(op.amountToSpend, op.owner) {}
             catch {
-                return (op.maximumFee, false);
-            }
-            return (op.maximumFee, true);
-        } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY) {
-            try
-                USDC.transferFrom(op.owner, address(this), op.maximumFee) {}
-            catch {
                 return (0, false);
             }
+            return (0, true);
+        } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY) {
+            // For removing liquidity, we don't take a fee.
             try
                 op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner) {}
             catch {
-                return (op.maximumFee, false);
+                return (0, false);
             }
-            return (op.maximumFee, true);
+            return (0, true);
         }
         return (0, false);
     }
@@ -232,6 +226,7 @@ contract NineLivesPaymaster {
     function multicall(
         Operation[] calldata operations
     ) external returns (bool[] memory statuses) {
+        require(msg.sender == ADMIN, "not admin");
         statuses = new bool[](operations.length);
         uint256 acc;
         for (uint i = 0; i < operations.length; ++i) {
