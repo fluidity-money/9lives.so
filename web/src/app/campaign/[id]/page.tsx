@@ -21,7 +21,11 @@ export async function generateMetadata({ params }: { params: Params }) {
     title: response?.name ?? "Predict on 9LIVES.so",
     description: response?.description,
     other: {
-      "fc:frame": JSON.stringify(config.frame),
+      "fc:miniapp": JSON.stringify({
+        version: config.frame.version,
+        imageUrl: `${config.metadata.metadataBase.origin}/campaign/${id}/farcaster-image`,
+        button: config.frame.button,
+      }),
     },
   };
 }
