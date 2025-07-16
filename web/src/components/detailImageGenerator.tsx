@@ -399,5 +399,9 @@ export default async function detailImageGenerator(
         </div>
       </div>
     ),
+    {
+      width: size.width,
+      height: size.height,
+    },
   );
 }
