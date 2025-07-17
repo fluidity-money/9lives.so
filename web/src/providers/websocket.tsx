@@ -13,7 +13,7 @@ import {
 import { BuyAndSellResponse } from "../types";
 import { mergeSortedActions } from "@/utils/mergeSortedActions";
 import { usePaymasterStore } from "@/stores/paymasterStore";
-import toast from "react-hot-toast";
+import handleTicketAttempts from "@/utils/handleAttempts";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -152,42 +152,10 @@ export default function WebSocketProvider() {
                 }
               }
             }
-            filteredAttempts.forEach((a) => {
-              const ticket = tickets.find((t) => a.poll_id === +t.id)!;
-              const selectedOutcome = ticket.data.outcomes.find(
-                (o) => o.identifier === ticket.outcomeId,
-              )!;
-              const outcomeIds = ticket.data.outcomes.map((o) => o.identifier);
-              if (!a.success) {
-                toast.error(`Failed to buy outcome ${selectedOutcome.name}`);
-              }
-              queryClient.invalidateQueries({
-                queryKey: [
-                  "positions",
-                  ticket.data.poolAddress,
-                  ticket.data.outcomes,
-                  ticket.account,
-                ],
-              });
-              queryClient.invalidateQueries({
-                queryKey: ["sharePrices", ticket.data.poolAddress, outcomeIds],
-              });
-              queryClient.invalidateQueries({
-                queryKey: [
-                  "returnValue",
-                  selectedOutcome.share.address,
-                  ticket.data.poolAddress,
-                  ticket.outcomeId,
-                  ticket.amount,
-                ],
-              });
-              queryClient.invalidateQueries({
-                queryKey: ["campaign", ticket.data.identifier],
-              });
-              queryClient.invalidateQueries({
-                queryKey: ["positionHistory", outcomeIds],
-              });
-              closeTicket(a.poll_id.toString());
+            filteredAttempts.forEach((attempt) => {
+              const ticket = tickets.find((t) => attempt.poll_id === +t.id)!;
+              handleTicketAttempts[ticket.opType](ticket, attempt, queryClient);
+              closeTicket(attempt.poll_id.toString());
             });
           },
           error: (error) => {

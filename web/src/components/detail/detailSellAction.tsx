@@ -28,6 +28,8 @@ import thirdweb from "@/config/thirdweb";
 import usePositions from "@/hooks/usePositions";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
 import formatFusdc from "@/utils/formatFusdc";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
+import useSellWithPaymaster from "@/hooks/useSellWithPaymaster";
 
 export default function DetailSellAction({
   shouldStopAction,
@@ -45,6 +47,7 @@ export default function DetailSellAction({
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
+  const enabledPaymaster = useFeatureFlag("enable paymaster sell");
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
   const outcome = selectedOutcome
@@ -75,6 +78,13 @@ export default function DetailSellAction({
     tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
     campaignId: data.identifier,
+    outcomeId: outcome.identifier,
+    outcomes: data.outcomes,
+  });
+  const { sell: sellWithPaymaster } = useSellWithPaymaster({
+    tradingAddr: data.poolAddress,
+    shareAddr: outcome.share.address,
+    data,
     outcomeId: outcome.identifier,
     outcomes: data.outcomes,
   });
@@ -113,7 +123,11 @@ export default function DetailSellAction({
   async function handleSell(input: FormData) {
     try {
       setIsSelling(true);
-      await sell(account!, input.shareToBurn, input.minUsdcToGet);
+      if (enabledPaymaster) {
+        await sellWithPaymaster(input.shareToBurn);
+      } else {
+        await sell(account!, input.shareToBurn, input.minUsdcToGet);
+      }
     } finally {
       setIsSelling(false);
     }

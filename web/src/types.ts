@@ -4,6 +4,7 @@ import {
   requestAchievments,
   requestCampaignById,
   requestUserClaims,
+  requestPaymaster,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -295,10 +296,14 @@ export type PaymasterAttempt = {
   success: boolean;
 };
 
+type PaymasterParams = Parameters<typeof requestPaymaster>[0];
+export type PaymasterOp = PaymasterParams["opType"];
+
 export type Ticket = {
   id: string;
   amount: string;
   account: Account;
   outcomeId: string;
   data: CampaignDetail;
+  opType: PaymasterOp;
 };

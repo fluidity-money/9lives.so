@@ -27,7 +27,10 @@ export default function useRequestPaymaster() {
     let permitS = "";
     let permitV = 0;
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    if (params.amountToSpend) {
+    if (
+      params.amountToSpend &&
+      (params.opType === "MINT" || params.opType === "ADD_LIQUIDITY")
+    ) {
       const allowanceTx = prepareContractCall({
         contract: config.contracts.fusdc,
         method: "allowance",

@@ -53,10 +53,10 @@ export default function DetailBuyAction({
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
-  const enabledLifiZaps =
-    useFeatureFlag("enable lifi zaps") &&
+  const enabledRelay =
+    useFeatureFlag("enable relay buy") &&
     config.NEXT_PUBLIC_CHAIN !== "testnet";
-  const enabledPaymaster = useFeatureFlag("enable paymaster");
+  const enabledPaymaster = useFeatureFlag("enable paymaster buy");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
@@ -71,7 +71,7 @@ export default function DetailBuyAction({
       .number()
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
-  const formSchemaWithZap = z.object({
+  const formSchemaWithRelay = z.object({
     supply: z.coerce.number().gt(0, { message: "Invalid amount to spend" }),
     toChain: z.number().min(0),
     toToken: z.string(),
@@ -87,7 +87,7 @@ export default function DetailBuyAction({
     outcomeIds: [selectedOutcome.id as `0x${string}`],
   })?.[0]?.chance;
   const chance = isDpm ? dpmChance : chanceAmm;
-  type FormData = z.infer<typeof formSchemaWithZap>;
+  type FormData = z.infer<typeof formSchemaWithRelay>;
   const {
     register,
     watch,
@@ -97,7 +97,7 @@ export default function DetailBuyAction({
     formState: { errors },
   } = useForm<FormData>({
     disabled: shouldStopAction,
-    resolver: zodResolver(enabledLifiZaps ? formSchemaWithZap : formSchema),
+    resolver: zodResolver(enabledRelay ? formSchemaWithRelay : formSchema),
     defaultValues: {
       supply: 0,
       toChain: config.chains.superposition.id,
@@ -181,7 +181,7 @@ export default function DetailBuyAction({
   }: FormData) {
     try {
       setIsMinting(true);
-      if (enabledLifiZaps && fromChain !== config.chains.superposition.id) {
+      if (enabledRelay && fromChain !== config.chains.superposition.id) {
         await buyWithRelay(
           account!,
           supply,
@@ -314,7 +314,7 @@ export default function DetailBuyAction({
             <span className="font-chicago text-xs font-normal text-9black">
               Supply
             </span>
-            {enabledLifiZaps ? (
+            {enabledRelay ? (
               <div
                 className={combineClass(
                   minimized ? "hidden" : "flex",
@@ -361,7 +361,7 @@ export default function DetailBuyAction({
               </div>
             )}
             <div className="flex gap-2.5">
-              {enabledLifiZaps ? (
+              {enabledRelay ? (
                 <AssetSelector
                   tokens={tokens}
                   tokensWithBalances={tokensWithBalances}
@@ -397,7 +397,7 @@ export default function DetailBuyAction({
               />
             </div>
             {errors.supply && <ErrorInfo text={errors.supply.message} />}
-            {enabledLifiZaps ? (
+            {enabledRelay ? (
               <div className="flex flex-col gap-1.5">
                 <span className="font-chicago text-xs font-normal text-9black">
                   From{" "}

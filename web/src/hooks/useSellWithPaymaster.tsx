@@ -1,5 +1,9 @@
 import config from "@/config";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
+import {
+  getContract,
+  prepareContractCall,
+  simulateTransaction,
+} from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -7,23 +11,22 @@ import { CampaignDetail, MintedPosition, Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
 import { useActiveAccount } from "thirdweb/react";
-import formatFusdc from "@/utils/formatFusdc";
 import { usePaymasterStore } from "@/stores/paymasterStore";
+import ERC20Abi from "@/config/abi/erc20";
+import { destinationChain } from "@/config/chains";
 
-const useBuyWithPaymaster = ({
+const useSellWithPaymaster = ({
   shareAddr,
   tradingAddr,
   outcomeId,
   data,
   outcomes,
-  openFundModal,
 }: {
   shareAddr: `0x${string}`;
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
   data: CampaignDetail;
   outcomes: Outcome[];
-  openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();
   const account = useActiveAccount();
@@ -48,7 +51,10 @@ const useBuyWithPaymaster = ({
       await queryClient.cancelQueries({
         queryKey: ["positions", tradingAddr, outcomes, account],
       });
-      let newPosition: MintedPosition;
+      const amountToSell = toUnits(
+        newRequest.minimumBack,
+        config.contracts.decimals.shares,
+      );
       let newPositions: MintedPosition[];
       const previousPositions =
         queryClient.getQueryData<MintedPosition[]>([
@@ -57,38 +63,26 @@ const useBuyWithPaymaster = ({
           outcomes,
           account,
         ]) ?? [];
-      const alreadyExistedPosition = previousPositions?.find(
-        (p) => p.id === newRequest.outcome,
-      );
-      if (alreadyExistedPosition) {
-        newPosition = {
-          ...alreadyExistedPosition,
-          balanceRaw:
-            alreadyExistedPosition.balanceRaw +
-            BigInt(newRequest.amountToSpend),
-          balance: (
-            Number(alreadyExistedPosition.balance) +
-            Number(formatFusdc(newRequest.amountToSpend, 2))
-          ).toString(),
-        };
-        newPositions = [
-          ...previousPositions.filter(
-            (p) => p.id !== alreadyExistedPosition.id,
-          ),
-          newPosition,
-        ];
-      } else {
-        const investedOutcome = outcomes.find(
-          (o) => o.identifier === newRequest.outcome,
+      const existedPositionAmount =
+        previousPositions?.find((p) => p.id === newRequest.outcome)
+          ?.balanceRaw ?? BigInt(0);
+
+      if (amountToSell >= existedPositionAmount) {
+        newPositions = previousPositions.filter(
+          (p) => p.id !== newRequest.outcome,
         );
-        newPosition = {
-          id: investedOutcome?.identifier ?? "0x",
-          balanceRaw: BigInt(newRequest.amountToSpend),
-          balance: formatFusdc(newRequest.amountToSpend, 2),
-          name: investedOutcome?.name ?? "Unknown",
-          shareAddress: investedOutcome?.share.address ?? "0x",
-        };
-        newPositions = [...previousPositions, newPosition];
+      } else {
+        newPositions = previousPositions.map((p) =>
+          p.id === newRequest.outcome
+            ? {
+                ...p,
+                balance: (
+                  Number(p.balance) - Number(newRequest.minimumBack)
+                ).toString(),
+                balanceRaw: p.balanceRaw - amountToSell,
+              }
+            : p,
+        );
       }
 
       // Optimistically update the cache
@@ -111,41 +105,41 @@ const useBuyWithPaymaster = ({
     onSettled: (result, err) => {
       // invalidate queries not here but, after reading paymaster tickets
       // check providers/websocket.tsx
-      // const outcomeIds = outcomes.map((o) => o.identifier);
-      // queryClient.invalidateQueries({
-      //   queryKey: ["positions", tradingAddr, outcomes, account],
-      // });
-      // queryClient.invalidateQueries({
-      //   queryKey: ["sharePrices", tradingAddr, outcomeIds],
-      // });
-      // queryClient.invalidateQueries({
-      //   queryKey: [
-      //     "returnValue",
-      //     shareAddr,
-      //     tradingAddr,
-      //     outcomeId,
-      //     result?.amount,
-      //   ],
-      // });
-      // queryClient.invalidateQueries({
-      //   queryKey: ["campaign", campaignId],
-      // });
-      // queryClient.invalidateQueries({
-      //   queryKey: ["positionHistory", outcomeIds],
-      // });
+      //      const outcomeIds = outcomes.map((o) => o.identifier);
+      //   queryClient.invalidateQueries({
+      //     queryKey: ["positions", tradingAddr, outcomes, account],
+      //   });
+      //   queryClient.invalidateQueries({
+      //     queryKey: ["sharePrices", tradingAddr, outcomeIds],
+      //   });
+      //   queryClient.invalidateQueries({
+      //     queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
+      //   });
+      //   queryClient.invalidateQueries({
+      //     queryKey: ["campaign", campaignId],
+      //   });
+      //   queryClient.invalidateQueries({
+      //     queryKey: ["positionHistory", outcomeIds],
+      //   });
     },
   });
-  const buy = async (fusdc: number) =>
+  const sell = async (rawAmount: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
           if (!account) throw new Error("No active account");
           const amount = toUnits(
-            fusdc.toString(),
-            config.contracts.decimals.fusdc,
+            rawAmount.toString(),
+            config.contracts.decimals.shares,
           ).toString();
+          const shareContract = getContract({
+            abi: ERC20Abi,
+            address: shareAddr,
+            chain: destinationChain,
+            client: config.thirdweb.client,
+          });
           const userBalanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
+            contract: shareContract,
             method: "balanceOf",
             params: [account?.address],
           });
@@ -154,31 +148,30 @@ const useBuyWithPaymaster = ({
             account,
           });
           if (amount > userBalance) {
-            openFundModal();
-            throw new Error("You dont have enough USDC.");
+            throw new Error("You dont have enough shares.");
           }
           const result = await requestPaymasterOptimistically({
-            amountToSpend: amount,
+            amountToSpend: "0",
             outcome: outcomeId,
-            opType: "MINT",
+            opType: "SELL",
             tradingAddr: tradingAddr,
-            minimumBack: "0",
+            minimumBack: amount,
           });
           if (result && result.ticketId) {
             createTicket({
               id: result.ticketId,
               amount: result.amount,
               data,
-              opType: "MINT",
+              opType: "SELL",
               outcomeId,
               account,
             });
-            track(EVENTS.MINT, {
+            track(EVENTS.BURN, {
               wallet: account.address,
-              amount: result.amount,
+              amount,
+              type: "sellWithPaymaster",
               outcomeId,
               shareAddr,
-              type: "buyWithPaymaster",
               tradingAddr,
             });
             res(result.ticketId);
@@ -190,13 +183,13 @@ const useBuyWithPaymaster = ({
         }
       }),
       {
-        loading: "Buying shares...",
-        success: "Shares bought successfully!",
+        loading: "Selling shares...",
+        success: "Shares sold successfully!",
         error: (e) => `${e?.shortMessage ?? e?.message ?? "Unknown error"}`,
       },
     );
 
-  return { buy };
+  return { sell };
 };
 
-export default useBuyWithPaymaster;
+export default useSellWithPaymaster;

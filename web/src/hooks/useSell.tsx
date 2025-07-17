@@ -104,6 +104,7 @@ const useSell = ({
             amount: fusdc,
             maxShareOut,
             minShareOut,
+            type: "sellWithContract",
             outcomeId,
             shareAddr,
             tradingAddr,

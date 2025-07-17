@@ -6,6 +6,8 @@
 	"admin features are enabled": true,
 	"referrer needs to verify": false,
 	"enable lifi zaps": true,
-	"enable paymaster": true,
-	"ai for asking if a campaign makes sense": false
+	"enable paymaster buy": true,
+	"ai for asking if a campaign makes sense": false,
+	"enable relay buy": true,
+	"enable paymaster sell" : false 
 }
