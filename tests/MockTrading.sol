@@ -32,8 +32,6 @@ contract MockTrading is INineLivesTrading {
 
     function ctor(CtorArgs calldata _a) external {
         require(timeStart_ == 0, "already created");
-        // We track some things to set up to prevent abuse in testing, but we don't
-        // track the oracles that were created.
         for (uint i = 0; i < _a.outcomes.length; ++i) {
             Share s = Share(address(new TransparentUpgradeableProxy(
                 address(new Share()),
@@ -69,15 +67,17 @@ contract MockTrading is INineLivesTrading {
     }
 
     function burn854CC96E(
-        bytes8 /* outcome */,
-        uint256 /* value */,
+        bytes8 outcome,
+        uint256 /* maxShareOut */,
         bool /* shouldTakeShares */,
-        uint256 /* minShares */,
+        uint256 minShares,
         address /* referrer */,
         address /* recipient */
-    ) external returns (uint256, uint256) {
+    ) external returns (uint256 burnedShares, uint256 fusdcReturned) {
         ++counter_;
-        return (0, 0);
+        shares_[outcome].burn(msg.sender, minShares);
+        IERC20TransferFrom(FUSDC_ADDR).transfer(msg.sender, minShares);
+        return (minShares, minShares);
     }
 
     function quoteC0E17FC7(

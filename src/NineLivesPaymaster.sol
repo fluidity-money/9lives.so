@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 import { INineLivesTrading } from "./INineLivesTrading.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
@@ -35,7 +37,7 @@ struct Operation {
     uint8 v;
     bytes32 r;
     bytes32 s;
-    uint256 outgoingChain;
+    uint32 outgoingChainEid;
 }
 
 interface IERC20 {
@@ -54,6 +56,71 @@ interface IERC20 {
     function transferFrom(address owner, address spender, uint256 amount) external;
 
     function transfer(address owner, uint256 amount) external;
+}
+
+struct SendParam {
+    uint32 dstEid; // Destination endpoint ID.
+    bytes32 to; // Recipient address.
+    uint256 amountLD; // Amount to send in local decimals.
+    uint256 minAmountLD; // Minimum amount to send in local decimals.
+    bytes extraOptions; // Additional options supplied by the caller to be used in the LayerZero message.
+    bytes composeMsg; // The composed message for the send() operation.
+    bytes oftCmd; // The OFT command to be executed, unused in default OFT implementations.
+}
+
+struct OFTReceipt {
+    uint256 amountSentLD; // Amount of tokens ACTUALLY debited from the sender in local decimals.
+    // @dev In non-default implementations, the amountReceivedLD COULD differ from this value.
+    uint256 amountReceivedLD; // Amount of tokens to be received on the remote side.
+}
+
+struct MessagingReceipt {
+    bytes32 guid;
+    uint64 nonce;
+    MessagingFee fee;
+}
+
+struct MessagingFee {
+    uint256 nativeFee;
+    uint256 lzTokenFee;
+}
+
+enum StargateType {
+    Pool,
+    OFT
+}
+
+/// @notice Ticket data for bus ride.
+struct Ticket {
+    uint72 ticketId;
+    bytes passengerBytes;
+}
+
+struct OFTLimit {
+    uint256 minAmountLD; // Minimum amount in local decimals that can be sent to the recipient.
+    uint256 maxAmountLD; // Maximum amount in local decimals that can be sent to the recipient.
+}
+
+struct OFTFeeDetail {
+    int256 feeAmountLD; // Amount of the fee in local decimals.
+    string description; // Description of the fee.
+}
+
+interface IStargate {
+    /// @dev This function is same as `send` in OFT interface but returns the ticket data if in the bus ride mode,
+    /// which allows the caller to ride and drive the bus in the same transaction.
+    function sendToken(
+        SendParam calldata _sendParam,
+        MessagingFee calldata _fee,
+        address _refundAddress
+    ) external payable returns (MessagingReceipt memory msgReceipt, OFTReceipt memory oftReceipt, Ticket memory ticket);
+
+    /// @notice Returns the Stargate implementation type.
+    function stargateType() external pure returns (StargateType);
+
+    function quoteOFT(
+        SendParam calldata _sendParam
+    ) external view returns (OFTLimit memory limit, OFTFeeDetail[] memory oftFeeDetails, OFTReceipt memory receipt);
 }
 
 contract NineLivesPaymaster {
@@ -82,11 +149,13 @@ contract NineLivesPaymaster {
     // issue.
     address public immutable ADMIN;
 
+    IStargate public immutable STARGATE;
+
     mapping(bytes32 domain => mapping(address addr => uint256 nonce)) public nonces;
 
     mapping(uint256 => bytes32) public domainSeparators;
 
-    constructor(address _erc20, address _admin) {
+    constructor(address _erc20, address _admin, IStargate _stargate) {
         USDC = IERC20(_erc20);
         INITIAL_CHAIN_ID = block.chainid;
         INITIAL_SALT = keccak256(abi.encode(INITIAL_CHAIN_ID));
@@ -94,6 +163,7 @@ contract NineLivesPaymaster {
             INITIAL_CHAIN_ID
         );
         ADMIN = _admin;
+        STARGATE = _stargate;
     }
 
     function NEW_DOMAIN_SEPARATOR(uint256 _chainId) internal returns (bytes32 sep) {
@@ -118,8 +188,8 @@ contract NineLivesPaymaster {
             );
     }
 
-    function recoverAddress(bytes32 domain, Operation calldata op) public view returns (address) {
-        return ecrecover(
+    function recoverAddress(bytes32 domain, Operation calldata op) public view returns (address recovered) {
+        (recovered,,) = ECDSA.tryRecover(
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
@@ -219,6 +289,33 @@ contract NineLivesPaymaster {
                 return (0, false);
             }
             return (0, true);
+        } else if (op.typ == PaymasterType.BURN_SEND_OUT) {
+            // For selling, we don't take a fee. But Stargate will.
+            try
+                op.market.burn854CC96E(
+                    op.outcome,
+                    op.amountToSpend,
+                    true,
+                    op.minimumBack,
+                    op.referrer,
+                    op.owner
+                )
+            returns (uint256, uint256 fusdcReturned) {
+                SendParam memory sendParam = SendParam({
+                    dstEid: op.outgoingChainEid,
+                    to: bytes32(uint256(uint160(op.owner))),
+                    amountLD: fusdcReturned, // Not sent with local decimals.
+                    minAmountLD: 0,
+                    extraOptions: new bytes(0),
+                    composeMsg: new bytes(0),
+                    oftCmd: ""                  // Empty for taxi mode
+                });
+                (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+            }
+            catch {
+                return (0, false);
+            }
+            return (0, false);
         }
         return (0, false);
     }

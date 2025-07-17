@@ -5,6 +5,7 @@ import { Test } from "forge-std/Test.sol";
 
 import {
     NineLivesPaymaster,
+    IStargate,
     PaymasterType,
     Operation } from "../src/NineLivesPaymaster.sol";
 
@@ -23,7 +24,7 @@ contract TestNineLivesPaymaster is Test {
     function setUp() external {
         ERC20 = new TestERC20();
         vm.chainId(55244);
-        P = new NineLivesPaymaster(address(ERC20), address(this));
+        P = new NineLivesPaymaster(address(ERC20), address(this), IStargate(address(0)));
         m = new MockTrading(address(ERC20));
         bytes8[] memory outcomes = new bytes8[](2);
         outcomes[0] = OUTCOME;
@@ -166,7 +167,7 @@ contract TestNineLivesPaymaster is Test {
             v: v,
             r: r,
             s: s,
-            outgoingChain: block.chainid
+            outgoingChainEid: 0 // We can set this to zero if we're not using it.
         });
         ops[1] = Operation({
             owner: ivan,
@@ -187,7 +188,7 @@ contract TestNineLivesPaymaster is Test {
             v: v2,
             r: r2,
             s: s2,
-            outgoingChain: block.chainid
+            outgoingChainEid: 0
         });
         (,address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
@@ -196,7 +197,14 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testBurnEndToEnd() external {
+        // This test burns an amount that was minted using a mock trading
+        // interaction.
         (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
+        ERC20.transfer(ivan, 2e6);
+        vm.prank(ivan);
+        ERC20.approve(address(m), 1e6);
+        vm.prank(ivan);
+        uint256 minted = m.mint8A059B6E(OUTCOME, 1e6, address(0), ivan);
         bytes32 hash = computePaymasterHash(
             address(P),
             block.chainid,
@@ -205,8 +213,8 @@ contract TestNineLivesPaymaster is Test {
             uint8(PaymasterType.BURN),
             address(m),
             0, // Max fee
-            1e6, // Amount
-            0,
+            minted, // Amount to burn
+            1e6, // Amount back min
             address(0), // Referrer
             OUTCOME
         );
@@ -218,20 +226,20 @@ contract TestNineLivesPaymaster is Test {
             nonce: 0,
             typ: PaymasterType.BURN,
             deadline: type(uint256).max,
-            permitAmount: 2e6,
+            permitAmount: 0,
             permitR: bytes32(0),
             permitS: bytes32(0),
             permitV: 0,
             market: m,
             maximumFee: 0,
-            amountToSpend: 1e6,
-            minimumBack: 0,
+            amountToSpend: minted,
+            minimumBack: 1e6,
             referrer: address(0),
             outcome: OUTCOME,
             v: v,
             r: r,
             s: s,
-            outgoingChain: block.chainid
+            outgoingChainEid: 0
         });
         (,address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
