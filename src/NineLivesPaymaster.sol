@@ -319,7 +319,7 @@ contract NineLivesPaymaster {
             }
             acc += amt;
         }
-        USDC.transfer(msg.sender, acc);
+        if (acc > 0) USDC.transfer(msg.sender, acc);
     }
 
     function drain(address _recipient) external {
@@ -330,5 +330,10 @@ contract NineLivesPaymaster {
     function changeAdmin(address _admin) external {
         require(msg.sender == ADMIN, "not admin");
         ADMIN = _admin;
+    }
+
+    function changeUsdc(IERC20 _newUsdc) external {
+        require(msg.sender == ADMIN, "not admin");
+        USDC = _newUsdc;
     }
 }

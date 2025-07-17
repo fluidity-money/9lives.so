@@ -58,7 +58,7 @@ CREATE TABLE ninelives_paymaster_poll_1 (
 	nonce HUGEINT NOT NULL,
 
 	-- Outgoing EID of the paymaster operation.
-	outgoing_eid INTEGER NOT NULL DEFAULT 0
+	outgoing_chain_eid INTEGER NOT NULL DEFAULT 0
 );
 
 -- migrate:down
