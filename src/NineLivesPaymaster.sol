@@ -81,29 +81,32 @@ contract NineLivesPaymaster {
         bytes8 outcome
     );
 
+    uint256 public version;
+
     /// @dev NAME here is a concatenation of the chain id as well! We don't
     /// intend to deploy this anywhere else, but we want cross-chain signing
     /// functionality, so we reuse the domain separator to discover nonces
     /// that we supply to this contract relative to the chain id here.
     string constant NAME = "NineLivesPaymaster";
 
-    IERC20 immutable USDC;
+    IERC20 public USDC;
 
-    uint256 public immutable INITIAL_CHAIN_ID;
-    bytes32 public immutable INITIAL_SALT;
+    uint256 public INITIAL_CHAIN_ID;
+    bytes32 public INITIAL_SALT;
 
     // An admin isn't needed in this contract, but it provides us with a
     // way to have some assurance against abuse if there's a signature
     // issue.
-    address public immutable ADMIN;
+    address public ADMIN;
 
-    IStargate public immutable STARGATE;
+    IStargate public STARGATE;
 
     mapping(bytes32 domain => mapping(address addr => uint256 nonce)) public nonces;
 
     mapping(uint256 => bytes32) public domainSeparators;
 
-    constructor(address _erc20, address _admin, IStargate _stargate) {
+    function initialise(address _erc20, address _admin, IStargate _stargate) external {
+        require(version == 0, "already set up");
         USDC = IERC20(_erc20);
         INITIAL_CHAIN_ID = block.chainid;
         INITIAL_SALT = keccak256(abi.encode(INITIAL_CHAIN_ID));
@@ -112,6 +115,7 @@ contract NineLivesPaymaster {
         );
         ADMIN = _admin;
         STARGATE = _stargate;
+        version = 1;
     }
 
     function NEW_DOMAIN_SEPARATOR(uint256 _chainId) internal returns (bytes32 sep) {

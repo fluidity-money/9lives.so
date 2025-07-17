@@ -25,7 +25,8 @@ contract TestNineLivesPaymaster is Test {
     function setUp() external {
         ERC20 = new TestERC20();
         vm.chainId(55244);
-        P = new NineLivesPaymaster(address(ERC20), address(this), IStargate(address(0)));
+        P = new NineLivesPaymaster();
+        P.initialise(address(ERC20), address(this), IStargate(address(0)));
         m = new MockTrading(address(ERC20), address(P));
         bytes8[] memory outcomes = new bytes8[](2);
         outcomes[0] = OUTCOME;
