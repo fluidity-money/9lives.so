@@ -3,6 +3,7 @@
 cat >/dev/null <<EOF
 $SPN_FUSDC_ADDR
 $SPN_PROXY_ADMIN
+$SPN_PAYMASTER_CALLER_ADDR
 $SPN_STARGATE_ADDR
 EOF
 
@@ -26,5 +27,5 @@ forge create --json \
 	--constructor-args \
 	"$SPN_PAYMASTER_IMPL" \
 	"$SPN_PROXY_ADMIN" \
-	"$(cast calldata 'initialise(address,address,address)' "$SPN_FUSDC_ADDR" "$SPN_PROXY_ADMIN" "$SPN_STARGATE_ADDR")" \
+	"$(cast calldata 'initialise(address,address,address)' "$SPN_FUSDC_ADDR" "$SPN_PAYMASTER_CALLER_ADDR" "$SPN_STARGATE_ADDR")" \
 		| jq -r .deployedTo

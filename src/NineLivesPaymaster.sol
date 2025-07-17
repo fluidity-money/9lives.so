@@ -8,12 +8,7 @@ import {
     IStargate,
     MessagingFee,
     SendParam,
-    OFTReceipt,
-    MessagingReceipt,
-    StargateType,
-    Ticket,
-    OFTLimit,
-    OFTFeeDetail } from "./IStargate.sol";
+    OFTReceipt } from "./IStargate.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
     keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
@@ -330,5 +325,10 @@ contract NineLivesPaymaster {
     function drain(address _recipient) external {
         require(msg.sender == ADMIN, "not admin");
         USDC.transfer(_recipient, USDC.balanceOf(address(this)));
+    }
+
+    function changeAdmin(address _admin) external {
+        require(msg.sender == ADMIN, "not admin");
+        ADMIN = _admin;
     }
 }
