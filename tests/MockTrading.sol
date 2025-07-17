@@ -17,17 +17,22 @@ interface IERC20TransferFrom {
 contract MockTrading is INineLivesTrading {
     mapping(bytes8 => Share) shares_;
     address immutable FUSDC_ADDR;
+    address immutable PAYMASTER;
+
     uint256 counter_;
 
     bytes8 public calledOutcome_;
+
+    mapping(address => uint256) providedLiquidity_;
 
     address oracle_;
     uint256 timeStart_;
     uint256 timeEnding_;
     address feeRecipient_;
 
-    constructor(address _fusdc) {
+    constructor(address _fusdc, address _paymaster) {
         FUSDC_ADDR = _fusdc;
+        PAYMASTER = _paymaster;
     }
 
     function ctor(CtorArgs calldata _a) external {
@@ -72,11 +77,13 @@ contract MockTrading is INineLivesTrading {
         bool /* shouldTakeShares */,
         uint256 minShares,
         address /* referrer */,
-        address /* recipient */
+        address recipient
     ) external returns (uint256 burnedShares, uint256 fusdcReturned) {
+        address sender = msg.sender;
+        if (msg.sender == PAYMASTER) sender = recipient;
         ++counter_;
-        shares_[outcome].burn(msg.sender, minShares);
-        IERC20TransferFrom(FUSDC_ADDR).transfer(msg.sender, minShares);
+        shares_[outcome].burn(sender, minShares);
+        IERC20TransferFrom(FUSDC_ADDR).transfer(sender, minShares);
         return (minShares, minShares);
     }
 
@@ -109,18 +116,22 @@ contract MockTrading is INineLivesTrading {
         return shareAmount;
     }
 
-    function addLiquidityA975D995(uint256 /* liquidity */, address /* recipient */) external returns (
+    function addLiquidityA975D995(uint256 liquidity, address recipient) external returns (
         uint256 userLiquidity
     ) {
         ++counter_;
-        return 0;
+        IERC20TransferFrom(FUSDC_ADDR).transferFrom(msg.sender, address(this), liquidity);
+        providedLiquidity_[recipient] += liquidity;
+        return liquidity;
     }
 
-    function removeLiquidity3C857A15(uint256 liquidity, address /* recipient */) external returns (
+    function removeLiquidity3C857A15(uint256 liquidity, address recipient) external returns (
         uint256 fusdcAmount,
         uint256 feesEarned
     ) {
         ++counter_;
+        providedLiquidity_[recipient] -= liquidity;
+        IERC20TransferFrom(FUSDC_ADDR).transfer(recipient, liquidity);
         return (liquidity, 0);
     }
 

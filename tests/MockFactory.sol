@@ -38,7 +38,7 @@ contract MockFactory is INineLivesFactory {
         uint64 /* feeMinter */,
         uint64 /* feeReferrer */
     ) external returns (address) {
-        MockTrading t = new MockTrading(ADDR_FUSDC);
+        MockTrading t = new MockTrading(ADDR_FUSDC, address(0));
         bytes8[] memory outcomes = new bytes8[](_outcomes.length);
         for (uint i = 0; i < _outcomes.length; ++i) {
             outcomes[i] = _outcomes[i].identifier;

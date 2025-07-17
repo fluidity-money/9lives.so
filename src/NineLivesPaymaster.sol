@@ -13,7 +13,8 @@ enum PaymasterType {
     BURN,
     ADD_LIQUIDITY,
     REMOVE_LIQUIDITY,
-    BURN_SEND_OUT
+    BURN_SEND_OUT,
+    REMOVE_LIQUIDITY_SEND_OUT
 }
 
 struct Operation {
@@ -107,20 +108,30 @@ struct OFTFeeDetail {
 }
 
 interface IStargate {
-    /// @dev This function is same as `send` in OFT interface but returns the ticket data if in the bus ride mode,
-    /// which allows the caller to ride and drive the bus in the same transaction.
     function sendToken(
         SendParam calldata _sendParam,
         MessagingFee calldata _fee,
         address _refundAddress
-    ) external payable returns (MessagingReceipt memory msgReceipt, OFTReceipt memory oftReceipt, Ticket memory ticket);
+    ) external payable returns (
+        MessagingReceipt memory msgReceipt,
+        OFTReceipt memory oftReceipt,
+        Ticket memory ticket
+    );
 
-    /// @notice Returns the Stargate implementation type.
     function stargateType() external pure returns (StargateType);
 
     function quoteOFT(
         SendParam calldata _sendParam
-    ) external view returns (OFTLimit memory limit, OFTFeeDetail[] memory oftFeeDetails, OFTReceipt memory receipt);
+    ) external view returns (
+        OFTLimit memory limit,
+        OFTFeeDetail[] memory oftFeeDetails,
+        OFTReceipt memory receipt
+    );
+
+    function quoteSend(
+        SendParam calldata _sendParam,
+        bool _payInLzToken
+    ) external view returns (MessagingFee memory);
 }
 
 contract NineLivesPaymaster {
@@ -231,15 +242,19 @@ contract NineLivesPaymaster {
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
         if (op.permitR != bytes32(0))
-            USDC.permit(
-                op.owner,
-                address(this),
-                op.permitAmount,
-                op.deadline,
-                op.permitV,
-                op.permitR,
-                op.permitS
-            );
+            try
+                USDC.permit(
+                    op.owner,
+                    address(this),
+                    op.permitAmount,
+                    op.deadline,
+                    op.permitV,
+                    op.permitR,
+                    op.permitS
+                ) {}
+            catch {
+                return (0, false);
+            }
         if (op.typ == PaymasterType.MINT) {
             try
                 USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee) {}
@@ -272,9 +287,15 @@ contract NineLivesPaymaster {
             catch {
                 return (0, false);
             }
-            return (0, false);
+            return (0, true);
         } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
             // For adding liquidity, we don't take a fee.
+            try
+                USDC.transferFrom(op.owner, address(this), op.amountToSpend) {}
+            catch {
+                return (0, false);
+            }
+            USDC.approve(address(op.market), op.amountToSpend);
             try
                 op.market.addLiquidityA975D995(op.amountToSpend, op.owner) {}
             catch {
@@ -301,6 +322,7 @@ contract NineLivesPaymaster {
                     op.owner
                 )
             returns (uint256, uint256 fusdcReturned) {
+                USDC.approve(address(STARGATE), fusdcReturned);
                 SendParam memory sendParam = SendParam({
                     dstEid: op.outgoingChainEid,
                     to: bytes32(uint256(uint160(op.owner))),
@@ -311,11 +333,16 @@ contract NineLivesPaymaster {
                     oftCmd: ""                  // Empty for taxi mode
                 });
                 (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+                sendParam.minAmountLD = receipt.amountReceivedLD;
+                MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
+                STARGATE.sendToken(sendParam, messagingFee, op.owner);
+                return (0, true);
             }
             catch {
                 return (0, false);
             }
-            return (0, false);
+        } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY_SEND_OUT) {
+
         }
         return (0, false);
     }

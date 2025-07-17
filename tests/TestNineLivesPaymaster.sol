@@ -25,7 +25,7 @@ contract TestNineLivesPaymaster is Test {
         ERC20 = new TestERC20();
         vm.chainId(55244);
         P = new NineLivesPaymaster(address(ERC20), address(this), IStargate(address(0)));
-        m = new MockTrading(address(ERC20));
+        m = new MockTrading(address(ERC20), address(P));
         bytes8[] memory outcomes = new bytes8[](2);
         outcomes[0] = OUTCOME;
         outcomes[1] = bytes8(keccak256(abi.encodePacked(block.timestamp)));
@@ -197,8 +197,6 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testBurnEndToEnd() external {
-        // This test burns an amount that was minted using a mock trading
-        // interaction.
         (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 2e6);
         vm.prank(ivan);
@@ -245,5 +243,113 @@ contract TestNineLivesPaymaster is Test {
         assertEq(ivan, recovered);
         bool[] memory statuses = P.multicall(ops);
         for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
+    }
+
+    function testAddLiquidityEndToEnd() external {
+        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
+        ERC20.transfer(ivan, 1e6);
+        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(
+            address(P),
+            ivan,
+            0,
+            1e6
+        ));
+        bytes32 hash = computePaymasterHash(
+            address(P),
+            block.chainid,
+            ivan,
+            0, // Nonce
+            uint8(PaymasterType.ADD_LIQUIDITY),
+            address(m),
+            0, // Max fee
+            1e6, // Amount to send to add as liquidity
+            0, // Amount back min
+            address(0), // Referrer
+            bytes8(0)
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
+        Operation[] memory ops = new Operation[](1);
+        ops[0] = Operation({
+            owner: ivan,
+            originatingChainId: block.chainid,
+            nonce: 0,
+            typ: PaymasterType.ADD_LIQUIDITY,
+            deadline: type(uint256).max,
+            permitAmount: 1e6,
+            permitR: permitR,
+            permitS: permitS,
+            permitV: permitV,
+            market: m,
+            maximumFee: 0,
+            amountToSpend: 1e6,
+            minimumBack: 0,
+            referrer: address(0),
+            outcome: bytes8(0),
+            v: v,
+            r: r,
+            s: s,
+            outgoingChainEid: 0
+        });
+        (,address recovered) = P.recoverAddressNewChain(ops[0]);
+        assertEq(ivan, recovered);
+        bool[] memory statuses = P.multicall(ops);
+        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
+    }
+
+    function testRemoveLiquidityEndToEnd() external {
+        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
+        ERC20.transfer(ivan, 1e6);
+        vm.prank(ivan);
+        ERC20.approve(address(m), 1e6);
+        vm.prank(ivan);
+        uint256 liq = m.addLiquidityA975D995(1e6, ivan);
+        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(
+            address(P),
+            ivan,
+            0,
+            1e6
+        ));
+        bytes32 hash = computePaymasterHash(
+            address(P),
+            block.chainid,
+            ivan,
+            0, // Nonce
+            uint8(PaymasterType.REMOVE_LIQUIDITY),
+            address(m),
+            0, // Max fee
+            liq, // Amount to send to add as liquidity
+            0, // Amount back min
+            address(0), // Referrer
+            bytes8(0)
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
+        Operation[] memory ops = new Operation[](1);
+        ops[0] = Operation({
+            owner: ivan,
+            originatingChainId: block.chainid,
+            nonce: 0,
+            typ: PaymasterType.REMOVE_LIQUIDITY,
+            deadline: type(uint256).max,
+            permitAmount: 1e6,
+            permitR: bytes32(0),
+            permitS: bytes32(0),
+            permitV: 0,
+            market: m,
+            maximumFee: 0,
+            amountToSpend: liq,
+            minimumBack: 0,
+            referrer: address(0),
+            outcome: bytes8(0),
+            v: v,
+            r: r,
+            s: s,
+            outgoingChainEid: 0
+        });
+        (,address recovered) = P.recoverAddressNewChain(ops[0]);
+        assertEq(ivan, recovered);
+        bool[] memory statuses = P.multicall(ops);
+        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
+        uint256 bal = ERC20.balanceOf(ivan);
+        assertEq(1e6, bal);
     }
 }
