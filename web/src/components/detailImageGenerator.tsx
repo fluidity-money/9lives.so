@@ -220,6 +220,7 @@ export default async function detailImageGenerator(
         <div
           style={{
             display: "flex",
+            flex: 1,
             flexDirection: "column",
             gap: "1.25rem",
             backgroundColor: "#DDEAEF",
@@ -264,6 +265,8 @@ export default async function detailImageGenerator(
             style={{
               display: "flex",
               flexDirection: "column",
+              flexGrow: 1,
+              justifyContent: "space-between",
               gap: "1.25rem",
               borderRadius: 3,
               borderWidth: 1,
