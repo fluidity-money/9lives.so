@@ -303,12 +303,6 @@ contract TestNineLivesPaymaster is Test {
         ERC20.approve(address(m), 1e6);
         vm.prank(ivan);
         uint256 liq = m.addLiquidityA975D995(1e6, ivan);
-        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(
-            address(P),
-            ivan,
-            0,
-            1e6
-        ));
         bytes32 hash = computePaymasterHash(
             address(P),
             block.chainid,

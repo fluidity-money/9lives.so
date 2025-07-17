@@ -235,6 +235,23 @@ contract NineLivesPaymaster {
         return (domain, recoverAddress(domain, op));
     }
 
+    function stargateSendAmount(uint256 amt, uint32 chainEid, address recipient) internal {
+        USDC.approve(address(STARGATE), amt);
+        SendParam memory sendParam = SendParam({
+            dstEid: chainEid,
+            to: bytes32(uint256(uint160(recipient))),
+            amountLD: amt, // Not sent with local decimals (TODO?)
+            minAmountLD: 0,
+            extraOptions: new bytes(0),
+            composeMsg: new bytes(0),
+            oftCmd: ""                  // Empty for taxi mode
+        });
+        (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+        sendParam.minAmountLD = receipt.amountReceivedLD;
+        MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
+        STARGATE.sendToken(sendParam, messagingFee, recipient);
+    }
+
     function execute(Operation calldata op) internal returns (uint256, bool) {
         if (op.deadline < block.timestamp) return (0, false);
         (bytes32 domain, address recovered) = recoverAddressNewChain(op);
@@ -322,27 +339,23 @@ contract NineLivesPaymaster {
                     op.owner
                 )
             returns (uint256, uint256 fusdcReturned) {
-                USDC.approve(address(STARGATE), fusdcReturned);
-                SendParam memory sendParam = SendParam({
-                    dstEid: op.outgoingChainEid,
-                    to: bytes32(uint256(uint160(op.owner))),
-                    amountLD: fusdcReturned, // Not sent with local decimals.
-                    minAmountLD: 0,
-                    extraOptions: new bytes(0),
-                    composeMsg: new bytes(0),
-                    oftCmd: ""                  // Empty for taxi mode
-                });
-                (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
-                sendParam.minAmountLD = receipt.amountReceivedLD;
-                MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
-                STARGATE.sendToken(sendParam, messagingFee, op.owner);
+                stargateSendAmount(fusdcReturned, op.outgoingChainEid, op.owner);
                 return (0, true);
             }
             catch {
                 return (0, false);
             }
         } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY_SEND_OUT) {
-
+            // For removing liquidity, we don't take a fee.
+            try
+                op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner)
+            returns (uint256 fusdcReturned, uint256) {
+                stargateSendAmount(fusdcReturned, op.outgoingChainEid, op.owner);
+            }
+            catch {
+                return (0, false);
+            }
+            return (0, true);
         }
         return (0, false);
     }
