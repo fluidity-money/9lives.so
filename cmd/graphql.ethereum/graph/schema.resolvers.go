@@ -6,6 +6,7 @@ package graph
 
 import (
 	"bytes"
+	"database/sql"
 	"context"
 	"encoding/hex"
 	"encoding/json"
@@ -346,14 +347,18 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	}
 	p.Owner = *owner_
 	if permitR != "" {
-		if p.PermitR, err = events.BytesFromHex(permitR); err != nil {
+		permitR_, err := events.BytesFromHex(permitR)
+		if err != nil {
 			return nil, fmt.Errorf("permitr")
 		}
+		p.PermitR = sql.NullString{permitR_.String(), true }
 	}
 	if permitS != "" {
-		if p.PermitS, err = events.BytesFromHex(permitS); err != nil {
+		permitS_, err := events.BytesFromHex(permitS)
+		if err != nil {
 			return nil, fmt.Errorf("permits")
 		}
+		p.PermitS = sql.NullString{permitS_.String(), true }
 	}
 	if permitV > math.MaxUint8 && permitV < 0 {
 		return nil, fmt.Errorf("permit v value")

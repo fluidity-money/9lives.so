@@ -50,7 +50,7 @@ func TestScanning(t *testing.T) {
 		no("192381281818181818181818181282828"),
 		input[0].Number,
 	)
-	var 2 []struct {
+	var input2 []struct {
 		Bytes, Bytes8, Bytes32 *events.Bytes
 		Address                *events.Address
 		Number                 *events.Number

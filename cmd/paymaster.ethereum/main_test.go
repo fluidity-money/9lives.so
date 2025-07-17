@@ -68,7 +68,7 @@ func FuzzPackOperations(f *testing.F) {
 			Deadline:           deadline,
 			Typ:                paymasterType,
 			//PermitR:            &bytess(permitR, 32),
-			PermitS:            &permitS_,
+			PermitS:            permitS_,
 			PermitV:            permitV,
 			Market:             addr(market),
 			MaximumFee:         number(maxFee),
