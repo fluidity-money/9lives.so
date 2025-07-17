@@ -5,11 +5,12 @@ import { Test } from "forge-std/Test.sol";
 
 import {
     NineLivesPaymaster,
-    IStargate,
     PaymasterType,
     Operation } from "../src/NineLivesPaymaster.sol";
 
 import { CtorArgs } from "../src/INineLivesTrading.sol";
+
+import { IStargate } from "../src/IStargate.sol";
 
 import { MockTrading } from "./MockTrading.sol";
 import { TestERC20 } from "./TestERC20.sol";
