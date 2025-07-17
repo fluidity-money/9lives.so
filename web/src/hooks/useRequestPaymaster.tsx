@@ -84,7 +84,13 @@ export default function useRequestPaymaster() {
       tradingAddr: params.tradingAddr,
       nonce: nonce.toString(),
     });
-    return { ticketId, amount: params.amountToSpend };
+    const amountMap: Record<typeof params.opType, string> = {
+      MINT: params.amountToSpend,
+      SELL: params.minimumBack,
+      ADD_LIQUIDITY: params.amountToSpend,
+      REMOVE_LIQUIDITY: params.minimumBack,
+    };
+    return { ticketId, amount: amountMap[params.opType] };
   };
   return { requestPaymaster };
 }
