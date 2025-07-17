@@ -1,6 +1,10 @@
 package paymaster
 
-import "github.com/fluidity-money/9lives.so/lib/types/events"
+import (
+	"database/sql"
+
+	"github.com/fluidity-money/9lives.so/lib/types/events"
+)
 
 const (
 	PaymasterTypeMint = uint8(iota)
@@ -15,8 +19,8 @@ type Poll struct {
 	Deadline           int             `json:"deadline"`
 	Typ                uint8           `json:"typ"`
 	PermitAmount       *events.Number  `json:"permitAmount"`
-	PermitR            *events.Bytes   `json:"permitR",gorm:"column:permit_r"`
-	PermitS            *events.Bytes   `json:"permitS",gorm:"column:permit_s"`
+	PermitR            sql.NullString   `json:"permitR",gorm:"column:permit_r"`
+	PermitS            sql.NullString   `json:"permitS",gorm:"column:permit_s"`
 	PermitV            uint8           `json:"permitV",gorm:"column:permit_v"`
 	Market             events.Address  `json:"market"`
 	MaximumFee         events.Number   `json:"maximumFee"`

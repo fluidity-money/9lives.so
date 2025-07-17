@@ -2,6 +2,7 @@ package crypto
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
@@ -84,9 +85,9 @@ type PaymasterOperation struct {
 	Deadline           *big.Int          `abi:"deadline"`
 	Typ                uint8             `abi:"typ"`
 	PermitAmount       *big.Int          `abi:"permitAmount"`
-	PermitR            [32]byte          `abi:"permitR"`
-	PermitS            [32]byte          `abi:"permitS"`
-	PermitV            uint8             `abi:"permitV"`
+	PermitR            [32]byte    `json:"permitR",gorm:"column:permit_r"`
+	PermitS            [32]byte    `json:"permitS",gorm:"column:permit_s"`
+	PermitV            uint8             `json:"permitV",gorm:"column:permit_v"`
 	Market             ethCommon.Address `abi:"market"`
 	MaximumFee         *big.Int          `abi:"maximumFee"`
 	AmountToSpend      *big.Int          `abi:"amountToSpend"`
@@ -106,8 +107,8 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		Deadline:           new(big.Int).SetInt64(int64(x.Deadline)),
 		Typ:                x.Typ,
 		PermitAmount:       maybeNumberToBig(x.PermitAmount),
-		PermitR:            maybeBytesToBytes32(x.PermitR),
-		PermitS:            maybeBytesToBytes32(x.PermitS),
+		PermitR:            stringBytesMaybe(x.PermitR),
+		PermitS:            stringBytesMaybe(x.PermitS),
 		PermitV:            x.PermitV,
 		Market:             addrToEthAddr(x.Market),
 		MaximumFee:         x.MaximumFee.Big(),
@@ -119,6 +120,17 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		S:                  bytesToBytes32(x.S),
 		Outcome:            maybeBytesToBytes8(x.Outcome),
 	}
+}
+
+func stringBytesMaybe(x sql.NullString) (b [32]byte) {
+	if x.Valid {
+		y, err := hex.DecodeString(x.String)
+		if err != nil {
+			panic(err)
+		}
+		copy(b[:], y)
+	}
+	return
 }
 
 func maybeNumberToBig(x *events.Number) *big.Int {
