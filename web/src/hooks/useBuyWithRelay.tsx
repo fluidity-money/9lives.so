@@ -15,6 +15,7 @@ import {
 } from "thirdweb/react";
 import RelayTxToaster from "@/components/relayTxToaster";
 
+type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 const useBuyWithRelay = ({
   shareAddr,
   tradingAddr,
@@ -63,7 +64,7 @@ const useBuyWithRelay = ({
               recipient: account?.address,
               referrer: "9lives.so",
               amount: fromAmountBigInt.toString(),
-              tradeType: "EXACT_INPUT",
+              tradeType: "EXACT_INPUT" as TradeType,
             }),
           });
           const toAmountData = await toAmountRes.json();
@@ -95,7 +96,6 @@ const useBuyWithRelay = ({
 
           const calldata = await encode(transaction);
 
-          type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
           const options = {
             user: account.address,
             chainId: fromChain,

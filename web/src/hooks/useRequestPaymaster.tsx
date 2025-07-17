@@ -1,6 +1,6 @@
 import config from "@/config";
 import { requestPaymaster as requestPaymasterMutation } from "@/providers/graphqlClient";
-import { ethers, MaxUint256, ZeroAddress } from "ethers";
+import { MaxUint256, ZeroAddress } from "ethers";
 import { prepareContractCall, simulateTransaction } from "thirdweb";
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import useSignForPermit from "./useSignForPermit";
@@ -37,10 +37,11 @@ export default function useRequestPaymaster() {
         transaction: allowanceTx,
         account,
       })) as bigint;
-      if (MaxUint256 > allowance) {
+      const thresholdAmount = MaxUint256 - BigInt(1);
+      if (thresholdAmount > allowance) {
         const { r, s, v } = await signForPermit({
           spender: config.NEXT_PUBLIC_PAYMASTER_ADDR,
-          amountToSpend: MaxUint256,
+          amountToSpend: thresholdAmount,
           deadline,
         });
         permitR = r;
