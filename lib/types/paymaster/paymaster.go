@@ -19,8 +19,8 @@ type Poll struct {
 	Deadline           int             `json:"deadline"`
 	Typ                uint8           `json:"typ"`
 	PermitAmount       *events.Number  `json:"permitAmount"`
-	PermitR            sql.NullString   `json:"permitR",gorm:"column:permit_r"`
-	PermitS            sql.NullString   `json:"permitS",gorm:"column:permit_s"`
+	PermitR            sql.NullString  `json:"permitR",gorm:"column:permit_r"`
+	PermitS            sql.NullString  `json:"permitS",gorm:"column:permit_s"`
 	PermitV            uint8           `json:"permitV",gorm:"column:permit_v"`
 	Market             events.Address  `json:"market"`
 	MaximumFee         events.Number   `json:"maximumFee"`
@@ -33,4 +33,5 @@ type Poll struct {
 	S                  events.Bytes    `json:"s"`
 	OriginatingChainId events.Number   `json:"originatingChainId"`
 	Nonce              events.Number   `json:"nonce"`
+	OutgoingChainEid   uint32          `json:"outgoing_chain_eid"`
 }

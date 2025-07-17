@@ -97,6 +97,11 @@
 						"name": "s",
 						"type": "bytes32",
 						"internalType": "bytes32"
+					},
+					{
+						"name": "outgoingChainEid",
+						"type": "uint32",
+						"internalType": "uint32"
 					}
 				]
 			}

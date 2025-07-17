@@ -85,8 +85,8 @@ type PaymasterOperation struct {
 	Deadline           *big.Int          `abi:"deadline"`
 	Typ                uint8             `abi:"typ"`
 	PermitAmount       *big.Int          `abi:"permitAmount"`
-	PermitR            [32]byte    `json:"permitR",gorm:"column:permit_r"`
-	PermitS            [32]byte    `json:"permitS",gorm:"column:permit_s"`
+	PermitR            [32]byte          `json:"permitR",gorm:"column:permit_r"`
+	PermitS            [32]byte          `json:"permitS",gorm:"column:permit_s"`
 	PermitV            uint8             `json:"permitV",gorm:"column:permit_v"`
 	Market             ethCommon.Address `abi:"market"`
 	MaximumFee         *big.Int          `abi:"maximumFee"`
@@ -97,6 +97,7 @@ type PaymasterOperation struct {
 	V                  uint8             `abi:"v"`
 	R                  [32]byte          `abi:"r"`
 	S                  [32]byte          `abi:"s"`
+	OutgoingChainEid   uint32            `json:"outgoing_chain_eid"`
 }
 
 func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
@@ -119,6 +120,7 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		R:                  bytesToBytes32(x.R),
 		S:                  bytesToBytes32(x.S),
 		Outcome:            maybeBytesToBytes8(x.Outcome),
+		OutgoingChainEid:   x.OutgoingChainEid,
 	}
 }
 

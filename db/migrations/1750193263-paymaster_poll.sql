@@ -55,7 +55,10 @@ CREATE TABLE ninelives_paymaster_poll_1 (
 	originating_chain_id HUGEINT NOT NULL,
 
 	-- The nonce associated with this chain combination.
-	nonce HUGEINT NOT NULL
+	nonce HUGEINT NOT NULL,
+
+	-- Outgoing EID of the paymaster operation.
+	outgoing_eid INTEGER NOT NULL DEFAULT 0
 );
 
 -- migrate:down
