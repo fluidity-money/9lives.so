@@ -109,6 +109,9 @@ type (
 
 		// If any outcome declared as winner, it returns bytes8 id
 		Winner *string `json:"winner"`
+
+		// for dpm markets it is true, for amms false
+		IsDpm *bool `json:"isDpm"`
 	}
 
 	// Wallet of the creator of a campaign.

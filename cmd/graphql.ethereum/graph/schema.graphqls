@@ -601,6 +601,11 @@ type Campaign {
   Campaigns can be tagged with multiple categories
   """
   categories: [String!]!
+
+  """
+  For dpm markets it is true, for amms false 
+  """
+  isDpm: Boolean
 }
 
 """
