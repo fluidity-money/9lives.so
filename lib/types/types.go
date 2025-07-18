@@ -21,6 +21,7 @@ type (
 		UpdatedAt         time.Time             `gorm:"autoUpdateTime"`
 		Content           CampaignContent       `json:"content"`
 		TotalVolume       int                   `json:"totalVolume"`
+		IsDpm             bool                  `json:"isDpm"`
 		InvestmentAmounts InvestmentAmountsList `json:"investmentAmounts" gorm:"type:jsonb"`
 		LiquidityVested   int                   `json:"liquidityVested"`
 	}

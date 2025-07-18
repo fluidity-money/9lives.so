@@ -260,7 +260,10 @@ func (r *campaignResolver) Categories(ctx context.Context, obj *types.Campaign) 
 
 // IsDpm is the resolver for the isDpm field.
 func (r *campaignResolver) IsDpm(ctx context.Context, obj *types.Campaign) (*bool, error) {
-	panic(fmt.Errorf("not implemented: IsDpm - isDpm"))
+	if obj == nil {
+		return nil, fmt.Errorf("empty campaign")
+	}
+	return &obj.IsDpm, nil
 }
 
 // ID is the resolver for the id field.
