@@ -68,12 +68,11 @@ contract LensesV1 {
         INineLivesTrading[] calldata _pools
     ) external view returns (BalancesForAll[] memory bals) {
         bals = new BalancesForAll[](10 * _pools.length);
-        bytes32 hash = FACTORY.erc20Hash();
         for (uint i = 0; i < _pools.length; ++i) {
             bytes8[] memory outcomes = _pools[i].outcomeList();
             // This should only ever return up to 10!
             for (uint x = 0; x < outcomes.length; ++x) {
-                IERC20 share = IERC20(getShareAddr(FACTORY, hash, address(_pools[i]), outcomes[x]));
+                IERC20 share = IERC20(_pools[i].shareAddr(outcomes[x]));
                 bals[(i * 10) + x].amount = share.balanceOf(msg.sender);
                 bals[(i * 10) + x].name = share.name();
                 bals[(i * 10) + x].id = outcomes[x];
