@@ -67,14 +67,16 @@ async function fetchPositions({
     balances = res;
   }
 
-  const mintedPositions = balances.map((b) => ({
-    id: b.id,
-    shareAddress:
-      outcomes.find((o) => o.identifier === b.id)?.share.address ?? "0x",
-    name: outcomes.find((o) => o.identifier === b.id)?.name ?? b.name,
-    balance: formatFusdc(Number(b.amount), 2),
-    balanceRaw: BigInt(b.amount),
-  }));
+  const mintedPositions = balances
+    .filter((b) => Number(b.amount) > 0)
+    .map((b) => ({
+      id: b.id,
+      shareAddress:
+        outcomes.find((o) => o.identifier === b.id)?.share.address ?? "0x",
+      name: outcomes.find((o) => o.identifier === b.id)?.name ?? b.name,
+      balance: formatFusdc(Number(b.amount), 2),
+      balanceRaw: BigInt(b.amount),
+    }));
 
   return mintedPositions;
 }
