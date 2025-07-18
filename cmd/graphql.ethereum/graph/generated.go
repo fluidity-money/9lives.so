@@ -82,6 +82,7 @@ type ComplexityRoot struct {
 		Ending            func(childComplexity int) int
 		Identifier        func(childComplexity int) int
 		InvestmentAmounts func(childComplexity int) int
+		IsDpm             func(childComplexity int) int
 		LiquidityVested   func(childComplexity int) int
 		Name              func(childComplexity int) int
 		OracleDescription func(childComplexity int) int
@@ -226,6 +227,7 @@ type CampaignResolver interface {
 	InvestmentAmounts(ctx context.Context, obj *types.Campaign) ([]*types.InvestmentAmounts, error)
 	Banners(ctx context.Context, obj *types.Campaign) ([]string, error)
 	Categories(ctx context.Context, obj *types.Campaign) ([]string, error)
+	IsDpm(ctx context.Context, obj *types.Campaign) (*bool, error)
 }
 type ChangelogResolver interface {
 	ID(ctx context.Context, obj *changelog.Changelog) (string, error)
@@ -451,6 +453,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.InvestmentAmounts(childComplexity), true
+
+	case "Campaign.isDpm":
+		if e.complexity.Campaign.IsDpm == nil {
+			break
+		}
+
+		return e.complexity.Campaign.IsDpm(childComplexity), true
 
 	case "Campaign.liquidityVested":
 		if e.complexity.Campaign.LiquidityVested == nil {
@@ -3677,6 +3686,47 @@ func (ec *executionContext) fieldContext_Campaign_categories(_ context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _Campaign_isDpm(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_isDpm(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().IsDpm(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_isDpm(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Changelog_id(ctx context.Context, field graphql.CollectedField, obj *changelog.Changelog) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Changelog_id(ctx, field)
 	if err != nil {
@@ -4068,6 +4118,8 @@ func (ec *executionContext) fieldContext_Claim_content(_ context.Context, field 
 				return ec.fieldContext_Campaign_banners(ctx, field)
 			case "categories":
 				return ec.fieldContext_Campaign_categories(ctx, field)
+			case "isDpm":
+				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -4372,6 +4424,8 @@ func (ec *executionContext) fieldContext_LP_campaign(_ context.Context, field gr
 				return ec.fieldContext_Campaign_banners(ctx, field)
 			case "categories":
 				return ec.fieldContext_Campaign_categories(ctx, field)
+			case "isDpm":
+				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5329,6 +5383,8 @@ func (ec *executionContext) fieldContext_Position_content(_ context.Context, fie
 				return ec.fieldContext_Campaign_banners(ctx, field)
 			case "categories":
 				return ec.fieldContext_Campaign_categories(ctx, field)
+			case "isDpm":
+				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5554,6 +5610,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_banners(ctx, field)
 			case "categories":
 				return ec.fieldContext_Campaign_categories(ctx, field)
+			case "isDpm":
+				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5652,6 +5710,8 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_banners(ctx, field)
 			case "categories":
 				return ec.fieldContext_Campaign_categories(ctx, field)
+			case "isDpm":
+				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -6487,6 +6547,8 @@ func (ec *executionContext) fieldContext_Query_featuredCampaign(ctx context.Cont
 				return ec.fieldContext_Campaign_banners(ctx, field)
 			case "categories":
 				return ec.fieldContext_Campaign_categories(ctx, field)
+			case "isDpm":
+				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -9614,6 +9676,39 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "isDpm":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_isDpm(ctx, field, obj)
 				return res
 			}
 

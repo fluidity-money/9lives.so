@@ -6,8 +6,8 @@ package graph
 
 import (
 	"bytes"
-	"database/sql"
 	"context"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -258,6 +258,11 @@ func (r *campaignResolver) Categories(ctx context.Context, obj *types.Campaign) 
 	return obj.Content.Categories, nil
 }
 
+// IsDpm is the resolver for the isDpm field.
+func (r *campaignResolver) IsDpm(ctx context.Context, obj *types.Campaign) (*bool, error) {
+	panic(fmt.Errorf("not implemented: IsDpm - isDpm"))
+}
+
 // ID is the resolver for the id field.
 func (r *changelogResolver) ID(ctx context.Context, obj *changelog.Changelog) (string, error) {
 	if obj == nil {
@@ -351,14 +356,14 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		if err != nil {
 			return nil, fmt.Errorf("permitr")
 		}
-		p.PermitR = sql.NullString{permitR_.String(), true }
+		p.PermitR = sql.NullString{permitR_.String(), true}
 	}
 	if permitS != "" {
 		permitS_, err := events.BytesFromHex(permitS)
 		if err != nil {
 			return nil, fmt.Errorf("permits")
 		}
-		p.PermitS = sql.NullString{permitS_.String(), true }
+		p.PermitS = sql.NullString{permitS_.String(), true}
 	}
 	if permitV > math.MaxUint8 && permitV < 0 {
 		return nil, fmt.Errorf("permit v value")
