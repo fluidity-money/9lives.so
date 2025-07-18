@@ -81,6 +81,34 @@ contract LensesV1 {
         }
     }
 
+    struct BalancesForDpm {
+        INineLivesTrading trading;
+        bytes8 outcomeA;
+        bytes8 outcomeB;
+    }
+
+    struct BalancesForDpmOut {
+        INineLivesTrading trading;
+        uint256 outcomeA;
+        string nameA;
+        uint256 outcomeB;
+        string nameB;
+    }
+
+    function balancesForAllDpm(
+        BalancesForDpm[] calldata _pools
+    ) external view returns (BalancesForDpmOut[] memory bals) {
+        bals = new BalancesForDpmOut[](_pools.length);
+        for (uint i = 0; i < _pools.length; ++i) {
+            IERC20 shareA = IERC20(_pools[i].trading.shareAddr(_pools[i].outcomeA));
+            bals[i].outcomeA = shareA.balanceOf(msg.sender);
+            bals[i].nameA = shareA.name();
+            IERC20 shareB = IERC20(_pools[i].trading.shareAddr(_pools[i].outcomeB));
+            bals[i].outcomeB = shareB.balanceOf(msg.sender);
+            bals[i].nameB = shareB.name();
+        }
+    }
+
     function balancesWithFactoryAndHash(
         INineLivesFactory _factory,
         bytes32 _hash,
