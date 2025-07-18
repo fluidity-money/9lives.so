@@ -263,7 +263,7 @@ func (r *campaignResolver) IsDpm(ctx context.Context, obj *types.Campaign) (*boo
 	if obj == nil {
 		return nil, fmt.Errorf("empty campaign")
 	}
-	return &obj.IsDpm, nil
+	return obj.Content.IsDpm, nil
 }
 
 // ID is the resolver for the id field.
