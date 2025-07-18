@@ -35,6 +35,7 @@ export default function DetailSellAction({
   shouldStopAction,
   data,
   selectedOutcome,
+  isDpm,
   price,
   minimized,
   setMinimized,
@@ -44,6 +45,7 @@ export default function DetailSellAction({
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
   price: string;
+  isDpm?: boolean;
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
@@ -93,6 +95,7 @@ export default function DetailSellAction({
     tradingAddr: data.poolAddress,
     outcomes: [data.outcomes.find((o) => o.identifier === selectedOutcome.id)!],
     account,
+    isDpm,
   });
   const { data: estimation } = useEstimateBurn({
     outcomeId: selectedOutcome.id as `0x${string}`,

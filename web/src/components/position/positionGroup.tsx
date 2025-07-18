@@ -33,6 +33,7 @@ export default function PositionsGroup({
     tradingAddr,
     outcomes,
     account,
+    isDpm,
   });
   const outcomeIds = outcomes.map((o) => o.identifier);
   const { data: sharePrices } = useSharePrices({

@@ -5,22 +5,67 @@ import { useQuery } from "@tanstack/react-query";
 import { prepareContractCall, simulateTransaction } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 
-async function fetchPositions(
-  tradingAddr: `0x${string}`,
-  outcomes: Outcome[],
-  account?: Account,
-) {
+async function fetchPositions({
+  tradingAddr,
+  outcomes,
+  account,
+  isDpm,
+}: {
+  tradingAddr: `0x${string}`;
+  outcomes: Outcome[];
+  account?: Account;
+  isDpm?: boolean;
+}) {
   if (!account) return [];
-  const balances = (
-    (await simulateTransaction({
-      transaction: prepareContractCall({
-        contract: config.contracts.lens,
-        method: "balancesForAll",
-        params: [[tradingAddr]],
-      }),
+  const dpmTx = prepareContractCall({
+    contract: config.contracts.lens,
+    method: "balancesForAllDpm",
+    params: [
+      [
+        {
+          trading: tradingAddr,
+          outcomeA: outcomes[0].identifier,
+          outcomeB: outcomes[1].identifier,
+        },
+      ],
+    ],
+  });
+  const ammTx = prepareContractCall({
+    contract: config.contracts.lens,
+    method: "balancesForAll",
+    params: [[tradingAddr]],
+  });
+  let balances: { amount: string; id: `0x${string}`; name: string }[] = [];
+  if (isDpm) {
+    const res = (await simulateTransaction({
+      transaction: dpmTx,
       account,
-    })) as { amount: string; id: `0x${string}`; name: string }[]
-  ).filter((i) => BigInt(i.amount) > BigInt(0));
+    })) as {
+      trading: string;
+      outcomeA: string;
+      nameA: string;
+      outcomeB: string;
+      nameB: string;
+    }[];
+    balances = [
+      {
+        id: outcomes[0].identifier,
+        amount: res[0].outcomeA,
+        name: res[0].nameA,
+      },
+      {
+        id: outcomes[1].identifier,
+        amount: res[0].outcomeB,
+        name: res[0].nameB,
+      },
+    ];
+  } else {
+    const res = (await simulateTransaction({
+      transaction: ammTx,
+      account,
+    })) as typeof balances;
+    balances = res;
+  }
 
   const mintedPositions = balances.map((b) => ({
     id: b.id,
@@ -38,10 +83,12 @@ export default function usePositions({
   tradingAddr,
   outcomes,
   account,
+  isDpm,
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   account?: Account;
+  isDpm?: boolean;
 }) {
   return useQuery<
     {
@@ -52,7 +99,7 @@ export default function usePositions({
       balanceRaw: bigint;
     }[]
   >({
-    queryKey: ["positions", tradingAddr, outcomes, account],
-    queryFn: () => fetchPositions(tradingAddr, outcomes, account),
+    queryKey: ["positions", tradingAddr, outcomes, account, isDpm],
+    queryFn: () => fetchPositions({ tradingAddr, outcomes, account, isDpm }),
   });
 }

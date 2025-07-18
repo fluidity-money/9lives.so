@@ -79,6 +79,69 @@ const lensAbi = [
   },
   {
     type: "function",
+    name: "balancesForAllDpm",
+    inputs: [
+      {
+        name: "_pools",
+        type: "tuple[]",
+        internalType: "struct LensesV1.BalancesForDpm[]",
+        components: [
+          {
+            name: "trading",
+            type: "address",
+            internalType: "contract INineLivesTrading",
+          },
+          {
+            name: "outcomeA",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
+          {
+            name: "outcomeB",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
+        ],
+      },
+    ],
+    outputs: [
+      {
+        name: "bals",
+        type: "tuple[]",
+        internalType: "struct LensesV1.BalancesForDpmOut[]",
+        components: [
+          {
+            name: "trading",
+            type: "address",
+            internalType: "contract INineLivesTrading",
+          },
+          {
+            name: "outcomeA",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "nameA",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "outcomeB",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "nameB",
+            type: "string",
+            internalType: "string",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "balancesWithFactoryAndHash",
     inputs: [
       {
