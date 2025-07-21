@@ -180,7 +180,7 @@ contract NineLivesPaymaster {
             minAmountLD: 0,
             extraOptions: new bytes(0),
             composeMsg: new bytes(0),
-            oftCmd: ""                  // Empty for taxi mode
+            oftCmd: "" // Empty for taxi mode
         });
         (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
         sendParam.minAmountLD = receipt.amountReceivedLD;
