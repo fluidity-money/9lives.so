@@ -247,7 +247,7 @@ contract NineLivesPaymaster {
             return (0, true);
         } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
             // For withdrawing, we take a fee.
-            USDC.transferFrom(msg.sender, address(this), op.amountToSpend);
+            USDC.transferFrom(msg.sender, address(this), op.amountToSpend + op.maximumFee);
             USDC.approve(address(STARGATE), op.amountToSpend);
             address recipient = 0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7;
             SendParam memory sendParam = SendParam({
