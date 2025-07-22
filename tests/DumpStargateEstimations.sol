@@ -54,12 +54,13 @@ contract DumpStargateEstimations {
         (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
         sendParam.minAmountLD = receipt.amountReceivedLD;
         USDC.approve(address(STARGATE), amt);
-        STARGATE.sendToken{value: messagingFee.nativeFee}(
-            sendParam,
-            messagingFee,
-            recipient
-        );
-        return messagingFee.nativeFee;
+        (, OFTReceipt memory oftReceipt,) =
+            STARGATE.sendToken{value: messagingFee.nativeFee}(
+                sendParam,
+                messagingFee,
+                recipient
+            );
+        return oftReceipt.amountSentLD;
     }
 
     receive() external payable {}
