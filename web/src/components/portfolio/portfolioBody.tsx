@@ -24,6 +24,7 @@ export default function PortfolioBody() {
           tradingAddr: pc?.content?.poolAddress,
           winner: pc?.content?.winner,
           outcomes: pc?.content?.outcomes,
+          isDpm: pc?.content?.isDpm,
         }) as PositionsProps,
     ) ?? [];
   return (
