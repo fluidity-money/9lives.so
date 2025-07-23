@@ -39,9 +39,9 @@ function Anchor({ text, href }: { text: string; href: string }) {
 function About() {
   return (
     <Section>
-      <Title text="What is 9Lives?" />
-      <Parag text="9Lives is the most advanced prediction market developed by the Superposition team. Inspired by decentralized finance, 9Lives combines a constant product market maker with parimutuel markets and a continuous double auction, providing deep liquidity and a risk-free environment for market participants." />
-      <Parag text="Built using Arbitrum Stylus, 9Lives is the most cost-efficient, and the most advanced platform for trading. With 9Lives, traders can easily place bets, trade their positions, and maximise capital efficiency while benefiting from the safest and most affordable prediction market on Web3." />
+      <Title text="What is 9lives?" />
+      <Parag text="9lives is the most advanced prediction market developed by the Superposition team. Inspired by decentralized finance, 9lives combines a constant product market maker with parimutuel markets and a continuous double auction, providing deep liquidity and a risk-free environment for market participants." />
+      <Parag text="Built using Arbitrum Stylus, 9lives is the most cost-efficient, and the most advanced platform for trading. With 9lives, traders can easily make predictions, trade their positions, and maximise capital efficiency while benefiting from the safest and most affordable prediction market on Web3." />
       <Title text="Disclaimer" />
       <List
         items={[
