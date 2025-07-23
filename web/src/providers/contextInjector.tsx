@@ -50,17 +50,29 @@ export default function ContextInjector() {
       window.localStorage.setItem("walletAddress", account.address);
       setUser({ id: account.address, walletId: wallet?.id ?? "unknown" });
       posthog.identify(account.address);
-      posthog.people.set({
+      const ctx = {
         walletId: wallet?.id ?? "unknown",
+        walletAddress: account.address,
         farcaster: isInMiniApp,
-      });
+      } as any;
+      if (farcasterCtx) {
+        ctx.farcaster_fid = farcasterCtx.user?.fid;
+        ctx.farcaster_username = farcasterCtx.user?.username;
+      }
+      posthog.people.set(ctx);
     } else {
       window.localStorage.removeItem("walletAddress");
       setUser(null);
       posthog.identify(undefined);
       posthog.reset();
     }
-  }, [account?.address, wallet?.id, trackingConsent, isInMiniApp]);
+  }, [
+    account?.address,
+    wallet?.id,
+    trackingConsent,
+    isInMiniApp,
+    farcasterCtx,
+  ]);
 
   useEffect(() => {
     setTag("chainId", chain?.id);
