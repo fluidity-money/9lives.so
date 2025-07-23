@@ -94,6 +94,7 @@ const (
 	PaymasterOperationSell            PaymasterOperation = "SELL"
 	PaymasterOperationAddLiquidity    PaymasterOperation = "ADD_LIQUIDITY"
 	PaymasterOperationRemoveLiquidity PaymasterOperation = "REMOVE_LIQUIDITY"
+	PaymasterOperationWithdrawUsdc    PaymasterOperation = "WITHDRAW_USDC"
 )
 
 var AllPaymasterOperation = []PaymasterOperation{
@@ -101,11 +102,12 @@ var AllPaymasterOperation = []PaymasterOperation{
 	PaymasterOperationSell,
 	PaymasterOperationAddLiquidity,
 	PaymasterOperationRemoveLiquidity,
+	PaymasterOperationWithdrawUsdc,
 }
 
 func (e PaymasterOperation) IsValid() bool {
 	switch e {
-	case PaymasterOperationMint, PaymasterOperationSell, PaymasterOperationAddLiquidity, PaymasterOperationRemoveLiquidity:
+	case PaymasterOperationMint, PaymasterOperationSell, PaymasterOperationAddLiquidity, PaymasterOperationRemoveLiquidity, PaymasterOperationWithdrawUsdc:
 		return true
 	}
 	return false

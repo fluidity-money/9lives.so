@@ -157,7 +157,8 @@ enum PaymasterOperation {
     MINT,
     SELL,
     ADD_LIQUIDITY,
-    REMOVE_LIQUIDITY
+    REMOVE_LIQUIDITY,
+    WITHDRAW_USDC
 }
 
 type Mutation {
@@ -603,7 +604,7 @@ type Campaign {
   categories: [String!]!
 
   """
-  For dpm markets it is true, for amms false 
+  For dpm markets it is true, for amms false
   """
   isDpm: Boolean
 }

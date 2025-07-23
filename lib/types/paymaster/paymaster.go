@@ -11,6 +11,7 @@ const (
 	PaymasterTypeBurn
 	PaymasterTypeAddLiquidity
 	PaymasterTypeRemoveLiquidity
+	PaymasterTypeWithdrawUsdc
 )
 
 type Poll struct {
