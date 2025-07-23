@@ -17,7 +17,7 @@ import { combineClass } from "@/utils/combineClass";
 
 interface DetailResultsProps {
   data: CampaignDetail;
-  isDpm?: boolean;
+  isDpm: boolean | null;
 }
 export default function DetailResults({ data, isDpm }: DetailResultsProps) {
   const account = useActiveAccount();

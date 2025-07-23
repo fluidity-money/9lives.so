@@ -197,6 +197,7 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     },
     banners: {},
     categories: {},
+    isDpm: {},
   },
 };
 

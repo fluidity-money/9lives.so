@@ -4,7 +4,7 @@ import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
 import { SelectedOutcome } from "../../types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useSharePrices from "@/hooks/useSharePrices";
 import DetailInfo from "./detailInfo";
 import { useSearchParams } from "next/navigation";
@@ -14,10 +14,8 @@ import { useQuery } from "@tanstack/react-query";
 import { requestCampaignById } from "@/providers/graphqlClient";
 import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
-import useIsDpm from "@/hooks/useIsDpm";
 import useUserLiquidity from "@/hooks/useUserLiquidity";
 import { useActiveAccount } from "thirdweb/react";
-import { setTag } from "@sentry/nextjs";
 
 export default function DetailWrapper({
   initialData,
@@ -54,7 +52,6 @@ export default function DetailWrapper({
     initialData,
   });
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
-  const { data: isDpm, isSuccess: isDpmLoaded } = useIsDpm(data.poolAddress);
   const { data: userLiquidity } = useUserLiquidity({
     address: account?.address,
     tradingAddr: data.poolAddress,
@@ -72,11 +69,11 @@ export default function DetailWrapper({
           isEnded={isEnded}
           userLiquidity={userLiquidity}
           isConcluded={isConcluded}
-          isDpm={isDpm}
+          isDpm={data.isDpm}
         />
         <DetailOutcomeTable
           data={data}
-          isDpm={isDpm}
+          isDpm={data.isDpm}
           sharePrices={sharePrices}
           selectedOutcome={selectedOutcome}
           setSelectedOutcome={setSelectedOutcome}
@@ -86,10 +83,10 @@ export default function DetailWrapper({
       </div>
       <div className="flex flex-1 flex-col gap-8">
         {isConcluded ? (
-          <DetailResults data={data} isDpm={isDpm} />
+          <DetailResults data={data} isDpm={data.isDpm} />
         ) : (
           <DetailCall2Action
-            isDpm={isDpm}
+            isDpm={data.isDpm}
             shouldStopAction={isEnded || isConcluded}
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
@@ -101,15 +98,16 @@ export default function DetailWrapper({
           />
         )}
         <AssetScene
+          isDetailDpm={data.isDpm}
           positionGrops={[
             {
               tradingAddr: data.poolAddress,
               outcomes: data.outcomes,
               campaignId: data.identifier,
               campaignName: data.name,
+              isDpm: data.isDpm,
             },
           ]}
-          isDpm={isDpm}
           campaignId={data.identifier}
           detailPage={true}
         />

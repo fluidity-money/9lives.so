@@ -31,6 +31,7 @@ export type Campaign = Omit<
 export type CampaignDetail = Campaign & {
   investmentAmounts: { id: string; usdc: number; share: number }[];
   liquidityVested: number;
+  isDpm: boolean | null;
 };
 export type Outcome = {
   name: string;
@@ -221,11 +222,13 @@ export class CampaignDto implements Campaign {
 export class CampaignDetailDto extends CampaignDto {
   investmentAmounts: { id: string; usdc: number; share: number }[];
   liquidityVested: number;
+  isDpm: boolean | null;
   constructor(rc: Awaited<ReturnType<typeof requestCampaignById>>) {
     if (!rc) throw new Error("Campaign dto can not be null");
     super(rc);
     this.liquidityVested = rc.liquidityVested;
     this.investmentAmounts = rc.investmentAmounts.filter((a) => !!a);
+    this.isDpm = rc.isDpm;
   }
 }
 class OutcomeDto implements Outcome {
@@ -250,6 +253,7 @@ export type PositionsProps = {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   winner?: string;
+  isDpm: boolean | null;
 };
 
 export type Activity = NonNullable<

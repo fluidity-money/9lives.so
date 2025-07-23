@@ -5,18 +5,18 @@ export default function PositionTable({
   positionGroups,
   areGroupsLoading,
   detailPage,
-  isDpm,
+  isDetailDpm,
 }: {
   positionGroups: PositionsProps[];
   areGroupsLoading?: boolean;
   detailPage?: boolean;
-  isDpm?: boolean;
+  isDetailDpm: boolean | null;
 }) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
   const headers = ["Position", "Current", "Qty", "Value", "PnL"];
   const headersWithWin = [...headers, "To Win"];
-  const tableHeaders = isDpm ? headers : headersWithWin;
+  const tableHeaders = isDetailDpm ? headers : headersWithWin;
   return (
     <table className="w-full table-auto border-separate border-spacing-y-1">
       <thead>
@@ -29,7 +29,6 @@ export default function PositionTable({
         </tr>
       </thead>
       <PositionsBody
-        isDpm={isDpm}
         colSpan={tableHeaders.length}
         detailPage={detailPage}
         positionGroups={positionGroups}

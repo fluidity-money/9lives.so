@@ -2446,6 +2446,14 @@ export interface Campaign<
   categories?:
     | Campaign.categories$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Campaign.categories<_$Scalars>>;
+  /**
+   *
+   * Select the `isDpm` field on the `Campaign` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  isDpm?:
+    | Campaign.isDpm$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.isDpm<_$Scalars>>;
 
   /**
    *
@@ -3096,6 +3104,34 @@ export namespace Campaign {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | categories$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type isDpm<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | isDpm$SelectionSet<_$Scalars>;
+
+  export interface isDpm$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `isDpm` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type isDpm$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | isDpm$SelectionSet<_$Scalars>
   >;
 }
 

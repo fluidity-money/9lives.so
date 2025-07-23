@@ -160,6 +160,7 @@ export const requestCampaignById = (id: string) =>
     oracleUrls: true,
     settlement: true,
     poolAddress: true,
+    isDpm: true,
     creator: {
       address: true,
     },
@@ -189,6 +190,7 @@ export const requestUserParticipated = (address: string) =>
     campaignId: true,
     outcomeIds: true,
     content: {
+      isDpm: true,
       name: true,
       picture: true,
       poolAddress: true,

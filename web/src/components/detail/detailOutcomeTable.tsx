@@ -20,7 +20,7 @@ export default function DetailOutcomes({
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   isConcluded: boolean;
-  isDpm?: boolean;
+  isDpm: boolean | null;
 }) {
   const dpmTitle = ["Outcome", "Chance %", "Invested", "Current Price", ""];
   const ammTitle = ["Outcome", "Chance %", "Current Price", ""];

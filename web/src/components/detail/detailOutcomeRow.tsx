@@ -31,7 +31,7 @@ export default function DetailOutcomeRow({
   isWinner: boolean;
   isConcluded: boolean;
   displayQuickActions?: boolean;
-  isDpm?: boolean;
+  isDpm: boolean | null;
 }) {
   const borderStyle = "border-b border-b-gray-200";
   const isSelected = selectedOutcome.id === data.identifier;

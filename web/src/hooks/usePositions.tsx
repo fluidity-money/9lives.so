@@ -14,7 +14,7 @@ async function fetchPositions({
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   account?: Account;
-  isDpm?: boolean;
+  isDpm: boolean | null;
 }) {
   if (!account) return [];
   const dpmTx = prepareContractCall({
@@ -90,7 +90,7 @@ export default function usePositions({
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   account?: Account;
-  isDpm?: boolean;
+  isDpm: boolean | null;
 }) {
   return useQuery<
     {

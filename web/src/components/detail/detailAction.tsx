@@ -12,7 +12,7 @@ interface DetailActionProps {
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
   price: string;
-  isDpm?: boolean;
+  isDpm: boolean | null;
 }
 export default function DetailAction(props: DetailActionProps) {
   const [minimized, setMinimized] = useState(true);
@@ -29,7 +29,7 @@ export default function DetailAction(props: DetailActionProps) {
             <TabButton title="Buy" {...props} intent="buy" size={"medium"} />
           )}
         </Tab>
-        {props.isDpm !== undefined && !props.isDpm && (
+        {props.isDpm ? null : (
           <Tab as={Fragment}>
             {(props) => (
               <TabButton

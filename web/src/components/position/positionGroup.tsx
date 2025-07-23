@@ -7,7 +7,6 @@ import useSharePrices from "@/hooks/useSharePrices";
 import PositionRow from "./positionRow";
 import usePositionHistory from "@/hooks/usePositionsHistory";
 import Placeholder from "../tablePlaceholder";
-import useIsDpm from "@/hooks/useIsDpm";
 
 export default function PositionsGroup({
   tradingAddr,
@@ -20,7 +19,6 @@ export default function PositionsGroup({
   colSpan,
 }: PositionsProps & {
   detailPage?: boolean;
-  isDpm?: boolean;
   colSpan: number;
 }) {
   const account = useActiveAccount();
@@ -44,9 +42,6 @@ export default function PositionsGroup({
     account?.address,
     positions?.map((p) => p.id),
   );
-  const { data: groupCheckedIsDpm } = useIsDpm(tradingAddr, {
-    initialData: isDpm,
-  });
 
   if (isLoading)
     return (
@@ -78,7 +73,7 @@ export default function PositionsGroup({
       {positions?.map((item, idx) => (
         <PositionRow
           key={idx}
-          isDpm={groupCheckedIsDpm}
+          isDpm={isDpm}
           data={{ ...item, campaignName, campaignId, winner }}
           price={sharePrices?.find((o) => o.id === item.id)?.price}
           history={positionsHistory?.filter((p) => p.id === item.id)}

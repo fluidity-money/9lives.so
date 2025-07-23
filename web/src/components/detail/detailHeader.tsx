@@ -22,7 +22,7 @@ export default function DetailHeader({
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
-  isDpm?: boolean;
+  isDpm: boolean | null;
   userLiquidity?: string;
 }) {
   return (
@@ -140,16 +140,14 @@ export default function DetailHeader({
               />
             )
           ) : null}
-          {!isConcluded && isDpm !== undefined && !isDpm && (
+          {isDpm ? null : (
             <AddLiquidityButton
               name={data.name}
               campaignId={data.identifier}
               tradingAddr={data.poolAddress}
             />
           )}
-          {isDpm !== undefined && !isDpm ? (
-            <ClaimFeesButton address={data.poolAddress} />
-          ) : null}
+          {isDpm ? null : <ClaimFeesButton address={data.poolAddress} />}
         </div>
       </div>
     </div>

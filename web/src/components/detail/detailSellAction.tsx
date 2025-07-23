@@ -45,7 +45,7 @@ export default function DetailSellAction({
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
   price: string;
-  isDpm?: boolean;
+  isDpm: boolean | null;
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {

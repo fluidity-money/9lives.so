@@ -30,6 +30,7 @@ export default function PortfolioBody() {
     <AssetScene
       positionGrops={positionGrops}
       areGroupsLoading={areGroupsLoading}
+      isDetailDpm={null}
     />
   );
 }

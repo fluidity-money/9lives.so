@@ -36,7 +36,7 @@ export default function PositionRow({
     outcomePic?: string;
     winner?: string;
   };
-  isDpm?: boolean;
+  isDpm: boolean | null;
   detailPage?: boolean;
   price?: string;
   history?: {
@@ -334,7 +334,7 @@ export default function PositionRow({
             </div>
           ) : null}
         </td>
-        {isDpm !== undefined && !isDpm && (
+        {isDpm ? null : (
           <td>
             <span className="font-chicago text-xs">
               ${data.winner && data.winner !== data.id ? 0 : data.balance}
@@ -419,7 +419,7 @@ export default function PositionRow({
                   </span>
                 </div>
               </td>
-              {isDpm !== undefined && !isDpm && <td></td>}
+              {isDpm ? null : <td></td>}
             </tr>
           );
         })}

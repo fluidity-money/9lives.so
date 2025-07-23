@@ -7,13 +7,11 @@ export default function PositionBody({
   positionGroups,
   areGroupsLoading,
   detailPage,
-  isDpm,
   colSpan,
 }: {
   positionGroups: PositionsProps[];
   areGroupsLoading?: boolean;
   detailPage?: boolean;
-  isDpm?: boolean;
   colSpan: number;
 }) {
   return (
@@ -30,7 +28,7 @@ export default function PositionBody({
         positionGroups.map((group) => (
           <PositionsGroup
             colSpan={colSpan}
-            isDpm={isDpm}
+            isDpm={group.isDpm}
             detailPage={detailPage}
             key={group.tradingAddr}
             tradingAddr={group.tradingAddr}

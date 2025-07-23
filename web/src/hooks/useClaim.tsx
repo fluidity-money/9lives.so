@@ -24,7 +24,7 @@ const useClaim = ({
   tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
   outcomes: Outcome[];
-  isDpm?: boolean;
+  isDpm: boolean | null;
 }) => {
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);

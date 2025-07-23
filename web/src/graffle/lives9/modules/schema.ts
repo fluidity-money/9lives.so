@@ -1291,6 +1291,7 @@ export namespace Schema {
       investmentAmounts: Campaign.investmentAmounts;
       banners: Campaign.banners;
       categories: Campaign.categories;
+      isDpm: Campaign.isDpm;
     };
   }
 
@@ -1527,6 +1528,16 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * For dpm markets it is true, for amms false
+     */
+    export interface isDpm extends $.OutputField {
+      name: "isDpm";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
     }
   }
 
