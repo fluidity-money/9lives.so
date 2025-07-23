@@ -9,14 +9,21 @@ import {
     Operation } from "../src/NineLivesPaymaster.sol";
 
 import { CtorArgs } from "../src/INineLivesTrading.sol";
-
 import { IStargate } from "../src/IStargate.sol";
+import { ICamelotSwapRouter } from "../src/ICamelotSwapRouter.sol";
+import { IWETH10 } from "../src/IWETH10.sol";
 
+import { MockStargate } from "./MockStargate.sol";
 import { MockTrading } from "./MockTrading.sol";
 import { TestERC20 } from "./TestERC20.sol";
+import { MockCamelotSwapRouter } from "./MockCamelotSwapRouter.sol";
+import { MockWETH10 } from "./MockWETH10.sol";
 
 contract TestNineLivesPaymaster is Test {
     TestERC20 ERC20;
+    ICamelotSwapRouter SWAP_ROUTER;
+    IStargate STARGATE;
+    IWETH10 WETH;
     NineLivesPaymaster P;
     MockTrading m;
 
@@ -26,7 +33,13 @@ contract TestNineLivesPaymaster is Test {
         ERC20 = new TestERC20();
         vm.chainId(55244);
         P = new NineLivesPaymaster();
-        P.initialise(address(ERC20), address(this), IStargate(address(0)));
+        MockWETH10 mockWeth = new MockWETH10();
+        WETH = IWETH10(address(mockWeth));
+        SWAP_ROUTER = ICamelotSwapRouter(address(new MockCamelotSwapRouter(mockWeth)));
+        STARGATE = IStargate(address(new MockStargate()));
+        P.initialise(address(ERC20), address(this), STARGATE, SWAP_ROUTER, WETH);
+        WETH.deposit{value: 1000e18}();
+        WETH.transfer(address(SWAP_ROUTER), 1000e18);
         m = new MockTrading(address(ERC20), address(P));
         bytes8[] memory outcomes = new bytes8[](2);
         outcomes[0] = OUTCOME;
@@ -86,7 +99,7 @@ contract TestNineLivesPaymaster is Test {
         address ref,
         bytes8 outcome
     ) public view returns (bytes32 hash) {
-        bytes32 domainSeparator = NineLivesPaymaster(p).computeDomainSeparator(_originatingChain);
+        bytes32 domainSeparator = NineLivesPaymaster(payable(p)).computeDomainSeparator(_originatingChain);
         hash = keccak256(
             abi.encodePacked(
                 "\x19\x01",
@@ -347,5 +360,52 @@ contract TestNineLivesPaymaster is Test {
         for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
         uint256 bal = ERC20.balanceOf(ivan);
         assertEq(1e6, bal);
+    }
+
+    function testWithdrawEndToEnd() external {
+        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
+        ERC20.transfer(ivan, 25000000);
+        vm.prank(ivan);
+        ERC20.approve(address(P), 25000000);
+        bytes32 hash = computePaymasterHash(
+            address(P),
+            block.chainid,
+            ivan,
+            0, // Nonce
+            uint8(PaymasterType.WITHDRAW_USDC),
+            address(m),
+            0, // Max fee
+            25000000, // Amount to transfer back.
+            0, // Amount back min
+            address(0), // Referrer
+            bytes8(0)
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
+        Operation[] memory ops = new Operation[](1);
+        ops[0] = Operation({
+            owner: ivan,
+            originatingChainId: block.chainid,
+            nonce: 0,
+            typ: PaymasterType.WITHDRAW_USDC,
+            deadline: type(uint256).max,
+            permitAmount: 0,
+            permitR: bytes32(0),
+            permitS: bytes32(0),
+            permitV: 0,
+            market: m,
+            maximumFee: 0,
+            amountToSpend: 25000000,
+            minimumBack: 0,
+            referrer: address(0),
+            outcome: bytes8(0),
+            v: v,
+            r: r,
+            s: s,
+            outgoingChainEid: 0
+        });
+        (,address recovered) = P.recoverAddressNewChain(ops[0]);
+        assertEq(ivan, recovered);
+        bool[] memory statuses = P.multicall(ops);
+        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
     }
 }

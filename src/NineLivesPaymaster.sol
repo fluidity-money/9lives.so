@@ -16,6 +16,8 @@ import {
 
 import { IWETH10 } from "./IWETH10.sol";
 
+import "forge-std/console.sol";
+
 bytes32 constant PAYMASTER_TYPEHASH =
     keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
 
@@ -105,12 +107,17 @@ contract NineLivesPaymaster {
 
     mapping(uint256 => bytes32) public domainSeparators;
 
-    ICamelotSwapRouter constant public CAMELOT_SWAP_ROUTER =
-        ICamelotSwapRouter(0xC216fCdEb961EEF95657Cb45dEe20e379C7624B8);
+    ICamelotSwapRouter public CAMELOT_SWAP_ROUTER;
 
-    IWETH10 constant public WETH = IWETH10(0x1fB719f10b56d7a85DCD32f27f897375fB21cfdd);
+    IWETH10 public WETH;
 
-    function initialise(address _erc20, address _admin, IStargate _stargate) external {
+    function initialise(
+        address _erc20,
+        address _admin,
+        IStargate _stargate,
+        ICamelotSwapRouter _swapRouter,
+        IWETH10 _weth
+    ) external {
         require(version == 0, "already set up");
         USDC = IERC20(_erc20);
         INITIAL_CHAIN_ID = block.chainid;
@@ -120,7 +127,17 @@ contract NineLivesPaymaster {
         );
         ADMIN = _admin;
         STARGATE = _stargate;
-        version = 1;
+        CAMELOT_SWAP_ROUTER = _swapRouter;
+        WETH = _weth;
+        version = 2;
+    }
+
+    function migrate1(ICamelotSwapRouter _camelotSwapRouter, IWETH10 _weth) external {
+        require(version == 1, "already set up");
+        require(msg.sender == ADMIN, "not admin");
+        CAMELOT_SWAP_ROUTER = _camelotSwapRouter;
+        WETH = _weth;
+        version = 2;
     }
 
     function NEW_DOMAIN_SEPARATOR(uint256 _chainId) internal returns (bytes32 sep) {
@@ -247,12 +264,16 @@ contract NineLivesPaymaster {
             return (0, true);
         } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
             // For withdrawing, we take a fee.
-            USDC.transferFrom(msg.sender, address(this), op.amountToSpend + op.maximumFee);
+            try
+                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
+                {}
+             catch {
+                 return (0, false);
+             }
             USDC.approve(address(STARGATE), op.amountToSpend);
-            address recipient = 0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7;
             SendParam memory sendParam = SendParam({
                 dstEid: op.outgoingChainEid,
-                to: bytes32(uint256(uint160(recipient))),
+                to: bytes32(uint256(uint160(op.owner))),
                 amountLD: op.amountToSpend,
                 minAmountLD: op.minimumBack,
                 extraOptions: new bytes(0),
@@ -261,7 +282,7 @@ contract NineLivesPaymaster {
             });
             MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
             USDC.approve(address(CAMELOT_SWAP_ROUTER), op.amountToSpend);
-            uint256 amountForFee =
+            try
                 CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
                     tokenIn: address(USDC),
                     tokenOut: address(WETH),
@@ -271,21 +292,26 @@ contract NineLivesPaymaster {
                     amountOut: messagingFee.nativeFee,
                     amountInMaximum: op.amountToSpend,
                     limitSqrtPrice: type(uint160).min
-                }));
-            WETH.withdraw(messagingFee.nativeFee);
-            uint256 amountToSend = op.amountToSpend - amountForFee;
-            sendParam.amountLD = amountToSend;
-            (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
-            sendParam.minAmountLD = receipt.amountReceivedLD;
-            USDC.approve(address(STARGATE), amountToSend);
-            (, OFTReceipt memory oftReceipt,) =
-                STARGATE.sendToken{value: messagingFee.nativeFee}(
-                    sendParam,
-                    messagingFee,
-                    recipient
-                );
-            require(oftReceipt.amountReceivedLD > op.minimumBack, "not min");
-            return (op.maximumFee, true);
+                }))
+            returns (uint256 amountForFee) {
+                WETH.withdraw(messagingFee.nativeFee);
+                sendParam.amountLD = op.amountToSpend - amountForFee;
+                (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+                sendParam.minAmountLD = receipt.amountReceivedLD;
+                USDC.approve(address(STARGATE), sendParam.amountLD);
+                (, OFTReceipt memory oftReceipt,) =
+                    STARGATE.sendToken{value: messagingFee.nativeFee}(
+                        sendParam,
+                        messagingFee,
+                        op.owner
+                    );
+                require(oftReceipt.amountReceivedLD > op.minimumBack, "not min");
+                return (op.maximumFee, true);
+            }
+            catch {
+                USDC.transfer(op.owner, op.amountToSpend);
+                return (op.maximumFee, false);
+            }
         }
         return (0, false);
     }
@@ -324,8 +350,5 @@ contract NineLivesPaymaster {
         ADMIN = _admin;
     }
 
-    function changeUsdc(IERC20 _newUsdc) external {
-        require(msg.sender == ADMIN, "not admin");
-        USDC = _newUsdc;
-    }
+    receive() external payable {}
 }

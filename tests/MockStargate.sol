@@ -22,7 +22,8 @@ contract MockStargate is IStargate {
         OFTReceipt memory oftReceipt,
         Ticket memory ticket
     ) {
-        require(false);
+        require(msg.value == 76973247383465, "not mocked");
+        oftReceipt.amountReceivedLD = 24713502;
     }
 
     function stargateType() external pure returns (StargateType) {
@@ -36,13 +37,18 @@ contract MockStargate is IStargate {
         OFTFeeDetail[] memory oftFeeDetails,
         OFTReceipt memory receipt
     ) {
-        require(false);
+        require(_sendParam.amountLD == 24713502, "not mocked");
+        receipt.amountReceivedLD = 24698673;
     }
 
     function quoteSend(
         SendParam calldata _sendParam,
         bool _payInLzToken
-    ) external view returns (MessagingFee memory) {
-        require(false);
+    ) external view returns (MessagingFee memory f) {
+        require(
+            !_payInLzToken && _sendParam.amountLD == 25000000,
+            "not mocked"
+        );
+        f.nativeFee = 76973247383465;
     }
 }

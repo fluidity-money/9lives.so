@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "../src/IStargate.sol";
+import {
+    SendParam,
+    MessagingFee,
+    IStargate,
+    OFTReceipt } from "../src/IStargate.sol";
 
 import {
     ICamelotSwapRouter,
@@ -24,7 +28,8 @@ contract DumpStargateEstimations {
     ICamelotSwapRouter constant public SWAP_ROUTER = ICamelotSwapRouter(0xC216fCdEb961EEF95657Cb45dEe20e379C7624B8);
     IWETH10 constant public WETH = IWETH10(0x1fB719f10b56d7a85DCD32f27f897375fB21cfdd);
 
-    function estimateBridgeOut(uint256 amt) external returns (uint256) {
+    function estimateBridgeOut(uint256 amt) external returns (uint256, uint256) {
+        uint256 amt2 = amt;
         USDC.transferFrom(msg.sender, address(this), amt);
         USDC.approve(address(STARGATE), amt);
         address recipient = 0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7;
@@ -60,7 +65,7 @@ contract DumpStargateEstimations {
                 messagingFee,
                 recipient
             );
-        return oftReceipt.amountSentLD;
+        return (amt2, oftReceipt.amountSentLD);
     }
 
     receive() external payable {}
