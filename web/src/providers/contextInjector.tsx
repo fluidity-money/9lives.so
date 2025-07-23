@@ -27,6 +27,7 @@ export default function ContextInjector() {
   const [tagSnitch, setTagSnitch] = useState<string>();
   const trackingConsent = useUserStore((s) => s.trackingConsent);
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
+  const farcasterCtx = useUserStore((s) => s.farcasterCtx);
   const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ export default function ContextInjector() {
       const platform = browser.getPlatform();
       (async () => {
         try {
-          const tag = await tagUser({
+          const context = {
             address: account?.address,
             property: "9lives",
             facts: [
@@ -118,7 +119,7 @@ export default function ContextInjector() {
                 value: [String(navigator.cookieEnabled)],
               },
               {
-                key: "farcaster",
+                key: "isInFarcasterApp",
                 value: [String(isInMiniApp)],
               },
               {
@@ -126,7 +127,19 @@ export default function ContextInjector() {
                 value: [config.destinationChain?.id.toString()],
               },
             ],
-          });
+          };
+          if (farcasterCtx) {
+            context.facts.push({
+              key: "farcasterContext",
+              value: [
+                JSON.stringify({
+                  fid: farcasterCtx.user?.fid,
+                  username: farcasterCtx.user?.username,
+                }),
+              ],
+            });
+          }
+          const tag = await tagUser(context);
           setTagSnitch(tag);
         } catch (e) {
           console.error(e instanceof Error ? e.message : e);

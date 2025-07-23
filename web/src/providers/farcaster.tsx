@@ -5,14 +5,14 @@ import useConnectWallet from "@/hooks/useConnectWallet";
 export default function FarcasterProvider() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const setIsInMiniApp = useUserStore((s) => s.setIsInMiniApp);
-  const [_, setContext] = useState<Context.FrameContext>();
+  const setFarcasterCtx = useUserStore((s) => s.setFarcasterCtx);
   const { connect } = useConnectWallet();
   useEffect(() => {
     const load = async () => {
       const isInMiniApp = await sdk.isInMiniApp();
       if (isInMiniApp) {
-        setContext(await sdk.context);
         setIsInMiniApp(true);
+        setFarcasterCtx(await sdk.context);
         sdk.actions.ready({});
         if (sdk.wallet) {
           connect(isInMiniApp);
