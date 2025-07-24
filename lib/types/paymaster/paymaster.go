@@ -32,6 +32,7 @@ type Poll struct {
 	V                  uint8           `json:"v"`
 	R                  events.Bytes    `json:"r"`
 	S                  events.Bytes    `json:"s"`
+	OriginatingChainId events.Number   `json:"originatingChainId"`
 	Nonce              events.Number   `json:"nonce"`
 	OutgoingChainEid   uint32          `json:"outgoing_chain_eid"`
 }
