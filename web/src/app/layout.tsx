@@ -21,6 +21,7 @@ import DegenModeFloatingButton from "@/components/degenMode/degenModeFloatingBut
 import EmailSuggester from "@/components/emailSuggester";
 import Changelog from "@/components/changelog";
 import { getCachedFeaturedCampaigns } from "@/serverData/getFeaturedCampaigns";
+import TradingCompetitionBanner from "@/components/tradingCompetitionBanner";
 
 const chicago = localFont({
   src: [
@@ -110,6 +111,7 @@ export default async function RootLayout({
           }}
         >
           <Header />
+          <TradingCompetitionBanner />
           <main className="flex flex-1 gap-2">
             <div className="flex-1 p-4">{children}</div>
             <DegenModeWrapper />
