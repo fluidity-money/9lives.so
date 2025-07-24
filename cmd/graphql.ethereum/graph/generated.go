@@ -140,7 +140,7 @@ type ComplexityRoot struct {
 		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v string) int
 		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
 		GenReferrer       func(childComplexity int, walletAddress string, code string) int
-		RequestPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, rr string, s string, v int) int
+		RequestPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) int
 		RevealCommitment  func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string) int
 		RevealCommitment2 func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) int
 		SynchProfile      func(childComplexity int, walletAddress string, email string) int
@@ -240,7 +240,7 @@ type ClaimResolver interface {
 	CreatedAt(ctx context.Context, obj *types.Claim) (int, error)
 }
 type MutationResolver interface {
-	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, rr string, s string, v int) (*string, error)
+	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) (*string, error)
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
@@ -738,7 +738,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.RequestPaymaster(childComplexity, args["ticket"].(*int), args["type"].(model.Modification), args["nonce"].(string), args["deadline"].(int), args["permitAmount"].(string), args["permitV"].(int), args["permitR"].(string), args["permitS"].(string), args["operation"].(model.PaymasterOperation), args["owner"].(string), args["outcome"].(*string), args["referrer"].(*string), args["market"].(string), args["maximumFee"].(string), args["amountToSpend"].(string), args["minimumBack"].(string), args["originatingChainId"].(string), args["rr"].(string), args["s"].(string), args["v"].(int)), true
+		return e.complexity.Mutation.RequestPaymaster(childComplexity, args["ticket"].(*int), args["type"].(model.Modification), args["nonce"].(string), args["deadline"].(int), args["permitAmount"].(string), args["permitV"].(int), args["permitR"].(string), args["permitS"].(string), args["operation"].(model.PaymasterOperation), args["owner"].(string), args["outcome"].(*string), args["referrer"].(*string), args["market"].(string), args["maximumFee"].(string), args["amountToSpend"].(string), args["minimumBack"].(string), args["originatingChainId"].(string), args["outgoingChainEid"].(int), args["rr"].(string), args["s"].(string), args["v"].(int)), true
 
 	case "Mutation.revealCommitment":
 		if e.complexity.Mutation.RevealCommitment == nil {
@@ -1548,33 +1548,42 @@ func (ec *executionContext) field_Mutation_requestPaymaster_args(ctx context.Con
 		}
 	}
 	args["originatingChainId"] = arg16
-	var arg17 string
-	if tmp, ok := rawArgs["rr"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rr"))
-		arg17, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg17 int
+	if tmp, ok := rawArgs["outgoingChainEid"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outgoingChainEid"))
+		arg17, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["rr"] = arg17
+	args["outgoingChainEid"] = arg17
 	var arg18 string
-	if tmp, ok := rawArgs["s"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
+	if tmp, ok := rawArgs["rr"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rr"))
 		arg18, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["s"] = arg18
-	var arg19 int
-	if tmp, ok := rawArgs["v"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
-		arg19, err = ec.unmarshalNInt2int(ctx, tmp)
+	args["rr"] = arg18
+	var arg19 string
+	if tmp, ok := rawArgs["s"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
+		arg19, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["v"] = arg19
+	args["s"] = arg19
+	var arg20 int
+	if tmp, ok := rawArgs["v"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
+		arg20, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["v"] = arg20
 	return args, nil
 }
 
@@ -4685,7 +4694,7 @@ func (ec *executionContext) _Mutation_requestPaymaster(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().RequestPaymaster(rctx, fc.Args["ticket"].(*int), fc.Args["type"].(model.Modification), fc.Args["nonce"].(string), fc.Args["deadline"].(int), fc.Args["permitAmount"].(string), fc.Args["permitV"].(int), fc.Args["permitR"].(string), fc.Args["permitS"].(string), fc.Args["operation"].(model.PaymasterOperation), fc.Args["owner"].(string), fc.Args["outcome"].(*string), fc.Args["referrer"].(*string), fc.Args["market"].(string), fc.Args["maximumFee"].(string), fc.Args["amountToSpend"].(string), fc.Args["minimumBack"].(string), fc.Args["originatingChainId"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
+		return ec.resolvers.Mutation().RequestPaymaster(rctx, fc.Args["ticket"].(*int), fc.Args["type"].(model.Modification), fc.Args["nonce"].(string), fc.Args["deadline"].(int), fc.Args["permitAmount"].(string), fc.Args["permitV"].(int), fc.Args["permitR"].(string), fc.Args["permitS"].(string), fc.Args["operation"].(model.PaymasterOperation), fc.Args["owner"].(string), fc.Args["outcome"].(*string), fc.Args["referrer"].(*string), fc.Args["market"].(string), fc.Args["maximumFee"].(string), fc.Args["amountToSpend"].(string), fc.Args["minimumBack"].(string), fc.Args["originatingChainId"].(string), fc.Args["outgoingChainEid"].(int), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

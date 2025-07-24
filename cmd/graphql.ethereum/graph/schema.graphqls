@@ -250,6 +250,11 @@ type Mutation {
       """
       originatingChainId: String!,
 
+      """
+      The outgoing chain EID that's needed for Stargate.
+      """
+      outgoingChainEid: Int!,
+
       rr: String!,
 
       s: String!,
