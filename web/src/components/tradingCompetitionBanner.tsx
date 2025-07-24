@@ -6,7 +6,11 @@ export default function TradingCompetitionBanner() {
   const timeleft = useCountdown(new Date("2025-09-01").getTime());
   if (pathname.startsWith("/campaign/")) return null;
   return (
-    <a className="block cursor-pointer border-b-2 border-9black bg-9layer p-3 text-center font-chicago text-sm shadow-9card md:p-4 md:text-lg">
+    <a
+      className="block cursor-pointer border-b-2 border-9black bg-9layer p-3 text-center font-chicago text-sm shadow-9card md:p-4 md:text-lg"
+      href="https://x.com/Superpositionso/status/1948356966851420635"
+      target="_blank"
+    >
       Win 5000 $ARB in the 9lives trading competition 💸 Now Live 💸 {timeleft}
     </a>
   );
