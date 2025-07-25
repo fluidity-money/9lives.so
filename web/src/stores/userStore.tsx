@@ -1,5 +1,5 @@
 import { Campaign } from "@/types";
-import { Context } from "@farcaster/frame-sdk";
+import { Context } from "@farcaster/miniapp-sdk";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -15,8 +15,8 @@ interface UserStore {
   setTrackingConsent: (consent: boolean) => void;
   isInMiniApp: boolean;
   setIsInMiniApp: (state: boolean) => void;
-  farcasterCtx: Context.FrameContext | null;
-  setFarcasterCtx: (context: Context.FrameContext) => void;
+  farcasterCtx: Context.MiniAppContext | null;
+  setFarcasterCtx: (context: Context.MiniAppContext) => void;
 }
 export const useUserStore = create<UserStore>()(
   persist(
