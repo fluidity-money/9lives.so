@@ -280,6 +280,7 @@ export enum PaymasterType {
   BURN,
   ADD_LIQUIDITY,
   REMOVE_LIQUIDITY,
+  WITHDRAW_USDC,
 }
 
 export type MintedPosition = {

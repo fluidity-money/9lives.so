@@ -11,7 +11,12 @@ export default function useRequestPaymaster() {
   type MutationType = Parameters<typeof requestPaymasterMutation>[0];
   type InputType = Pick<
     MutationType,
-    "amountToSpend" | "opType" | "outcome" | "tradingAddr" | "minimumBack"
+    | "amountToSpend"
+    | "opType"
+    | "outcome"
+    | "tradingAddr"
+    | "minimumBack"
+    | "outgoingChainEid"
   >;
   const account = useActiveAccount();
   const chain = useActiveWalletChain();
@@ -57,6 +62,7 @@ export default function useRequestPaymaster() {
       ADD_LIQUIDITY: PaymasterType.ADD_LIQUIDITY,
       REMOVE_LIQUIDITY: PaymasterType.REMOVE_LIQUIDITY,
       SELL: PaymasterType.BURN,
+      WITHDRAW_USDC: PaymasterType.WITHDRAW_USDC,
     } as const;
     const { r, s, v, nonce } = await signForPaymaster({
       tradingAddr: params.tradingAddr,
@@ -79,6 +85,7 @@ export default function useRequestPaymaster() {
       outcome: params.outcome ? params.outcome.slice(2) : undefined,
       originatingChainId,
       opType: params.opType,
+      outgoingChainEid: params.outgoingChainEid,
       deadline,
       amountToSpend: params.amountToSpend,
       tradingAddr: params.tradingAddr,
@@ -89,6 +96,7 @@ export default function useRequestPaymaster() {
       SELL: params.minimumBack,
       ADD_LIQUIDITY: params.amountToSpend,
       REMOVE_LIQUIDITY: params.minimumBack,
+      WITHDRAW_USDC: params.minimumBack,
     };
     return { ticketId, amount: amountMap[params.opType] };
   };

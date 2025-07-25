@@ -426,6 +426,7 @@ export const requestPaymaster = ({
   minimumBack,
   deadline,
   originatingChainId,
+  outgoingChainEid,
   outcome,
   owner,
   permitR,
@@ -448,6 +449,7 @@ export const requestPaymaster = ({
   permitR: string;
   permitS: string;
   permitV: number;
+  outgoingChainEid: number;
   r: string;
   s: string;
   v: number;
@@ -464,6 +466,7 @@ export const requestPaymaster = ({
       minimumBack,
       nonce,
       originatingChainId,
+      outgoingChainEid,
       outcome,
       owner,
       permitR,

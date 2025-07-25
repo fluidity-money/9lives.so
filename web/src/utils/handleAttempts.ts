@@ -72,5 +72,8 @@ const handleTicketAttempts: Record<
   REMOVE_LIQUIDITY: (t, a, qc) => {
     //TODO
   },
+  WITHDRAW_USDC: (t, a, qc) => {
+    // TODO
+  },
 };
 export default handleTicketAttempts;

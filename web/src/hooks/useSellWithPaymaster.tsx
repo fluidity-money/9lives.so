@@ -13,7 +13,7 @@ import useRequestPaymaster from "./useRequestPaymaster";
 import { useActiveAccount } from "thirdweb/react";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 import ERC20Abi from "@/config/abi/erc20";
-import { destinationChain } from "@/config/chains";
+import { chainIdToEid, destinationChain } from "@/config/chains";
 
 const useSellWithPaymaster = ({
   shareAddr,
@@ -39,10 +39,12 @@ const useSellWithPaymaster = ({
       opType,
       tradingAddr,
       minimumBack,
+      outgoingChainEid,
     }: Parameters<typeof requestPaymaster>[0]) =>
       requestPaymaster({
         amountToSpend,
         outcome,
+        outgoingChainEid,
         opType,
         tradingAddr,
         minimumBack,
@@ -123,7 +125,7 @@ const useSellWithPaymaster = ({
       //   });
     },
   });
-  const sell = async (rawAmount: number) =>
+  const sell = async (rawAmount: number, toChain: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -154,6 +156,7 @@ const useSellWithPaymaster = ({
             amountToSpend: "0",
             outcome: outcomeId,
             opType: "SELL",
+            outgoingChainEid: chainIdToEid[toChain],
             tradingAddr: tradingAddr,
             minimumBack: amount,
           });

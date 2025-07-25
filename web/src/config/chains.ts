@@ -99,7 +99,16 @@ const chainList = {
   bsc: { ...bsc, icon: BSC },
   avalanche: { ...avalanche, icon: AVAX },
 } as const;
-
+export const chainIdToEid: Record<number, number> = {
+  [superposition.id]: 30327,
+  [arbitrum.id]: 30110,
+  [ethereum.id]: 30101,
+  [optimism.id]: 30111,
+  [base.id]: 30184,
+  [polygon.id]: 30109,
+  [bsc.id]: 30102,
+  [avalanche.id]: 30106,
+};
 const supportedCrossChainSchema = z.record(z.string(), networkSchema);
 
 // validate all chains

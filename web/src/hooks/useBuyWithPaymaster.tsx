@@ -36,11 +36,13 @@ const useBuyWithPaymaster = ({
       opType,
       tradingAddr,
       minimumBack,
+      outgoingChainEid,
     }: Parameters<typeof requestPaymaster>[0]) =>
       requestPaymaster({
         amountToSpend,
         outcome,
         opType,
+        outgoingChainEid,
         tradingAddr,
         minimumBack,
       }),
@@ -162,6 +164,7 @@ const useBuyWithPaymaster = ({
             outcome: outcomeId,
             opType: "MINT",
             tradingAddr: tradingAddr,
+            outgoingChainEid: 0,
             minimumBack: "0",
           });
           if (result && result.ticketId) {

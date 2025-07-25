@@ -127,7 +127,10 @@ export default function DetailSellAction({
     try {
       setIsSelling(true);
       if (enabledPaymaster) {
-        await sellWithPaymaster(input.shareToBurn);
+        await sellWithPaymaster(
+          input.shareToBurn,
+          config.chains.superposition.id,
+        );
       } else {
         await sell(account!, input.shareToBurn, input.minUsdcToGet);
       }

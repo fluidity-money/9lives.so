@@ -4,7 +4,7 @@ import clientEnv from "./clientEnv";
 import appConfig from "./app";
 import chains from "./chains";
 import { createWallet, EIP1193 } from "thirdweb/wallets";
-import sdk from "@farcaster/frame-sdk";
+import sdk from "@farcaster/miniapp-sdk";
 const thirdwebClientId = clientEnv.NEXT_PUBLIC_THIRDWEB_ID;
 const thirdwebClient = createThirdwebClient({
   clientId: thirdwebClientId,
@@ -19,7 +19,7 @@ const thirdwebSchema = z.object({
   }),
   theme: z.literal("light"),
   detailsButton: z.object({
-    displayBalanceToken: z.record(z.string()),
+    displayBalanceToken: z.record(z.string(), z.string()),
     style: z.any(),
   }),
   wallets: z.array(z.any()),
