@@ -47,12 +47,18 @@ export default function ContextInjector() {
   useEffect(() => {
     if (account?.address && trackingConsent) {
       // wallet address stored to local storage for GTM to use it
-      window.localStorage.setItem("walletAddress", account.address);
-      setUser({ id: account.address, walletId: wallet?.id ?? "unknown" });
-      posthog.identify(account.address);
+      window.localStorage.setItem(
+        "walletAddress",
+        account.address.toLowerCase(),
+      );
+      setUser({
+        id: account.address.toLowerCase(),
+        walletId: wallet?.id ?? "unknown",
+      });
+      posthog.identify(account.address.toLowerCase());
       const ctx = {
         walletId: wallet?.id ?? "unknown",
-        walletAddress: account.address,
+        walletAddress: account.address.toLowerCase(),
         farcaster: isInMiniApp,
       } as any;
       if (farcasterCtx) {
@@ -111,7 +117,7 @@ export default function ContextInjector() {
       (async () => {
         try {
           const context = {
-            address: account?.address,
+            address: account?.address.toLowerCase(),
             property: "9lives",
             facts: [
               { key: "languages", value: [...navigator.languages] },
