@@ -164,7 +164,7 @@ export default function ContextInjector() {
         }
       })();
     }
-  }, [account?.address, trackingConsent, isInMiniApp]);
+  }, [account?.address, trackingConsent, isInMiniApp, farcasterCtx]);
 
   useEffect(() => {
     if (tagSnitch && trackingConsent && config.NEXT_PUBLIC_CHAIN !== "testnet")

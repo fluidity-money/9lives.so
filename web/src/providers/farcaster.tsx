@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { type Context, sdk } from "@farcaster/frame-sdk";
+import { sdk } from "@farcaster/frame-sdk";
 import { useUserStore } from "@/stores/userStore";
 import useConnectWallet from "@/hooks/useConnectWallet";
 export default function FarcasterProvider() {
@@ -19,10 +19,10 @@ export default function FarcasterProvider() {
         }
       }
     };
-    if (sdk && !isSDKLoaded) {
-      setIsSDKLoaded(true);
+    if (!isSDKLoaded) {
       load();
+      setIsSDKLoaded(true);
     }
-  }, [isSDKLoaded, connect, setIsInMiniApp]);
+  }, [isSDKLoaded, connect, setIsInMiniApp, setFarcasterCtx]);
   return null;
 }
