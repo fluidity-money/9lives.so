@@ -925,7 +925,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `requestPaymaster` field. Some (17/20) arguments are required so you must include this.
+     * Arguments for `requestPaymaster` field. Some (18/21) arguments are required so you must include this.
      */
     $: requestPaymaster$Arguments<_$Scalars>;
   }
@@ -1000,6 +1000,10 @@ export namespace Mutation {
      * The originating chain ID for this signature.
      */
     originatingChainId: string;
+    /**
+     * The outgoing chain EID that's needed for Stargate.
+     */
+    outgoingChainEid: number;
     rr: string;
     s: string;
     v: number;
@@ -1415,7 +1419,8 @@ export type PaymasterOperation =
   | "MINT"
   | "SELL"
   | "ADD_LIQUIDITY"
-  | "REMOVE_LIQUIDITY";
+  | "REMOVE_LIQUIDITY"
+  | "WITHDRAW_USDC";
 
 /**
  * HTTP-like interface for mutation. Either a delete, a logical update, or a put for the

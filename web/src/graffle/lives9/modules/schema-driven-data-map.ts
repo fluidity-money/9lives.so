@@ -575,6 +575,10 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
+        outgoingChainEid: {
+          nt: Int,
+          it: [1],
+        },
         rr: {
           nt: String,
           it: [1],

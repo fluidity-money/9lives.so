@@ -564,6 +564,15 @@ export namespace Schema {
           inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
+        /**
+         * The outgoing chain EID that's needed for Stargate.
+         */
+        outgoingChainEid: {
+          kind: "InputField";
+          name: "outgoingChainEid";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
         rr: {
           kind: "InputField";
           name: "rr";
@@ -2232,8 +2241,19 @@ export namespace Schema {
 
   export interface PaymasterOperation extends $.Enum {
     name: "PaymasterOperation";
-    members: ["MINT", "SELL", "ADD_LIQUIDITY", "REMOVE_LIQUIDITY"];
-    membersUnion: "MINT" | "SELL" | "ADD_LIQUIDITY" | "REMOVE_LIQUIDITY";
+    members: [
+      "MINT",
+      "SELL",
+      "ADD_LIQUIDITY",
+      "REMOVE_LIQUIDITY",
+      "WITHDRAW_USDC",
+    ];
+    membersUnion:
+      | "MINT"
+      | "SELL"
+      | "ADD_LIQUIDITY"
+      | "REMOVE_LIQUIDITY"
+      | "WITHDRAW_USDC";
   }
 
   //                                            Modification
