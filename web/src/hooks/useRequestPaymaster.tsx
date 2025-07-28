@@ -20,8 +20,8 @@ export default function useRequestPaymaster() {
   >;
   const account = useActiveAccount();
   const chain = useActiveWalletChain();
-  const { signForPermit } = useSignForPermit();
-  const { signForPaymaster } = useSignForPaymaster();
+  const { signForPermit } = useSignForPermit(chain, account);
+  const { signForPaymaster } = useSignForPaymaster(chain, account);
   const { data: profile } = useProfile(account?.address);
   const requestPaymaster = async (params: InputType) => {
     if (!account?.address) throw new Error("No account is connected");

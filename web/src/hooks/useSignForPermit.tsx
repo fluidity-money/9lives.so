@@ -1,12 +1,10 @@
 import { Signature } from "ethers";
 import { destinationChain } from "@/config/chains";
-import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
+import { Chain, prepareContractCall, simulateTransaction } from "thirdweb";
 import config from "@/config";
+import { Account } from "thirdweb/wallets";
 
-export default function useSignForPermit() {
-  const chain = useActiveWalletChain();
-  const account = useActiveAccount();
+export default function useSignForPermit(chain?: Chain, account?: Account) {
   const types = {
     Permit: [
       { name: "owner", type: "address" },

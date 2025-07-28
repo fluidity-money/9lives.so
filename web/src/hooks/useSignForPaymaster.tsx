@@ -1,7 +1,7 @@
 import { Signature } from "ethers";
 import { destinationChain } from "@/config/chains";
-import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import {
+  Chain,
   prepareContractCall,
   simulateTransaction,
   ZERO_ADDRESS,
@@ -9,10 +9,9 @@ import {
 import { PaymasterType } from "@/types";
 import config from "@/config";
 import { hashChainId } from "@/utils/hashChainId";
+import { Account } from "thirdweb/wallets";
 
-export default function useSignForPaymaster() {
-  const chain = useActiveWalletChain();
-  const account = useActiveAccount();
+export default function useSignForPaymaster(chain?: Chain, account?: Account) {
   const domain = {
     name: "NineLivesPaymaster",
     version: "1",
