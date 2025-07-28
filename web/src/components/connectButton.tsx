@@ -7,6 +7,7 @@ import appConfig from "@/config";
 import Image from "next/image";
 import LoginIcon from "#/icons/login.svg";
 import { useUserStore } from "@/stores/userStore";
+import { farcasterWallet } from "@/providers/farcaster";
 export default function ConnectButton() {
   const account = useActiveAccount();
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
@@ -24,11 +25,7 @@ export default function ConnectButton() {
         chains={chains}
         appMetadata={appConfig.thirdweb.metadata}
         detailsModal={appConfig.thirdweb.detailsModal}
-        wallets={
-          isInMiniApp
-            ? [appConfig.thirdweb.farcasterWallet]
-            : appConfig.thirdweb.wallets
-        }
+        wallets={isInMiniApp ? [farcasterWallet] : appConfig.thirdweb.wallets}
         theme={appConfig.thirdweb.theme}
         detailsButton={appConfig.thirdweb.detailsButton}
         connectButton={appConfig.thirdweb.connectButton}

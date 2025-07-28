@@ -4,6 +4,7 @@ import { track, EVENTS } from "@/utils/analytics";
 import { Wallet } from "thirdweb/wallets";
 import { useCallback } from "react";
 import { useUserStore } from "@/stores/userStore";
+import { farcasterWallet } from "@/providers/farcaster";
 
 export default function useConnectWallet() {
   const { connect, isConnecting } = useConnectModal();
@@ -24,7 +25,7 @@ export default function useConnectWallet() {
           appMetadata: appConfig.thirdweb.metadata,
           wallets:
             isInMiniApp || initialIsInMiniApp
-              ? [appConfig.thirdweb.farcasterWallet]
+              ? [farcasterWallet]
               : appConfig.thirdweb.wallets,
           theme: appConfig.thirdweb.theme,
           showThirdwebBranding:
