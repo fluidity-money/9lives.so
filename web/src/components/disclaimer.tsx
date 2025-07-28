@@ -56,6 +56,10 @@ function About() {
       />
       <Anchor href="#terms-and-conditions" text="Terms and Conditions" />
       <Anchor
+        href="https://x.com/Superpositionso/status/1949808095686758533"
+        text="9lives Guide for Liquidity Providers"
+      />
+      <Anchor
         href="https://dl.acm.org/doi/10.1145/988772.988799"
         text="A dynamic pari-mutuel market for hedging, wagering, and information aggregation"
       />
