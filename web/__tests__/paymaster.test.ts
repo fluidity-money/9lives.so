@@ -23,9 +23,9 @@ describe("Paymaster", () => {
   let snapshotId: `0x${string}`;
   const insecureAgent = new https.Agent({ rejectUnauthorized: false });
   beforeAll(async () => {
-    const rpcUrl = process.env.FORKNET;
+    const rpcUrl = process.env.FORKNET_URL;
     const auth = process.env.FORKNET_SECRET;
-    const privateKey = process.env.PRIVATE_KEY;
+    const privateKey = process.env.TESTER_PRIVATE_KEY;
     if (!rpcUrl) throw new Error("Forknet url is not defined");
     if (!auth) throw new Error("Forknet secret is not defined");
     if (!privateKey) throw new Error("Private key is not defined");
@@ -62,7 +62,7 @@ describe("Paymaster", () => {
     });
   }, 30000);
   afterEach(async () => {
-    const rpcUrl = process.env.FORKNET;
+    const rpcUrl = process.env.FORKNET_URL;
     const auth = process.env.FORKNET_SECRET;
     if (!rpcUrl) throw new Error("Forknet url is not defined");
     if (!auth) throw new Error("Forknet secret is not defined");
