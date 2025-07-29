@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"math/big"
 	"regexp"
-	"log"
 	"strings"
 	"time"
 )
@@ -46,16 +45,24 @@ func BytesFromHex(s string) (*Bytes, error) {
 	}
 	return &Bytes{h}, nil
 }
+func (b *Bytes) MarshalJSON() ([]byte, error) {
+	return json.Marshal(b.String())
+}
 func (x *Bytes) UnmarshalJSON(b []byte) (err error) {
-	var s string
-	if err := json.Unmarshal(b, &x); err != nil {
-		return err
+	var s any
+	if err := json.Unmarshal(b, &s); err != nil {
+		return fmt.Errorf("unmarshal bytes: %v", err)
 	}
-	e, err := BytesFromHex(s)
-	if err != nil {
-		return err
+	switch v := s.(type) {
+	case string:
+		e, err := BytesFromHex(v)
+		if err != nil {
+			return err
+		}
+		*x = *e
+	default:
+		panic(fmt.Sprintf("type for unmarshal: %v", s))
 	}
-	*x = *e
 	return nil
 }
 func (b Bytes) String() string {
@@ -95,6 +102,9 @@ func (a Address) String() string {
 }
 func (a Address) Value() (sqlDriver.Value, error) {
 	return a.String(), nil
+}
+func (a *Address) MarshalJSON() ([]byte, error) {
+	return json.Marshal(a.String())
 }
 func (a *Address) UnmarshalJSON(b []byte) error {
 	var s string
@@ -181,8 +191,6 @@ func (x NumberSlice) Value() (sqlDriver.Value, error) {
 	if err != nil {
 		return "", fmt.Errorf("number slice marshal: %v", err)
 	}
-	log.Printf("marshalled: %s", string(b))
-	log.Printf("should've been: %v", x)
 	return string(b), nil
 }
 func (x NumberSlice) Scan(a any) error {

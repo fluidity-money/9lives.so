@@ -28,13 +28,13 @@ func TestInsertAmmDetails(t *testing.T) {
 		Set("gorm:table_options", "").
 		Create(events.EventAmmDetails{
 			Product: no("123191"),
-			Shares:  []events.ShareDetail{
+			Shares: []events.ShareDetail{
 				{
-					Shares: no("1288211"),
+					Shares:     no("1288211"),
 					Identifier: hd("0x893b7b3126802bf0"),
 				},
 				{
-					Shares: no("999999"),
+					Shares:     no("999999"),
 					Identifier: hd("0x6edd2440b9818c34"),
 				},
 			},
@@ -43,5 +43,5 @@ func TestInsertAmmDetails(t *testing.T) {
 	assert.NoError(t, err)
 	var details []events.EventAmmDetails
 	assert.NoError(t, d.Table("test_1753772017").Find(&details).Error)
-	assert.Equal(t, no("1288211"),details[0].Shares[0].Shares)
+	assert.Equal(t, no("1288211"), details[0].Shares[0].Shares)
 }
