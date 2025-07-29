@@ -133,3 +133,12 @@ pub fn is_dpm(addr: Address) -> Result<bool, Error> {
     };
     unpack_bool(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
+
+pub fn price(addr: Address, outcome: FixedBytes<8>) -> Result<U256, Error> {
+    let b = unsafe {
+        RawCall::new()
+            .call(addr, &priceA827ED27Call {outcome}.abi_encode())
+            .map_err(Error::TradingError)?
+    };
+    unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
+}

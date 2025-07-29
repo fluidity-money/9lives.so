@@ -16,6 +16,8 @@ import {
 
 import { IWETH10 } from "./IWETH10.sol";
 
+import "forge-std/console.sol";
+
 bytes32 constant PAYMASTER_TYPEHASH =
     keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
 
@@ -24,7 +26,7 @@ enum PaymasterType {
     BURN,
     ADD_LIQUIDITY,
     REMOVE_LIQUIDITY,
-    BURN_ELSEWHERE
+    WITHDRAW_USDC
 }
 
 struct Operation {
@@ -260,48 +262,42 @@ contract NineLivesPaymaster {
                 return (0, false);
             }
             return (0, true);
-        } else if (op.typ == PaymasterType.BURN_ELSEWHERE) {
-            // For burning and offramping, we don't take a fee.
+        } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
+            // For withdrawing, we take a fee.
             try
-                op.market.burn854CC96E(
-                    op.outcome,
-                    op.amountToSpend,
-                    true,
-                    op.minimumBack,
-                    op.referrer,
-                    op.owner
-                )
-            returns (uint256, uint256 fusdcReturned) {
-                SendParam memory sendParam = SendParam({
-                    dstEid: op.outgoingChainEid,
-                    to: bytes32(uint256(uint160(op.owner))),
-                    amountLD: fusdcReturned,
-                    minAmountLD: op.minimumBack,
-                    extraOptions: new bytes(0),
-                    composeMsg: new bytes(0),
-                    oftCmd: "" // Empty for taxi mode
-                });
-                MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
-                USDC.approve(address(CAMELOT_SWAP_ROUTER), fusdcReturned);
-                // We can't tolerate failure if something happens here. This needs to not
-                // happen in the first place, since we can't return the user an intermediate
-                // amount. This should be flagged in the worker.
+                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
+                {}
+             catch {
+                 return (0, false);
+             }
+            USDC.approve(address(STARGATE), op.amountToSpend);
+            SendParam memory sendParam = SendParam({
+                dstEid: op.outgoingChainEid,
+                to: bytes32(uint256(uint160(op.owner))),
+                amountLD: op.amountToSpend,
+                minAmountLD: op.minimumBack,
+                extraOptions: new bytes(0),
+                composeMsg: new bytes(0),
+                oftCmd: "" // Empty for taxi mode
+            });
+            MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
+            USDC.approve(address(CAMELOT_SWAP_ROUTER), op.amountToSpend);
+            try
+                CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
+                    tokenIn: address(USDC),
+                    tokenOut: address(WETH),
+                    fee: 0,
+                    recipient: address(this),
+                    deadline: type(uint256).max,
+                    amountOut: messagingFee.nativeFee,
+                    amountInMaximum: op.amountToSpend,
+                    limitSqrtPrice: type(uint160).min
+                }))
+            returns (uint256 amountForFee) {
                 WETH.withdraw(messagingFee.nativeFee);
-                sendParam.amountLD =
-                    fusdcReturned - CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
-                        tokenIn: address(USDC),
-                        tokenOut: address(WETH),
-                        fee: 0,
-                        recipient: address(this),
-                        deadline: type(uint256).max,
-                        amountOut: messagingFee.nativeFee,
-                        amountInMaximum: fusdcReturned,
-                        limitSqrtPrice: type(uint160).min
-                    }));
-                {
-                    (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
-                    sendParam.minAmountLD = receipt.amountReceivedLD;
-                }
+                sendParam.amountLD = op.amountToSpend - amountForFee;
+                (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+                sendParam.minAmountLD = receipt.amountReceivedLD;
                 USDC.approve(address(STARGATE), sendParam.amountLD);
                 (, OFTReceipt memory oftReceipt,) =
                     STARGATE.sendToken{value: messagingFee.nativeFee}(
@@ -310,10 +306,11 @@ contract NineLivesPaymaster {
                         op.owner
                     );
                 require(oftReceipt.amountReceivedLD > op.minimumBack, "not min");
-                return (0, true);
+                return (op.maximumFee, true);
             }
             catch {
-                return (0, false);
+                USDC.transfer(op.owner, op.amountToSpend);
+                return (op.maximumFee, false);
             }
         }
         return (0, false);

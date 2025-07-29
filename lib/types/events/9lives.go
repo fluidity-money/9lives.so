@@ -1,6 +1,11 @@
 package events
 
-import "time"
+import (
+	"time"
+	"encoding/json"
+	"fmt"
+	"database/sql/driver"
+)
 
 type (
 	// EventNewTrading2 event emitted by the factory.
@@ -257,6 +262,24 @@ type (
 		Event
 
 		Product Number        `json:"product"`
-		Shares  []ShareDetail `json:"shares"`
+		Shares  ShareDetails `json:"shares"`
 	}
 )
+
+type ShareDetails []ShareDetail
+
+func (s ShareDetails) Value() (driver.Value, error) {
+	return json.Marshal(s)
+}
+
+func jsonUnmarshal(value interface{}, v interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("unmarshal %T, not []byte", v)
+	}
+	return json.Unmarshal(bytes, v)
+}
+
+func (s *ShareDetails) Scan(v interface{}) error {
+	return jsonUnmarshal(v, s)
+}

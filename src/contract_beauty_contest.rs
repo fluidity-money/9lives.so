@@ -43,7 +43,8 @@ impl StorageBeautyContest {
             let (count_shares, _, min_shares, winning_outcome) = outcome_ids.into_iter().try_fold(
                 (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
                 |(count_shares, max_shares, min_shares, winning_outcome), outcome_id| {
-                    let (shares, _, _, winner) = c!(trading_call::details(trading_addr, outcome_id));
+                    let (shares, _, _, winner) =
+                        c!(trading_call::details(trading_addr, outcome_id));
                     assert_or!(winner.is_zero(), Error::WinnerAlreadyDeclared);
                     let is_greater = shares > max_shares;
                     Ok((
@@ -77,9 +78,16 @@ impl StorageBeautyContest {
             Ok(comp)
         } else {
             // For the AMM, we need to find the market with the least amount of shares.
-            for o in c!(trading_call::outcome_list(trading_addr)) {
-
-            }
+            let (winner, _) = c!(trading_call::outcome_list(trading_addr))
+                .into_iter()
+                .map(|o| trading_call::price(trading_addr, o).map(|p| (o, p)))
+                .collect::<Result<Vec<_>, Error>>()?
+                .into_iter()
+                .max_by(|(_, x), (_, y)| x.cmp(y))
+                .ok_or(Error::BeautyContestBadOutcomes)?;
+            let comp = c!(trading_call::decide(trading_addr, winner));
+            fusdc_call::transfer(fee_recipient, comp)?;
+            Ok(comp)
         }
     }
 }
