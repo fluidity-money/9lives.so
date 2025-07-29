@@ -27,6 +27,32 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Jest tests
+        env:
+          NEXT_PUBLIC_THIRDWEB_ID: ${{ vars.NEXT_PUBLIC_THIRDWEB_ID }}
+          NEXT_PUBLIC_GRAPHQL_URL: "https://graph.9lives.so"
+          NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
+          NEXT_PUBLIC_POINTS_URL: "https://points-graph.superposition.so"
+          NEXT_PUBLIC_FUSDC_ADDR: "0x6c030c5CC283F791B26816f325b9C632d964F8A1"
+          NEXT_PUBLIC_AMM_ADDR: "0xF3334049A3ce7e890bd4f8C6a0FBC70e38fd3746"
+          NEXT_PUBLIC_LENS_ADDR: "0x8036d656D2E0c36d90DF47b7Da625fDC16375f87"
+          NEXT_PUBLIC_HELPER_FACTORY_ADDR: "0x2965aF7dD96D550d63be1577feC27ae26d2C46F7"
+          NEXT_PUBLIC_BUY_HELPER_ADDR: "0xEBBfeAcbbD331466512A362BEa782e1f7CB45b57"
+          NEXT_PUBLIC_INFRA_ADDR: "0xc4451d8477cd6b92bfa0d3e2662ce0507a8e10b9"
+          NEXT_PUBLIC_AI_ADDR: "0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1"
+          NEXT_PUBLIC_BEAUTY_ADDR: "0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C"
+          NEXT_PUBLIC_SARP_SIGNALLER_ADDR: "0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455"
+          NEXT_PUBLIC_MEOW_DOMAINS_ADDR: "0x4087fb91A1fBdef05761C02714335D232a2Bf3a1"
+          NEXT_PUBLIC_POSTHOG_KEY: "phc_wFN8nVjgKYNURCUsE7MEFUdAjgKE6aDC01AAEXLUGyt"
+          NEXT_PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com"
+          NEXT_PUBLIC_WS_URL: "wss://superposition-main.hasura.app/v1/graphql"
+          NEXT_PUBLIC_CHAIN: "mainnet"
+          NEXT_PUBLIC_SNITCH_ENDPOINT: "https://snitch-superposition-so.stellate.sh"
+          NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: "0x00FA0a5d3b25Da03ef651045d42B9F7137486b03"
+          NEXT_PUBLIC_BUY_HELPER2_ADDR: "0x20a5D83b3A7E475B0CCC482F236C475D39a29854"
+          NEXT_PUBLIC_PAYMASTER_ADDR: "0xE990f05e2264f56435Fd7589FA2F70A879B0cE9f"
+          FORKNET_URL: ${{ secrets.FORKNET_URL }}
+          FORKNET_SECRET: ${{ secrets.FORKNET_SECRET }}
+          TESTER_PRIVATE_KEY: ${{ secrets.TESTER_PRIVATE_KEY }}
         run: pnpm test:unit
 
       - uses: actions/upload-artifact@v4
