@@ -517,6 +517,9 @@ pub enum Error {
 
     // Someone tried to claim the DAO funds correctly!
     IncorrectDAOClaiming,
+
+    // Call out returned false!
+    ReturnedFalse,
 }
 
 #[cfg(any(

@@ -39,40 +39,47 @@ impl StorageBeautyContest {
         outcome_ids.sort();
         outcome_ids.dedup();
         let outcome_fst = outcome_ids[0];
-        let (count_shares, _, min_shares, winning_outcome) = outcome_ids.into_iter().try_fold(
-            (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
-            |(count_shares, max_shares, min_shares, winning_outcome), outcome_id| {
-                let (shares, _, _, winner) = c!(trading_call::details(trading_addr, outcome_id));
-                assert_or!(winner.is_zero(), Error::WinnerAlreadyDeclared);
-                let is_greater = shares > max_shares;
-                Ok((
-                    count_shares + shares,
-                    if is_greater { shares } else { max_shares },
-                    if shares < min_shares {
-                        shares
-                    } else {
-                        min_shares
-                    },
-                    if is_greater {
-                        outcome_id
-                    } else {
-                        winning_outcome
-                    },
-                ))
-            },
-        )?;
-        // We need to check that the global shares remaining is less than
-        // the minimum that we have. If that's not the case, then they
-        // supplied the calldata incorrectly, and we need to revert.
-        // This is to ensure that we don't accidentally miss the maximum
-        // that a winner supplied.
-        assert_or!(
-            global_shares - count_shares <= min_shares,
-            Error::BeautyContestBadOutcomes
-        );
-        // Now that we know the winner, we need to decide the outcome.
-        let comp = c!(trading_call::decide(trading_addr, winning_outcome));
-        fusdc_call::transfer(fee_recipient, comp)?;
-        Ok(comp)
+        if c!(trading_call::is_dpm(trading_addr)) {
+            let (count_shares, _, min_shares, winning_outcome) = outcome_ids.into_iter().try_fold(
+                (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
+                |(count_shares, max_shares, min_shares, winning_outcome), outcome_id| {
+                    let (shares, _, _, winner) = c!(trading_call::details(trading_addr, outcome_id));
+                    assert_or!(winner.is_zero(), Error::WinnerAlreadyDeclared);
+                    let is_greater = shares > max_shares;
+                    Ok((
+                        count_shares + shares,
+                        if is_greater { shares } else { max_shares },
+                        if shares < min_shares {
+                            shares
+                        } else {
+                            min_shares
+                        },
+                        if is_greater {
+                            outcome_id
+                        } else {
+                            winning_outcome
+                        },
+                    ))
+                },
+            )?;
+            // We need to check that the global shares remaining is less than
+            // the minimum that we have. If that's not the case, then they
+            // supplied the calldata incorrectly, and we need to revert.
+            // This is to ensure that we don't accidentally miss the maximum
+            // that a winner supplied.
+            assert_or!(
+                global_shares - count_shares <= min_shares,
+                Error::BeautyContestBadOutcomes
+            );
+            // Now that we know the winner, we need to decide the outcome.
+            let comp = c!(trading_call::decide(trading_addr, winning_outcome));
+            fusdc_call::transfer(fee_recipient, comp)?;
+            Ok(comp)
+        } else {
+            // For the AMM, we need to find the market with the least amount of shares.
+            for o in c!(trading_call::outcome_list(trading_addr)) {
+
+            }
+        }
     }
 }

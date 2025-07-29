@@ -1,6 +1,6 @@
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
-use alloc::vec::Vec;
+use alloc::{vec, vec::Vec};
 
 use crate::error::Error;
 
@@ -47,4 +47,8 @@ pub fn time_ending(_addr: Address) -> Result<u64, Error> {
 
 pub fn add_liquidity(_: Address, _: U256, _: Address) -> Result<U256, Error> {
     Ok(U256::ZERO)
+}
+
+pub fn outcome_list(_addr: Address) -> Result<Vec<FixedBytes<8>>, Error> {
+    Ok(vec![])
 }

@@ -1,9 +1,17 @@
-use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
+use stylus_sdk::{
+    alloy_primitives::{Address, FixedBytes, U256},
+    alloy_sol_types::{sol, SolCall},
+};
 
 use crate::error::Error;
 
+sol!("./src/INineLivesTrading.sol");
+use INineLivesTrading::*;
+
 #[cfg(test)]
 use const_hex;
+
+use alloc::vec::Vec;
 
 pub fn write_address(bytes: &mut [u8], slot: usize, address: Address) {
     let o = 4 + 32 * slot;
@@ -67,6 +75,10 @@ pub fn unpack_bool_safe(data: &[u8]) -> Result<(), Error> {
     }
 }
 
+pub fn unpack_bool(data: &[u8]) -> Option<bool,> {
+    data.get(31).map(|x| *x == 1)
+}
+
 pub fn unpack_address(data: &[u8]) -> Option<Address> {
     if data.len() != 32 {
         None
@@ -93,6 +105,12 @@ pub fn unpack_details(data: &[u8]) -> Option<(U256, U256, U256, FixedBytes<8>)> 
         let winner = unpack_bytes8(&data[96..104])?;
         Some((shares, invested, global_invested, winner))
     }
+}
+
+pub fn unpack_outcome_list(d: &[u8]) -> Option<Vec<FixedBytes<8>>> {
+    outcomeListCall::abi_decode_returns(d, true)
+        .map(|x| x.outcomes)
+        .ok()
 }
 
 #[test]

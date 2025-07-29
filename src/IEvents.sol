@@ -100,6 +100,11 @@ interface IEvents {
 
     event TimeExtension(uint64 indexed newDeadline);
 
+    event AmmDetails(
+        uint256 indexed product,
+        uint256[] shares
+    );
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

@@ -7,7 +7,7 @@ use stylus_sdk::{
 use alloc::vec::Vec;
 
 use crate::{
-    calldata::{unpack_details, unpack_u256, unpack_u64},
+    calldata::{unpack_bool, unpack_details, unpack_outcome_list, unpack_u256, unpack_u64},
     error::Error,
 };
 
@@ -114,4 +114,22 @@ pub fn add_liquidity(addr: Address, amt: U256, recipient: Address) -> Result<U25
             .map_err(Error::TradingError)?
     };
     unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
+}
+
+pub fn outcome_list(addr: Address) -> Result<Vec<FixedBytes<8>>, Error> {
+    let b = unsafe {
+        RawCall::new()
+            .call(addr, &outcomeListCall {}.abi_encode())
+            .map_err(Error::TradingError)?
+    };
+    unpack_outcome_list(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
+}
+
+pub fn is_dpm(addr: Address) -> Result<bool, Error> {
+    let b = unsafe {
+        RawCall::new()
+            .call(addr, &isDpmCall {}.abi_encode())
+            .map_err(Error::TradingError)?
+    };
+    unpack_bool(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
