@@ -52,3 +52,11 @@ pub fn add_liquidity(_: Address, _: U256, _: Address) -> Result<U256, Error> {
 pub fn outcome_list(_addr: Address) -> Result<Vec<FixedBytes<8>>, Error> {
     Ok(vec![])
 }
+
+pub fn is_dpm(_addr: Address) -> Result<bool, Error> {
+    Ok(false)
+}
+
+pub fn price(_addr: Address, _outcome: FixedBytes<8>) -> Result<U256, Error> {
+    Ok(U256::ZERO)
+}

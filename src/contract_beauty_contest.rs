@@ -77,7 +77,7 @@ impl StorageBeautyContest {
             fusdc_call::transfer(fee_recipient, comp)?;
             Ok(comp)
         } else {
-            // For the AMM, we need to find the market with the least amount of shares.
+            // For the AMM, we need to find the market with the most amount of shares.
             let (winner, _) = c!(trading_call::outcome_list(trading_addr))
                 .into_iter()
                 .map(|o| trading_call::price(trading_addr, o).map(|p| (o, p)))
