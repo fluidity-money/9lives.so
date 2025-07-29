@@ -457,7 +457,11 @@ export default function DetailBuyAction({
             <ul className="flex flex-col gap-1 text-gray-500">
               {orderSummary.map((item) => (
                 <li
-                  className="flex items-center justify-between"
+                  className={combineClass(
+                    item.value ===
+                      orderSummary[orderSummary.length - 1].title && "text-lg",
+                    "flex items-center justify-between",
+                  )}
                   key={item.title}
                 >
                   <strong>{item.title}</strong>
