@@ -358,6 +358,16 @@ impl StorageTrading {
             burned_shares >= min_shares,
             Error::NotEnoughSharesBurned(min_shares, burned_shares)
         );
+        evm::log(events::AmmDetails {
+            product,
+            shares: self
+                .outcome_ids_iter()
+                .map(|id| events::ShareDetail {
+                    shares: self.amm_shares.get(id),
+                    identifier: id,
+                })
+                .collect::<Vec<_>>(),
+        });
         c!(share_call::burn(
             proxy::get_share_addr(
                 self.factory_addr.get(),
