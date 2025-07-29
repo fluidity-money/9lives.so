@@ -20,6 +20,37 @@
 	},
 	{
 		"type": "event",
+		"name": "AmmDetails",
+		"inputs": [
+			{
+				"name": "product",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "shares",
+				"type": "tuple[]",
+				"indexed": false,
+				"internalType": "struct IEvents.ShareDetail[]",
+				"components": [
+					{
+						"name": "shares",
+						"type": "uint256",
+						"internalType": "uint256"
+					},
+					{
+						"name": "identifier",
+						"type": "bytes8",
+						"internalType": "bytes8"
+					}
+				]
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
 		"name": "CallMade",
 		"inputs": [
 			{
@@ -362,6 +393,12 @@
 		"name": "LiquidityClaimed",
 		"inputs": [
 			{
+				"name": "sender",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
 				"name": "recipient",
 				"type": "address",
 				"indexed": true,
@@ -371,6 +408,12 @@
 				"name": "fusdcAmt",
 				"type": "uint256",
 				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "sharesAmount",
+				"type": "uint256",
+				"indexed": false,
 				"internalType": "uint256"
 			}
 		],
@@ -734,6 +777,19 @@
 				"type": "uint256",
 				"indexed": true,
 				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "TimeExtension",
+		"inputs": [
+			{
+				"name": "newDeadline",
+				"type": "uint64",
+				"indexed": true,
+				"internalType": "uint64"
 			}
 		],
 		"anonymous": false

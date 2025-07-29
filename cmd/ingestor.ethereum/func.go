@@ -61,6 +61,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicLPFeesClaimed,
 	events.TopicAddressFeesClaimed,
 	events.TopicReferrerEarnedFees,
+	events.TopicAmmDetails,
 	// Lifi
 	lifi.TopicLifiGenericSwapCompleted,
 	// Stargate
@@ -410,6 +411,11 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		a, err = events.UnpackReferrerEarnedFees(topic1, topic2, topic3)
 		table = "ninelives_events_referrer_earned_fees"
 		logEvent("ReferrerEarnedFees")
+		fromTrading = true
+	case events.TopicAmmDetails:
+		a, err = events.UnpackAmmDetails(topic1, data)
+		table = "ninelives_events_amm_details"
+		logEvent("AmmDetails")
 		fromTrading = true
 	case lifi.TopicLifiGenericSwapCompleted:
 		a, err = lifi.UnpackLifiGenericSwapCompleted(topic1, data)

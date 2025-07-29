@@ -247,4 +247,16 @@ type (
 		Fees      Number  `json:"fees"`
 		Volume    Number  `json:"volume"`
 	}
+
+	ShareDetail struct {
+		Shares     Number `json:"shares"`
+		Identifier Bytes  `json:"identifier"`
+	}
+
+	EventAmmDetails struct {
+		Event
+
+		Product Number        `json:"product"`
+		Shares  []ShareDetail `json:"shares"`
+	}
 )

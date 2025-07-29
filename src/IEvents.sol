@@ -100,9 +100,14 @@ interface IEvents {
 
     event TimeExtension(uint64 indexed newDeadline);
 
+    struct ShareDetail {
+        uint256 shares;
+        bytes8 identifier;
+    }
+
     event AmmDetails(
         uint256 indexed product,
-        uint256[] shares
+        ShareDetail[] shares
     );
 
     /* INFRASTRUCTURE MARKET */

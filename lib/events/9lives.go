@@ -49,6 +49,7 @@ var (
 	TopicLPFeesClaimed              = abi.Events["LPFeesClaimed"].ID
 	TopicAddressFeesClaimed         = abi.Events["AddressFeesClaimed"].ID
 	TopicReferrerEarnedFees         = abi.Events["ReferrerEarnedFees"].ID
+	TopicAmmDetails                 = abi.Events["AmmDetails"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
@@ -361,18 +362,41 @@ func UnpackLPFeesClaimed(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*even
 	}, nil
 }
 
-func UnpackAddressFeesClaimed(topic0, topic1 ethCommon.Hash) (*events.EventAddressFeesClaimed, error) {
+func UnpackAddressFeesClaimed(topic1, topic2 ethCommon.Hash) (*events.EventAddressFeesClaimed, error) {
 	return &events.EventAddressFeesClaimed{
-		Recipient: hashToAddr(topic0),
-		Amount:    hashToNumber(topic1),
+		Recipient: hashToAddr(topic1),
+		Amount:    hashToNumber(topic2),
 	}, nil
 }
 
-func UnpackReferrerEarnedFees(topic0, topic1, topic3 ethCommon.Hash) (*events.EventReferrerEarnedFees, error) {
+func UnpackReferrerEarnedFees(topic1, topic2, topic3 ethCommon.Hash) (*events.EventReferrerEarnedFees, error) {
 	return &events.EventReferrerEarnedFees{
-		Recipient: hashToAddr(topic0),
-		Fees:      hashToNumber(topic1),
-		Volume: hashToNumber(topic3),
+		Recipient: hashToAddr(topic1),
+		Fees:      hashToNumber(topic2),
+		Volume:    hashToNumber(topic3),
+	}, nil
+}
+
+func UnpackAmmDetails(topic1 ethCommon.Hash, d []byte) (*events.EventAmmDetails, error) {
+	a, err := abi.Unpack("AmmDetails", d)
+	if err != nil {
+		return nil, err
+	}
+	details, ok := a[0].([]struct {
+		Shares     *big.Int `json:"shares"`
+		Identifier [8]byte  `json:"identifier"`
+	})
+	if !ok {
+		return nil, fmt.Errorf("share details: %T", a[0])
+	}
+	shares := make([]events.ShareDetail, len(details))
+	for i, d := range details {
+		shares[i].Shares = events.NumberFromBig(d.Shares)
+		shares[i].Identifier = events.BytesFromSlice(d.Identifier[:])
+	}
+	return &events.EventAmmDetails{
+		Product: hashToNumber(topic1),
+		Shares:  shares,
 	}, nil
 }
 

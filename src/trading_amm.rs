@@ -571,7 +571,10 @@ impl StorageTrading {
             product,
             shares: self
                 .outcome_ids_iter()
-                .map(|x| self.amm_shares.get(x))
+                .map(|id| events::ShareDetail {
+                    shares: self.amm_shares.get(id),
+                    identifier: id,
+                })
                 .collect::<Vec<_>>(),
         });
         share_call::mint(
