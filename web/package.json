@@ -84,7 +84,6 @@
     "lint-staged": "^16.1.2",
     "monocart-coverage-reports": "^2.12.4",
     "monocart-reporter": "^2.9.18",
-    "node-fetch": "^2.7.0",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",

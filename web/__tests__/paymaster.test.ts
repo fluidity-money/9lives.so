@@ -14,14 +14,11 @@ import { act } from "react";
 import useSignForPermit from "@/hooks/useSignForPermit";
 import { MaxUint256 } from "ethers";
 import ERC20Abi from "@/config/abi/erc20";
-import fetch from "node-fetch";
-import https from "node:https";
 describe("Paymaster", () => {
   let account: Account;
   let client: ThirdwebClient;
   let chain: Chain;
   let snapshotId: `0x${string}`;
-  const insecureAgent = new https.Agent({ rejectUnauthorized: false });
   beforeAll(async () => {
     const rpcUrl = process.env.FORKNET_URL;
     const auth = process.env.FORKNET_SECRET;
@@ -41,7 +38,6 @@ describe("Paymaster", () => {
         "Content-Type": "application/json",
         Authorization: auth,
       },
-      agent: insecureAgent,
       body: JSON.stringify(data),
     }).then(
       async (res) => ((await res.json()) as { result: `0x${string}` })?.result,
@@ -49,6 +45,15 @@ describe("Paymaster", () => {
     if (!snapshotId) throw new Error("Couldnt get latest snapshot id");
     client = createThirdwebClient({
       clientId: process.env.NEXT_PUBLIC_THIRDWEB_ID,
+      config: {
+        rpc: {
+          fetch: {
+            headers: {
+              Authorization: auth,
+            },
+          },
+        },
+      },
     });
     account = privateKeyToAccount({
       client,
@@ -79,7 +84,6 @@ describe("Paymaster", () => {
         "Content-Type": "application/json",
         Authorization: auth,
       },
-      agent: insecureAgent,
       body: JSON.stringify(data),
     }).then(async (res) => ((await res.json()) as { result: boolean })?.result);
     if (!success) throw new Error("Couldnt revert chain to previous snapshot");
@@ -127,19 +131,19 @@ describe("Paymaster", () => {
         concatSig,
       ],
     });
-    // await sendTransaction({
-    //   account,
-    //   transaction: permitTx,
-    // });
-    // const allowanceTx = prepareContractCall({
-    //   contract: usdc,
-    //   method: "allowance",
-    //   params: [account.address, spender],
-    // });
-    // const approvedAmount = await simulateTransaction({
-    //   account,
-    //   transaction: allowanceTx,
-    // });
-    // expect(approvedAmount).toEqual(amountToSpend);
+    await sendTransaction({
+      account,
+      transaction: permitTx,
+    });
+    const allowanceTx = prepareContractCall({
+      contract: usdc,
+      method: "allowance",
+      params: [account.address, spender],
+    });
+    const approvedAmount = await simulateTransaction({
+      account,
+      transaction: allowanceTx,
+    });
+    expect(approvedAmount).toEqual(amountToSpend);
   });
 });

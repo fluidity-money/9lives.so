@@ -186,9 +186,6 @@ importers:
       monocart-reporter:
         specifier: ^2.9.18
         version: 2.9.21
-      node-fetch:
-        specifier: ^2.7.0
-        version: 2.7.0
       postcss:
         specifier: ^8.5.3
         version: 8.5.6
