@@ -39,17 +39,16 @@ export default function useRequestPaymaster() {
       const allowanceTx = prepareContractCall({
         contract: config.contracts.fusdc,
         method: "allowance",
-        params: [account.address, config.contracts.buyHelper2.address],
+        params: [account.address, config.contracts.paymaster.address],
       });
       const allowance = (await simulateTransaction({
         transaction: allowanceTx,
         account,
       })) as bigint;
-      const thresholdAmount = MaxUint256 - BigInt(1);
-      if (thresholdAmount > allowance) {
+      if (BigInt(params.amountToSpend) > allowance) {
         const { r, s, v } = await signForPermit({
           spender: config.NEXT_PUBLIC_PAYMASTER_ADDR,
-          amountToSpend: thresholdAmount,
+          amountToSpend: MaxUint256,
           deadline,
         });
         permitR = r;
