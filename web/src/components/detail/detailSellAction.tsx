@@ -57,7 +57,7 @@ export default function DetailSellAction({
     : data.outcomes[0];
   const [isSelling, setIsSelling] = useState(false);
   const formSchema = z.object({
-    shareToBurn: z.preprocess((val) => Number(val), z.number().min(0)),
+    shareToBurn: z.preprocess((val) => Number(val), z.number().gt(0)),
     minUsdcToGet: z.preprocess((val) => Number(val), z.number().min(0)),
   });
   const chance = Number(price) * 100;
@@ -127,10 +127,7 @@ export default function DetailSellAction({
     try {
       setIsSelling(true);
       if (enabledPaymaster) {
-        await sellWithPaymaster(
-          input.shareToBurn,
-          config.chains.superposition.id,
-        );
+        await sellWithPaymaster(input.shareToBurn);
       } else {
         await sell(account!, input.shareToBurn, input.minUsdcToGet);
       }

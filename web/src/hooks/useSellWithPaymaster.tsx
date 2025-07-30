@@ -125,7 +125,7 @@ const useSellWithPaymaster = ({
       //   });
     },
   });
-  const sell = async (rawAmount: number, toChain: number) =>
+  const sell = async (rawAmount: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -156,7 +156,7 @@ const useSellWithPaymaster = ({
             amountToSpend: "0",
             outcome: outcomeId,
             opType: "SELL",
-            outgoingChainEid: chainIdToEid[toChain],
+            outgoingChainEid: 0,
             tradingAddr: tradingAddr,
             minimumBack: amount,
           });
