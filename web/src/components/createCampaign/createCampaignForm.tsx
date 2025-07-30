@@ -42,14 +42,24 @@ export function onFileChange(
       if (!ctx) return;
 
       const size = Math.min(img.width, img.height);
-      canvas.width = size;
-      canvas.height = size;
-
       const xOffset = (img.width - size) / 2;
       const yOffset = (img.height - size) / 2;
+      const targetSize = 120;
+      canvas.width = targetSize;
+      canvas.height = targetSize;
 
-      ctx.drawImage(img, xOffset, yOffset, size, size, 0, 0, size, size);
-      setFunc(canvas.toDataURL("image/jpeg", 0.7));
+      ctx.drawImage(
+        img,
+        xOffset,
+        yOffset,
+        size,
+        size,
+        0,
+        0,
+        targetSize,
+        targetSize,
+      );
+      setFunc(canvas.toDataURL("image/jpeg", 0.9));
     };
   };
   reader.readAsDataURL(file);
