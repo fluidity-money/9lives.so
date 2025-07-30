@@ -49,7 +49,7 @@ export function onFileChange(
       const yOffset = (img.height - size) / 2;
 
       ctx.drawImage(img, xOffset, yOffset, size, size, 0, 0, size, size);
-      setFunc(canvas.toDataURL());
+      setFunc(canvas.toDataURL("image/jpeg", 0.7));
     };
   };
   reader.readAsDataURL(file);
