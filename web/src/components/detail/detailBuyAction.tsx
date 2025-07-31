@@ -167,10 +167,6 @@ export default function DetailBuyAction({
       title: "Shares To Get",
       value: isDpm ? (usdValue / Number(price)).toFixed(2) : sharesToGet,
     },
-    {
-      title: "To Win 💵",
-      value: `$${isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet}`,
-    },
   ];
   async function handleBuy({
     supply,
@@ -457,11 +453,7 @@ export default function DetailBuyAction({
             <ul className="flex flex-col gap-1 text-gray-500">
               {orderSummary.map((item) => (
                 <li
-                  className={combineClass(
-                    item.value ===
-                      orderSummary[orderSummary.length - 1].title && "text-lg",
-                    "flex items-center justify-between",
-                  )}
+                  className="flex items-center justify-between"
                   key={item.title}
                 >
                   <strong>{item.title}</strong>
@@ -470,6 +462,35 @@ export default function DetailBuyAction({
               ))}
             </ul>
           </div>
+          {estimatedWinForDpm || +sharesToGet ? (
+            <div
+              className={combineClass(
+                minimized && "hidden",
+                "flex-col gap-4 bg-9gray p-5 text-xs shadow-9orderSummary md:flex",
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-chicago uppercase">To Win 💵</span>
+                <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
+                  ${isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet}
+                </span>
+              </div>
+              {/* <ul className="flex flex-col gap-1 text-gray-500">
+              <li
+                className="flex items-center justify-between"
+              >
+                  <strong>Multiplier</strong>
+                  <span className="bg-9green px-1 py-0.5">x1.18</span>
+              </li>
+              <li
+                className="flex items-center justify-between"
+              >
+                  <strong>Profit</strong>
+                  <span className="bg-9green px-1 py-0.5">+$722</span>
+              </li>
+            </ul> */}
+            </div>
+          ) : null}
           <Button
             disabled={isMinting || isConnecting || shouldStopAction}
             title={isMinting ? "Loading.." : ctaTitle}
