@@ -44,7 +44,7 @@ export function onFileChange(
       const size = Math.min(img.width, img.height);
       const xOffset = (img.width - size) / 2;
       const yOffset = (img.height - size) / 2;
-      const targetSize = 120;
+      const targetSize = 180;
       canvas.width = targetSize;
       canvas.height = targetSize;
 
@@ -59,7 +59,7 @@ export function onFileChange(
         targetSize,
         targetSize,
       );
-      setFunc(canvas.toDataURL("image/jpeg", 0.9));
+      setFunc(canvas.toDataURL());
     };
   };
   reader.readAsDataURL(file);
