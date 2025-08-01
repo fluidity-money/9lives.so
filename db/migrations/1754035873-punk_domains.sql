@@ -9,7 +9,9 @@ CREATE TABLE punk_domains_events_default_domain_changed(
 	emitter_addr ADDRESS NOT NULL,
 
 	address ADDRESS NOT NULL,
-	domain VARCHAR NOT NULL
+	default_domain VARCHAR NOT NULL
 );
+
+CREATE INDEX ON punk_domains_events_default_domain_changed (address);
 
 -- migrate:down
