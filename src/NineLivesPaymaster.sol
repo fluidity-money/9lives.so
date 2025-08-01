@@ -215,7 +215,12 @@ contract NineLivesPaymaster {
                     op.permitS
                 );
         if (op.typ == PaymasterType.MINT) {
-                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
+            try
+                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
+                {}
+            catch {
+                return (0, false);
+            }
             USDC.approve(address(op.market), op.amountToSpend);
                 op.market.mint8A059B6E(
                     op.outcome,

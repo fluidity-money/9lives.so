@@ -138,7 +138,7 @@ The error table lives in ERRORS.md.
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
 | Helper factory                | `0x2965aF7dD96D550d63be1577feC27ae26d2C46F7` |
 | LensesV1                      | `0x8036d656D2E0c36d90DF47b7Da625fDC16375f87` |
-| Beauty contest implementation | `0x3421264e413489b1e69ae84ace8c33c6cb7809ff` |
+| Beauty contest implementation | `0xb7f978f707dc03b392d7215426cf98dc812d9454` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0x6e95B1fcca9aBb2D94213AE3ccFCaf5BB8406E6B` |

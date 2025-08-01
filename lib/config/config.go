@@ -24,7 +24,7 @@ type C struct {
 	LockupAddress, SarpAiSignallerAddress   string
 	LifiDiamondAddress, PaymasterAddress    string
 	LayerzeroEndpointAddress, DineroAddress string
-	SudoswapFactoryAddress                  string
+	SudoswapFactoryAddress, PunkDomainsTld  string
 	ChainId                                 int
 }
 
@@ -85,6 +85,10 @@ func Get() C {
 	if sudoswapFactoryAddr == "" {
 		setup.Exitf("SPN_SUDOSWAP_FACTORY_ADDR not set")
 	}
+	punkDomainsTldAddr := strings.ToLower(os.Getenv("SPN_PUNK_DOMAINS_TLD_ADDR"))
+	if punkDomainsTldAddr == "" {
+		setup.Exitf("SPN_PUNK_DOMAINS_TLD_ADDR not set")
+	}
 	return C{
 		GethUrls:                 gethUrls,
 		TimescaleUrls:            timescaleUrls,
@@ -98,6 +102,7 @@ func Get() C {
 		PaymasterAddress:         paymasterAddr,
 		LayerzeroEndpointAddress: layerzeroEndpointAddr,
 		DineroAddress:            dineroAddr,
+		PunkDomainsTld:           punkDomainsTldAddr,
 		ChainId:                  DefaultChainId,
 	}
 }

@@ -21,6 +21,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/events/stargate"
 	"github.com/fluidity-money/9lives.so/lib/events/sudoswap"
 	"github.com/fluidity-money/9lives.so/lib/events/vendor"
+	"github.com/fluidity-money/9lives.so/lib/events/punk-domains"
 
 	"gorm.io/gorm"
 
@@ -85,11 +86,14 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	vendor.TopicWithdraw,
 	// Sudoswap
 	sudoswap.TopicNewERC721Pair,
+	// Punk Domains
+	punk_domains.TopicDefaultDomainChanged,
 }
 
 type IngestorArgs struct {
 	Factory, InfraMarket, Lockup, SarpSignallerAi   ethCommon.Address
 	LifiDiamond, Layerzero, Dinero, SudoswapFactory ethCommon.Address
+	PunkDomainsTld ethCommon.Address
 }
 
 // Entry function, using the database to determine if polling should be
@@ -489,7 +493,10 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		a, err = sudoswap.UnpackNewERC721Pair(topic1, data)
 		table = "sudoswap_new_erc721pair"
 		logEvent("NewERC721Pair")
-
+	case punk_domains.TopicDefaultDomainChanged:
+		a, err = punk_domains.UnpackDefaultDomainChanged(topic1, data)
+		table = "punk_domains_events_default_domain_changed"
+		logEvent("DefaultDomainChanged")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -511,12 +518,13 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		isLayerzero     = r.Layerzero == emitterAddr
 		isDinero        = r.Dinero == emitterAddr
 		isSudoswap      = r.SudoswapFactory == emitterAddr
+		isPunkDomainsTld = r.PunkDomainsTld == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
-		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap:
+		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap, isPunkDomainsTld:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to
