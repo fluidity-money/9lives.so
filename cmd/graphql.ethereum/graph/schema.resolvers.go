@@ -336,7 +336,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 	case model.PaymasterOperationAddLiquidity:
 		typ = paymaster.PaymasterTypeAddLiquidity
 	case model.PaymasterOperationRemoveLiquidity:
-		typ = paymaster.PaymasterTypeAddLiquidity
+		typ = paymaster.PaymasterTypeRemoveLiquidity
 	case model.PaymasterOperationWithdrawUsdc:
 		typ = paymaster.PaymasterTypeWithdrawUsdc
 	default:
