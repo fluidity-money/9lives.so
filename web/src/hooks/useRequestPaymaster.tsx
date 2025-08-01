@@ -69,7 +69,7 @@ export default function useRequestPaymaster() {
       referrer: profile?.settings?.refererr || ZeroAddress,
       outcomeId: params.outcome,
       deadline,
-      minimumBack: BigInt(0),
+      minimumBack: BigInt(params.minimumBack),
       type: convertOpTypeToEnum[params.opType],
     });
     const ticketId = await requestPaymasterMutation({
