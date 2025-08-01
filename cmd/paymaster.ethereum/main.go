@@ -86,7 +86,6 @@ func main() {
 	transactOpts := ethAbiBind.NewKeyedTransactor(privateKey, chainId)
 L:
 	for {
-		heartbeat.Pulse()
 		ctx, cancelCtx := context.WithTimeout(
 			context.Background(),
 			time.Second*time.Duration(pollLifetimeSecs),
@@ -113,6 +112,7 @@ L:
 		if len(items) == 0 {
 			cancelCtx()
 			sleep(sleepSecs)
+			heartbeat.Pulse()
 			continue
 		}
 		operations := make([]crypto.PaymasterOperation, 0, len(items))
@@ -163,6 +163,7 @@ L:
 		if goodLen == 0 {
 			// There weren't any ids we should continue with! Don't do anything.
 			logIds(db, ctx, badIds, goodIds, "")
+			heartbeat.Pulse()
 			continue L
 		}
 		// We need to regenerate the calldata now with the trimmed ids.
@@ -192,6 +193,7 @@ L:
 				slog.Info("Submitted transaction", "tx", tx)
 				logIds(db, ctx, badIds, goodIds, tx.Hash().String())
 				sleep(sleepSecs)
+				heartbeat.Pulse()
 				continue L
 			}
 		}
