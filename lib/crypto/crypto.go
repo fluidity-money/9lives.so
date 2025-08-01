@@ -97,7 +97,7 @@ type PaymasterOperation struct {
 	V                  uint8             `abi:"v"`
 	R                  [32]byte          `abi:"r"`
 	S                  [32]byte          `abi:"s"`
-	OutgoingChainId   uint32            `json:"outgoing_chain_eid"`
+	OutgoingChainEid   uint32            `abi:"outgoingChainEid"`
 }
 
 func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
@@ -120,7 +120,7 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		R:                  bytesToBytes32(x.R),
 		S:                  bytesToBytes32(x.S),
 		Outcome:            maybeBytesToBytes8(x.Outcome),
-		OutgoingChainId:   x.OutgoingChainEid,
+		OutgoingChainEid:   x.OutgoingChainEid,
 	}
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/big"
+	"database/sql"
 	"math/rand"
 	"testing"
 
@@ -60,6 +61,7 @@ func FuzzPackOperations(f *testing.F) {
 		outcome int,
 	) {
 		permitS_ := bytess(permitS, 32)
+		permitR_ := bytess(permitR, 32)
 		referrer_ := addr(referrer)
 		_ = packOperations(crypto.PollToPaymasterOperation(paymaster.Poll{
 			Owner:              addr(owner),
@@ -67,8 +69,8 @@ func FuzzPackOperations(f *testing.F) {
 			Nonce:              number(nonce),
 			Deadline:           deadline,
 			Typ:                paymasterType,
-			//PermitR:            &bytess(permitR, 32),
-			PermitS:            permitS_,
+			PermitR:            sql.NullString{permitR_.String(), true},
+			PermitS:            sql.NullString{permitS_.String(), true},
 			PermitV:            permitV,
 			Market:             addr(market),
 			MaximumFee:         number(maxFee),
