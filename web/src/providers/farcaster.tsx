@@ -19,10 +19,10 @@ export default function FarcasterProvider() {
       if (isInMiniApp) {
         setIsInMiniApp(true);
         setFarcasterCtx(await sdk.context);
-        await sdk.actions.ready();
         if (sdk.wallet) {
-          connect(isInMiniApp);
+          await connect(isInMiniApp);
         }
+        await sdk.actions.ready();
         setIsSDKLoaded(true);
       }
     };
