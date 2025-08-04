@@ -256,10 +256,6 @@ export default function DetailBuyAction({
     (addr: string) => setValue("fromToken", addr),
     [setValue],
   );
-  useEffect(() => {
-    console.log("Supplyytrte", supply);
-  }, [supply]);
-
   return (
     <>
       <ShadowCard
