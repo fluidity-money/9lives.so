@@ -158,6 +158,7 @@ export default function DetailBuyAction({
     fusdc: usdValue,
     share: supply / Number(price),
   });
+  const winEstimation = isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet;
   const orderSummary = [
     {
       title: "AVG Price",
@@ -166,6 +167,23 @@ export default function DetailBuyAction({
     {
       title: "Shares To Get",
       value: isDpm ? (usdValue / Number(price)).toFixed(2) : sharesToGet,
+    },
+  ];
+  const winSummary = [
+    {
+      title: "Profit",
+      value: Number(winEstimation) - usdValue,
+      symbol: "$",
+    },
+    {
+      title: "Change",
+      value: ((Number(winEstimation) - usdValue) / usdValue) * 100,
+      symbol: "%",
+    },
+    {
+      title: "Multiplier",
+      value: Number(winEstimation) / usdValue,
+      symbol: "x",
     },
   ];
   async function handleBuy({
@@ -472,23 +490,28 @@ export default function DetailBuyAction({
               <div className="flex items-center justify-between">
                 <span className="font-chicago uppercase">To Win 💵</span>
                 <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
-                  ${isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet}
+                  ${winEstimation}
                 </span>
               </div>
-              {/* <ul className="flex flex-col gap-1 text-gray-500">
-              <li
-                className="flex items-center justify-between"
-              >
-                  <strong>Multiplier</strong>
-                  <span className="bg-9green px-1 py-0.5">x1.18</span>
-              </li>
-              <li
-                className="flex items-center justify-between"
-              >
-                  <strong>Profit</strong>
-                  <span className="bg-9green px-1 py-0.5">+$722</span>
-              </li>
-            </ul> */}
+              <ul className="flex flex-col gap-1 text-gray-500">
+                {winSummary.map((i) => (
+                  <li
+                    key={"winSum_" + i.title}
+                    className="flex items-center justify-between"
+                  >
+                    <strong>{i.title}</strong>
+                    <span
+                      className={combineClass(
+                        0 > i.value ? "bg-9red" : "bg-9green",
+                        "text-geneva px-1 py-0.5",
+                      )}
+                    >
+                      {i.symbol}
+                      {i.value.toFixed(2)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : null}
           <Button
