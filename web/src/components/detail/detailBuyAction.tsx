@@ -480,7 +480,7 @@ export default function DetailBuyAction({
               ))}
             </ul>
           </div>
-          {estimatedWinForDpm || +sharesToGet ? (
+          {supply ? (
             <div
               className={combineClass(
                 minimized && "hidden",
