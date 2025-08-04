@@ -503,7 +503,7 @@ export default function DetailBuyAction({
                     <span
                       className={combineClass(
                         0 > i.value ? "bg-9red" : "bg-9green",
-                        "text-geneva px-1 py-0.5",
+                        "px-1 py-0.5 font-geneva",
                       )}
                     >
                       {i.symbol}
