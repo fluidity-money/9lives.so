@@ -153,12 +153,12 @@ const useSellWithPaymaster = ({
             throw new Error("You dont have enough shares.");
           }
           const result = await requestPaymasterOptimistically({
-            amountToSpend: "0",
+            amountToSpend: amount,
             outcome: outcomeId,
             opType: "SELL",
             outgoingChainEid: 0,
             tradingAddr: tradingAddr,
-            minimumBack: amount,
+            minimumBack: "0",
           });
           if (result && result.ticketId) {
             createTicket({
