@@ -30,6 +30,7 @@ import useEstimateBurn from "@/hooks/useEstimateBurn";
 import formatFusdc from "@/utils/formatFusdc";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useSellWithPaymaster from "@/hooks/useSellWithPaymaster";
+import usePositionHistory from "@/hooks/usePositionsHistory";
 
 export default function DetailSellAction({
   shouldStopAction,
@@ -93,7 +94,7 @@ export default function DetailSellAction({
   const share = watch("shareToBurn");
   const { data: ownedShares } = usePositions({
     tradingAddr: data.poolAddress,
-    outcomes: [data.outcomes.find((o) => o.identifier === selectedOutcome.id)!],
+    outcomes: data.outcomes,
     account,
     isDpm,
   });
@@ -109,6 +110,7 @@ export default function DetailSellAction({
   //   tradingAddr: data.poolAddress,
   //   account,
   // });
+  const usdcToGet = formatFusdc(estimation ?? BigInt(0), 2);
   const orderSummary = [
     {
       title: "AVG Price",
@@ -120,7 +122,39 @@ export default function DetailSellAction({
     },
     {
       title: "USDC to Get",
-      value: `$${formatFusdc(estimation ?? BigInt(0), 2)}`,
+      value: `$${usdcToGet}`,
+    },
+  ];
+  const { data: positionsHistory } = usePositionHistory(account?.address, [
+    outcome.identifier,
+  ]);
+  const historicalCost = Math.trunc(
+    positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0,
+  );
+  const ownedShare = ownedShares?.find((o) => o.id === outcome.identifier);
+  const costOfShare = Number(
+    formatFusdc(
+      Math.floor((share / Number(ownedShare?.balance ?? 0)) * historicalCost),
+      2,
+    ),
+  );
+  const winEstimation =
+    estimation && costOfShare ? Number(usdcToGet) - costOfShare : 0;
+  const winSummary = [
+    {
+      title: "Profit",
+      value: winEstimation,
+      symbol: "$",
+    },
+    {
+      title: "Change",
+      value: (winEstimation / costOfShare) * 100,
+      symbol: "%",
+    },
+    {
+      title: "Multiplier",
+      value: winEstimation / costOfShare,
+      symbol: "x",
     },
   ];
   async function handleSell(input: FormData) {
@@ -249,7 +283,7 @@ export default function DetailSellAction({
               <div className="flex items-center gap-2">
                 <span className="font-geneva text-xs font-normal text-9black/50">
                   {formatUnits(
-                    ownedShares?.[0]?.balanceRaw ?? BigInt(0),
+                    ownedShare?.balanceRaw ?? BigInt(0),
                     config.contracts.decimals.shares,
                   )}
                 </span>
@@ -323,6 +357,40 @@ export default function DetailSellAction({
               ))}
             </ul>
           </div>
+          {share ? (
+            <div
+              className={combineClass(
+                minimized && "hidden",
+                "flex-col gap-4 bg-9gray p-5 text-xs shadow-9orderSummary md:flex",
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-chicago uppercase">To Win 💵</span>
+                <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
+                  ${winEstimation.toFixed(2)}
+                </span>
+              </div>
+              <ul className="flex flex-col gap-1 text-gray-500">
+                {winSummary.map((i) => (
+                  <li
+                    key={"winSum_" + i.title}
+                    className="flex items-center justify-between"
+                  >
+                    <strong>{i.title}</strong>
+                    <span
+                      className={combineClass(
+                        0 > i.value ? "bg-9red" : "bg-9green",
+                        "px-1 py-0.5 font-geneva",
+                      )}
+                    >
+                      {i.symbol}
+                      {i.value.toFixed(2)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <Button
             disabled={isSelling || isConnecting || shouldStopAction}
             title={isSelling ? "Loading.." : "Sell"}

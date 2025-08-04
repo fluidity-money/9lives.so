@@ -490,7 +490,7 @@ export default function DetailBuyAction({
               <div className="flex items-center justify-between">
                 <span className="font-chicago uppercase">To Win 💵</span>
                 <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
-                  ${winEstimation}
+                  ${Number(winEstimation).toFixed(2)}
                 </span>
               </div>
               <ul className="flex flex-col gap-1 text-gray-500">
