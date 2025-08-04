@@ -256,6 +256,10 @@ export default function DetailBuyAction({
     (addr: string) => setValue("fromToken", addr),
     [setValue],
   );
+  useEffect(() => {
+    console.log("Supplyytrte", supply);
+  }, [supply]);
+
   return (
     <>
       <ShadowCard
@@ -480,7 +484,7 @@ export default function DetailBuyAction({
               ))}
             </ul>
           </div>
-          {supply ? (
+          {Number(supply) ? (
             <div
               className={combineClass(
                 minimized && "hidden",

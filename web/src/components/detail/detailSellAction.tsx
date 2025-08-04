@@ -357,7 +357,7 @@ export default function DetailSellAction({
               ))}
             </ul>
           </div>
-          {share ? (
+          {Number(share) ? (
             <div
               className={combineClass(
                 minimized && "hidden",
