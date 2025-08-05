@@ -157,6 +157,9 @@ L:
 						{"Calldata", callCd},
 					},
 				))
+				if err != nil {
+					setup.Exitf("Failed to send report operation: %v", err)
+				}
 				badIds = append(badIds, items[i].ID)
 				x := operations[len(operations)-len(badIds)]
 				operations[i] = x
