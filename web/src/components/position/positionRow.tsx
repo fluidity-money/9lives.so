@@ -242,7 +242,7 @@ export default function PositionRow({
         <td>
           <div className="flex flex-col gap-1">
             <span className="font-chicago text-xs">
-              {data.balance}{" "}
+              {Number(data.balance) ? data.balance : "<0.01"}{" "}
               <span
                 className={combineClass(
                   "p-0.5",
@@ -256,7 +256,7 @@ export default function PositionRow({
                 {data.name}
               </span>
             </span>
-            {history && history.length > 0 ? (
+            {history && history.length > 0 && Number(data.balance) ? (
               <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
                 AVG ${averageShareCost.toFixed(2)}/Share
               </span>
