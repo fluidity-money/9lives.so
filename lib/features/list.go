@@ -40,4 +40,8 @@ const (
 	// FeatureShouldSimulateSubmission will simulate a multicall transaction using the Paymaster
 	// sender before accepting a transaction from the end user.
 	FeatureShouldSimulateSubmission = "paymaster should simulate submission"
+
+	// FeatureShouldReportPaymasterFailure is enabled if we want to alert via Twist if an error
+	// took place simulating a Paymaster transaction, including details.
+	FeatureShouldReportPaymasterFailure = "paymaster should report failure"
 )

@@ -13,10 +13,11 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/config"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
+	"github.com/fluidity-money/9lives.so/lib/webhooks"
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
+	paymasterMisc "github.com/fluidity-money/9lives.so/lib/misc/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
-	paymasterMisc "github.com/fluidity-money/9lives.so/lib/misc/paymaster"
 
 	_ "github.com/lib/pq"
 
@@ -30,6 +31,9 @@ import (
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
+
+// IntentBadOperation is used to key a webhook send when a simulation fails.
+const IntentBadOperation = "twist/bad operation sim"
 
 const (
 	EnvPrivateKey       = "SPN_SUPERPOSITION_KEY"
@@ -146,6 +150,13 @@ L:
 			} else {
 				// Looks like we had a bad result here. We need to replace it with the
 				// end then track. Later, we'll use the length of the bad ids to pop.
+				err = f.On(features.FeatureShouldReportPaymasterFailure, config.W.TwistCur(
+					IntentBadOperation,
+					"Failed to send operation!",
+					[]webhooks.F{
+						{"Calldata", callCd},
+					},
+				))
 				badIds = append(badIds, items[i].ID)
 				x := operations[len(operations)-len(badIds)]
 				operations[i] = x

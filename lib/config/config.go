@@ -1,15 +1,16 @@
 // config: contains configuration behaviour that should be configured
 // using environment variables that're global.
-//
 
 package config
 
 import (
+	"log/slog"
 	"math/rand"
 	"os"
 	"strings"
 
 	"github.com/fluidity-money/9lives.so/lib/setup"
+	"github.com/fluidity-money/9lives.so/lib/webhooks"
 )
 
 // DefaultChainId to use for all interactions.
@@ -17,6 +18,7 @@ const DefaultChainId = 55244
 
 // C is configuration for each service, and globally.
 type C struct {
+	W                                       webhooks.Webhooks
 	GethUrls                                []string
 	TimescaleUrls                           []string
 	FactoryAddress, InfraMarketAddress      string
@@ -30,6 +32,10 @@ type C struct {
 
 // Get config by querying environment variables.
 func Get() C {
+	w := parseWebhooks()
+	if len(w) == 0 {
+		slog.Debug("SPN_WEBHOOKS_LIST is empty")
+	}
 	/* Global RPC configuration. */
 	gethUrl := os.Getenv("SPN_SUPERPOSITION_URL")
 	if gethUrl == "" {
@@ -90,6 +96,7 @@ func Get() C {
 		setup.Exitf("SPN_PUNK_DOMAINS_TLD_ADDR not set")
 	}
 	return C{
+		W:                        w,
 		GethUrls:                 gethUrls,
 		TimescaleUrls:            timescaleUrls,
 		FactoryAddress:           factoryAddr,
