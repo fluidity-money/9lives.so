@@ -120,43 +120,39 @@ export default function DetailSellAction({
       title: "Shares",
       value: share,
     },
-    {
-      title: "USDC to Get",
-      value: `$${usdcToGet}`,
-    },
   ];
-  const { data: positionsHistory } = usePositionHistory(account?.address, [
-    outcome.identifier,
-  ]);
-  const historicalCost = Math.trunc(
-    positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0,
-  );
+  // const { data: positionsHistory } = usePositionHistory(account?.address, [
+  //   outcome.identifier,
+  // ]);
+  // const historicalCost = Math.trunc(
+  //   positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0,
+  // );
   const ownedShare = ownedShares?.find((o) => o.id === outcome.identifier);
-  const costOfShare = Number(
-    formatFusdc(
-      Math.floor((share / Number(ownedShare?.balance ?? 0)) * historicalCost),
-      2,
-    ),
-  );
-  const winEstimation =
-    estimation && costOfShare ? Number(usdcToGet) - costOfShare : 0;
-  const winSummary = [
-    {
-      title: "Profit",
-      value: winEstimation,
-      symbol: "$",
-    },
-    {
-      title: "Change",
-      value: (winEstimation / costOfShare) * 100,
-      symbol: "%",
-    },
-    {
-      title: "Multiplier",
-      value: winEstimation / costOfShare,
-      symbol: "x",
-    },
-  ];
+  // const costOfShare = Number(
+  //   formatFusdc(
+  //     Math.floor((share / Number(ownedShare?.balance ?? 0)) * historicalCost),
+  //     2,
+  //   ),
+  // );
+  // const winEstimation =
+  //   estimation && costOfShare ? Number(usdcToGet) - costOfShare : 0;
+  // const winSummary = [
+  //   {
+  //     title: "Profit",
+  //     value: winEstimation,
+  //     symbol: "$",
+  //   },
+  //   {
+  //     title: "Change",
+  //     value: (winEstimation / costOfShare) * 100,
+  //     symbol: "%",
+  //   },
+  //   {
+  //     title: "Multiplier",
+  //     value: winEstimation / costOfShare,
+  //     symbol: "x",
+  //   },
+  // ];
   async function handleSell(input: FormData) {
     try {
       setIsSelling(true);
@@ -367,10 +363,10 @@ export default function DetailSellAction({
               <div className="flex items-center justify-between">
                 <span className="font-chicago uppercase">To Win 💵</span>
                 <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
-                  ${winEstimation.toFixed(2)}
+                  ${usdcToGet}
                 </span>
               </div>
-              <ul className="flex flex-col gap-1 text-gray-500">
+              {/* <ul className="flex flex-col gap-1 text-gray-500">
                 {winSummary.map((i) => (
                   <li
                     key={"winSum_" + i.title}
@@ -388,7 +384,7 @@ export default function DetailSellAction({
                     </span>
                   </li>
                 ))}
-              </ul>
+              </ul> */}
             </div>
           ) : null}
           <Button
