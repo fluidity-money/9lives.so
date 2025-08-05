@@ -34,6 +34,7 @@ import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
 import { useUserStore } from "@/stores/userStore";
 import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
+import ChainSelector from "../chainSelector";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -412,51 +413,11 @@ export default function DetailBuyAction({
             </div>
             {errors.supply && <ErrorInfo text={errors.supply.message} />}
             {enabledRelay ? (
-              <div className="flex flex-col gap-1.5">
-                <span className="font-chicago text-xs font-normal text-9black">
-                  From{" "}
-                  <span className="underline">
-                    {
-                      Object.values(
-                        isInMiniApp
-                          ? {
-                              superposition: config.chains.superposition,
-                              ...config.farcasterChains,
-                            }
-                          : config.chains,
-                      ).find((chain) => chain.id === fromChain)?.name
-                    }
-                  </span>
-                </span>
-                <div className="flex items-center gap-1">
-                  {Object.values(
-                    isInMiniApp
-                      ? {
-                          superposition: config.chains.superposition,
-                          ...config.farcasterChains,
-                        }
-                      : config.chains,
-                  ).map((chain) => (
-                    <div
-                      key={chain.id}
-                      onClick={() => handleNetworkChange(chain)}
-                      title={chain.name}
-                      className="cursor-pointer"
-                    >
-                      <Image
-                        alt={chain.name ?? ""}
-                        src={chain.icon}
-                        className={combineClass(
-                          chain.id === fromChain
-                            ? "border-2 border-9black"
-                            : "border border-9black/50 grayscale",
-                          "size-8",
-                        )}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <ChainSelector
+                handleNetworkChange={handleNetworkChange}
+                selectedChainId={fromChain}
+                isInMiniApp={isInMiniApp}
+              />
             ) : null}
             {errors.fromChain && <ErrorInfo text={errors.fromChain.message} />}
             {errors.fromToken && <ErrorInfo text={errors.fromToken.message} />}
