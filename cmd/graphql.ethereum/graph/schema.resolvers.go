@@ -1160,7 +1160,7 @@ func (r *queryResolver) UserActivity(ctx context.Context, address string, campai
 	query := r.DB.Table("ninelives_buys_and_sells_1").Select("*",
 		"created_by AS created_at",
 		"transaction_hash AS tx_hash",
-		"emitter_addr AS pool_address").Where(&types.Activity{Recipient: address})
+		"emitter_addr AS pool_address").Where(&types.Activity{Recipient: address}).Order("created_at DESC")
 	if campaignID != nil {
 		query = query.Where(&types.Activity{CampaignID: *campaignID})
 	}
