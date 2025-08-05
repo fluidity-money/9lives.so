@@ -61,6 +61,10 @@ const (
 	// EnvPaymasterMinimumFee to use as the minimum amount for maximum
 	// fee. Should be 200000 for 20 cents (the current fee for a sell).
 	EnvPaymasterMinimumFee = "SPN_PAYMASTER_MIN_FEE"
+
+	// EnvPaymasterSenderAddr that's used for simulating Paymaster interactions
+	// at the graph level.
+	EnvPaymasterSenderAddr = "SPN_PAYMASTER_SENDER_ADDR"
 )
 
 // ChangelogLen to send to the user at max on request for the changelog endpoint.
@@ -116,6 +120,10 @@ func main() {
 	paymasterMinFee, ok := new(big.Int).SetString(os.Getenv(EnvPaymasterMinimumFee), 10)
 	if !ok {
 		setup.Exitf("SPN_PAYMASTER_MIN_FEE incorrectly set")
+	}
+	paymasterSenderAddr := os.Getenv(EnvPaymasterSenderAddr)
+	if paymasterSenderAddr == "" {
+		setup.Exitf("SPN_PAYMASTER_SENDER_ADDR not set")
 	}
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{

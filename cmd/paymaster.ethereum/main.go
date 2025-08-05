@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"crypto/ecdsa"
 	"database/sql"
-	_ "embed"
 	"fmt"
 	"log/slog"
 	"os"
@@ -18,6 +16,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
+	paymasterMisc "github.com/fluidity-money/9lives.so/lib/misc/paymaster"
 
 	_ "github.com/lib/pq"
 
@@ -26,7 +25,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/ethereum/go-ethereum"
-	ethAbi "github.com/ethereum/go-ethereum/accounts/abi"
 	ethAbiBind "github.com/ethereum/go-ethereum/accounts/abi/bind/v2"
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
@@ -38,11 +36,6 @@ const (
 	EnvPollLifeTimeSecs = "SPN_POLL_LIFE_TIME_SECS"
 	EnvSleepTimeSecs    = "SPN_SLEEP_SECS"
 )
-
-//go:embed abi.json
-var abiB []byte
-
-var abi, abiErr = ethAbi.JSON(bytes.NewReader(abiB))
 
 func main() {
 	defer setup.Flush()
@@ -137,7 +130,7 @@ L:
 			setup.Exitf("error calling, sender: %v: %x", fromAddr, callCd)
 		}
 		// These are the bad ids we need to call with our function to remove.
-		callResI, err := abi.Unpack("multicall", callRes)
+		callResI, err := paymasterMisc.Abi.Unpack("multicall", callRes)
 		if err != nil {
 			setup.Exitf("unpack simulate: %v", err)
 		}
@@ -178,7 +171,13 @@ L:
 			setup.Exitf("estimate gas: %v", err)
 		}
 		// Now that we know the gas, it's time to submit!
-		bc := ethAbiBind.NewBoundContract(paymasterAddr, abi, c, c, c)
+		bc := ethAbiBind.NewBoundContract(
+			paymasterAddr,
+			paymasterMisc.Abi,
+			c,
+			c,
+			c,
+		)
 		// Get a safe upper bound for the gas amount.
 		gas = uint64(float64(gas) * 1.25)
 		tx, err := bc.Transact(transactOpts, "multicall", operations[:goodLen])
@@ -220,10 +219,4 @@ func logIds(db *gorm.DB, ctx context.Context, badIds, goodIds []int, h string) {
 
 func sleep(secs int) {
 	time.Sleep(time.Duration(secs) * time.Second)
-}
-
-func init() {
-	if abiErr != nil {
-		panic(abiErr)
-	}
 }

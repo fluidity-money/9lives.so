@@ -36,4 +36,8 @@ const (
 
 	// FeatureShouldValidateMarketExistence before accepting a request to the Paymaster.
 	FeatureShouldValidateMarketExistence = "paymaster should check trading addr"
+
+	// FeatureShouldSimulateSubmission will simulate a multicall transaction using the Paymaster
+	// sender before accepting a transaction from the end user.
+	FeatureShouldSimulateSubmission = "paymaster should simulate submission"
 )

@@ -27,6 +27,7 @@ type Resolver struct {
 	BeautyContestAddr       ethCommon.Address     // address of the beauty contest (opinion poll)
 	SarpAiAddr              ethCommon.Address     // address of SARP AI
 	PaymasterAddr           ethCommon.Address     // address of the Paymaster
+	PaymasterSenderAddr     ethCommon.Address     // public key address of the Paymaster sender
 	ChangelogItems          []changelog.Changelog // the changelog for this.
 	S3UploadBucketName      string                // bucket for s3 images
 	S3UploadManager         *s3manager.Uploader   // uploader for S3

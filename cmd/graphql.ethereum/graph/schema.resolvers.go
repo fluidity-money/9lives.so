@@ -466,6 +466,25 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 			return nil, fmt.Errorf("owner addr")
 		}
 	}
+	if r.F.Is(features.FeatureShouldSimulateSubmission) {
+		ok, err := simPaymasterMulticall(
+			ctx,
+			r.Geth,
+			r.PaymasterSenderAddr,
+			r.PaymasterAddr,
+			p,
+		)
+		if err != nil {
+			slog.Error("Failed to simulate a paymaster multicall transaction",
+				"p", p,
+				"err", err,
+			)
+			return nil, fmt.Errorf("simulate paymaster send")
+		}
+		if !ok {
+			return nil, fmt.Errorf("paymaster simulation returned false")
+		}
+	}
 	if err := r.DB.Table("ninelives_paymaster_poll_1").Create(&p).Error; err != nil {
 		slog.Error("Error inserting new paymaster operation", "err", err)
 		return nil, fmt.Errorf("insert paymaster op")
