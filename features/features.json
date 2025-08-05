@@ -11,5 +11,6 @@
 	"enable relay buy": true,
 	"enable paymaster sell": true,
 	"paymaster should check sig": true,
-	"paymaster should check trading addr": true
+	"paymaster should check trading addr": true,
+	"paymaster should report failure": true
 }
