@@ -17,7 +17,7 @@ export default function useBalance(
     contract = getContract({
       abi: ERC20Abi,
       address: erc20Addr,
-      chain: config.thirdweb.chain,
+      chain: config.destinationChain,
       client: config.thirdweb.client,
     });
   } else {
