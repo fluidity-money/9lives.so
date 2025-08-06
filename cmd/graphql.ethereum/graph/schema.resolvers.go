@@ -30,6 +30,8 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/types/referrer"
+	"github.com/fluidity-money/9lives.so/lib/webhooks"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -479,9 +481,30 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 				"p", p,
 				"err", err,
 			)
+			err = r.F.On(features.FeatureShouldReportPaymasterFailure,
+				r.C.W.TwistCur(
+					IntentBadOperation,
+					"Paymaster simulation was in error for a user",
+					[]webhooks.F{
+						{"Calldata", p},
+					},
+				),
+			)
 			return nil, fmt.Errorf("simulate paymaster send")
 		}
 		if !ok {
+			slog.Error("Paymaster simulation returned false",
+				"p", p,
+			)
+			err = r.F.On(features.FeatureShouldReportPaymasterFailure,
+				r.C.W.TwistCur(
+					IntentBadOperation,
+					"Paymaster simulation was false for a user",
+					[]webhooks.F{
+						{"Calldata", p},
+					},
+				),
+			)
 			return nil, fmt.Errorf("paymaster simulation returned false")
 		}
 	}

@@ -13,11 +13,11 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/config"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
-	"github.com/fluidity-money/9lives.so/lib/webhooks"
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	paymasterMisc "github.com/fluidity-money/9lives.so/lib/misc/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
+	"github.com/fluidity-money/9lives.so/lib/webhooks"
 
 	_ "github.com/lib/pq"
 
@@ -150,13 +150,15 @@ L:
 			} else {
 				// Looks like we had a bad result here. We need to replace it with the
 				// end then track. Later, we'll use the length of the bad ids to pop.
-				err = f.On(features.FeatureShouldReportPaymasterFailure, config.W.TwistCur(
-					IntentBadOperation,
-					"Failed to send operation!",
-					[]webhooks.F{
-						{"Calldata", callCd},
-					},
-				))
+				err = f.On(features.FeatureShouldReportPaymasterFailure,
+					config.W.TwistCur(
+						IntentBadOperation,
+						"Failed to send operation!",
+						[]webhooks.F{
+							{"Calldata", callCd},
+						},
+					),
+				)
 				if err != nil {
 					setup.Exitf("Failed to send report operation: %v", err)
 				}
