@@ -127,6 +127,14 @@ func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSe
 		From: paymasterSenderAddr,
 		Data: cd,
 	}, nil)
+	if len(callRes) == 0 {
+		return false, fmt.Errorf(
+			"simulation reverted, from: %v, to: %v: %v",
+			paymasterSenderAddr,
+			paymasterContractAddr,
+			cd,
+		)
+	}
 	i, err := paymasterMisc.Abi.Unpack("multicall", callRes)
 	if err != nil {
 		return false, fmt.Errorf("pack multicall: %v", err)
