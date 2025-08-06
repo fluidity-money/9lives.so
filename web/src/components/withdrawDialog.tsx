@@ -7,7 +7,6 @@ import { Field } from "@headlessui/react";
 import Input from "./themed/input";
 import { combineClass } from "@/utils/combineClass";
 import { FormEvent, useRef, useState } from "react";
-import { Account } from "thirdweb/wallets";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import formatFusdc from "@/utils/formatFusdc";
@@ -16,6 +15,7 @@ import ChainSelector from "./chainSelector";
 import { useUserStore } from "@/stores/userStore";
 import { Chain } from "thirdweb";
 import useBalance from "@/hooks/useBalance";
+import useWithdraw from "@/hooks/useWithdraw";
 
 export default function WithdrawDialog() {
   const account = useActiveAccount();
@@ -23,8 +23,8 @@ export default function WithdrawDialog() {
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
-  const { data } = useBalance(account);
-  const maxBalance = Number(formatFusdc(data, 6));
+  const { data: balance } = useBalance(account);
+  const maxBalance = Number(formatFusdc(balance, 6));
   const formSchema = z.object({
     amount: z.preprocess(
       (val) => Number(val),
@@ -47,15 +47,11 @@ export default function WithdrawDialog() {
     },
   });
   const selectedChainId = watch("toChain");
-  // const { remove } = useLiquidity({
-  //     campaignId,
-  //     tradingAddr,
-  // });
-  const onSubmit = async (input: FormData, account: Account) => {
+  const { withdraw } = useWithdraw();
+  const onSubmit = async (input: FormData) => {
     try {
       setIsLoading(true);
-      // await remove(account!, input.amount.toString());
-      close();
+      await withdraw(input.amount, input.toChain);
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +62,7 @@ export default function WithdrawDialog() {
       connect();
       return;
     }
-    handleSubmit((data) => onSubmit(data, account))(e);
+    handleSubmit((data) => onSubmit(data))(e);
   };
   const handleNetworkChange = async (chain: Chain) => {
     setValue("toChain", chain.id);
@@ -121,6 +117,7 @@ export default function WithdrawDialog() {
         isInMiniApp={isInMiniApp}
         handleNetworkChange={handleNetworkChange}
         selectedChainId={selectedChainId}
+        removeSPN={true}
       />
       <Button
         intent={"no"}

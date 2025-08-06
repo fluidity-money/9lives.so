@@ -8,54 +8,52 @@ export default function ChainSelector({
   handleNetworkChange,
   title = "From",
   isInMiniApp,
+  removeSPN,
 }: {
   selectedChainId: number;
   isInMiniApp: boolean;
   handleNetworkChange: (chain: Chain) => void;
   title?: string;
+  removeSPN?: boolean;
 }) {
+  let chains = isInMiniApp
+    ? (JSON.parse(JSON.stringify(config.farcasterChains)) as Record<
+        string,
+        Chain
+      >)
+    : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
+  if (removeSPN) {
+    delete chains.superposition;
+  }
+  const chainList = Object.values(chains);
   return (
     <div className="flex flex-col gap-1.5">
       <span className="font-chicago text-xs font-normal text-9black">
         {title}{" "}
         <span className="underline">
-          {
-            Object.values(
-              isInMiniApp
-                ? {
-                    superposition: config.chains.superposition,
-                    ...config.farcasterChains,
-                  }
-                : config.chains,
-            ).find((chain) => chain.id === selectedChainId)?.name
-          }
+          {chainList.find((chain) => chain.id === selectedChainId)?.name}
         </span>
       </span>
       <div className="flex items-center gap-1">
-        {Object.values(
-          isInMiniApp
-            ? {
-                superposition: config.chains.superposition,
-                ...config.farcasterChains,
-              }
-            : config.chains,
-        ).map((chain) => (
+        {chainList.map((chain) => (
           <div
             key={chain.id}
             onClick={() => handleNetworkChange(chain)}
             title={chain.name}
             className="cursor-pointer"
           >
-            <Image
-              alt={chain.name ?? ""}
-              src={chain.icon}
-              className={combineClass(
-                chain.id === selectedChainId
-                  ? "border-2 border-9black"
-                  : "border border-9black/50 grayscale",
-                "size-8",
-              )}
-            />
+            {chain.icon && (
+              <Image
+                alt={chain.name ?? ""}
+                src={chain.icon.url}
+                className={combineClass(
+                  chain.id === selectedChainId
+                    ? "border-2 border-9black"
+                    : "border border-9black/50 grayscale",
+                  "size-8",
+                )}
+              />
+            )}
           </div>
         ))}
       </div>

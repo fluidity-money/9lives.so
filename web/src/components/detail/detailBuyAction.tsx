@@ -103,7 +103,7 @@ export default function DetailBuyAction({
       supply: 0,
       toChain: config.chains.superposition.id,
       toToken: ZeroAddress,
-      fromChain: config.chains.arbitrum.id,
+      fromChain: config.chains.superposition.id,
       fromToken: ZeroAddress,
     },
   });

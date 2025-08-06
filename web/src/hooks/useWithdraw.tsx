@@ -5,14 +5,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
-import { useActiveAccount } from "thirdweb/react";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 import { chainIdToEid } from "@/config/chains";
 import { ZeroAddress } from "ethers";
+import { Account } from "thirdweb/wallets";
 
-const useWithdraw = ({ openFundModal }: { openFundModal: () => void }) => {
+const useWithdraw = () => {
   const queryClient = useQueryClient();
-  const account = useActiveAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
@@ -62,7 +61,7 @@ const useWithdraw = ({ openFundModal }: { openFundModal: () => void }) => {
       // invalidate queries not here but, after reading paymaster tickets
     },
   });
-  const withdraw = async (fusdc: number, chainId: number) =>
+  const withdraw = async (fusdc: number, chainId: number, account?: Account) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -81,7 +80,6 @@ const useWithdraw = ({ openFundModal }: { openFundModal: () => void }) => {
             account,
           });
           if (amount > userBalance) {
-            openFundModal();
             throw new Error("You dont have enough USDC.");
           }
           const result = await requestPaymasterOptimistically({

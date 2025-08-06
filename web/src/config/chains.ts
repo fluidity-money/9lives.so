@@ -86,12 +86,13 @@ const apechain = defineChain({
   icon: APE,
 });
 const farcasterList = {
+  superposition: { ...superposition, icon: SPN },
   arbitrum: { ...arbitrum, icon: ARB },
   // apechain: { ...apechain, icon: APE },
 } as const;
 const chainList = {
   superposition: { ...superposition, icon: SPN },
-  ...farcasterList,
+  arbitrum: { ...arbitrum, icon: ARB },
   ethereum: { ...ethereum, icon: ETH },
   optimism: { ...optimism, icon: OP },
   base: { ...base, icon: BASE },
