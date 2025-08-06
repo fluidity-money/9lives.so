@@ -24,6 +24,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types"
+	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/types/banners"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
 	commitment_reveal "github.com/fluidity-money/9lives.so/lib/types/commitment-reveal"
@@ -490,6 +491,9 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 					},
 				),
 			)
+			if err != nil {
+				setup.Exitf("Failed to send Twist report about failure: %v", err)
+			}
 			return nil, fmt.Errorf("simulate paymaster send")
 		}
 		if !ok {
@@ -505,6 +509,9 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 					},
 				),
 			)
+			if err != nil {
+				setup.Exitf("Failed to send Twist report about failure: %v", err)
+			}
 			return nil, fmt.Errorf("paymaster simulation returned false")
 		}
 	}
