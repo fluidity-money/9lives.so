@@ -129,7 +129,7 @@ func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSe
 	}, nil)
 	i, err := paymasterMisc.Abi.Unpack("multicall", callRes)
 	if err != nil {
-		return false, fmt.Errorf("pack multicall: %v")
+		return false, fmt.Errorf("pack multicall: %v", err)
 	}
 	switch v := i[0].(type) {
 	case []bool:
