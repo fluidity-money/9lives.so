@@ -29,6 +29,7 @@ export namespace Schema {
     fields: {
       __typename: Query.__typename;
       points: Query.points;
+      leaderboard: Query.leaderboard;
       achievements: Query.achievements;
       leaderboards: Query.leaderboards;
       productUserCount: Query.productUserCount;
@@ -64,6 +65,32 @@ export namespace Schema {
         };
       };
       inlineType: [1];
+      namedType: $$NamedTypes.$$Points;
+    }
+
+    /**
+     * Leaderboard for everyone of points, sent in batches of 50. Also lets you request
+     * information on the connected wallet's place in the leaderboard. If the user requested
+     * their wallet, they're included as the last row if they weren't included in the results list
+     * along with their place in the results.
+     */
+    export interface leaderboard extends $.OutputField {
+      name: "leaderboard";
+      arguments: {
+        from: {
+          kind: "InputField";
+          name: "from";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
+        wallet: {
+          kind: "InputField";
+          name: "wallet";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [1]];
       namedType: $$NamedTypes.$$Points;
     }
 
@@ -700,6 +727,9 @@ export namespace Schema {
     fields: {
       __typename: Points.__typename;
       id: Points.id;
+      domainName: Points.domainName;
+      placement: Points.placement;
+      wallet: Points.wallet;
       amount: Points.amount;
     };
   }
@@ -723,6 +753,36 @@ export namespace Schema {
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$ID;
+    }
+
+    /**
+     * Meow Domain, if any.
+     */
+    export interface domainName extends $.OutputField {
+      name: "domainName";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Placement of the user's points in the leaderboard rankings.
+     */
+    export interface placement extends $.OutputField {
+      name: "placement";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Wallet address of the user whom these points are for.
+     */
+    export interface wallet extends $.OutputField {
+      name: "wallet";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
 
     /**

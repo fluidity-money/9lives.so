@@ -56,6 +56,31 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
+   * Leaderboard for everyone of points, sent in batches of 50. Also lets you request
+   * information on the connected wallet's place in the leaderboard. If the user requested
+   * their wallet, they're included as the last row if they weren't included in the results list
+   * along with their place in the results.
+   */
+  leaderboard: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.leaderboard<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { leaderboard: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "leaderboard"
+        >
+    >
+  >;
+  /**
    * Get achievements for the address given, or the category.
    * If the product is requested, then the count will be 0.
    */

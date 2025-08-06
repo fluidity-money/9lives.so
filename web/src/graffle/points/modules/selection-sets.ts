@@ -61,6 +61,14 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.points<_$Scalars>>;
   /**
    *
+   * Select the `leaderboard` field on the `Query` object. Its type is `Points` (a `OutputObject` kind of type).
+   *
+   */
+  leaderboard?:
+    | Query.leaderboard$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.leaderboard<_$Scalars>>;
+  /**
+   *
    * Select the `achievements` field on the `Query` object. Its type is `Achievement` (a `OutputObject` kind of type).
    *
    */
@@ -185,6 +193,46 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<points$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type leaderboard<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = leaderboard$SelectionSet<_$Scalars>;
+
+  export interface leaderboard$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Points<_$Scalars> {
+    /**
+     * Arguments for `leaderboard` field. No arguments are required so you may omit this.
+     */
+    $?: leaderboard$Arguments<_$Scalars>;
+  }
+
+  export interface leaderboard$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    from?: number | undefined | null;
+    wallet?: string | undefined | null;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `leaderboard` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type leaderboard$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<leaderboard$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
@@ -1626,6 +1674,30 @@ export interface Points<
     | $Select.SelectAlias.SelectAlias<Points.id<_$Scalars>>;
   /**
    *
+   * Select the `domainName` field on the `Points` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  domainName?:
+    | Points.domainName$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Points.domainName<_$Scalars>>;
+  /**
+   *
+   * Select the `placement` field on the `Points` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  placement?:
+    | Points.placement$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Points.placement<_$Scalars>>;
+  /**
+   *
+   * Select the `wallet` field on the `Points` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  wallet?:
+    | Points.wallet$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Points.wallet<_$Scalars>>;
+  /**
+   *
    * Select the `amount` field on the `Points` object. Its type is `Int` (a `ScalarStandard` kind of type).
    *
    */
@@ -1690,6 +1762,90 @@ export namespace Points {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type domainName<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | domainName$SelectionSet<_$Scalars>;
+
+  export interface domainName$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `domainName` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type domainName$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | domainName$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type placement<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | placement$SelectionSet<_$Scalars>;
+
+  export interface placement$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `placement` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type placement$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | placement$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type wallet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
+
+  export interface wallet$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `wallet` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type wallet$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------

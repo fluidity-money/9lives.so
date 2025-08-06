@@ -132,6 +132,9 @@ const LeaderboardItem: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 const Points: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     id: {},
+    domainName: {},
+    placement: {},
+    wallet: {},
     amount: {},
   },
 };
@@ -203,6 +206,19 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         wallet: {
           nt: String,
           it: [1],
+        },
+      },
+      // nt: Points, <-- Assigned later to avoid potential circular dependency.
+    },
+    leaderboard: {
+      a: {
+        from: {
+          nt: Int,
+          it: [0],
+        },
+        wallet: {
+          nt: String,
+          it: [0],
         },
       },
       // nt: Points, <-- Assigned later to avoid potential circular dependency.
@@ -389,6 +405,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 
 Leaderboard.f[`items`]!.nt = LeaderboardItem;
 Query.f[`points`]!.nt = Points;
+Query.f[`leaderboard`]!.nt = Points;
 Query.f[`achievements`]!.nt = Achievement;
 Query.f[`leaderboards`]!.nt = Leaderboard;
 Query.f[`getTokenLeaderboard`]!.nt = TokenHolding;
