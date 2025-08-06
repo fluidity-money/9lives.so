@@ -80,11 +80,11 @@ export default function PortfolioHeader() {
                 ${formatFusdc(Number(balance), 2)}
               </span>
             </div>
-            <Button
+            {/* <Button
               title="Withdraw"
               intent={"cta"}
               onClick={() => setIsWithdrawDialogOpen(true)}
-            />
+            /> */}
             <Link
               href={"https://bridge.superposition.so/"}
               target="_blank"
