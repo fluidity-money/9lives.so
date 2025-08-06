@@ -3,9 +3,11 @@ import appConfig from "../../../config";
 export async function GET() {
   const config = {
     accountAssociation: {
-      header: "eyJmaWQiOjExMDM5MDgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhGMTU4MjZFRTdjYjAzZDEzMEQ4MDM4NzUwNThhQTM5OEIyYTdiNmU0In0",
+      header:
+        "eyJmaWQiOjExMDM5MDgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhGMTU4MjZFRTdjYjAzZDEzMEQ4MDM4NzUwNThhQTM5OEIyYTdiNmU0In0",
       payload: "eyJkb21haW4iOiI5bGl2ZXMuc28ifQ",
-      signature: "MHhhYzkwYjg2OWQyMDFkYzY1OTQ4MTNlYTZjNDQ1YzAwZjM3NzU2ZDg5N2JmZjcxY2MyMzE2MTFiNDI0N2YwZDE0MGM1Y2E1YWExODIzOWY5Y2QyOTljY2U2ZWYxNTcwODdjMTQ1MjBiN2ZlNzY1YjdjYmYyNDE5MThlMWMzNDQzYTFi"
+      signature:
+        "MHhhYzkwYjg2OWQyMDFkYzY1OTQ4MTNlYTZjNDQ1YzAwZjM3NzU2ZDg5N2JmZjcxY2MyMzE2MTFiNDI0N2YwZDE0MGM1Y2E1YWExODIzOWY5Y2QyOTljY2U2ZWYxNTcwODdjMTQ1MjBiN2ZlNzY1YjdjYmYyNDE5MThlMWMzNDQzYTFi",
     },
     frame: appConfig.frame,
   };
