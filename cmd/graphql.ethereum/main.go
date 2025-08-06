@@ -146,6 +146,7 @@ func main() {
 			LambdaMiscAiBackendName: os.Getenv(EnvLambdaMiscAiBackend),
 			AdminSecret:             adminSecret,
 			PaymasterMinimumUSDCGas: paymasterMinFee,
+			PaymasterSenderAddr:     ethCommon.HexToAddress(paymasterSenderAddr),
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})
