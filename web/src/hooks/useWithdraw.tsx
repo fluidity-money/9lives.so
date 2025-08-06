@@ -5,13 +5,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
+import { useActiveAccount } from "thirdweb/react";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 import { chainIdToEid } from "@/config/chains";
 import { ZeroAddress } from "ethers";
-import { Account } from "thirdweb/wallets";
 
 const useWithdraw = () => {
   const queryClient = useQueryClient();
+  const account = useActiveAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
@@ -61,7 +62,7 @@ const useWithdraw = () => {
       // invalidate queries not here but, after reading paymaster tickets
     },
   });
-  const withdraw = async (fusdc: number, chainId: number, account?: Account) =>
+  const withdraw = async (fusdc: number, chainId: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -85,6 +86,7 @@ const useWithdraw = () => {
           const result = await requestPaymasterOptimistically({
             amountToSpend: amount,
             opType: "WITHDRAW_USDC",
+            outcome: "0x0000000000000000",
             tradingAddr: ZeroAddress,
             outgoingChainEid: chainIdToEid[chainId],
             minimumBack: "0",

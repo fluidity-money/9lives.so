@@ -42,18 +42,16 @@ export default function ChainSelector({
             title={chain.name}
             className="cursor-pointer"
           >
-            {chain.icon && (
-              <Image
-                alt={chain.name ?? ""}
-                src={chain.icon.url}
-                className={combineClass(
-                  chain.id === selectedChainId
-                    ? "border-2 border-9black"
-                    : "border border-9black/50 grayscale",
-                  "size-8",
-                )}
-              />
-            )}
+            <Image
+              alt={chain.name ?? ""}
+              src={chain.icon as any}
+              className={combineClass(
+                chain.id === selectedChainId
+                  ? "border-2 border-9black"
+                  : "border border-9black/50 grayscale",
+                "size-8",
+              )}
+            />
           </div>
         ))}
       </div>
