@@ -13,6 +13,7 @@ export const EVENTS = {
   REMOVE_LIQUIDITY: "remove_liquidity",
   CLAIM_ALL_FEES: "claim_all_fees",
   EMAIL_SUB: "email_sub",
+  WITHDRAW_USDC: "withdraw_usdc",
 } as const;
 
 export const track = (

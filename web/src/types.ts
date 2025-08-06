@@ -308,7 +308,7 @@ export type Ticket = {
   id: string;
   amount: string;
   account: Account;
-  outcomeId: string;
-  data: CampaignDetail;
+  outcomeId?: string;
+  data?: CampaignDetail;
   opType: PaymasterOp;
 };

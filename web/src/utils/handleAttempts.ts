@@ -1,3 +1,4 @@
+import config from "@/config";
 import { PaymasterAttempt, PaymasterOp, Ticket } from "@/types";
 import { QueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -7,6 +8,8 @@ const handleTicketAttempts: Record<
   (ticket: Ticket, attempt: PaymasterAttempt, queryClient: QueryClient) => void
 > = {
   MINT: (t, a, qc) => {
+    if (!t.data) throw new Error("Campaign detail data is missing");
+    if (!t.outcomeId) throw new Error("outcomeId is missing");
     const selectedOutcome = t.data.outcomes.find(
       (o) => o.identifier === t.outcomeId,
     )!;
@@ -37,6 +40,8 @@ const handleTicketAttempts: Record<
     });
   },
   SELL: (t, a, qc) => {
+    if (!t.data) throw new Error("Campaign detail data is missing");
+    if (!t.outcomeId) throw new Error("outcomeId is missing");
     const selectedOutcome = t.data.outcomes.find(
       (o) => o.identifier === t.outcomeId,
     )!;
@@ -73,7 +78,9 @@ const handleTicketAttempts: Record<
     //TODO
   },
   WITHDRAW_USDC: (t, a, qc) => {
-    // TODO
+    qc.invalidateQueries({
+      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+    });
   },
 };
 export default handleTicketAttempts;
