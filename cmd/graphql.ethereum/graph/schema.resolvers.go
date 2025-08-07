@@ -470,7 +470,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		}
 	}
 	if r.F.Is(features.FeatureShouldSimulateSubmission) {
-		ok, err := simPaymasterMulticall(
+		ok, cd, err := simPaymasterMulticall(
 			ctx,
 			r.Geth,
 			r.PaymasterSenderAddr,
@@ -480,6 +480,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		if err != nil {
 			slog.Error("Failed to simulate a paymaster multicall transaction",
 				"p", p,
+				"cd", hex.EncodeToString(cd),
 				"err", err,
 			)
 			err = r.F.On(features.FeatureShouldReportPaymasterFailure,
@@ -487,7 +488,8 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 					IntentBadOperation,
 					"Paymaster simulation was in error for a user",
 					[]webhooks.F{
-						{"Calldata", p},
+						{"Content", p},
+						{"Calldata", cd},
 					},
 				),
 			)
@@ -499,13 +501,15 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 		if !ok {
 			slog.Error("Paymaster simulation returned false",
 				"p", p,
+				"cd", hex.EncodeToString(cd),
 			)
 			err = r.F.On(features.FeatureShouldReportPaymasterFailure,
 				r.C.W.TwistCur(
 					IntentBadOperation,
 					"Paymaster simulation was false for a user",
 					[]webhooks.F{
-						{"Calldata", p},
+						{"Content", p},
+						{"Calldata", cd},
 					},
 				),
 			)

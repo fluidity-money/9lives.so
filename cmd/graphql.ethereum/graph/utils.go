@@ -115,12 +115,12 @@ func validateReferralSig(sender, referrer ethCommon.Address, r, s, v []byte) (et
 	return recoveredAddr, nil
 }
 
-func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSenderAddr, paymasterContractAddr ethCommon.Address, p paymasterType.Poll) (bool, error) {
-	cd, err := paymasterMisc.Abi.Pack("multicall", []crypto.PaymasterOperation{
+func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSenderAddr, paymasterContractAddr ethCommon.Address, p paymasterType.Poll) (success bool, cd []byte, err error) {
+	cd, err = paymasterMisc.Abi.Pack("multicall", []crypto.PaymasterOperation{
 		crypto.PollToPaymasterOperation(p),
 	})
 	if err != nil {
-		return false, fmt.Errorf("pack multicall: %v", err)
+		return false, nil, fmt.Errorf("pack multicall: %v", err)
 	}
 	callRes, err := c.CallContract(ctx, ethereum.CallMsg{
 		To:   &paymasterContractAddr,
@@ -128,7 +128,7 @@ func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSe
 		Data: cd,
 	}, nil)
 	if len(callRes) == 0 {
-		return false, fmt.Errorf(
+		return false, nil, fmt.Errorf(
 			"simulation reverted, from: %v, to: %v: %x",
 			paymasterSenderAddr,
 			paymasterContractAddr,
@@ -137,15 +137,15 @@ func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSe
 	}
 	i, err := paymasterMisc.Abi.Unpack("multicall", callRes)
 	if err != nil {
-		return false, fmt.Errorf("pack multicall: %v", err)
+		return false, nil, fmt.Errorf("pack multicall: %v", err)
 	}
 	switch v := i[0].(type) {
 	case []bool:
 		if len(v) == 0 {
-			return false, fmt.Errorf("response was empty")
+			return false, nil, fmt.Errorf("response was empty")
 		}
-		return v[0], nil
+		return v[0], cd, nil
 	default:
-		return false, fmt.Errorf("bad type: %T", i[0])
+		return false, nil, fmt.Errorf("bad type: %T", i[0])
 	}
 }
