@@ -38,6 +38,9 @@ const handleTicketAttempts: Record<
     qc.invalidateQueries({
       queryKey: ["positionHistory", outcomeIds],
     });
+    qc.invalidateQueries({
+      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+    });
   },
   SELL: (t, a, qc) => {
     if (!t.data) throw new Error("Campaign detail data is missing");
@@ -69,6 +72,9 @@ const handleTicketAttempts: Record<
     });
     qc.invalidateQueries({
       queryKey: ["positionHistory", outcomeIds],
+    });
+    qc.invalidateQueries({
+      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
   },
   ADD_LIQUIDITY: (t, a, qc) => {
