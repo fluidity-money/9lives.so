@@ -489,6 +489,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 					"Paymaster simulation was in error for a user",
 					[]webhooks.F{
 						{"Content", p},
+						{"Paymster address", r.PaymasterAddr},
 						{"Calldata", cd},
 					},
 				),
@@ -509,6 +510,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 					"Paymaster simulation was false for a user",
 					[]webhooks.F{
 						{"Content", p},
+						{"Paymster address", r.PaymasterAddr},
 						{"Calldata", cd},
 					},
 				),

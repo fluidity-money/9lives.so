@@ -16,8 +16,6 @@ import {
 
 import { IWETH10 } from "./IWETH10.sol";
 
-import "forge-std/console.sol";
-
 bytes32 constant PAYMASTER_TYPEHASH =
     keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
 
@@ -199,9 +197,9 @@ contract NineLivesPaymaster {
     }
 
     function execute(Operation calldata op) internal returns (uint256, bool) {
-        if (op.deadline < block.timestamp) return (0, false);
+        require(op.deadline > block.timestamp, "deadline over");
         (bytes32 domain, address recovered) = recoverAddressNewChain(op);
-        if (op.owner != recovered) return (op.maximumFee, false);
+        require(op.owner == recovered, "bad signature");
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
         if (op.permitR != bytes32(0))
@@ -215,66 +213,39 @@ contract NineLivesPaymaster {
                     op.permitS
                 );
         if (op.typ == PaymasterType.MINT) {
-            try
-                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
-                {}
-            catch {
-                return (0, false);
-            }
+            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(op.market), op.amountToSpend);
-                op.market.mint8A059B6E(
-                    op.outcome,
-                    op.amountToSpend,
-                    op.referrer,
-                    op.owner
-                );
+            op.market.mint8A059B6E(
+                op.outcome,
+                op.amountToSpend,
+                op.referrer,
+                op.owner
+            );
             return (op.maximumFee, true);
         } else if (op.typ == PaymasterType.BURN) {
             // For selling, we don't take a fee.
-            try
-                op.market.burn854CC96E(
-                    op.outcome,
-                    op.amountToSpend,
-                    true,
-                    op.minimumBack,
-                    op.referrer,
-                    op.owner
-                ) {}
-            catch {
-                return (0, false);
-            }
+            op.market.burn854CC96E(
+                op.outcome,
+                op.amountToSpend,
+                true,
+                op.minimumBack,
+                op.referrer,
+                op.owner
+            );
             return (0, true);
         } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
             // For adding liquidity, we don't take a fee.
-            try
-                USDC.transferFrom(op.owner, address(this), op.amountToSpend) {}
-            catch {
-                return (0, false);
-            }
+            USDC.transferFrom(op.owner, address(this), op.amountToSpend);
             USDC.approve(address(op.market), op.amountToSpend);
-            try
-                op.market.addLiquidityA975D995(op.amountToSpend, op.owner) {}
-            catch {
-                USDC.transfer(op.owner, op.amountToSpend);
-                return (0, false);
-            }
+            op.market.addLiquidityA975D995(op.amountToSpend, op.owner);
             return (0, true);
         } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY) {
             // For removing liquidity, we don't take a fee.
-            try
-                op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner) {}
-            catch {
-                return (0, false);
-            }
+            op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner);
             return (0, true);
         } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
             // For withdrawing, we take a fee.
-            try
-                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
-                {}
-             catch {
-                 return (0, false);
-             }
+            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(STARGATE), op.amountToSpend);
             SendParam memory sendParam = SendParam({
                 dstEid: op.outgoingChainEid,
@@ -287,7 +258,7 @@ contract NineLivesPaymaster {
             });
             MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
             USDC.approve(address(CAMELOT_SWAP_ROUTER), op.amountToSpend);
-            try
+            uint256 amountForFee =
                 CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
                     tokenIn: address(USDC),
                     tokenOut: address(WETH),
@@ -297,28 +268,22 @@ contract NineLivesPaymaster {
                     amountOut: messagingFee.nativeFee,
                     amountInMaximum: op.amountToSpend,
                     limitSqrtPrice: type(uint160).min
-                }))
-            returns (uint256 amountForFee) {
-                WETH.withdraw(messagingFee.nativeFee);
-                sendParam.amountLD = op.amountToSpend - amountForFee;
-                (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
-                sendParam.minAmountLD = receipt.amountReceivedLD;
-                USDC.approve(address(STARGATE), sendParam.amountLD);
-                (, OFTReceipt memory oftReceipt,) =
-                    STARGATE.sendToken{value: messagingFee.nativeFee}(
-                        sendParam,
-                        messagingFee,
-                        op.owner
-                    );
-                require(oftReceipt.amountReceivedLD > op.minimumBack, "not min");
-                return (op.maximumFee, true);
-            }
-            catch {
-                USDC.transfer(op.owner, op.amountToSpend);
-                return (op.maximumFee, false);
-            }
+                }));
+            WETH.withdraw(messagingFee.nativeFee);
+            sendParam.amountLD = op.amountToSpend - amountForFee;
+            (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+            sendParam.minAmountLD = receipt.amountReceivedLD;
+            USDC.approve(address(STARGATE), sendParam.amountLD);
+            (, OFTReceipt memory oftReceipt,) =
+                STARGATE.sendToken{value: messagingFee.nativeFee}(
+                    sendParam,
+                    messagingFee,
+                    op.owner
+                );
+            require(oftReceipt.amountReceivedLD > op.minimumBack, "not min");
+            return (op.maximumFee, true);
         }
-        return (0, false);
+        revert("impossible ask");
     }
 
     function multicall(
