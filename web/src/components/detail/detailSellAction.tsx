@@ -361,7 +361,7 @@ export default function DetailSellAction({
               )}
             >
               <div className="flex items-center justify-between">
-                <span className="font-chicago uppercase">To Win 💵</span>
+                <span className="font-chicago uppercase">To Receive 💵</span>
                 <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
                   ${usdcToGet}
                 </span>
