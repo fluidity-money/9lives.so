@@ -197,9 +197,9 @@ contract NineLivesPaymaster {
     }
 
     function execute(Operation calldata op) internal returns (uint256, bool) {
-        require(op.deadline > block.timestamp, "deadline over");
+        if (op.deadline < block.timestamp) revert("bad deadline");
         (bytes32 domain, address recovered) = recoverAddressNewChain(op);
-        require(op.owner == recovered, "bad signature");
+        if (op.owner != recovered) revert("bad recovery");
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
         if (op.permitR != bytes32(0))
@@ -213,39 +213,71 @@ contract NineLivesPaymaster {
                     op.permitS
                 );
         if (op.typ == PaymasterType.MINT) {
-            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
+            revert("I'm inside mint");
+            try
+                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
+                {}
+            catch {
+                return (0, false);
+            }
             USDC.approve(address(op.market), op.amountToSpend);
-            op.market.mint8A059B6E(
-                op.outcome,
-                op.amountToSpend,
-                op.referrer,
-                op.owner
-            );
+                op.market.mint8A059B6E(
+                    op.outcome,
+                    op.amountToSpend,
+                    op.referrer,
+                    op.owner
+                );
             return (op.maximumFee, true);
         } else if (op.typ == PaymasterType.BURN) {
+            revert("I'm inside burn");
             // For selling, we don't take a fee.
-            op.market.burn854CC96E(
-                op.outcome,
-                op.amountToSpend,
-                true,
-                op.minimumBack,
-                op.referrer,
-                op.owner
-            );
+            try
+                op.market.burn854CC96E(
+                    op.outcome,
+                    op.amountToSpend,
+                    true,
+                    op.minimumBack,
+                    op.referrer,
+                    op.owner
+                ) {}
+            catch {
+                return (0, false);
+            }
             return (0, true);
         } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
+            revert("I'm inside add liq");
             // For adding liquidity, we don't take a fee.
-            USDC.transferFrom(op.owner, address(this), op.amountToSpend);
+            try
+                USDC.transferFrom(op.owner, address(this), op.amountToSpend) {}
+            catch {
+                return (0, false);
+            }
             USDC.approve(address(op.market), op.amountToSpend);
-            op.market.addLiquidityA975D995(op.amountToSpend, op.owner);
+            try
+                op.market.addLiquidityA975D995(op.amountToSpend, op.owner) {}
+            catch {
+                USDC.transfer(op.owner, op.amountToSpend);
+                return (0, false);
+            }
             return (0, true);
         } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY) {
             // For removing liquidity, we don't take a fee.
-            op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner);
+            try
+                op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner) {}
+            catch {
+                return (0, false);
+            }
             return (0, true);
         } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
+            revert("I'm inside withdraw");
             // For withdrawing, we take a fee.
-            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
+            try
+                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
+                {}
+             catch {
+                 revert("withdraw transfer from fail");
+                 return (0, false);
+             }
             USDC.approve(address(STARGATE), op.amountToSpend);
             SendParam memory sendParam = SendParam({
                 dstEid: op.outgoingChainEid,
@@ -256,35 +288,50 @@ contract NineLivesPaymaster {
                 composeMsg: new bytes(0),
                 oftCmd: "" // Empty for taxi mode
             });
-            MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
-            USDC.approve(address(CAMELOT_SWAP_ROUTER), op.amountToSpend);
-            uint256 amountForFee =
-                CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
-                    tokenIn: address(USDC),
-                    tokenOut: address(WETH),
-                    fee: 0,
-                    recipient: address(this),
-                    deadline: type(uint256).max,
-                    amountOut: messagingFee.nativeFee,
-                    amountInMaximum: op.amountToSpend,
-                    limitSqrtPrice: type(uint160).min
-                }));
-            WETH.withdraw(messagingFee.nativeFee);
-            sendParam.amountLD = op.amountToSpend - amountForFee;
-            (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
-            sendParam.minAmountLD = receipt.amountReceivedLD;
-            USDC.approve(address(STARGATE), sendParam.amountLD);
-            (, OFTReceipt memory oftReceipt,) =
-                STARGATE.sendToken{value: messagingFee.nativeFee}(
-                    sendParam,
-                    messagingFee,
-                    op.owner
-                );
-            require(oftReceipt.amountReceivedLD > op.minimumBack, "not min");
-            return (op.maximumFee, true);
+            try
+                STARGATE.quoteSend(sendParam, false)
+            returns (MessagingFee memory messagingFee) {
+                USDC.approve(address(CAMELOT_SWAP_ROUTER), op.amountToSpend);
+                try
+                    CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
+                        tokenIn: address(USDC),
+                        tokenOut: address(WETH),
+                        fee: 0,
+                        recipient: address(this),
+                        deadline: type(uint256).max,
+                        amountOut: messagingFee.nativeFee,
+                        amountInMaximum: op.amountToSpend,
+                        limitSqrtPrice: type(uint160).min
+                    }))
+                returns (uint256 amountForFee) {
+                    WETH.withdraw(messagingFee.nativeFee);
+                    sendParam.amountLD = op.amountToSpend - amountForFee;
+                    (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+                    sendParam.minAmountLD = receipt.amountReceivedLD;
+                    USDC.approve(address(STARGATE), sendParam.amountLD);
+                    (, OFTReceipt memory oftReceipt,) =
+                        STARGATE.sendToken{value: messagingFee.nativeFee}(
+                            sendParam,
+                            messagingFee,
+                            op.owner
+                        );
+                    if (oftReceipt.amountReceivedLD > op.minimumBack) return (0, false);
+                    return (op.maximumFee, true);
+                }
+                catch {
+                    revert("exact output single failed");
+                    return (0, false);
+                }
+            }
+            catch {
+                 revert("quote send");
+                return (op.maximumFee, false);
+            }
         }
-        revert("impossible ask");
+        revert("bad numbered input");
     }
+
+    error MulticallFailure(uint256);
 
     function multicall(
         Operation[] calldata operations
@@ -294,17 +341,16 @@ contract NineLivesPaymaster {
         uint256 acc;
         for (uint i = 0; i < operations.length; ++i) {
             (uint256 amt, bool rd) = execute(operations[i]);
-            statuses[i] = rd;
-            if (rd) {
-                emit PaymasterPaidFor(
-                    operations[i].owner,
-                    operations[i].maximumFee,
-                    operations[i].amountToSpend,
-                    operations[i].maximumFee,
-                    operations[i].referrer,
-                    operations[i].outcome
-                );
-            }
+            if (!rd) revert MulticallFailure(i);
+            statuses[i] = true;
+            emit PaymasterPaidFor(
+                operations[i].owner,
+                operations[i].maximumFee,
+                operations[i].amountToSpend,
+                operations[i].maximumFee,
+                operations[i].referrer,
+                operations[i].outcome
+            );
             acc += amt;
         }
         if (acc > 0) USDC.transfer(msg.sender, acc);
