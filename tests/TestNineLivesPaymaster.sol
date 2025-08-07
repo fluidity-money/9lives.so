@@ -411,9 +411,9 @@ contract TestNineLivesPaymaster is Test {
 
     function testWithdrawEndToEnd2() external {
         (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
-        ERC20.transfer(ivan, 25000000);
+        ERC20.transfer(ivan, 1000000);
         vm.prank(ivan);
-        ERC20.approve(address(P), 25000000);
+        ERC20.approve(address(P), 1000000);
         bytes32 hash = computePaymasterHash(
             address(P),
             42161, 
