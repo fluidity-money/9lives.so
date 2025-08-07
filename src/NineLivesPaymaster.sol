@@ -197,9 +197,9 @@ contract NineLivesPaymaster {
     }
 
     function execute(Operation calldata op) internal returns (uint256, bool) {
-        if (op.deadline < block.timestamp) revert("bad deadline");
+        if (op.deadline < block.timestamp) return (0, false);
         (bytes32 domain, address recovered) = recoverAddressNewChain(op);
-        if (op.owner != recovered) revert("bad recovery");
+        if (op.owner != recovered) return (0, false);
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
         if (op.permitR != bytes32(0))
@@ -253,7 +253,6 @@ contract NineLivesPaymaster {
             try
                 op.market.addLiquidityA975D995(op.amountToSpend, op.owner) {}
             catch {
-                USDC.transfer(op.owner, op.amountToSpend);
                 return (0, false);
             }
             return (0, true);
@@ -271,7 +270,6 @@ contract NineLivesPaymaster {
                 USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
                 {}
              catch {
-                 revert("withdraw transfer from fail");
                  return (0, false);
              }
             USDC.approve(address(STARGATE), op.amountToSpend);
@@ -284,48 +282,33 @@ contract NineLivesPaymaster {
                 composeMsg: new bytes(0),
                 oftCmd: "" // Empty for taxi mode
             });
-            try
-                STARGATE.quoteSend(sendParam, false)
-            returns (MessagingFee memory messagingFee) {
-                USDC.approve(address(CAMELOT_SWAP_ROUTER), op.amountToSpend);
-                try
-                    CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
-                        tokenIn: address(USDC),
-                        tokenOut: address(WETH),
-                        fee: 0,
-                        recipient: address(this),
-                        deadline: type(uint256).max,
-                        amountOut: messagingFee.nativeFee,
-                        amountInMaximum: op.amountToSpend,
-                        limitSqrtPrice: type(uint160).min
-                    }))
-                returns (uint256 amountForFee) {
-                    WETH.withdraw(messagingFee.nativeFee);
-                    sendParam.amountLD = op.amountToSpend - amountForFee;
-                    (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
-                    sendParam.minAmountLD = receipt.amountReceivedLD;
-                    USDC.approve(address(STARGATE), sendParam.amountLD);
-                    (, OFTReceipt memory oftReceipt,) =
-                        STARGATE.sendToken{value: messagingFee.nativeFee}(
-                            sendParam,
-                            messagingFee,
-                            op.owner
-                        );
-                    if (op.minimumBack > oftReceipt.amountReceivedLD) return (0, false);
-                    return (op.maximumFee, true);
-                }
-                catch {
-                    revert("exact output single failed");
-                    return (0, false);
-                }
-            }
-            catch {
-                 revert("quote send");
-                return (op.maximumFee, false);
-            }
+            MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
+            USDC.approve(address(CAMELOT_SWAP_ROUTER), op.amountToSpend);
+            uint256 amountForFee = CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
+                tokenIn: address(USDC),
+                tokenOut: address(WETH),
+                fee: 0,
+                recipient: address(this),
+                deadline: type(uint256).max,
+                amountOut: messagingFee.nativeFee,
+                amountInMaximum: op.amountToSpend,
+                limitSqrtPrice: type(uint160).min
+            }));
+            WETH.withdraw(messagingFee.nativeFee);
+            sendParam.amountLD = op.amountToSpend - amountForFee;
+            (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+            sendParam.minAmountLD = receipt.amountReceivedLD;
+            USDC.approve(address(STARGATE), sendParam.amountLD);
+            (, OFTReceipt memory oftReceipt,) =
+                STARGATE.sendToken{value: messagingFee.nativeFee}(
+                    sendParam,
+                    messagingFee,
+                    op.owner
+                );
+            if (op.minimumBack > oftReceipt.amountReceivedLD) return (0, false);
+            return (op.maximumFee, true);
         }
-        revert("bad numbered input");
-
+        return (0, false);
 }
 
     error MulticallFailure(uint256);
