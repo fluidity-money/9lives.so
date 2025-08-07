@@ -120,7 +120,7 @@ func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSe
 		crypto.PollToPaymasterOperation(p),
 	})
 	if err != nil {
-		return false, nil, fmt.Errorf("pack multicall: %v", err)
+		return false, cd, fmt.Errorf("pack multicall: %v", err)
 	}
 	callRes, err := c.CallContract(ctx, ethereum.CallMsg{
 		To:   &paymasterContractAddr,
@@ -137,15 +137,15 @@ func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSe
 	}
 	i, err := paymasterMisc.Abi.Unpack("multicall", callRes)
 	if err != nil {
-		return false, nil, fmt.Errorf("pack multicall: %v", err)
+		return false, cd, fmt.Errorf("pack multicall: %v", err)
 	}
 	switch v := i[0].(type) {
 	case []bool:
 		if len(v) == 0 {
-			return false, nil, fmt.Errorf("response was empty")
+			return false, cd, fmt.Errorf("response was empty")
 		}
 		return v[0], cd, nil
 	default:
-		return false, nil, fmt.Errorf("bad type: %T", i[0])
+		return false, cd, fmt.Errorf("bad type: %T", i[0])
 	}
 }
