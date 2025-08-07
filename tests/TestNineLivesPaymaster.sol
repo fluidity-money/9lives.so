@@ -408,4 +408,51 @@ contract TestNineLivesPaymaster is Test {
         bool[] memory statuses = P.multicall(ops);
         for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
     }
+
+    function testWithdrawEndToEnd2() external {
+        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
+        ERC20.transfer(ivan, 25000000);
+        vm.prank(ivan);
+        ERC20.approve(address(P), 25000000);
+        bytes32 hash = computePaymasterHash(
+            address(P),
+            42161, 
+            ivan,
+            11, // Nonce
+            uint8(PaymasterType.WITHDRAW_USDC),
+            address(m),
+            0, // Max fee
+            1000000, // Amount to transfer back.
+            0, // Amount back min
+            address(0), // Referrer
+            bytes8(0)
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
+        Operation[] memory ops = new Operation[](1);
+        ops[0] = Operation({
+            owner: ivan,
+            originatingChainId: 42161,
+            nonce: 11,
+            typ: PaymasterType.WITHDRAW_USDC,
+            deadline: type(uint256).max,
+            permitAmount: 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+            permitR: bytes32(0),
+            permitS: bytes32(0),
+            permitV: 0,
+            market: m,
+            maximumFee: 0,
+            amountToSpend: 1000000,
+            minimumBack: 0,
+            referrer: address(0),
+            outcome: bytes8(0),
+            v: v,
+            r: r,
+            s: s,
+            outgoingChainEid: 30110
+        });
+        (,address recovered) = P.recoverAddressNewChain(ops[0]);
+        assertEq(ivan, recovered);
+        bool[] memory statuses = P.multicall(ops);
+        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
+    }
 }
