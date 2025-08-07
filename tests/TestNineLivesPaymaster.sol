@@ -435,7 +435,7 @@ contract TestNineLivesPaymaster is Test {
             nonce: 11,
             typ: PaymasterType.WITHDRAW_USDC,
             deadline: type(uint256).max,
-            permitAmount: 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+            permitAmount: type(uint256).max,
             permitR: bytes32(0),
             permitS: bytes32(0),
             permitV: 0,
