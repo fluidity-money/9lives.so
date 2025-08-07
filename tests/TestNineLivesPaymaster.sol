@@ -418,7 +418,7 @@ contract TestNineLivesPaymaster is Test {
             address(P),
             42161, 
             ivan,
-            11, // Nonce
+            0, // Nonce
             uint8(PaymasterType.WITHDRAW_USDC),
             address(m),
             0, // Max fee
@@ -432,7 +432,7 @@ contract TestNineLivesPaymaster is Test {
         ops[0] = Operation({
             owner: ivan,
             originatingChainId: 42161,
-            nonce: 11,
+            nonce: 0,
             typ: PaymasterType.WITHDRAW_USDC,
             deadline: type(uint256).max,
             permitAmount: type(uint256).max,
