@@ -88,6 +88,7 @@ export default function DetailBuyAction({
     outcomeIds: [selectedOutcome.id as `0x${string}`],
   })?.[0]?.chance;
   const chance = isDpm ? dpmChance : chanceAmm;
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   type FormData = z.infer<typeof formSchemaWithRelay>;
   const {
     register,
@@ -103,11 +104,12 @@ export default function DetailBuyAction({
       supply: 0,
       toChain: config.chains.superposition.id,
       toToken: ZeroAddress,
-      fromChain: config.chains.superposition.id,
+      fromChain: isInMiniApp
+        ? config.chains.arbitrum.id
+        : config.chains.superposition.id,
       fromToken: ZeroAddress,
     },
   });
-  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const supply = watch("supply");
   const fromChain = watch("fromChain");
   const fromToken = watch("fromToken");
