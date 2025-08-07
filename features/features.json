@@ -13,5 +13,6 @@
 	"paymaster should check sig": true,
 	"paymaster should check trading addr": true,
 	"paymaster should report failure": true,
-	"paymaster should simulate submission": true
+	"paymaster should simulate submission": true,
+	"enable paymaster withdraw": false
 }

@@ -17,6 +17,7 @@ import Modal from "../themed/modal";
 import WithdrawDialog from "../withdrawDialog";
 import { useState } from "react";
 import useBalance from "@/hooks/useBalance";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function PortfolioHeader() {
   const account = useActiveAccount();
@@ -28,6 +29,7 @@ export default function PortfolioHeader() {
   const PnL = usePortfolioStore((s) => s.totalPnL);
   const { data: totalVolume } = useTotalVolume(account?.address);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
+  const enableWithdraw = useFeatureFlag("enable paymaster withdraw");
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -80,11 +82,13 @@ export default function PortfolioHeader() {
                 ${formatFusdc(Number(balance), 2)}
               </span>
             </div>
-            <Button
-              title="Withdraw"
-              intent={"cta"}
-              onClick={() => setIsWithdrawDialogOpen(true)}
-            />
+            {enableWithdraw && (
+              <Button
+                title="Withdraw"
+                intent={"cta"}
+                onClick={() => setIsWithdrawDialogOpen(true)}
+              />
+            )}
             <Link
               href={"https://bridge.superposition.so/"}
               target="_blank"
