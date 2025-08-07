@@ -128,7 +128,7 @@ func simPaymasterMulticall(ctx context.Context, c *ethclient.Client, paymasterSe
 		Data: cd,
 	}, nil)
 	if len(callRes) == 0 {
-		return false, nil, fmt.Errorf(
+		return false, cd, fmt.Errorf(
 			"simulation reverted, from: %v, to: %v: %x",
 			paymasterSenderAddr,
 			paymasterContractAddr,
