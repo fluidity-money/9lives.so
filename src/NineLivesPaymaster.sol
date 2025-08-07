@@ -213,7 +213,6 @@ contract NineLivesPaymaster {
                     op.permitS
                 );
         if (op.typ == PaymasterType.MINT) {
-            revert("I'm inside mint");
             try
                 USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
                 {}
@@ -229,7 +228,6 @@ contract NineLivesPaymaster {
                 );
             return (op.maximumFee, true);
         } else if (op.typ == PaymasterType.BURN) {
-            revert("I'm inside burn");
             // For selling, we don't take a fee.
             try
                 op.market.burn854CC96E(
@@ -245,7 +243,6 @@ contract NineLivesPaymaster {
             }
             return (0, true);
         } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
-            revert("I'm inside add liq");
             // For adding liquidity, we don't take a fee.
             try
                 USDC.transferFrom(op.owner, address(this), op.amountToSpend) {}
@@ -269,7 +266,6 @@ contract NineLivesPaymaster {
             }
             return (0, true);
         } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
-            revert("I'm inside withdraw");
             // For withdrawing, we take a fee.
             try
                 USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
@@ -315,7 +311,7 @@ contract NineLivesPaymaster {
                             messagingFee,
                             op.owner
                         );
-                    if (oftReceipt.amountReceivedLD > op.minimumBack) return (0, false);
+                    if (op.minimumBack > oftReceipt.amountReceivedLD) return (0, false);
                     return (op.maximumFee, true);
                 }
                 catch {
@@ -329,7 +325,8 @@ contract NineLivesPaymaster {
             }
         }
         revert("bad numbered input");
-    }
+
+}
 
     error MulticallFailure(uint256);
 

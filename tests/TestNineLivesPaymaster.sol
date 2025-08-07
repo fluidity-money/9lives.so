@@ -362,7 +362,7 @@ contract TestNineLivesPaymaster is Test {
         assertEq(1e6, bal);
     }
 
-    /*function testWithdrawEndToEnd() external {
+    function testWithdrawEndToEnd() external {
         (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 25000000);
         vm.prank(ivan);
@@ -407,5 +407,5 @@ contract TestNineLivesPaymaster is Test {
         assertEq(ivan, recovered);
         bool[] memory statuses = P.multicall(ops);
         for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
-    } */
+    }
 }
