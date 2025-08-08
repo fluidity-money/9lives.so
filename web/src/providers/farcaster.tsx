@@ -15,11 +15,11 @@ export default function FarcasterProvider() {
   const { connect } = useConnectWallet();
   useEffect(() => {
     const load = async () => {
-      const isInMiniApp = await sdk.isInMiniApp();
+      // @ts-expect-error
+      const isInMiniApp = await sdk.isInMiniApp(1000);
       if (isInMiniApp) {
         setIsInMiniApp(true);
-        // @ts-expect-error
-        await sdk.actions.ready(1000);
+        await sdk.actions.ready();
         setFarcasterCtx(await sdk.context);
         if (sdk.wallet) {
           connect(isInMiniApp);
