@@ -16,11 +16,18 @@ interface DetailActionProps {
 }
 export default function DetailAction(props: DetailActionProps) {
   const [minimized, setMinimized] = useState(true);
+  const [index, setIndex] = useState(0);
   return (
-    <TabGroup>
+    <TabGroup onChange={(i) => setIndex(i)}>
       <TabList
         className={combineClass(
-          minimized ? "bottom-[145px]" : "bottom-[381px]",
+          minimized
+            ? index === 0
+              ? "bottom-[240px]"
+              : "bottom-[150px]"
+            : index === 0
+              ? "bottom-[452px]"
+              : "bottom-[362px]",
           "fixed right-[59px] z-10 flex items-center overflow-y-auto md:static",
         )}
       >
