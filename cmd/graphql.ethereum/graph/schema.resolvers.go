@@ -23,8 +23,8 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/ai"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
-	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/setup"
+	"github.com/fluidity-money/9lives.so/lib/types"
 	"github.com/fluidity-money/9lives.so/lib/types/banners"
 	"github.com/fluidity-money/9lives.so/lib/types/changelog"
 	commitment_reveal "github.com/fluidity-money/9lives.so/lib/types/commitment-reveal"
@@ -1277,15 +1277,20 @@ func (r *queryResolver) PositionsHistory(ctx context.Context, address string, ou
 func (r *queryResolver) UserClaims(ctx context.Context, address string, campaignID *string) ([]*types.Claim, error) {
 	var claims []*types.Claim
 	address = strings.ToLower(address)
-	query := r.DB.Raw(`select nc.id, nepa.shares_spent, nepa.fusdc_received, nepa.created_by as created_at, nc.content, concat('0x', nepa.identifier) as winner
-	from ninelives_events_payoff_activated nepa
-	left join ninelives_campaigns_1 nc
-	on nepa.emitter_addr = nc."content"->>'poolAddress'
-	where nepa.recipient = ?`, address)
+	sql := `
+    SELECT nc.id, nepa.shares_spent, nepa.fusdc_received, nepa.created_by as created_at,
+           nc.content, concat('0x', nepa.identifier) as winner
+    FROM ninelives_events_payoff_activated nepa
+    LEFT JOIN ninelives_campaigns_1 nc
+    ON nepa.emitter_addr = nc."content"->>'poolAddress'
+    WHERE nepa.recipient = ?
+	`
+	args := []interface{}{address}
 	if campaignID != nil {
-		query = query.Where("nc.id = ?", *campaignID)
+		sql += " AND nc.id = ?"
+		args = append(args, *campaignID)
 	}
-	err := query.Scan(&claims).Error
+	err := r.DB.Raw(sql, args...).Scan(&claims).Error
 	if err != nil {
 		slog.Error("Error getting reward claims from database",
 			"error", err,
