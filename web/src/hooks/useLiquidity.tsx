@@ -70,11 +70,18 @@ export default function useLiquidity({
         error: "Failed to add.",
       },
     );
-  const remove = async (account: Account, fusdc: string) =>
+  const remove = async (
+    account: Account,
+    fusdc: string,
+    totalLiquidity: number,
+  ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const amount = toUnits(fusdc, config.contracts.decimals.shares);
+          const _fusdc = toUnits(fusdc, config.contracts.decimals.shares);
+          const diff = BigInt(totalLiquidity) - _fusdc;
+          const amount =
+            BigInt(1e6) > diff ? BigInt(totalLiquidity) - BigInt(1e6) : _fusdc; // always 1 usdc should be secured in liquidity pool
           const removeLiquidityTx = prepareContractCall({
             contract: tradingContract,
             method: "removeLiquidity3C857A15",

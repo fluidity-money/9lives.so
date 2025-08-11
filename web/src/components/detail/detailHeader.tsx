@@ -136,6 +136,7 @@ export default function DetailHeader({
                 name={data.name}
                 campaignId={data.identifier}
                 tradingAddr={data.poolAddress}
+                totalLiquidity={data.liquidityVested}
                 liquidity={userLiquidity}
               />
             )

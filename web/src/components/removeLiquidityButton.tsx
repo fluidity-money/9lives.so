@@ -8,11 +8,13 @@ export default function RemoveLiquidityButton({
   campaignId,
   liquidity,
   tradingAddr,
+  totalLiquidity,
 }: {
   name: string;
   campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
   liquidity: string;
+  totalLiquidity: number;
 }) {
   const [isLPModalOpen, setIsLPModalOpen] = useState(false);
   return (
@@ -31,6 +33,7 @@ export default function RemoveLiquidityButton({
           liquidity={liquidity}
           close={() => setIsLPModalOpen(false)}
           name={name}
+          totalLiquidity={totalLiquidity}
           campaignId={campaignId}
           tradingAddr={tradingAddr}
         />

@@ -20,12 +20,14 @@ export default function RemoveLiquidityDialog({
   campaignId,
   tradingAddr,
   liquidity,
+  totalLiquidity,
 }: {
   name: string;
   close: () => void;
   campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
   liquidity: string;
+  totalLiquidity: number;
 }) {
   const account = useActiveAccount();
   const sliderRef = useRef<HTMLInputElement>(null);
@@ -57,7 +59,7 @@ export default function RemoveLiquidityDialog({
   const onSubmit = async (input: FormData, account: Account) => {
     try {
       setIsLoading(true);
-      await remove(account!, input.liquidity.toString());
+      await remove(account!, input.liquidity.toString(), totalLiquidity);
       close();
     } finally {
       setIsLoading(false);
