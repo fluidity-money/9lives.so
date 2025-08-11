@@ -23,8 +23,8 @@ export default function useEstimateBurn({
   return useQuery({
     queryKey: ["estimateBurn", outcomeId, tradingAddr, Number(share), account],
     queryFn: async () => {
-      if (!account) return 0;
-      if (!share || share <= BigInt(0)) return 0;
+      if (!account) return BigInt(0);
+      if (!share || share <= BigInt(0)) return BigInt(0);
       const tradingContract = getContract({
         abi: tradingAbi,
         address: tradingAddr,

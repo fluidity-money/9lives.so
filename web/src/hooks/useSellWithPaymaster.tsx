@@ -40,7 +40,7 @@ const useSellWithPaymaster = ({
       tradingAddr,
       minimumBack,
       outgoingChainEid,
-    }: Parameters<typeof requestPaymaster>[0]) =>
+    }: Parameters<typeof requestPaymaster>[0] & { estimatedReturn?: bigint }) =>
       requestPaymaster({
         amountToSpend,
         outcome,
@@ -92,15 +92,39 @@ const useSellWithPaymaster = ({
         ["positions", tradingAddr, outcomes, account],
         () => newPositions,
       );
+      await queryClient.cancelQueries({
+        queryKey: ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+      });
+      const previousBalance =
+        queryClient.getQueryData<string>([
+          "balance",
+          account?.address,
+          config.NEXT_PUBLIC_FUSDC_ADDR,
+        ]) ?? "0";
 
+      if (newRequest.estimatedReturn) {
+        // Optimistically update the cache if previousBalance
+        const newAmount =
+          BigInt(previousBalance) + BigInt(newRequest.estimatedReturn);
+        queryClient.setQueryData(
+          ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+          () => newAmount.toString(),
+        );
+      }
       // Return context to roll back
-      return { previousPositions };
+      return { previousPositions, previousBalance };
     },
     onError: (err, newRequest, context) => {
       if (context?.previousPositions) {
         queryClient.setQueryData(
           ["positions", tradingAddr, outcomes, account],
           context.previousPositions,
+        );
+      }
+      if (context?.previousBalance) {
+        queryClient.setQueryData(
+          ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+          () => context.previousBalance,
         );
       }
     },
@@ -125,7 +149,7 @@ const useSellWithPaymaster = ({
       //   });
     },
   });
-  const sell = async (rawAmount: number) =>
+  const sell = async (rawAmount: number, estimatedReturn?: bigint) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -159,6 +183,7 @@ const useSellWithPaymaster = ({
             outgoingChainEid: 0,
             tradingAddr: tradingAddr,
             minimumBack: "0",
+            estimatedReturn,
           });
           if (result && result.ticketId) {
             createTicket({

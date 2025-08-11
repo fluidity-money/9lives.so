@@ -42,11 +42,16 @@ const useWithdraw = () => {
           account?.address,
           config.NEXT_PUBLIC_FUSDC_ADDR,
         ]) ?? "0";
-      // Optimistically update the cache
-      queryClient.setQueryData(
-        ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
-        () => "0",
-      );
+      // Optimistically update the cache if previousBalance not zero
+      if (previousBalance !== "0") {
+        const leftAmount =
+          BigInt(previousBalance) - BigInt(newRequest.amountToSpend);
+        const amount = leftAmount > BigInt(0) ? leftAmount : BigInt(0);
+        queryClient.setQueryData(
+          ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+          () => amount.toString(),
+        );
+      }
       // Return context to roll back
       return { previousBalance };
     },

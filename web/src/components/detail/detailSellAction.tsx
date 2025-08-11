@@ -157,7 +157,7 @@ export default function DetailSellAction({
     try {
       setIsSelling(true);
       if (enabledPaymaster) {
-        await sellWithPaymaster(input.shareToBurn);
+        await sellWithPaymaster(input.shareToBurn, estimation);
       } else {
         await sell(account!, input.shareToBurn, input.minUsdcToGet);
       }

@@ -99,14 +99,40 @@ const useBuyWithPaymaster = ({
         () => newPositions,
       );
 
+      await queryClient.cancelQueries({
+        queryKey: ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+      });
+      const previousBalance =
+        queryClient.getQueryData<string>([
+          "balance",
+          account?.address,
+          config.NEXT_PUBLIC_FUSDC_ADDR,
+        ]) ?? "0";
+      // Optimistically update the cache if previousBalance
+      if (previousBalance !== "0") {
+        const leftAmount =
+          BigInt(previousBalance) - BigInt(newRequest.amountToSpend);
+        const amount = leftAmount > BigInt(0) ? leftAmount : BigInt(0);
+        queryClient.setQueryData(
+          ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+          () => amount.toString(),
+        );
+      }
+
       // Return context to roll back
-      return { previousPositions };
+      return { previousPositions, previousBalance };
     },
     onError: (err, newRequest, context) => {
       if (context?.previousPositions) {
         queryClient.setQueryData(
           ["positions", tradingAddr, outcomes, account],
           context.previousPositions,
+        );
+      }
+      if (context?.previousBalance) {
+        queryClient.setQueryData(
+          ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+          () => context.previousBalance,
         );
       }
     },
