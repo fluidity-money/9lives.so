@@ -55,7 +55,7 @@ export default function useSignForPaymaster(chain?: Chain, account?: Account) {
     const domainTx = prepareContractCall({
       contract: config.contracts.paymaster,
       method: "domainSeparators",
-      params: [BigInt(destinationChain.id)],
+      params: [BigInt(chain.id)],
     });
     const domainSeparator = await simulateTransaction({
       transaction: domainTx,
