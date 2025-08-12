@@ -15,7 +15,7 @@ import (
 )
 
 func testIngestorArgs(x ethCommon.Address) IngestorArgs {
-	return IngestorArgs{x, x, x, x, x, x, x, x, x}
+	return IngestorArgs{x, x, x, x, x, x, x, x, x, x}
 }
 
 func testIngestorArgsZero() IngestorArgs {

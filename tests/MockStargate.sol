@@ -14,9 +14,9 @@ import {
 
 contract MockStargate is IStargate {
     function sendToken(
-        SendParam calldata _sendParam,
-        MessagingFee calldata _fee,
-        address _refundAddress
+        SendParam calldata /* _sendParam */,
+        MessagingFee calldata /* _fee */,
+        address /* _refundAddress */
     ) external payable returns (
         MessagingReceipt memory msgReceipt,
         OFTReceipt memory oftReceipt,
@@ -27,7 +27,7 @@ contract MockStargate is IStargate {
     }
 
     function stargateType() external pure returns (StargateType) {
-        require(false);
+        revert("unimplemented");
     }
 
     function quoteOFT(

@@ -8,6 +8,7 @@ import {
     IStargate,
     MessagingFee,
     SendParam,
+    MessagingReceipt,
     OFTReceipt } from "./IStargate.sol";
 
 import {
@@ -81,6 +82,14 @@ contract NineLivesPaymaster {
         bytes8 outcome
     );
 
+    event StargateBridged(
+        bytes32 indexed guid,
+        address indexed spender,
+        uint256 indexed amountReceived,
+        uint256 amountFee,
+        uint32 destinationEid
+    );
+
     uint256 public version;
 
     /// @dev NAME here is a concatenation of the chain id as well! We don't
@@ -126,14 +135,6 @@ contract NineLivesPaymaster {
         ADMIN = _admin;
         STARGATE = _stargate;
         CAMELOT_SWAP_ROUTER = _swapRouter;
-        WETH = _weth;
-        version = 2;
-    }
-
-    function migrate1(ICamelotSwapRouter _camelotSwapRouter, IWETH10 _weth) external {
-        require(version == 1, "already set up");
-        require(msg.sender == ADMIN, "not admin");
-        CAMELOT_SWAP_ROUTER = _camelotSwapRouter;
         WETH = _weth;
         version = 2;
     }
@@ -194,6 +195,28 @@ contract NineLivesPaymaster {
     ) public returns (bytes32 domain, address recovered) {
         domain = NEW_DOMAIN_SEPARATOR(op.originatingChainId);
         return (domain, recoverAddress(domain, op));
+    }
+
+    function stargateSendAmount(
+        SendParam memory _sendParam,
+        MessagingFee memory _messagingFee,
+        Operation memory _op
+    ) internal returns (uint256, bool) {
+        (MessagingReceipt memory msgReceipt, OFTReceipt memory oftReceipt,) =
+            STARGATE.sendToken{value: _messagingFee.nativeFee}(
+                _sendParam,
+                _messagingFee,
+                _op.owner
+            );
+        if (_op.minimumBack > oftReceipt.amountReceivedLD) return (0, false);
+        emit StargateBridged(
+            msgReceipt.guid,
+            _op.owner,
+            oftReceipt.amountReceivedLD,
+            _messagingFee.nativeFee,
+            _sendParam.dstEid
+        );
+        return (_op.maximumFee, true);
     }
 
     function execute(Operation calldata op) internal returns (uint256, bool) {
@@ -299,14 +322,7 @@ contract NineLivesPaymaster {
             (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
             sendParam.minAmountLD = receipt.amountReceivedLD;
             USDC.approve(address(STARGATE), sendParam.amountLD);
-            (, OFTReceipt memory oftReceipt,) =
-                STARGATE.sendToken{value: messagingFee.nativeFee}(
-                    sendParam,
-                    messagingFee,
-                    op.owner
-                );
-            if (op.minimumBack > oftReceipt.amountReceivedLD) return (0, false);
-            return (op.maximumFee, true);
+            return stargateSendAmount(sendParam, messagingFee, op);
         }
         return (0, false);
 }

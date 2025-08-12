@@ -71,6 +71,7 @@ func main() {
 			Dinero:          ethCommon.HexToAddress(config.DineroAddress),
 			PunkDomainsTld: ethCommon.HexToAddress(config.PunkDomainsTld),
 			SudoswapFactory: ethCommon.HexToAddress(config.SudoswapFactoryAddress),
+			Paymaster: ethCommon.HexToAddress(config.PaymasterAddress),
 		},
 	)
 }

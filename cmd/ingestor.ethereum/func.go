@@ -22,6 +22,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/events/sudoswap"
 	"github.com/fluidity-money/9lives.so/lib/events/vendor"
 	"github.com/fluidity-money/9lives.so/lib/events/punk-domains"
+	"github.com/fluidity-money/9lives.so/lib/events/paymaster"
 
 	"gorm.io/gorm"
 
@@ -63,6 +64,8 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicAddressFeesClaimed,
 	events.TopicReferrerEarnedFees,
 	events.TopicAmmDetails,
+	paymaster.TopicPaymasterPaidFor,
+	paymaster.TopicStargateBridged,
 	// Lifi
 	lifi.TopicLifiGenericSwapCompleted,
 	// Stargate
@@ -93,7 +96,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 type IngestorArgs struct {
 	Factory, InfraMarket, Lockup, SarpSignallerAi   ethCommon.Address
 	LifiDiamond, Layerzero, Dinero, SudoswapFactory ethCommon.Address
-	PunkDomainsTld ethCommon.Address
+	PunkDomainsTld, Paymaster ethCommon.Address
 }
 
 // Entry function, using the database to determine if polling should be
@@ -421,6 +424,14 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		table = "ninelives_events_amm_details"
 		logEvent("AmmDetails")
 		fromTrading = true
+	case paymaster.TopicPaymasterPaidFor:
+		a, err = paymaster.UnpackPaymasterPaidFor(topic1, topic2, topic3, data)
+		table = "ninelives_events_paymaster_paid_for"
+		logEvent("PaymasterPaidFor")
+	case paymaster.TopicStargateBridged:
+		a, err = paymaster.UnpackStargateBridged(topic1, topic2, topic3, data)
+		table = "events_ninelives_stargate_bridged"
+		logEvent("PaymasterStargateBridged")
 	case lifi.TopicLifiGenericSwapCompleted:
 		a, err = lifi.UnpackLifiGenericSwapCompleted(topic1, data)
 		table = "lifi_events_generic_swap_completed"
@@ -519,12 +530,14 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		isDinero        = r.Dinero == emitterAddr
 		isSudoswap      = r.SudoswapFactory == emitterAddr
 		isPunkDomainsTld = r.PunkDomainsTld == emitterAddr
+		isPaymaster = r.Paymaster == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
-		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap, isPunkDomainsTld:
+		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap, isPunkDomainsTld,
+		isPaymaster:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to
