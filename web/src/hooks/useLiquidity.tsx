@@ -7,6 +7,7 @@ import {
   getContract,
   prepareContractCall,
   sendTransaction,
+  simulateTransaction,
   toUnits,
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
@@ -120,6 +121,13 @@ export default function useLiquidity({
             method: "removeLiquidity3C857A15",
             params: [BigInt(0), account.address],
           });
+          const claimFees = await simulateTransaction({
+            transaction: claimLiquidityTx,
+            account,
+          });
+          if (!(BigInt(claimFees) > 0)) {
+            throw new Error("You don't have any fees to claim.");
+          }
           await sendTransaction({
             transaction: claimLiquidityTx,
             account,
@@ -141,7 +149,7 @@ export default function useLiquidity({
       {
         loading: "Claiming liquidity...",
         success: "Liquidity claimed successfully!",
-        error: "Failed to claim.",
+        error: (e) => e?.shortMessage ?? e?.message ?? "Failed to claim.",
       },
     );
   return { add, remove, claim };
