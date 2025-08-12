@@ -1064,7 +1064,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	if orderBy == nil {
 		query = query.Order("total_volume DESC").Where("content->>'winner' IS NULL")
 	} else if *orderBy == "ended" {
-		query = query.Joins("LEFT JOIN ninelives_events_outcome_decided ON ninelives_events_outcome_decided.emitter_addr = ninelives_campaigns_1.content->>'poolAddress'").Order("ninelives_events_outcome_decided.created_by DESC")
+		query = query.Joins("JOIN ninelives_events_outcome_decided ON ninelives_events_outcome_decided.emitter_addr = ninelives_campaigns_1.content->>'poolAddress'").Order("ninelives_events_outcome_decided.created_by DESC")
 	} else {
 		query = query.Where("content->>'winner' IS NULL")
 		switch *orderBy {
