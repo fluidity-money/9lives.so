@@ -1,10 +1,13 @@
 import { calcSecondsLeft, calcTimeLeft } from "@/utils/calcTimeDiff";
 import { useEffect, useState } from "react";
-export default function useCountdown(endTime: number) {
-  const [timeLeft, setTimeLeft] = useState(calcTimeLeft(endTime).full);
+export default function useCountdown(
+  endTime: number,
+  format: "full" | "short" = "full",
+) {
+  const [timeLeft, setTimeLeft] = useState(calcTimeLeft(endTime)[format]);
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(calcTimeLeft(endTime).full);
+      setTimeLeft(calcTimeLeft(endTime)[format]);
     }, 1000);
     return () => clearInterval(timer);
   }, [endTime]);
