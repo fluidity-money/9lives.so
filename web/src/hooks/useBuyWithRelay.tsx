@@ -67,6 +67,9 @@ const useBuyWithRelay = ({
               tradeType: "EXACT_INPUT" as TradeType,
             }),
           });
+          if (toAmountRes.status !== 200) {
+            throw new Error("Selected token is not supported.");
+          }
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.details.currencyOut.amount;
           const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
