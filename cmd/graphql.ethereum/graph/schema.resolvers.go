@@ -1064,7 +1064,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	if orderBy == nil {
 		query = query.Order("total_volume DESC").Where("content->>'winner' IS NULL")
 	} else if *orderBy == "ended" {
-		query = query.Where("content->>'winner' IS NOT NULL").Order("content->>'ending' DESC")
+		query = query.Joins("LEFT JOIN ninelives_events_outcome_decided ON ninelives_events_outcome_decided.emitter_addr = ninelives_campaigns_1.content->>'poolAddress'").Order("ninelives_events_outcome_decided.created_by DESC")
 	} else {
 		query = query.Where("content->>'winner' IS NULL")
 		switch *orderBy {
@@ -1073,7 +1073,8 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		case "volume":
 			query = query.Order("total_volume DESC")
 		case "ending":
-			query = query.Order("content->>'ending' ASC")
+			query = query.Where("( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) > 0").
+				Order("( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) ASC")
 		default:
 			return nil, fmt.Errorf("invalid orderBy value")
 		}
