@@ -121,12 +121,12 @@ export default function useLiquidity({
             method: "removeLiquidity3C857A15",
             params: [BigInt(0), account.address],
           });
-          const claimFees = await simulateTransaction({
+          const [_, lpRewards] = await simulateTransaction({
             transaction: claimLiquidityTx,
             account,
           });
-          if (!(BigInt(claimFees) > 0)) {
-            throw new Error("You don't have any fees to claim.");
+          if (!(BigInt(lpRewards) > 0)) {
+            throw new Error("You don't have any LP rewards.");
           }
           await sendTransaction({
             transaction: claimLiquidityTx,
