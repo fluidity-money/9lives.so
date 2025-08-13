@@ -114,6 +114,7 @@ export default function WithdrawDialog() {
         {errors.amount && <ErrorInfo text={errors.amount.message} />}
       </Field>
       <ChainSelector
+        title="To"
         isInMiniApp={isInMiniApp}
         handleNetworkChange={handleNetworkChange}
         selectedChainId={selectedChainId}
