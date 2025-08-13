@@ -33,11 +33,14 @@ export default function RemoveLiquidityDialog({
   const sliderRef = useRef<HTMLInputElement>(null);
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
-  const maxLiquidity = Number(formatFusdc(+liquidity, 6));
+  const isSafeMax = totalLiquidity - Number(liquidity) > 1e6;
+  const maxLiquidity = Number(
+    formatFusdc(isSafeMax ? Number(liquidity) : Number(liquidity) - 1e6, 6),
+  );
   const formSchema = z.object({
     liquidity: z.preprocess(
       (val) => Number(val),
-      z.number().min(0).max(maxLiquidity),
+      z.number().gt(0).max(maxLiquidity),
     ),
   });
   type FormData = z.infer<typeof formSchema>;
