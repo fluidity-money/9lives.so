@@ -125,13 +125,13 @@ export default function DetailHeader({
           )}
         </div>
         <div className="flex items-center gap-2.5">
-          {userLiquidity && +userLiquidity > 0 ? (
+          {userLiquidity && Number(userLiquidity) > 0 ? (
             isConcluded ? (
               <ClaimLiquidityButton
                 campaignId={data.identifier}
                 tradingAddr={data.poolAddress}
               />
-            ) : (
+            ) : data.liquidityVested - Number(userLiquidity) > 1e6 ? (
               <RemoveLiquidityButton
                 name={data.name}
                 campaignId={data.identifier}
@@ -139,7 +139,7 @@ export default function DetailHeader({
                 totalLiquidity={data.liquidityVested}
                 liquidity={userLiquidity}
               />
-            )
+            ) : null
           ) : null}
           {isDpm ? null : (
             <AddLiquidityButton
