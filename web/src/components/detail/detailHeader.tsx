@@ -131,7 +131,7 @@ export default function DetailHeader({
                 campaignId={data.identifier}
                 tradingAddr={data.poolAddress}
               />
-            ) : data.liquidityVested - Number(userLiquidity) > 1e6 ? (
+            ) : Number(userLiquidity) >= 1e6 ? (
               <RemoveLiquidityButton
                 name={data.name}
                 campaignId={data.identifier}

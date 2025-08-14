@@ -33,7 +33,7 @@ export default function RemoveLiquidityDialog({
   const sliderRef = useRef<HTMLInputElement>(null);
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
-  const isSafeMax = totalLiquidity - Number(liquidity) > 1e6;
+  const isSafeMax = totalLiquidity - Number(liquidity) >= 1e6;
   const maxLiquidity = Number(
     formatFusdc(isSafeMax ? Number(liquidity) : Number(liquidity) - 1e6, 6),
   );
