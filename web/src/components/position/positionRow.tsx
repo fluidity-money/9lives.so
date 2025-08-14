@@ -15,6 +15,7 @@ import { requestCampaignById } from "@/providers/graphqlClient";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
+import useEstimateBurn from "@/hooks/useEstimateBurn";
 // import SellButton from "../sellButton";
 export default function PositionRow({
   data,
@@ -65,8 +66,15 @@ export default function PositionRow({
   );
   const averageShareCost = +formatFusdc(historicalValue, 6) / +data.balance;
   const addPosition = usePortfolioStore((s) => s.addPositionValue);
-  const PnL =
-    Number(data.balance) * Number(price) - +formatFusdc(historicalValue, 6);
+  const { data: estimationOfBurn } = useEstimateBurn({
+    outcomeId: data.id as `0x${string}`,
+    share: data.balanceRaw,
+    tradingAddr,
+    account,
+  });
+  const PnL = Number(
+    formatFusdc((estimationOfBurn ?? BigInt(0)) - BigInt(historicalValue)),
+  );
   const percentageChange = Math.abs(
     (PnL / +formatFusdc(historicalValue, 6)) * 100,
   ).toFixed(2);
