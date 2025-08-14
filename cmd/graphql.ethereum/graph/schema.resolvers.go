@@ -1218,10 +1218,11 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 	var positions []*types.Position
 	address = strings.ToLower(address)
 	err := r.DB.Raw(`
-	SELECT campaign_id, json_agg(DISTINCT outcome_id) AS outcome_ids, campaign_content AS content
-	FROM ninelives_buys_and_sells_1
-	WHERE recipient = ? and campaign_id is not null
-	GROUP BY campaign_id, campaign_content;
+	SELECT nc.id as campaign_id, json_agg(DISTINCT nbs.outcome_id) AS outcome_ids, nc."content" 
+	FROM ninelives_buys_and_sells_1 as nbs
+	join ninelives_campaigns_1 nc on nc.id = nbs.campaign_id 
+	WHERE nbs.recipient = ? and nbs.campaign_id is not null
+	GROUP BY nbs.campaign_id, nc.id;
 	`, address).Scan(&positions).Error
 	if err != nil {
 		slog.Error("Error getting positions from database",
