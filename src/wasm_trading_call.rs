@@ -100,14 +100,20 @@ pub fn time_ending(addr: Address) -> Result<u64, Error> {
     unpack_u64(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
 
-pub fn add_liquidity(addr: Address, amt: U256, recipient: Address) -> Result<U256, Error> {
+pub fn add_liquidity(
+    addr: Address,
+    amt: U256,
+    recipient: Address,
+    min_liquidity: U256,
+) -> Result<U256, Error> {
     let b = unsafe {
         RawCall::new()
             .call(
                 addr,
-                &addLiquidityA975D995Call {
+                &addLiquidity638EB2C9Call {
                     liquidity: amt,
                     recipient,
+                    minShares: min_liquidity,
                 }
                 .abi_encode(),
             )
@@ -137,7 +143,7 @@ pub fn is_dpm(addr: Address) -> Result<bool, Error> {
 pub fn price(addr: Address, outcome: FixedBytes<8>) -> Result<U256, Error> {
     let b = unsafe {
         RawCall::new()
-            .call(addr, &priceA827ED27Call {outcome}.abi_encode())
+            .call(addr, &priceA827ED27Call { outcome }.abi_encode())
             .map_err(Error::TradingError)?
     };
     unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))

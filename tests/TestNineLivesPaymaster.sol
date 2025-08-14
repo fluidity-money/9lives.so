@@ -317,7 +317,7 @@ contract TestNineLivesPaymaster is Test {
         vm.prank(ivan);
         ERC20.approve(address(m), 1e6);
         vm.prank(ivan);
-        uint256 liq = m.addLiquidityA975D995(1e6, ivan);
+        uint256 liq = m.addLiquidity638EB2C9(1e6, ivan, 0);
         bytes32 hash = computePaymasterHash(
             address(P),
             block.chainid,
@@ -416,7 +416,7 @@ contract TestNineLivesPaymaster is Test {
         ERC20.approve(address(P), 1000000);
         bytes32 hash = computePaymasterHash(
             address(P),
-            42161, 
+            42161,
             ivan,
             0, // Nonce
             uint8(PaymasterType.WITHDRAW_USDC),

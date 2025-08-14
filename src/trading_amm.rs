@@ -49,6 +49,7 @@ impl StorageTrading {
         &mut self,
         amount: U256,
         recipient: Address,
+        min_liquidity: U256,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
         self.require_not_done_predicting()?;
         self.internal_amm_get_prices()?;
@@ -152,6 +153,10 @@ impl StorageTrading {
                 Ok((outcome_id, outcome_shares_received))
             })
             .collect::<R<Vec<_>>>()?;
+        assert_or!(
+            add_user_liq >= min_liquidity,
+            Error::NotEnoughLiquidityReturned
+        );
         evm::log(events::LiquidityAdded {
             sender: msg_sender(),
             fusdcAmt: amount,

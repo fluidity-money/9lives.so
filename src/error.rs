@@ -520,6 +520,10 @@ pub enum Error {
 
     // Call out returned false!
     ReturnedFalse,
+
+    // Not enough liquidity shares were sent to the user after they added
+    // liquidity, failing the slippage check.
+    NotEnoughLiquidityReturned,
 }
 
 #[cfg(any(

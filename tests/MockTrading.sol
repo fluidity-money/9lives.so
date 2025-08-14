@@ -116,7 +116,11 @@ contract MockTrading is INineLivesTrading {
         return shareAmount;
     }
 
-    function addLiquidityA975D995(uint256 liquidity, address recipient) external returns (
+    function addLiquidity638EB2C9(
+        uint256 liquidity,
+        address recipient,
+        uint256 minSharesBack
+    ) external returns (
         uint256 userLiquidity
     ) {
         ++counter_;

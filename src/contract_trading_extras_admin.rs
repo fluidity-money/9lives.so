@@ -32,7 +32,9 @@ impl StorageTrading {
                 self.amm_user_liquidity_shares.get(_user),
                 contract_address(),
             )?;
-            return trading_call::add_liquidity(_target, fusdc_amt, _user);
+            // The caller will need to be mindful of the action and liquidity that's
+            // in this market.
+            return trading_call::add_liquidity(_target, fusdc_amt, _user, U256::ZERO);
         }
     }
 }

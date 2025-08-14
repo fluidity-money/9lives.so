@@ -274,7 +274,11 @@ contract NineLivesPaymaster {
             }
             USDC.approve(address(op.market), op.amountToSpend);
             try
-                op.market.addLiquidityA975D995(op.amountToSpend, op.owner) {}
+                op.market.addLiquidity638EB2C9(
+                    op.amountToSpend,
+                    op.owner,
+                    op.minimumBack
+                ) {}
             catch {
                 return (0, false);
             }

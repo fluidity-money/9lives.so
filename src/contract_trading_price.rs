@@ -44,13 +44,13 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn add_liquidity_A_975_D_995(&mut self, _amount: U256, _recipient: Address) -> R<U256> {
+    pub fn add_liquidity_638_E_B_2_C_9(&mut self, _amount: U256, _recipient: Address, _min_liquidity: U256) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return {
             c!(fusdc_call::take_from_sender(_amount));
-            let (shares, _) = self.internal_amm_add_liquidity(_amount, _recipient)?;
+            let (shares, _) = self.internal_amm_add_liquidity(_amount, _recipient, _min_liquidity)?;
             Ok(shares)
         };
     }
