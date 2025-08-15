@@ -78,12 +78,31 @@ const handleTicketAttempts: Record<
     });
   },
   ADD_LIQUIDITY: (t, a, qc) => {
-    //TODO
+    if (!a.success) {
+      toast.error(`Failed to add liquidity to ${t.data?.name}`);
+    }
+    qc.invalidateQueries({
+      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+    });
+    qc.invalidateQueries({
+      queryKey: ["userLiquidity", t.account.address, t.data?.poolAddress],
+    });
   },
   REMOVE_LIQUIDITY: (t, a, qc) => {
-    //TODO
+    if (!a.success) {
+      toast.error(`Failed to remove liquidity to ${t.data?.name}`);
+    }
+    qc.invalidateQueries({
+      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+    });
+    qc.invalidateQueries({
+      queryKey: ["userLiquidity", t.account.address, t.data?.poolAddress],
+    });
   },
   WITHDRAW_USDC: (t, a, qc) => {
+    if (!a.success) {
+      toast.error(`Failed to withdraw usdc`);
+    }
     qc.invalidateQueries({
       queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
