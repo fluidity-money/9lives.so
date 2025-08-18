@@ -243,12 +243,12 @@ contract NineLivesPaymaster {
                 return (0, false);
             }
             USDC.approve(address(op.market), op.amountToSpend);
-                op.market.mint8A059B6E(
-                    op.outcome,
-                    op.amountToSpend,
-                    op.referrer,
-                    op.owner
-                );
+            op.market.mint8A059B6E(
+                op.outcome,
+                op.amountToSpend,
+                op.referrer,
+                op.owner
+            );
             return (op.maximumFee, true);
         } else if (op.typ == PaymasterType.BURN) {
             // For selling, we don't take a fee.
