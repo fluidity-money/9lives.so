@@ -483,6 +483,19 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 				"cd", hex.EncodeToString(cd),
 				"err", err,
 			)
+			var actionDesc string
+			switch p.Typ {
+			case paymaster.PaymasterTypeMint:
+				actionDesc = "mint"
+			case paymaster.PaymasterTypeBurn:
+				actionDesc = "burn"
+			case paymaster.PaymasterTypeAddLiquidity:
+				actionDesc = "add liquidity"
+			case paymaster.PaymasterTypeRemoveLiquidity:
+				actionDesc = "remove liquidity"
+			case paymaster.PaymasterTypeWithdrawUsdc:
+				actionDesc = "withdraw usdc"
+			}
 			err = r.F.On(features.FeatureShouldReportPaymasterFailure,
 				r.C.W.TwistCur(
 					IntentBadOperation,
@@ -492,7 +505,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 						{"Paymaster address", r.PaymasterAddr},
 						{"Sender", p.Owner},
 						{"Market", p.Market},
-						{"Type", p.Typ},
+						{"Type", actionDesc},
 						{"Calldata", cd},
 						{"Originating chain id", p.OriginatingChainId},
 						{"Error", err},
