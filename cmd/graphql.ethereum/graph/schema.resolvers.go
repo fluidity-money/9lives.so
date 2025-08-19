@@ -495,6 +495,8 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 						{"Type", p.Typ},
 						{"Calldata", cd},
 						{"Originating chain id", p.OriginatingChainId},
+						{"Error", err},
+						{"Error calldata", cd},
 					},
 				),
 			)

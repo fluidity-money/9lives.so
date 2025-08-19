@@ -299,12 +299,7 @@ contract NineLivesPaymaster {
             return (0, true);
         } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
             // For withdrawing, we take a fee.
-            try
-                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
-                {}
-             catch {
-                 return (0, false);
-             }
+            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(STARGATE), op.amountToSpend);
             SendParam memory sendParam = SendParam({
                 dstEid: op.outgoingChainEid,
