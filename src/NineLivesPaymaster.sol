@@ -72,6 +72,10 @@ interface IERC20 {
     function balanceOf(address) external returns (uint256);
 }
 
+interface DPMOld {
+    function mintPermitE90275AB(bytes8,uint256,address,uint256,uint8,bytes32,bytes32) external returns (uint256);
+}
+
 contract NineLivesPaymaster {
     event PaymasterPaidFor(
         address indexed owner,
@@ -220,9 +224,9 @@ contract NineLivesPaymaster {
     }
 
     function execute(Operation calldata op) internal returns (uint256, bool) {
-        if (op.deadline < block.timestamp) return (0, false);
+        if (op.deadline < block.timestamp) revert("past deadline");
         (bytes32 domain, address recovered) = recoverAddressNewChain(op);
-        if (op.owner != recovered) return (0, false);
+        if (op.owner != recovered) revert("bad address recovery");
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
         if (op.permitR != bytes32(0))
@@ -236,60 +240,62 @@ contract NineLivesPaymaster {
                     op.permitS
                 );
         if (op.typ == PaymasterType.MINT) {
-            try
-                USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee)
-                {}
-            catch {
-                return (0, false);
-            }
+            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(op.market), op.amountToSpend);
-            op.market.mint8A059B6E(
+            try op.market.isDpm() returns (bool isDpm) {
+                if (isDpm)
+                    DPMOld(address(op.market)).mintPermitE90275AB(
+                        op.outcome,
+                        op.amountToSpend,
+                        op.owner,
+                        0,
+                        0,
+                        bytes32(0),
+                        bytes32(0)
+                    );
+                else
+                    op.market.mint8A059B6E(
+                        op.outcome,
+                        op.amountToSpend,
+                        op.referrer,
+                        op.owner
+                    );
+                return (op.maximumFee, true);
+            } catch {
+                DPMOld(address(op.market)).mintPermitE90275AB(
+                    op.outcome,
+                    op.amountToSpend,
+                    op.owner,
+                    0,
+                    0,
+                    bytes32(0),
+                    bytes32(0)
+                );
+            }
+        } else if (op.typ == PaymasterType.BURN) {
+            // For selling, we don't take a fee.
+            op.market.burn854CC96E(
                 op.outcome,
                 op.amountToSpend,
+                true,
+                op.minimumBack,
                 op.referrer,
                 op.owner
             );
-            return (op.maximumFee, true);
-        } else if (op.typ == PaymasterType.BURN) {
-            // For selling, we don't take a fee.
-            try
-                op.market.burn854CC96E(
-                    op.outcome,
-                    op.amountToSpend,
-                    true,
-                    op.minimumBack,
-                    op.referrer,
-                    op.owner
-                ) {}
-            catch {
-                return (0, false);
-            }
             return (0, true);
         } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
             // For adding liquidity, we don't take a fee.
-            try
-                USDC.transferFrom(op.owner, address(this), op.amountToSpend) {}
-            catch {
-                return (0, false);
-            }
+            USDC.transferFrom(op.owner, address(this), op.amountToSpend);
             USDC.approve(address(op.market), op.amountToSpend);
-            try
-                op.market.addLiquidity638EB2C9(
-                    op.amountToSpend,
-                    op.owner,
-                    op.minimumBack
-                ) {}
-            catch {
-                return (0, false);
-            }
+            op.market.addLiquidity638EB2C9(
+                op.amountToSpend,
+                op.owner,
+                op.minimumBack
+            );
             return (0, true);
         } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY) {
             // For removing liquidity, we don't take a fee.
-            try
-                op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner) {}
-            catch {
-                return (0, false);
-            }
+            op.market.removeLiquidity3C857A15(op.amountToSpend, op.owner);
             return (0, true);
         } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
             // For withdrawing, we take a fee.

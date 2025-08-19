@@ -491,7 +491,10 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 						{"Content", p},
 						{"Paymaster address", r.PaymasterAddr},
 						{"Sender", p.Owner},
+						{"Market", p.Market},
+						{"Type", p.Typ},
 						{"Calldata", cd},
+						{"Originating chain id", p.OriginatingChainId},
 					},
 				),
 			)
@@ -1218,9 +1221,9 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 	var positions []*types.Position
 	address = strings.ToLower(address)
 	err := r.DB.Raw(`
-	SELECT nc.id as campaign_id, json_agg(DISTINCT nbs.outcome_id) AS outcome_ids, nc."content" 
+	SELECT nc.id as campaign_id, json_agg(DISTINCT nbs.outcome_id) AS outcome_ids, nc."content"
 	FROM ninelives_buys_and_sells_1 as nbs
-	join ninelives_campaigns_1 nc on nc.id = nbs.campaign_id 
+	join ninelives_campaigns_1 nc on nc.id = nbs.campaign_id
 	WHERE nbs.recipient = ? and nbs.campaign_id is not null
 	GROUP BY nbs.campaign_id, nc.id;
 	`, address).Scan(&positions).Error
