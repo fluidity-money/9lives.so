@@ -123,12 +123,15 @@ export default function useLiquidity({
             method: "removeLiquidity3C857A15",
             params: [BigInt(0), account.address],
           });
-          const [_, lpRewards] = await simulateTransaction({
+          const [lpedAmount, lpRewards] = await simulateTransaction({
             transaction: claimLiquidityTx,
             account,
           });
-          if (!(BigInt(lpRewards) > 0)) {
-            throw new Error("You don't have any LP rewards.");
+          if (
+            BigInt(lpRewards) === BigInt(0) &&
+            BigInt(lpedAmount) === BigInt(0)
+          ) {
+            throw new Error("You don't have anything to claim.");
           }
           await sendTransaction({
             transaction: claimLiquidityTx,
@@ -150,7 +153,7 @@ export default function useLiquidity({
         }
       }),
       {
-        loading: "Claiming liquidity...",
+        loading: "Claiming liquidity and rewards...",
         success: "Liquidity claimed successfully!",
         error: (e) => e?.shortMessage ?? e?.message ?? "Failed to claim.",
       },
