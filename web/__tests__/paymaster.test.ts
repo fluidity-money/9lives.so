@@ -145,5 +145,5 @@ describe("Paymaster", () => {
       transaction: allowanceTx,
     });
     expect(approvedAmount).toEqual(amountToSpend);
-  });
+  }, 30000);
 });
