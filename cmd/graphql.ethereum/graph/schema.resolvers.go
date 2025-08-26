@@ -1062,45 +1062,48 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
-	query := r.DB.Table("ninelives_campaigns_1 as nc").
-		Where("shown = TRUE").
-		Select("*")
+	selectClause := "nc.*"
+	joinClause := ""
+	whereClause := "WHERE shown = TRUE"
+	orderClause := ""
+	args := []interface{}{}
 	if address != nil {
 		*address = strings.ToLower(*address)
-		query = query.Where("content->'creator'->>'address' = ?", *address)
+		whereClause += " AND content->'creator'->>'address' = ?"
+		args = append(args, *address)
 	}
 	if len(category) > 0 {
 		jsonCategories, err := json.Marshal(category)
 		if err != nil {
 			return nil, fmt.Errorf("category filter can not be converted to json")
 		}
-		query = query.Where("content->'categories' @> ?", jsonCategories)
+		whereClause += " AND content->'categories' @> ?"
+		args = append(args, string(jsonCategories))
 	}
 	if searchTerm != nil {
-		query = query.Where("name_to_search ILIKE ?", "%"+*searchTerm+"%")
+		whereClause += " AND name_to_search ILIKE ?"
+		args = append(args, "%"+*searchTerm+"%")
 	}
+
 	if orderBy == nil {
-		query = query.Order("total_volume DESC").Where("content->>'winner' IS NULL")
+		whereClause += " AND content->>'winner' IS NULL"
+		orderClause = " ORDER BY total_volume DESC"
 	} else if *orderBy == "ended" {
-		query = query.Select("nc.*,neo.created_by").Joins("JOIN ninelives_events_outcome_decided AS neo ON neo.emitter_addr = nc.content->>'poolAddress'").Order("neo.created_by DESC")
+		selectClause += ",neo.created_by AS winner_decided_at"
+		joinClause = " JOIN ninelives_events_outcome_decided AS neo ON neo.emitter_addr = nc.content->>'poolAddress'"
+		orderClause = " ORDER BY winner_decided_at DESC"
 	} else {
-		query = query.Where("content->>'winner' IS NULL")
+		whereClause += " AND content->>'winner' IS NULL"
 		switch *orderBy {
 		case "newest":
-			query = query.Order("created_at DESC")
+			orderClause = " ORDER BY created_at DESC"
 		case "volume":
-			query = query.Order("total_volume DESC")
+			orderClause = " ORDER BY total_volume DESC"
 		case "ending":
-			query = query.Where("( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) > 0").
-				Order("( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) ASC")
+			whereClause += " AND ( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) > 0"
+			orderClause = " ORDER BY ( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) ASC"
 		case "liquidity":
-			addedSubquery := r.DB.Table("ninelives_events_liquidity_added").
-				Select("COALESCE(SUM(fusdc_amt), 0)").
-				Where("emitter_addr = ninelives_campaigns_1.content->>'poolAddress'")
-			removedSubquery := r.DB.Table("ninelives_events_liquidity_removed").
-				Select("COALESCE(SUM(fusdc_amt), 0)").
-				Where("emitter_addr = ninelives_campaigns_1.content->>'poolAddress'")
-			query = query.Select("nc.*, (?) - (?) as liquidity_vested", addedSubquery, removedSubquery).Order("liquidity_vested ")
+			panic("liquidity will be added")
 		default:
 			return nil, fmt.Errorf("invalid orderBy value")
 		}
@@ -1113,12 +1116,12 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	if pageSize != nil {
 		pageSizeNum = *pageSize
 	}
+	paginationClause := ""
 	if pageNum != -1 {
-		query = query.Offset(pageNum * pageSizeNum).Limit(pageSizeNum)
+		paginationClause = fmt.Sprintf(" OFFSET %d LIMIT %d", pageNum*pageSizeNum, pageSizeNum)
 	}
-	err := query.
-		Scan(&campaigns).
-		Error
+	finalQuery := "SELECT " + selectClause + " FROM ninelives_campaigns_1 AS nc " + joinClause + whereClause + orderClause + paginationClause
+	err := r.DB.Raw(finalQuery, args...).Scan(&campaigns).Error
 	if err != nil {
 		slog.Error("Error getting campaigns from database",
 			"error", err,
