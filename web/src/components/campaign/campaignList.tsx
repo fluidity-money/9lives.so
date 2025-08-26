@@ -44,6 +44,7 @@ export default function CampaignList({
       ["newest", "Newest"],
       ["ending", "Ending Soon"],
       ["ended", "Ended Recently"],
+      ["liquidity", "Liquidity"],
     ];
   useEffect(() => {
     const timer = setTimeout(() => setSearcTermFilter(searchTermInput), 300);
