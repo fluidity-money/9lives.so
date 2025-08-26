@@ -18,11 +18,9 @@ import tradingAbi from "@/config/abi/trading";
 const useLiquidityWithPaymaster = ({
   tradingAddr,
   data,
-  openFundModal,
 }: {
   tradingAddr: `0x${string}`;
   data: CampaignDetail;
-  openFundModal: () => void;
 }) => {
   const idempotentOutcome = "0x0000000000000000";
   const queryClient = useQueryClient();
@@ -218,7 +216,7 @@ const useLiquidityWithPaymaster = ({
             account,
           });
           if (amount > userBalance) {
-            openFundModal();
+            // openFundModal(); funding dialog can be added later
             throw new Error("You dont have enough USDC.");
           }
           const addLiquidityTx = prepareContractCall({

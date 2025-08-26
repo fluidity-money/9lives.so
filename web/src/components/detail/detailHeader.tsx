@@ -134,6 +134,7 @@ export default function DetailHeader({
             ) : Number(data.liquidityVested) > 1e6 &&
               Number(userLiquidity) > 0 ? (
               <RemoveLiquidityButton
+                data={data}
                 name={data.name}
                 campaignId={data.identifier}
                 tradingAddr={data.poolAddress}
@@ -144,6 +145,7 @@ export default function DetailHeader({
           ) : null}
           {isDpm ? null : (
             <AddLiquidityButton
+              data={data}
               name={data.name}
               campaignId={data.identifier}
               tradingAddr={data.poolAddress}

@@ -14,5 +14,7 @@
 	"paymaster should check trading addr": true,
 	"paymaster should report failure": true,
 	"paymaster should simulate submission": true,
-	"enable paymaster withdraw": true
+	"enable paymaster withdraw": true,
+	"enable paymaster add liquidity": false,
+	"enable paymaster remove liquidity": false
 }

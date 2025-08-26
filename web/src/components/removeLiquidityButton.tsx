@@ -2,10 +2,12 @@ import { useState } from "react";
 import Button from "./themed/button";
 import Modal from "./themed/modal";
 import RemoveLiquidityDialog from "./removeLiquidityDialog";
+import { CampaignDetail } from "@/types";
 
 export default function RemoveLiquidityButton({
   name,
   campaignId,
+  data,
   liquidity,
   tradingAddr,
   totalLiquidity,
@@ -15,6 +17,7 @@ export default function RemoveLiquidityButton({
   tradingAddr: `0x${string}`;
   liquidity: string;
   totalLiquidity: number;
+  data: CampaignDetail;
 }) {
   const [isLPModalOpen, setIsLPModalOpen] = useState(false);
   return (
@@ -31,6 +34,7 @@ export default function RemoveLiquidityButton({
       >
         <RemoveLiquidityDialog
           liquidity={liquidity}
+          data={data}
           close={() => setIsLPModalOpen(false)}
           name={name}
           totalLiquidity={totalLiquidity}

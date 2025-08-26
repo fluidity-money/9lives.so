@@ -8,21 +8,27 @@ import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { Account } from "thirdweb/wallets";
 import useLiquidity from "@/hooks/useLiquidity";
+import useLiquidityWithPaymaster from "@/hooks/useLiquidityWithPaymaster";
+import { CampaignDetail } from "@/types";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function AddLiquidityDialog({
   name,
   close,
   campaignId,
   tradingAddr,
+  data,
 }: {
   name: string;
   close: () => void;
+  data: CampaignDetail;
   campaignId: `0x${string}`;
   tradingAddr: `0x${string}`;
 }) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const [isFunding, setIsFunding] = useState(false);
+  const enablePaymaster = useFeatureFlag("enable paymaster add liquidity");
   const formSchema = z.object({
     seedLiquidity: z.preprocess((val) => Number(val), z.number().min(1)),
   });
@@ -41,10 +47,17 @@ export default function AddLiquidityDialog({
     campaignId,
     tradingAddr,
   });
+  const { add: addWithPaymaster } = useLiquidityWithPaymaster({
+    data,
+    tradingAddr,
+  });
   const onSubmit = async (input: FormData, account: Account) => {
     try {
       setIsFunding(true);
-      await add(account!, input.seedLiquidity.toString());
+      await (enablePaymaster ? addWithPaymaster : add)(
+        account!,
+        input.seedLiquidity.toString(),
+      );
       close();
     } finally {
       setIsFunding(false);

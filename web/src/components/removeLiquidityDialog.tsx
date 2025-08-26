@@ -13,6 +13,9 @@ import Input from "./themed/input";
 import { combineClass } from "@/utils/combineClass";
 import ErrorInfo from "./themed/errorInfo";
 import formatFusdc from "@/utils/formatFusdc";
+import useLiquidityWithPaymaster from "@/hooks/useLiquidityWithPaymaster";
+import { CampaignDetail } from "@/types";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function RemoveLiquidityDialog({
   name,
@@ -21,6 +24,7 @@ export default function RemoveLiquidityDialog({
   tradingAddr,
   liquidity,
   totalLiquidity,
+  data,
 }: {
   name: string;
   close: () => void;
@@ -28,11 +32,13 @@ export default function RemoveLiquidityDialog({
   tradingAddr: `0x${string}`;
   liquidity: string;
   totalLiquidity: number;
+  data: CampaignDetail;
 }) {
   const account = useActiveAccount();
   const sliderRef = useRef<HTMLInputElement>(null);
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
+  const enabledPaymaster = useFeatureFlag("enable paymaster remove liquidity");
   const isSafeMax = totalLiquidity - Number(liquidity) >= 1e6;
   const maxLiquidity = Number(
     formatFusdc(isSafeMax ? Number(liquidity) : Number(liquidity) - 1e6, 6),
@@ -59,10 +65,18 @@ export default function RemoveLiquidityDialog({
     campaignId,
     tradingAddr,
   });
+  const { remove: removeWithPaymaster } = useLiquidityWithPaymaster({
+    data,
+    tradingAddr,
+  });
   const onSubmit = async (input: FormData, account: Account) => {
     try {
       setIsLoading(true);
-      await remove(account!, input.liquidity.toString(), totalLiquidity);
+      await (enabledPaymaster ? removeWithPaymaster : remove)(
+        account!,
+        input.liquidity.toString(),
+        totalLiquidity,
+      );
       close();
     } finally {
       setIsLoading(false);
