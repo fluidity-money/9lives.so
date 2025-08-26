@@ -1093,6 +1093,14 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		case "ending":
 			query = query.Where("( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) > 0").
 				Order("( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) ASC")
+		case "liquidity":
+			addedSubquery := r.DB.Table("ninelives_events_liquidity_added").
+				Select("COALESCE(SUM(fusdc_amt), 0)").
+				Where("emitter_addr = ninelives_campaigns_1.content->>'poolAddress'")
+			removedSubquery := r.DB.Table("ninelives_events_liquidity_removed").
+				Select("COALESCE(SUM(fusdc_amt), 0)").
+				Where("emitter_addr = ninelives_campaigns_1.content->>'poolAddress'")
+			query = query.Select("nc.*, (?) - (?) as liquidity_vested", addedSubquery, removedSubquery).Order("liquidity_vested ")
 		default:
 			return nil, fmt.Errorf("invalid orderBy value")
 		}
