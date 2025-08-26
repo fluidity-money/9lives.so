@@ -1103,7 +1103,12 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 			whereClause += " AND ( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) > 0"
 			orderClause = " ORDER BY ( (content->>'ending')::bigint - EXTRACT(EPOCH FROM NOW()) ) ASC"
 		case "liquidity":
-			panic("liquidity will be added")
+			selectClause += `,(
+    COALESCE((SELECT SUM(fusdc_amt) FROM ninelives_events_liquidity_added nela WHERE emitter_addr = nc.content->>'poolAddress'), 0)
+    -
+    COALESCE((SELECT SUM(fusdc_amt) FROM ninelives_events_liquidity_removed nelr WHERE emitter_addr = nc.content->>'poolAddress'), 0)
+) AS liquidity_vested`
+			orderClause = " ORDER BY liquidity_vested DESC"
 		default:
 			return nil, fmt.Errorf("invalid orderBy value")
 		}
