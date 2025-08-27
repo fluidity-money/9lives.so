@@ -9,6 +9,7 @@ export default function getAmmPrices(
 ): Map<OutcomeId, number> | undefined {
   if (!sharesArray) return;
   const filteredArr = sharesArray.filter((s) => s !== null);
+  if (2 > filteredArr.length) return;
   const shares: Map<OutcomeId, bigint> = new Map(
     filteredArr.map((item) => [
       `0x${item.identifier}` as OutcomeId,
