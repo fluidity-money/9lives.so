@@ -23,6 +23,7 @@ type (
 		TotalVolume       int                   `json:"totalVolume"`
 		InvestmentAmounts InvestmentAmountsList `json:"investmentAmounts" gorm:"type:jsonb"`
 		LiquidityVested   int                   `json:"liquidityVested"`
+		Shares            CampaignShares        `json:"shares"`
 	}
 
 	LP struct {
@@ -57,6 +58,13 @@ type (
 	}
 
 	OutcomeList []Outcome
+
+	CampaignShare struct {
+		Shares     string `json:"shares"`
+		Identifier string `json:"identifier"`
+	}
+
+	CampaignShares []*CampaignShare
 
 	CampaignContent struct {
 		// Name of the campaign.
@@ -283,6 +291,22 @@ func (ois OutcomeIds) Value() (driver.Value, error) {
 
 func (ois *OutcomeIds) Scan(value interface{}) error {
 	return JSONUnmarshal(value, ois)
+}
+
+func (cs CampaignShare) Value() (driver.Value, error) {
+	return JSONMarshal(cs)
+}
+
+func (cs CampaignShare) Scan(value interface{}) error {
+	return JSONUnmarshal(value, cs)
+}
+
+func (css CampaignShares) Value() (driver.Value, error) {
+	return JSONMarshal(css)
+}
+
+func (css *CampaignShares) Scan(value interface{}) error {
+	return JSONUnmarshal(value, css)
 }
 
 type Frontpage struct {

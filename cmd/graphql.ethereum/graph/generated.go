@@ -91,12 +91,18 @@ type ComplexityRoot struct {
 		Picture           func(childComplexity int) int
 		PoolAddress       func(childComplexity int) int
 		Settlement        func(childComplexity int) int
+		Shares            func(childComplexity int) int
 		Starting          func(childComplexity int) int
 		Telegram          func(childComplexity int) int
 		TotalVolume       func(childComplexity int) int
 		Web               func(childComplexity int) int
 		Winner            func(childComplexity int) int
 		X                 func(childComplexity int) int
+	}
+
+	CampaignShare struct {
+		Identifier func(childComplexity int) int
+		Shares     func(childComplexity int) int
 	}
 
 	Changelog struct {
@@ -228,6 +234,7 @@ type CampaignResolver interface {
 	Banners(ctx context.Context, obj *types.Campaign) ([]string, error)
 	Categories(ctx context.Context, obj *types.Campaign) ([]string, error)
 	IsDpm(ctx context.Context, obj *types.Campaign) (*bool, error)
+	Shares(ctx context.Context, obj *types.Campaign) ([]*types.CampaignShare, error)
 }
 type ChangelogResolver interface {
 	ID(ctx context.Context, obj *changelog.Changelog) (string, error)
@@ -517,6 +524,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Campaign.Settlement(childComplexity), true
 
+	case "Campaign.shares":
+		if e.complexity.Campaign.Shares == nil {
+			break
+		}
+
+		return e.complexity.Campaign.Shares(childComplexity), true
+
 	case "Campaign.starting":
 		if e.complexity.Campaign.Starting == nil {
 			break
@@ -558,6 +572,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.X(childComplexity), true
+
+	case "CampaignShare.identifier":
+		if e.complexity.CampaignShare.Identifier == nil {
+			break
+		}
+
+		return e.complexity.CampaignShare.Identifier(childComplexity), true
+
+	case "CampaignShare.shares":
+		if e.complexity.CampaignShare.Shares == nil {
+			break
+		}
+
+		return e.complexity.CampaignShare.Shares(childComplexity), true
 
 	case "Changelog.afterTs":
 		if e.complexity.Changelog.AfterTs == nil {
@@ -3736,6 +3764,144 @@ func (ec *executionContext) fieldContext_Campaign_isDpm(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Campaign_shares(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_shares(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().Shares(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*types.CampaignShare)
+	fc.Result = res
+	return ec.marshalNCampaignShare2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaignShare(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_shares(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "shares":
+				return ec.fieldContext_CampaignShare_shares(ctx, field)
+			case "identifier":
+				return ec.fieldContext_CampaignShare_identifier(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CampaignShare", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CampaignShare_shares(ctx context.Context, field graphql.CollectedField, obj *types.CampaignShare) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CampaignShare_shares(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Shares, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CampaignShare_shares(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CampaignShare",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CampaignShare_identifier(ctx context.Context, field graphql.CollectedField, obj *types.CampaignShare) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CampaignShare_identifier(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Identifier, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CampaignShare_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CampaignShare",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Changelog_id(ctx context.Context, field graphql.CollectedField, obj *changelog.Changelog) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Changelog_id(ctx, field)
 	if err != nil {
@@ -4129,6 +4295,8 @@ func (ec *executionContext) fieldContext_Claim_content(_ context.Context, field 
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "shares":
+				return ec.fieldContext_Campaign_shares(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -4435,6 +4603,8 @@ func (ec *executionContext) fieldContext_LP_campaign(_ context.Context, field gr
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "shares":
+				return ec.fieldContext_Campaign_shares(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5394,6 +5564,8 @@ func (ec *executionContext) fieldContext_Position_content(_ context.Context, fie
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "shares":
+				return ec.fieldContext_Campaign_shares(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5621,6 +5793,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "shares":
+				return ec.fieldContext_Campaign_shares(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5721,6 +5895,8 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "shares":
+				return ec.fieldContext_Campaign_shares(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -6558,6 +6734,8 @@ func (ec *executionContext) fieldContext_Query_featuredCampaign(ctx context.Cont
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "shares":
+				return ec.fieldContext_Campaign_shares(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -9741,6 +9919,86 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "shares":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_shares(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var campaignShareImplementors = []string{"CampaignShare"}
+
+func (ec *executionContext) _CampaignShare(ctx context.Context, sel ast.SelectionSet, obj *types.CampaignShare) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, campaignShareImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CampaignShare")
+		case "shares":
+			out.Values[i] = ec._CampaignShare_shares(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "identifier":
+			out.Values[i] = ec._CampaignShare_identifier(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -11534,6 +11792,44 @@ func (ec *executionContext) marshalNCampaign2ᚖgithubᚗcomᚋfluidityᚑmoney�
 	return ec._Campaign(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNCampaignShare2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaignShare(ctx context.Context, sel ast.SelectionSet, v []*types.CampaignShare) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOCampaignShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaignShare(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
 func (ec *executionContext) marshalNChangelog2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚋchangelogᚐChangelog(ctx context.Context, sel ast.SelectionSet, v []*changelog.Changelog) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -12292,6 +12588,13 @@ func (ec *executionContext) marshalOCampaign2ᚖgithubᚗcomᚋfluidityᚑmoney�
 		return graphql.Null
 	}
 	return ec._Campaign(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCampaignShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaignShare(ctx context.Context, sel ast.SelectionSet, v *types.CampaignShare) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CampaignShare(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOChangelog2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚋchangelogᚐChangelog(ctx context.Context, sel ast.SelectionSet, v *changelog.Changelog) graphql.Marshaler {

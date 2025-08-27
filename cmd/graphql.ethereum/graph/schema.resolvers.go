@@ -32,7 +32,6 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/types/referrer"
 	"github.com/fluidity-money/9lives.so/lib/webhooks"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -267,6 +266,14 @@ func (r *campaignResolver) IsDpm(ctx context.Context, obj *types.Campaign) (*boo
 		return nil, fmt.Errorf("empty campaign")
 	}
 	return obj.Content.IsDpm, nil
+}
+
+// Shares is the resolver for the shares field.
+func (r *campaignResolver) Shares(ctx context.Context, obj *types.Campaign) ([]*types.CampaignShare, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Shares, nil
 }
 
 // ID is the resolver for the id field.
@@ -1062,8 +1069,8 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
-	selectClause := "nc.*"
-	joinClause := ""
+	selectClause := "nc.*,nead.shares AS shares"
+	joinClause := "JOIN (SELECT DISTINCT ON (emitter_addr) * FROM ninelives_events_amm_details ORDER BY emitter_addr, created_by DESC) AS nead on nead.emitter_addr = nc.content->>'poolAddress' "
 	whereClause := "WHERE shown = TRUE"
 	orderClause := ""
 	args := []interface{}{}
@@ -1090,7 +1097,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		orderClause = " ORDER BY total_volume DESC"
 	} else if *orderBy == "ended" {
 		selectClause += ",neo.created_by AS winner_decided_at"
-		joinClause = " JOIN ninelives_events_outcome_decided AS neo ON neo.emitter_addr = nc.content->>'poolAddress'"
+		joinClause += " JOIN ninelives_events_outcome_decided AS neo ON neo.emitter_addr = nc.content->>'poolAddress'"
 		orderClause = " ORDER BY winner_decided_at DESC"
 	} else {
 		whereClause += " AND content->>'winner' IS NULL"

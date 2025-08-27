@@ -612,6 +612,19 @@ type Campaign {
   For dpm markets it is true, for amms false
   """
   isDpm: Boolean
+
+  """
+  Latest total shares of the campaign to calculate prices of the outcomes
+  """
+  shares: [CampaignShare]!
+}
+
+"""
+Campaign outcome share with identifier to match
+"""
+type CampaignShare {
+  shares: String!
+  identifier: String!
 }
 
 """
