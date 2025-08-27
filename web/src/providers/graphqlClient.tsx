@@ -28,6 +28,10 @@ export const requestCampaignList = (filterParams: CampaignFilters) =>
     creator: {
       address: true,
     },
+    shares: {
+      identifier: true,
+      shares: true,
+    },
     outcomes: {
       identifier: true,
       name: true,
@@ -163,6 +167,10 @@ export const requestCampaignById = (id: string) =>
     isDpm: true,
     creator: {
       address: true,
+    },
+    shares: {
+      identifier: true,
+      shares: true,
     },
     outcomes: {
       identifier: true,
@@ -391,6 +399,10 @@ export const requestFeaturedCampaigns = (
     poolAddress: true,
     creator: {
       address: true,
+    },
+    shares: {
+      identifier: true,
+      shares: true,
     },
     outcomes: {
       identifier: true,

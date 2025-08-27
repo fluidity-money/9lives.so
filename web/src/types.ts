@@ -193,6 +193,10 @@ export class CampaignDto implements Campaign {
   settlement: SettlementType;
   ending: number;
   starting: number;
+  shares: ({
+    shares: string;
+    identifier: string;
+  } | null)[];
   totalVolume: number;
   creator: { address: string };
   constructor(
@@ -217,6 +221,7 @@ export class CampaignDto implements Campaign {
     this.starting = rawCampaign.starting;
     this.totalVolume = rawCampaign.totalVolume;
     this.creator = rawCampaign.creator;
+    this.shares = rawCampaign.shares;
   }
 }
 export class CampaignDetailDto extends CampaignDto {
