@@ -33,7 +33,7 @@ export default function useRequestPaymaster() {
     let permitV = 0;
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     if (
-      params.amountToSpend &&
+      Number(params.amountToSpend) > 0 &&
       (params.opType === "MINT" || params.opType === "ADD_LIQUIDITY")
     ) {
       const allowanceTx = prepareContractCall({
