@@ -1301,6 +1301,7 @@ export namespace Schema {
       banners: Campaign.banners;
       categories: Campaign.categories;
       isDpm: Campaign.isDpm;
+      shares: Campaign.shares;
     };
   }
 
@@ -1547,6 +1548,58 @@ export namespace Schema {
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Latest total shares of the campaign to calculate prices of the outcomes
+     */
+    export interface shares extends $.OutputField {
+      name: "shares";
+      arguments: {};
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$CampaignShare;
+    }
+  }
+
+  //                                           CampaignShare
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Campaign outcome share with identifier to match
+   */
+  export interface CampaignShare extends $.OutputObject {
+    name: "CampaignShare";
+    fields: {
+      __typename: CampaignShare.__typename;
+      shares: CampaignShare.shares;
+      identifier: CampaignShare.identifier;
+    };
+  }
+
+  export namespace CampaignShare {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "CampaignShare";
+      };
+    }
+
+    export interface shares extends $.OutputField {
+      name: "shares";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface identifier extends $.OutputField {
+      name: "identifier";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
   }
 
@@ -2395,6 +2448,7 @@ export namespace Schema {
     export type $$Claim = Claim;
     export type $$Position = Position;
     export type $$Campaign = Campaign;
+    export type $$CampaignShare = CampaignShare;
     export type $$LeaderboardPosition = LeaderboardPosition;
     export type $$LeaderboardWeekly = LeaderboardWeekly;
     export type $$InvestmentAmounts = InvestmentAmounts;
@@ -2455,6 +2509,7 @@ export interface Schema<
     Claim: Schema.Claim;
     Position: Schema.Position;
     Campaign: Schema.Campaign;
+    CampaignShare: Schema.CampaignShare;
     LeaderboardPosition: Schema.LeaderboardPosition;
     LeaderboardWeekly: Schema.LeaderboardWeekly;
     InvestmentAmounts: Schema.InvestmentAmounts;
@@ -2471,6 +2526,7 @@ export interface Schema<
     Claim: Schema.Claim;
     Position: Schema.Position;
     Campaign: Schema.Campaign;
+    CampaignShare: Schema.CampaignShare;
     LeaderboardPosition: Schema.LeaderboardPosition;
     LeaderboardWeekly: Schema.LeaderboardWeekly;
     InvestmentAmounts: Schema.InvestmentAmounts;

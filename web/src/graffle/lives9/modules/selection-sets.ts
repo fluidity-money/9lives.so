@@ -2459,6 +2459,14 @@ export interface Campaign<
   isDpm?:
     | Campaign.isDpm$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Campaign.isDpm<_$Scalars>>;
+  /**
+   *
+   * Select the `shares` field on the `Campaign` object. Its type is `CampaignShare` (a `OutputObject` kind of type).
+   *
+   */
+  shares?:
+    | Campaign.shares$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.shares<_$Scalars>>;
 
   /**
    *
@@ -3137,6 +3145,153 @@ export namespace Campaign {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | isDpm$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type shares<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = shares$SelectionSet<_$Scalars>;
+
+  export interface shares$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$CampaignShare<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `shares` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type shares$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<shares$SelectionSet<_$Scalars>>;
+}
+
+//                                           CampaignShare
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+/**
+ * Campaign outcome share with identifier to match
+ */
+export interface CampaignShare<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `shares` field on the `CampaignShare` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  shares?:
+    | CampaignShare.shares$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<CampaignShare.shares<_$Scalars>>;
+  /**
+   *
+   * Select the `identifier` field on the `CampaignShare` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  identifier?:
+    | CampaignShare.identifier$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<CampaignShare.identifier<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | CampaignShare$FragmentInline<_$Scalars>
+    | CampaignShare$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface CampaignShare$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends CampaignShare<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace CampaignShare {
+  export type shares<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | shares$SelectionSet<_$Scalars>;
+
+  export interface shares$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `shares` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type shares$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | shares$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type identifier<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | identifier$SelectionSet<_$Scalars>;
+
+  export interface identifier$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `identifier` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type identifier$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | identifier$SelectionSet<_$Scalars>
   >;
 }
 
@@ -4756,6 +4911,10 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = Campaign<_$Scalars>;
+  export type $CampaignShare<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = CampaignShare<_$Scalars>;
   export type $LeaderboardPosition<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,

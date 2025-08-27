@@ -93,6 +93,13 @@ export namespace Select {
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Campaign"]
     >;
+  export type CampaignShare<
+    $SelectionSet extends $$SelectionSets.CampaignShare,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["CampaignShare"]
+  >;
   export type LeaderboardPosition<
     $SelectionSet extends $$SelectionSets.LeaderboardPosition,
   > = InferResult.OutputObjectLike<

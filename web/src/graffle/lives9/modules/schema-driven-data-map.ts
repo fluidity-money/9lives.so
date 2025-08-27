@@ -198,6 +198,16 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     banners: {},
     categories: {},
     isDpm: {},
+    shares: {
+      // nt: CampaignShare, <-- Assigned later to avoid potential circular dependency.
+    },
+  },
+};
+
+const CampaignShare: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    shares: {},
+    identifier: {},
   },
 };
 
@@ -784,6 +794,7 @@ Position.f[`content`]!.nt = Campaign;
 Campaign.f[`creator`]!.nt = Wallet;
 Campaign.f[`outcomes`]!.nt = Outcome;
 Campaign.f[`investmentAmounts`]!.nt = InvestmentAmounts;
+Campaign.f[`shares`]!.nt = CampaignShare;
 LeaderboardWeekly.f[`referrers`]!.nt = LeaderboardPosition;
 LeaderboardWeekly.f[`volume`]!.nt = LeaderboardPosition;
 LeaderboardWeekly.f[`creators`]!.nt = LeaderboardPosition;
@@ -838,6 +849,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Claim,
     Position,
     Campaign,
+    CampaignShare,
     LeaderboardPosition,
     LeaderboardWeekly,
     InvestmentAmounts,

@@ -26,6 +26,7 @@ export interface $MethodsSelect {
   Claim: Claim;
   Position: Position;
   Campaign: Campaign;
+  CampaignShare: CampaignShare;
   LeaderboardPosition: LeaderboardPosition;
   LeaderboardWeekly: LeaderboardWeekly;
   InvestmentAmounts: InvestmentAmounts;
@@ -113,6 +114,15 @@ export interface Position {
 export interface Campaign {
   <$SelectionSet>(
     selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Campaign>,
+  ): $SelectionSet;
+}
+
+export interface CampaignShare {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.CampaignShare
+    >,
   ): $SelectionSet;
 }
 
