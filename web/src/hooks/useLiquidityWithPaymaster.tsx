@@ -1,9 +1,5 @@
 import config from "@/config";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-} from "thirdweb";
+import { prepareContractCall, simulateTransaction } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -13,7 +9,6 @@ import useRequestPaymaster from "./useRequestPaymaster";
 import { useActiveAccount } from "thirdweb/react";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 import { Account } from "thirdweb/wallets";
-import tradingAbi from "@/config/abi/trading";
 
 const useLiquidityWithPaymaster = ({
   tradingAddr,
@@ -27,12 +22,6 @@ const useLiquidityWithPaymaster = ({
   const account = useActiveAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
-  const tradingContract = getContract({
-    abi: tradingAbi,
-    address: tradingAddr,
-    client: config.thirdweb.client,
-    chain: config.destinationChain,
-  });
   const { mutateAsync: requestPaymasterOptimisticallyForAdd } = useMutation({
     mutationFn: ({
       amountToSpend,
@@ -41,7 +30,7 @@ const useLiquidityWithPaymaster = ({
       tradingAddr,
       minimumBack,
       outgoingChainEid,
-    }: Parameters<typeof requestPaymaster>[0] & { estimatedReturn?: bigint }) =>
+    }: Parameters<typeof requestPaymaster>[0]) =>
       requestPaymaster({
         amountToSpend,
         outcome,
@@ -61,15 +50,13 @@ const useLiquidityWithPaymaster = ({
           account?.address,
           tradingAddr,
         ]) ?? "0";
-      if (newRequest.estimatedReturn) {
-        // Optimistically update previousLiquidity with newAmount
-        const newAmount =
-          BigInt(previousLiquidity) + BigInt(newRequest.estimatedReturn);
-        queryClient.setQueryData(
-          ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
-          () => newAmount.toString(),
-        );
-      }
+      // Optimistically update previousLiquidity with newAmount
+      const newAmount =
+        BigInt(previousLiquidity) + BigInt(newRequest.amountToSpend);
+      queryClient.setQueryData(
+        ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+        () => newAmount.toString(),
+      );
 
       // handle balance
       await queryClient.cancelQueries({
@@ -121,7 +108,7 @@ const useLiquidityWithPaymaster = ({
       tradingAddr,
       minimumBack,
       outgoingChainEid,
-    }: Parameters<typeof requestPaymaster>[0] & { estimatedReturn?: bigint }) =>
+    }: Parameters<typeof requestPaymaster>[0]) =>
       requestPaymaster({
         amountToSpend,
         outcome,
@@ -166,15 +153,13 @@ const useLiquidityWithPaymaster = ({
           account?.address,
           config.NEXT_PUBLIC_FUSDC_ADDR,
         ]) ?? "0";
-      if (newRequest.estimatedReturn) {
-        // Optimistically update previousLiquidity with newAmount
-        const newAmount =
-          BigInt(previousBalance) + BigInt(newRequest.estimatedReturn);
-        queryClient.setQueryData(
-          ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
-          () => newAmount.toString(),
-        );
-      }
+      // Optimistically update previousLiquidity with newAmount
+      const newAmount =
+        BigInt(previousBalance) + BigInt(newRequest.amountToSpend);
+      queryClient.setQueryData(
+        ["balance", account?.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+        () => newAmount.toString(),
+      );
 
       // Return context to roll back
       return { previousLiquidity, previousBalance };
@@ -219,15 +204,6 @@ const useLiquidityWithPaymaster = ({
             // openFundModal(); funding dialog can be added later
             throw new Error("You dont have enough USDC.");
           }
-          const addLiquidityTx = prepareContractCall({
-            contract: tradingContract,
-            method: "addLiquidityA975D995",
-            params: [amount, account.address],
-          });
-          const estimatedReturn = (await simulateTransaction({
-            transaction: addLiquidityTx,
-            account,
-          })) as bigint | undefined;
           const result = await requestPaymasterOptimisticallyForAdd({
             amountToSpend: amount.toString(),
             outcome: idempotentOutcome,
@@ -235,7 +211,6 @@ const useLiquidityWithPaymaster = ({
             tradingAddr: tradingAddr,
             outgoingChainEid: 0,
             minimumBack: "0",
-            estimatedReturn,
           });
           if (result && result.ticketId) {
             createTicket({
@@ -278,16 +253,6 @@ const useLiquidityWithPaymaster = ({
           const amount =
             BigInt(1e6) > diff ? BigInt(totalLiquidity) - BigInt(1e6) : _fusdc; // always 1 usdc should be secured in liquidity pool
 
-          const removeLiquidityTx = prepareContractCall({
-            contract: tradingContract,
-            method: "removeLiquidity3C857A15",
-            params: [amount, account.address],
-          });
-          const estimatedReturn = (await simulateTransaction({
-            transaction: removeLiquidityTx,
-            account,
-          })) as bigint | undefined;
-
           const result = await requestPaymasterOptimisticallyForRemove({
             amountToSpend: amount.toString(),
             outcome: idempotentOutcome,
@@ -295,7 +260,6 @@ const useLiquidityWithPaymaster = ({
             tradingAddr: tradingAddr,
             outgoingChainEid: 0,
             minimumBack: "0",
-            estimatedReturn,
           });
           if (result && result.ticketId) {
             createTicket({
