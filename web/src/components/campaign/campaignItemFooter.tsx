@@ -1,14 +1,8 @@
 import formatFusdc from "@/utils/formatFusdc";
 import WatchlistButton from "../watchlistButton";
 import { Campaign } from "@/types";
-import useCountdown from "@/hooks/useCountdown";
+import { CountdownTimer } from "../countdownTimer";
 
-function DailyTimer({ endTime }: { endTime: number }) {
-  const timeleft = useCountdown(endTime);
-  return (
-    <span className="bg-9red px-0.5 py-[1px] text-9black">{timeleft}</span>
-  );
-}
 const weekDuration = 60 * 60 * 24 * 7;
 export default function CampaignItemFooter({ data }: { data: Campaign }) {
   const left = data.ending - Math.floor(Date.now() / 1000);
@@ -18,7 +12,9 @@ export default function CampaignItemFooter({ data }: { data: Campaign }) {
       {data.totalVolume === 0 ? null : (
         <span>{formatFusdc(data.totalVolume)} USDC Vol.</span>
       )}
-      {inThisWeek && !data.winner ? <DailyTimer endTime={data.ending} /> : null}
+      {inThisWeek && !data.winner ? (
+        <CountdownTimer endTime={data.ending} />
+      ) : null}
       <WatchlistButton type="small" data={data} className="ml-auto" />
     </div>
   );

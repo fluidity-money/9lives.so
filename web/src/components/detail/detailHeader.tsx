@@ -12,6 +12,7 @@ import AddLiquidityButton from "../addLiquidityButton";
 import RemoveLiquidityButton from "../removeLiquidityButton";
 import ClaimLiquidityButton from "../claimLiquidityButton";
 import ClaimFeesButton from "../claimFeesButton";
+import { CountdownTimer } from "../countdownTimer";
 export default function DetailHeader({
   data,
   isEnded,
@@ -93,6 +94,7 @@ export default function DetailHeader({
               : data.ending,
           ).toDateString()}
         </span>
+        <CountdownTimer endTime={data.ending} />
         {isConcluded || isEnded ? (
           <span className="bg-[#CCC] p-2 font-chicago text-xs text-[#808080]">
             Campaign {isConcluded ? "Concluded" : "Ended"}
