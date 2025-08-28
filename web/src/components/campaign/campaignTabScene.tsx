@@ -1,15 +1,13 @@
 "use client";
 import TabButton from "../tabButton";
 import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import CampaignList from "./campaignList";
 import WatchList from "./watchList";
 import config from "@/config";
-import { CampaignFilters } from "@/types";
+import { useNavStore } from "@/stores/navStore";
 export default function CampaignTabScene() {
-  const [categoryIdx, setCategoryIdx] = useState(0);
-  const [orderBy, setOrderBy] =
-    useState<CampaignFilters["orderBy"]>("trending");
+  const { categoryIdx, orderBy, setCategoryIdx, setOrderBy } = useNavStore();
   return (
     <TabGroup
       selectedIndex={categoryIdx}
