@@ -13,7 +13,7 @@ import { Account } from "thirdweb/wallets";
 
 export interface CampaignFilters {
   category?: typeof config.categories;
-  orderBy?: "newest" | "volume" | "ending" | "ended" | "liquidity";
+  orderBy?: "newest" | "volume" | "ending" | "ended" | "liquidity" | "trending";
   searchTerm?: string;
   page?: number;
   pageSize?: number;

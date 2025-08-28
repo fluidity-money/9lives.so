@@ -20,7 +20,6 @@ import {
 import DegenModeFloatingButton from "@/components/degenMode/degenModeFloatingButton";
 import EmailSuggester from "@/components/emailSuggester";
 import Changelog from "@/components/changelog";
-import { getCachedFeaturedCampaigns } from "@/serverData/getFeaturedCampaigns";
 import TradingCompetitionBanner from "@/components/tradingCompetitionBanner";
 
 const chicago = localFont({
@@ -77,19 +76,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [
-    campaigns,
-    totalUserCount,
-    degenCreations,
-    degenBuysAndSells,
-    featuredCampaigns,
-  ] = await Promise.all([
-    getCachedCampaigns(),
-    getCachedTotalUserCount(),
-    getCachedCreations() as Promise<CreationResponse>,
-    getCachedBuysAndSells() as Promise<BuyAndSellResponse>,
-    getCachedFeaturedCampaigns(),
-  ]);
+  const [campaigns, totalUserCount, degenCreations, degenBuysAndSells] =
+    await Promise.all([
+      getCachedCampaigns(),
+      getCachedTotalUserCount(),
+      getCachedCreations() as Promise<CreationResponse>,
+      getCachedBuysAndSells() as Promise<BuyAndSellResponse>,
+    ]);
   return (
     <html
       lang="en"
@@ -107,7 +100,6 @@ export default async function RootLayout({
             totalUserCount,
             degenCreations,
             degenBuysAndSells,
-            featuredCampaigns,
           }}
         >
           <Header />

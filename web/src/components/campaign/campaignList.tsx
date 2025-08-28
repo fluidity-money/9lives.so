@@ -40,6 +40,7 @@ export default function CampaignList({
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   const orderByFilters: Array<[Required<CampaignFilters["orderBy"]>, string]> =
     [
+      ["trending", "Trending"],
       ["volume", "Volume"],
       ["newest", "Newest"],
       ["ending", "Ending Soon"],

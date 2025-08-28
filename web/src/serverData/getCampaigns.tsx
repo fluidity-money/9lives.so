@@ -4,7 +4,7 @@ import { Campaign, CampaignDto } from "@/types";
 import appConfig from "@/config";
 const query = `
     query Campaigns {
-      campaigns(pageSize: 32) {
+      campaigns(pageSize: 32,orderBy:"trending") {
         name
         identifier
         description
@@ -15,6 +15,10 @@ const query = `
         poolAddress
         creator {
           address
+        }
+        shares {
+          identifier
+          shares
         }
         outcomes {
           identifier
@@ -66,7 +70,7 @@ export async function getCampaigns() {
 }
 export const getCachedCampaigns = unstable_cache(
   getCampaigns,
-  ["campaigns", "volume"],
+  ["campaigns", "trending"],
   {
     revalidate: 3600,
     tags: ["campaigns"],
