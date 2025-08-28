@@ -1070,6 +1070,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		return campaigns, nil
 	}
 	selectClause := "nc.*,nead.shares AS shares"
+	fromClause := " FROM ninelives_campaigns_1 AS nc "
 	joinClause := "LEFT JOIN (SELECT DISTINCT ON (emitter_addr) * FROM ninelives_events_amm_details ORDER BY emitter_addr, created_by DESC) AS nead on nead.emitter_addr = nc.content->>'poolAddress' "
 	whereClause := "WHERE shown = TRUE"
 	orderClause := ""
@@ -1102,6 +1103,8 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	} else {
 		whereClause += " AND content->>'winner' IS NULL"
 		switch *orderBy {
+		case "trending":
+			fromClause = " FROM private_ninelives_campaigns_sorted_by_breakout_4 AS nc "
 		case "newest":
 			orderClause = " ORDER BY created_at DESC"
 		case "volume":
@@ -1132,7 +1135,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	if pageNum != -1 {
 		paginationClause = fmt.Sprintf(" OFFSET %d LIMIT %d", pageNum*pageSizeNum, pageSizeNum)
 	}
-	finalQuery := "SELECT " + selectClause + " FROM ninelives_campaigns_1 AS nc " + joinClause + whereClause + orderClause + paginationClause
+	finalQuery := "SELECT " + selectClause + fromClause + joinClause + whereClause + orderClause + paginationClause
 	err := r.DB.Raw(finalQuery, args...).Scan(&campaigns).Error
 	if err != nil {
 		slog.Error("Error getting campaigns from database",
