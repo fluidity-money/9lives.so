@@ -18,7 +18,7 @@ export default function CampaignItemFooter({ data }: { data: Campaign }) {
       {data.totalVolume === 0 ? null : (
         <span>{formatFusdc(data.totalVolume)} USDC Vol.</span>
       )}
-      {inThisWeek ? <DailyTimer endTime={data.ending} /> : null}
+      {inThisWeek && !data.winner ? <DailyTimer endTime={data.ending} /> : null}
       <WatchlistButton type="small" data={data} className="ml-auto" />
     </div>
   );
