@@ -1,3 +1,10 @@
+## 28-08-2025 Display of odds on the frontpage
+
+We released several reliability improvements since our last update, including having the
+Paymaster be used for more transactions. We even supported withdrawal of funds to another
+chain in a way that can be used for Farcaster. We've made it that you can see the odds on
+the landing page as well!
+
 ## 04-07-2025 Paymaster and seamless cross-chain purchasing
 
 We’ve added Farcaster support 🎯 and seamless cross-chain purchasing 🌉!
