@@ -1070,7 +1070,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		return campaigns, nil
 	}
 	selectClause := "nc.*,nead.shares AS shares"
-	joinClause := "JOIN (SELECT DISTINCT ON (emitter_addr) * FROM ninelives_events_amm_details ORDER BY emitter_addr, created_by DESC) AS nead on nead.emitter_addr = nc.content->>'poolAddress' "
+	joinClause := "LEFT JOIN (SELECT DISTINCT ON (emitter_addr) * FROM ninelives_events_amm_details ORDER BY emitter_addr, created_by DESC) AS nead on nead.emitter_addr = nc.content->>'poolAddress' "
 	whereClause := "WHERE shown = TRUE"
 	orderClause := ""
 	args := []interface{}{}
