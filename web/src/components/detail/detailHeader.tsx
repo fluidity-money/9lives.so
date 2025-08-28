@@ -26,6 +26,10 @@ export default function DetailHeader({
   isDpm: boolean | null;
   userLiquidity?: string;
 }) {
+  const left = data.ending - Math.floor(Date.now() / 1000);
+  const weekDuration = 60 * 60 * 24 * 7;
+  const inThisWeek = weekDuration >= left && left > 0;
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col justify-between gap-4 md:flex-row">
@@ -95,7 +99,11 @@ export default function DetailHeader({
                 : data.ending,
             ).toDateString()}
           </span>
-          <CountdownTimer endTime={data.ending} />
+          {inThisWeek && !data.winner ? (
+            <div className="font-geneva text-xs">
+              <CountdownTimer endTime={data.ending} />
+            </div>
+          ) : null}
         </div>
         {isConcluded || isEnded ? (
           <span className="bg-[#CCC] p-2 font-chicago text-xs text-[#808080]">
