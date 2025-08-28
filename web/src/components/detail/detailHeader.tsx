@@ -81,20 +81,22 @@ export default function DetailHeader({
         ) : null}
       </div>
       <div className="flex flex-col items-center justify-between gap-2.5 md:flex-row">
-        <span
-          className={combineClass(
-            isEnded ? "bg-[#CCC]" : "bg-9yellow",
-            "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
-          )}
-        >
-          {isEnded ? "Ended" : "End Date"}:{" "}
-          {new Date(
-            data.ending.toString().length === 10
-              ? data.ending * 1000
-              : data.ending,
-          ).toDateString()}
-        </span>
-        <CountdownTimer endTime={data.ending} />
+        <div className="flex items-center gap-2.5">
+          <span
+            className={combineClass(
+              isEnded ? "bg-[#CCC]" : "bg-9yellow",
+              "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
+            )}
+          >
+            {isEnded ? "Ended" : "End Date"}:{" "}
+            {new Date(
+              data.ending.toString().length === 10
+                ? data.ending * 1000
+                : data.ending,
+            ).toDateString()}
+          </span>
+          <CountdownTimer endTime={data.ending} />
+        </div>
         {isConcluded || isEnded ? (
           <span className="bg-[#CCC] p-2 font-chicago text-xs text-[#808080]">
             Campaign {isConcluded ? "Concluded" : "Ended"}
