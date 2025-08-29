@@ -16,5 +16,6 @@
 	"paymaster should simulate submission": true,
 	"enable paymaster withdraw": true,
 	"enable paymaster add liquidity": false,
-	"enable paymaster remove liquidity": false
+	"enable paymaster remove liquidity": false,
+	"display odds on campaign items": true
 }
