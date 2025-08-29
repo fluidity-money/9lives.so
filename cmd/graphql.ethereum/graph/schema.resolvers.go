@@ -1105,6 +1105,7 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		switch *orderBy {
 		case "trending":
 			fromClause = " FROM private_ninelives_campaigns_sorted_by_breakout_4 AS nc "
+			orderClause = " ORDER BY breakout_score DESC"
 		case "newest":
 			orderClause = " ORDER BY created_at DESC"
 		case "volume":
