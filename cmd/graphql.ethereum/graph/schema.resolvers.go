@@ -1540,6 +1540,7 @@ func (r *queryResolver) FeaturedCampaign(ctx context.Context, limit *int) ([]typ
 // UserLPs is the resolver for the userLPs field.
 func (r *queryResolver) UserLPs(ctx context.Context, address string) ([]types.LP, error) {
 	var lps []types.LP
+	address = strings.ToLower(address)
 	err := r.DB.Raw(`
 	SELECT
     COALESCE(added.total_added, 0) - COALESCE(removed.total_removed, 0) AS liquidity,
