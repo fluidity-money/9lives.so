@@ -16,7 +16,7 @@ export default function CreateCampaign() {
           volume as the creator, and 1% as a LP. 1% goes to the DAO.
         </p>
       </div>
-      <div className="flex flex-1 gap-7">
+      <div className="flex flex-1 flex-col gap-7 md:flex-row">
         <CreateCampaignForm />
         <div className="flex flex-1 flex-col gap-7">
           <CreateCampaignTutorial />

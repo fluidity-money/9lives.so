@@ -96,7 +96,7 @@ export default function CreateCampaignFormSettlmentSource({
           }
         }}
       >
-        <TabList className="flex gap-2.5">
+        <TabList className="flex flex-col gap-2.5 md:flex-row">
           <Tab as={Fragment}>
             {(props) => (
               <TabIconButton

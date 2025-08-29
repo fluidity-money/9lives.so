@@ -7,6 +7,7 @@ import NavigationMenu from "./navMenu";
 import DisclaimerButton from "./disclaimerButton";
 import DegenModeMobileWrapper from "./degenMode/degenModeMobileWrapper";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function MobileMenu() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,6 +29,12 @@ export default function MobileMenu() {
         <div className="flex flex-col items-center justify-center gap-4">
           <NavigationMenu />
           <div className="flex flex-col items-center">
+            <Link
+              href={"/create-campaign"}
+              className="flex h-10 items-center font-chicago text-xs underline"
+            >
+              Create Campaign
+            </Link>
             <DegenModeMobileWrapper />
             <DisclaimerButton />
           </div>
