@@ -7,6 +7,7 @@ import { PositionsProps } from "@/types";
 import ActivityTable from "../activity/activityTable";
 import UserCampaignsList from "../campaign/userCampaignsList";
 import ClaimedRewardsTable from "../claimedRewards/claimedRewardsTable";
+import UserLpedCampaignsList from "../campaign/lpedCampaigns";
 interface AssetSceneProps {
   positionGrops: PositionsProps[];
   areGroupsLoading?: boolean;
@@ -38,6 +39,11 @@ export default function AssetScene({
         <Tab as={Fragment}>
           {(props) => <TabButton title="Claimed Rewards" {...props} />}
         </Tab>
+        {detailPage ? null : (
+          <Tab as={Fragment}>
+            {(props) => <TabButton title="My LP Campaigns" {...props} />}
+          </Tab>
+        )}
       </TabList>
       <TabPanels className={"md:min-w-[480px]"}>
         <TabPanel>
@@ -68,6 +74,13 @@ export default function AssetScene({
           </ShadowCard>
         </TabPanel>
       </TabPanels>
+      {detailPage ? null : (
+        <TabPanel>
+          <ShadowCard className="rounded-tl-none p-3 md:p-5">
+            <UserLpedCampaignsList />
+          </ShadowCard>
+        </TabPanel>
+      )}
     </TabGroup>
   );
 }
