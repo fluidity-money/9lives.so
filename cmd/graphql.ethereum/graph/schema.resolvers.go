@@ -1562,6 +1562,7 @@ func (r *queryResolver) UserLPs(ctx context.Context, address string) ([]types.LP
 	LEFT JOIN
     ninelives_campaigns_1 AS nc
     ON nc.content->>'poolAddress' = added.emitter_addr
+	WHERE COALESCE(added.total_added, 0) - COALESCE(removed.total_removed, 0) > 0
 	`, address, address).Scan(&lps).Error
 	if err != nil {
 		slog.Error("Error getting user lps",
