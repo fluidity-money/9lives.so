@@ -1548,7 +1548,7 @@ func (r *queryResolver) UserLPs(ctx context.Context, address string) ([]types.LP
 		(
 			SELECT emitter_addr, SUM(fusdc_amt) AS total_added
 			FROM ninelives_events_liquidity_added
-			WHERE sender = ?
+			WHERE recipient = ?
 			GROUP BY emitter_addr
 		) AS added
 	LEFT JOIN
