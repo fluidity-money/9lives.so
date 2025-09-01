@@ -27,7 +27,7 @@ export default function ClaimLiquidityButton({
   return (
     <Button
       intent={"cta"}
-      title={isClaiming ? "Claiming..." : "Claim Liquidty & Rewards"}
+      title={isClaiming ? "Claiming..." : "Claim Liquidity & Rewards"}
       onClick={handleClick}
       disabled={isClaiming}
     />
