@@ -16,8 +16,9 @@ export default function CampaignBody({
         name={data.name}
         identifier={data.identifier}
         picture={data.picture}
-        solo={data.outcomes.length === 1}
-        soloRatio={32}
+        shares={data.shares}
+        outcomes={data.outcomes}
+        isYesNo={data.isYesNo}
       />
       <div className="flex max-h-[118px] flex-col justify-end gap-2">
         <CampaignItemOutcomes
