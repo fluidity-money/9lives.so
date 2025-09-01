@@ -27,7 +27,7 @@ export default function CampaignItemOutcomes({
 }: CampaignItemOutcomesProps) {
   const router = useRouter();
   const prices = useMemo(() => getAmmPrices(shares), [shares]);
-  const yesPrice = prices?.get(outcomes[0].identifier);
+  const yesPrice = prices?.get(outcomes[0].identifier) ?? 0.5;
   const experimentIsLinear =
     posthog.getFeatureFlag("display-odds-visual") === "linear";
   const isOddsEnabled = useFeatureFlag("display odds on campaign items");

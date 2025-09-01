@@ -26,7 +26,7 @@ export default function CampaignItemHeader({
   outcomes,
 }: CampaignItemHeaderProps) {
   const prices = useMemo(() => getAmmPrices(shares), [shares]);
-  const yesPrice = prices?.get(outcomes[0].identifier);
+  const yesPrice = prices?.get(outcomes[0].identifier) ?? 0.5;
   const isOddsEnabled = useFeatureFlag("display odds on campaign items");
   const experimentIsCircular =
     posthog.getFeatureFlag("display-odds-visual") === "circular";
