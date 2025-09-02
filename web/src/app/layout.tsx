@@ -103,7 +103,6 @@ export default async function RootLayout({
           }}
         >
           <Header />
-          <TradingCompetitionBanner />
           <main className="flex flex-1 gap-2">
             <div className="flex-1 p-4">{children}</div>
             <DegenModeWrapper />
