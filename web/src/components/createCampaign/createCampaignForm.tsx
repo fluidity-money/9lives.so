@@ -223,6 +223,7 @@ export default function CreateCampaignForm() {
     }
     track(EVENTS.CAMPAIGN_CREATE, {
       wallet: account.address,
+      seedLiquidity: input.seedLiquidity,
       name: input.name,
       outcomeCount: outcomes.length,
       settlementType,
