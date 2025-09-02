@@ -45,6 +45,7 @@ const useBuyWithRelay = ({
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
+        const operationStart = performance.now();
         try {
           if (!fromDecimals) throw new Error("fromDecimals is undefined");
           if (!wallet) throw new Error("No wallet is detected");
@@ -160,6 +161,21 @@ const useBuyWithRelay = ({
             },
           });
 
+          res(null);
+          track(EVENTS.MINT, {
+            fromChain,
+            fromToken,
+            wallet: account.address,
+            amount: toAmount,
+            outcomeId,
+            shareAddr,
+            operationStart,
+            operationEnd: performance.now(),
+            tradingAddr,
+            status: "success",
+            type: "buyWithRelay",
+          });
+
           if (requestId) {
             toast.custom(
               (t) => (
@@ -197,18 +213,21 @@ const useBuyWithRelay = ({
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", outcomeIds],
           });
+        } catch (e) {
           track(EVENTS.MINT, {
             fromChain,
             fromToken,
             wallet: account.address,
-            amount: toAmount,
+            fromAmount,
             outcomeId,
             shareAddr,
+            operationStart,
+            operationEnd: performance.now(),
             tradingAddr,
+            status: "failure",
             type: "buyWithRelay",
+            error: e,
           });
-          res(null);
-        } catch (e) {
           rej(e);
         }
       }),

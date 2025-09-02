@@ -21,7 +21,7 @@ export const track = (
   properties?: Record<string, any>,
 ) => {
   try {
-    posthog.capture(event, properties);
+    return posthog.capture(event, properties);
   } catch (error) {
     console.error("Failed to track event:", event, error);
   }
