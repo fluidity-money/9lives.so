@@ -20,7 +20,6 @@ import {
 import DegenModeFloatingButton from "@/components/degenMode/degenModeFloatingButton";
 import EmailSuggester from "@/components/emailSuggester";
 import Changelog from "@/components/changelog";
-import TradingCompetitionBanner from "@/components/tradingCompetitionBanner";
 
 const chicago = localFont({
   src: [
