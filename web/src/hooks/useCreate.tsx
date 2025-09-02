@@ -16,6 +16,7 @@ import { useCampaignStore } from "@/stores/campaignStore";
 import clientEnv from "../config/clientEnv";
 import { generateCampaignId, generateOutcomeId } from "@/utils/generateId";
 import helperAbi from "@/config/abi/helperFactory";
+import { EVENTS, track } from "@/utils/analytics";
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type Create =
   // | "createWithInfraMarket"
@@ -163,6 +164,14 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             queryKey: ["campaigns"],
           });
           router.replace(`/campaign/${campaignId}`);
+          track(EVENTS.CAMPAIGN_CREATE, {
+            wallet: account.address,
+            seedLiquidity: seedLiquidity,
+            name: input.name,
+            campaignId,
+            outcomeCount: input.outcomes.length,
+            settlementType: input.settlementType,
+          });
           res(null);
         } catch (e) {
           rej(e);

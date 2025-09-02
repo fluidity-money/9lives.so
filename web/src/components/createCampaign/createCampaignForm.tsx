@@ -18,7 +18,6 @@ import useCreate from "@/hooks/useCreate";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { randomValue4Uint8 } from "@/utils/generateId";
-import { track, EVENTS } from "@/utils/analytics";
 import Modal from "../themed/modal";
 import Funding from "../fundingBalanceDialog";
 import { Account } from "thirdweb/wallets";
@@ -221,13 +220,6 @@ export default function CreateCampaignForm() {
     if (!Boolean(preparedInput.oracleUrls?.length)) {
       delete preparedInput.oracleUrls;
     }
-    track(EVENTS.CAMPAIGN_CREATE, {
-      wallet: account.address,
-      seedLiquidity: input.seedLiquidity,
-      name: input.name,
-      outcomeCount: outcomes.length,
-      settlementType,
-    });
     create(preparedInput, account);
   };
   const handleSubmitWithAccount = (e: FormEvent) => {
