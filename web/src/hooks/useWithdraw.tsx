@@ -104,7 +104,6 @@ const useWithdraw = () => {
               account,
             });
             track(EVENTS.WITHDRAW_USDC, {
-              wallet: account.address,
               amount: result.amount,
               chainId,
               chainEid: chainIdToEid[chainId],

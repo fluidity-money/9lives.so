@@ -111,7 +111,6 @@ const useBuy = ({
             queryKey: ["positionHistory", outcomeIds],
           });
           track(EVENTS.MINT, {
-            wallet: account.address,
             amount: fusdc,
             outcomeId,
             shareAddr,

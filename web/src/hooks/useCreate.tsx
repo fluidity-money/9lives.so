@@ -165,7 +165,6 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
           });
           router.replace(`/campaign/${campaignId}`);
           track(EVENTS.CAMPAIGN_CREATE, {
-            wallet: account.address,
             seedLiquidity: seedLiquidity,
             name: input.name,
             campaignId,

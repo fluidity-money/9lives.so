@@ -203,7 +203,6 @@ const useBuyWithPaymaster = ({
               account,
             });
             track(EVENTS.MINT, {
-              wallet: account.address,
               amount: result.amount,
               outcomeId,
               shareAddr,

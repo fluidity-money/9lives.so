@@ -83,7 +83,6 @@ const useClaim = ({
             queryKey: ["positionHistory", outcomeIds],
           });
           track(EVENTS.CLAIM_REWARD, {
-            wallet: account.address,
             amount: accountShare,
             outcomeId,
             shareAddr,

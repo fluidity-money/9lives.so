@@ -100,7 +100,6 @@ const useSell = ({
             queryKey: ["positionHistory", outcomeIds],
           });
           track(EVENTS.BURN, {
-            wallet: account.address,
             amount: fusdc,
             maxShareOut,
             minShareOut,

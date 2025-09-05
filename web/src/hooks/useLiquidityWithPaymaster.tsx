@@ -221,7 +221,6 @@ const useLiquidityWithPaymaster = ({
               account,
             });
             track(EVENTS.ADD_LIQUIDITY, {
-              wallet: account.address,
               amount: result.amount,
               type: "addLiquidityWithPaymaster",
               tradingAddr,
@@ -270,7 +269,6 @@ const useLiquidityWithPaymaster = ({
               account,
             });
             track(EVENTS.REMOVE_LIQUIDITY, {
-              wallet: account.address,
               amount: result.amount,
               type: "removeLiquidityWithPaymaster",
               tradingAddr,
@@ -310,7 +308,6 @@ const useLiquidityWithPaymaster = ({
               account,
             });
             track(EVENTS.REMOVE_LIQUIDITY, {
-              wallet: account.address,
               amount: result.amount,
               type: "claimLiquidityWithPaymaster",
               tradingAddr,

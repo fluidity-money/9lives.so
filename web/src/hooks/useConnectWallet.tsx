@@ -41,7 +41,7 @@ export default function useConnectWallet() {
       try {
         const address = await result?.getAccount();
         if (address) {
-          track(EVENTS.WALLET_CONNECT, { wallet: address });
+          track(EVENTS.WALLET_CONNECT, { walletAddress: address });
         }
       } catch (error) {
         console.error("Failed to track wallet connection:", error);

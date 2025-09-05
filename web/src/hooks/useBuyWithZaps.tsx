@@ -132,7 +132,6 @@ const useBuyWithZaps = ({
           track(EVENTS.MINT, {
             fromChain,
             fromToken,
-            wallet: account.address,
             amount: toAmount,
             outcomeId,
             shareAddr,

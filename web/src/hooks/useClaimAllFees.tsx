@@ -37,7 +37,6 @@ export default function useClaimAllFees() {
               account,
             });
             track(EVENTS.CLAIM_ALL_FEES, {
-              wallet: account.address,
               addresses,
             });
             res([]);

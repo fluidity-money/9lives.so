@@ -195,7 +195,6 @@ const useSellWithPaymaster = ({
               account,
             });
             track(EVENTS.BURN, {
-              wallet: account.address,
               amount,
               type: "sellWithPaymaster",
               outcomeId,

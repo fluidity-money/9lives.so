@@ -55,7 +55,6 @@ export default function useLiquidity({
             queryKey: ["userLiquidity", account.address, tradingAddr],
           });
           track(EVENTS.ADD_LIQUIDITY, {
-            wallet: account.address,
             amount,
             type: "addLiquidity",
             tradingAddr,
@@ -97,7 +96,6 @@ export default function useLiquidity({
             queryKey: ["userLiquidity", account.address, tradingAddr],
           });
           track(EVENTS.REMOVE_LIQUIDITY, {
-            wallet: account.address,
             amount,
             type: "removeLiquidity",
             tradingAddr,
@@ -142,7 +140,6 @@ export default function useLiquidity({
           });
           track(EVENTS.REMOVE_LIQUIDITY, {
             amount: BigInt(0),
-            wallet: account.address,
             type: "claimLiquidity",
             tradingAddr,
             campaignId,

@@ -165,7 +165,6 @@ const useBuyWithRelay = ({
           track(EVENTS.MINT, {
             fromChain,
             fromToken,
-            wallet: account.address,
             amount: toAmount,
             outcomeId,
             shareAddr,
@@ -218,7 +217,6 @@ const useBuyWithRelay = ({
           track(EVENTS.MINT, {
             fromChain,
             fromToken,
-            wallet: account.address,
             fromAmount,
             outcomeId,
             shareAddr,

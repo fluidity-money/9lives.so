@@ -65,7 +65,7 @@ export default function ContextInjector() {
         ctx.farcaster_fid = farcasterCtx.user?.fid;
         ctx.farcaster_username = farcasterCtx.user?.username;
       }
-      posthog.people.set(ctx);
+      posthog.register(ctx);
     } else {
       window.localStorage.removeItem("walletAddress");
       setUser(null);
