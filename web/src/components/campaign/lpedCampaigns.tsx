@@ -56,6 +56,11 @@ export default function UserLpedCampaignsList() {
                         >
                           {data?.name}
                         </p>
+                        {data?.winner ? (
+                          <span className="bg-9yellow p-0.5 font-geneva text-[10px] uppercase tracking-wide">
+                            Concluded
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                   </div>
