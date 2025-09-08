@@ -48,7 +48,7 @@ export default function UserLpedCampaignsList() {
                           className="size-10 self-start border border-9black bg-9layer"
                         />
                       ) : null}
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-row gap-1">
                         <p
                           className={
                             "self-start bg-9layer px-1 py-0.5 font-geneva text-xs uppercase tracking-wide text-9black"
