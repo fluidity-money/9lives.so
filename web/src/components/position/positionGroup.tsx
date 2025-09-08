@@ -17,9 +17,11 @@ export default function PositionsGroup({
   detailPage,
   isDpm,
   colSpan,
+  hideSmallBalances,
 }: PositionsProps & {
   detailPage?: boolean;
   colSpan: number;
+  hideSmallBalances: boolean;
 }) {
   const account = useActiveAccount();
   const {
@@ -68,20 +70,18 @@ export default function PositionsGroup({
         subtitle="Start Growing Your Portfolio."
       />
     );
-  return (
-    <>
-      {positions?.map((item, idx) => (
-        <PositionRow
-          key={idx}
-          isDpm={isDpm}
-          data={{ ...item, campaignName, campaignId, winner }}
-          price={sharePrices?.find((o) => o.id === item.id)?.price}
-          history={positionsHistory?.filter((p) => p.id === item.id)}
-          tradingAddr={tradingAddr}
-          outcomes={outcomes}
-          detailPage={detailPage}
-        />
-      ))}
-    </>
-  );
+  return positions
+    ?.filter((f) => !(hideSmallBalances && BigInt(1e4) >= f.balanceRaw))
+    .map((item, idx) => (
+      <PositionRow
+        key={idx}
+        isDpm={isDpm}
+        data={{ ...item, campaignName, campaignId, winner }}
+        price={sharePrices?.find((o) => o.id === item.id)?.price}
+        history={positionsHistory?.filter((p) => p.id === item.id)}
+        tradingAddr={tradingAddr}
+        outcomes={outcomes}
+        detailPage={detailPage}
+      />
+    ));
 }

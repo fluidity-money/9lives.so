@@ -8,11 +8,13 @@ export default function PositionBody({
   areGroupsLoading,
   detailPage,
   colSpan,
+  hideSmallBalances,
 }: {
   positionGroups: PositionsProps[];
   areGroupsLoading?: boolean;
   detailPage?: boolean;
   colSpan: number;
+  hideSmallBalances: boolean;
 }) {
   return (
     <tbody className={bodyStyles}>
@@ -28,6 +30,7 @@ export default function PositionBody({
         positionGroups.map((group) => (
           <PositionsGroup
             colSpan={colSpan}
+            hideSmallBalances={hideSmallBalances}
             isDpm={group.isDpm}
             detailPage={detailPage}
             key={group.tradingAddr}
