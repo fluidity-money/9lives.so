@@ -524,6 +524,9 @@ pub enum Error {
     // Not enough liquidity shares were sent to the user after they added
     // liquidity, failing the slippage check.
     NotEnoughLiquidityReturned,
+
+    // Already decided in the internal_decide function!
+    AlreadyDecided,
 }
 
 #[cfg(any(

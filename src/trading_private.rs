@@ -118,7 +118,7 @@ impl StorageTrading {
     pub fn internal_decide(&mut self, outcome: FixedBytes<8>) -> R<U256> {
         let oracle_addr = self.oracle.get();
         assert_or!(msg_sender() == oracle_addr, Error::NotOracle);
-        assert_or!(self.when_decided.get().is_zero(), Error::NotTradingContract);
+        assert_or!(self.when_decided.get().is_zero(), Error::AlreadyDecided);
         // Set the outcome that's winning as the winner!
         self.winner.set(outcome);
         self.when_decided.set(U64::from(block_timestamp()));
