@@ -524,6 +524,9 @@ pub enum Error {
     // Not enough liquidity shares were sent to the user after they added
     // liquidity, failing the slippage check.
     NotEnoughLiquidityReturned,
+
+    // Too much liquidity was taken when the user indicated that shouldn't be the case!
+    TooMuchLiquidityTaken,
 }
 
 #[cfg(any(

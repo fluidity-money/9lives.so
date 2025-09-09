@@ -80,7 +80,7 @@ contract HelperFactory {
         if (_a.seedLiquidity > 0) {
             FUSDC.transferFrom(msg.sender, address(this), _a.seedLiquidity);
             FUSDC.approve(address(t), _a.seedLiquidity);
-            t.addLiquidity638EB2C9(_a.seedLiquidity, msg.sender, 0);
+            t.addLiquidityB9DDA952(_a.seedLiquidity, msg.sender, 0, 0);
         }
         return address(t);
     }

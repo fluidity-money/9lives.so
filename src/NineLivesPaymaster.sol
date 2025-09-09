@@ -18,7 +18,7 @@ import {
 import { IWETH10 } from "./IWETH10.sol";
 
 bytes32 constant PAYMASTER_TYPEHASH =
-    keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)");
+    keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome,uint256 maxOutgoing)");
 
 enum PaymasterType {
     MINT,
@@ -50,6 +50,7 @@ struct Operation {
     bytes32 r;
     bytes32 s;
     uint32 outgoingChainEid;
+    uint256 maxOutgoing;
 }
 
 interface IERC20 {
@@ -287,10 +288,11 @@ contract NineLivesPaymaster {
             // For adding liquidity, we don't take a fee.
             USDC.transferFrom(op.owner, address(this), op.amountToSpend);
             USDC.approve(address(op.market), op.amountToSpend);
-            op.market.addLiquidity638EB2C9(
+            op.market.addLiquidityB9DDA952(
                 op.amountToSpend,
                 op.owner,
-                op.minimumBack
+                op.minimumBack,
+                op.maxOutgoing
             );
             return (0, true);
         } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY) {

@@ -44,13 +44,21 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn add_liquidity_638_E_B_2_C_9(&mut self, _amount: U256, _recipient: Address, _min_liquidity: U256) -> R<U256> {
+    pub fn add_liquidity_B_9_D_D_A_952(
+        &mut self,
+        _amount: U256,
+        _recipient: Address,
+        _min_liquidity: U256,
+        _max_liquidity: U256,
+    ) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return {
             c!(fusdc_call::take_from_sender(_amount));
-            let (shares, _) = self.internal_amm_add_liquidity(_amount, _recipient, _min_liquidity)?;
+            let (shares, _) =
+                self.internal_amm_add_liquidity(_amount, _recipient, _min_liquidity)?;
+            assert_or!(shares <= _max_liquidity, Error::TooMuchLiquidityTaken);
             Ok(shares)
         };
     }
