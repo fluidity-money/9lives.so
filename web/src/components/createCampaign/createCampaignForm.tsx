@@ -29,17 +29,11 @@ import Funding from "../fundingBalanceDialog";
 import { Account } from "thirdweb/wallets";
 import CreateCampaignFormLiquidity from "./form/formLiquidity";
 import config from "@/config";
-import { formatUnits, ZeroAddress } from "ethers";
+import { ZeroAddress } from "ethers";
 import { useUserStore } from "@/stores/userStore";
 import useCreateWithRelay from "@/hooks/useCreateWithRelay";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
-import useTokens from "@/hooks/useTokens";
-import useTokensWithBalances from "@/hooks/useTokensWithBalances";
-import ChainSelector from "../chainSelector";
-import AssetSelector from "../assetSelector";
-import { combineClass } from "@/utils/combineClass";
-import { Chain } from "thirdweb";
-import ErrorInfo from "../themed/errorInfo";
+import CreateCampaignFormLiquidityCrossChain from "./form/formLiquidityCrossChain";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -89,7 +83,7 @@ export default function CreateCampaignForm() {
   const { createWithRelay } = useCreateWithRelay({
     openFundModal: () => setFundModalOpen(true),
   });
-  const enabledRelay = useFeatureFlag("enable relay create");
+  const enabledRelay = !useFeatureFlag("enable relay create");
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("custom");
@@ -229,30 +223,6 @@ export default function CreateCampaignForm() {
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
-  const { data: tokens, isSuccess: isTokensSuccess } = useTokens(
-    fields.fromChain,
-  );
-  const fromDecimals = tokens?.find(
-    (t) => t.address === fields.fromToken,
-  )?.decimals;
-  const { data: tokensWithBalances } = useTokensWithBalances(fields.fromChain);
-  const selectedTokenBalance = tokensWithBalances?.find(
-    (t) =>
-      t.token_address.toLowerCase() === fields.fromToken.toLowerCase() ||
-      (fields.fromToken === ZeroAddress &&
-        t.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
-  )?.balance;
-  const usdValue = tokens
-    ? fields.seedLiquidity *
-      +(tokens.find((t) => t.address === fields.fromToken) ?? { priceUSD: 0 })
-        .priceUSD
-    : fields.seedLiquidity;
-  const setToMaxShare2 = async () => {
-    if (!selectedTokenBalance) return;
-    const maxBalance = +formatUnits(selectedTokenBalance, fromDecimals);
-    setValue("seedLiquidity", maxBalance);
-    if (maxBalance > 0) clearErrors();
-  };
   const onSubmit = (input: FormData, account: Account) => {
     if (input.seedLiquidity === defaultSeedLiquidity && !isLPModalDisplayed) {
       setIsLPModalOpen(true);
@@ -294,15 +264,6 @@ export default function CreateCampaignForm() {
     }
     handleSubmit((data) => onSubmit(data, account))(e);
   };
-  const handleNetworkChange = async (chain: Chain) => {
-    // lifi auto switch handle this for now
-    // await switchChain(chain);
-    setValue("fromChain", chain.id);
-  };
-  const handleTokenChange = useCallback(
-    (addr: string) => setValue("fromToken", addr),
-    [setValue],
-  );
   useEffect(() => {
     if (fields) {
       debouncedFillForm({
@@ -369,50 +330,23 @@ export default function CreateCampaignForm() {
           setSettlementType={setSettlementType}
         />
         <CreateCampaignFormSocials register={register} errors={errors} />
-        <CreateCampaignFormLiquidity
-          register={register}
-          error={errors.seedLiquidity}
-        />
-        {!enabledRelay ? null : (
-          <div className="flex flex-col gap-2.5">
-            <div className={combineClass("flex items-center justify-between")}>
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-normal text-9black/50">
-                  {selectedTokenBalance
-                    ? formatUnits(selectedTokenBalance, fromDecimals)
-                    : 0}
-                </span>
-                <Button
-                  disabled={!account || !selectedTokenBalance}
-                  onClick={setToMaxShare2}
-                  intent={"default"}
-                  size={"small"}
-                  title="Max"
-                />
-              </div>
-              <span className="text-xs font-normal text-9black/50">
-                ${usdValue.toFixed(2)}
-              </span>
-            </div>
-
-            <div className="flex gap-2.5">
-              <AssetSelector
-                tokens={tokens}
-                tokensWithBalances={tokensWithBalances}
-                isSuccess={isTokensSuccess}
-                fromToken={fields.fromToken}
-                fromChain={fields.fromChain}
-                setValue={handleTokenChange}
-              />
-            </div>
-            <ChainSelector
-              handleNetworkChange={handleNetworkChange}
-              selectedChainId={fields.fromChain}
-              isInMiniApp={isInMiniApp}
-            />
-            {errors.fromChain && <ErrorInfo text={errors.fromChain.message} />}
-            {errors.fromToken && <ErrorInfo text={errors.fromToken.message} />}
-          </div>
+        {enabledRelay ? (
+          <CreateCampaignFormLiquidityCrossChain
+            register={register}
+            errors={errors}
+            isInMiniApp={isInMiniApp}
+            account={account}
+            fromChain={fields.fromChain}
+            fromToken={fields.fromToken}
+            setValue={setValue}
+            seedLiquidity={fields.seedLiquidity}
+            clearErrors={clearErrors}
+          />
+        ) : (
+          <CreateCampaignFormLiquidity
+            error={errors.seedLiquidity}
+            register={register}
+          />
         )}
         <Button intent={"cta"} title="CONFIRM" size={"xlarge"} type="submit" />
       </form>
