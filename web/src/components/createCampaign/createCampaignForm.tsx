@@ -29,11 +29,11 @@ import Funding from "../fundingBalanceDialog";
 import { Account } from "thirdweb/wallets";
 import CreateCampaignFormLiquidity from "./form/formLiquidity";
 import config from "@/config";
-import { ZeroAddress } from "ethers";
 import { useUserStore } from "@/stores/userStore";
 import useCreateWithRelay from "@/hooks/useCreateWithRelay";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import CreateCampaignFormLiquidityCrossChain from "./form/formLiquidityCrossChain";
+import useTokens from "@/hooks/useTokens";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -83,7 +83,7 @@ export default function CreateCampaignForm() {
   const { createWithRelay } = useCreateWithRelay({
     openFundModal: () => setFundModalOpen(true),
   });
-  const enabledRelay = !useFeatureFlag("enable relay create");
+  const enabledRelay = useFeatureFlag("enable relay create");
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("custom");
@@ -179,7 +179,9 @@ export default function CreateCampaignForm() {
         //   settlementType === "contract"
         //     ? z.string().startsWith("0x").min(42)
         //     : z.undefined(),
-        seedLiquidity: z.preprocess((val) => Number(val), z.number().min(1)),
+        seedLiquidity: z.coerce
+          .number()
+          .gt(0, { message: "Invalid amount to spend" }),
       }),
     [outcomeType, outcomeschema, pictureSchema, settlementType],
   );
@@ -216,13 +218,19 @@ export default function CreateCampaignForm() {
       fromChain: isInMiniApp
         ? config.chains.arbitrum.id
         : config.chains.superposition.id,
-      fromToken: ZeroAddress,
+      fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
       seedLiquidity: defaultSeedLiquidity,
     },
   });
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
+  const { data: tokens, isSuccess: isTokensSuccess } = useTokens(
+    fields.fromChain,
+  );
+  const fromDecimals = tokens?.find(
+    (t) => t.address === fields.fromToken,
+  )?.decimals;
   const onSubmit = (input: FormData, account: Account) => {
     if (input.seedLiquidity === defaultSeedLiquidity && !isLPModalDisplayed) {
       setIsLPModalOpen(true);
@@ -253,7 +261,7 @@ export default function CreateCampaignForm() {
       delete preparedInput.oracleUrls;
     }
     enabledRelay && fields.fromChain !== config.chains.superposition.id
-      ? createWithRelay(preparedInput, account)
+      ? createWithRelay({ ...preparedInput, fromDecimals }, account)
       : create(preparedInput, account);
   };
   const handleSubmitWithAccount = (e: FormEvent) => {
@@ -334,8 +342,10 @@ export default function CreateCampaignForm() {
           <CreateCampaignFormLiquidityCrossChain
             register={register}
             errors={errors}
+            isTokensSuccess={isTokensSuccess}
             isInMiniApp={isInMiniApp}
             account={account}
+            tokens={tokens}
             fromChain={fields.fromChain}
             fromToken={fields.fromToken}
             setValue={setValue}

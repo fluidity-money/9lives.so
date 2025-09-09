@@ -1,21 +1,18 @@
 import { Field } from "@headlessui/react";
 import Label from "@/components/themed/label";
 import { combineClass } from "@/utils/combineClass";
-import { fieldClass } from "../createCampaignForm";
 import ErrorInfo from "@/components/themed/errorInfo";
-import { FieldError, UseFormRegister } from "react-hook-form";
+import { UseFormRegister } from "react-hook-form";
 import Input from "@/components/themed/input";
-import USDCImg from "#/images/usdc.svg";
-import Image from "next/image";
 import { formatUnits, ZeroAddress } from "ethers";
 import Button from "@/components/themed/button";
 import { Account } from "thirdweb/wallets";
 import AssetSelector from "@/components/assetSelector";
 import ChainSelector from "@/components/chainSelector";
-import useTokens from "@/hooks/useTokens";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import { Chain } from "thirdweb";
 import { useCallback } from "react";
+import { Token } from "@/types";
 export default function CreateCampaignFormLiquidityCrossChain({
   register,
   errors,
@@ -23,16 +20,17 @@ export default function CreateCampaignFormLiquidityCrossChain({
   account,
   setValue,
   fromToken,
-  // usdValue,
+  fromDecimals,
   seedLiquidity,
   clearErrors,
   fromChain,
   isInMiniApp,
+  tokens,
+  isTokensSuccess,
 }: {
   register: UseFormRegister<{ seedLiquidity: number } & any>;
   errors: any;
   renderLabel?: boolean;
-  // selectedTokenBalance: string;
   account?: Account;
   seedLiquidity: number;
   fromChain: number;
@@ -40,10 +38,10 @@ export default function CreateCampaignFormLiquidityCrossChain({
   setValue: (...args: any[]) => void;
   clearErrors: () => void;
   isInMiniApp: boolean;
-  // usdValue: number
+  tokens?: Token[];
+  fromDecimals?: number;
+  isTokensSuccess: boolean;
 }) {
-  const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
-  const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
@@ -105,7 +103,9 @@ export default function CreateCampaignFormLiquidityCrossChain({
         <Input
           {...register("seedLiquidity")}
           type="number"
-          min={1}
+          max={Number.MAX_SAFE_INTEGER}
+          min={0}
+          step={"any"}
           className={combineClass(
             errors?.seedLiquidity && "border-2 border-red-500",
             "flex-1",
