@@ -74,6 +74,11 @@ export type CampaignInput = {
   settlementType: SettlementType;
   oracleDescription?: string;
   seedLiquidity: number;
+  fromChain: number;
+  fromToken: string;
+  fromDecimals?: number;
+  toChain: number;
+  toToken: string;
 };
 export type OutcomeInput = {
   picture?: string;
