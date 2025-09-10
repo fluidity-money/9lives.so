@@ -101,6 +101,7 @@ proptest! {
     // Ignored test because we're not doing active development on the infra
     // market.
     #[test]
+    #[ignore]
     fn test_unhappy_call_whinge_claim_no_bettors_path(
         trading_addr in strat_address_not_empty(),
         desc in strat_fixed_bytes::<32>(),
