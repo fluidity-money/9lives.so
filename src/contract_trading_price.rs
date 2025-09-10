@@ -44,13 +44,19 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn add_liquidity_638_E_B_2_C_9(&mut self, _amount: U256, _recipient: Address, _min_liquidity: U256) -> R<U256> {
+    pub fn add_liquidity_638_E_B_2_C_9(
+        &mut self,
+        _amount: U256,
+        _recipient: Address,
+        _min_liquidity: U256,
+    ) -> R<U256> {
         #[cfg(feature = "trading-backend-dpm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dpm"))]
         return {
             c!(fusdc_call::take_from_sender(_amount));
-            let (shares, _) = self.internal_amm_add_liquidity(_amount, _recipient, _min_liquidity)?;
+            let (shares, _) =
+                self.internal_amm_add_liquidity(_amount, _recipient, _min_liquidity)?;
             Ok(shares)
         };
     }
@@ -101,8 +107,8 @@ impl StorageTrading {
         _amount: U256,
         _recipient: Address,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
-        c!(fusdc_call::take_from_sender(_amount));
-        self.internal_amm_add_liquidity(_amount, _recipient)
+        c!(crate::fusdc_call::take_from_sender(_amount));
+        self.internal_amm_add_liquidity(_amount, _recipient, U256::ZERO)
     }
 
     // Almost a carbon copy of the equivalent, though this returns the shares
@@ -120,7 +126,7 @@ impl StorageTrading {
         );
         let (fusdc_amt, fees_earned, shares) =
             self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
-        fusdc_call::transfer(_recipient, fusdc_amt)?;
+        crate::fusdc_call::transfer(_recipient, fusdc_amt)?;
         Ok((fusdc_amt, fees_earned, shares))
     }
 }

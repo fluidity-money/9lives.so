@@ -50,7 +50,14 @@ macro_rules! setup_contract {
 macro_rules! test_add_liquidity {
     ($c:expr, $amt:expr) => {
         let buy_amt = U256::from($amt);
-        should_spend_fusdc_sender!(buy_amt, $c.add_liquidity_A_975_D_995(buy_amt, msg_sender()))
+        should_spend_fusdc_sender!(
+            buy_amt,
+            $c.add_liquidity_638_E_B_2_C_9(
+                buy_amt,
+                msg_sender(),
+                U256::ZERO
+            )
+        )
     };
 }
 

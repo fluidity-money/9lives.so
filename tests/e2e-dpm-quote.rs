@@ -22,7 +22,7 @@ proptest! {
     ) {
         use lib9lives::storage_trading::StorageTrading;
         host::with_contract::<_, StorageTrading, _>(|c| {
-            c.ctor(
+            c.ctor((
                 vec![
                     fixed_bytes!("0541d76af67ad076"),
                     fixed_bytes!("3be0d8814450a582"),
@@ -35,8 +35,9 @@ proptest! {
                 false,
                 0,
                 0,
+                0,
                 0
-            )
+            ))
             .unwrap();
 
             match c
