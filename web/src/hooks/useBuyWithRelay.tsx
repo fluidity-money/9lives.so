@@ -214,20 +214,28 @@ const useBuyWithRelay = ({
             queryKey: ["positionHistory", outcomeIds],
           });
         } catch (e) {
-          track(EVENTS.MINT, {
-            fromChain,
-            fromToken,
-            fromAmount,
-            outcomeId,
-            shareAddr,
-            usdValue,
-            operationStart,
-            operationEnd: performance.now(),
-            tradingAddr,
-            status: "failure",
-            type: "buyWithRelay",
-            error: e,
-          });
+          if (
+            !(
+              e instanceof Error &&
+              (e.cause as { code?: number })?.code === 4001
+            )
+          ) {
+            // dont track if user rejects
+            track(EVENTS.MINT, {
+              fromChain,
+              fromToken,
+              fromAmount,
+              outcomeId,
+              shareAddr,
+              usdValue,
+              operationStart,
+              operationEnd: performance.now(),
+              tradingAddr,
+              status: "failure",
+              type: "buyWithRelay",
+              error: e,
+            });
+          }
           rej(e);
         }
       }),
