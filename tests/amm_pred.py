@@ -322,11 +322,15 @@ class PredMarketNew:
 
         previous_shares = self.shares.copy()
 
+        fee = (amount * self.fees) / (1 - self.fees)
+        # Add fee to the amount
+        amount_with_fee = amount + fee
+
         # Update all shares with the purchase amount
         for i in range(len(self.shares)):
             if (i != outcome):
-                self.shares[i] -= amount
-                self.total_shares[i] -= amount
+                self.shares[i] -= amount_with_fee
+                self.total_shares[i] -= amount_with_fee
                 if (self.shares[i] < 0 or self.total_shares[i] < 0):
                     raise ArithmeticError("Underflow error: result is negative")
 
@@ -345,6 +349,7 @@ class PredMarketNew:
         self.user_outcome_shares[user][outcome] -= user_deducted_by
 
         self.transfer_from_pool_to_user(amount, user)
+        self.collect_fees(fee)
 
         return self.shares
 

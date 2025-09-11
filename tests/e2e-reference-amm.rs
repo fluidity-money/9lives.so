@@ -131,12 +131,15 @@ macro_rules! test_should_buy_check_shares {
 }
 
 macro_rules! test_should_burn_shares {
-    ($c:expr, $outcome:expr, $buy_amt:expr, $shares_sold:expr) => {{
+    ($c:expr, $outcome:expr, $buy_amt:expr, $shares_sold:expr, $fees:expr) => {{
         let buy_amt = U256::from($buy_amt);
         let shares_sold = U256::from($shares_sold);
+        let fees = U256::from($fees);
         host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
         // In this test scaffolding, we don't set the referrer.
         let a = should_spend_fusdc_contract!($buy_amt, {
+            let estimated_usd = $c
+                .estimate_burn_E_9_B_09_A_17($outcome, shares_sold).unwrap();
             let (x, _) = $c
                 .burn_854_C_C_96_E(
                     $outcome,
@@ -147,6 +150,12 @@ macro_rules! test_should_burn_shares {
                     msg_sender(),
                 )
                 .unwrap();
+            // We allow some tolerance with the mistake here due to the method.
+            assert!(
+                estimated_usd.abs_diff(buy_amt) <= U256::from(1000),
+                "inconsistent estimated buy amounts: {estimated_usd} != {x}"
+            );
+            host_erc20_call::burn(FUSDC_ADDR, CONTRACT, fees);
             Ok(x)
         });
         assert!(
@@ -411,7 +420,7 @@ proptest! {
                 );
                 let expect_usd = U256::from(844833173);
                 let buy_amt = U256::from(buy_amt);
-                test_should_burn_shares!(c, outcome_a, buy_amt, expect_usd);
+                test_should_burn_shares!(c, outcome_a, buy_amt, expect_usd, 0);
                 for (i, (price1, price2)) in before_outcome_prices
                     .iter()
                     .zip(c.outcome_ids_iter().map(|x| c.amm_outcome_prices.get(x)))
@@ -700,9 +709,14 @@ proptest! {
                     10e6 as u64 // Fees
                 );
                 assert_eq_u!(10e6 as u64, c.amm_fees_collected_weighted.get());
-                test_should_burn_shares!(c, outcome_a, 100e6 as u64, 148283521);
-                // We don't take the burn fee.
-                assert_eq_u!(10000000 as u64, c.amm_fees_collected_weighted.get());
+                test_should_burn_shares!(
+                    c,
+                    outcome_a,
+                    100e6 as u64,
+                    148283521,
+                    2040817
+                );
+                assert_eq_u!(12040817 as u64, c.amm_fees_collected_weighted.get());
             }
         };
     }
@@ -714,7 +728,7 @@ proptest! {
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let target_fee_collected = U256::from(10000000);
+        let target_fee_collected = U256::from(12040817);
         let half_of_target_fee_collected = target_fee_collected / U256::from(2);
         interactions_clear_after! {
             IVAN => {
@@ -741,7 +755,8 @@ proptest! {
                     c,
                     outcome_a,
                     100e6 as u64,
-                    148283521
+                    148283521,
+                    2040817
                 );
                 // According to the Python, this should be 10000000.
                 assert_eq!(target_fee_collected, c.amm_fees_collected_weighted.get());
