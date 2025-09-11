@@ -307,6 +307,7 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         usd_amt: U256,
         min_shares: U256,
+        referrer: Address
     ) -> R<(U256, U256)> {
         assert_or!(
             !self.amm_liquidity.get().is_zero(),
@@ -383,6 +384,10 @@ impl StorageTrading {
             sender,
             burned_shares
         ));
+        let fees = self.calculate_and_set_fees(usd_amt, false, referrer)?;
+        let usd_amt = c!(usd_amt
+            .checked_sub(fees)
+            .ok_or(Error::CheckedSubOverflow(usd_amt, fees)));
         Ok((burned_shares, usd_amt))
     }
 
