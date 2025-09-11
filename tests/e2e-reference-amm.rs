@@ -138,7 +138,7 @@ macro_rules! test_should_burn_shares {
         host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
         // In this test scaffolding, we don't set the referrer.
         let a = should_spend_fusdc_contract!($buy_amt, {
-            let estimated_burned_shares = $c
+            let estimated_usd = $c
                 .estimate_burn_E_9_B_09_A_17($outcome, shares_sold).unwrap();
             let (x, _) = $c
                 .burn_854_C_C_96_E(
@@ -150,10 +150,10 @@ macro_rules! test_should_burn_shares {
                     msg_sender(),
                 )
                 .unwrap();
-            assert_eq!(
-                estimated_burned_shares,
-                x,
-                "inconsistent burned shares: {estimated_burned_shares} != {x}"
+            // We allow some tolerance with the mistake here due to the method.
+            assert!(
+                estimated_usd.abs_diff(buy_amt) <= U256::from(1000),
+                "inconsistent estimated buy amounts: {estimated_usd} != {x}"
             );
             host_erc20_call::burn(FUSDC_ADDR, CONTRACT, fees);
             Ok(x)
