@@ -90,13 +90,13 @@ const useBuyWithRelay = ({
               ],
               value: minShareOut === BigInt(0) ? toAmount : undefined,
             });
-          const return9lives = await simulateTransaction({
-            transaction: mintWith9LivesTx(),
-          });
+          // const return9lives = await simulateTransaction({
+          //   transaction: mintWith9LivesTx(),
+          // });
           // sets minimum share to %90 of expected return shares
-          const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
+          // const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
 
-          const transaction = mintWith9LivesTx(minShareOut);
+          const transaction = mintWith9LivesTx();
 
           const calldata = await encode(transaction);
 
