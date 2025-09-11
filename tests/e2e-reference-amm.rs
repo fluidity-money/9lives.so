@@ -139,7 +139,7 @@ macro_rules! test_should_burn_shares {
         // In this test scaffolding, we don't set the referrer.
         let a = should_spend_fusdc_contract!($buy_amt, {
             let estimated_burned_shares = $c
-                .estimate_burn_E_9_B_09_A_17($outcome, buy_amt).unwrap();
+                .estimate_burn_E_9_B_09_A_17($outcome, shares_sold).unwrap();
             let (x, _) = $c
                 .burn_854_C_C_96_E(
                     $outcome,
