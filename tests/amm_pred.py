@@ -349,6 +349,7 @@ class PredMarketNew:
         self.user_outcome_shares[user][outcome] -= user_deducted_by
 
         self.transfer_from_pool_to_user(amount, user)
+        self.collect_fees(fee)
 
         return self.shares
 
