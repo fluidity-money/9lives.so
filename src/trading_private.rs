@@ -250,19 +250,24 @@ fn test_is_amm() {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod proptesting {
     use crate::{
+        contract_trading_extras::CtorArgs,
         fees::FEE_SPN_MINT_PCT,
         maths, strat_storage_trading,
         utils::{strat_address_not_empty, strat_medium_u256},
-        contract_trading_extras::CtorArgs,
-        error::Error,
-        panic_guard
     };
 
-    use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
+    #[cfg(feature = "trading-backend-dpm")]
+    use crate::{error::Error, panic_guard};
+
+    #[cfg(feature = "trading-backend-dpm")]
+    use stylus_sdk::alloy_primitives::FixedBytes;
+
+    use stylus_sdk::alloy_primitives::{Address, U256};
 
     use proptest::prelude::*;
 
     #[cfg(test)]
+    #[allow(unused)]
     fn default_ctor_args() -> CtorArgs {
         (
             vec![],
