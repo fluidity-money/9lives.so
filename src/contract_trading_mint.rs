@@ -87,6 +87,10 @@ impl StorageTrading {
             } else {
                 _amount
             };
+            let fees = self.calculate_and_set_fees(fusdc, false, _referrer)?;
+            let fusdc = c!(fusdc
+                .checked_sub(fees)
+                .ok_or(Error::CheckedSubOverflow(fusdc, fees)));
             // If the paymaster was the one to submit this transaction, then we can
             // assume that the recipient was the true sender of the signed blob.
             let (burned_shares, fusdc_to_return) = self.internal_amm_burn(
