@@ -125,6 +125,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             }
             const defaultFee = BigInt(10);
             const zeroFee = BigInt(0);
+            const feeLp = BigInt(20);
             const createTx = prepareContractCall({
               contract: config.contracts.helperFactory,
               method: settlementFunctionMap[input.settlementType],
@@ -138,7 +139,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
                   documentation: hashedDocumentation,
                   feeRecipient: account.address,
                   feeCreator: defaultFee,
-                  feeLp: defaultFee,
+                  feeLp,
                   feeMinter: zeroFee,
                   feeReferrer: defaultFee,
                   seedLiquidity: seedLiquidityBigInt,
