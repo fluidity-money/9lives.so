@@ -60,7 +60,7 @@ export default function ReferrerDialog() {
       <div className="mx-auto flex w-[70%] flex-col items-center justify-center gap-5 pb-8">
         <div className="flex flex-col items-center justify-center gap-2">
           <p className="font-geneva uppercase">
-            You have {refereeCount} active referrals
+            You have {refereeCount ?? 0} active referrals
           </p>
           <p className="text-xs text-9black/60">
             Refer users using your link to earn more rewards!
