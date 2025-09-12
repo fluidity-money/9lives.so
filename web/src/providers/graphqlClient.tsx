@@ -492,3 +492,8 @@ export const requestPaymaster = ({
       v,
     },
   });
+
+export const requestCountReferees = (referrerAddress: string) =>
+  graph9Lives.query.countReferees({
+    $: { referrerAddress },
+  });
