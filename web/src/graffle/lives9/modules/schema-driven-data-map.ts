@@ -510,6 +510,14 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: LP, <-- Assigned later to avoid potential circular dependency.
     },
+    countReferees: {
+      a: {
+        referrerAddress: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 

@@ -181,6 +181,14 @@ export interface Query<
   userLPs?:
     | Query.userLPs<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.userLPs<_$Scalars>>;
+  /**
+   *
+   * Select the `countReferees` field on the `Query` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  countReferees?:
+    | Query.countReferees<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.countReferees<_$Scalars>>;
 
   /**
    *
@@ -811,6 +819,44 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<userLPs$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type countReferees<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = countReferees$SelectionSet<_$Scalars>;
+
+  export interface countReferees$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `countReferees` field. All arguments are required so you must include this.
+     */
+    $: countReferees$Arguments<_$Scalars>;
+  }
+
+  export interface countReferees$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    referrerAddress: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `countReferees` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type countReferees$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<countReferees$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

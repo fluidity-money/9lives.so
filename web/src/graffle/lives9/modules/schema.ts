@@ -44,6 +44,7 @@ export namespace Schema {
       referrerByCode: Query.referrerByCode;
       featuredCampaign: Query.featuredCampaign;
       userLPs: Query.userLPs;
+      countReferees: Query.countReferees;
     };
   }
 
@@ -374,6 +375,23 @@ export namespace Schema {
       };
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$LP;
+    }
+
+    /**
+     * Get the count of the referees
+     */
+    export interface countReferees extends $.OutputField {
+      name: "countReferees";
+      arguments: {
+        referrerAddress: {
+          kind: "InputField";
+          name: "referrerAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
     }
   }
 

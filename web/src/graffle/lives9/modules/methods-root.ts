@@ -387,6 +387,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Get the count of the referees
+   */
+  countReferees: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.countReferees<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { countReferees: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "countReferees"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
