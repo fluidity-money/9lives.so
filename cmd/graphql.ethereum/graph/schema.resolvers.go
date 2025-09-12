@@ -1331,6 +1331,7 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
     LEFT JOIN ninelives_campaigns_1 nc
     ON nepa.emitter_addr = nc."content"->>'poolAddress'
     WHERE nepa.recipient = ?
+	ORDER BY created_at DESC
 	`
 	args := []interface{}{address}
 	if campaignID != nil {
