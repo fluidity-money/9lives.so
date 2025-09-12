@@ -1576,6 +1576,22 @@ func (r *queryResolver) UserLPs(ctx context.Context, address string) ([]types.LP
 	return lps, nil
 }
 
+// CountReferees is the resolver for the countReferees field.
+func (r *queryResolver) CountReferees(ctx context.Context, referrerAddress string) (int, error) {
+	var count int
+	referrerAddress = strings.ToLower(referrerAddress)
+	err := r.DB.Raw(`
+	select count(*)
+	from ninelives_users_1 u
+	where u.settings->>'referrer' = ?
+	and u.wallet_address != ?
+	`, referrerAddress, referrerAddress).Scan(&count).Error
+	if err != nil {
+		return 0, fmt.Errorf(("Query failed from db"))
+	}
+	return count, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {

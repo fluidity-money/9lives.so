@@ -80,6 +80,11 @@ type Query {
   Return users active liquidity staked to the campaigns
   """
   userLPs(address: String!): [LP!]!
+
+  """
+  Get the count of the referees
+  """
+  countReferees(referrerAddress: String!): Int!
 }
 
 type LP {
