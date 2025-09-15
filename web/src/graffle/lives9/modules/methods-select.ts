@@ -21,6 +21,7 @@ export interface $MethodsSelect {
   Query: Query;
   Mutation: Mutation;
   LP: LP;
+  CampaignProfit: CampaignProfit;
   Settings: Settings;
   Profile: Profile;
   Claim: Claim;
@@ -84,6 +85,15 @@ export interface Mutation {
 export interface LP {
   <$SelectionSet>(
     selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.LP>,
+  ): $SelectionSet;
+}
+
+export interface CampaignProfit {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.CampaignProfit
+    >,
   ): $SelectionSet;
 }
 

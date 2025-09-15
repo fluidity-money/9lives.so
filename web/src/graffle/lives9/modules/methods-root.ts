@@ -409,6 +409,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Returns won campaigns profit according to share's total cost
+   */
+  userWonCampaignsProfits: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.userWonCampaignsProfits<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { userWonCampaignsProfits: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "userWonCampaignsProfits"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {

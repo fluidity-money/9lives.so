@@ -45,6 +45,7 @@ export namespace Schema {
       featuredCampaign: Query.featuredCampaign;
       userLPs: Query.userLPs;
       countReferees: Query.countReferees;
+      userWonCampaignsProfits: Query.userWonCampaignsProfits;
     };
   }
 
@@ -392,6 +393,23 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Returns won campaigns profit according to share's total cost
+     */
+    export interface userWonCampaignsProfits extends $.OutputField {
+      name: "userWonCampaignsProfits";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$CampaignProfit;
     }
   }
 
@@ -1074,6 +1092,45 @@ export namespace Schema {
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$Campaign;
+    }
+  }
+
+  //                                           CampaignProfit
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface CampaignProfit extends $.OutputObject {
+    name: "CampaignProfit";
+    fields: {
+      __typename: CampaignProfit.__typename;
+      poolAddress: CampaignProfit.poolAddress;
+      Profit: CampaignProfit.Profit;
+    };
+  }
+
+  export namespace CampaignProfit {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "CampaignProfit";
+      };
+    }
+
+    export interface poolAddress extends $.OutputField {
+      name: "poolAddress";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface Profit extends $.OutputField {
+      name: "Profit";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Int;
     }
   }
 
@@ -2461,6 +2518,7 @@ export namespace Schema {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
     export type $$LP = LP;
+    export type $$CampaignProfit = CampaignProfit;
     export type $$Settings = Settings;
     export type $$Profile = Profile;
     export type $$Claim = Claim;
@@ -2522,6 +2580,7 @@ export interface Schema<
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
     LP: Schema.LP;
+    CampaignProfit: Schema.CampaignProfit;
     Settings: Schema.Settings;
     Profile: Schema.Profile;
     Claim: Schema.Claim;
@@ -2539,6 +2598,7 @@ export interface Schema<
   };
   objects: {
     LP: Schema.LP;
+    CampaignProfit: Schema.CampaignProfit;
     Settings: Schema.Settings;
     Profile: Schema.Profile;
     Claim: Schema.Claim;
