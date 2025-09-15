@@ -503,4 +503,5 @@ export const requestPnLOfWonCampaigns = (address: string) =>
     $: { address },
     poolAddress: true,
     profit: true,
+    winner: true,
   });

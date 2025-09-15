@@ -4,6 +4,8 @@ import { useActiveAccount } from "thirdweb/react";
 import ClaimedRewardsRow from "./claimedRewardsRow";
 import useClaimedRewards from "@/hooks/useClaimedRewards";
 import Placeholder from "../tablePlaceholder";
+import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
+import { ClaimedRewards } from "@/types";
 const bodyStyles = "min-h-24 bg-9gray";
 
 export default function ClaimedRewardsBody({
@@ -18,6 +20,12 @@ export default function ClaimedRewardsBody({
     error,
     data: claimedRewards,
   } = useClaimedRewards(account?.address, campaignId);
+  const { data: PnLs } = usePnLOfWonCampaigns(account?.address);
+  const enrichedCampaigns = claimedRewards?.map((i) => ({
+    ...i,
+    PnL: PnLs?.find((pi) => pi?.winner === i?.winner?.slice(2)),
+  })) as ClaimedRewards[];
+
   if (isLoading)
     return (
       <tbody className={bodyStyles}>
@@ -42,8 +50,8 @@ export default function ClaimedRewardsBody({
 
   return (
     <tbody className={bodyStyles}>
-      {claimedRewards?.map((item) => (
-        <ClaimedRewardsRow key={item?.content.identifier} data={item} />
+      {enrichedCampaigns?.map((item) => (
+        <ClaimedRewardsRow key={item?.winner} data={item} />
       ))}
     </tbody>
   );

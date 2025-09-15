@@ -103,6 +103,7 @@ type ComplexityRoot struct {
 	CampaignProfit struct {
 		PoolAddress func(childComplexity int) int
 		Profit      func(childComplexity int) int
+		Winner      func(childComplexity int) int
 	}
 
 	CampaignShare struct {
@@ -595,6 +596,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CampaignProfit.Profit(childComplexity), true
+
+	case "CampaignProfit.winner":
+		if e.complexity.CampaignProfit.Winner == nil {
+			break
+		}
+
+		return e.complexity.CampaignProfit.Winner(childComplexity), true
 
 	case "CampaignShare.identifier":
 		if e.complexity.CampaignShare.Identifier == nil {
@@ -3973,6 +3981,47 @@ func (ec *executionContext) fieldContext_CampaignProfit_profit(_ context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _CampaignProfit_winner(ctx context.Context, field graphql.CollectedField, obj *types.CampaignProfit) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CampaignProfit_winner(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Winner, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CampaignProfit_winner(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CampaignProfit",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CampaignShare_shares(ctx context.Context, field graphql.CollectedField, obj *types.CampaignShare) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CampaignShare_shares(ctx, field)
 	if err != nil {
@@ -7072,6 +7121,8 @@ func (ec *executionContext) fieldContext_Query_userWonCampaignsProfits(ctx conte
 				return ec.fieldContext_CampaignProfit_poolAddress(ctx, field)
 			case "profit":
 				return ec.fieldContext_CampaignProfit_profit(ctx, field)
+			case "winner":
+				return ec.fieldContext_CampaignProfit_winner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CampaignProfit", field.Name)
 		},
@@ -10268,6 +10319,8 @@ func (ec *executionContext) _CampaignProfit(ctx context.Context, sel ast.Selecti
 			out.Values[i] = ec._CampaignProfit_poolAddress(ctx, field, obj)
 		case "profit":
 			out.Values[i] = ec._CampaignProfit_profit(ctx, field, obj)
+		case "winner":
+			out.Values[i] = ec._CampaignProfit_winner(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

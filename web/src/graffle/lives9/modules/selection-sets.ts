@@ -1734,6 +1734,14 @@ export interface CampaignProfit<
   profit?:
     | CampaignProfit.profit$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<CampaignProfit.profit<_$Scalars>>;
+  /**
+   *
+   * Select the `winner` field on the `CampaignProfit` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  winner?:
+    | CampaignProfit.winner$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<CampaignProfit.winner<_$Scalars>>;
 
   /**
    *
@@ -1822,6 +1830,34 @@ export namespace CampaignProfit {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | profit$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type winner<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | winner$SelectionSet<_$Scalars>;
+
+  export interface winner$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `winner` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type winner$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | winner$SelectionSet<_$Scalars>
   >;
 }
 

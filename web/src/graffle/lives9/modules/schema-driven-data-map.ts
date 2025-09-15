@@ -132,6 +132,7 @@ const CampaignProfit: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     poolAddress: {},
     profit: {},
+    winner: {},
   },
 };
 

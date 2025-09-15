@@ -6,7 +6,11 @@ import formatFusdc from "@/utils/formatFusdc";
 import { ClaimedRewards } from "@/types";
 import { calcTimePassed } from "@/utils/calcTimeDiff";
 
-export default function PositionRow({ data }: { data: ClaimedRewards | null }) {
+export default function PositionRow({
+  data,
+}: {
+  data: (ClaimedRewards & { PnL?: number }) | null;
+}) {
   if (!data) return null;
   const winnerOutcome = data.content.outcomes.find(
     (o) => o.identifier === data.winner,
@@ -54,6 +58,13 @@ export default function PositionRow({ data }: { data: ClaimedRewards | null }) {
         <span className="font-chicago text-sm font-bold">
           ${formatFusdc(+data.fusdcReceived, 2)}
         </span>
+        {data.PnL ? (
+          <span
+            className={combineClass(data.PnL > 0 ? "bg-9green" : "bg-9red")}
+          >
+            ${formatFusdc(data.PnL, 2)}
+          </span>
+        ) : null}
       </td>
       <td>
         <span className="font-chicago text-xs">

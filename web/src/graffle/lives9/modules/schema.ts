@@ -1105,6 +1105,7 @@ export namespace Schema {
       __typename: CampaignProfit.__typename;
       poolAddress: CampaignProfit.poolAddress;
       profit: CampaignProfit.profit;
+      winner: CampaignProfit.winner;
     };
   }
 
@@ -1131,6 +1132,13 @@ export namespace Schema {
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface winner extends $.OutputField {
+      name: "winner";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
     }
   }
 

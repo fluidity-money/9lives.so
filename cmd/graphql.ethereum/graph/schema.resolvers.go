@@ -1605,6 +1605,7 @@ func (r *queryResolver) UserWonCampaignsProfits(ctx context.Context, address str
             ELSE -nbas.to_amount 
         END
     ) AS profit,
+	nbas.outcome_id as winner,
     nepa.emitter_addr as pool_address
 FROM ninelives_events_payoff_activated nepa
 JOIN ninelives_buys_and_sells_1 nbas 
@@ -1613,7 +1614,8 @@ JOIN ninelives_buys_and_sells_1 nbas
     AND nepa.identifier = nbas.outcome_id
 WHERE nepa.recipient = ?
 GROUP BY 
-    nbas.recipient, 
+    nbas.recipient,
+	nbas.outcome_id,
     nepa.emitter_addr, 
     nepa.fusdc_received;
 	`, address).Scan(&profits).Error
