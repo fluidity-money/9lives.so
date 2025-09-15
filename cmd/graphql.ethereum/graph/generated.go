@@ -589,7 +589,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CampaignProfit.PoolAddress(childComplexity), true
 
-	case "CampaignProfit.Profit":
+	case "CampaignProfit.profit":
 		if e.complexity.CampaignProfit.Profit == nil {
 			break
 		}
@@ -3932,8 +3932,8 @@ func (ec *executionContext) fieldContext_CampaignProfit_poolAddress(_ context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _CampaignProfit_Profit(ctx context.Context, field graphql.CollectedField, obj *types.CampaignProfit) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CampaignProfit_Profit(ctx, field)
+func (ec *executionContext) _CampaignProfit_profit(ctx context.Context, field graphql.CollectedField, obj *types.CampaignProfit) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CampaignProfit_profit(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3960,7 +3960,7 @@ func (ec *executionContext) _CampaignProfit_Profit(ctx context.Context, field gr
 	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CampaignProfit_Profit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CampaignProfit_profit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CampaignProfit",
 		Field:      field,
@@ -7070,8 +7070,8 @@ func (ec *executionContext) fieldContext_Query_userWonCampaignsProfits(ctx conte
 			switch field.Name {
 			case "poolAddress":
 				return ec.fieldContext_CampaignProfit_poolAddress(ctx, field)
-			case "Profit":
-				return ec.fieldContext_CampaignProfit_Profit(ctx, field)
+			case "profit":
+				return ec.fieldContext_CampaignProfit_profit(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CampaignProfit", field.Name)
 		},
@@ -10266,8 +10266,8 @@ func (ec *executionContext) _CampaignProfit(ctx context.Context, sel ast.Selecti
 			out.Values[i] = graphql.MarshalString("CampaignProfit")
 		case "poolAddress":
 			out.Values[i] = ec._CampaignProfit_poolAddress(ctx, field, obj)
-		case "Profit":
-			out.Values[i] = ec._CampaignProfit_Profit(ctx, field, obj)
+		case "profit":
+			out.Values[i] = ec._CampaignProfit_profit(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

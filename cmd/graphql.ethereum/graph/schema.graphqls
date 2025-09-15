@@ -99,7 +99,7 @@ type LP {
 
 type CampaignProfit {
   poolAddress: String
-  Profit: Int
+  profit: Int
 }
 
 type Settings {
