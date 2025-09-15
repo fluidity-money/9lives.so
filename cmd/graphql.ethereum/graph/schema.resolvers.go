@@ -1595,6 +1595,7 @@ func (r *queryResolver) CountReferees(ctx context.Context, referrerAddress strin
 // UserWonCampaignsProfits is the resolver for the userWonCampaignsProfits field.
 func (r *queryResolver) UserWonCampaignsProfits(ctx context.Context, address string) ([]*types.CampaignProfit, error) {
 	var profits []*types.CampaignProfit
+	address = strings.ToLower(address)
 	err := r.DB.Raw(`
 	SELECT 
  	nepa.fusdc_received -
