@@ -524,6 +524,9 @@ pub enum Error {
     // Not enough liquidity shares were sent to the user after they added
     // liquidity, failing the slippage check.
     NotEnoughLiquidityReturned,
+
+    // The ending timestamp was set to be in the past in the extend_time function.
+    EndingInPast,
 }
 
 #[cfg(any(
