@@ -85,11 +85,21 @@ type Query {
   Get the count of the referees
   """
   countReferees(referrerAddress: String!): Int!
+
+  """
+  Returns won campaigns profit according to share's total cost
+  """
+  userWonCampaignsProfits(address: String!): [CampaignProfit]!
 }
 
 type LP {
   liquidity: String
   campaign: Campaign
+}
+
+type CampaignProfit {
+  poolAddress: String
+  Profit: Int
 }
 
 type Settings {

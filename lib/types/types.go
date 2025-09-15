@@ -31,6 +31,11 @@ type (
 		Campaign
 	}
 
+	CampaignProfit struct {
+		PoolAddress string `json:"poolAddress"`
+		Profit      int    `json:"profit"`
+	}
+
 	InvestmentAmounts struct {
 		Id    string `json:"id"`
 		USDC  int    `json:"usdc"`

@@ -1587,9 +1587,42 @@ func (r *queryResolver) CountReferees(ctx context.Context, referrerAddress strin
 	and u.wallet_address != ?
 	`, referrerAddress, referrerAddress).Scan(&count).Error
 	if err != nil {
-		return 0, fmt.Errorf(("Query failed from db"))
+		return 0, fmt.Errorf("Query failed from db")
 	}
 	return count, nil
+}
+
+// UserWonCampaignsProfits is the resolver for the userWonCampaignsProfits field.
+func (r *queryResolver) UserWonCampaignsProfits(ctx context.Context, address string) ([]*types.CampaignProfit, error) {
+	var profits []*types.CampaignProfit
+	err := r.DB.Raw(`
+	SELECT 
+ 	nepa.fusdc_received -
+    SUM(
+        CASE 
+            WHEN nbas.type = 'buy' THEN nbas.from_amount 
+            ELSE -nbas.to_amount 
+        END
+    ) AS profit,
+    nepa.emitter_addr 
+FROM ninelives_events_payoff_activated nepa
+JOIN ninelives_buys_and_sells_1 nbas 
+    ON nbas.emitter_addr = nepa.emitter_addr 
+    AND nbas.recipient = nepa.recipient 
+    AND nepa.identifier = nbas.outcome_id
+WHERE nepa.recipient = ?
+GROUP BY 
+    nbas.recipient, 
+    nepa.emitter_addr, 
+    nepa.fusdc_received;
+	`, address).Scan(&profits).Error
+	if err != nil {
+		slog.Error("Error getting market's profits which are won",
+			"error", err,
+		)
+		return nil, fmt.Errorf("Error getting market's profits which are won %w", err)
+	}
+	return profits, nil
 }
 
 // Refererr is the resolver for the refererr field.
