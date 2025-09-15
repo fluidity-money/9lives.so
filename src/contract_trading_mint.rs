@@ -97,6 +97,7 @@ impl StorageTrading {
                 _outcome,
                 fusdc,
                 _min_shares,
+                _referrer
             )?;
             fusdc_call::transfer(_recipient, fusdc_to_return)?;
             evm::log(events::SharesBurned {
