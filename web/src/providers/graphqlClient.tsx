@@ -497,3 +497,10 @@ export const requestCountReferees = (referrerAddress: string) =>
   graph9Lives.query.countReferees({
     $: { referrerAddress },
   });
+
+export const requestPnLOfWonCampaigns = (address: string) =>
+  graph9Lives.query.userWonCampaignsProfits({
+    $: { address },
+    poolAddress: true,
+    profit: true,
+  });

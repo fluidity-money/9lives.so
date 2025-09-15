@@ -1728,12 +1728,12 @@ export interface CampaignProfit<
     | $Select.SelectAlias.SelectAlias<CampaignProfit.poolAddress<_$Scalars>>;
   /**
    *
-   * Select the `Profit` field on the `CampaignProfit` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   * Select the `profit` field on the `CampaignProfit` object. Its type is `Int` (a `ScalarStandard` kind of type).
    *
    */
-  Profit?:
-    | CampaignProfit.Profit$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<CampaignProfit.Profit<_$Scalars>>;
+  profit?:
+    | CampaignProfit.profit$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<CampaignProfit.profit<_$Scalars>>;
 
   /**
    *
@@ -1798,12 +1798,12 @@ export namespace CampaignProfit {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type Profit<
+  export type profit<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | Profit$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | profit$SelectionSet<_$Scalars>;
 
-  export interface Profit$SelectionSet<
+  export interface profit$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {}
@@ -1812,16 +1812,16 @@ export namespace CampaignProfit {
 
   /**
    *
-   * This is the "expanded" version of the `Profit` type. It is identical except for the fact
+   * This is the "expanded" version of the `profit` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type Profit$Expanded<
+  export type profit$Expanded<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | Profit$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | profit$SelectionSet<_$Scalars>
   >;
 }
 

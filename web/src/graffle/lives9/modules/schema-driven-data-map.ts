@@ -131,7 +131,7 @@ const LP: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 const CampaignProfit: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     poolAddress: {},
-    Profit: {},
+    profit: {},
   },
 };
 
