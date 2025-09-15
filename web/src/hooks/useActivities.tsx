@@ -6,7 +6,7 @@ export default function useAcitivies({
   address,
   campaignId,
   page = 0,
-  pageSize = 8,
+  pageSize = 10,
 }: {
   address?: string;
   campaignId?: string;
