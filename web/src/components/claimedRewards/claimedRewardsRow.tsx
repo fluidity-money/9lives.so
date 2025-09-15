@@ -55,16 +55,21 @@ export default function PositionRow({
         </div>
       </td>
       <td>
-        <span className="font-chicago text-sm font-bold">
-          ${formatFusdc(+data.fusdcReceived, 2)}
-        </span>
-        {data.PnL ? (
-          <span
-            className={combineClass(data.PnL > 0 ? "bg-9green" : "bg-9red")}
-          >
-            ${formatFusdc(data.PnL, 2)}
+        <div className="flex items-center gap-2.5">
+          <span className="font-chicago text-sm font-bold">
+            ${formatFusdc(+data.fusdcReceived, 2)}
           </span>
-        ) : null}
+          {data.PnL ? (
+            <span
+              className={combineClass(
+                data.PnL > 0 ? "bg-9green" : "bg-9red",
+                "px-1 py-0.5 font-geneva text-xs uppercase",
+              )}
+            >
+              ${formatFusdc(BigInt(data.PnL), 2)}
+            </span>
+          ) : null}
+        </div>
       </td>
       <td>
         <span className="font-chicago text-xs">

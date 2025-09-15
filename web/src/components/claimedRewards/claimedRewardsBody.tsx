@@ -23,7 +23,7 @@ export default function ClaimedRewardsBody({
   const { data: PnLs } = usePnLOfWonCampaigns(account?.address);
   const enrichedCampaigns = claimedRewards?.map((i) => ({
     ...i,
-    PnL: PnLs?.find((pi) => pi?.winner === i?.winner?.slice(2)),
+    PnL: PnLs?.find((pi) => pi?.winner === i?.winner?.slice(2))?.profit,
   })) as ClaimedRewards[];
 
   if (isLoading)
