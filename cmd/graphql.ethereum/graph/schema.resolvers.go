@@ -1605,7 +1605,7 @@ func (r *queryResolver) UserWonCampaignsProfits(ctx context.Context, address str
             ELSE -nbas.to_amount 
         END
     ) AS profit,
-    nepa.emitter_addr 
+    nepa.emitter_addr as pool_address
 FROM ninelives_events_payoff_activated nepa
 JOIN ninelives_buys_and_sells_1 nbas 
     ON nbas.emitter_addr = nepa.emitter_addr 
