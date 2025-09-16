@@ -6,6 +6,8 @@ import usePostComment from "@/hooks/usePostComment";
 import { useActiveAccount } from "thirdweb/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import { combineClass } from "@/utils/combineClass";
+import ErrorInfo from "../themed/errorInfo";
 
 export default function CommentComposer({
   campaignId,
@@ -18,7 +20,11 @@ export default function CommentComposer({
     content: z.string().min(10).max(2000),
   });
   type FormData = z.infer<typeof formSchema>;
-  const { register, handleSubmit } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
   const { mutate: postComment } = usePostComment(campaignId);
@@ -28,9 +34,19 @@ export default function CommentComposer({
   }
   const handleClick = () => (!account ? connect() : handleSubmit(handlePost)());
   return (
-    <div className="flex items-center">
-      <Input type="text" {...register("content")} />
-      <Button onClick={handleClick} title="Post" />
-    </div>
+    <>
+      <div className="flex gap-2.5">
+        <Input
+          type="text"
+          {...register("content")}
+          className={combineClass(
+            "w-full flex-1",
+            errors.content && "border-2 border-red-500",
+          )}
+        />
+        <Button onClick={handleClick} title="Post" />
+      </div>
+      {errors.content && <ErrorInfo text={errors.content.message} />}
+    </>
   );
 }

@@ -1673,7 +1673,7 @@ func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string,
 	WHERE campaign_id = ?
 	ORDER BY created_at DESC
 	OFFSET ? LIMIT ?
-	`, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(comments).Error
+	`, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&comments).Error
 	if err != nil {
 		slog.Error("Error getting campaign's comments",
 			"error", err,

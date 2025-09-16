@@ -17,13 +17,21 @@ export default function usePostComment(campaignId: string) {
       await queryClient.cancelQueries({
         queryKey: ["comments", campaignId],
       });
-      const previousComments =
-        queryClient.getQueryData<Comment[]>(["comments", campaignId]) ?? [];
-      const newComments = [
-        { ...newComment, id: -1, createdAt: Math.floor(Date.now() / 1000) },
-        previousComments,
-      ];
-
+      const previousComments = queryClient.getQueryData<{
+        pages: Comment[][];
+        pageParams: number[];
+      }>(["comments", campaignId]) ?? { pageParams: [0], pages: [[]] };
+      const [firstPage, ...rest] = previousComments?.pages;
+      const newComments = {
+        pageParams: previousComments?.pageParams,
+        pages: [
+          [
+            { ...newComment, id: -1, createdAt: Math.floor(Date.now() / 1000) },
+            ...firstPage,
+          ],
+          ...rest,
+        ],
+      };
       // Optimistically update the cache
       queryClient.setQueryData(["comments", campaignId], newComments);
       toast.success("Comment posted.");
