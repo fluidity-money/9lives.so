@@ -26,6 +26,14 @@ type (
 		Shares            CampaignShares        `json:"shares"`
 	}
 
+	Comment struct {
+		Id            int       `gorm:"primaryKey"`
+		CampaignId    string    `json:"campaignId"`
+		CreatedAt     time.Time `gorm:"autoCreateTime"`
+		Content       string    `json:"content"`
+		WalletAddress string    `json:"walletAddress"`
+	}
+
 	LP struct {
 		Liquidity string `json:"liquidity"`
 		Campaign

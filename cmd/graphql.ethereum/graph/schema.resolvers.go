@@ -323,6 +323,34 @@ func (r *claimResolver) CreatedAt(ctx context.Context, obj *types.Claim) (int, e
 	return int(obj.CreatedAt.Unix()), nil
 }
 
+// CreatedAt is the resolver for the createdAt field.
+func (r *commentResolver) CreatedAt(ctx context.Context, obj *types.Comment) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("Comment is nil")
+	}
+	return int(obj.CreatedAt.Unix()), nil
+}
+
+// PostComment is the resolver for the postComment field.
+func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, walletAddress string, content string) (*bool, error) {
+	comment := types.Comment{
+		CampaignId:    campaignID,
+		WalletAddress: strings.ToLower(walletAddress),
+		Content:       content,
+	}
+	err := r.DB.Table("ninelives_comments_1").Create(&comment).Error
+	if err != nil {
+		return nil, fmt.Errorf("Error to post comment %w", err)
+	}
+	var res = true
+	return &res, nil
+}
+
+// DeleteComment is the resolver for the deleteComment field.
+func (r *mutationResolver) DeleteComment(ctx context.Context, campaignID string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteComment - deleteComment"))
+}
+
 // RequestPaymaster is the resolver for the requestPaymaster field.
 func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) (*string, error) {
 	// Verify the user has the amount to spend that they're requesting.
@@ -1628,6 +1656,33 @@ GROUP BY
 	return profits, nil
 }
 
+// CampaignComments is the resolver for the campaignComments field.
+func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string, page *int, pageSize *int) ([]*types.Comment, error) {
+	var comments []*types.Comment
+	pageNum := 0
+	if page != nil {
+		pageNum = *page
+	}
+	pageSizeNum := 10
+	if pageSize != nil {
+		pageSizeNum = *pageSize
+	}
+	err := r.DB.Raw(`
+	SELECT *
+	FROM ninelives_comments_1
+	WHERE campaign_id = ?
+	ORDER BY created_at DESC
+	OFFSET ? LIMIT ?
+	`, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(comments).Error
+	if err != nil {
+		slog.Error("Error getting campaign's comments",
+			"error", err,
+		)
+		return nil, fmt.Errorf("Error getting campaign's comments %w", err)
+	}
+	return comments, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {
@@ -1648,6 +1703,9 @@ func (r *Resolver) Changelog() ChangelogResolver { return &changelogResolver{r} 
 // Claim returns ClaimResolver implementation.
 func (r *Resolver) Claim() ClaimResolver { return &claimResolver{r} }
 
+// Comment returns CommentResolver implementation.
+func (r *Resolver) Comment() CommentResolver { return &commentResolver{r} }
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
@@ -1664,6 +1722,7 @@ type activityResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
 type changelogResolver struct{ *Resolver }
 type claimResolver struct{ *Resolver }
+type commentResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type positionResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

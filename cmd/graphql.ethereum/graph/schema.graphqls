@@ -90,6 +90,19 @@ type Query {
   Returns won campaigns profit according to share's total cost
   """
   userWonCampaignsProfits(address: String!): [CampaignProfit]!
+
+  """
+  Gets comments of a campaign
+  """
+  campaignComments(campaignId: String!, page: Int, pageSize: Int): [Comment]!
+}
+
+type Comment {
+  id: Int!
+  campaignId: String!
+  createdAt: Int!
+  walletAddress: String!
+  content: String!
 }
 
 type LP {
@@ -178,6 +191,16 @@ enum PaymasterOperation {
 }
 
 type Mutation {
+  """
+  Post new comment to a campaign
+  """
+  postComment(campaignId:String!,walletAddress:String!,content:String!): Boolean
+
+  """
+  Delete a comment owned
+  """
+  deleteComment(campaignId:String!): Boolean
+
   """
   Request that the Paymaster service this request and deduct funds from the user's USDC
   EOA using a Permit blob.
