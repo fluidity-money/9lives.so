@@ -505,3 +505,33 @@ export const requestPnLOfWonCampaigns = (address: string) =>
     profit: true,
     winner: true,
   });
+
+export const requestComments = ({
+  campaignId,
+  page,
+  pageSize,
+}: {
+  campaignId: string;
+  page?: number;
+  pageSize?: number;
+}) =>
+  graph9Lives.query.campaignComments({
+    $: { campaignId, page, pageSize },
+    id: true,
+    content: true,
+    walletAddress: true,
+    createdAt: true,
+  });
+
+export const postComment = ({
+  campaignId,
+  walletAddress,
+  content,
+}: {
+  campaignId: string;
+  walletAddress: string;
+  content: string;
+}) =>
+  graph9Lives.mutation.postComment({
+    $: { campaignId, walletAddress, content },
+  });
