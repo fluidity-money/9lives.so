@@ -102,7 +102,7 @@ export default function DetailInfo({ data }: { data: Campaign }) {
         </div>
       </RetroCard>
       <RetroCard title="Creator" showClose={false}>
-        <h5 className="mb-5 font-chicago text-sm">Creator</h5>
+        {/* <h5 className="mb-5 font-chicago text-sm">Creator</h5> */}
         <p className="ml-5 text-xs">
           This was created by{" "}
           <Link

@@ -16,6 +16,7 @@ import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
 import useUserLiquidity from "@/hooks/useUserLiquidity";
 import { useActiveAccount } from "thirdweb/react";
+import DetailComments from "./detailComments";
 
 export default function DetailWrapper({
   initialData,
@@ -80,6 +81,7 @@ export default function DetailWrapper({
           isConcluded={isConcluded}
         />
         <DetailInfo data={data} />
+        <DetailComments campaignId={data.identifier} />
       </div>
       <div className="flex flex-1 flex-col gap-8">
         {isConcluded ? (
