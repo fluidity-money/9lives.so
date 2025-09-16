@@ -119,6 +119,16 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 
+const Comment: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    id: {},
+    campaignId: {},
+    createdAt: {},
+    walletAddress: {},
+    content: {},
+  },
+};
+
 const LP: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     liquidity: {},
@@ -535,11 +545,52 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: CampaignProfit, <-- Assigned later to avoid potential circular dependency.
     },
+    campaignComments: {
+      a: {
+        campaignId: {
+          nt: String,
+          it: [1],
+        },
+        page: {
+          nt: Int,
+          it: [0],
+        },
+        pageSize: {
+          nt: Int,
+          it: [0],
+        },
+      },
+      // nt: Comment, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
 const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
+    postComment: {
+      a: {
+        campaignId: {
+          nt: String,
+          it: [1],
+        },
+        walletAddress: {
+          nt: String,
+          it: [1],
+        },
+        content: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
+    deleteComment: {
+      a: {
+        campaignId: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
     requestPaymaster: {
       a: {
         ticket: {
@@ -836,6 +887,7 @@ Query.f[`leaderboards`]!.nt = LeaderboardWeekly;
 Query.f[`featuredCampaign`]!.nt = Campaign;
 Query.f[`userLPs`]!.nt = LP;
 Query.f[`userWonCampaignsProfits`]!.nt = CampaignProfit;
+Query.f[`campaignComments`]!.nt = Comment;
 
 //
 //
@@ -869,6 +921,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     SettlementType,
     ActivityType,
     OutcomeInput,
+    Comment,
     LP,
     CampaignProfit,
     Settings,

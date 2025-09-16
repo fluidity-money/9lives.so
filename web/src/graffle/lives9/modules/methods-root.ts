@@ -431,6 +431,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Gets comments of a campaign
+   */
+  campaignComments: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.campaignComments<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { campaignComments: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "campaignComments"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
@@ -460,6 +482,50 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
           $Context,
           { __typename: "Mutation" },
           "__typename"
+        >
+    >
+  >;
+  /**
+   * Post new comment to a campaign
+   */
+  postComment: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.postComment<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { postComment: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "postComment"
+        >
+    >
+  >;
+  /**
+   * Delete a comment owned
+   */
+  deleteComment: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.deleteComment<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { deleteComment: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "deleteComment"
         >
     >
   >;

@@ -197,6 +197,14 @@ export interface Query<
   userWonCampaignsProfits?:
     | Query.userWonCampaignsProfits<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.userWonCampaignsProfits<_$Scalars>>;
+  /**
+   *
+   * Select the `campaignComments` field on the `Query` object. Its type is `Comment` (a `OutputObject` kind of type).
+   *
+   */
+  campaignComments?:
+    | Query.campaignComments<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.campaignComments<_$Scalars>>;
 
   /**
    *
@@ -904,6 +912,47 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<userWonCampaignsProfits$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type campaignComments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = campaignComments$SelectionSet<_$Scalars>;
+
+  export interface campaignComments$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Comment<_$Scalars> {
+    /**
+     * Arguments for `campaignComments` field. Some (1/3) arguments are required so you must include this.
+     */
+    $: campaignComments$Arguments<_$Scalars>;
+  }
+
+  export interface campaignComments$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    campaignId: string;
+    page?: number | undefined | null;
+    pageSize?: number | undefined | null;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `campaignComments` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type campaignComments$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<campaignComments$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -916,6 +965,22 @@ export interface Mutation<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
 > {
+  /**
+   *
+   * Select the `postComment` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  postComment?:
+    | Mutation.postComment<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.postComment<_$Scalars>>;
+  /**
+   *
+   * Select the `deleteComment` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  deleteComment?:
+    | Mutation.deleteComment<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.deleteComment<_$Scalars>>;
   /**
    *
    * Select the `requestPaymaster` field on the `Mutation` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -1008,6 +1073,84 @@ export interface Mutation$FragmentInline<
 // ----------------------------------------| Fields |
 
 export namespace Mutation {
+  export type postComment<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = postComment$SelectionSet<_$Scalars>;
+
+  export interface postComment$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `postComment` field. All arguments are required so you must include this.
+     */
+    $: postComment$Arguments<_$Scalars>;
+  }
+
+  export interface postComment$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    campaignId: string;
+    walletAddress: string;
+    content: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `postComment` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type postComment$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<postComment$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type deleteComment<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = deleteComment$SelectionSet<_$Scalars>;
+
+  export interface deleteComment$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `deleteComment` field. All arguments are required so you must include this.
+     */
+    $: deleteComment$Arguments<_$Scalars>;
+  }
+
+  export interface deleteComment$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    campaignId: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `deleteComment` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type deleteComment$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<deleteComment$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
   export type requestPaymaster<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
@@ -1593,6 +1736,229 @@ export interface OutcomeInput<
 //
 //
 //
+
+//                                              Comment
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface Comment<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `id` field on the `Comment` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  id?:
+    | Comment.id$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Comment.id<_$Scalars>>;
+  /**
+   *
+   * Select the `campaignId` field on the `Comment` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  campaignId?:
+    | Comment.campaignId$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Comment.campaignId<_$Scalars>>;
+  /**
+   *
+   * Select the `createdAt` field on the `Comment` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  createdAt?:
+    | Comment.createdAt$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Comment.createdAt<_$Scalars>>;
+  /**
+   *
+   * Select the `walletAddress` field on the `Comment` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  walletAddress?:
+    | Comment.walletAddress$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Comment.walletAddress<_$Scalars>>;
+  /**
+   *
+   * Select the `content` field on the `Comment` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  content?:
+    | Comment.content$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Comment.content<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?: Comment$FragmentInline<_$Scalars> | Comment$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface Comment$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends Comment<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace Comment {
+  export type id<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
+
+  export interface id$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `id` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type id$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type campaignId<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | campaignId$SelectionSet<_$Scalars>;
+
+  export interface campaignId$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `campaignId` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type campaignId$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | campaignId$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type createdAt<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | createdAt$SelectionSet<_$Scalars>;
+
+  export interface createdAt$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `createdAt` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type createdAt$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | createdAt$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type walletAddress<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | walletAddress$SelectionSet<_$Scalars>;
+
+  export interface walletAddress$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `walletAddress` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type walletAddress$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | walletAddress$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type content<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | content$SelectionSet<_$Scalars>;
+
+  export interface content$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `content` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type content$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | content$SelectionSet<_$Scalars>
+  >;
+}
 
 //                                                 LP
 // --------------------------------------------------------------------------------------------------
@@ -5133,6 +5499,10 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = OutcomeInput<_$Scalars>;
+  export type $Comment<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = Comment<_$Scalars>;
   export type $LP<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
