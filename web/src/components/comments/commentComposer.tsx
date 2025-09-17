@@ -17,7 +17,10 @@ export default function CommentComposer({
   const { connect } = useConnectWallet();
   const account = useActiveAccount();
   const formSchema = z.object({
-    content: z.string().min(10).max(2000),
+    content: z
+      .string()
+      .min(3, "Your comments have to be longer than 3 charachters.")
+      .max(2000, "Your comments have to be shorter than 2000 charachters."),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
