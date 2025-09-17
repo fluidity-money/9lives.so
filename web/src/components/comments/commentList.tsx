@@ -18,7 +18,7 @@ export default function CommentList({ campaignId }: { campaignId: string }) {
       <Placeholder title="No Comments Yet." subtitle="Start adding yours." />
     );
   return (
-    <ul>
+    <ul className="mt-4 flex flex-col gap-2.5">
       {data?.map((i) => (
         <CommentItem data={i} key={i.id} />
       ))}

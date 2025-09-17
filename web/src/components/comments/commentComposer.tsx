@@ -38,6 +38,7 @@ export default function CommentComposer({
       <div className="flex gap-2.5">
         <Input
           type="text"
+          placeholder="Add a comment"
           {...register("content")}
           className={combineClass(
             "w-full flex-1",
