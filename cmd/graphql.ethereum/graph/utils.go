@@ -102,9 +102,9 @@ func validateReferralSig(sender, referrer ethCommon.Address, r, s, v []byte) (et
 	message := referrer.Hex()
 	prefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%d", len(message))
 	msg := prefix + message
-	msgHash := ethCommon.BytesToHash(ethCrypto.Keccak256([]byte(msg)))
+	msgHash := ethCrypto.Keccak256([]byte(msg))
 	sig := append(r, append(s, v[0])...)
-	pubKey, err := ethCrypto.SigToPub(msgHash.Bytes(), sig)
+	pubKey, err := ethCrypto.SigToPub(msgHash, sig)
 	if err != nil {
 		return ethCommon.Address{}, fmt.Errorf("recovering signature: %v", err)
 	}
@@ -121,9 +121,9 @@ func validateCommentSig(sender ethCommon.Address, message string, r, s, v []byte
 	}
 	prefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%d", len(message))
 	msg := prefix + message
-	msgHash := ethCommon.BytesToHash(ethCrypto.Keccak256([]byte(msg)))
+	msgHash := ethCrypto.Keccak256([]byte(msg))
 	sig := append(r, append(s, v[0])...)
-	pubKey, err := ethCrypto.SigToPub(msgHash.Bytes(), sig)
+	pubKey, err := ethCrypto.SigToPub(msgHash, sig)
 	if err != nil {
 		return ethCommon.Address{}, fmt.Errorf("recovering signature: %v", err)
 	}
