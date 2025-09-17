@@ -581,6 +581,18 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
+        rr: {
+          nt: String,
+          it: [1],
+        },
+        s: {
+          nt: String,
+          it: [1],
+        },
+        v: {
+          nt: Int,
+          it: [1],
+        },
       },
     },
     deleteComment: {
@@ -838,7 +850,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           it: [1],
         },
         v: {
-          nt: String,
+          nt: Int,
           it: [1],
         },
       },

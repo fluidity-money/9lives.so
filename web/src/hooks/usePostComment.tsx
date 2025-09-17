@@ -9,10 +9,24 @@ export default function usePostComment(campaignId: string) {
     mutationFn: async ({
       walletAddress,
       content,
+      rr,
+      s,
+      v,
     }: {
       walletAddress: string;
       content: string;
-    }) => postComment({ campaignId, walletAddress, content }),
+      rr: string;
+      s: string;
+      v: number;
+    }) =>
+      postComment({
+        campaignId,
+        walletAddress,
+        content,
+        rr: rr.slice(2),
+        s: s.slice(2),
+        v,
+      }),
     onMutate: async (newComment) => {
       await queryClient.cancelQueries({
         queryKey: ["comments", campaignId],

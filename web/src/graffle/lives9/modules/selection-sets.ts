@@ -1095,6 +1095,9 @@ export namespace Mutation {
     campaignId: string;
     walletAddress: string;
     content: string;
+    rr: string;
+    s: string;
+    v: number;
   }
 
   // --- expanded ---
@@ -1617,7 +1620,7 @@ export namespace Mutation {
     /**
      * The recovery ID (27) for the private key used for this signature. A Int.
      */
-    v: string;
+    v: number;
   }
 
   // --- expanded ---

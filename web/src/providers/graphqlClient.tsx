@@ -358,7 +358,7 @@ export const associateReferral = ({
   sender: string;
   code: string;
   s: string;
-  v: string;
+  v: number;
   rr: string;
 }) =>
   graph9Lives.mutation.associateReferral({
@@ -527,11 +527,17 @@ export const postComment = ({
   campaignId,
   walletAddress,
   content,
+  rr,
+  s,
+  v,
 }: {
   campaignId: string;
   walletAddress: string;
   content: string;
+  rr: string;
+  s: string;
+  v: number;
 }) =>
   graph9Lives.mutation.postComment({
-    $: { campaignId, walletAddress, content },
+    $: { campaignId, walletAddress, content, rr, s, v },
   });

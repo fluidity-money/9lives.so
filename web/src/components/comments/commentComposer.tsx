@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { combineClass } from "@/utils/combineClass";
 import ErrorInfo from "../themed/errorInfo";
+import { signMessage } from "thirdweb/utils";
+import { Signature } from "ethers";
 
 export default function CommentComposer({
   campaignId,
@@ -31,9 +33,22 @@ export default function CommentComposer({
     resolver: zodResolver(formSchema),
   });
   const { mutate: postComment } = usePostComment(campaignId);
-  function handlePost(input: FormData) {
+  async function handlePost(input: FormData) {
     if (!account) throw new Error("No wallet is connected.");
-    postComment({ content: input.content, walletAddress: account?.address });
+    const signature = await signMessage({
+      message: input.content,
+      account,
+    });
+    if (!signature) throw new Error("Signature not found");
+    const { r: rr, s, v } = Signature.from(signature);
+    if (!rr || !s || !v) throw new Error("Signature can not be splitted");
+    postComment({
+      content: input.content,
+      walletAddress: account?.address,
+      rr,
+      s,
+      v,
+    });
   }
   const handleClick = () => (!account ? connect() : handleSubmit(handlePost)());
   return (

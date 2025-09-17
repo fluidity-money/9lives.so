@@ -49,7 +49,7 @@ export default function RefereeDialog({
             code,
             rr: rr.slice(2),
             s: s.slice(2),
-            v: v === 27 ? "00" : "01",
+            v,
           });
           res(associated);
           close();

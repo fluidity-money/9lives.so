@@ -498,6 +498,24 @@ export namespace Schema {
           inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
+        rr: {
+          kind: "InputField";
+          name: "rr";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        s: {
+          kind: "InputField";
+          name: "s";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        v: {
+          kind: "InputField";
+          name: "v";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
       };
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;
@@ -1110,7 +1128,7 @@ export namespace Schema {
           kind: "InputField";
           name: "v";
           inlineType: [1];
-          namedType: $$NamedTypes.$$String;
+          namedType: $$NamedTypes.$$Int;
         };
       };
       inlineType: [0];

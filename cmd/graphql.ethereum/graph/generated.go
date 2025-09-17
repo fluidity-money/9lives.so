@@ -158,11 +158,11 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v string) int
+		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v int) int
 		DeleteComment     func(childComplexity int, campaignID string) int
 		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
 		GenReferrer       func(childComplexity int, walletAddress string, code string) int
-		PostComment       func(childComplexity int, campaignID string, walletAddress string, content string) int
+		PostComment       func(childComplexity int, campaignID string, walletAddress string, content string, rr string, s string, v int) int
 		RequestPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) int
 		RevealCommitment  func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string) int
 		RevealCommitment2 func(childComplexity int, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) int
@@ -270,7 +270,7 @@ type CommentResolver interface {
 	CreatedAt(ctx context.Context, obj *types.Comment) (int, error)
 }
 type MutationResolver interface {
-	PostComment(ctx context.Context, campaignID string, walletAddress string, content string) (*bool, error)
+	PostComment(ctx context.Context, campaignID string, walletAddress string, content string, rr string, s string, v int) (*bool, error)
 	DeleteComment(ctx context.Context, campaignID string) (*bool, error)
 	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) (*string, error)
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error)
@@ -278,7 +278,7 @@ type MutationResolver interface {
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
 	SynchProfile(ctx context.Context, walletAddress string, email string) (*bool, error)
 	GenReferrer(ctx context.Context, walletAddress string, code string) (string, error)
-	AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v string) (*bool, error)
+	AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v int) (*bool, error)
 }
 type PositionResolver interface {
 	OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error)
@@ -814,7 +814,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.AssociateReferral(childComplexity, args["sender"].(string), args["code"].(string), args["rr"].(string), args["s"].(string), args["v"].(string)), true
+		return e.complexity.Mutation.AssociateReferral(childComplexity, args["sender"].(string), args["code"].(string), args["rr"].(string), args["s"].(string), args["v"].(int)), true
 
 	case "Mutation.deleteComment":
 		if e.complexity.Mutation.DeleteComment == nil {
@@ -862,7 +862,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PostComment(childComplexity, args["campaignId"].(string), args["walletAddress"].(string), args["content"].(string)), true
+		return e.complexity.Mutation.PostComment(childComplexity, args["campaignId"].(string), args["walletAddress"].(string), args["content"].(string), args["rr"].(string), args["s"].(string), args["v"].(int)), true
 
 	case "Mutation.requestPaymaster":
 		if e.complexity.Mutation.RequestPaymaster == nil {
@@ -1387,10 +1387,10 @@ func (ec *executionContext) field_Mutation_associateReferral_args(ctx context.Co
 		}
 	}
 	args["s"] = arg3
-	var arg4 string
+	var arg4 int
 	if tmp, ok := rawArgs["v"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
-		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		arg4, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1609,6 +1609,33 @@ func (ec *executionContext) field_Mutation_postComment_args(ctx context.Context,
 		}
 	}
 	args["content"] = arg2
+	var arg3 string
+	if tmp, ok := rawArgs["rr"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rr"))
+		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["rr"] = arg3
+	var arg4 string
+	if tmp, ok := rawArgs["s"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
+		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["s"] = arg4
+	var arg5 int
+	if tmp, ok := rawArgs["v"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
+		arg5, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["v"] = arg5
 	return args, nil
 }
 
@@ -5462,7 +5489,7 @@ func (ec *executionContext) _Mutation_postComment(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PostComment(rctx, fc.Args["campaignId"].(string), fc.Args["walletAddress"].(string), fc.Args["content"].(string))
+		return ec.resolvers.Mutation().PostComment(rctx, fc.Args["campaignId"].(string), fc.Args["walletAddress"].(string), fc.Args["content"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5881,7 +5908,7 @@ func (ec *executionContext) _Mutation_associateReferral(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().AssociateReferral(rctx, fc.Args["sender"].(string), fc.Args["code"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(string))
+		return ec.resolvers.Mutation().AssociateReferral(rctx, fc.Args["sender"].(string), fc.Args["code"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

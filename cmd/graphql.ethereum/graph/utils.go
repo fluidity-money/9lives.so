@@ -14,18 +14,18 @@ import (
 	"regexp"
 	"strings"
 
-	paymasterType "github.com/fluidity-money/9lives.so/lib/types/paymaster"
-	paymasterMisc "github.com/fluidity-money/9lives.so/lib/misc/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
+	paymasterMisc "github.com/fluidity-money/9lives.so/lib/misc/paymaster"
+	paymasterType "github.com/fluidity-money/9lives.so/lib/types/paymaster"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
-	ethCommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum"
+	ethCommon "github.com/ethereum/go-ethereum/common"
 	ethCrypto "github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 // MaxImageSizeEncoded is 2 megabytes
@@ -99,7 +99,7 @@ func validateReferralSig(sender, referrer ethCommon.Address, r, s, v []byte) (et
 	if len(r) != 32 || len(s) != 32 || len(v) != 1 {
 		return ethCommon.Address{}, fmt.Errorf("invalid signature parameters")
 	}
-	message := strings.ToLower(referrer.Hex())
+	message := referrer.Hex()
 	prefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%d", len(message))
 	msg := prefix + message
 	msgHash := ethCommon.BytesToHash(ethCrypto.Keccak256([]byte(msg)))
@@ -110,6 +110,27 @@ func validateReferralSig(sender, referrer ethCommon.Address, r, s, v []byte) (et
 	}
 	recoveredAddr := ethCrypto.PubkeyToAddress(*pubKey)
 	if recoveredAddr != sender {
+		return ethCommon.Address{}, fmt.Errorf("signature does not match sender")
+	}
+	return recoveredAddr, nil
+}
+
+func validateCommentSig(sender ethCommon.Address, message string, r, s, v []byte) (ethCommon.Address, error) {
+	if len(r) != 32 || len(s) != 32 || len(v) != 1 {
+		return ethCommon.Address{}, fmt.Errorf("invalid signature parameters")
+	}
+	prefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%d", len(message))
+	msg := prefix + message
+	msgHash := ethCommon.BytesToHash(ethCrypto.Keccak256([]byte(msg)))
+	sig := append(r, append(s, v[0])...)
+	pubKey, err := ethCrypto.SigToPub(msgHash.Bytes(), sig)
+	if err != nil {
+		return ethCommon.Address{}, fmt.Errorf("recovering signature: %v", err)
+	}
+	recoveredAddr := ethCrypto.PubkeyToAddress(*pubKey)
+	if recoveredAddr != sender {
+		fmt.Print("recover", recoveredAddr)
+		fmt.Print("sender", sender)
 		return ethCommon.Address{}, fmt.Errorf("signature does not match sender")
 	}
 	return recoveredAddr, nil

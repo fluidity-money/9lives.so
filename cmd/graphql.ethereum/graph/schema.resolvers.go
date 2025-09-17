@@ -332,13 +332,36 @@ func (r *commentResolver) CreatedAt(ctx context.Context, obj *types.Comment) (in
 }
 
 // PostComment is the resolver for the postComment field.
-func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, walletAddress string, content string) (*bool, error) {
+func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, walletAddress string, content string, rr string, s string, v int) (*bool, error) {
+	if !ethCommon.IsHexAddress(walletAddress) {
+		return nil, fmt.Errorf("bad wallet address")
+	}
+	sender := strings.ToLower(walletAddress)
+	senderAddr := ethCommon.HexToAddress(sender)
+	rB, err := hex.DecodeString(rr)
+	if err != nil {
+		return nil, fmt.Errorf("unable to decode string")
+	}
+	sB, err := hex.DecodeString(s)
+	if err != nil {
+		return nil, fmt.Errorf("unable to decode s")
+	}
+	if v == 27 || v == 28 {
+		v -= 27
+	} else if v != 0 && v != 1 {
+		return nil, fmt.Errorf("invalid v")
+	}
+	vB := []byte{byte(v)}
+	_, err = validateCommentSig(senderAddr, content, rB, sB, vB)
+	if err != nil {
+		return nil, fmt.Errorf("Signature is not valid")
+	}
 	comment := types.Comment{
 		CampaignId:    campaignID,
-		WalletAddress: strings.ToLower(walletAddress),
+		WalletAddress: sender,
 		Content:       content,
 	}
-	err := r.DB.Table("ninelives_comments_1").Create(&comment).Error
+	err = r.DB.Table("ninelives_comments_1").Create(&comment).Error
 	if err != nil {
 		return nil, fmt.Errorf("Error to post comment %w", err)
 	}
@@ -980,7 +1003,7 @@ func (r *mutationResolver) GenReferrer(ctx context.Context, walletAddress string
 }
 
 // AssociateReferral is the resolver for the associateReferral field.
-func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v string) (*bool, error) {
+func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v int) (*bool, error) {
 	if r.F.Is(features.FeatureReferrerNeedsToVerify) {
 		panic("unimplemented")
 	}
@@ -997,10 +1020,12 @@ func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string,
 	if err != nil {
 		return nil, fmt.Errorf("unable to decode s")
 	}
-	vB, err := hex.DecodeString(v)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode v")
+	if v == 27 || v == 28 {
+		v -= 27
+	} else if v != 0 && v != 1 {
+		return nil, fmt.Errorf("invalid v")
 	}
+	vB := []byte{byte(v)}
 	var referrer string
 	err = r.DB.Raw(
 		"SELECT owner FROM ninelives_referrer_1 WHERE code = ?",
