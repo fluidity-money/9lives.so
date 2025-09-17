@@ -52,7 +52,7 @@ export default function CommentComposer({
   }
   const handleClick = () => (!account ? connect() : handleSubmit(handlePost)());
   return (
-    <>
+    <div className="mb-4">
       <div className="flex gap-2.5">
         <Input
           type="text"
@@ -66,6 +66,6 @@ export default function CommentComposer({
         <Button onClick={handleClick} title="Post" />
       </div>
       {errors.content && <ErrorInfo text={errors.content.message} />}
-    </>
+    </div>
   );
 }

@@ -597,8 +597,28 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     },
     deleteComment: {
       a: {
-        campaignId: {
+        id: {
+          nt: Int,
+          it: [1],
+        },
+        walletAddress: {
           nt: String,
+          it: [1],
+        },
+        content: {
+          nt: String,
+          it: [1],
+        },
+        rr: {
+          nt: String,
+          it: [1],
+        },
+        s: {
+          nt: String,
+          it: [1],
+        },
+        v: {
+          nt: Int,
           it: [1],
         },
       },

@@ -159,7 +159,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v int) int
-		DeleteComment     func(childComplexity int, campaignID string) int
+		DeleteComment     func(childComplexity int, id int, walletAddress string, content string, rr string, s string, v int) int
 		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) int
 		GenReferrer       func(childComplexity int, walletAddress string, code string) int
 		PostComment       func(childComplexity int, campaignID string, walletAddress string, content string, rr string, s string, v int) int
@@ -271,7 +271,7 @@ type CommentResolver interface {
 }
 type MutationResolver interface {
 	PostComment(ctx context.Context, campaignID string, walletAddress string, content string, rr string, s string, v int) (*bool, error)
-	DeleteComment(ctx context.Context, campaignID string) (*bool, error)
+	DeleteComment(ctx context.Context, id int, walletAddress string, content string, rr string, s string, v int) (*bool, error)
 	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) (*string, error)
 	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
@@ -826,7 +826,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteComment(childComplexity, args["campaignId"].(string)), true
+		return e.complexity.Mutation.DeleteComment(childComplexity, args["id"].(int), args["walletAddress"].(string), args["content"].(string), args["rr"].(string), args["s"].(string), args["v"].(int)), true
 
 	case "Mutation.explainCampaign":
 		if e.complexity.Mutation.ExplainCampaign == nil {
@@ -1402,15 +1402,60 @@ func (ec *executionContext) field_Mutation_associateReferral_args(ctx context.Co
 func (ec *executionContext) field_Mutation_deleteComment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["campaignId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("campaignId"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["campaignId"] = arg0
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["walletAddress"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("walletAddress"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["walletAddress"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["content"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["content"] = arg2
+	var arg3 string
+	if tmp, ok := rawArgs["rr"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rr"))
+		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["rr"] = arg3
+	var arg4 string
+	if tmp, ok := rawArgs["s"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("s"))
+		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["s"] = arg4
+	var arg5 int
+	if tmp, ok := rawArgs["v"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
+		arg5, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["v"] = arg5
 	return args, nil
 }
 
@@ -5541,7 +5586,7 @@ func (ec *executionContext) _Mutation_deleteComment(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteComment(rctx, fc.Args["campaignId"].(string))
+		return ec.resolvers.Mutation().DeleteComment(rctx, fc.Args["id"].(int), fc.Args["walletAddress"].(string), fc.Args["content"].(string), fc.Args["rr"].(string), fc.Args["s"].(string), fc.Args["v"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

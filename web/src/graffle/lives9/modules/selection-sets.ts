@@ -1135,7 +1135,12 @@ export namespace Mutation {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
-    campaignId: string;
+    id: number;
+    walletAddress: string;
+    content: string;
+    rr: string;
+    s: string;
+    v: number;
   }
 
   // --- expanded ---

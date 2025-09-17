@@ -1,5 +1,5 @@
 import useComments from "@/hooks/useComments";
-import Placeholder from "../tablePlaceholder";
+import Placeholder from "../placeholder";
 import CommentItem from "./commentItem";
 import Button from "../themed/button";
 
@@ -22,12 +22,11 @@ export default function CommentList({ campaignId }: { campaignId: string }) {
       <Placeholder title="No Comments Yet." subtitle="Start adding yours." />
     );
   return (
-    <ul className="mt-4 flex flex-col gap-2.5">
+    <ul className="flex flex-col gap-2.5">
       {data?.map((i) => (
-        <CommentItem data={i} key={i.id} />
+        <CommentItem data={i} key={i.id} campaignId={campaignId} />
       ))}
       <li>
-        {" "}
         {hasNextPage ? (
           <Button
             intent={"cta"}

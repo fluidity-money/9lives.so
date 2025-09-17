@@ -370,8 +370,39 @@ func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, w
 }
 
 // DeleteComment is the resolver for the deleteComment field.
-func (r *mutationResolver) DeleteComment(ctx context.Context, campaignID string) (*bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteComment - deleteComment"))
+func (r *mutationResolver) DeleteComment(ctx context.Context, id int, walletAddress string, content string, rr string, s string, v int) (*bool, error) {
+	if !ethCommon.IsHexAddress(walletAddress) {
+		return nil, fmt.Errorf("bad wallet address")
+	}
+	sender := strings.ToLower(walletAddress)
+	senderAddr := ethCommon.HexToAddress(sender)
+	rB, err := hex.DecodeString(rr)
+	if err != nil {
+		return nil, fmt.Errorf("unable to decode string")
+	}
+	sB, err := hex.DecodeString(s)
+	if err != nil {
+		return nil, fmt.Errorf("unable to decode s")
+	}
+	if v == 27 || v == 28 {
+		v -= 27
+	} else if v != 0 && v != 1 {
+		return nil, fmt.Errorf("invalid v")
+	}
+	vB := []byte{byte(v)}
+	_, err = validateCommentSig(senderAddr, content, rB, sB, vB)
+	if err != nil {
+		return nil, fmt.Errorf("Signature is not valid")
+	}
+	comment := types.Comment{
+		Id: id,
+	}
+	err = r.DB.Table("ninelives_comments_1").Delete(&comment).Error
+	if err != nil {
+		return nil, fmt.Errorf("Error to post comment %w", err)
+	}
+	var res = true
+	return &res, nil
 }
 
 // RequestPaymaster is the resolver for the requestPaymaster field.
