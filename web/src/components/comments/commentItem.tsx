@@ -16,7 +16,7 @@ export default function CommentItem({
     data.createdAt * 1000 + new Date().getTimezoneOffset() * 1000 * 60,
   );
   const account = useActiveAccount();
-  const { mutate } = useDeleteComment(campaignId);
+  const { mutate, isPending } = useDeleteComment(campaignId);
   const deleteComment = async () => {
     if (!account) throw new Error("No wallet is connected.");
     const signature = await signMessage({
@@ -38,7 +38,7 @@ export default function CommentItem({
   return (
     <li className="flex justify-between gap-2.5">
       <div className="flex gap-2.5">
-        <div className="size-9 border border-9black bg-9gray" />
+        <div className="size-9 shrink-0 border border-9black bg-9gray" />
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2.5">
             <span className="font-chicago text-xs font-bold text-9black">
@@ -55,7 +55,9 @@ export default function CommentItem({
         <Button
           intent={"no"}
           size={"small"}
-          title="Del"
+          title={isPending ? "Deleting" : "Del"}
+          disabled={isPending}
+          className={"self-start"}
           onClick={deleteComment}
         />
       ) : null}
