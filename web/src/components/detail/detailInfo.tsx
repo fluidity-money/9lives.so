@@ -66,6 +66,20 @@ export default function DetailInfo({ data }: { data: Campaign }) {
             <div className="flex flex-col gap-1 md:flex-row md:items-center">
               <div className="flex gap-1">
                 <Image src={LinkIcon} alt="" width={16} />
+                <h6 className="text-xs">Campaign contract:</h6>
+              </div>
+              <Link
+                className="text-xs underline"
+                rel="noopener noreferrer"
+                target="_blank"
+                href={`${config.destinationChain.blockExplorers![0].url}/address/${data.poolAddress}`}
+              >
+                {data.poolAddress}
+              </Link>
+            </div>
+            <div className="flex flex-col gap-1 md:flex-row md:items-center">
+              <div className="flex gap-1">
+                <Image src={LinkIcon} alt="" width={16} />
                 <h6 className="text-xs">Settlement source:</h6>
               </div>
               <Link
