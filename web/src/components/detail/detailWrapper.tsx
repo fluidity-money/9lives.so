@@ -81,7 +81,10 @@ export default function DetailWrapper({
           isConcluded={isConcluded}
         />
         <DetailInfo data={data} />
-        <DetailComments campaignId={data.identifier} />
+        <DetailComments
+          campaignId={data.identifier}
+          creator={data.creator.address}
+        />
       </div>
       <div className="flex flex-1 flex-col gap-8">
         {isConcluded ? (

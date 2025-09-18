@@ -3,7 +3,13 @@ import Placeholder from "../placeholder";
 import CommentItem from "./commentItem";
 import Button from "../themed/button";
 
-export default function CommentList({ campaignId }: { campaignId: string }) {
+export default function CommentList({
+  campaignId,
+  creator,
+}: {
+  campaignId: string;
+  creator: string;
+}) {
   const {
     data: comments,
     isLoading,
@@ -24,7 +30,12 @@ export default function CommentList({ campaignId }: { campaignId: string }) {
   return (
     <ul className="flex flex-col gap-2.5">
       {data?.map((i) => (
-        <CommentItem data={i} key={i.id} campaignId={campaignId} />
+        <CommentItem
+          data={i}
+          key={i.id}
+          campaignId={campaignId}
+          creator={creator}
+        />
       ))}
       <li>
         {hasNextPage ? (

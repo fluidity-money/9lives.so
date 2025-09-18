@@ -5,12 +5,15 @@ import { useActiveAccount } from "thirdweb/react";
 import useDeleteComment from "@/hooks/useDeleteComment";
 import { signMessage } from "thirdweb/utils";
 import { Signature } from "ethers";
+import DetailCreatedBy from "../detail/detailCreatedBy";
 export default function CommentItem({
   data,
   campaignId,
+  creator,
 }: {
   data: Comment;
   campaignId: string;
+  creator: string;
 }) {
   const timePassed = useTimePassed(
     data.createdAt * 1000 + new Date().getTimezoneOffset() * 1000 * 60,
@@ -42,9 +45,11 @@ export default function CommentItem({
         <div className="size-9 shrink-0 border border-9black bg-9gray" />
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2.5">
-            <span className="font-chicago text-xs font-bold text-9black">
-              {data.walletAddress.slice(0, 4)}...{data.walletAddress.slice(-4)}
-            </span>
+            <DetailCreatedBy
+              prefix={false}
+              address={data.walletAddress as `0x${string}`}
+              isCreator={creator === data.walletAddress}
+            />
             <span className="text-xs font-bold text-9black/50">
               {timePassed}
             </span>
