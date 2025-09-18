@@ -3,8 +3,8 @@ src = "src"
 out = "out"
 libs = ["foundry-libs"]
 test = "tests"
-via_ir = false
-optimizer = false # TODO
+via_ir = true
+optimizer = true
 optimizer_runs = 10
 
 [lint]

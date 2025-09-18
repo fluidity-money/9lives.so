@@ -27,6 +27,9 @@ contract TestNineLivesPaymaster is Test {
     NineLivesPaymaster P;
     MockTrading m;
 
+    address ivan;
+    uint256 ivanPk;
+
     bytes8 OUTCOME = bytes8(keccak256(abi.encodePacked(uint256(123))));
 
     function setUp() external {
@@ -57,6 +60,7 @@ contract TestNineLivesPaymaster is Test {
             feeLp: 0,
             feeReferrer: 0
         }));
+        (ivan, ivanPk) = makeAddrAndKey("ivan");
     }
 
     function computePermit(
@@ -128,7 +132,6 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testMintEndToEnd() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 2e6);
         (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(
             address(P),
@@ -218,7 +221,6 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testBurnEndToEnd() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 2e6);
         vm.prank(ivan);
         ERC20.approve(address(m), 1e6);
@@ -269,7 +271,6 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testWithdrawEndToEnd() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 25000000);
         vm.prank(ivan);
         ERC20.approve(address(P), 25000000);
@@ -318,7 +319,6 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testWithdrawEndToEnd2() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 1000000);
         vm.prank(ivan);
         ERC20.approve(address(P), 1000000);
