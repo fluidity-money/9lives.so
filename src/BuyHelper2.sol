@@ -197,6 +197,7 @@ contract BuyHelper2 {
             uint256 b = t.balanceOf(address(this));
             res.tokens[i].token = _tokens[i].identifier;
             res.tokens[i].amt = b;
+            t.transfer(_recipient, b);
             if (_tokens[i].maxToken == 0) continue;
             require(b > _tokens[i].minToken && b < _tokens[i].maxToken, "bad liq shares");
         }
