@@ -35,8 +35,9 @@ export default function CommentComposer({
   const { mutate: postComment } = usePostComment(campaignId);
   async function handlePost(input: FormData) {
     if (!account) throw new Error("No wallet is connected.");
+    const message = `Posting a comment on https://9lives.so/campaign/${campaignId}\n${input.content}`;
     const signature = await signMessage({
-      message: input.content,
+      message,
       account,
     });
     if (!signature) throw new Error("Signature not found");

@@ -338,23 +338,9 @@ func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, w
 	}
 	sender := strings.ToLower(walletAddress)
 	senderAddr := ethCommon.HexToAddress(sender)
-	rB, err := hex.DecodeString(rr)
+	_, err := validateCommentSig(senderAddr, content, campaignID, "post", rr, s, v)
 	if err != nil {
-		return nil, fmt.Errorf("unable to decode string")
-	}
-	sB, err := hex.DecodeString(s)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode s")
-	}
-	if v == 27 || v == 28 {
-		v -= 27
-	} else if v != 0 && v != 1 {
-		return nil, fmt.Errorf("invalid v")
-	}
-	vB := []byte{byte(v)}
-	_, err = validateCommentSig(senderAddr, content, rB, sB, vB)
-	if err != nil {
-		return nil, fmt.Errorf("Signature is not valid")
+		return nil, fmt.Errorf("signature is not valid")
 	}
 	comment := types.Comment{
 		CampaignId:    campaignID,
@@ -363,43 +349,37 @@ func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, w
 	}
 	err = r.DB.Table("ninelives_comments_1").Create(&comment).Error
 	if err != nil {
-		return nil, fmt.Errorf("Error to post comment %w", err)
+		return nil, fmt.Errorf("Error to post comment")
 	}
 	var res = true
 	return &res, nil
 }
 
 // DeleteComment is the resolver for the deleteComment field.
-func (r *mutationResolver) DeleteComment(ctx context.Context, id int, walletAddress string, content string, rr string, s string, v int) (*bool, error) {
+func (r *mutationResolver) DeleteComment(ctx context.Context, campaignID string, id int, walletAddress string, content string, rr string, s string, v int) (*bool, error) {
 	if !ethCommon.IsHexAddress(walletAddress) {
 		return nil, fmt.Errorf("bad wallet address")
 	}
 	sender := strings.ToLower(walletAddress)
 	senderAddr := ethCommon.HexToAddress(sender)
-	rB, err := hex.DecodeString(rr)
+	_, err := validateCommentSig(senderAddr, content, campaignID, "delete", rr, s, v)
 	if err != nil {
-		return nil, fmt.Errorf("unable to decode string")
-	}
-	sB, err := hex.DecodeString(s)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode s")
-	}
-	if v == 27 || v == 28 {
-		v -= 27
-	} else if v != 0 && v != 1 {
-		return nil, fmt.Errorf("invalid v")
-	}
-	vB := []byte{byte(v)}
-	_, err = validateCommentSig(senderAddr, content, rB, sB, vB)
-	if err != nil {
-		return nil, fmt.Errorf("Signature is not valid")
+		return nil, fmt.Errorf("signature is not valid")
 	}
 	comment := types.Comment{
-		Id: id,
+		Id:         id,
+		CampaignId: campaignID,
+	}
+	err = r.DB.Table("ninelives_comments_1").Select("*").Where(&comment).First(&comment).Error
+	if err != nil {
+		return nil, fmt.Errorf("error getting comment")
+	}
+	if comment.WalletAddress != sender {
+		return nil, fmt.Errorf("wallet is not owner")
 	}
 	err = r.DB.Table("ninelives_comments_1").Delete(&comment).Error
 	if err != nil {
-		return nil, fmt.Errorf("Error to post comment %w", err)
+		return nil, fmt.Errorf("error to delete comment")
 	}
 	var res = true
 	return &res, nil
@@ -1043,22 +1023,8 @@ func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string,
 	}
 	sender = strings.ToLower(sender)
 	senderAddr := ethCommon.HexToAddress(sender)
-	rB, err := hex.DecodeString(rr)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode string")
-	}
-	sB, err := hex.DecodeString(s)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode s")
-	}
-	if v == 27 || v == 28 {
-		v -= 27
-	} else if v != 0 && v != 1 {
-		return nil, fmt.Errorf("invalid v")
-	}
-	vB := []byte{byte(v)}
 	var referrer string
-	err = r.DB.Raw(
+	err := r.DB.Raw(
 		"SELECT owner FROM ninelives_referrer_1 WHERE code = ?",
 		code,
 	).
@@ -1077,7 +1043,7 @@ func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string,
 	if senderAddr == referrerAddr {
 		return nil, fmt.Errorf("sender != referrer")
 	}
-	signer, err := validateReferralSig(senderAddr, referrerAddr, rB, sB, vB)
+	signer, err := validateReferralSig(senderAddr, referrerAddr, rr, s, v)
 	if err != nil {
 		slog.Error("Unable to validate referral sig",
 			"error", err,

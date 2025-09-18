@@ -22,6 +22,7 @@ export default function useDeleteComment(campaignId: string) {
       v: number;
     }) =>
       deleteComment({
+        campaignId,
         id,
         walletAddress,
         content,

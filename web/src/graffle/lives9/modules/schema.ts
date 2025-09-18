@@ -527,6 +527,12 @@ export namespace Schema {
     export interface deleteComment extends $.OutputField {
       name: "deleteComment";
       arguments: {
+        campaignId: {
+          kind: "InputField";
+          name: "campaignId";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
         id: {
           kind: "InputField";
           name: "id";

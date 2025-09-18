@@ -543,6 +543,7 @@ export const postComment = ({
   });
 
 export const deleteComment = ({
+  campaignId,
   id,
   walletAddress,
   content,
@@ -550,6 +551,7 @@ export const deleteComment = ({
   s,
   v,
 }: {
+  campaignId: string;
   id: number;
   walletAddress: string;
   content: string;
@@ -558,5 +560,5 @@ export const deleteComment = ({
   v: number;
 }) =>
   graph9Lives.mutation.deleteComment({
-    $: { id, walletAddress, content, rr, s, v },
+    $: { id, campaignId, walletAddress, content, rr, s, v },
   });

@@ -199,7 +199,7 @@ type Mutation {
   """
   Delete a comment owned
   """
-  deleteComment(id:Int!,walletAddress:String!,content:String!,rr:String!, s:String!, v:Int!): Boolean
+  deleteComment(campaignId:String!,id:Int!,walletAddress:String!,content:String!,rr:String!, s:String!, v:Int!): Boolean
 
   """
   Request that the Paymaster service this request and deduct funds from the user's USDC

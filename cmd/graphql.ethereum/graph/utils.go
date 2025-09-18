@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"image"
 	_ "image/gif"
@@ -95,15 +96,41 @@ func uploadTradingPicMaybePrecommit(ctx context.Context, uploadBucketName, pictu
 	return concatPicUrl, nil
 }
 
-func validateReferralSig(sender, referrer ethCommon.Address, r, s, v []byte) (ethCommon.Address, error) {
-	if len(r) != 32 || len(s) != 32 || len(v) != 1 {
-		return ethCommon.Address{}, fmt.Errorf("invalid signature parameters")
+func parseSig(rHex, sHex string, vInt int) ([]byte, []byte, []byte, error) {
+	rB, err := hex.DecodeString(rHex)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("unable to decode r: %w", err)
+	}
+	sB, err := hex.DecodeString(sHex)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("unable to decode s: %w", err)
+	}
+	// Normalize v
+	switch vInt {
+	case 27, 28:
+		vInt -= 27
+	case 0, 1:
+		// already fine
+	default:
+		return nil, nil, nil, fmt.Errorf("invalid v value: %d", vInt)
+	}
+	vB := []byte{byte(vInt)}
+	if len(rB) != 32 || len(sB) != 32 || len(vB) != 1 {
+		return nil, nil, nil, fmt.Errorf("invalid signature parameters")
+	}
+	return rB, sB, vB, nil
+}
+
+func validateReferralSig(sender, referrer ethCommon.Address, r, s string, v int) (ethCommon.Address, error) {
+	rb, sb, vb, err := parseSig(r, s, v)
+	if err != nil {
+		return ethCommon.Address{}, fmt.Errorf("signature can not be parsed")
 	}
 	message := referrer.Hex()
 	prefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%d", len(message))
 	msg := prefix + message
 	msgHash := ethCrypto.Keccak256([]byte(msg))
-	sig := append(r, append(s, v[0])...)
+	sig := append(rb, append(sb, vb[0])...)
 	pubKey, err := ethCrypto.SigToPub(msgHash, sig)
 	if err != nil {
 		return ethCommon.Address{}, fmt.Errorf("recovering signature: %v", err)
@@ -115,17 +142,27 @@ func validateReferralSig(sender, referrer ethCommon.Address, r, s, v []byte) (et
 	return recoveredAddr, nil
 }
 
-func validateCommentSig(sender ethCommon.Address, message string, r, s, v []byte) (ethCommon.Address, error) {
-	if len(r) != 32 || len(s) != 32 || len(v) != 1 {
-		return ethCommon.Address{}, fmt.Errorf("invalid signature parameters")
+func validateCommentSig(sender ethCommon.Address, message, campaignID, action, r, s string, v int) (ethCommon.Address, error) {
+	rb, sb, vb, err := parseSig(r, s, v)
+	if err != nil {
+		return ethCommon.Address{}, fmt.Errorf("signature can not be parsed")
 	}
-	prefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%d", len(message))
-	msg := prefix + message
+	var msgPrefix string
+	switch action {
+	case "post":
+		msgPrefix = fmt.Sprintf("Posting a comment on https://9lives.so/campaign/%s\n", campaignID)
+	case "delete":
+		msgPrefix = fmt.Sprintf("Deleting a comment on https://9lives.so/campaign/%s\n", campaignID)
+	default:
+		return ethCommon.Address{}, fmt.Errorf("action is not valid")
+	}
+	ethPrefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%d", len(msgPrefix+message))
+	msg := ethPrefix + msgPrefix + message
 	msgHash := ethCrypto.Keccak256([]byte(msg))
-	sig := append(r, append(s, v[0])...)
+	sig := append(rb, append(sb, vb[0])...)
 	pubKey, err := ethCrypto.SigToPub(msgHash, sig)
 	if err != nil {
-		return ethCommon.Address{}, fmt.Errorf("recovering signature: %v", err)
+		return ethCommon.Address{}, fmt.Errorf("recovering signature")
 	}
 	recoveredAddr := ethCrypto.PubkeyToAddress(*pubKey)
 	if recoveredAddr != sender {
