@@ -23,12 +23,20 @@ interface DPMOld {
     function mintPermitE90275AB(bytes8,uint256,address,uint256,uint8,bytes32,bytes32) external returns (uint256);
 }
 
+struct AddLiquidityTokens {
+    bytes8 identifier;
+    uint256 minToken;
+    uint256 maxToken;
+}
+
 contract BuyHelper2 {
     INineLivesFactory immutable public FACTORY;
     ILongtail immutable public LONGTAIL;
     IERC20 immutable public FUSDC;
     IWETH10 immutable public WETH;
     ICamelotSwapRouter immutable public CAMELOT_SWAP_ROUTER;
+
+    bytes32 immutable public ERC20_HASH;
 
     constructor(
         INineLivesFactory _factory,
@@ -42,6 +50,7 @@ contract BuyHelper2 {
         FUSDC = IERC20(_fusdc);
         WETH = _weth;
         CAMELOT_SWAP_ROUTER = _camelotSwapRouter;
+        ERC20_HASH = FACTORY.erc20Hash();
     }
 
     /**
@@ -138,5 +147,58 @@ contract BuyHelper2 {
         uint256 toSend = shareAddr.balanceOf(address(this));
         if (toSend > 0) shareAddr.transfer(msg.sender, toSend);
         return (burnedShares, fusdcReturned);
+    }
+
+    struct AddLiquidityResToken {
+        bytes8 token;
+        uint256 amt;
+    }
+
+    struct AddLiquidityRes {
+        uint256 liq;
+        AddLiquidityResToken[] tokens;
+    }
+
+    function getShareAddr(
+         INineLivesFactory _factory,
+        address _tradingAddr,
+        bytes8 _outcomeId
+    ) public view returns (IERC20) {
+        return IERC20(address(uint160(uint256(keccak256(abi.encodePacked(
+            hex"ff",
+            _factory,
+            keccak256(abi.encodePacked(
+                _outcomeId,
+                _tradingAddr
+            )),
+            ERC20_HASH
+        ))))));
+    }
+
+    function addLiquidity(
+        address _tradingAddr,
+        uint256 _amount,
+        address _recipient,
+        uint256 _minLiquidity,
+        uint256 _maxLiquidity,
+        AddLiquidityTokens[] calldata _tokens
+    ) external returns (AddLiquidityRes memory res) {
+        res.liq = INineLivesTrading(_tradingAddr).addLiquidityB9DDA952(
+            _amount,
+            address(this),
+            _minLiquidity,
+            _maxLiquidity
+        );
+        res.tokens = new AddLiquidityResToken[](_tokens.length);
+        FUSDC.approve(_tradingAddr, _amount);
+        FUSDC.transferFrom(msg.sender, address(this), _amount);
+        for (uint i = 0; i < _tokens.length; ++i) {
+            IERC20 t = getShareAddr(FACTORY, _tradingAddr, _tokens[i].identifier);
+            uint256 b = t.balanceOf(address(this));
+            res.tokens[i].token = _tokens[i].identifier;
+            res.tokens[i].amt = b;
+            if (_tokens[i].maxToken == 0) continue;
+            require(b > _tokens[i].minToken && b < _tokens[i].maxToken, "bad liq shares");
+        }
     }
 }
