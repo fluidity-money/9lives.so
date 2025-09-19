@@ -185,7 +185,7 @@ contract BuyHelper2 {
     ) external returns (AddLiquidityRes memory res) {
         res.liq = INineLivesTrading(_tradingAddr).addLiquidityB9DDA952(
             _amount,
-            address(this),
+            _recipient,
             _minLiquidity,
             _maxLiquidity
         );
