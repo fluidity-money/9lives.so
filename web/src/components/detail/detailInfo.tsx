@@ -115,20 +115,6 @@ export default function DetailInfo({ data }: { data: Campaign }) {
           </div>
         </div>
       </RetroCard>
-      <RetroCard title="Creator" showClose={false}>
-        {/* <h5 className="mb-5 font-chicago text-sm">Creator</h5> */}
-        <p className="ml-5 text-xs">
-          This was created by{" "}
-          <Link
-            rel="noopener noreferrer"
-            target="_blank"
-            className="text-xs underline"
-            href={`${config.destinationChain.blockExplorers![0].url}/address/${data.creator?.address}`}
-          >
-            {data.creator?.address}
-          </Link>
-        </p>
-      </RetroCard>
     </>
   );
 }
