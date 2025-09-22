@@ -525,6 +525,9 @@ pub enum Error {
     // liquidity, failing the slippage check.
     NotEnoughLiquidityReturned,
 
+    // Already decided in the internal_decide function!
+    AlreadyDecided,
+
     // The ending timestamp was set to be in the past in the extend_time function.
     EndingInPast,
 
