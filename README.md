@@ -1,5 +1,5 @@
 
-# 9Lives
+# 9lives
 
 You probably want to read [the guide](https://guide.9lives.so) as a developer!
 
