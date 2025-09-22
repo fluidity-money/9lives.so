@@ -26,6 +26,14 @@ type (
 		Shares            CampaignShares        `json:"shares"`
 	}
 
+	CommentInput struct {
+		Id            int       `gorm:"primaryKey"`
+		CampaignId    string    `json:"campaignId"`
+		CreatedAt     time.Time `gorm:"autoCreateTime"`
+		Content       string    `json:"content"`
+		WalletAddress string    `json:"walletAddress"`
+	}
+
 	Comment struct {
 		Id            int                `gorm:"primaryKey"`
 		CampaignId    string             `json:"campaignId"`

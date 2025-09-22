@@ -350,7 +350,7 @@ func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, w
 	if err != nil {
 		return nil, fmt.Errorf("signature is not valid")
 	}
-	comment := types.Comment{
+	comment := types.CommentInput{
 		CampaignId:    campaignID,
 		WalletAddress: sender,
 		Content:       content,
