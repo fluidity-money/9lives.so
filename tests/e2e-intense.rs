@@ -80,7 +80,7 @@ proptest! {
             let outcome_1_id = FixedBytes::<8>::from(outcome_1_id);
             let outcome_2_id = FixedBytes::<8>::from(outcome_2_id);
             let outcomes = vec![outcome_1_id, outcome_2_id];
-            c.ctor(
+            c.ctor((
                 outcomes,
                 msg_sender(),
                 block_timestamp() + 1,
@@ -90,8 +90,9 @@ proptest! {
                 false,
                 fee_creator,
                 fee_minter,
-                fee_lp
-            )
+                fee_lp,
+                0
+            ))
                 .unwrap();
             let mut fusdc_vested = U256::ZERO;
             let mut fusdc_spent_1 = U256::ZERO;
@@ -127,7 +128,7 @@ proptest! {
                 (outcome_2_id, share_2_received)
             };
             c.decide(outcome_winner).unwrap();
-            let ret_amt = c.payoff_91_F_A_8_C_2_E(outcome_winner, winning_amt, msg_sender()).unwrap();
+            let ret_amt = c.payoff_C_B_6_F_2565(outcome_winner, winning_amt, msg_sender()).unwrap();
             assert!(
                 ret_amt <= fusdc_vested,
                 "ret_amt: {ret_amt} <= fusdc_vested: {fusdc_vested}, diff: {}",

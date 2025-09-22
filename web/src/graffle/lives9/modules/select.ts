@@ -57,12 +57,32 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
+  export type CommentInvestment<
+    $SelectionSet extends $$SelectionSets.CommentInvestment,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["CommentInvestment"]
+  >;
+  export type Comment<$SelectionSet extends $$SelectionSets.Comment> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["Comment"]
+    >;
   export type LP<$SelectionSet extends $$SelectionSets.LP> =
     InferResult.OutputObjectLike<
       $SelectionSet,
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["LP"]
     >;
+  export type CampaignProfit<
+    $SelectionSet extends $$SelectionSets.CampaignProfit,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["CampaignProfit"]
+  >;
   export type Settings<$SelectionSet extends $$SelectionSets.Settings> =
     InferResult.OutputObjectLike<
       $SelectionSet,

@@ -471,7 +471,7 @@ impl StorageTrading {
     }
 
     pub fn internal_amm_claim_lp_fees(&mut self, spender: Address, recipient: Address) -> R<U256> {
-        let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
+        let sender_liq_shares = self.amm_user_liquidity_shares.get(spender);
         if sender_liq_shares.is_zero() {
             return Ok(U256::ZERO);
         }

@@ -80,11 +80,46 @@ type Query {
   Return users active liquidity staked to the campaigns
   """
   userLPs(address: String!): [LP!]!
+
+  """
+  Get the count of the referees
+  """
+  countReferees(referrerAddress: String!): Int!
+
+  """
+  Returns won campaigns profit according to share's total cost
+  """
+  userWonCampaignsProfits(address: String!): [CampaignProfit]!
+
+  """
+  Gets comments of a campaign
+  """
+  campaignComments(campaignId: String!, page: Int, pageSize: Int): [Comment]!
+}
+
+type CommentInvestment {
+  id: String!
+  amount: Int!
+}
+
+type Comment {
+  id: Int!
+  campaignId: String!
+  createdAt: Int!
+  walletAddress: String!
+  content: String!
+  investments: [CommentInvestment]!
 }
 
 type LP {
   liquidity: String
   campaign: Campaign
+}
+
+type CampaignProfit {
+  poolAddress: String
+  profit: Int
+  winner: String
 }
 
 type Settings {
@@ -162,6 +197,16 @@ enum PaymasterOperation {
 }
 
 type Mutation {
+  """
+  Post new comment to a campaign
+  """
+  postComment(campaignId:String!,walletAddress:String!,content:String!, rr:String!, s:String!, v:Int!): Boolean
+
+  """
+  Delete a comment owned
+  """
+  deleteComment(campaignId:String!,id:Int!,walletAddress:String!,content:String!,rr:String!, s:String!, v:Int!): Boolean
+
   """
   Request that the Paymaster service this request and deduct funds from the user's USDC
   EOA using a Permit blob.
@@ -486,7 +531,7 @@ type Mutation {
     """
     The recovery ID (27) for the private key used for this signature. A Int.
     """
-    v: String!
+    v: Int!
   ): Boolean
 }
 

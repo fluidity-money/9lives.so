@@ -90,13 +90,13 @@ const useBuyWithRelay = ({
               ],
               value: minShareOut === BigInt(0) ? toAmount : undefined,
             });
-          const return9lives = await simulateTransaction({
-            transaction: mintWith9LivesTx(),
-          });
+          // const return9lives = await simulateTransaction({
+          //   transaction: mintWith9LivesTx(),
+          // });
           // sets minimum share to %90 of expected return shares
-          const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
+          // const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
 
-          const transaction = mintWith9LivesTx(minShareOut);
+          const transaction = mintWith9LivesTx();
 
           const calldata = await encode(transaction);
 
@@ -214,20 +214,28 @@ const useBuyWithRelay = ({
             queryKey: ["positionHistory", outcomeIds],
           });
         } catch (e) {
-          track(EVENTS.MINT, {
-            fromChain,
-            fromToken,
-            fromAmount,
-            outcomeId,
-            shareAddr,
-            usdValue,
-            operationStart,
-            operationEnd: performance.now(),
-            tradingAddr,
-            status: "failure",
-            type: "buyWithRelay",
-            error: e,
-          });
+          if (
+            !(
+              e instanceof Error &&
+              (e.cause as { code?: number })?.code === 4001
+            )
+          ) {
+            // dont track if user rejects
+            track(EVENTS.MINT, {
+              fromChain,
+              fromToken,
+              fromAmount,
+              outcomeId,
+              shareAddr,
+              usdValue,
+              operationStart,
+              operationEnd: performance.now(),
+              tradingAddr,
+              status: "failure",
+              type: "buyWithRelay",
+              error: e,
+            });
+          }
           rej(e);
         }
       }),

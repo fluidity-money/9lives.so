@@ -105,15 +105,17 @@ pub fn add_liquidity(
     amt: U256,
     recipient: Address,
     min_liquidity: U256,
+    max_shares: U256
 ) -> Result<U256, Error> {
     let b = unsafe {
         RawCall::new()
             .call(
                 addr,
-                &addLiquidity638EB2C9Call {
+                &addLiquidityB9DDA952Call {
                     liquidity: amt,
                     recipient,
                     minShares: min_liquidity,
+                    maxShares: max_shares
                 }
                 .abi_encode(),
             )

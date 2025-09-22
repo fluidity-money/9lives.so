@@ -119,12 +119,40 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 
+const CommentInvestment: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    id: {},
+    amount: {},
+  },
+};
+
+const Comment: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    id: {},
+    campaignId: {},
+    createdAt: {},
+    walletAddress: {},
+    content: {},
+    investments: {
+      // nt: CommentInvestment, <-- Assigned later to avoid potential circular dependency.
+    },
+  },
+};
+
 const LP: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     liquidity: {},
     campaign: {
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
+  },
+};
+
+const CampaignProfit: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    poolAddress: {},
+    profit: {},
+    winner: {},
   },
 };
 
@@ -510,11 +538,105 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: LP, <-- Assigned later to avoid potential circular dependency.
     },
+    countReferees: {
+      a: {
+        referrerAddress: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
+    userWonCampaignsProfits: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: CampaignProfit, <-- Assigned later to avoid potential circular dependency.
+    },
+    campaignComments: {
+      a: {
+        campaignId: {
+          nt: String,
+          it: [1],
+        },
+        page: {
+          nt: Int,
+          it: [0],
+        },
+        pageSize: {
+          nt: Int,
+          it: [0],
+        },
+      },
+      // nt: Comment, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
 const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
+    postComment: {
+      a: {
+        campaignId: {
+          nt: String,
+          it: [1],
+        },
+        walletAddress: {
+          nt: String,
+          it: [1],
+        },
+        content: {
+          nt: String,
+          it: [1],
+        },
+        rr: {
+          nt: String,
+          it: [1],
+        },
+        s: {
+          nt: String,
+          it: [1],
+        },
+        v: {
+          nt: Int,
+          it: [1],
+        },
+      },
+    },
+    deleteComment: {
+      a: {
+        campaignId: {
+          nt: String,
+          it: [1],
+        },
+        id: {
+          nt: Int,
+          it: [1],
+        },
+        walletAddress: {
+          nt: String,
+          it: [1],
+        },
+        content: {
+          nt: String,
+          it: [1],
+        },
+        rr: {
+          nt: String,
+          it: [1],
+        },
+        s: {
+          nt: String,
+          it: [1],
+        },
+        v: {
+          nt: Int,
+          it: [1],
+        },
+      },
+    },
     requestPaymaster: {
       a: {
         ticket: {
@@ -762,7 +884,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           it: [1],
         },
         v: {
-          nt: String,
+          nt: Int,
           it: [1],
         },
       },
@@ -787,6 +909,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 //
 
+Comment.f[`investments`]!.nt = CommentInvestment;
 LP.f[`campaign`]!.nt = Campaign;
 Profile.f[`settings`]!.nt = Settings;
 Claim.f[`content`]!.nt = Campaign;
@@ -810,6 +933,8 @@ Query.f[`userProfile`]!.nt = Profile;
 Query.f[`leaderboards`]!.nt = LeaderboardWeekly;
 Query.f[`featuredCampaign`]!.nt = Campaign;
 Query.f[`userLPs`]!.nt = LP;
+Query.f[`userWonCampaignsProfits`]!.nt = CampaignProfit;
+Query.f[`campaignComments`]!.nt = Comment;
 
 //
 //
@@ -843,7 +968,10 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     SettlementType,
     ActivityType,
     OutcomeInput,
+    CommentInvestment,
+    Comment,
     LP,
+    CampaignProfit,
     Settings,
     Profile,
     Claim,

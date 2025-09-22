@@ -242,12 +242,6 @@ impl StorageTrading {
 }
 
 #[test]
-#[cfg(feature = "trading-backend-dpm")]
-fn test_is_dpm() {
-    assert!(c.is_dpm());
-}
-
-#[test]
 #[cfg(feature = "trading-backend-amm")]
 fn test_is_amm() {
     assert!(!StorageTrading::default().is_dpm());
@@ -256,27 +250,53 @@ fn test_is_amm() {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod proptesting {
     use crate::{
+        contract_trading_extras::CtorArgs,
         fees::FEE_SPN_MINT_PCT,
         maths, strat_storage_trading,
         utils::{strat_address_not_empty, strat_medium_u256},
     };
 
-    use stylus_sdk::alloy_primitives::U256;
+    #[cfg(feature = "trading-backend-dpm")]
+    use crate::{error::Error, panic_guard};
+
+    #[cfg(feature = "trading-backend-dpm")]
+    use stylus_sdk::alloy_primitives::FixedBytes;
+
+    use stylus_sdk::alloy_primitives::{Address, U256};
 
     use proptest::prelude::*;
+
+    #[cfg(test)]
+    #[allow(unused)]
+    fn default_ctor_args() -> CtorArgs {
+        (
+            vec![],
+            Address::ZERO,
+            0,
+            0,
+            Address::ZERO,
+            Address::ZERO,
+            false,
+            0,
+            0,
+            0,
+            0,
+        )
+    }
 
     proptest! {
         #[test]
         #[cfg(feature = "trading-backend-dpm")]
         fn test_dpm_ctor_only_two_outcomes_1(
-            mut c in strat_storage_trading(),
+            mut c in strat_storage_trading(false),
             outcomes in proptest::collection::vec(any::<FixedBytes<8>>(), 2..4)
         ) {
             let mut args = default_ctor_args();
-            args.outcomes = outcomes;
+            args.0 = outcomes;
             panic_guard(|| {
+                let l = args.0.len();
                 let r = c.ctor(args);
-                if outcomes.len() == 2 {
+                if l == 2 {
                     assert!(r.is_ok());
                 } else {
                     assert_eq!(Error::BadTradingCtor, r.unwrap_err());

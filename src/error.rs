@@ -527,6 +527,9 @@ pub enum Error {
 
     // The ending timestamp was set to be in the past in the extend_time function.
     EndingInPast,
+
+    // Too much liquidity was taken when the user indicated that shouldn't be the case!
+    TooMuchLiquidityTaken,
 }
 
 #[cfg(any(

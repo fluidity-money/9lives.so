@@ -1,26 +1,28 @@
-import { requestUserActivities } from "@/providers/graphqlClient";
-import { Activity } from "@/types";
+import { requestComments } from "@/providers/graphqlClient";
+import { Comment } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-export default function useAcitivies({
-  address,
+export default function useComments({
   campaignId,
+  onlyHolders,
 }: {
-  address?: string;
-  campaignId?: string;
+  campaignId: string;
+  onlyHolders: boolean;
 }) {
-  return useInfiniteQuery<Activity[]>({
-    queryKey: ["activities", address, campaignId],
+  return useInfiniteQuery<Comment[]>({
+    queryKey: ["comments", campaignId, onlyHolders],
     queryFn: async ({ pageParam }) => {
       if (typeof pageParam !== "number") return [];
-      if (!address) return [];
-      const response = await requestUserActivities({
-        address,
+      const response = await requestComments({
         campaignId,
         page: pageParam,
         pageSize: 10,
       });
-      return response.filter((a) => !!a);
+      const results = response.filter((a) => !!a);
+      if (onlyHolders) {
+        results.filter((i) => i.investments.length > 0);
+      }
+      return results;
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) => {

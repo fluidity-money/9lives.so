@@ -44,6 +44,9 @@ export namespace Schema {
       referrerByCode: Query.referrerByCode;
       featuredCampaign: Query.featuredCampaign;
       userLPs: Query.userLPs;
+      countReferees: Query.countReferees;
+      userWonCampaignsProfits: Query.userWonCampaignsProfits;
+      campaignComments: Query.campaignComments;
     };
   }
 
@@ -375,6 +378,69 @@ export namespace Schema {
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$LP;
     }
+
+    /**
+     * Get the count of the referees
+     */
+    export interface countReferees extends $.OutputField {
+      name: "countReferees";
+      arguments: {
+        referrerAddress: {
+          kind: "InputField";
+          name: "referrerAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Returns won campaigns profit according to share's total cost
+     */
+    export interface userWonCampaignsProfits extends $.OutputField {
+      name: "userWonCampaignsProfits";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$CampaignProfit;
+    }
+
+    /**
+     * Gets comments of a campaign
+     */
+    export interface campaignComments extends $.OutputField {
+      name: "campaignComments";
+      arguments: {
+        campaignId: {
+          kind: "InputField";
+          name: "campaignId";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        page: {
+          kind: "InputField";
+          name: "page";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
+        pageSize: {
+          kind: "InputField";
+          name: "pageSize";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$Comment;
+    }
   }
 
   //                                              Mutation
@@ -385,6 +451,8 @@ export namespace Schema {
     name: "Mutation";
     fields: {
       __typename: Mutation.__typename;
+      postComment: Mutation.postComment;
+      deleteComment: Mutation.deleteComment;
       requestPaymaster: Mutation.requestPaymaster;
       explainCampaign: Mutation.explainCampaign;
       revealCommitment: Mutation.revealCommitment;
@@ -404,6 +472,106 @@ export namespace Schema {
         kind: "__typename";
         value: "Mutation";
       };
+    }
+
+    /**
+     * Post new comment to a campaign
+     */
+    export interface postComment extends $.OutputField {
+      name: "postComment";
+      arguments: {
+        campaignId: {
+          kind: "InputField";
+          name: "campaignId";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        walletAddress: {
+          kind: "InputField";
+          name: "walletAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        content: {
+          kind: "InputField";
+          name: "content";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        rr: {
+          kind: "InputField";
+          name: "rr";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        s: {
+          kind: "InputField";
+          name: "s";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        v: {
+          kind: "InputField";
+          name: "v";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Delete a comment owned
+     */
+    export interface deleteComment extends $.OutputField {
+      name: "deleteComment";
+      arguments: {
+        campaignId: {
+          kind: "InputField";
+          name: "campaignId";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        id: {
+          kind: "InputField";
+          name: "id";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+        walletAddress: {
+          kind: "InputField";
+          name: "walletAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        content: {
+          kind: "InputField";
+          name: "content";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        rr: {
+          kind: "InputField";
+          name: "rr";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        s: {
+          kind: "InputField";
+          name: "s";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        v: {
+          kind: "InputField";
+          name: "v";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
     }
 
     /**
@@ -996,7 +1164,7 @@ export namespace Schema {
           kind: "InputField";
           name: "v";
           inlineType: [1];
-          namedType: $$NamedTypes.$$String;
+          namedType: $$NamedTypes.$$Int;
         };
       };
       inlineType: [0];
@@ -1019,6 +1187,116 @@ export namespace Schema {
   //
   //
   //
+
+  //                                         CommentInvestment
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface CommentInvestment extends $.OutputObject {
+    name: "CommentInvestment";
+    fields: {
+      __typename: CommentInvestment.__typename;
+      id: CommentInvestment.id;
+      amount: CommentInvestment.amount;
+    };
+  }
+
+  export namespace CommentInvestment {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "CommentInvestment";
+      };
+    }
+
+    export interface id extends $.OutputField {
+      name: "id";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface amount extends $.OutputField {
+      name: "amount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+  }
+
+  //                                              Comment
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface Comment extends $.OutputObject {
+    name: "Comment";
+    fields: {
+      __typename: Comment.__typename;
+      id: Comment.id;
+      campaignId: Comment.campaignId;
+      createdAt: Comment.createdAt;
+      walletAddress: Comment.walletAddress;
+      content: Comment.content;
+      investments: Comment.investments;
+    };
+  }
+
+  export namespace Comment {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Comment";
+      };
+    }
+
+    export interface id extends $.OutputField {
+      name: "id";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface campaignId extends $.OutputField {
+      name: "campaignId";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface createdAt extends $.OutputField {
+      name: "createdAt";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface walletAddress extends $.OutputField {
+      name: "walletAddress";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface content extends $.OutputField {
+      name: "content";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface investments extends $.OutputField {
+      name: "investments";
+      arguments: {};
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$CommentInvestment;
+    }
+  }
 
   //                                                 LP
   // --------------------------------------------------------------------------------------------------
@@ -1056,6 +1334,53 @@ export namespace Schema {
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$Campaign;
+    }
+  }
+
+  //                                           CampaignProfit
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface CampaignProfit extends $.OutputObject {
+    name: "CampaignProfit";
+    fields: {
+      __typename: CampaignProfit.__typename;
+      poolAddress: CampaignProfit.poolAddress;
+      profit: CampaignProfit.profit;
+      winner: CampaignProfit.winner;
+    };
+  }
+
+  export namespace CampaignProfit {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "CampaignProfit";
+      };
+    }
+
+    export interface poolAddress extends $.OutputField {
+      name: "poolAddress";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface profit extends $.OutputField {
+      name: "profit";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface winner extends $.OutputField {
+      name: "winner";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
     }
   }
 
@@ -2442,7 +2767,10 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$CommentInvestment = CommentInvestment;
+    export type $$Comment = Comment;
     export type $$LP = LP;
+    export type $$CampaignProfit = CampaignProfit;
     export type $$Settings = Settings;
     export type $$Profile = Profile;
     export type $$Claim = Claim;
@@ -2503,7 +2831,10 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    CommentInvestment: Schema.CommentInvestment;
+    Comment: Schema.Comment;
     LP: Schema.LP;
+    CampaignProfit: Schema.CampaignProfit;
     Settings: Schema.Settings;
     Profile: Schema.Profile;
     Claim: Schema.Claim;
@@ -2520,7 +2851,10 @@ export interface Schema<
     Activity: Schema.Activity;
   };
   objects: {
+    CommentInvestment: Schema.CommentInvestment;
+    Comment: Schema.Comment;
     LP: Schema.LP;
+    CampaignProfit: Schema.CampaignProfit;
     Settings: Schema.Settings;
     Profile: Schema.Profile;
     Claim: Schema.Claim;

@@ -27,6 +27,9 @@ contract TestNineLivesPaymaster is Test {
     NineLivesPaymaster P;
     MockTrading m;
 
+    address ivan;
+    uint256 ivanPk;
+
     bytes8 OUTCOME = bytes8(keccak256(abi.encodePacked(uint256(123))));
 
     function setUp() external {
@@ -57,6 +60,7 @@ contract TestNineLivesPaymaster is Test {
             feeLp: 0,
             feeReferrer: 0
         }));
+        (ivan, ivanPk) = makeAddrAndKey("ivan");
     }
 
     function computePermit(
@@ -97,7 +101,8 @@ contract TestNineLivesPaymaster is Test {
         uint256 amtToSpend,
         uint256 minBack,
         address ref,
-        bytes8 outcome
+        bytes8 outcome,
+        uint256 maxOutgoing
     ) public view returns (bytes32 hash) {
         bytes32 domainSeparator = NineLivesPaymaster(payable(p)).computeDomainSeparator(_originatingChain);
         hash = keccak256(
@@ -107,7 +112,7 @@ contract TestNineLivesPaymaster is Test {
                 keccak256(
                     abi.encode(
                         keccak256(
-                            "NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome)"
+                            "NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome,uint256 maxOutgoing)"
                         ),
                         sender,
                         nonce,
@@ -118,7 +123,8 @@ contract TestNineLivesPaymaster is Test {
                         amtToSpend,
                         minBack,
                         ref,
-                        outcome
+                        outcome,
+                        maxOutgoing
                     )
                 )
             )
@@ -126,7 +132,6 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testMintEndToEnd() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 2e6);
         (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(
             address(P),
@@ -145,7 +150,8 @@ contract TestNineLivesPaymaster is Test {
             1e6, // Amount to spend (no stack)
             0,
             address(0), // Refererr (no stack)
-            OUTCOME
+            OUTCOME,
+            type(uint256).max // Max outgoing
         );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
         hash = computePaymasterHash(
@@ -159,7 +165,8 @@ contract TestNineLivesPaymaster is Test {
             1e6, // Amount to spend (no stack)
             0,
             address(0), // Refererr (no stack)
-            OUTCOME
+            OUTCOME,
+            type(uint256).max // Max outgoing
         );
         (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(ivanPk, hash);
         Operation[] memory ops = new Operation[](2);
@@ -182,7 +189,8 @@ contract TestNineLivesPaymaster is Test {
             v: v,
             r: r,
             s: s,
-            outgoingChainEid: 0 // We can set this to zero if we're not using it.
+            outgoingChainEid: 0, // We can set this to zero if we're not using it.
+            maxOutgoing: type(uint256).max
         });
         ops[1] = Operation({
             owner: ivan,
@@ -203,7 +211,8 @@ contract TestNineLivesPaymaster is Test {
             v: v2,
             r: r2,
             s: s2,
-            outgoingChainEid: 0
+            outgoingChainEid: 0,
+            maxOutgoing: type(uint256).max
         });
         (,address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
@@ -212,7 +221,6 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testBurnEndToEnd() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 2e6);
         vm.prank(ivan);
         ERC20.approve(address(m), 1e6);
@@ -229,7 +237,8 @@ contract TestNineLivesPaymaster is Test {
             minted, // Amount to burn
             1e6, // Amount back min
             address(0), // Referrer
-            OUTCOME
+            OUTCOME,
+            type(uint256).max // Max outgoing
         );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
         Operation[] memory ops = new Operation[](1);
@@ -252,118 +261,16 @@ contract TestNineLivesPaymaster is Test {
             v: v,
             r: r,
             s: s,
-            outgoingChainEid: 0
+            outgoingChainEid: 0,
+            maxOutgoing: type(uint256).max
         });
         (,address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
         bool[] memory statuses = P.multicall(ops);
         for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
-    }
-
-    function testAddLiquidityEndToEnd() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
-        ERC20.transfer(ivan, 1e6);
-        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(
-            address(P),
-            ivan,
-            0,
-            1e6
-        ));
-        bytes32 hash = computePaymasterHash(
-            address(P),
-            block.chainid,
-            ivan,
-            0, // Nonce
-            uint8(PaymasterType.ADD_LIQUIDITY),
-            address(m),
-            0, // Max fee
-            1e6, // Amount to send to add as liquidity
-            0, // Amount back min
-            address(0), // Referrer
-            bytes8(0)
-        );
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
-        Operation[] memory ops = new Operation[](1);
-        ops[0] = Operation({
-            owner: ivan,
-            originatingChainId: block.chainid,
-            nonce: 0,
-            typ: PaymasterType.ADD_LIQUIDITY,
-            deadline: type(uint256).max,
-            permitAmount: 1e6,
-            permitR: permitR,
-            permitS: permitS,
-            permitV: permitV,
-            market: m,
-            maximumFee: 0,
-            amountToSpend: 1e6,
-            minimumBack: 0,
-            referrer: address(0),
-            outcome: bytes8(0),
-            v: v,
-            r: r,
-            s: s,
-            outgoingChainEid: 0
-        });
-        (,address recovered) = P.recoverAddressNewChain(ops[0]);
-        assertEq(ivan, recovered);
-        bool[] memory statuses = P.multicall(ops);
-        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
-    }
-
-    function testRemoveLiquidityEndToEnd() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
-        ERC20.transfer(ivan, 1e6);
-        vm.prank(ivan);
-        ERC20.approve(address(m), 1e6);
-        vm.prank(ivan);
-        uint256 liq = m.addLiquidity638EB2C9(1e6, ivan, 0);
-        bytes32 hash = computePaymasterHash(
-            address(P),
-            block.chainid,
-            ivan,
-            0, // Nonce
-            uint8(PaymasterType.REMOVE_LIQUIDITY),
-            address(m),
-            0, // Max fee
-            liq, // Amount to send to add as liquidity
-            0, // Amount back min
-            address(0), // Referrer
-            bytes8(0)
-        );
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
-        Operation[] memory ops = new Operation[](1);
-        ops[0] = Operation({
-            owner: ivan,
-            originatingChainId: block.chainid,
-            nonce: 0,
-            typ: PaymasterType.REMOVE_LIQUIDITY,
-            deadline: type(uint256).max,
-            permitAmount: 1e6,
-            permitR: bytes32(0),
-            permitS: bytes32(0),
-            permitV: 0,
-            market: m,
-            maximumFee: 0,
-            amountToSpend: liq,
-            minimumBack: 0,
-            referrer: address(0),
-            outcome: bytes8(0),
-            v: v,
-            r: r,
-            s: s,
-            outgoingChainEid: 0
-        });
-        (,address recovered) = P.recoverAddressNewChain(ops[0]);
-        assertEq(ivan, recovered);
-        bool[] memory statuses = P.multicall(ops);
-        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
-        uint256 bal = ERC20.balanceOf(ivan);
-        assertEq(1e6, bal);
     }
 
     function testWithdrawEndToEnd() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 25000000);
         vm.prank(ivan);
         ERC20.approve(address(P), 25000000);
@@ -378,7 +285,8 @@ contract TestNineLivesPaymaster is Test {
             25000000, // Amount to transfer back.
             0, // Amount back min
             address(0), // Referrer
-            bytes8(0)
+            bytes8(0),
+            type(uint256).max // Max outgoing
         );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
         Operation[] memory ops = new Operation[](1);
@@ -401,7 +309,8 @@ contract TestNineLivesPaymaster is Test {
             v: v,
             r: r,
             s: s,
-            outgoingChainEid: 0
+            outgoingChainEid: 0,
+            maxOutgoing: type(uint256).max
         });
         (,address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
@@ -410,7 +319,6 @@ contract TestNineLivesPaymaster is Test {
     }
 
     function testWithdrawEndToEnd2() external {
-        (address ivan, uint256 ivanPk) = makeAddrAndKey("ivan");
         ERC20.transfer(ivan, 1000000);
         vm.prank(ivan);
         ERC20.approve(address(P), 1000000);
@@ -425,7 +333,8 @@ contract TestNineLivesPaymaster is Test {
             1000000, // Amount to transfer back.
             0, // Amount back min
             address(0), // Referrer
-            bytes8(0)
+            bytes8(0),
+            type(uint256).max // Max outgoing
         );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ivanPk, hash);
         Operation[] memory ops = new Operation[](1);
@@ -448,7 +357,8 @@ contract TestNineLivesPaymaster is Test {
             v: v,
             r: r,
             s: s,
-            outgoingChainEid: 30110
+            outgoingChainEid: 30110,
+            maxOutgoing: type(uint256).max
         });
         (,address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);

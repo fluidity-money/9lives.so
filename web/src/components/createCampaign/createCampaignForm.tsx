@@ -1,7 +1,13 @@
 "use client";
 import Button from "@/components/themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { FormEvent, useEffect, useMemo, useState } from "react";
+import React, {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useFormStore } from "@/stores/formStore";
@@ -22,6 +28,12 @@ import Modal from "../themed/modal";
 import Funding from "../fundingBalanceDialog";
 import { Account } from "thirdweb/wallets";
 import CreateCampaignFormLiquidity from "./form/formLiquidity";
+import config from "@/config";
+import { useUserStore } from "@/stores/userStore";
+import useCreateWithRelay from "@/hooks/useCreateWithRelay";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
+import CreateCampaignFormLiquidityCrossChain from "./form/formLiquidityCrossChain";
+import useTokens from "@/hooks/useTokens";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -68,6 +80,10 @@ export default function CreateCampaignForm() {
   const [isLPModalOpen, setIsLPModalOpen] = useState<boolean>(false);
   const [isLPModalDisplayed, setIsLPModalDisplayed] = useState(false);
   const { create } = useCreate({ openFundModal: () => setFundModalOpen(true) });
+  const { createWithRelay } = useCreateWithRelay({
+    openFundModal: () => setFundModalOpen(true),
+  });
+  const enabledRelay = useFeatureFlag("enable relay create");
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("custom");
@@ -143,6 +159,14 @@ export default function CreateCampaignForm() {
                   seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
                 }),
               ),
+        toChain: z.number().min(0),
+        toToken: z.string(),
+        fromChain: z
+          .number({ message: "You need to select a chain to pay from" })
+          .min(0),
+        fromToken: z.string({
+          message: "You need to select a token to pay with",
+        }),
         oracleDescription:
           settlementType === "ORACLE"
             ? z.string().min(10).max(1000)
@@ -155,10 +179,13 @@ export default function CreateCampaignForm() {
         //   settlementType === "contract"
         //     ? z.string().startsWith("0x").min(42)
         //     : z.undefined(),
-        seedLiquidity: z.preprocess((val) => Number(val), z.number().min(1)),
+        seedLiquidity: z.coerce
+          .number()
+          .gt(0, { message: "Invalid amount to spend" }),
       }),
     [outcomeType, outcomeschema, pictureSchema, settlementType],
   );
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   type FormData = z.infer<typeof formSchema>;
   const {
     register,
@@ -167,6 +194,7 @@ export default function CreateCampaignForm() {
     setValue,
     watch,
     trigger,
+    clearErrors,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -185,12 +213,24 @@ export default function CreateCampaignForm() {
           seed: randomValue4Uint8(),
         },
       ],
+      toChain: config.chains.superposition.id,
+      toToken: config.NEXT_PUBLIC_FUSDC_ADDR,
+      fromChain: isInMiniApp
+        ? config.chains.arbitrum.id
+        : config.chains.superposition.id,
+      fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
       seedLiquidity: defaultSeedLiquidity,
     },
   });
   const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
+  const { data: tokens, isSuccess: isTokensSuccess } = useTokens(
+    fields.fromChain,
+  );
+  const fromDecimals = tokens?.find(
+    (t) => t.address === fields.fromToken,
+  )?.decimals;
   const onSubmit = (input: FormData, account: Account) => {
     if (input.seedLiquidity === defaultSeedLiquidity && !isLPModalDisplayed) {
       setIsLPModalOpen(true);
@@ -220,7 +260,9 @@ export default function CreateCampaignForm() {
     if (!Boolean(preparedInput.oracleUrls?.length)) {
       delete preparedInput.oracleUrls;
     }
-    create(preparedInput, account);
+    enabledRelay && fields.fromChain !== config.chains.superposition.id
+      ? createWithRelay({ ...preparedInput, fromDecimals }, account)
+      : create(preparedInput, account);
   };
   const handleSubmitWithAccount = (e: FormEvent) => {
     if (!account) {
@@ -296,10 +338,26 @@ export default function CreateCampaignForm() {
           setSettlementType={setSettlementType}
         />
         <CreateCampaignFormSocials register={register} errors={errors} />
-        <CreateCampaignFormLiquidity
-          register={register}
-          error={errors.seedLiquidity}
-        />
+        {enabledRelay ? (
+          <CreateCampaignFormLiquidityCrossChain
+            register={register}
+            errors={errors}
+            isTokensSuccess={isTokensSuccess}
+            isInMiniApp={isInMiniApp}
+            account={account}
+            tokens={tokens}
+            fromChain={fields.fromChain}
+            fromToken={fields.fromToken}
+            setValue={setValue}
+            seedLiquidity={fields.seedLiquidity}
+            clearErrors={clearErrors}
+          />
+        ) : (
+          <CreateCampaignFormLiquidity
+            error={errors.seedLiquidity}
+            register={register}
+          />
+        )}
         <Button intent={"cta"} title="CONFIRM" size={"xlarge"} type="submit" />
       </form>
       <Modal
