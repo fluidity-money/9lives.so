@@ -5,6 +5,7 @@ import {
   requestCampaignById,
   requestUserClaims,
   requestPaymaster,
+  requestComments,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -74,6 +75,11 @@ export type CampaignInput = {
   settlementType: SettlementType;
   oracleDescription?: string;
   seedLiquidity: number;
+  fromChain: number;
+  fromToken: string;
+  fromDecimals?: number;
+  toChain: number;
+  toToken: string;
 };
 export type OutcomeInput = {
   picture?: string;
@@ -317,3 +323,7 @@ export type Ticket = {
   data?: CampaignDetail;
   opType: PaymasterOp;
 };
+
+export type Comment = NonNullable<
+  Awaited<ReturnType<typeof requestComments>>[number]
+>;

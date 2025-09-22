@@ -10,7 +10,7 @@ export default function useCountdown(
       setTimeLeft(calcTimeLeft(endTime)[format]);
     }, 1000);
     return () => clearInterval(timer);
-  }, [endTime]);
+  }, [endTime, format]);
   return timeLeft;
 }
 

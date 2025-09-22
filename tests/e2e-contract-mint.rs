@@ -1,7 +1,7 @@
 #![cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 
 #[allow(unused)]
-use stylus_sdk::alloy_primitives::{fixed_bytes, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{Address, fixed_bytes, FixedBytes, U256};
 
 #[allow(unused)]
 use lib9lives::{
@@ -23,18 +23,19 @@ fn test_e2e_mint_dpm() {
     with_contract::<_, StorageTrading, _>(|c| {
         let outcome_1 = fixed_bytes!("0541d76af67ad076");
         let outcome_2 = fixed_bytes!("3be0d8814450a582");
-        c.ctor(
+        c.ctor((
             vec![outcome_1, outcome_2],
             msg_sender(), // Whoever can call the oracle.
             block_timestamp() + 1,
             block_timestamp() + 2,
-            DAO_ADDR,             // The fee recipient.
+            DAO_EARN_ADDR,             // The fee recipient.
             testing_addrs::SHARE, // The share impl.
             false,
-            DEFAULT_FEE_CREATOR_MINT_PCT,
             0,
             0,
-        )
+            0,
+            0,
+        ))
         .unwrap();
         // Check if the shares were correctly set.
         assert_eq!(c.dpm_outcome_shares.get(outcome_1), U256::from(1e6));
@@ -51,7 +52,7 @@ fn test_e2e_mint_dpm() {
         );
         c.decide(outcome_1).unwrap();
         assert_eq!(
-            erc20_call::balance_of(FUSDC_ADDR, DAO_ADDR).unwrap(),
+            erc20_call::balance_of(FUSDC_ADDR, DAO_EARN_ADDR).unwrap(),
             dao_fee + creator_fee
         );
     })
@@ -72,7 +73,7 @@ proptest! {
     ) {
         c.created.set(false);
         c.is_shutdown.set(false);
-        c.ctor(
+        c.ctor((
             vec![outcome_1, outcome_2],
             msg_sender(), // Whoever can call the oracle.
             block_timestamp() + 1,
@@ -83,12 +84,14 @@ proptest! {
             fee_creator,
             fee_minter,
             fee_lp,
-        )
+            0,
+        ))
         .unwrap();
         ts_add_time(secs_since);
         should_spend_fusdc_sender!(mint_value, c.mint_8_A_059_B_6_E(
             outcome_1,
             mint_value,
+            Address::ZERO,
             msg_sender(),
          ));
     }

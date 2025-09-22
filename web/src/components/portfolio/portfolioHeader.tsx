@@ -18,6 +18,7 @@ import WithdrawDialog from "../withdrawDialog";
 import { useState } from "react";
 import useBalance from "@/hooks/useBalance";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
+import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
 
 export default function PortfolioHeader() {
   const account = useActiveAccount();
@@ -26,10 +27,16 @@ export default function PortfolioHeader() {
   const { connect } = useConnectWallet();
   const { data: achievmentCount } = useAchievmentCount(account?.address);
   const positionsValue = usePortfolioStore((s) => s.positionsValue);
-  const PnL = usePortfolioStore((s) => s.totalPnL);
+  const unrealizedPnL = usePortfolioStore((s) => s.totalPnL);
+  const { data: realizedPnLs } = usePnLOfWonCampaigns(account?.address);
+  const realizedPnL = +formatFusdc(
+    realizedPnLs?.reduce((acc, v) => acc + (v?.profit ?? 0), 0) ?? 0,
+    2,
+  );
   const { data: totalVolume } = useTotalVolume(account?.address);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
   const enableWithdraw = useFeatureFlag("enable paymaster withdraw");
+  const totalPnL = unrealizedPnL + realizedPnL;
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -111,11 +118,11 @@ export default function PortfolioHeader() {
               <span className="text-xs">PnL</span>
               <span
                 className={combineClass(
-                  PnL >= 0 ? "text-[#64b650]" : "text-[#fd7878]",
+                  totalPnL >= 0 ? "text-[#64b650]" : "text-[#fd7878]",
                   "md:text-2xl",
                 )}
               >
-                ${PnL.toFixed(2)}
+                ${totalPnL.toFixed(2)}
               </span>
             </div>
             <div className="flex flex-col gap-1">

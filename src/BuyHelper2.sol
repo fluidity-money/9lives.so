@@ -62,6 +62,7 @@ contract BuyHelper2 {
         address _asset,
         bytes8 _outcome,
         uint256 _minShareOut,
+        uint256 _maxSharesOut,
         uint256 _amount,
         address _referrer,
         uint256 _rebate,
@@ -116,6 +117,7 @@ contract BuyHelper2 {
         }
         // This is enough to prevent slippage.
         require(shares >= _minShareOut, "not enough shares");
+        require(shares <= _maxSharesOut, "too many shares");
         if (_rebate > 0) {
             (bool rc,) = _recipient.call{value: _rebate}("");
             require(rc, "recipient didn't receive");
@@ -127,23 +129,25 @@ contract BuyHelper2 {
         address _tradingAddr,
         bytes8 _outcome,
         uint256 _minFusdc,
-        uint256 _maxShareOut,
+        uint256 _sharesToBurn,
         uint256 _minShareOut,
+        uint256 _maxShareBurned,
         address _referrer
     ) external returns (uint256, uint256) {
         // In the normal router, this should be possible to get offline.
         INineLivesTrading tradingAddr = INineLivesTrading(_tradingAddr);
         IERC20 shareAddr = IERC20(tradingAddr.shareAddr(_outcome));
-        shareAddr.transferFrom(msg.sender, address(this), _maxShareOut);
+        shareAddr.transferFrom(msg.sender, address(this), _sharesToBurn);
         (uint256 burnedShares, uint256 fusdcReturned) = tradingAddr.burn854CC96E(
             _outcome,
-            _maxShareOut,
+            _sharesToBurn,
             true,
             _minShareOut,
             _referrer,
             msg.sender
         );
         require(fusdcReturned >= _minFusdc, "not enough fusdc returned");
+        require(burnedShares <= _maxShareBurned, "too many shares burned");
         uint256 toSend = shareAddr.balanceOf(address(this));
         if (toSend > 0) shareAddr.transfer(msg.sender, toSend);
         return (burnedShares, fusdcReturned);

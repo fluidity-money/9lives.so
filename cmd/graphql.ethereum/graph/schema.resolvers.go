@@ -323,6 +323,76 @@ func (r *claimResolver) CreatedAt(ctx context.Context, obj *types.Claim) (int, e
 	return int(obj.CreatedAt.Unix()), nil
 }
 
+// CreatedAt is the resolver for the createdAt field.
+func (r *commentResolver) CreatedAt(ctx context.Context, obj *types.Comment) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("Comment is nil")
+	}
+	return int(obj.CreatedAt.Unix()), nil
+}
+
+// Investments is the resolver for the investments field.
+func (r *commentResolver) Investments(ctx context.Context, obj *types.Comment) ([]*types.CommentInvestment, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("comment is nil")
+	}
+	return obj.Investments, nil
+}
+
+// PostComment is the resolver for the postComment field.
+func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, walletAddress string, content string, rr string, s string, v int) (*bool, error) {
+	if !ethCommon.IsHexAddress(walletAddress) {
+		return nil, fmt.Errorf("bad wallet address")
+	}
+	sender := strings.ToLower(walletAddress)
+	senderAddr := ethCommon.HexToAddress(sender)
+	_, err := validateCommentSig(senderAddr, content, campaignID, "post", rr, s, v)
+	if err != nil {
+		return nil, fmt.Errorf("signature is not valid")
+	}
+	comment := types.Comment{
+		CampaignId:    campaignID,
+		WalletAddress: sender,
+		Content:       content,
+	}
+	err = r.DB.Table("ninelives_comments_1").Create(&comment).Error
+	if err != nil {
+		return nil, fmt.Errorf("Error to post comment")
+	}
+	var res = true
+	return &res, nil
+}
+
+// DeleteComment is the resolver for the deleteComment field.
+func (r *mutationResolver) DeleteComment(ctx context.Context, campaignID string, id int, walletAddress string, content string, rr string, s string, v int) (*bool, error) {
+	if !ethCommon.IsHexAddress(walletAddress) {
+		return nil, fmt.Errorf("bad wallet address")
+	}
+	sender := strings.ToLower(walletAddress)
+	senderAddr := ethCommon.HexToAddress(sender)
+	_, err := validateCommentSig(senderAddr, content, campaignID, "delete", rr, s, v)
+	if err != nil {
+		return nil, fmt.Errorf("signature is not valid")
+	}
+	comment := types.Comment{
+		Id:         id,
+		CampaignId: campaignID,
+	}
+	err = r.DB.Table("ninelives_comments_1").Select("*").Where(&comment).First(&comment).Error
+	if err != nil {
+		return nil, fmt.Errorf("error getting comment")
+	}
+	if comment.WalletAddress != sender {
+		return nil, fmt.Errorf("wallet is not owner")
+	}
+	err = r.DB.Table("ninelives_comments_1").Delete(&comment).Error
+	if err != nil {
+		return nil, fmt.Errorf("error to delete comment")
+	}
+	var res = true
+	return &res, nil
+}
+
 // RequestPaymaster is the resolver for the requestPaymaster field.
 func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) (*string, error) {
 	// Verify the user has the amount to spend that they're requesting.
@@ -952,7 +1022,7 @@ func (r *mutationResolver) GenReferrer(ctx context.Context, walletAddress string
 }
 
 // AssociateReferral is the resolver for the associateReferral field.
-func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v string) (*bool, error) {
+func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v int) (*bool, error) {
 	if r.F.Is(features.FeatureReferrerNeedsToVerify) {
 		panic("unimplemented")
 	}
@@ -961,20 +1031,8 @@ func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string,
 	}
 	sender = strings.ToLower(sender)
 	senderAddr := ethCommon.HexToAddress(sender)
-	rB, err := hex.DecodeString(rr)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode string")
-	}
-	sB, err := hex.DecodeString(s)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode s")
-	}
-	vB, err := hex.DecodeString(v)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode v")
-	}
 	var referrer string
-	err = r.DB.Raw(
+	err := r.DB.Raw(
 		"SELECT owner FROM ninelives_referrer_1 WHERE code = ?",
 		code,
 	).
@@ -993,7 +1051,7 @@ func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string,
 	if senderAddr == referrerAddr {
 		return nil, fmt.Errorf("sender != referrer")
 	}
-	signer, err := validateReferralSig(senderAddr, referrerAddr, rB, sB, vB)
+	signer, err := validateReferralSig(senderAddr, referrerAddr, rr, s, v)
 	if err != nil {
 		slog.Error("Unable to validate referral sig",
 			"error", err,
@@ -1331,6 +1389,7 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
     LEFT JOIN ninelives_campaigns_1 nc
     ON nepa.emitter_addr = nc."content"->>'poolAddress'
     WHERE nepa.recipient = ?
+	ORDER BY created_at DESC
 	`
 	args := []interface{}{address}
 	if campaignID != nil {
@@ -1575,6 +1634,111 @@ func (r *queryResolver) UserLPs(ctx context.Context, address string) ([]types.LP
 	return lps, nil
 }
 
+// CountReferees is the resolver for the countReferees field.
+func (r *queryResolver) CountReferees(ctx context.Context, referrerAddress string) (int, error) {
+	var count int
+	referrerAddress = strings.ToLower(referrerAddress)
+	err := r.DB.Raw(`
+	select count(*)
+	from ninelives_users_1 u
+	where u.settings->>'referrer' = ?
+	and u.wallet_address != ?
+	`, referrerAddress, referrerAddress).Scan(&count).Error
+	if err != nil {
+		return 0, fmt.Errorf("Query failed from db")
+	}
+	return count, nil
+}
+
+// UserWonCampaignsProfits is the resolver for the userWonCampaignsProfits field.
+func (r *queryResolver) UserWonCampaignsProfits(ctx context.Context, address string) ([]*types.CampaignProfit, error) {
+	var profits []*types.CampaignProfit
+	address = strings.ToLower(address)
+	err := r.DB.Raw(`
+	SELECT 
+ 	nepa.fusdc_received -
+    SUM(
+        CASE 
+            WHEN nbas.type = 'buy' THEN nbas.from_amount 
+            ELSE -nbas.to_amount 
+        END
+    ) AS profit,
+	nbas.outcome_id as winner,
+    nepa.emitter_addr as pool_address
+FROM ninelives_events_payoff_activated nepa
+JOIN ninelives_buys_and_sells_1 nbas 
+    ON nbas.emitter_addr = nepa.emitter_addr 
+    AND nbas.recipient = nepa.recipient 
+    AND nepa.identifier = nbas.outcome_id
+WHERE nepa.recipient = ?
+GROUP BY 
+    nbas.recipient,
+	nbas.outcome_id,
+    nepa.emitter_addr, 
+    nepa.fusdc_received;
+	`, address).Scan(&profits).Error
+	if err != nil {
+		slog.Error("Error getting market's profits which are won",
+			"error", err,
+		)
+		return nil, fmt.Errorf("Error getting market's profits which are won %w", err)
+	}
+	return profits, nil
+}
+
+// CampaignComments is the resolver for the campaignComments field.
+func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string, page *int, pageSize *int) ([]*types.Comment, error) {
+	var comments []*types.Comment
+	pageNum := 0
+	if page != nil {
+		pageNum = *page
+	}
+	pageSizeNum := 10
+	if pageSize != nil {
+		pageSizeNum = *pageSize
+	}
+	err := r.DB.Raw(`
+	SELECT 
+    nc.*,
+    COALESCE(
+        (
+            SELECT JSON_AGG(
+                JSON_BUILD_OBJECT(
+                    'id', CONCAT('0x', t.outcome_id),
+                    'amount', t.investment
+                )
+            )
+            FROM (
+                SELECT 
+                    nbas.outcome_id,
+                    SUM(
+                        CASE 
+                            WHEN nbas.type = 'buy' THEN nbas.from_amount
+                            ELSE -nbas.from_amount
+                        END
+                    ) AS investment
+                FROM ninelives_buys_and_sells_1 AS nbas
+                WHERE nbas.campaign_id = nc.campaign_id
+                  AND nbas.recipient = nc.wallet_address
+                GROUP BY nbas.outcome_id
+            ) t
+        ),
+        '[]'
+    ) AS investments
+	FROM ninelives_comments_1 AS nc
+	WHERE nc.campaign_id = ?
+	ORDER BY nc.created_at DESC
+	OFFSET ? LIMIT ?
+	`, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&comments).Error
+	if err != nil {
+		slog.Error("Error getting campaign's comments",
+			"error", err,
+		)
+		return nil, fmt.Errorf("Error getting campaign's comments %w", err)
+	}
+	return comments, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {
@@ -1595,6 +1759,9 @@ func (r *Resolver) Changelog() ChangelogResolver { return &changelogResolver{r} 
 // Claim returns ClaimResolver implementation.
 func (r *Resolver) Claim() ClaimResolver { return &claimResolver{r} }
 
+// Comment returns CommentResolver implementation.
+func (r *Resolver) Comment() CommentResolver { return &commentResolver{r} }
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
@@ -1611,6 +1778,7 @@ type activityResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
 type changelogResolver struct{ *Resolver }
 type claimResolver struct{ *Resolver }
+type commentResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type positionResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

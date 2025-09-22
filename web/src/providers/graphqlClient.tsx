@@ -358,7 +358,7 @@ export const associateReferral = ({
   sender: string;
   code: string;
   s: string;
-  v: string;
+  v: number;
   rr: string;
 }) =>
   graph9Lives.mutation.associateReferral({
@@ -491,4 +491,78 @@ export const requestPaymaster = ({
       s,
       v,
     },
+  });
+
+export const requestCountReferees = (referrerAddress: string) =>
+  graph9Lives.query.countReferees({
+    $: { referrerAddress },
+  });
+
+export const requestPnLOfWonCampaigns = (address: string) =>
+  graph9Lives.query.userWonCampaignsProfits({
+    $: { address },
+    poolAddress: true,
+    profit: true,
+    winner: true,
+  });
+
+export const requestComments = ({
+  campaignId,
+  page,
+  pageSize,
+}: {
+  campaignId: string;
+  page?: number;
+  pageSize?: number;
+}) =>
+  graph9Lives.query.campaignComments({
+    $: { campaignId, page, pageSize },
+    id: true,
+    content: true,
+    walletAddress: true,
+    createdAt: true,
+    investments: {
+      id: true,
+      amount: true,
+    },
+  });
+
+export const postComment = ({
+  campaignId,
+  walletAddress,
+  content,
+  rr,
+  s,
+  v,
+}: {
+  campaignId: string;
+  walletAddress: string;
+  content: string;
+  rr: string;
+  s: string;
+  v: number;
+}) =>
+  graph9Lives.mutation.postComment({
+    $: { campaignId, walletAddress, content, rr, s, v },
+  });
+
+export const deleteComment = ({
+  campaignId,
+  id,
+  walletAddress,
+  content,
+  rr,
+  s,
+  v,
+}: {
+  campaignId: string;
+  id: number;
+  walletAddress: string;
+  content: string;
+  rr: string;
+  s: string;
+  v: number;
+}) =>
+  graph9Lives.mutation.deleteComment({
+    $: { id, campaignId, walletAddress, content, rr, s, v },
   });

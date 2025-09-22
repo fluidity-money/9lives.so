@@ -22,6 +22,7 @@ use lib9lives::{
 proptest! {
     // Ignored test because it's not being tested/developed anymore.
     #[test]
+    #[ignore]
     fn test_infra_market_call_close_only_happy_path(
         trading_addr in strat_address_not_empty(),
         desc in strat_fixed_bytes::<32>(),
@@ -100,6 +101,7 @@ proptest! {
     // Ignored test because we're not doing active development on the infra
     // market.
     #[test]
+    #[ignore]
     fn test_unhappy_call_whinge_claim_no_bettors_path(
         trading_addr in strat_address_not_empty(),
         desc in strat_fixed_bytes::<32>(),
@@ -180,6 +182,7 @@ proptest! {
     }
 
     #[test]
+    #[ignore]
     fn test_whinge_predict_slash(
         trading_addr in strat_address_not_empty(),
         desc in strat_fixed_bytes::<32>(),

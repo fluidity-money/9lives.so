@@ -109,8 +109,8 @@ impl StorageTrading {
         _amount: U256,
         _recipient: Address,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
-        c!(fusdc_call::take_from_sender(_amount));
-        self.internal_amm_add_liquidity(_amount, _recipient)
+        c!(crate::fusdc_call::take_from_sender(_amount));
+        self.internal_amm_add_liquidity(_amount, _recipient, U256::ZERO)
     }
 
     // Almost a carbon copy of the equivalent, though this returns the shares
@@ -128,7 +128,7 @@ impl StorageTrading {
         );
         let (fusdc_amt, fees_earned, shares) =
             self.internal_amm_remove_liquidity(_amount_liq, _recipient)?;
-        fusdc_call::transfer(_recipient, fusdc_amt)?;
+        crate::fusdc_call::transfer(_recipient, fusdc_amt)?;
         Ok((fusdc_amt, fees_earned, shares))
     }
 }

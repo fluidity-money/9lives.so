@@ -26,9 +26,24 @@ type (
 		Shares            CampaignShares        `json:"shares"`
 	}
 
+	Comment struct {
+		Id            int                `gorm:"primaryKey"`
+		CampaignId    string             `json:"campaignId"`
+		CreatedAt     time.Time          `gorm:"autoCreateTime"`
+		Content       string             `json:"content"`
+		WalletAddress string             `json:"walletAddress"`
+		Investments   CommentInvestments `json:"investments"`
+	}
+
 	LP struct {
 		Liquidity string `json:"liquidity"`
 		Campaign
+	}
+
+	CampaignProfit struct {
+		PoolAddress string `json:"poolAddress"`
+		Profit      int    `json:"profit"`
+		Winner      string `json:"winner"`
 	}
 
 	InvestmentAmounts struct {
@@ -36,6 +51,13 @@ type (
 		USDC  int    `json:"usdc"`
 		Share int    `json:"share"`
 	}
+
+	CommentInvestment struct {
+		Id     string `json:"id"`
+		Amount int    `json:"amount"`
+	}
+
+	CommentInvestments []*CommentInvestment
 
 	InvestmentAmountsList []*InvestmentAmounts
 
@@ -267,6 +289,14 @@ func (content CampaignContent) Value() (driver.Value, error) {
 
 func (content *CampaignContent) Scan(value interface{}) error {
 	return JSONUnmarshal(value, content)
+}
+
+func (ccs CommentInvestments) Value() (driver.Value, error) {
+	return JSONMarshal(ccs)
+}
+
+func (ccs *CommentInvestments) Scan(value interface{}) error {
+	return JSONUnmarshal(value, ccs)
 }
 
 func (ai InvestmentAmounts) Value() (driver.Value, error) {

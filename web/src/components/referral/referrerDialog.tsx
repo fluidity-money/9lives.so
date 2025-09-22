@@ -11,6 +11,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import TabButton from "../tabButton";
 import Input from "../themed/input";
 import toast from "react-hot-toast";
+import useCountReferees from "@/hooks/useCountReferees";
 
 export default function ReferrerDialog() {
   const account = useActiveAccount();
@@ -28,6 +29,7 @@ export default function ReferrerDialog() {
     navigator.clipboard.writeText(`https://9lives.so/?referral=${code}`);
     toast.success("Referral link copied");
   }
+  const { data: refereeCount } = useCountReferees(account?.address);
 
   useEffect(() => {
     async function generateCode() {
@@ -57,7 +59,9 @@ export default function ReferrerDialog() {
     return (
       <div className="mx-auto flex w-[70%] flex-col items-center justify-center gap-5 pb-8">
         <div className="flex flex-col items-center justify-center gap-2">
-          <p className="font-geneva uppercase">You have 0 active referrals</p>
+          <p className="font-geneva uppercase">
+            You have {refereeCount ?? 0} active referrals
+          </p>
           <p className="text-xs text-9black/60">
             Refer users using your link to earn more rewards!
           </p>
