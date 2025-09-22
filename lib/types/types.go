@@ -291,6 +291,14 @@ func (content *CampaignContent) Scan(value interface{}) error {
 	return JSONUnmarshal(value, content)
 }
 
+func (ccs CommentInvestments) Value() (driver.Value, error) {
+	return JSONMarshal(ccs)
+}
+
+func (ccs *CommentInvestments) Scan(value interface{}) error {
+	return JSONUnmarshal(value, ccs)
+}
+
 func (ai InvestmentAmounts) Value() (driver.Value, error) {
 	return JSONMarshal(ai)
 }
