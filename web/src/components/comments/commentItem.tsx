@@ -15,9 +15,7 @@ export default function CommentItem({
   campaignId: string;
   creator: string;
 }) {
-  const timePassed = useTimePassed(
-    data.createdAt * 1000 + new Date().getTimezoneOffset() * 1000 * 60,
-  );
+  const timePassed = useTimePassed(data.createdAt * 1000);
   const account = useActiveAccount();
   const { mutate, isPending } = useDeleteComment(campaignId);
   const deleteComment = async () => {
