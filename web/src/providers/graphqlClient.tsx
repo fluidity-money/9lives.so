@@ -508,15 +508,17 @@ export const requestPnLOfWonCampaigns = (address: string) =>
 
 export const requestComments = ({
   campaignId,
+  onlyHolders = false,
   page,
   pageSize,
 }: {
   campaignId: string;
+  onlyHolders?: boolean;
   page?: number;
   pageSize?: number;
 }) =>
   graph9Lives.query.campaignComments({
-    $: { campaignId, page, pageSize },
+    $: { campaignId, page, pageSize, onlyHolders },
     id: true,
     content: true,
     walletAddress: true,

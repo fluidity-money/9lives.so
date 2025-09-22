@@ -1687,7 +1687,7 @@ GROUP BY
 }
 
 // CampaignComments is the resolver for the campaignComments field.
-func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string, page *int, pageSize *int) ([]*types.Comment, error) {
+func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string, onlyHolders *bool, page *int, pageSize *int) ([]*types.Comment, error) {
 	var comments []*types.Comment
 	pageNum := 0
 	if page != nil {
@@ -1697,39 +1697,42 @@ func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string,
 	if pageSize != nil {
 		pageSizeNum = *pageSize
 	}
-	err := r.DB.Raw(`
+	whereExtra := ""
+	if onlyHolders != nil && *onlyHolders {
+		whereExtra = " AND json_array_length(COALESCE(investments.investments, '[]')) > 0"
+	}
+	query := `
 	SELECT 
     nc.*,
-    COALESCE(
-        (
-            SELECT JSON_AGG(
-                JSON_BUILD_OBJECT(
-                    'id', CONCAT('0x', t.outcome_id),
-                    'amount', t.investment
-                )
-            )
-            FROM (
-                SELECT 
-                    nbas.outcome_id,
-                    SUM(
-                        CASE 
-                            WHEN nbas.type = 'buy' THEN nbas.from_amount
-                            ELSE -nbas.from_amount
-                        END
-                    ) AS investment
-                FROM ninelives_buys_and_sells_1 AS nbas
-                WHERE nbas.campaign_id = nc.campaign_id
-                  AND nbas.recipient = nc.wallet_address
-                GROUP BY nbas.outcome_id
-            ) t
-        ),
-        '[]'
-    ) AS investments
+    COALESCE(investments.investments, '[]') AS investments
 	FROM ninelives_comments_1 AS nc
-	WHERE nc.campaign_id = ?
+	LEFT JOIN LATERAL (
+    SELECT JSON_AGG(
+               JSON_BUILD_OBJECT(
+                   'id', CONCAT('0x', t.outcome_id),
+                   'amount', t.investment
+               )
+           ) AS investments
+    FROM (
+        SELECT 
+            nbas.outcome_id,
+            SUM(
+                CASE 
+                    WHEN nbas.type = 'buy' THEN nbas.from_amount
+                    ELSE -nbas.from_amount
+                END
+            ) AS investment
+        FROM ninelives_buys_and_sells_1 AS nbas
+        WHERE nbas.campaign_id = nc.campaign_id
+          AND nbas.recipient = nc.wallet_address
+        GROUP BY nbas.outcome_id
+    ) t
+	) investments ON true
+	WHERE nc.campaign_id = ?` + whereExtra + `
 	ORDER BY nc.created_at DESC
 	OFFSET ? LIMIT ?
-	`, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&comments).Error
+	`
+	err := r.DB.Raw(query, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&comments).Error
 	if err != nil {
 		slog.Error("Error getting campaign's comments",
 			"error", err,

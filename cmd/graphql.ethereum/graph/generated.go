@@ -196,7 +196,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		CampaignByID              func(childComplexity int, id string) int
-		CampaignComments          func(childComplexity int, campaignID string, page *int, pageSize *int) int
+		CampaignComments          func(childComplexity int, campaignID string, onlyHolders *bool, page *int, pageSize *int) int
 		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) int
 		Changelog                 func(childComplexity int) int
 		CountReferees             func(childComplexity int, referrerAddress string) int
@@ -311,7 +311,7 @@ type QueryResolver interface {
 	UserLPs(ctx context.Context, address string) ([]types.LP, error)
 	CountReferees(ctx context.Context, referrerAddress string) (int, error)
 	UserWonCampaignsProfits(ctx context.Context, address string) ([]*types.CampaignProfit, error)
-	CampaignComments(ctx context.Context, campaignID string, page *int, pageSize *int) ([]*types.Comment, error)
+	CampaignComments(ctx context.Context, campaignID string, onlyHolders *bool, page *int, pageSize *int) ([]*types.Comment, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -1033,7 +1033,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.CampaignComments(childComplexity, args["campaignId"].(string), args["page"].(*int), args["pageSize"].(*int)), true
+		return e.complexity.Query.CampaignComments(childComplexity, args["campaignId"].(string), args["onlyHolders"].(*bool), args["page"].(*int), args["pageSize"].(*int)), true
 
 	case "Query.campaigns":
 		if e.complexity.Query.Campaigns == nil {
@@ -2094,24 +2094,33 @@ func (ec *executionContext) field_Query_campaignComments_args(ctx context.Contex
 		}
 	}
 	args["campaignId"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["page"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+	var arg1 *bool
+	if tmp, ok := rawArgs["onlyHolders"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("onlyHolders"))
+		arg1, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["page"] = arg1
+	args["onlyHolders"] = arg1
 	var arg2 *int
-	if tmp, ok := rawArgs["pageSize"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
+	if tmp, ok := rawArgs["page"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
 		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["pageSize"] = arg2
+	args["page"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["pageSize"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pageSize"] = arg3
 	return args, nil
 }
 
@@ -7897,7 +7906,7 @@ func (ec *executionContext) _Query_campaignComments(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CampaignComments(rctx, fc.Args["campaignId"].(string), fc.Args["page"].(*int), fc.Args["pageSize"].(*int))
+		return ec.resolvers.Query().CampaignComments(rctx, fc.Args["campaignId"].(string), fc.Args["onlyHolders"].(*bool), fc.Args["page"].(*int), fc.Args["pageSize"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

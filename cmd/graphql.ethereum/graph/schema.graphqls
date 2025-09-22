@@ -94,7 +94,7 @@ type Query {
   """
   Gets comments of a campaign
   """
-  campaignComments(campaignId: String!, page: Int, pageSize: Int): [Comment]!
+  campaignComments(campaignId: String!, onlyHolders: Boolean, page: Int, pageSize: Int): [Comment]!
 }
 
 type CommentInvestment {

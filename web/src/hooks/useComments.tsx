@@ -14,14 +14,12 @@ export default function useComments({
     queryFn: async ({ pageParam }) => {
       if (typeof pageParam !== "number") return [];
       const response = await requestComments({
+        onlyHolders,
         campaignId,
         page: pageParam,
         pageSize: 10,
       });
       const results = response.filter((a) => !!a);
-      if (onlyHolders) {
-        results.filter((i) => i.investments.length > 0);
-      }
       return results;
     },
     initialPageParam: 0,

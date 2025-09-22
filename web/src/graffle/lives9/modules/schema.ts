@@ -425,6 +425,12 @@ export namespace Schema {
           inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
+        onlyHolders: {
+          kind: "InputField";
+          name: "onlyHolders";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Boolean;
+        };
         page: {
           kind: "InputField";
           name: "page";

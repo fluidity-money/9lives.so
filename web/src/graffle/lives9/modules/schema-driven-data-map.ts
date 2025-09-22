@@ -561,6 +561,10 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
+        onlyHolders: {
+          nt: Boolean,
+          it: [0],
+        },
         page: {
           nt: Int,
           it: [0],

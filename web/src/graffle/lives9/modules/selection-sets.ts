@@ -926,7 +926,7 @@ export namespace Query {
   > extends $Select.Bases.Base,
       $NamedTypes.$Comment<_$Scalars> {
     /**
-     * Arguments for `campaignComments` field. Some (1/3) arguments are required so you must include this.
+     * Arguments for `campaignComments` field. Some (1/4) arguments are required so you must include this.
      */
     $: campaignComments$Arguments<_$Scalars>;
   }
@@ -936,6 +936,7 @@ export namespace Query {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     campaignId: string;
+    onlyHolders?: boolean | undefined | null;
     page?: number | undefined | null;
     pageSize?: number | undefined | null;
   }
