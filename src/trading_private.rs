@@ -19,7 +19,6 @@ use crate::factory_call;
 #[derive(Debug, PartialEq, Clone)]
 pub struct CalcFees {
     pub fee_for_creator: U256,
-    pub fee_for_minter: U256,
     pub fee_for_lp: U256,
     pub fee_for_referrer: U256,
     pub fee_for_protocol: U256,
@@ -137,7 +136,6 @@ impl StorageTrading {
     /// whether the action has a referrer.
     pub fn calculate_fees(&self, value: U256, is_buy: bool) -> R<(U256, CalcFees)> {
         let fee_for_creator = maths::calc_fee(value, self.fee_creator.get())?;
-        let fee_for_minter = maths::calc_fee(value, self.fee_minter.get())?;
         let fee_for_lp = if is_buy {
             maths::calc_fee(value, self.fee_lp.get())?
         } else {
@@ -149,10 +147,9 @@ impl StorageTrading {
         } else {
             U256::ZERO
         };
-        // fee_for_creator + fee_for_minter +  fee_for_lp + fee_for_referrer + fee_for_protocol
+        // fee_for_creator + fee_for_lp + fee_for_referrer + fee_for_protocol
         let fee_cum = fee_for_creator
-            .checked_add(fee_for_minter)
-            .and_then(|x| fee_for_lp.checked_add(x))
+            .checked_add(fee_for_lp)
             .and_then(|x| fee_for_referrer.checked_add(x))
             .and_then(|x| fee_for_protocol.checked_add(x))
             .ok_or(Error::CheckedAddOverflow)?;
@@ -160,7 +157,6 @@ impl StorageTrading {
             fee_cum,
             CalcFees {
                 fee_for_creator,
-                fee_for_minter,
                 fee_for_lp,
                 fee_for_referrer,
                 fee_for_protocol,
@@ -183,7 +179,6 @@ impl StorageTrading {
             fee_cum,
             CalcFees {
                 fee_for_creator,
-                fee_for_minter,
                 fee_for_lp,
                 fee_for_referrer,
                 fee_for_protocol,
@@ -200,9 +195,6 @@ impl StorageTrading {
                         .ok_or(Error::CheckedAddOverflow)?,
                 );
         }
-        // TODO: we don't do anything with this -- yet. No-one internal to the
-        // team should be deploying contracts with this enabled for now.
-        let _ = fee_for_minter;
         self.amm_fees_collected_weighted.set(
             self.amm_fees_collected_weighted
                 .get()
@@ -242,12 +234,6 @@ impl StorageTrading {
 }
 
 #[test]
-#[cfg(feature = "trading-backend-dpm")]
-fn test_is_dpm() {
-    assert!(c.is_dpm());
-}
-
-#[test]
 #[cfg(feature = "trading-backend-amm")]
 fn test_is_amm() {
     assert!(!StorageTrading::default().is_dpm());
@@ -256,27 +242,53 @@ fn test_is_amm() {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod proptesting {
     use crate::{
+        contract_trading_extras::CtorArgs,
         fees::FEE_SPN_MINT_PCT,
         maths, strat_storage_trading,
         utils::{strat_address_not_empty, strat_medium_u256},
     };
 
-    use stylus_sdk::alloy_primitives::U256;
+    #[cfg(feature = "trading-backend-dpm")]
+    use crate::{error::Error, panic_guard};
+
+    #[cfg(feature = "trading-backend-dpm")]
+    use stylus_sdk::alloy_primitives::FixedBytes;
+
+    use stylus_sdk::alloy_primitives::{Address, U256};
 
     use proptest::prelude::*;
+
+    #[cfg(test)]
+    #[allow(unused)]
+    fn default_ctor_args() -> CtorArgs {
+        (
+            vec![],
+            Address::ZERO,
+            0,
+            0,
+            Address::ZERO,
+            Address::ZERO,
+            false,
+            0,
+            0,
+            0,
+            0,
+        )
+    }
 
     proptest! {
         #[test]
         #[cfg(feature = "trading-backend-dpm")]
         fn test_dpm_ctor_only_two_outcomes_1(
-            mut c in strat_storage_trading(),
+            mut c in strat_storage_trading(false),
             outcomes in proptest::collection::vec(any::<FixedBytes<8>>(), 2..4)
         ) {
             let mut args = default_ctor_args();
-            args.outcomes = outcomes;
+            args.0 = outcomes;
             panic_guard(|| {
+                let l = args.0.len();
                 let r = c.ctor(args);
-                if outcomes.len() == 2 {
+                if l == 2 {
                     assert!(r.is_ok());
                 } else {
                     assert_eq!(Error::BadTradingCtor, r.unwrap_err());
@@ -287,7 +299,6 @@ mod proptesting {
         #[test]
         fn test_fee_addition_ok_selling(
             fee_for_creator in (0..=100).prop_map(U256::from),
-            fee_for_minter in (0..=100).prop_map(U256::from),
             fee_for_lp in (0..=100).prop_map(U256::from),
             fee_for_referrer in (0..=100).prop_map(U256::from),
             value in strat_medium_u256(),
@@ -296,7 +307,6 @@ mod proptesting {
             mut c in strat_storage_trading(false)
         ) {
             c.fee_creator.set(fee_for_creator);
-            c.fee_minter.set(fee_for_minter);
             c.fee_lp.set(fee_for_lp);
             c.fee_referrer.set(fee_for_referrer);
             c.is_protocol_fee_disabled.set(false);
@@ -307,7 +317,6 @@ mod proptesting {
             };
             let cum_fee =
                 maths::calc_fee(value, fee_for_creator).unwrap() +
-                maths::calc_fee(value, fee_for_minter).unwrap() +
                 lp_fee +
                 maths::calc_fee(value, fee_for_referrer).unwrap() +
                 maths::calc_fee(value, FEE_SPN_MINT_PCT).unwrap();

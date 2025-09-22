@@ -431,12 +431,12 @@ impl StorageTrading {
 
     /// Rebalance the calculated user fee weight.
     pub fn rebalance_fees(&mut self, sender: Address, delta_liq: U256, is_add: bool) -> R<()> {
-        let fee_weight = maths::mul_div_round_up(
-            delta_liq,
-            self.amm_fees_collected_weighted.get(),
-            self.amm_liquidity.get(),
-        )?;
         if is_add {
+            let fee_weight = maths::mul_div_round_up(
+                delta_liq,
+                self.amm_fees_collected_weighted.get(),
+                self.amm_liquidity.get(),
+            )?;
             {
                 let x = self
                     .amm_fees_collected_weighted
@@ -452,6 +452,11 @@ impl StorageTrading {
                     .set(x.checked_add(fee_weight).ok_or(Error::CheckedAddOverflow)?);
             }
         } else {
+            let (fee_weight, _) = maths::mul_div(
+                delta_liq,
+                self.amm_fees_collected_weighted.get(),
+                self.amm_liquidity.get(),
+            )?;
             {
                 let x = self
                     .amm_fees_collected_weighted
@@ -471,7 +476,7 @@ impl StorageTrading {
     }
 
     pub fn internal_amm_claim_lp_fees(&mut self, spender: Address, recipient: Address) -> R<U256> {
-        let sender_liq_shares = self.amm_user_liquidity_shares.get(msg_sender());
+        let sender_liq_shares = self.amm_user_liquidity_shares.get(spender);
         if sender_liq_shares.is_zero() {
             return Ok(U256::ZERO);
         }

@@ -216,7 +216,7 @@ macro_rules! implement_action {
             Action::AddLiquidity(a) => {
                 should_spend_fusdc_sender!(
                     a.amount,
-                    $c.add_liquidity_A_975_D_995(a.amount, $sender)
+                    $c.add_liquidity_638_E_B_2_C_9(a.amount, $sender, U256::ZERO)
                 );
             }
             #[cfg(feature = "trading-backend-amm")]

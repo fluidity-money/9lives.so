@@ -82,11 +82,11 @@ pub fn dpm_payoff(n: Decimal, N_1: Decimal, M: Decimal) -> Result<Decimal, Error
 
 // Using this operation is the equivalent of pow(x, 1/n).
 pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {
-    if x.is_zero() {
-        return Ok(U256::ZERO);
-    }
     if n == 0 {
         return Err(Error::BadDenominator);
+    }
+    if x.is_zero() {
+        return Ok(U256::ZERO);
     }
     if n == 1 {
         return Ok(x);
