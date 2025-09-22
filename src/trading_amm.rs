@@ -431,12 +431,12 @@ impl StorageTrading {
 
     /// Rebalance the calculated user fee weight.
     pub fn rebalance_fees(&mut self, sender: Address, delta_liq: U256, is_add: bool) -> R<()> {
-        let fee_weight = maths::mul_div_round_up(
-            delta_liq,
-            self.amm_fees_collected_weighted.get(),
-            self.amm_liquidity.get(),
-        )?;
         if is_add {
+            let fee_weight = maths::mul_div_round_up(
+                delta_liq,
+                self.amm_fees_collected_weighted.get(),
+                self.amm_liquidity.get(),
+            )?;
             {
                 let x = self
                     .amm_fees_collected_weighted
@@ -452,6 +452,11 @@ impl StorageTrading {
                     .set(x.checked_add(fee_weight).ok_or(Error::CheckedAddOverflow)?);
             }
         } else {
+            let (fee_weight, _) = maths::mul_div(
+                delta_liq,
+                self.amm_fees_collected_weighted.get(),
+                self.amm_liquidity.get(),
+            )?;
             {
                 let x = self
                     .amm_fees_collected_weighted
