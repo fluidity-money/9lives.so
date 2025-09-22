@@ -36,6 +36,7 @@ export default function CommentList({
     <>
       <Button
         title={onlyHolders ? "Show All" : "Only Holders"}
+        className={"mb-4 ml-auto block"}
         onClick={() => setOnlyHolders(!onlyHolders)}
         size={"small"}
       />
