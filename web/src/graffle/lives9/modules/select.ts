@@ -57,6 +57,13 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
+  export type CommentInvestment<
+    $SelectionSet extends $$SelectionSets.CommentInvestment,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["CommentInvestment"]
+  >;
   export type Comment<$SelectionSet extends $$SelectionSets.Comment> =
     InferResult.OutputObjectLike<
       $SelectionSet,

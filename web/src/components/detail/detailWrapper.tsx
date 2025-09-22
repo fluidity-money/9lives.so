@@ -84,6 +84,7 @@ export default function DetailWrapper({
         <DetailComments
           campaignId={data.identifier}
           creator={data.creator.address}
+          outcomes={data.outcomes}
         />
       </div>
       <div className="flex flex-1 flex-col gap-8">

@@ -27,11 +27,12 @@ type (
 	}
 
 	Comment struct {
-		Id            int       `gorm:"primaryKey"`
-		CampaignId    string    `json:"campaignId"`
-		CreatedAt     time.Time `gorm:"autoCreateTime"`
-		Content       string    `json:"content"`
-		WalletAddress string    `json:"walletAddress"`
+		Id            int                `gorm:"primaryKey"`
+		CampaignId    string             `json:"campaignId"`
+		CreatedAt     time.Time          `gorm:"autoCreateTime"`
+		Content       string             `json:"content"`
+		WalletAddress string             `json:"walletAddress"`
+		Investments   CommentInvestments `json:"investments"`
 	}
 
 	LP struct {
@@ -50,6 +51,13 @@ type (
 		USDC  int    `json:"usdc"`
 		Share int    `json:"share"`
 	}
+
+	CommentInvestment struct {
+		Id     string `json:"id"`
+		Amount int    `json:"amount"`
+	}
+
+	CommentInvestments []*CommentInvestment
 
 	InvestmentAmountsList []*InvestmentAmounts
 

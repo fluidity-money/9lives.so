@@ -521,6 +521,10 @@ export const requestComments = ({
     content: true,
     walletAddress: true,
     createdAt: true,
+    investments: {
+      id: true,
+      amount: true,
+    },
   });
 
 export const postComment = ({

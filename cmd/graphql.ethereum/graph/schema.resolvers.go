@@ -331,6 +331,14 @@ func (r *commentResolver) CreatedAt(ctx context.Context, obj *types.Comment) (in
 	return int(obj.CreatedAt.Unix()), nil
 }
 
+// Investments is the resolver for the investments field.
+func (r *commentResolver) Investments(ctx context.Context, obj *types.Comment) ([]*types.CommentInvestment, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("comment is nil")
+	}
+	return obj.Investments, nil
+}
+
 // PostComment is the resolver for the postComment field.
 func (r *mutationResolver) PostComment(ctx context.Context, campaignID string, walletAddress string, content string, rr string, s string, v int) (*bool, error) {
 	if !ethCommon.IsHexAddress(walletAddress) {
@@ -1690,10 +1698,36 @@ func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string,
 		pageSizeNum = *pageSize
 	}
 	err := r.DB.Raw(`
-	SELECT *
-	FROM ninelives_comments_1
-	WHERE campaign_id = ?
-	ORDER BY created_at DESC
+	SELECT 
+    nc.*,
+    COALESCE(
+        (
+            SELECT JSON_AGG(
+                JSON_BUILD_OBJECT(
+                    'id', CONCAT('0x', t.outcome_id),
+                    'amount', t.investment
+                )
+            )
+            FROM (
+                SELECT 
+                    nbas.outcome_id,
+                    SUM(
+                        CASE 
+                            WHEN nbas.type = 'buy' THEN nbas.from_amount
+                            ELSE -nbas.from_amount
+                        END
+                    ) AS investment
+                FROM ninelives_buys_and_sells_1 AS nbas
+                WHERE nbas.campaign_id = nc.campaign_id
+                  AND nbas.recipient = nc.wallet_address
+                GROUP BY nbas.outcome_id
+            ) t
+        ),
+        '[]'
+    ) AS investments
+	FROM ninelives_comments_1 AS nc
+	WHERE nc.campaign_id = ?
+	ORDER BY nc.created_at DESC
 	OFFSET ? LIMIT ?
 	`, campaignID, pageNum*pageSizeNum, pageSizeNum).Scan(&comments).Error
 	if err != nil {

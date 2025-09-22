@@ -119,6 +119,13 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 
+const CommentInvestment: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    id: {},
+    amount: {},
+  },
+};
+
 const Comment: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     id: {},
@@ -126,6 +133,9 @@ const Comment: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     createdAt: {},
     walletAddress: {},
     content: {},
+    investments: {
+      // nt: CommentInvestment, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -899,6 +909,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 //
 
+Comment.f[`investments`]!.nt = CommentInvestment;
 LP.f[`campaign`]!.nt = Campaign;
 Profile.f[`settings`]!.nt = Settings;
 Claim.f[`content`]!.nt = Campaign;
@@ -957,6 +968,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     SettlementType,
     ActivityType,
     OutcomeInput,
+    CommentInvestment,
     Comment,
     LP,
     CampaignProfit,

@@ -97,12 +97,18 @@ type Query {
   campaignComments(campaignId: String!, page: Int, pageSize: Int): [Comment]!
 }
 
+type CommentInvestment {
+  id: String!
+  amount: Int!
+}
+
 type Comment {
   id: Int!
   campaignId: String!
   createdAt: Int!
   walletAddress: String!
   content: String!
+  investments: [CommentInvestment]!
 }
 
 type LP {

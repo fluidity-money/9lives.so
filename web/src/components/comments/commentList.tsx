@@ -2,12 +2,15 @@ import useComments from "@/hooks/useComments";
 import Placeholder from "../placeholder";
 import CommentItem from "./commentItem";
 import Button from "../themed/button";
+import { Outcome } from "@/types";
 
 export default function CommentList({
   campaignId,
+  outcomes,
   creator,
 }: {
   campaignId: string;
+  outcomes: Outcome[];
   creator: string;
 }) {
   const {
@@ -31,6 +34,7 @@ export default function CommentList({
     <ul className="flex flex-col gap-2.5">
       {data?.map((i) => (
         <CommentItem
+          outcomes={outcomes}
           data={i}
           key={i.id}
           campaignId={campaignId}

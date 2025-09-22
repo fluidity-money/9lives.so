@@ -1188,6 +1188,45 @@ export namespace Schema {
   //
   //
 
+  //                                         CommentInvestment
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface CommentInvestment extends $.OutputObject {
+    name: "CommentInvestment";
+    fields: {
+      __typename: CommentInvestment.__typename;
+      id: CommentInvestment.id;
+      amount: CommentInvestment.amount;
+    };
+  }
+
+  export namespace CommentInvestment {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "CommentInvestment";
+      };
+    }
+
+    export interface id extends $.OutputField {
+      name: "id";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface amount extends $.OutputField {
+      name: "amount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+  }
+
   //                                              Comment
   // --------------------------------------------------------------------------------------------------
   //
@@ -1201,6 +1240,7 @@ export namespace Schema {
       createdAt: Comment.createdAt;
       walletAddress: Comment.walletAddress;
       content: Comment.content;
+      investments: Comment.investments;
     };
   }
 
@@ -1248,6 +1288,13 @@ export namespace Schema {
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
+    }
+
+    export interface investments extends $.OutputField {
+      name: "investments";
+      arguments: {};
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$CommentInvestment;
     }
   }
 
@@ -2720,6 +2767,7 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$CommentInvestment = CommentInvestment;
     export type $$Comment = Comment;
     export type $$LP = LP;
     export type $$CampaignProfit = CampaignProfit;
@@ -2783,6 +2831,7 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    CommentInvestment: Schema.CommentInvestment;
     Comment: Schema.Comment;
     LP: Schema.LP;
     CampaignProfit: Schema.CampaignProfit;
@@ -2802,6 +2851,7 @@ export interface Schema<
     Activity: Schema.Activity;
   };
   objects: {
+    CommentInvestment: Schema.CommentInvestment;
     Comment: Schema.Comment;
     LP: Schema.LP;
     CampaignProfit: Schema.CampaignProfit;

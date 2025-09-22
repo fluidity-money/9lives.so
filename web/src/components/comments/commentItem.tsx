@@ -1,12 +1,14 @@
 import useTimePassed from "@/hooks/useTimePassed";
-import { Comment } from "../../types";
+import { Comment, Outcome } from "../../types";
 import Button from "../themed/button";
 import { useActiveAccount } from "thirdweb/react";
 import useDeleteComment from "@/hooks/useDeleteComment";
 import { signMessage } from "thirdweb/utils";
 import { Signature } from "ethers";
 import DetailCreatedBy from "../detail/detailCreatedBy";
+import formatFusdc from "@/utils/formatFusdc";
 export default function CommentItem({
+  outcomes,
   data,
   campaignId,
   creator,
@@ -14,6 +16,7 @@ export default function CommentItem({
   data: Comment;
   campaignId: string;
   creator: string;
+  outcomes: Outcome[];
 }) {
   const timePassed = useTimePassed(data.createdAt * 1000);
   const account = useActiveAccount();
@@ -48,6 +51,19 @@ export default function CommentItem({
               address={data.walletAddress as `0x${string}`}
               isCreator={creator === data.walletAddress}
             />
+            {data.investments.length > 0
+              ? data.investments.map((i) => {
+                  const outcome = outcomes?.find((o) => o.identifier === i?.id);
+                  return (
+                    <span
+                      key={i?.id}
+                      className="ml-1 bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide"
+                    >
+                      ${formatFusdc(i?.amount ?? 0, 0)} {outcome?.name}
+                    </span>
+                  );
+                })
+              : null}
             <span className="text-xs font-bold text-9black/50">
               {timePassed}
             </span>
