@@ -2,9 +2,15 @@ import { requestComments } from "@/providers/graphqlClient";
 import { Comment } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-export default function useComments({ campaignId }: { campaignId: string }) {
+export default function useComments({
+  campaignId,
+  onlyHolders,
+}: {
+  campaignId: string;
+  onlyHolders: boolean;
+}) {
   return useInfiniteQuery<Comment[]>({
-    queryKey: ["comments", campaignId],
+    queryKey: ["comments", campaignId, onlyHolders],
     queryFn: async ({ pageParam }) => {
       if (typeof pageParam !== "number") return [];
       const response = await requestComments({
@@ -12,7 +18,11 @@ export default function useComments({ campaignId }: { campaignId: string }) {
         page: pageParam,
         pageSize: 10,
       });
-      return response.filter((a) => !!a);
+      const results = response.filter((a) => !!a);
+      if (onlyHolders) {
+        results.filter((i) => i.investments.length > 0);
+      }
+      return results;
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) => {
