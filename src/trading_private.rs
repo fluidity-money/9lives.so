@@ -19,7 +19,6 @@ use crate::factory_call;
 #[derive(Debug, PartialEq, Clone)]
 pub struct CalcFees {
     pub fee_for_creator: U256,
-    pub fee_for_minter: U256,
     pub fee_for_lp: U256,
     pub fee_for_referrer: U256,
     pub fee_for_protocol: U256,
@@ -137,7 +136,6 @@ impl StorageTrading {
     /// whether the action has a referrer.
     pub fn calculate_fees(&self, value: U256, is_buy: bool) -> R<(U256, CalcFees)> {
         let fee_for_creator = maths::calc_fee(value, self.fee_creator.get())?;
-        let fee_for_minter = maths::calc_fee(value, self.fee_minter.get())?;
         let fee_for_lp = if is_buy {
             maths::calc_fee(value, self.fee_lp.get())?
         } else {
@@ -149,10 +147,9 @@ impl StorageTrading {
         } else {
             U256::ZERO
         };
-        // fee_for_creator + fee_for_minter +  fee_for_lp + fee_for_referrer + fee_for_protocol
+        // fee_for_creator + fee_for_lp + fee_for_referrer + fee_for_protocol
         let fee_cum = fee_for_creator
-            .checked_add(fee_for_minter)
-            .and_then(|x| fee_for_lp.checked_add(x))
+            .checked_add(fee_for_lp)
             .and_then(|x| fee_for_referrer.checked_add(x))
             .and_then(|x| fee_for_protocol.checked_add(x))
             .ok_or(Error::CheckedAddOverflow)?;
@@ -160,7 +157,6 @@ impl StorageTrading {
             fee_cum,
             CalcFees {
                 fee_for_creator,
-                fee_for_minter,
                 fee_for_lp,
                 fee_for_referrer,
                 fee_for_protocol,
@@ -183,7 +179,6 @@ impl StorageTrading {
             fee_cum,
             CalcFees {
                 fee_for_creator,
-                fee_for_minter,
                 fee_for_lp,
                 fee_for_referrer,
                 fee_for_protocol,
@@ -200,9 +195,6 @@ impl StorageTrading {
                         .ok_or(Error::CheckedAddOverflow)?,
                 );
         }
-        // TODO: we don't do anything with this -- yet. No-one internal to the
-        // team should be deploying contracts with this enabled for now.
-        let _ = fee_for_minter;
         self.amm_fees_collected_weighted.set(
             self.amm_fees_collected_weighted
                 .get()
@@ -307,7 +299,6 @@ mod proptesting {
         #[test]
         fn test_fee_addition_ok_selling(
             fee_for_creator in (0..=100).prop_map(U256::from),
-            fee_for_minter in (0..=100).prop_map(U256::from),
             fee_for_lp in (0..=100).prop_map(U256::from),
             fee_for_referrer in (0..=100).prop_map(U256::from),
             value in strat_medium_u256(),
@@ -316,7 +307,6 @@ mod proptesting {
             mut c in strat_storage_trading(false)
         ) {
             c.fee_creator.set(fee_for_creator);
-            c.fee_minter.set(fee_for_minter);
             c.fee_lp.set(fee_for_lp);
             c.fee_referrer.set(fee_for_referrer);
             c.is_protocol_fee_disabled.set(false);
@@ -327,7 +317,6 @@ mod proptesting {
             };
             let cum_fee =
                 maths::calc_fee(value, fee_for_creator).unwrap() +
-                maths::calc_fee(value, fee_for_minter).unwrap() +
                 lp_fee +
                 maths::calc_fee(value, fee_for_referrer).unwrap() +
                 maths::calc_fee(value, FEE_SPN_MINT_PCT).unwrap();
