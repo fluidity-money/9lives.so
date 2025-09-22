@@ -57,7 +57,7 @@ export default function CommentItem({
                   return (
                     <span
                       key={i?.id}
-                      className="ml-1 bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide"
+                      className="ml-1 max-w-[150px] truncate bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide"
                     >
                       ${formatFusdc(i?.amount ?? 0, 0)} {outcome?.name}
                     </span>
