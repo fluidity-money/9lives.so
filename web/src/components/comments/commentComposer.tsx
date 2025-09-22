@@ -21,8 +21,8 @@ export default function CommentComposer({
   const formSchema = z.object({
     content: z
       .string()
-      .min(3, "Your comments have to be longer than 3 charachters.")
-      .max(2000, "Your comments have to be shorter than 2000 charachters."),
+      .min(3, "Your comments have to be longer than 3 characters.")
+      .max(2000, "Your comments have to be shorter than 2000 characters."),
   });
   type FormData = z.infer<typeof formSchema>;
   const {
