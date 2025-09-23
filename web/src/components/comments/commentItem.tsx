@@ -52,7 +52,7 @@ export default function CommentItem({
           width={36}
           height={36}
           className="size-9 shrink-0 border border-9black bg-9gray"
-          src={profile?.settings?.meowAvatar ?? DefaultMeowAvatar}
+          src={profile?.settings?.meowAvatar || DefaultMeowAvatar}
         />
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2.5">
