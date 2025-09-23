@@ -57,6 +57,12 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
+  export type PriceEvent<$SelectionSet extends $$SelectionSets.PriceEvent> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["PriceEvent"]
+    >;
   export type CommentInvestment<
     $SelectionSet extends $$SelectionSets.CommentInvestment,
   > = InferResult.OutputObjectLike<

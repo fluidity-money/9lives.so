@@ -47,6 +47,7 @@ export namespace Schema {
       countReferees: Query.countReferees;
       userWonCampaignsProfits: Query.userWonCampaignsProfits;
       campaignComments: Query.campaignComments;
+      campaignPriceEvents: Query.campaignPriceEvents;
     };
   }
 
@@ -446,6 +447,23 @@ export namespace Schema {
       };
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Comment;
+    }
+
+    /**
+     * Get historical prices change events to create a price chart timeline
+     */
+    export interface campaignPriceEvents extends $.OutputField {
+      name: "campaignPriceEvents";
+      arguments: {
+        poolAddress: {
+          kind: "InputField";
+          name: "poolAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$PriceEvent;
     }
   }
 
@@ -1223,6 +1241,45 @@ export namespace Schema {
   //
   //
   //
+
+  //                                             PriceEvent
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface PriceEvent extends $.OutputObject {
+    name: "PriceEvent";
+    fields: {
+      __typename: PriceEvent.__typename;
+      createdAt: PriceEvent.createdAt;
+      shares: PriceEvent.shares;
+    };
+  }
+
+  export namespace PriceEvent {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "PriceEvent";
+      };
+    }
+
+    export interface createdAt extends $.OutputField {
+      name: "createdAt";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface shares extends $.OutputField {
+      name: "shares";
+      arguments: {};
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$CampaignShare;
+    }
+  }
 
   //                                         CommentInvestment
   // --------------------------------------------------------------------------------------------------
@@ -2825,6 +2882,7 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$PriceEvent = PriceEvent;
     export type $$CommentInvestment = CommentInvestment;
     export type $$Comment = Comment;
     export type $$LP = LP;
@@ -2889,6 +2947,7 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    PriceEvent: Schema.PriceEvent;
     CommentInvestment: Schema.CommentInvestment;
     Comment: Schema.Comment;
     LP: Schema.LP;
@@ -2909,6 +2968,7 @@ export interface Schema<
     Activity: Schema.Activity;
   };
   objects: {
+    PriceEvent: Schema.PriceEvent;
     CommentInvestment: Schema.CommentInvestment;
     Comment: Schema.Comment;
     LP: Schema.LP;

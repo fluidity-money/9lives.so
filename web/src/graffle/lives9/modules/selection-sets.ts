@@ -205,6 +205,14 @@ export interface Query<
   campaignComments?:
     | Query.campaignComments<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.campaignComments<_$Scalars>>;
+  /**
+   *
+   * Select the `campaignPriceEvents` field on the `Query` object. Its type is `PriceEvent` (a `OutputObject` kind of type).
+   *
+   */
+  campaignPriceEvents?:
+    | Query.campaignPriceEvents<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.campaignPriceEvents<_$Scalars>>;
 
   /**
    *
@@ -954,6 +962,45 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<campaignComments$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type campaignPriceEvents<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = campaignPriceEvents$SelectionSet<_$Scalars>;
+
+  export interface campaignPriceEvents$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$PriceEvent<_$Scalars> {
+    /**
+     * Arguments for `campaignPriceEvents` field. All arguments are required so you must include this.
+     */
+    $: campaignPriceEvents$Arguments<_$Scalars>;
+  }
+
+  export interface campaignPriceEvents$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    poolAddress: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `campaignPriceEvents` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type campaignPriceEvents$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<campaignPriceEvents$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -1794,6 +1841,122 @@ export interface OutcomeInput<
 //
 //
 //
+
+//                                             PriceEvent
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface PriceEvent<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `createdAt` field on the `PriceEvent` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  createdAt?:
+    | PriceEvent.createdAt$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<PriceEvent.createdAt<_$Scalars>>;
+  /**
+   *
+   * Select the `shares` field on the `PriceEvent` object. Its type is `CampaignShare` (a `OutputObject` kind of type).
+   *
+   */
+  shares?:
+    | PriceEvent.shares$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<PriceEvent.shares<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | PriceEvent$FragmentInline<_$Scalars>
+    | PriceEvent$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface PriceEvent$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends PriceEvent<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace PriceEvent {
+  export type createdAt<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | createdAt$SelectionSet<_$Scalars>;
+
+  export interface createdAt$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `createdAt` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type createdAt$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | createdAt$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type shares<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = shares$SelectionSet<_$Scalars>;
+
+  export interface shares$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$CampaignShare<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `shares` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type shares$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<shares$SelectionSet<_$Scalars>>;
+}
 
 //                                         CommentInvestment
 // --------------------------------------------------------------------------------------------------
@@ -5781,6 +5944,10 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = OutcomeInput<_$Scalars>;
+  export type $PriceEvent<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = PriceEvent<_$Scalars>;
   export type $CommentInvestment<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,

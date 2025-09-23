@@ -119,6 +119,15 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 
+const PriceEvent: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    createdAt: {},
+    shares: {
+      // nt: CampaignShare, <-- Assigned later to avoid potential circular dependency.
+    },
+  },
+};
+
 const CommentInvestment: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     id: {},
@@ -578,6 +587,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Comment, <-- Assigned later to avoid potential circular dependency.
     },
+    campaignPriceEvents: {
+      a: {
+        poolAddress: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: PriceEvent, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -931,6 +949,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 //
 
+PriceEvent.f[`shares`]!.nt = CampaignShare;
 Comment.f[`investments`]!.nt = CommentInvestment;
 LP.f[`campaign`]!.nt = Campaign;
 Profile.f[`settings`]!.nt = Settings;
@@ -957,6 +976,7 @@ Query.f[`featuredCampaign`]!.nt = Campaign;
 Query.f[`userLPs`]!.nt = LP;
 Query.f[`userWonCampaignsProfits`]!.nt = CampaignProfit;
 Query.f[`campaignComments`]!.nt = Comment;
+Query.f[`campaignPriceEvents`]!.nt = PriceEvent;
 
 //
 //
@@ -990,6 +1010,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     SettlementType,
     ActivityType,
     OutcomeInput,
+    PriceEvent,
     CommentInvestment,
     Comment,
     LP,

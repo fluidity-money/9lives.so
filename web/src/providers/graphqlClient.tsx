@@ -581,3 +581,10 @@ export const updateMeowDomain = ({
   name: string;
 }) =>
   graph9Lives.mutation.updateMeowDomain({ $: { name, walletAddress, image } });
+
+export const requestPriceChanges = (poolAddress: string) =>
+  graph9Lives.query.campaignPriceEvents({
+    $: { poolAddress },
+    createdAt: true,
+    shares: { shares: true, identifier: true },
+  });
