@@ -24,7 +24,7 @@ export default function CommentItem({
   const timePassed = useTimePassed(data.createdAt * 1000);
   const account = useActiveAccount();
   const { mutate, isPending } = useDeleteComment(campaignId);
-  const { data: profile } = useProfile(account?.address);
+  const { data: profile } = useProfile(data.walletAddress);
   const deleteComment = async () => {
     if (!account) throw new Error("No wallet is connected.");
     const message = `Deleting a comment on https://9lives.so/campaign/${campaignId}\n${data.content}`;

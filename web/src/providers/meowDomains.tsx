@@ -21,7 +21,7 @@ export default function MeowDomainProvider() {
         transaction: nameTx,
         account,
       });
-      if (name === "") {
+      if (name === "" || !name) {
         return;
       }
       const tokenIdTx = prepareContractCall({
