@@ -160,6 +160,8 @@ const Settings: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     notification: {},
     refererr: {},
+    meowAvatar: {},
+    meowName: {},
   },
 };
 
@@ -889,6 +891,22 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
         v: {
           nt: Int,
+          it: [1],
+        },
+      },
+    },
+    updateMeowDomain: {
+      a: {
+        walletAddress: {
+          nt: String,
+          it: [1],
+        },
+        image: {
+          nt: String,
+          it: [1],
+        },
+        name: {
+          nt: String,
           it: [1],
         },
       },

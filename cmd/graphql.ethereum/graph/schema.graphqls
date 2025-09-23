@@ -132,6 +132,16 @@ type Settings {
   Did the user click a referrer link that we should hint to the browser?
   """
   refererr: String
+
+  """
+  meow domain avatar
+  """
+  meowAvatar: String
+
+  """
+  meow domain name
+  """
+  meowName: String
 }
 
 type Profile {
@@ -533,6 +543,11 @@ type Mutation {
     """
     v: Int!
   ): Boolean
+
+  """
+  Updates meow domains avatar and name for user's profile
+  """
+  updateMeowDomain(walletAddress:String!,image:String!, name:String!): Boolean
 }
 
 """

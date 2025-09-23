@@ -7,6 +7,9 @@ import { signMessage } from "thirdweb/utils";
 import { Signature } from "ethers";
 import DetailCreatedBy from "../detail/detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
+import Image from "next/image";
+import DefaultMeowAvatar from "#/images/meow.svg";
+import useProfile from "@/hooks/useProfile";
 export default function CommentItem({
   outcomes,
   data,
@@ -21,6 +24,7 @@ export default function CommentItem({
   const timePassed = useTimePassed(data.createdAt * 1000);
   const account = useActiveAccount();
   const { mutate, isPending } = useDeleteComment(campaignId);
+  const { data: profile } = useProfile(account?.address);
   const deleteComment = async () => {
     if (!account) throw new Error("No wallet is connected.");
     const message = `Deleting a comment on https://9lives.so/campaign/${campaignId}\n${data.content}`;
@@ -43,7 +47,13 @@ export default function CommentItem({
   return (
     <li className="flex justify-between gap-2.5">
       <div className="flex gap-2.5">
-        <div className="size-9 shrink-0 border border-9black bg-9gray" />
+        <Image
+          alt={profile?.settings?.meowName ?? ""}
+          width={36}
+          height={36}
+          className="size-9 shrink-0 border border-9black bg-9gray"
+          src={profile?.settings?.meowAvatar ?? DefaultMeowAvatar}
+        />
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2.5">
             <DetailCreatedBy

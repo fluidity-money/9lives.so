@@ -466,6 +466,7 @@ export namespace Schema {
       synchProfile: Mutation.synchProfile;
       genReferrer: Mutation.genReferrer;
       associateReferral: Mutation.associateReferral;
+      updateMeowDomain: Mutation.updateMeowDomain;
     };
   }
 
@@ -1176,6 +1177,35 @@ export namespace Schema {
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;
     }
+
+    /**
+     * Updates meow domains avatar and name for user's profile
+     */
+    export interface updateMeowDomain extends $.OutputField {
+      name: "updateMeowDomain";
+      arguments: {
+        walletAddress: {
+          kind: "InputField";
+          name: "walletAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        image: {
+          kind: "InputField";
+          name: "image";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        name: {
+          kind: "InputField";
+          name: "name";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Boolean;
+    }
   }
 
   //
@@ -1400,6 +1430,8 @@ export namespace Schema {
       __typename: Settings.__typename;
       notification: Settings.notification;
       refererr: Settings.refererr;
+      meowAvatar: Settings.meowAvatar;
+      meowName: Settings.meowName;
     };
   }
 
@@ -1429,6 +1461,26 @@ export namespace Schema {
      */
     export interface refererr extends $.OutputField {
       name: "refererr";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * meow domain avatar
+     */
+    export interface meowAvatar extends $.OutputField {
+      name: "meowAvatar";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * meow domain name
+     */
+    export interface meowName extends $.OutputField {
+      name: "meowName";
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$String;
