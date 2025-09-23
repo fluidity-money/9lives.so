@@ -1136,6 +1136,22 @@ func (r *positionResolver) Content(ctx context.Context, obj *types.Position) (*t
 	return &campaign, nil
 }
 
+// CreatedAt is the resolver for the createdAt field.
+func (r *priceEventResolver) CreatedAt(ctx context.Context, obj *types.PriceEvent) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("event is nil")
+	}
+	return int(obj.CreatedAt.Unix()), nil
+}
+
+// Shares is the resolver for the shares field.
+func (r *priceEventResolver) Shares(ctx context.Context, obj *types.PriceEvent) ([]*types.CampaignShare, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("event is nil")
+	}
+	return obj.Shares, nil
+}
+
 // Campaigns is the resolver for the campaigns field.
 func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) ([]types.Campaign, error) {
 	var campaigns []types.Campaign
@@ -1801,6 +1817,9 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Position returns PositionResolver implementation.
 func (r *Resolver) Position() PositionResolver { return &positionResolver{r} }
 
+// PriceEvent returns PriceEventResolver implementation.
+func (r *Resolver) PriceEvent() PriceEventResolver { return &priceEventResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
@@ -1814,5 +1833,6 @@ type claimResolver struct{ *Resolver }
 type commentResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type positionResolver struct{ *Resolver }
+type priceEventResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type settingsResolver struct{ *Resolver }

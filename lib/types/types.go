@@ -245,14 +245,9 @@ type (
 		CreatedAt time.Time `json:"createdAt"`
 	}
 
-	PriceEventShare struct {
-		Shares     int    `json:"shares"`
-		Identifier string `json:"identifier"`
-	}
-
 	PriceEvent struct {
-		CreatedAt int                `json:"createdAt"`
-		Shares    []*PriceEventShare `json:"shares"`
+		CreatedAt time.Time      `json:"createdAt"`
+		Shares    CampaignShares `json:"shares"`
 	}
 )
 
@@ -318,14 +313,6 @@ func (ccs CommentInvestments) Value() (driver.Value, error) {
 }
 
 func (ccs *CommentInvestments) Scan(value interface{}) error {
-	return JSONUnmarshal(value, ccs)
-}
-
-func (ccs PriceEventShare) Value() (driver.Value, error) {
-	return JSONMarshal(ccs)
-}
-
-func (ccs *PriceEventShare) Scan(value interface{}) error {
 	return JSONUnmarshal(value, ccs)
 }
 

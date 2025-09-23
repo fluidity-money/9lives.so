@@ -102,14 +102,9 @@ type Query {
   campaignPriceEvents(poolAddress:String!): [PriceEvent]! 
 }
 
-type PriceEventShare {
-shares: Int
-identifier: String
-}
-
 type PriceEvent {
   createdAt: Int!
-  shares: [PriceEventShare]!
+  shares: [CampaignShare]!
 }
 
 type CommentInvestment {
