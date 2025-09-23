@@ -189,6 +189,16 @@ type ComplexityRoot struct {
 		OutcomeIds func(childComplexity int) int
 	}
 
+	PriceEvent struct {
+		CreatedAt func(childComplexity int) int
+		Shares    func(childComplexity int) int
+	}
+
+	PriceEventShare struct {
+		Identifier func(childComplexity int) int
+		Shares     func(childComplexity int) int
+	}
+
 	Profile struct {
 		Email         func(childComplexity int) int
 		Settings      func(childComplexity int) int
@@ -198,6 +208,7 @@ type ComplexityRoot struct {
 	Query struct {
 		CampaignByID              func(childComplexity int, id string) int
 		CampaignComments          func(childComplexity int, campaignID string, onlyHolders *bool, page *int, pageSize *int) int
+		CampaignPriceEvents       func(childComplexity int, poolAddress string) int
 		Campaigns                 func(childComplexity int, category []string, orderBy *string, searchTerm *string, page *int, pageSize *int, address *string) int
 		Changelog                 func(childComplexity int) int
 		CountReferees             func(childComplexity int, referrerAddress string) int
@@ -316,6 +327,7 @@ type QueryResolver interface {
 	CountReferees(ctx context.Context, referrerAddress string) (int, error)
 	UserWonCampaignsProfits(ctx context.Context, address string) ([]*types.CampaignProfit, error)
 	CampaignComments(ctx context.Context, campaignID string, onlyHolders *bool, page *int, pageSize *int) ([]*types.Comment, error)
+	CampaignPriceEvents(ctx context.Context, poolAddress string) ([]*types.PriceEvent, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -1006,6 +1018,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Position.OutcomeIds(childComplexity), true
 
+	case "PriceEvent.createdAt":
+		if e.complexity.PriceEvent.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.PriceEvent.CreatedAt(childComplexity), true
+
+	case "PriceEvent.shares":
+		if e.complexity.PriceEvent.Shares == nil {
+			break
+		}
+
+		return e.complexity.PriceEvent.Shares(childComplexity), true
+
+	case "PriceEventShare.identifier":
+		if e.complexity.PriceEventShare.Identifier == nil {
+			break
+		}
+
+		return e.complexity.PriceEventShare.Identifier(childComplexity), true
+
+	case "PriceEventShare.shares":
+		if e.complexity.PriceEventShare.Shares == nil {
+			break
+		}
+
+		return e.complexity.PriceEventShare.Shares(childComplexity), true
+
 	case "Profile.email":
 		if e.complexity.Profile.Email == nil {
 			break
@@ -1050,6 +1090,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.CampaignComments(childComplexity, args["campaignId"].(string), args["onlyHolders"].(*bool), args["page"].(*int), args["pageSize"].(*int)), true
+
+	case "Query.campaignPriceEvents":
+		if e.complexity.Query.CampaignPriceEvents == nil {
+			break
+		}
+
+		args, err := ec.field_Query_campaignPriceEvents_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.CampaignPriceEvents(childComplexity, args["poolAddress"].(string)), true
 
 	case "Query.campaigns":
 		if e.complexity.Query.Campaigns == nil {
@@ -2184,6 +2236,21 @@ func (ec *executionContext) field_Query_campaignComments_args(ctx context.Contex
 		}
 	}
 	args["pageSize"] = arg3
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_campaignPriceEvents_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["poolAddress"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("poolAddress"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["poolAddress"] = arg0
 	return args, nil
 }
 
@@ -6647,6 +6714,182 @@ func (ec *executionContext) fieldContext_Position_content(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _PriceEvent_createdAt(ctx context.Context, field graphql.CollectedField, obj *types.PriceEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PriceEvent_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PriceEvent_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PriceEvent",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PriceEvent_shares(ctx context.Context, field graphql.CollectedField, obj *types.PriceEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PriceEvent_shares(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Shares, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*types.PriceEventShare)
+	fc.Result = res
+	return ec.marshalNPriceEventShare2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceEventShare(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PriceEvent_shares(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PriceEvent",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "shares":
+				return ec.fieldContext_PriceEventShare_shares(ctx, field)
+			case "identifier":
+				return ec.fieldContext_PriceEventShare_identifier(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PriceEventShare", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PriceEventShare_shares(ctx context.Context, field graphql.CollectedField, obj *types.PriceEventShare) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PriceEventShare_shares(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Shares, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PriceEventShare_shares(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PriceEventShare",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PriceEventShare_identifier(ctx context.Context, field graphql.CollectedField, obj *types.PriceEventShare) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PriceEventShare_identifier(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Identifier, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PriceEventShare_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PriceEventShare",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Profile_walletAddress(ctx context.Context, field graphql.CollectedField, obj *types.Profile) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Profile_walletAddress(ctx, field)
 	if err != nil {
@@ -8074,6 +8317,67 @@ func (ec *executionContext) fieldContext_Query_campaignComments(ctx context.Cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_campaignComments_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_campaignPriceEvents(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_campaignPriceEvents(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CampaignPriceEvents(rctx, fc.Args["poolAddress"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*types.PriceEvent)
+	fc.Result = res
+	return ec.marshalNPriceEvent2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceEvent(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_campaignPriceEvents(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "createdAt":
+				return ec.fieldContext_PriceEvent_createdAt(ctx, field)
+			case "shares":
+				return ec.fieldContext_PriceEvent_shares(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PriceEvent", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_campaignPriceEvents_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -12271,6 +12575,88 @@ func (ec *executionContext) _Position(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var priceEventImplementors = []string{"PriceEvent"}
+
+func (ec *executionContext) _PriceEvent(ctx context.Context, sel ast.SelectionSet, obj *types.PriceEvent) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, priceEventImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PriceEvent")
+		case "createdAt":
+			out.Values[i] = ec._PriceEvent_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "shares":
+			out.Values[i] = ec._PriceEvent_shares(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var priceEventShareImplementors = []string{"PriceEventShare"}
+
+func (ec *executionContext) _PriceEventShare(ctx context.Context, sel ast.SelectionSet, obj *types.PriceEventShare) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, priceEventShareImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PriceEventShare")
+		case "shares":
+			out.Values[i] = ec._PriceEventShare_shares(ctx, field, obj)
+		case "identifier":
+			out.Values[i] = ec._PriceEventShare_identifier(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var profileImplementors = []string{"Profile"}
 
 func (ec *executionContext) _Profile(ctx context.Context, sel ast.SelectionSet, obj *types.Profile) graphql.Marshaler {
@@ -12736,6 +13122,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_campaignComments(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "campaignPriceEvents":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_campaignPriceEvents(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -13965,6 +14373,82 @@ func (ec *executionContext) marshalNPosition2ᚕᚖgithubᚗcomᚋfluidityᚑmon
 	return ret
 }
 
+func (ec *executionContext) marshalNPriceEvent2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceEvent(ctx context.Context, sel ast.SelectionSet, v []*types.PriceEvent) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOPriceEvent2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceEvent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNPriceEventShare2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceEventShare(ctx context.Context, sel ast.SelectionSet, v []*types.PriceEventShare) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOPriceEventShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceEventShare(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalNSettlementType2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐSettlementType(ctx context.Context, v interface{}) (model.SettlementType, error) {
 	var res model.SettlementType
 	err := res.UnmarshalGQL(v)
@@ -14423,6 +14907,20 @@ func (ec *executionContext) marshalOPosition2ᚖgithubᚗcomᚋfluidityᚑmoney�
 		return graphql.Null
 	}
 	return ec._Position(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPriceEvent2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceEvent(ctx context.Context, sel ast.SelectionSet, v *types.PriceEvent) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PriceEvent(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPriceEventShare2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceEventShare(ctx context.Context, sel ast.SelectionSet, v *types.PriceEventShare) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PriceEventShare(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOProfile2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐProfile(ctx context.Context, sel ast.SelectionSet, v *types.Profile) graphql.Marshaler {

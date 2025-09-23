@@ -1758,6 +1758,20 @@ func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string,
 	return comments, nil
 }
 
+// CampaignPriceEvents is the resolver for the campaignPriceEvents field.
+func (r *queryResolver) CampaignPriceEvents(ctx context.Context, poolAddress string) ([]*types.PriceEvent, error) {
+	var events []*types.PriceEvent
+	err := r.DB.Raw(`
+	SELECT created_by as created_at, shares
+	FROM ninelives_events_amm_details
+	WHERE emitter_addr = ?
+	`, poolAddress).Scan(&events).Error
+	if err != nil {
+		return nil, fmt.Errorf("Error getting price change events")
+	}
+	return events, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {

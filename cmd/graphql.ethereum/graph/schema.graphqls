@@ -95,6 +95,21 @@ type Query {
   Gets comments of a campaign
   """
   campaignComments(campaignId: String!, onlyHolders: Boolean, page: Int, pageSize: Int): [Comment]!
+
+  """
+  Get historical prices change events to create a price chart timeline
+  """
+  campaignPriceEvents(poolAddress:String!): [PriceEvent]! 
+}
+
+type PriceEventShare {
+shares: Int
+identifier: String
+}
+
+type PriceEvent {
+  createdAt: Int!
+  shares: [PriceEventShare]!
 }
 
 type CommentInvestment {
