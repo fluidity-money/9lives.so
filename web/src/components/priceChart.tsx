@@ -113,6 +113,7 @@ export default function PriceChart({
               minute: "2-digit",
             });
           }}
+          formatter={(c) => `${c}%`}
           contentStyle={{
             borderColor: "#0C0C0C",
             borderRadius: 3,
