@@ -17,6 +17,7 @@ import { combineClass } from "@/utils/combineClass";
 import useUserLiquidity from "@/hooks/useUserLiquidity";
 import { useActiveAccount } from "thirdweb/react";
 import DetailComments from "./detailComments";
+import PriceChart from "../priceChart";
 
 export default function DetailWrapper({
   initialData,
@@ -72,6 +73,7 @@ export default function DetailWrapper({
           isConcluded={isConcluded}
           isDpm={data.isDpm}
         />
+        <PriceChart poolAddress={data.poolAddress} outcomes={data.outcomes} />
         <DetailOutcomeTable
           data={data}
           isDpm={data.isDpm}
