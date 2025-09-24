@@ -21,14 +21,14 @@ export default function PriceChart({
 }) {
   const { data: priceEvents, isSuccess } = usePriceEvents(poolAddress);
   const colors = [
-    "#B8F2AA",
-    "#FFB3B3",
-    "#52AACC",
-    "#FFD699",
-    "#D0ABFF",
+    "#5dd341",
+    "#f96565",
+    "#3fb5e2",
+    "#e7aa4e",
+    "#8b48e3",
     "#0C0C0C",
-    "#DDEAEF",
-    "#EEEEEE",
+    "#9be2fd",
+    "#b8b7b7",
   ];
 
   if (isSuccess && 2 > priceEvents.length) {
@@ -112,6 +112,11 @@ export default function PriceChart({
               hour: "2-digit",
               minute: "2-digit",
             });
+          }}
+          contentStyle={{
+            borderColor: "#0C0C0C",
+            borderRadius: 3,
+            boxShadow: "5px 5px 0 rgba(12, 12, 12, 0.20)",
           }}
           labelStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
           itemStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
