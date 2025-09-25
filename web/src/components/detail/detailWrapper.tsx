@@ -1,5 +1,5 @@
 "use client";
-import { CampaignDetail, CampaignDetailDto } from "@/types";
+import { CampaignDetail, CampaignDetailDto, PriceEvent } from "@/types";
 import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
@@ -21,8 +21,10 @@ import PriceChart from "../priceChart";
 
 export default function DetailWrapper({
   initialData,
+  priceEvents,
 }: {
   initialData: CampaignDetail;
+  priceEvents: PriceEvent[];
 }) {
   const account = useActiveAccount();
   const outcomeId = useSearchParams()?.get("outcomeId");
@@ -73,7 +75,11 @@ export default function DetailWrapper({
           isConcluded={isConcluded}
           isDpm={data.isDpm}
         />
-        <PriceChart poolAddress={data.poolAddress} outcomes={data.outcomes} />
+        <PriceChart
+          poolAddress={data.poolAddress}
+          outcomes={data.outcomes}
+          initialData={priceEvents}
+        />
         <DetailOutcomeTable
           data={data}
           isDpm={data.isDpm}

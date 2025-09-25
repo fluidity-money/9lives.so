@@ -6,6 +6,7 @@ import {
   requestUserClaims,
   requestPaymaster,
   requestComments,
+  requestPriceChanges,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -327,3 +328,7 @@ export type Ticket = {
 export type Comment = NonNullable<
   Awaited<ReturnType<typeof requestComments>>[number]
 >;
+
+export type PriceEvent = Awaited<
+  ReturnType<typeof requestPriceChanges>
+>[number];

@@ -1,6 +1,9 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
 import config from "@/config";
-import { requestCampaignById } from "@/providers/graphqlClient";
+import {
+  requestCampaignById,
+  requestPriceChanges,
+} from "@/providers/graphqlClient";
 import { getCampaignsForSSG } from "@/serverData/getCampaigns";
 import { CampaignDetailDto } from "@/types";
 import { notFound } from "next/navigation";
@@ -34,9 +37,10 @@ export default async function DetailPage({ params }: { params: Params }) {
   const response = await requestCampaignById(id);
   if (!response) notFound();
   const campaign = JSON.parse(JSON.stringify(new CampaignDetailDto(response)));
+  const priceEvents = await requestPriceChanges(response.poolAddress);
   return (
     <Suspense>
-      <DetailWrapper initialData={campaign} />
+      <DetailWrapper initialData={campaign} priceEvents={priceEvents} />
     </Suspense>
   );
 }

@@ -1,5 +1,5 @@
 import usePriceEvents from "@/hooks/usePriceEvents";
-import { Outcome } from "@/types";
+import { Outcome, PriceEvent } from "@/types";
 import getAmmPrices from "@/utils/getAmmPrices";
 import {
   LineChart,
@@ -15,11 +15,16 @@ import {
 export default function PriceChart({
   outcomes,
   poolAddress,
+  initialData,
 }: {
+  initialData: PriceEvent[];
   poolAddress: string;
   outcomes: Outcome[];
 }) {
-  const { data: priceEvents, isSuccess } = usePriceEvents(poolAddress);
+  const { data: priceEvents, isSuccess } = usePriceEvents(
+    poolAddress,
+    initialData,
+  );
   const colors = [
     "#5dd341",
     "#f96565",
