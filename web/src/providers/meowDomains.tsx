@@ -8,7 +8,7 @@ import { updateMeowDomain } from "./graphqlClient";
 
 export default function MeowDomainProvider() {
   const account = useActiveAccount();
-  const { data: profile } = useProfile(account?.address);
+  const { data: profile, isSuccess } = useProfile(account?.address);
   useEffect(() => {
     async function checkAndStoreMeowAvatar(account: Account) {
       const contract = config.contracts.meowDomains;
@@ -61,8 +61,8 @@ export default function MeowDomainProvider() {
         });
       }
     }
-    if (account && !profile?.settings?.meowAvatar) {
+    if (account && isSuccess && !profile?.settings?.meowAvatar) {
       checkAndStoreMeowAvatar(account);
     }
-  }, [account]);
+  }, [account, isSuccess, profile?.settings?.meowAvatar]);
 }
