@@ -9,26 +9,28 @@ import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
 import AddLiquidityButton from "../addLiquidityButton";
-import RemoveLiquidityButton from "../removeLiquidityButton";
-import ClaimLiquidityButton from "../claimLiquidityButton";
+// import RemoveLiquidityButton from "../removeLiquidityButton";
+// import ClaimLiquidityButton from "../claimLiquidityButton";
 import ClaimFeesButton from "../claimFeesButton";
 import { CountdownTimer } from "../countdownTimer";
+import { useState } from "react";
+import Modal from "../themed/modal";
+import ManageLiquidityDialog from "../manageLiquidityDialog";
 export default function DetailHeader({
   data,
   isEnded,
   isConcluded,
   isDpm,
-  userLiquidity,
 }: {
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
   isDpm: boolean | null;
-  userLiquidity?: string;
 }) {
   const left = data.ending - Math.floor(Date.now() / 1000);
   const weekDuration = 60 * 60 * 24 * 7;
   const inThisWeek = weekDuration >= left && left > 0;
+  const [isModalOpen, setIsModalOpen] = useState(true);
 
   return (
     <div className="flex flex-col gap-4">
@@ -135,7 +137,7 @@ export default function DetailHeader({
           )}
         </div>
         <div className="flex items-center gap-2.5">
-          {userLiquidity && Number(userLiquidity) > 0 ? (
+          {/* {userLiquidity && Number(userLiquidity) > 0 ? (
             isConcluded ? (
               <ClaimLiquidityButton
                 campaignId={data.identifier}
@@ -145,14 +147,10 @@ export default function DetailHeader({
               Number(userLiquidity) > 0 ? (
               <RemoveLiquidityButton
                 data={data}
-                name={data.name}
-                campaignId={data.identifier}
-                tradingAddr={data.poolAddress}
-                totalLiquidity={data.liquidityVested}
-                liquidity={userLiquidity}
+                userLiquidity={userLiquidity}
               />
             ) : null
-          ) : null}
+          ) : null} */}
           {isDpm ? null : (
             <AddLiquidityButton
               data={data}
@@ -164,6 +162,13 @@ export default function DetailHeader({
           {isDpm ? null : <ClaimFeesButton address={data.poolAddress} />}
         </div>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        title="MANAGE LIQUIDITY"
+      >
+        <ManageLiquidityDialog data={data} />
+      </Modal>
     </div>
   );
 }

@@ -13,17 +13,11 @@ import { CampaignDetail } from "@/types";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function AddLiquidityDialog({
-  name,
   close,
-  campaignId,
-  tradingAddr,
   data,
 }: {
-  name: string;
-  close: () => void;
+  close?: () => void;
   data: CampaignDetail;
-  campaignId: `0x${string}`;
-  tradingAddr: `0x${string}`;
 }) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
@@ -44,12 +38,11 @@ export default function AddLiquidityDialog({
     },
   });
   const { add } = useLiquidity({
-    campaignId,
-    tradingAddr,
+    campaignId: data.identifier,
+    tradingAddr: data.poolAddress,
   });
   const { add: addWithPaymaster } = useLiquidityWithPaymaster({
     data,
-    tradingAddr,
   });
   const onSubmit = async (input: FormData, account: Account) => {
     try {
@@ -58,7 +51,7 @@ export default function AddLiquidityDialog({
         account!,
         input.seedLiquidity.toString(),
       );
-      close();
+      close?.();
     } finally {
       setIsFunding(false);
     }
@@ -73,15 +66,15 @@ export default function AddLiquidityDialog({
   };
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-center font-chicago text-base">
+      {/* <p className="text-center font-chicago text-base">
         Supply Liquidity to The Campaign
       </p>
-      <p className="text-center font-chicago text-xl">{name}</p>
+      <p className="text-center font-chicago text-xl">{data.name}</p>
       <p className="text-center text-xs">
         Higher liquidty means better trading stability and lower slippage. You
         can add liquidity to your campaign and earn provider rewards at any
         time.
-      </p>
+      </p> */}
       <CreateCampaignFormLiquidity
         renderLabel={false}
         register={register}

@@ -64,6 +64,9 @@ const config: Config = {
         "9aiButtonDisabled": "2px 2px 0px 0px rgba(68, 68, 68, 0.20) inset;",
         "9ogBox":
           "-4px -4px 0px 0px rgba(0, 0, 0, 0.25) inset, 4px 4px 0px 0px rgba(255, 255, 255, 0.90) inset, 2px 2px 0px 0px rgba(12, 12, 12, 0.20)",
+        "9liquidityVar":
+          "-4px -4px 0 0 rgba(0, 0, 0, 0.25) inset, 4px 4px 0 0 rgba(255, 255, 255, 0.90) inset, 2px 2px 0 0 rgba(12, 12, 12, 0.20)",
+        "9liqCard": "4px 4px 0 0 rgba(0, 0, 0, 0.20) inset",
       },
       animation: {
         fade: "fade linear 2s;",

@@ -18,20 +18,12 @@ import { CampaignDetail } from "@/types";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function RemoveLiquidityDialog({
-  name,
   close,
-  campaignId,
-  tradingAddr,
-  liquidity,
-  totalLiquidity,
+  userLiquidity,
   data,
 }: {
-  name: string;
-  close: () => void;
-  campaignId: `0x${string}`;
-  tradingAddr: `0x${string}`;
-  liquidity: string;
-  totalLiquidity: number;
+  close?: () => void;
+  userLiquidity: string;
   data: CampaignDetail;
 }) {
   const account = useActiveAccount();
@@ -39,9 +31,12 @@ export default function RemoveLiquidityDialog({
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
   const enabledPaymaster = useFeatureFlag("enable paymaster remove liquidity");
-  const isSafeMax = totalLiquidity - Number(liquidity) >= 1e6;
+  const isSafeMax = data.liquidityVested - Number(userLiquidity) >= 1e6;
   const maxLiquidity = Number(
-    formatFusdc(isSafeMax ? Number(liquidity) : Number(liquidity) - 1e6, 6),
+    formatFusdc(
+      isSafeMax ? Number(userLiquidity) : Number(userLiquidity) - 1e6,
+      6,
+    ),
   );
   const formSchema = z.object({
     liquidity: z.preprocess(
@@ -62,12 +57,11 @@ export default function RemoveLiquidityDialog({
     },
   });
   const { remove } = useLiquidity({
-    campaignId,
-    tradingAddr,
+    campaignId: data.identifier,
+    tradingAddr: data.poolAddress,
   });
   const { remove: removeWithPaymaster } = useLiquidityWithPaymaster({
     data,
-    tradingAddr,
   });
   const onSubmit = async (input: FormData, account: Account) => {
     try {
@@ -75,9 +69,9 @@ export default function RemoveLiquidityDialog({
       await (enabledPaymaster ? removeWithPaymaster : remove)(
         account!,
         input.liquidity.toString(),
-        totalLiquidity,
+        data.liquidityVested,
       );
-      close();
+      close?.();
     } finally {
       setIsLoading(false);
     }
@@ -92,13 +86,13 @@ export default function RemoveLiquidityDialog({
   };
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-center font-chicago text-base">
+      {/* <p className="text-center font-chicago text-base">
         Remove Liquidity from The Campaign
       </p>
-      <p className="text-center font-chicago text-base">{name}</p>
+      <p className="text-center font-chicago text-base">{data.name}</p>
       <p className="text-center text-xs">
         You can remove your liquidity shares and earn provider rewards.
-      </p>
+      </p> */}
       <p className="text-center font-chicago text-xl">{`${maxLiquidity} Shares`}</p>
       <div className="flex items-center justify-between">
         <span className="font-geneva text-xs text-9black">0%</span>

@@ -10,13 +10,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 import { Account } from "thirdweb/wallets";
 
-const useLiquidityWithPaymaster = ({
-  tradingAddr,
-  data,
-}: {
-  tradingAddr: `0x${string}`;
-  data: CampaignDetail;
-}) => {
+const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
   const idempotentOutcome = "0x0000000000000000";
   const queryClient = useQueryClient();
   const account = useActiveAccount();
@@ -27,28 +21,27 @@ const useLiquidityWithPaymaster = ({
       amountToSpend,
       outcome,
       opType,
-      tradingAddr,
       minimumBack,
       outgoingChainEid,
-    }: Parameters<typeof requestPaymaster>[0]) =>
+    }: Omit<Parameters<typeof requestPaymaster>[0], "tradingAddr">) =>
       requestPaymaster({
         amountToSpend,
         outcome,
         opType,
         outgoingChainEid,
-        tradingAddr,
+        tradingAddr: data.poolAddress,
         minimumBack,
       }),
     onMutate: async (newRequest) => {
       // handle liquidity
       await queryClient.cancelQueries({
-        queryKey: ["userLiquidity", account?.address, tradingAddr],
+        queryKey: ["userLiquidity", account?.address, data.poolAddress],
       });
       const previousLiquidity =
         queryClient.getQueryData<string>([
           "userLiquidity",
           account?.address,
-          tradingAddr,
+          data.poolAddress,
         ]) ?? "0";
       // Optimistically update previousLiquidity with newAmount
       const newAmount =
@@ -85,7 +78,7 @@ const useLiquidityWithPaymaster = ({
     onError: (err, newRequest, context) => {
       if (context?.previousLiquidity) {
         queryClient.setQueryData(
-          ["userLiquidity", account?.address, tradingAddr],
+          ["userLiquidity", account?.address, data.poolAddress],
           context.previousLiquidity,
         );
       }
@@ -105,16 +98,15 @@ const useLiquidityWithPaymaster = ({
       amountToSpend,
       outcome,
       opType,
-      tradingAddr,
       minimumBack,
       outgoingChainEid,
-    }: Parameters<typeof requestPaymaster>[0]) =>
+    }: Omit<Parameters<typeof requestPaymaster>[0], "tradingAddr">) =>
       requestPaymaster({
         amountToSpend,
         outcome,
         opType,
         outgoingChainEid,
-        tradingAddr,
+        tradingAddr: data.poolAddress,
         minimumBack,
       }),
     onMutate: async (newRequest) => {
@@ -122,13 +114,13 @@ const useLiquidityWithPaymaster = ({
       let previousLiquidity;
       if (newRequest.amountToSpend !== "0") {
         await queryClient.cancelQueries({
-          queryKey: ["userLiquidity", account?.address, tradingAddr],
+          queryKey: ["userLiquidity", account?.address, data.poolAddress],
         });
         previousLiquidity =
           queryClient.getQueryData<string>([
             "userLiquidity",
             account?.address,
-            tradingAddr,
+            data.poolAddress,
           ]) ?? "0";
         // Optimistically update the cache if previousBalance
         if (previousLiquidity !== "0") {
@@ -136,7 +128,7 @@ const useLiquidityWithPaymaster = ({
             BigInt(previousLiquidity) - BigInt(newRequest.amountToSpend);
           const amount = leftAmount > BigInt(0) ? leftAmount : BigInt(0);
           queryClient.setQueryData(
-            ["userLiquidity", account?.address, tradingAddr],
+            ["userLiquidity", account?.address, data.poolAddress],
             () => amount.toString(),
           );
         }
@@ -167,7 +159,7 @@ const useLiquidityWithPaymaster = ({
     onError: (err, newRequest, context) => {
       if (context?.previousLiquidity) {
         queryClient.setQueryData(
-          ["userLiquidity", account?.address, tradingAddr],
+          ["userLiquidity", account?.address, data.poolAddress],
           context.previousLiquidity,
         );
       }
@@ -208,7 +200,6 @@ const useLiquidityWithPaymaster = ({
             amountToSpend: amount.toString(),
             outcome: idempotentOutcome,
             opType: "ADD_LIQUIDITY",
-            tradingAddr: tradingAddr,
             outgoingChainEid: 0,
             minimumBack: "0",
           });
@@ -223,7 +214,7 @@ const useLiquidityWithPaymaster = ({
             track(EVENTS.ADD_LIQUIDITY, {
               amount: result.amount,
               type: "addLiquidityWithPaymaster",
-              tradingAddr,
+              tradingAddr: data.poolAddress,
             });
             res(result.ticketId);
           } else {
@@ -256,7 +247,6 @@ const useLiquidityWithPaymaster = ({
             amountToSpend: amount.toString(),
             outcome: idempotentOutcome,
             opType: "REMOVE_LIQUIDITY",
-            tradingAddr: tradingAddr,
             outgoingChainEid: 0,
             minimumBack: "0",
           });
@@ -271,7 +261,7 @@ const useLiquidityWithPaymaster = ({
             track(EVENTS.REMOVE_LIQUIDITY, {
               amount: result.amount,
               type: "removeLiquidityWithPaymaster",
-              tradingAddr,
+              tradingAddr: data.poolAddress,
             });
             res(result.ticketId);
           } else {
@@ -295,7 +285,6 @@ const useLiquidityWithPaymaster = ({
             amountToSpend: "0",
             outcome: idempotentOutcome,
             opType: "REMOVE_LIQUIDITY",
-            tradingAddr: tradingAddr,
             outgoingChainEid: 0,
             minimumBack: "0",
           });
@@ -310,7 +299,7 @@ const useLiquidityWithPaymaster = ({
             track(EVENTS.REMOVE_LIQUIDITY, {
               amount: result.amount,
               type: "claimLiquidityWithPaymaster",
-              tradingAddr,
+              tradingAddr: data.poolAddress,
             });
             res(result.ticketId);
           } else {

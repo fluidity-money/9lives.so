@@ -56,10 +56,6 @@ export default function DetailWrapper({
     initialData,
   });
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
-  const { data: userLiquidity } = useUserLiquidity({
-    address: account?.address,
-    tradingAddr: data.poolAddress,
-  });
   return (
     <section
       className={combineClass(
@@ -71,7 +67,6 @@ export default function DetailWrapper({
         <DetailHeader
           data={data}
           isEnded={isEnded}
-          userLiquidity={userLiquidity}
           isConcluded={isConcluded}
           isDpm={data.isDpm}
         />
