@@ -4,17 +4,7 @@ import Modal from "./themed/modal";
 import AddLiquidityDialog from "./addLiquidityDialog";
 import { CampaignDetail } from "@/types";
 
-export default function AddLiquidityButton({
-  name,
-  campaignId,
-  tradingAddr,
-  data,
-}: {
-  name: string;
-  campaignId: `0x${string}`;
-  tradingAddr: `0x${string}`;
-  data: CampaignDetail;
-}) {
+export default function AddLiquidityButton({ data }: { data: CampaignDetail }) {
   const [isLPModalOpen, setIsLPModalOpen] = useState(false);
   return (
     <>
@@ -28,13 +18,7 @@ export default function AddLiquidityButton({
         setIsOpen={setIsLPModalOpen}
         title="ADD LIQUIDITY"
       >
-        <AddLiquidityDialog
-          data={data}
-          close={() => setIsLPModalOpen(false)}
-          name={name}
-          campaignId={campaignId}
-          tradingAddr={tradingAddr}
-        />
+        <AddLiquidityDialog data={data} close={() => setIsLPModalOpen(false)} />
       </Modal>
     </>
   );

@@ -8,7 +8,7 @@ import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
-import AddLiquidityButton from "../addLiquidityButton";
+// import AddLiquidityButton from "../addLiquidityButton";
 // import RemoveLiquidityButton from "../removeLiquidityButton";
 // import ClaimLiquidityButton from "../claimLiquidityButton";
 import ClaimFeesButton from "../claimFeesButton";
@@ -151,15 +151,15 @@ export default function DetailHeader({
               />
             ) : null
           ) : null} */}
-          {isDpm ? null : (
+          {/* {isDpm ? null : (
             <AddLiquidityButton
               data={data}
               name={data.name}
               campaignId={data.identifier}
               tradingAddr={data.poolAddress}
             />
-          )}
-          {isDpm ? null : <ClaimFeesButton address={data.poolAddress} />}
+          )} */}
+          {/* {isDpm ? null : <ClaimFeesButton address={data.poolAddress} />} */}
         </div>
       </div>
       <Modal
