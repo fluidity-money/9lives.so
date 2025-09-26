@@ -7,11 +7,6 @@ const sarpSignallerAbi = [
         type: "address",
         internalType: "address",
       },
-      {
-        name: "_fusdc",
-        type: "address",
-        internalType: "contract IERC20",
-      },
     ],
     stateMutability: "nonpayable",
   },
@@ -80,13 +75,58 @@ const sarpSignallerAbi = [
         type: "address",
         internalType: "address",
       },
-      {
-        name: "repaid",
-        type: "bool",
-        internalType: "bool",
-      },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "event",
+    name: "AddressFeesClaimed",
+    inputs: [
+      {
+        name: "recipient",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "AmmDetails",
+    inputs: [
+      {
+        name: "product",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "shares",
+        type: "tuple[]",
+        indexed: false,
+        internalType: "struct IEvents.ShareDetail[]",
+        components: [
+          {
+            name: "shares",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "identifier",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
+        ],
+      },
+    ],
+    anonymous: false,
   },
   {
     type: "event",
@@ -367,6 +407,124 @@ const sarpSignallerAbi = [
   },
   {
     type: "event",
+    name: "LPFeesClaimed",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "feesEarned",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "senderLiquidityShares",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "LiquidityAdded",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "fusdcAmt",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "liquidityShares",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "LiquidityClaimed",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "fusdcAmt",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "sharesAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "LiquidityRemoved",
+    inputs: [
+      {
+        name: "fusdcAmt",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "liquidityAmt",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "LockedUp",
     inputs: [
       {
@@ -561,6 +719,31 @@ const sarpSignallerAbi = [
   },
   {
     type: "event",
+    name: "ReferrerEarnedFees",
+    inputs: [
+      {
+        name: "referrer",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "fees",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "volume",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "Requested",
     inputs: [
       {
@@ -573,6 +756,43 @@ const sarpSignallerAbi = [
         name: "ticket",
         type: "uint256",
         indexed: true,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "SharesBurned",
+    inputs: [
+      {
+        name: "identifier",
+        type: "bytes8",
+        indexed: true,
+        internalType: "bytes8",
+      },
+      {
+        name: "shareAmount",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "spender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        indexed: false,
+        internalType: "address",
+      },
+      {
+        name: "fusdcReturned",
+        type: "uint256",
+        indexed: false,
         internalType: "uint256",
       },
     ],
@@ -636,6 +856,44 @@ const sarpSignallerAbi = [
         type: "uint256",
         indexed: true,
         internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "TimeExtension",
+    inputs: [
+      {
+        name: "newDeadline",
+        type: "uint64",
+        indexed: true,
+        internalType: "uint64",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Whinged",
+    inputs: [
+      {
+        name: "trading",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "preferredOutcome",
+        type: "bytes8",
+        indexed: true,
+        internalType: "bytes8",
+      },
+      {
+        name: "whinger",
+        type: "address",
+        indexed: true,
+        internalType: "address",
       },
     ],
     anonymous: false,

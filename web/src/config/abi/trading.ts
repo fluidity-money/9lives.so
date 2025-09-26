@@ -1,7 +1,7 @@
 const tradingAbi = [
   {
     type: "function",
-    name: "addLiquidityA975D995",
+    name: "addLiquidityB9DDA952",
     inputs: [
       {
         name: "liquidity",
@@ -12,6 +12,16 @@ const tradingAbi = [
         name: "recipient",
         type: "address",
         internalType: "address",
+      },
+      {
+        name: "minShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "maxShares",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     outputs: [
