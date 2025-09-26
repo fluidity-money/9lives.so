@@ -6,8 +6,6 @@ use proptest_derive::Arbitrary as P;
 
 use arbitrary::Arbitrary as A;
 
-use crate::utils::*;
-
 // Actions for use in property testing/fuzzing.
 
 #[derive(Clone, Debug, PartialEq, arbitrary::Arbitrary, proptest_derive::Arbitrary)]
