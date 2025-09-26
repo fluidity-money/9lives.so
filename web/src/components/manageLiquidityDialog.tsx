@@ -29,7 +29,7 @@ export default function ManageLiquidityDialog({
     Number(data.liquidityVested) > 1e6;
   return (
     <div className="flex flex-col gap-4">
-      <h5 className="text-md text-center font-chicago">
+      <h5 className="text-center font-chicago text-base">
         Supply Liquidity to the campaign?
       </h5>
       <div className="flex-col gap-4 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] p-5 text-xs shadow-9liqCard md:flex">
