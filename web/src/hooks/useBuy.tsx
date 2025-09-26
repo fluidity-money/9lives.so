@@ -78,7 +78,7 @@ const useBuy = ({
           const allowanceTx = prepareContractCall({
             contract: config.contracts.fusdc,
             method: "allowance",
-            params: [account.address, config.contracts.buyHelper.address],
+            params: [account.address, config.contracts.buyHelper2.address],
           });
           const allowance = (await simulateTransaction({
             transaction: allowanceTx,
@@ -88,7 +88,7 @@ const useBuy = ({
             const approveTx = prepareContractCall({
               contract: config.contracts.fusdc,
               method: "approve",
-              params: [config.contracts.buyHelper.address, amount],
+              params: [config.contracts.buyHelper2.address, amount],
             });
             await sendTransaction({
               transaction: approveTx,
