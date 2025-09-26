@@ -14,6 +14,7 @@ import {
   useSwitchActiveWalletChain,
 } from "thirdweb/react";
 import RelayTxToaster from "@/components/relayTxToaster";
+import { MaxUint256 } from "ethers";
 
 type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 const useBuyWithRelay = ({
@@ -73,23 +74,30 @@ const useBuyWithRelay = ({
           }
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.details.currencyOut.amount;
-          const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
-            prepareContractCall({
+          const mintWith9LivesTx = (simulatedShare?: bigint) => {
+            const minSharesOut = simulatedShare
+              ? (simulatedShare * BigInt(95)) / BigInt(100)
+              : BigInt(0);
+            const maxSharesOut = simulatedShare
+              ? (simulatedShare * BigInt(105)) / BigInt(100)
+              : MaxUint256;
+            return prepareContractCall({
               contract: config.contracts.buyHelper2,
               method: "mint",
               params: [
                 tradingAddr,
-                toToken,
+                config.contracts.fusdc.address,
                 outcomeId,
-                minShareOut,
+                minSharesOut,
+                maxSharesOut,
                 toAmount,
                 referrer,
                 BigInt(0), //rebate
                 BigInt(Math.floor(Date.now() / 1000) + 60 * 30), // deadline
                 account.address,
               ],
-              value: minShareOut === BigInt(0) ? toAmount : undefined,
             });
+          };
           // const return9lives = await simulateTransaction({
           //   transaction: mintWith9LivesTx(),
           // });

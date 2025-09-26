@@ -213,7 +213,7 @@ export default function DetailBuyAction({
         );
       } else {
         let action = enabledPaymaster ? buyWithPaymaster : buy;
-        await action(supply);
+        await action(supply, profile?.settings?.refererr ?? "");
       }
     } finally {
       setIsMinting(false);

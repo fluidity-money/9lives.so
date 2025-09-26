@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { useActiveAccount } from "thirdweb/react";
+import { MaxUint256 } from "ethers";
 
 const useBuy = ({
   shareAddr,
@@ -28,7 +29,7 @@ const useBuy = ({
 }) => {
   const queryClient = useQueryClient();
   const account = useActiveAccount();
-  const buy = async (fusdc: number) =>
+  const buy = async (fusdc: number, referrer: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -50,19 +51,30 @@ const useBuy = ({
             openFundModal();
             throw new Error("You dont have enough USDC.");
           }
-          const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
-            prepareContractCall({
-              contract: config.contracts.buyHelper,
+          const mintWith9LivesTx = (simulatedShare?: bigint) => {
+            const minSharesOut = simulatedShare
+              ? (simulatedShare * BigInt(95)) / BigInt(100)
+              : BigInt(0);
+            const maxSharesOut = simulatedShare
+              ? (simulatedShare * BigInt(105)) / BigInt(100)
+              : MaxUint256;
+            return prepareContractCall({
+              contract: config.contracts.buyHelper2,
               method: "mint",
               params: [
                 tradingAddr,
                 config.contracts.fusdc.address,
                 outcomeId,
-                minShareOut,
+                minSharesOut,
+                maxSharesOut,
                 amount,
+                referrer,
+                BigInt(0), //rebate
+                BigInt(Math.floor(Date.now() / 1000) + 60 * 30), // deadline
                 account.address,
               ],
             });
+          };
           const allowanceTx = prepareContractCall({
             contract: config.contracts.fusdc,
             method: "allowance",
@@ -83,15 +95,13 @@ const useBuy = ({
               account,
             });
           }
-          const return9lives = await simulateTransaction({
+          const simulatedShares = await simulateTransaction({
             transaction: mintWith9LivesTx(),
             account,
           });
 
-          // sets minimum share to %90 of expected return shares
-          const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
           await sendTransaction({
-            transaction: mintWith9LivesTx(minShareOut),
+            transaction: mintWith9LivesTx(simulatedShares),
             account,
           });
           const outcomeIds = outcomes.map((o) => o.identifier);

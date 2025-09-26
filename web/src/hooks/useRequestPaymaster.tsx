@@ -17,6 +17,7 @@ export default function useRequestPaymaster() {
     | "tradingAddr"
     | "minimumBack"
     | "outgoingChainEid"
+    | "referrer"
   >;
   const account = useActiveAccount();
   const chain = useActiveWalletChain();

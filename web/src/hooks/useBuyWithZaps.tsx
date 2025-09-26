@@ -11,7 +11,7 @@ import {
   executeRoute,
   getContractCallsQuote,
 } from "@lifi/sdk";
-import { ZeroAddress } from "ethers";
+import { MaxUint256 } from "ethers";
 
 const useBuyWithZaps = ({
   shareAddr,
@@ -53,15 +53,22 @@ const useBuyWithZaps = ({
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.estimate.toAmount;
 
-          const mintWith9LivesTx = (minShareOut = BigInt(0)) =>
-            prepareContractCall({
+          const mintWith9LivesTx = (simulatedShare?: bigint) => {
+            const minSharesOut = simulatedShare
+              ? (simulatedShare * BigInt(95)) / BigInt(100)
+              : BigInt(0);
+            const maxSharesOut = simulatedShare
+              ? (simulatedShare * BigInt(105)) / BigInt(100)
+              : MaxUint256;
+            return prepareContractCall({
               contract: config.contracts.buyHelper2,
               method: "mint",
               params: [
                 tradingAddr,
-                toToken,
+                config.contracts.fusdc.address,
                 outcomeId,
-                minShareOut,
+                minSharesOut,
+                maxSharesOut,
                 toAmount,
                 referrer,
                 BigInt(0), //rebate
@@ -69,6 +76,7 @@ const useBuyWithZaps = ({
                 account.address,
               ],
             });
+          };
           // const return9lives = await simulateTransaction({
           //   transaction: mintWith9LivesTx(),
           //   account,

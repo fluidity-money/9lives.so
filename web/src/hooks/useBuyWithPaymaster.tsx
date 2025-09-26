@@ -31,6 +31,7 @@ const useBuyWithPaymaster = ({
   const createTicket = usePaymasterStore((s) => s.createTicket);
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
     mutationFn: ({
+      referrer,
       amountToSpend,
       outcome,
       opType,
@@ -41,6 +42,7 @@ const useBuyWithPaymaster = ({
       requestPaymaster({
         amountToSpend,
         outcome,
+        referrer,
         opType,
         outgoingChainEid,
         tradingAddr,
@@ -163,7 +165,7 @@ const useBuyWithPaymaster = ({
       // });
     },
   });
-  const buy = async (fusdc: number) =>
+  const buy = async (fusdc: number, referrer: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -192,6 +194,7 @@ const useBuyWithPaymaster = ({
             tradingAddr: tradingAddr,
             outgoingChainEid: 0,
             minimumBack: "0",
+            referrer,
           });
           if (result && result.ticketId) {
             createTicket({

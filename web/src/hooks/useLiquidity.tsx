@@ -12,6 +12,7 @@ import {
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 import { useAllowanceCheck } from "./useAllowanceCheck";
+import { MaxUint256 } from "ethers";
 
 export default function useLiquidity({
   tradingAddr,
@@ -39,13 +40,25 @@ export default function useLiquidity({
             account,
             amount,
           });
-          const addLiquidityTx = prepareContractCall({
-            contract: tradingContract,
-            method: "addLiquidityA975D995",
-            params: [amount, account.address],
+          const addLiquidityTx = (simulatedShare?: bigint) => {
+            const minShares = simulatedShare
+              ? (simulatedShare * BigInt(95)) / BigInt(100)
+              : BigInt(0);
+            const maxShares = simulatedShare
+              ? (simulatedShare * BigInt(105)) / BigInt(100)
+              : MaxUint256;
+            return prepareContractCall({
+              contract: tradingContract,
+              method: "addLiquidityB9DDA952",
+              params: [amount, account.address, minShares, maxShares],
+            });
+          };
+          const simulatedShare = await simulateTransaction({
+            transaction: addLiquidityTx(),
+            account,
           });
           await sendTransaction({
-            transaction: addLiquidityTx,
+            transaction: addLiquidityTx(simulatedShare),
             account,
           });
           queryClient.invalidateQueries({
