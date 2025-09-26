@@ -45,12 +45,13 @@ const useSell = ({
             chain: config.destinationChain,
           });
 
-          const minShareOut = BigInt(Math.floor(Number(shareAmount) * 0.95));
-          const maxShareOut = shareAmount;
+          const sharesToBurn = shareAmount;
+          const minShareOut = BigInt(Math.floor(Number(sharesToBurn) * 0.95));
+          const maxShareBurned = sharesToBurn;
           const allowanceTx = prepareContractCall({
             contract: shareContract,
             method: "allowance",
-            params: [account.address, config.contracts.buyHelper.address],
+            params: [account.address, config.contracts.buyHelper2.address],
           });
           const allowance = await simulateTransaction({
             transaction: allowanceTx,
@@ -60,7 +61,7 @@ const useSell = ({
             const approveTx = prepareContractCall({
               contract: shareContract,
               method: "approve",
-              params: [config.contracts.buyHelper.address, shareAmount],
+              params: [config.contracts.buyHelper2.address, shareAmount],
             });
             await sendTransaction({
               transaction: approveTx,
@@ -68,14 +69,15 @@ const useSell = ({
             });
           }
           const burnTx = prepareContractCall({
-            contract: config.contracts.buyHelper,
+            contract: config.contracts.buyHelper2,
             method: "burn",
             params: [
               tradingAddr,
               outcomeId,
               usdAmount,
-              maxShareOut,
+              sharesToBurn,
               minShareOut,
+              maxShareBurned,
               account.address,
             ],
           });
@@ -101,8 +103,9 @@ const useSell = ({
           });
           track(EVENTS.BURN, {
             amount: fusdc,
-            maxShareOut,
+            sharesToBurn,
             minShareOut,
+            maxShareBurned,
             type: "sellWithContract",
             outcomeId,
             shareAddr,
