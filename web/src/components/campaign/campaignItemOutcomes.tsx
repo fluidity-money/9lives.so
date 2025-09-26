@@ -5,7 +5,6 @@ import { Outcome, SelectedOutcome } from "@/types";
 import { useRouter } from "next/navigation";
 import getAmmPrices from "@/utils/getAmmPrices";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
-import posthog from "posthog-js";
 interface CampaignItemOutcomesProps {
   campaignId: string;
   outcomes: Outcome[];
@@ -28,8 +27,6 @@ export default function CampaignItemOutcomes({
   const router = useRouter();
   const prices = useMemo(() => getAmmPrices(shares), [shares]);
   const yesPrice = prices?.get(outcomes[0].identifier) ?? 0.5;
-  const experimentIsLinear =
-    posthog.getFeatureFlag("display-odds-visual") === "linear";
   const isOddsEnabled = useFeatureFlag("display odds on campaign items");
   if (isConcluded)
     return (
@@ -69,7 +66,7 @@ export default function CampaignItemOutcomes({
             className={"flex-1 truncate"}
           />
         </div>
-        {yesPrice && isOddsEnabled && experimentIsLinear ? (
+        {yesPrice && isOddsEnabled ? (
           <div className="flex flex-row items-center gap-1">
             <span className="font-chicago text-sm">
               %{+(yesPrice * 100).toFixed(0)}
@@ -100,9 +97,7 @@ export default function CampaignItemOutcomes({
               </span>
             </Link>
             <div className="flex items-center gap-1">
-              {price &&
-              isOddsEnabled &&
-              posthog.getFeatureFlag("display-odds-visual") !== "control" ? (
+              {price && isOddsEnabled ? (
                 <span className="font-chicago text-sm font-normal">
                   %{+(price * 100).toFixed(0)}
                 </span>
