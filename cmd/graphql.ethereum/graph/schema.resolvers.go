@@ -1687,26 +1687,26 @@ func (r *queryResolver) UserWonCampaignsProfits(ctx context.Context, address str
 	var profits []*types.CampaignProfit
 	address = strings.ToLower(address)
 	err := r.DB.Raw(`
-	SELECT 
+	SELECT
  	nepa.fusdc_received -
     SUM(
-        CASE 
-            WHEN nbas.type = 'buy' THEN nbas.from_amount 
-            ELSE -nbas.to_amount 
+        CASE
+            WHEN nbas.type = 'buy' THEN nbas.from_amount
+            ELSE -nbas.to_amount
         END
     ) AS profit,
 	nbas.outcome_id as winner,
     nepa.emitter_addr as pool_address
 FROM ninelives_events_payoff_activated nepa
-JOIN ninelives_buys_and_sells_1 nbas 
-    ON nbas.emitter_addr = nepa.emitter_addr 
-    AND nbas.recipient = nepa.recipient 
+JOIN ninelives_buys_and_sells_1 nbas
+    ON nbas.emitter_addr = nepa.emitter_addr
+    AND nbas.recipient = nepa.recipient
     AND nepa.identifier = nbas.outcome_id
 WHERE nepa.recipient = ?
-GROUP BY 
+GROUP BY
     nbas.recipient,
 	nbas.outcome_id,
-    nepa.emitter_addr, 
+    nepa.emitter_addr,
     nepa.fusdc_received;
 	`, address).Scan(&profits).Error
 	if err != nil {
@@ -1734,7 +1734,7 @@ func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string,
 		whereExtra = " AND json_array_length(COALESCE(investments.investments, '[]')) > 0"
 	}
 	query := `
-	SELECT 
+	SELECT
     nc.*,
     COALESCE(investments.investments, '[]') AS investments
 	FROM ninelives_comments_1 AS nc
@@ -1746,10 +1746,10 @@ func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string,
                )
            ) AS investments
     FROM (
-        SELECT 
+        SELECT
             nbas.outcome_id,
             SUM(
-                CASE 
+                CASE
                     WHEN nbas.type = 'buy' THEN nbas.from_amount
                     ELSE -nbas.from_amount
                 END

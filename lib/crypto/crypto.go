@@ -98,6 +98,7 @@ type PaymasterOperation struct {
 	R                  [32]byte          `abi:"r"`
 	S                  [32]byte          `abi:"s"`
 	OutgoingChainEid   uint32            `abi:"outgoingChainEid"`
+	MaxOutgoing        *big.Int          `abi:"maxOutgoing"`
 }
 
 func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
@@ -121,6 +122,7 @@ func PollToPaymasterOperation(x paymaster.Poll) PaymasterOperation {
 		S:                  bytesToBytes32(x.S),
 		Outcome:            maybeBytesToBytes8(x.Outcome),
 		OutgoingChainEid:   x.OutgoingChainEid,
+		MaxOutgoing:        new(big.Int),
 	}
 }
 

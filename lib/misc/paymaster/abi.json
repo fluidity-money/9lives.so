@@ -102,6 +102,11 @@
 						"name": "outgoingChainEid",
 						"type": "uint32",
 						"internalType": "uint32"
+					},
+					{
+						"name": "maxOutgoing",
+						"type": "uint256",
+						"internalType": "uint256"
 					}
 				]
 			}
