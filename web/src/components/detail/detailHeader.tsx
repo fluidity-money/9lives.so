@@ -30,7 +30,7 @@ export default function DetailHeader({
   const left = data.ending - Math.floor(Date.now() / 1000);
   const weekDuration = 60 * 60 * 24 * 7;
   const inThisWeek = weekDuration >= left && left > 0;
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4">
