@@ -5,11 +5,12 @@ import Button from "./themed/button";
 import useConnectWallet from "@/hooks/useConnectWallet";
 
 export default function ClaimFeesButton({ address }: { address: string }) {
-  const [shouldDisplay, setShouldDisplay] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
-  const { claim, displayClaimFeesBtn } = useClaimAllFees();
-  const { connect } = useConnectWallet();
   const account = useActiveAccount();
+  const { claim, checkClaimFees } = useClaimAllFees();
+  const { connect } = useConnectWallet();
+  const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
+  const displayBtn = unclaimedFees > BigInt(0);
 
   const handleClick = async () => {
     try {
@@ -24,18 +25,21 @@ export default function ClaimFeesButton({ address }: { address: string }) {
   useEffect(() => {
     (async function () {
       if (!account) return;
-      setShouldDisplay(await displayClaimFeesBtn(address, account));
+      const fees = await checkClaimFees(address, account);
+      if (fees && BigInt(fees) > BigInt(0)) {
+        setUnclaimedFees(fees);
+      }
     })();
-  }, [account, address, displayClaimFeesBtn]);
+  }, [account, checkClaimFees]);
 
-  if (!shouldDisplay) return null;
-
-  return (
-    <Button
-      onClick={handleClick}
-      title={isClaiming ? "Claiming..." : "Claim Fees"}
-      disabled={isClaiming}
-      intent={"cta"}
-    />
-  );
+  if (displayBtn) {
+    return (
+      <Button
+        onClick={handleClick}
+        title={isClaiming ? "Claiming..." : "Claim Fees"}
+        disabled={isClaiming}
+        intent={"cta"}
+      />
+    );
+  }
 }

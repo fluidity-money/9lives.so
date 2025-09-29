@@ -12,16 +12,15 @@ import { Account } from "thirdweb/wallets";
 export default function useClaimAllFees() {
   const claim = useCallback(
     async (
-      addresses: string[],
+      poolAddresses: string[],
       account: Account,
       simulate: boolean = false,
     ) => {
       const claimTx = prepareContractCall({
         contract: config.contracts.claimantHelper,
         method: "claim",
-        params: [addresses],
+        params: [poolAddresses],
       });
-      if (addresses.length === 0) throw new Error("No addresses to claim.");
       if (simulate) {
         const values = (await simulateTransaction({
           transaction: claimTx,
@@ -37,7 +36,7 @@ export default function useClaimAllFees() {
               account,
             });
             track(EVENTS.CLAIM_ALL_FEES, {
-              addresses,
+              poolAddresses,
             });
             res([]);
           } catch (e) {
@@ -53,14 +52,13 @@ export default function useClaimAllFees() {
     },
     [],
   );
-  const displayClaimFeesBtn = useCallback(
-    async (address: string, account: Account) => {
-      const fees = await claim([address], account, true);
-      if (fees) return Number(fees[0]) > 0;
-      return false;
+  const checkClaimFees = useCallback(
+    async (poolAddress: string, account: Account) => {
+      const fees = await claim([poolAddress], account, true);
+      return BigInt(fees?.[0] ?? 0);
     },
     [claim],
   );
 
-  return { claim, displayClaimFeesBtn };
+  return { claim, checkClaimFees };
 }
