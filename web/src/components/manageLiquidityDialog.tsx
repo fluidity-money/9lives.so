@@ -2,10 +2,12 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import AddLiquidityDialog from "./addLiquidityDialog";
 import { CampaignDetail } from "@/types";
 import Button from "./themed/button";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import RemoveLiquidityDialog from "./removeLiquidityDialog";
 import useUserLiquidity from "@/hooks/useUserLiquidity";
 import { useActiveAccount } from "thirdweb/react";
+import useLiquidity from "@/hooks/useLiquidity";
+import ClaimLiquidityDialog from "./claimLiquidityDialog";
 
 const VarButton = ({ title, value }: { title: string; value: string }) => (
   <div className="flex flex-1 items-center justify-between rounded-[3px] border-[1.5px] border-9black bg-9gray px-4 py-3 shadow-9liquidityVar">
@@ -19,6 +21,11 @@ export default function ManageLiquidityDialog({
   data: CampaignDetail;
 }) {
   const account = useActiveAccount();
+  const [unclaimedRewards, setUnclaimedRewards] = useState(BigInt(0));
+  const { checkLpRewards } = useLiquidity({
+    tradingAddr: data.poolAddress,
+    campaignId: data.identifier,
+  });
   const { data: userLiquidity, isSuccess } = useUserLiquidity({
     address: account?.address,
     tradingAddr: data.poolAddress,
@@ -27,6 +34,18 @@ export default function ManageLiquidityDialog({
     isSuccess &&
     Number(userLiquidity) > 0 &&
     Number(data.liquidityVested) > 1e6;
+  const displayClaimBtn = unclaimedRewards && unclaimedRewards > BigInt(0);
+
+  useEffect(() => {
+    (async function () {
+      if (!account) return;
+      const fees = await checkLpRewards(account);
+      if (fees && BigInt(fees) > BigInt(0)) {
+        setUnclaimedRewards(fees);
+      }
+    })();
+  }, [account]);
+
   return (
     <div className="flex flex-col gap-4">
       <h5 className="text-center font-chicago text-base">
@@ -63,6 +82,16 @@ export default function ManageLiquidityDialog({
               )}
             </Tab>
           ) : null}
+          {displayClaimBtn ? (
+            <Tab as={Fragment}>
+              {(props) => (
+                <Button
+                  title="Claim"
+                  intent={props.selected ? "cta" : "default"}
+                />
+              )}
+            </Tab>
+          ) : null}
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -73,6 +102,15 @@ export default function ManageLiquidityDialog({
               <RemoveLiquidityDialog
                 userLiquidity={userLiquidity}
                 data={data}
+              />
+            </TabPanel>
+          ) : null}
+          {displayClaimBtn ? (
+            <TabPanel>
+              <ClaimLiquidityDialog
+                unclaimedRewards={unclaimedRewards}
+                tradingAddr={data.poolAddress}
+                campaignId={data.identifier}
               />
             </TabPanel>
           ) : null}

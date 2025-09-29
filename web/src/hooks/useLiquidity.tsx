@@ -168,5 +168,20 @@ export default function useLiquidity({
         error: (e) => e?.shortMessage ?? e?.message ?? "Failed to claim.",
       },
     );
-  return { add, remove, claim };
+
+  const checkLpRewards = async (account: Account) => {
+    const claimLiquidityTx = prepareContractCall({
+      contract: tradingContract,
+      method: "removeLiquidity3C857A15",
+      params: [BigInt(0), account.address],
+    });
+    const [lpedAmount, lpRewards] = await simulateTransaction({
+      transaction: claimLiquidityTx,
+      account,
+    });
+
+    return BigInt(lpRewards ?? 0);
+  };
+
+  return { add, remove, claim, checkLpRewards };
 }
