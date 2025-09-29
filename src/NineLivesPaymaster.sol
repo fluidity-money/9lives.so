@@ -184,7 +184,8 @@ contract NineLivesPaymaster {
                             op.amountToSpend,
                             op.minimumBack,
                             op.referrer,
-                            op.outcome
+                            op.outcome,
+                            op.maxOutgoing
                         )
                     )
                 )
