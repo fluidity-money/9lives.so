@@ -77,6 +77,7 @@ export default function useSignForPaymaster(chain?: Chain, account?: Account) {
       minimumBack,
       referrer,
       outcome: outcomeId,
+      maxOutgoing: BigInt(0),
     };
 
     const signature = await account.signTypedData({
