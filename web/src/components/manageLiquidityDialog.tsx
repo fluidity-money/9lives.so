@@ -44,7 +44,7 @@ export default function ManageLiquidityDialog({
         setUnclaimedRewards(fees);
       }
     })();
-  }, [account]);
+  }, [account, checkLpRewards]);
 
   return (
     <div className="flex flex-col gap-4">

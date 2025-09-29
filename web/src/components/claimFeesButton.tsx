@@ -30,7 +30,7 @@ export default function ClaimFeesButton({ address }: { address: string }) {
         setUnclaimedFees(fees);
       }
     })();
-  }, [account, checkClaimFees]);
+  }, [account, checkClaimFees, address]);
 
   if (displayBtn) {
     return (
