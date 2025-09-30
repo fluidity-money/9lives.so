@@ -836,6 +836,11 @@ async fn main() -> Result<(), Error> {
         },
     )?;
     linker.func_wrap("vm_hooks", "pay_for_memory_grow", |_: Caller<_>, _: i32| {})?;
+    linker.func_wrap("vm_hooks", "exit_early", |_: Caller<_>, code: i32| {
+            eprintln!("exit_early was invoked: {code}");
+            process::exit(code);
+            #[allow(unused)]
+            Ok(())})?;
 
     // Handy console logging functions that Stylus gives us.
     linker.func_wrap("console", "log_f32", |_: Caller<_>, value: f32| {
