@@ -71,12 +71,17 @@ export default function ManageLiquidityDialog({
 
       <TabGroup className={"flex flex-col gap-4"}>
         <TabList className={"flex items-center gap-2"}>
-          <Tab as={Fragment}>
-            {(props) => (
-              <Button title="Add" intent={props.selected ? "yes" : "default"} />
-            )}
-          </Tab>
-          {displayWithdrawBtn ? (
+          {data.winner ? null : (
+            <Tab as={Fragment}>
+              {(props) => (
+                <Button
+                  title="Add"
+                  intent={props.selected ? "yes" : "default"}
+                />
+              )}
+            </Tab>
+          )}
+          {displayWithdrawBtn && !data.winner ? (
             <Tab as={Fragment}>
               {(props) => (
                 <Button
@@ -86,7 +91,7 @@ export default function ManageLiquidityDialog({
               )}
             </Tab>
           ) : null}
-          {displayClaimBtn ? (
+          {displayClaimBtn && data.winner ? (
             <Tab as={Fragment}>
               {(props) => (
                 <Button
@@ -98,10 +103,12 @@ export default function ManageLiquidityDialog({
           ) : null}
         </TabList>
         <TabPanels>
-          <TabPanel>
-            <AddLiquidityDialog data={data} />
-          </TabPanel>
-          {displayWithdrawBtn ? (
+          {data.winner ? null : (
+            <TabPanel>
+              <AddLiquidityDialog data={data} />
+            </TabPanel>
+          )}
+          {displayWithdrawBtn && !data.winner ? (
             <TabPanel>
               <RemoveLiquidityDialog
                 userLiquidity={userLiquidity}
@@ -109,7 +116,7 @@ export default function ManageLiquidityDialog({
               />
             </TabPanel>
           ) : null}
-          {displayClaimBtn ? (
+          {displayClaimBtn && data.winner ? (
             <TabPanel>
               <ClaimLiquidityDialog
                 unclaimedRewards={unclaimedRewards}
@@ -118,6 +125,13 @@ export default function ManageLiquidityDialog({
               />
             </TabPanel>
           ) : null}
+          <TabPanel>
+            <div className="flex-col gap-4 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] p-5 text-xs shadow-9liqCard md:flex">
+              <p className="text-center font-chicago text-xs">
+                Campaign is concluded.
+              </p>
+            </div>
+          </TabPanel>
         </TabPanels>
       </TabGroup>
     </div>
