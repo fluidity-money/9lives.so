@@ -9,10 +9,13 @@ import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
 import { CountdownTimer } from "../countdownTimer";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Modal from "../themed/modal";
 import ManageLiquidityDialog from "../manageLiquidityDialog";
 import Button from "../themed/button";
+import useClaimAllFees from "@/hooks/useClaimAllFees";
+import { useActiveAccount } from "thirdweb/react";
+import ClaimFeesButton from "../claimFeesButton";
 
 const HeaderBox = ({
   title,
@@ -52,22 +55,26 @@ export default function DetailHeader({
   isConcluded: boolean;
   isDpm: boolean | null;
 }) {
+  const account = useActiveAccount();
   const left = data.ending - Math.floor(Date.now() / 1000);
   const weekDuration = 60 * 60 * 24 * 7;
   const inThisWeek = weekDuration >= left && left > 0;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
+  const displayCreatorFees = unclaimedFees > BigInt(0);
+  const { checkClaimFees } = useClaimAllFees();
   const LiquidityComp = () => (
     <div className="flex flex-row gap-1">
       <Button title="+" intent={"yes"} onClick={() => setIsModalOpen(true)} />
       <Button title="-" intent={"no"} onClick={() => setIsModalOpen(true)} />
     </div>
   );
+
   const subHeaderMap = [
     {
       title: isDpm ? "TVL" : "Total Vol.",
       value: `$${formatFusdc(data.totalVolume, 2)}`,
       show: true,
-      shrink: false,
     },
     {
       title: "Total Liq.",
@@ -75,7 +82,25 @@ export default function DetailHeader({
       show: !isDpm,
       rightComp: <LiquidityComp />,
     },
+    {
+      title: "Creator Fees",
+      value: `$${formatFusdc(unclaimedFees, 2)}`,
+      show: displayCreatorFees,
+      rightComp: <ClaimFeesButton address={data.poolAddress} />,
+      shrink: true,
+    },
   ];
+
+  useEffect(() => {
+    if (data.creator.address === account?.address) {
+      (async () => {
+        const unclaimedFees = await checkClaimFees(data.poolAddress, account);
+        if (unclaimedFees > BigInt(0)) {
+          setUnclaimedFees(unclaimedFees);
+        }
+      })();
+    }
+  }, [account?.address]);
 
   return (
     <div className="flex flex-col gap-4">

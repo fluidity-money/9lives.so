@@ -7,10 +7,8 @@ import useConnectWallet from "@/hooks/useConnectWallet";
 export default function ClaimFeesButton({ address }: { address: string }) {
   const [isClaiming, setIsClaiming] = useState(false);
   const account = useActiveAccount();
-  const { claim, checkClaimFees } = useClaimAllFees();
+  const { claim } = useClaimAllFees();
   const { connect } = useConnectWallet();
-  const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
-  const displayBtn = unclaimedFees > BigInt(0);
 
   const handleClick = async () => {
     try {
@@ -22,24 +20,12 @@ export default function ClaimFeesButton({ address }: { address: string }) {
     }
   };
 
-  useEffect(() => {
-    (async function () {
-      if (!account) return;
-      const fees = await checkClaimFees(address, account);
-      if (fees && BigInt(fees) > BigInt(0)) {
-        setUnclaimedFees(fees);
-      }
-    })();
-  }, [account, checkClaimFees, address]);
-
-  if (displayBtn) {
-    return (
-      <Button
-        onClick={handleClick}
-        title={isClaiming ? "Claiming..." : "Claim Fees"}
-        disabled={isClaiming}
-        intent={"cta"}
-      />
-    );
-  }
+  return (
+    <Button
+      onClick={handleClick}
+      title={isClaiming ? "Claiming..." : "Claim"}
+      disabled={isClaiming}
+      intent={"cta"}
+    />
+  );
 }
