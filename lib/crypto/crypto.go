@@ -182,6 +182,7 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 				{Name: "minimumBack", Type: "uint256"},
 				{Name: "referrer", Type: "address"},
 				{Name: "outcome", Type: "bytes8"},
+				{Name: "maxOutgoing", Type: "uint256"},
 			},
 		},
 		PrimaryType: "NineLivesPaymaster",
@@ -203,6 +204,7 @@ func EcrecoverPaymasterOperation(spnChainId, originatingChainId *big.Int, verify
 			"minimumBack":   op.MinimumBack,
 			"referrer":      op.Referrer.String(),
 			"outcome":       fmt.Sprintf("0x%x", op.Outcome),
+			"maxOutgoing":   op.MaxOutgoing,
 		},
 	}
 	domainSeparator, err := typedData.HashStruct(

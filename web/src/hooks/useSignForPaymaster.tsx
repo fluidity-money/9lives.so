@@ -31,6 +31,7 @@ export default function useSignForPaymaster(chain?: Chain, account?: Account) {
       { name: "minimumBack", type: "uint256" },
       { name: "referrer", type: "address" },
       { name: "outcome", type: "bytes8" },
+      { name: "maxOutgoing", type: "uint256" },
     ],
   };
   const signForPaymaster = async ({
