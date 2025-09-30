@@ -8,14 +8,39 @@ import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
-// import AddLiquidityButton from "../addLiquidityButton";
-// import RemoveLiquidityButton from "../removeLiquidityButton";
-// import ClaimLiquidityButton from "../claimLiquidityButton";
-import ClaimFeesButton from "../claimFeesButton";
 import { CountdownTimer } from "../countdownTimer";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import Modal from "../themed/modal";
 import ManageLiquidityDialog from "../manageLiquidityDialog";
+import Button from "../themed/button";
+
+const HeaderBox = ({
+  title,
+  value,
+  shrink = false,
+  rightComp,
+}: {
+  title: string;
+  value: string;
+  shrink?: boolean;
+  rightComp?: ReactNode;
+}) => (
+  <div
+    className={combineClass(
+      shrink ? "shrink-1" : "flex-1",
+      "flex justify-between gap-4 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] px-4 py-2 text-xs shadow-9liqCard",
+    )}
+  >
+    <div className="flex flex-col gap-1">
+      <span className="font-geneva text-xs uppercase text-[#808080]">
+        {title}
+      </span>
+      <span className="font-chicago text-lg">{value}</span>
+    </div>
+    {rightComp ? rightComp : null}
+  </div>
+);
+
 export default function DetailHeader({
   data,
   isEnded,
@@ -31,6 +56,26 @@ export default function DetailHeader({
   const weekDuration = 60 * 60 * 24 * 7;
   const inThisWeek = weekDuration >= left && left > 0;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const LiquidityComp = () => (
+    <div className="flex flex-row gap-1">
+      <Button title="+" intent={"yes"} onClick={() => setIsModalOpen(true)} />
+      <Button title="-" intent={"no"} onClick={() => setIsModalOpen(true)} />
+    </div>
+  );
+  const subHeaderMap = [
+    {
+      title: isDpm ? "TVL" : "Total Vol.",
+      value: `$${formatFusdc(data.totalVolume, 2)}`,
+      show: true,
+      shrink: false,
+    },
+    {
+      title: "Total Liq.",
+      value: `$${formatFusdc(data.liquidityVested, 2)}`,
+      show: !isDpm,
+      rightComp: <LiquidityComp />,
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-4">
@@ -57,13 +102,6 @@ export default function DetailHeader({
               />{" "}
               <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <DetailCreatedBy
-                  address={data.creator.address as `0x${string}`}
-                />
-              </div>
-            </div>
           </div>
         </div>
         {isConcluded ? (
@@ -86,24 +124,26 @@ export default function DetailHeader({
       </div>
       <div className="flex flex-col items-center justify-between gap-2.5 md:flex-row">
         <div className="flex items-center gap-2.5">
-          <span
-            className={combineClass(
-              isEnded ? "bg-[#CCC]" : "bg-9yellow",
-              "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
-            )}
-          >
-            {isEnded ? "Ended" : "End Date"}:{" "}
-            {new Date(
-              data.ending.toString().length === 10
-                ? data.ending * 1000
-                : data.ending,
-            ).toDateString()}
-          </span>
-          {inThisWeek && !data.winner ? (
+          <DetailCreatedBy address={data.creator.address as `0x${string}`} />
+          {inThisWeek ? (
             <div className="font-geneva text-xs">
               <CountdownTimer endTime={data.ending} />
             </div>
-          ) : null}
+          ) : (
+            <span
+              className={combineClass(
+                isEnded ? "bg-[#CCC]" : "bg-9yellow",
+                "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
+              )}
+            >
+              {isEnded ? "Ended" : "End Date"}:{" "}
+              {new Date(
+                data.ending.toString().length === 10
+                  ? data.ending * 1000
+                  : data.ending,
+              ).toDateString()}
+            </span>
+          )}
         </div>
         {isConcluded || isEnded ? (
           <span className="bg-[#CCC] p-2 font-chicago text-xs text-[#808080]">
@@ -115,52 +155,18 @@ export default function DetailHeader({
           </div>
         )}
       </div>
-      <div className="flex flex-col items-center justify-between gap-2.5 md:flex-row">
-        <div className="flex items-center gap-2.5">
-          <div className="flex shrink-0 flex-row items-center justify-start gap-2.5">
-            <span className="font-geneva text-xs uppercase text-[#808080]">
-              {isDpm ? "TVL:" : "Volume:"}
-            </span>
-            <span className="font-chicago text-sm">
-              ${formatFusdc(data.totalVolume, 2)}
-            </span>
-          </div>
-          {isDpm ? null : (
-            <div className="flex shrink-0 flex-row items-center justify-start gap-2.5">
-              <span className="font-geneva text-xs uppercase text-[#808080]">
-                Liquidity:
-              </span>
-              <span className="font-chicago text-sm">
-                ${formatFusdc(data.liquidityVested, 2)}
-              </span>
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-2.5">
-          {/* {userLiquidity && Number(userLiquidity) > 0 ? (
-            isConcluded ? (
-              <ClaimLiquidityButton
-                campaignId={data.identifier}
-                tradingAddr={data.poolAddress}
-              />
-            ) : Number(data.liquidityVested) > 1e6 &&
-              Number(userLiquidity) > 0 ? (
-              <RemoveLiquidityButton
-                data={data}
-                userLiquidity={userLiquidity}
-              />
-            ) : null
-          ) : null} */}
-          {/* {isDpm ? null : (
-            <AddLiquidityButton
-              data={data}
-              name={data.name}
-              campaignId={data.identifier}
-              tradingAddr={data.poolAddress}
+      <div className="flex items-center gap-2.5">
+        {subHeaderMap
+          .filter((i) => i.show)
+          .map((i) => (
+            <HeaderBox
+              key={i.title}
+              title={i.title}
+              value={i.value}
+              shrink={i.shrink}
+              rightComp={i.rightComp}
             />
-          )} */}
-          {/* {isDpm ? null : <ClaimFeesButton address={data.poolAddress} />} */}
-        </div>
+          ))}
       </div>
       <Modal
         isOpen={isModalOpen}

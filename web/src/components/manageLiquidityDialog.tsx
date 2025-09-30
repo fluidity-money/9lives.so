@@ -8,6 +8,7 @@ import useUserLiquidity from "@/hooks/useUserLiquidity";
 import { useActiveAccount } from "thirdweb/react";
 import useLiquidity from "@/hooks/useLiquidity";
 import ClaimLiquidityDialog from "./claimLiquidityDialog";
+import formatFusdc from "@/utils/formatFusdc";
 
 const VarButton = ({ title, value }: { title: string; value: string }) => (
   <div className="flex flex-1 items-center justify-between rounded-[3px] border-[1.5px] border-9black bg-9gray px-4 py-3 shadow-9liquidityVar">
@@ -54,8 +55,11 @@ export default function ManageLiquidityDialog({
       <div className="flex-col gap-4 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] p-5 text-xs shadow-9liqCard md:flex">
         <h4 className="text-center font-chicago text-xl">{`“${data.name}”`}</h4>
         <div className="flex items-center gap-2.5">
-          <VarButton title="My liquidity" value="$500" />
-          <VarButton title="Apy Rate" value="%50" />
+          <VarButton
+            title="My liquidity"
+            value={`$${formatFusdc(userLiquidity ?? "0")}`}
+          />
+          {/* <VarButton title="Apy Rate" value="%50" /> */}
         </div>
         <p className="text-center font-chicago text-xs">
           Higher liquidity means better trading stability and lower slippage.
