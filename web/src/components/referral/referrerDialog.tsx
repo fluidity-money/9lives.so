@@ -57,7 +57,7 @@ export default function ReferrerDialog() {
 
   if (code)
     return (
-      <div className="mx-auto flex w-[70%] flex-col items-center justify-center gap-5 pb-8">
+      <div className="flex flex-col items-center justify-center gap-5">
         <div className="flex flex-col items-center justify-center gap-2">
           <p className="font-geneva uppercase">
             You have {refereeCount ?? 0} active referrals

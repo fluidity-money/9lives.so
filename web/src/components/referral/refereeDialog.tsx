@@ -83,7 +83,7 @@ export default function RefereeDialog({
     );
 
   return (
-    <div className="mx-auto flex w-[70%] flex-col items-center justify-center gap-5 pb-8">
+    <div className="flex flex-col items-center justify-center gap-5">
       <div className="flex flex-col items-center justify-center gap-2">
         <p className="font-geneva uppercase">You are referred by</p>
         <span className="bg-9yellow px-2 py-1 text-xs text-9black">
