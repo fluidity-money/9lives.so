@@ -82,9 +82,11 @@ export default function CampaignTableItem({
         </span>
       </td>
       <td>
-        {displayClaimButton && (
-          <ClaimFeesButton addresses={[data.poolAddress]} />
-        )}
+        <div className="flex items-center justify-end">
+          {displayClaimButton && (
+            <ClaimFeesButton addresses={[data.poolAddress]} />
+          )}
+        </div>
       </td>
     </tr>
   );
