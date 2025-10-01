@@ -36,11 +36,13 @@ export default function CampaignTableItem({
 
   return (
     <tr>
-      <td className="flex items-center">
+      <td className="flex items-center gap-1 p-2">
         {data?.picture ? (
           <Image
             src={data.picture}
             alt={data.name}
+            width={40}
+            height={40}
             className="size-10 border border-9black"
           />
         ) : null}

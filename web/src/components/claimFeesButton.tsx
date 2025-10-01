@@ -9,7 +9,7 @@ export default function ClaimFeesButton({
   multiple = false,
 }: {
   addresses: string[];
-  multiple: boolean;
+  multiple?: boolean;
 }) {
   const [isClaiming, setIsClaiming] = useState(false);
   const account = useActiveAccount();
