@@ -86,7 +86,7 @@ export default function DetailHeader({
       title: "Creator Fees",
       value: `$${formatFusdc(unclaimedFees, 2)}`,
       show: displayCreatorFees,
-      rightComp: <ClaimFeesButton address={data.poolAddress} />,
+      rightComp: <ClaimFeesButton addresses={[data.poolAddress]} />,
       shrink: true,
     },
   ];

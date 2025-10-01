@@ -80,7 +80,9 @@ export default function CampaignTableItem({
         </span>
       </td>
       <td>
-        {displayClaimButton && <ClaimFeesButton address={data.poolAddress} />}
+        {displayClaimButton && (
+          <ClaimFeesButton addresses={[data.poolAddress]} />
+        )}
       </td>
     </tr>
   );
