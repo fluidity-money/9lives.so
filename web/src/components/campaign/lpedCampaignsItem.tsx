@@ -1,19 +1,43 @@
+import useLiquidity from "@/hooks/useLiquidity";
 import formatFusdc from "@/utils/formatFusdc";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Account } from "thirdweb/wallets";
+import ClaimLiquidityButton from "../claimLiquidityButton";
 
 export default function UserLpedCampaignsListItem({
   data,
   liquidity,
+  account,
 }: {
   data: {
     identifier: string;
     picture: string | null;
     name: string;
     winner: string | null;
-  } | null;
-  liquidity: string | null;
+    poolAddress: string;
+  };
+  liquidity: string;
+  account?: Account;
 }) {
+  const [unclaimedRewards, setUnclaimedRewards] = useState(BigInt(0));
+  const { checkLpRewards } = useLiquidity({
+    tradingAddr: data?.poolAddress as `0x${string}`,
+    campaignId: data?.identifier as `0x${string}`,
+  });
+  const displayClaimBtn = unclaimedRewards && unclaimedRewards > BigInt(0);
+
+  useEffect(() => {
+    (async function () {
+      if (!account) return;
+      const fees = await checkLpRewards(account);
+      if (fees && BigInt(fees) > BigInt(0)) {
+        setUnclaimedRewards(fees);
+      }
+    })();
+  }, [account, checkLpRewards]);
+
   return (
     <tr>
       <td className="bg-[#DDDDDD] align-baseline">
@@ -52,7 +76,21 @@ export default function UserLpedCampaignsListItem({
           ${formatFusdc(liquidity ?? "0", 2)}
         </span>
       </td>
-      <td></td>
+      <td>
+        <span className="font-chicago text-xs">
+          ${formatFusdc(unclaimedRewards ?? "0", 2)}
+        </span>
+      </td>
+      <td>
+        {displayClaimBtn ? (
+          <div className="justifty-end flex items-center">
+            <ClaimLiquidityButton
+              tradingAddr={data.poolAddress as `0x${string}`}
+              campaignId={data.identifier as `0x${string}`}
+            />
+          </div>
+        ) : null}
+      </td>
     </tr>
   );
 }

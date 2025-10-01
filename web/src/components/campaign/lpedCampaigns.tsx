@@ -4,7 +4,12 @@ import useUserLPs from "@/hooks/useUserLPs";
 import UserLpedCampaignsListItem from "./lpedCampaignsItem";
 
 export default function UserLpedCampaignsList() {
-  const headerItems = ["Campaign", "Provided Liquidity", "Actions"];
+  const headerItems = [
+    "Campaign",
+    "Provided Liquidity",
+    "Unclaimed Rewards",
+    "Actions",
+  ];
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
   const bodyStyles = "min-h-24 bg-9gray";
@@ -44,9 +49,9 @@ export default function UserLpedCampaignsList() {
         ) : (
           campaigns?.map(({ campaign: data, liquidity }) => (
             <UserLpedCampaignsListItem
-              key={data?.identifier}
-              data={data}
-              liquidity={liquidity}
+              key={data!.identifier}
+              data={data!}
+              liquidity={liquidity!}
             />
           ))
         )}

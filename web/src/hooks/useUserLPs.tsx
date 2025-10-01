@@ -8,5 +8,7 @@ export default function useUserLPs(address?: string) {
       if (!address) return [];
       return await requestUserLPs(address);
     },
+    select: (data) =>
+      data.filter((c) => c?.campaign !== null && c?.liquidity !== null),
   });
 }
