@@ -1,16 +1,16 @@
 import { useState } from "react";
-import CampaignList from "./campaignList";
 import { CampaignFilters } from "@/types";
 import { useActiveAccount } from "thirdweb/react";
+import CampaignTable from "./campaignTable";
 
 export default function UserCampaignsList() {
-  const [orderBy, setOrderBy] = useState<CampaignFilters["orderBy"]>("volume");
+  const [orderBy, setOrderBy] = useState<CampaignFilters["orderBy"]>("newest");
   const account = useActiveAccount();
   return (
-    <CampaignList
+    <CampaignTable
       orderBy={orderBy}
       setOrderBy={setOrderBy}
-      address={account?.address ?? "0x"}
+      account={account}
     />
   );
 }
