@@ -1,10 +1,9 @@
-import * as $$SelectionSets from "./selection-sets";
-import * as $$Schema from "./schema";
+import type * as $$SelectionSets from "./selection-sets.js";
+import type * as $$Schema from "./schema.js";
 import type * as $$Utilities from "graffle/utilities-for-generated";
-import type { InferResult } from "graffle/schema";
 
 export interface QueryMethods<$Context extends $$Utilities.Context> {
-  $batch: $$Utilities.ClientTransports.PreflightCheck<
+  $batch: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -15,18 +14,18 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       (null | {}) &
         $$Utilities.HandleOutput<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             $$Utilities.AssertExtendsObject<$SelectionSet>,
             $$Schema.Schema<$Context["scalars"]>
           >
         >
     >
   >;
-  __typename: $$Utilities.ClientTransports.PreflightCheck<
+  __typename: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     () => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
           { __typename: "Query" },
           "__typename"
@@ -36,7 +35,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Campaign List that can be filtered according to categories
    */
-  campaigns: $$Utilities.ClientTransports.PreflightCheck<
+  campaigns: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -45,9 +44,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { campaigns: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -58,7 +57,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Get a campaign by its ID. May or may not exist.
    */
-  campaignById: $$Utilities.ClientTransports.PreflightCheck<
+  campaignById: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -67,9 +66,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { campaignById: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -80,7 +79,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Suggested headlines for the day based on AI input.
    */
-  suggestedHeadlines: $$Utilities.ClientTransports.PreflightCheck<
+  suggestedHeadlines: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet?: $$Utilities.Exact<
@@ -89,9 +88,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { suggestedHeadlines: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -102,7 +101,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Any new changelog items that have come up recently.
    */
-  changelog: $$Utilities.ClientTransports.PreflightCheck<
+  changelog: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -111,9 +110,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { changelog: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -124,7 +123,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Returns user's buy and sell activities
    */
-  userActivity: $$Utilities.ClientTransports.PreflightCheck<
+  userActivity: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -133,9 +132,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { userActivity: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -147,7 +146,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
    * Returns user's participated positions as pool address of the campaigns
    * and bought and sought outcome ids
    */
-  userParticipatedCampaigns: $$Utilities.ClientTransports.PreflightCheck<
+  userParticipatedCampaigns: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -156,9 +155,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { userParticipatedCampaigns: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -169,7 +168,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Returns total volume of user's all buy and sell actions
    */
-  userTotalVolume: $$Utilities.ClientTransports.PreflightCheck<
+  userTotalVolume: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -178,9 +177,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { userTotalVolume: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -191,7 +190,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Returns active positions acitvity history
    */
-  positionsHistory: $$Utilities.ClientTransports.PreflightCheck<
+  positionsHistory: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -200,9 +199,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { positionsHistory: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -213,7 +212,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Return user's claim rewards details
    */
-  userClaims: $$Utilities.ClientTransports.PreflightCheck<
+  userClaims: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -222,9 +221,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { userClaims: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -233,7 +232,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
     >
   >;
 
-  userProfile: $$Utilities.ClientTransports.PreflightCheck<
+  userProfile: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -242,9 +241,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { userProfile: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -255,7 +254,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Returns user's staked liquidity to the markets
    */
-  userLiquidity: $$Utilities.ClientTransports.PreflightCheck<
+  userLiquidity: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -264,9 +263,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { userLiquidity: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -278,7 +277,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
    * Though the user should only ever create a referrer once, we should assume there might be
    * more, so we'll return more here, and let the frontend decide. Returns the codes.
    */
-  referrersForAddress: $$Utilities.ClientTransports.PreflightCheck<
+  referrersForAddress: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -287,9 +286,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { referrersForAddress: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -300,7 +299,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Leaderboards for this week.
    */
-  leaderboards: $$Utilities.ClientTransports.PreflightCheck<
+  leaderboards: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -309,9 +308,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { leaderboards: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -322,7 +321,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Get referrer address by its generated code.
    */
-  referrerByCode: $$Utilities.ClientTransports.PreflightCheck<
+  referrerByCode: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -331,9 +330,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { referrerByCode: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -346,7 +345,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
    * Combines liquidity changes, hourly volume, current liquidity, and buy/sell volume,
    * then ranks pools and returns recent shown buy/sell events with these metrics.
    */
-  featuredCampaign: $$Utilities.ClientTransports.PreflightCheck<
+  featuredCampaign: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -355,9 +354,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { featuredCampaign: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -368,7 +367,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Return users active liquidity staked to the campaigns
    */
-  userLPs: $$Utilities.ClientTransports.PreflightCheck<
+  userLPs: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -377,9 +376,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { userLPs: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -390,7 +389,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Get the count of the referees
    */
-  countReferees: $$Utilities.ClientTransports.PreflightCheck<
+  countReferees: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -399,9 +398,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { countReferees: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -412,7 +411,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Returns won campaigns profit according to share's total cost
    */
-  userWonCampaignsProfits: $$Utilities.ClientTransports.PreflightCheck<
+  userWonCampaignsProfits: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -421,9 +420,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { userWonCampaignsProfits: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -434,7 +433,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Gets comments of a campaign
    */
-  campaignComments: $$Utilities.ClientTransports.PreflightCheck<
+  campaignComments: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -443,9 +442,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { campaignComments: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -456,7 +455,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Get historical prices change events to create a price chart timeline
    */
-  campaignPriceEvents: $$Utilities.ClientTransports.PreflightCheck<
+  campaignPriceEvents: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -465,9 +464,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationQuery<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
             { campaignPriceEvents: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -478,7 +477,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
-  $batch: $$Utilities.ClientTransports.PreflightCheck<
+  $batch: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -489,18 +488,18 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       (null | {}) &
         $$Utilities.HandleOutput<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             $$Utilities.AssertExtendsObject<$SelectionSet>,
             $$Schema.Schema<$Context["scalars"]>
           >
         >
     >
   >;
-  __typename: $$Utilities.ClientTransports.PreflightCheck<
+  __typename: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     () => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
           { __typename: "Mutation" },
           "__typename"
@@ -510,7 +509,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   /**
    * Post new comment to a campaign
    */
-  postComment: $$Utilities.ClientTransports.PreflightCheck<
+  postComment: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -519,9 +518,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { postComment: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -532,7 +531,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   /**
    * Delete a comment owned
    */
-  deleteComment: $$Utilities.ClientTransports.PreflightCheck<
+  deleteComment: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -541,9 +540,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { deleteComment: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -555,7 +554,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * Request that the Paymaster service this request and deduct funds from the user's USDC
    * EOA using a Permit blob.
    */
-  requestPaymaster: $$Utilities.ClientTransports.PreflightCheck<
+  requestPaymaster: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -564,9 +563,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { requestPaymaster: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -578,7 +577,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * "Explain" a campaign, so an on-chain campaign creation is listed in the frontend.
    * Campaign is then spooled in a would-be frontend aggregation table.
    */
-  explainCampaign: $$Utilities.ClientTransports.PreflightCheck<
+  explainCampaign: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -587,9 +586,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { explainCampaign: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -607,7 +606,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * revealCommitment2, which takes a signature. This will always return false,
    * unless the frontend should be prompted to provide a signature.
    */
-  revealCommitment: $$Utilities.ClientTransports.PreflightCheck<
+  revealCommitment: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -616,9 +615,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { revealCommitment: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -634,7 +633,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * gated with a signature, and will reject the user's submission unless they provide a
    * correct signature. True will always be returned here.
    */
-  revealCommitment2: $$Utilities.ClientTransports.PreflightCheck<
+  revealCommitment2: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -643,9 +642,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { revealCommitment2: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -654,7 +653,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
 
-  synchProfile: $$Utilities.ClientTransports.PreflightCheck<
+  synchProfile: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -663,9 +662,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { synchProfile: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -676,7 +675,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   /**
    * Generate a referrer code, using the identifier that the user gave us.
    */
-  genReferrer: $$Utilities.ClientTransports.PreflightCheck<
+  genReferrer: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -685,9 +684,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { genReferrer: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -701,7 +700,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    *
    * Referral(address sender,address referrer,uint256 deadline)
    */
-  associateReferral: $$Utilities.ClientTransports.PreflightCheck<
+  associateReferral: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -710,9 +709,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { associateReferral: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -723,7 +722,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   /**
    * Updates meow domains avatar and name for user's profile
    */
-  updateMeowDomain: $$Utilities.ClientTransports.PreflightCheck<
+  updateMeowDomain: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -732,9 +731,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
+        $$Utilities.HandleOutputDocumentBuilderRootField<
           $Context,
-          InferResult.OperationMutation<
+          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
             { updateMeowDomain: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,

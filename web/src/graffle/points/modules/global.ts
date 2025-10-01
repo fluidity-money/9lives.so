@@ -1,8 +1,8 @@
-import * as $$Data from "./data";
-import * as $$MethodsSelect from "./methods-select";
-import * as $$MethodsDocument from "./methods-document";
-import * as $$MethodsRoot from "./methods-root";
-import * as $$Schema from "./schema";
+import * as $$Data from "./data.js";
+import * as $$MethodsSelect from "./methods-select.js";
+import * as $$MethodsDocument from "./methods-document.js";
+import * as $$MethodsRoot from "./methods-root.js";
+import * as $$Schema from "./schema.js";
 
 declare global {
   export namespace GraffleGlobal {
@@ -15,7 +15,10 @@ declare global {
           Document: $$MethodsDocument.BuilderMethodsDocumentFn;
           Root: $$MethodsRoot.BuilderMethodsRootFn;
         };
-        defaultSchemaUrl: null;
+        /**
+         * https://points-graph.superposition.so/graphql
+         */
+        defaultSchemaUrl: string;
       };
     }
   }

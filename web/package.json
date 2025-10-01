@@ -39,7 +39,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "ethers": "^6.14.0",
-    "graffle": "8.0.0-next.140",
+    "graffle": "8.0.0-next.173",
     "graphql": "^16.11.0",
     "graphql-ws": "^5.16.2",
     "keccak": "^3.0.4",
