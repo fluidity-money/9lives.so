@@ -12,6 +12,7 @@ import useCampaigns from "@/hooks/useCampaigns";
 import Placeholder from "../tablePlaceholder";
 import CampaignTableItem from "./campaignTableItem";
 import { Account } from "thirdweb/wallets";
+import ClaimFeesButton from "../claimFeesButton";
 
 export default function CampaignTable({
   category,
@@ -40,6 +41,7 @@ export default function CampaignTable({
     data,
     isLoading,
     isError,
+    isSuccess,
     error,
     fetchNextPage,
     hasNextPage,
@@ -107,6 +109,14 @@ export default function CampaignTable({
           ) : null}
         </div>
       </div>
+      {isSuccess && campaigns && campaigns.length > 1 ? (
+        <div className="mb-2 flex justify-end">
+          <ClaimFeesButton
+            addresses={campaigns.map((c) => c.poolAddress)}
+            multiple
+          />
+        </div>
+      ) : null}
       <table className="w-full table-auto border-separate border-spacing-y-1">
         <thead>
           <tr className="font-geneva">
