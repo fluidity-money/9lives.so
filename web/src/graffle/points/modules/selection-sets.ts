@@ -1,3 +1,4 @@
+import type { Select as $Select } from "graffle/schema";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 
 //
@@ -57,9 +58,7 @@ export interface Query<
    */
   points?:
     | Query.points<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.points<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.points<_$Scalars>>;
   /**
    *
    * Select the `leaderboard` field on the `Query` object. Its type is `Points` (a `OutputObject` kind of type).
@@ -67,9 +66,7 @@ export interface Query<
    */
   leaderboard?:
     | Query.leaderboard$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.leaderboard<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.leaderboard<_$Scalars>>;
   /**
    *
    * Select the `achievements` field on the `Query` object. Its type is `Achievement` (a `OutputObject` kind of type).
@@ -77,9 +74,7 @@ export interface Query<
    */
   achievements?:
     | Query.achievements$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.achievements<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.achievements<_$Scalars>>;
   /**
    *
    * Select the `leaderboards` field on the `Query` object. Its type is `Leaderboard` (a `OutputObject` kind of type).
@@ -87,9 +82,7 @@ export interface Query<
    */
   leaderboards?:
     | Query.leaderboards<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.leaderboards<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.leaderboards<_$Scalars>>;
   /**
    *
    * Select the `productUserCount` field on the `Query` object. Its type is `Int` (a `ScalarStandard` kind of type).
@@ -97,9 +90,7 @@ export interface Query<
    */
   productUserCount?:
     | Query.productUserCount<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.productUserCount<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.productUserCount<_$Scalars>>;
   /**
    *
    * Select the `getPointsComponent` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -107,9 +98,7 @@ export interface Query<
    */
   getPointsComponent?:
     | Query.getPointsComponent$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.getPointsComponent<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.getPointsComponent<_$Scalars>>;
   /**
    *
    * Select the `getAddressByDiscord` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -117,9 +106,7 @@ export interface Query<
    */
   getAddressByDiscord?:
     | Query.getAddressByDiscord<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.getAddressByDiscord<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.getAddressByDiscord<_$Scalars>>;
   /**
    *
    * Select the `getDiscordName` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -127,9 +114,7 @@ export interface Query<
    */
   getDiscordName?:
     | Query.getDiscordName<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.getDiscordName<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.getDiscordName<_$Scalars>>;
   /**
    *
    * Select the `getTokenLeaderboard` field on the `Query` object. Its type is `TokenHolding` (a `OutputObject` kind of type).
@@ -137,9 +122,7 @@ export interface Query<
    */
   getTokenLeaderboard?:
     | Query.getTokenLeaderboard<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Query.getTokenLeaderboard<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Query.getTokenLeaderboard<_$Scalars>>;
 
   /**
    *
@@ -161,16 +144,15 @@ export interface Query<
    *
    */
   __typename?:
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator$Expanded
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<$$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator>;
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
 }
 
 export interface Query$FragmentInline<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
 > extends Query<_$Scalars>,
-    $$Utilities.DocumentBuilderKit.Select.Directive.$Groups.InlineFragment
-      .Fields {}
+    $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
@@ -183,7 +165,7 @@ export namespace Query {
   export interface points$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base,
+  > extends $Select.Bases.Base,
       $NamedTypes.$Points<_$Scalars> {
     /**
      * Arguments for `points` field. All arguments are required so you must include this.
@@ -222,7 +204,7 @@ export namespace Query {
   export interface leaderboard$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base,
+  > extends $Select.Bases.Base,
       $NamedTypes.$Points<_$Scalars> {
     /**
      * Arguments for `leaderboard` field. No arguments are required so you may omit this.
@@ -262,7 +244,7 @@ export namespace Query {
   export interface achievements$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base,
+  > extends $Select.Bases.Base,
       $NamedTypes.$Achievement<_$Scalars> {
     /**
      * Arguments for `achievements` field. No arguments are required so you may omit this.
@@ -301,7 +283,7 @@ export namespace Query {
   export interface leaderboards$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base,
+  > extends $Select.Bases.Base,
       $NamedTypes.$Leaderboard<_$Scalars> {
     /**
      * Arguments for `leaderboards` field. Some (1/2) arguments are required so you must include this.
@@ -341,7 +323,7 @@ export namespace Query {
   export interface productUserCount$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `productUserCount` field. All arguments are required so you must include this.
      */
@@ -375,13 +357,13 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
+    | $Select.Indicator.NoArgsIndicator
     | getPointsComponent$SelectionSet<_$Scalars>;
 
   export interface getPointsComponent$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `getPointsComponent` field. No arguments are required so you may omit this.
      */
@@ -408,7 +390,7 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
+    | $Select.Indicator.NoArgsIndicator
     | getPointsComponent$SelectionSet<_$Scalars>
   >;
 
@@ -422,7 +404,7 @@ export namespace Query {
   export interface getAddressByDiscord$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `getAddressByDiscord` field. All arguments are required so you must include this.
      */
@@ -460,7 +442,7 @@ export namespace Query {
   export interface getDiscordName$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `getDiscordName` field. All arguments are required so you must include this.
      */
@@ -498,7 +480,7 @@ export namespace Query {
   export interface getTokenLeaderboard$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base,
+  > extends $Select.Bases.Base,
       $NamedTypes.$TokenHolding<_$Scalars> {
     /**
      * Arguments for `getTokenLeaderboard` field. All arguments are required so you must include this.
@@ -545,9 +527,7 @@ export interface Mutation<
    */
   auth?:
     | Mutation.auth<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Mutation.auth<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Mutation.auth<_$Scalars>>;
   /**
    *
    * Select the `addAchievement` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -555,9 +535,7 @@ export interface Mutation<
    */
   addAchievement?:
     | Mutation.addAchievement<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Mutation.addAchievement<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Mutation.addAchievement<_$Scalars>>;
   /**
    *
    * Select the `registerDiscord` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -565,9 +543,7 @@ export interface Mutation<
    */
   registerDiscord?:
     | Mutation.registerDiscord<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Mutation.registerDiscord<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Mutation.registerDiscord<_$Scalars>>;
   /**
    *
    * Select the `calculatePoints` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -575,9 +551,7 @@ export interface Mutation<
    */
   calculatePoints?:
     | Mutation.calculatePoints<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Mutation.calculatePoints<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Mutation.calculatePoints<_$Scalars>>;
   /**
    *
    * Select the `hideCampaign` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -585,9 +559,7 @@ export interface Mutation<
    */
   hideCampaign?:
     | Mutation.hideCampaign<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Mutation.hideCampaign<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Mutation.hideCampaign<_$Scalars>>;
   /**
    *
    * Select the `setCampaignCategories` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -595,7 +567,7 @@ export interface Mutation<
    */
   setCampaignCategories?:
     | Mutation.setCampaignCategories<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
+    | $Select.SelectAlias.SelectAlias<
         Mutation.setCampaignCategories<_$Scalars>
       >;
   /**
@@ -605,7 +577,7 @@ export interface Mutation<
    */
   requestTokensHackathon?:
     | Mutation.requestTokensHackathon<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
+    | $Select.SelectAlias.SelectAlias<
         Mutation.requestTokensHackathon<_$Scalars>
       >;
 
@@ -631,16 +603,15 @@ export interface Mutation<
    *
    */
   __typename?:
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator$Expanded
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<$$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator>;
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
 }
 
 export interface Mutation$FragmentInline<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
 > extends Mutation<_$Scalars>,
-    $$Utilities.DocumentBuilderKit.Select.Directive.$Groups.InlineFragment
-      .Fields {}
+    $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
@@ -653,7 +624,7 @@ export namespace Mutation {
   export interface auth$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `auth` field. All arguments are required so you must include this.
      */
@@ -691,7 +662,7 @@ export namespace Mutation {
   export interface addAchievement$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `addAchievement` field. Some (1/4) arguments are required so you must include this.
      */
@@ -744,7 +715,7 @@ export namespace Mutation {
   export interface registerDiscord$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `registerDiscord` field. All arguments are required so you must include this.
      */
@@ -793,7 +764,7 @@ export namespace Mutation {
   export interface calculatePoints$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `calculatePoints` field. All arguments are required so you must include this.
      */
@@ -831,7 +802,7 @@ export namespace Mutation {
   export interface hideCampaign$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `hideCampaign` field. All arguments are required so you must include this.
      */
@@ -869,7 +840,7 @@ export namespace Mutation {
   export interface setCampaignCategories$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `setCampaignCategories` field. All arguments are required so you must include this.
      */
@@ -908,7 +879,7 @@ export namespace Mutation {
   export interface requestTokensHackathon$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {
+  > extends $Select.Bases.Base {
     /**
      * Arguments for `requestTokensHackathon` field. All arguments are required so you must include this.
      */
@@ -977,7 +948,7 @@ export namespace Mutation {
 export interface Achievement<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $$Utilities.DocumentBuilderKit.Select.Bases.ObjectLike {
+> extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `Achievement` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -985,9 +956,7 @@ export interface Achievement<
    */
   id?:
     | Achievement.id$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.id<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.id<_$Scalars>>;
   /**
    *
    * Select the `name` field on the `Achievement` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -995,9 +964,7 @@ export interface Achievement<
    */
   name?:
     | Achievement.name$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.name<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.name<_$Scalars>>;
   /**
    *
    * Select the `count` field on the `Achievement` object. Its type is `Int` (a `ScalarStandard` kind of type).
@@ -1005,9 +972,7 @@ export interface Achievement<
    */
   count?:
     | Achievement.count$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.count<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.count<_$Scalars>>;
   /**
    *
    * Select the `shouldCountMatter` field on the `Achievement` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -1015,9 +980,7 @@ export interface Achievement<
    */
   shouldCountMatter?:
     | Achievement.shouldCountMatter$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.shouldCountMatter<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.shouldCountMatter<_$Scalars>>;
   /**
    *
    * Select the `isCountFinancial` field on the `Achievement` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -1025,9 +988,7 @@ export interface Achievement<
    */
   isCountFinancial?:
     | Achievement.isCountFinancial$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.isCountFinancial<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.isCountFinancial<_$Scalars>>;
   /**
    *
    * Select the `description` field on the `Achievement` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -1035,9 +996,7 @@ export interface Achievement<
    */
   description?:
     | Achievement.description$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.description<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.description<_$Scalars>>;
   /**
    *
    * Select the `product` field on the `Achievement` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -1045,9 +1004,7 @@ export interface Achievement<
    */
   product?:
     | Achievement.product$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.product<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.product<_$Scalars>>;
   /**
    *
    * Select the `season` field on the `Achievement` object. Its type is `Int` (a `ScalarStandard` kind of type).
@@ -1055,9 +1012,7 @@ export interface Achievement<
    */
   season?:
     | Achievement.season$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.season<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.season<_$Scalars>>;
   /**
    *
    * Select the `scoring` field on the `Achievement` object. Its type is `Float` (a `ScalarStandard` kind of type).
@@ -1065,9 +1020,7 @@ export interface Achievement<
    */
   scoring?:
     | Achievement.scoring$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Achievement.scoring<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Achievement.scoring<_$Scalars>>;
 
   /**
    *
@@ -1091,16 +1044,15 @@ export interface Achievement<
    *
    */
   __typename?:
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator$Expanded
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<$$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator>;
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
 }
 
 export interface Achievement$FragmentInline<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
 > extends Achievement<_$Scalars>,
-    $$Utilities.DocumentBuilderKit.Select.Directive.$Groups.InlineFragment
-      .Fields {}
+    $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
@@ -1108,14 +1060,12 @@ export namespace Achievement {
   export type id<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1130,8 +1080,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1139,14 +1088,12 @@ export namespace Achievement {
   export type name<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | name$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>;
 
   export interface name$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1161,8 +1108,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | name$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1170,14 +1116,12 @@ export namespace Achievement {
   export type count<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | count$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | count$SelectionSet<_$Scalars>;
 
   export interface count$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1192,8 +1136,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | count$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | count$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1202,13 +1145,13 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
+    | $Select.Indicator.NoArgsIndicator
     | shouldCountMatter$SelectionSet<_$Scalars>;
 
   export interface shouldCountMatter$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1223,7 +1166,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
+    | $Select.Indicator.NoArgsIndicator
     | shouldCountMatter$SelectionSet<_$Scalars>
   >;
 
@@ -1233,13 +1176,13 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
+    | $Select.Indicator.NoArgsIndicator
     | isCountFinancial$SelectionSet<_$Scalars>;
 
   export interface isCountFinancial$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1254,8 +1197,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | isCountFinancial$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | isCountFinancial$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1263,14 +1205,12 @@ export namespace Achievement {
   export type description<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | description$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | description$SelectionSet<_$Scalars>;
 
   export interface description$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1285,8 +1225,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | description$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | description$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1294,14 +1233,12 @@ export namespace Achievement {
   export type product<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | product$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | product$SelectionSet<_$Scalars>;
 
   export interface product$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1316,8 +1253,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | product$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | product$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1325,14 +1261,12 @@ export namespace Achievement {
   export type season<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | season$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | season$SelectionSet<_$Scalars>;
 
   export interface season$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1347,8 +1281,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | season$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | season$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1356,14 +1289,12 @@ export namespace Achievement {
   export type scoring<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | scoring$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | scoring$SelectionSet<_$Scalars>;
 
   export interface scoring$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1378,8 +1309,7 @@ export namespace Achievement {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | scoring$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | scoring$SelectionSet<_$Scalars>
   >;
 }
 
@@ -1392,7 +1322,7 @@ export namespace Achievement {
 export interface Leaderboard<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $$Utilities.DocumentBuilderKit.Select.Bases.ObjectLike {
+> extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `Leaderboard` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -1400,9 +1330,7 @@ export interface Leaderboard<
    */
   id?:
     | Leaderboard.id$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Leaderboard.id<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Leaderboard.id<_$Scalars>>;
   /**
    *
    * Select the `product` field on the `Leaderboard` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -1410,9 +1338,7 @@ export interface Leaderboard<
    */
   product?:
     | Leaderboard.product$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Leaderboard.product<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Leaderboard.product<_$Scalars>>;
   /**
    *
    * Select the `items` field on the `Leaderboard` object. Its type is `LeaderboardItem` (a `OutputObject` kind of type).
@@ -1420,9 +1346,7 @@ export interface Leaderboard<
    */
   items?:
     | Leaderboard.items$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Leaderboard.items<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Leaderboard.items<_$Scalars>>;
 
   /**
    *
@@ -1446,16 +1370,15 @@ export interface Leaderboard<
    *
    */
   __typename?:
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator$Expanded
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<$$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator>;
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
 }
 
 export interface Leaderboard$FragmentInline<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
 > extends Leaderboard<_$Scalars>,
-    $$Utilities.DocumentBuilderKit.Select.Directive.$Groups.InlineFragment
-      .Fields {}
+    $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
@@ -1463,14 +1386,12 @@ export namespace Leaderboard {
   export type id<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1485,8 +1406,7 @@ export namespace Leaderboard {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1494,14 +1414,12 @@ export namespace Leaderboard {
   export type product<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | product$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | product$SelectionSet<_$Scalars>;
 
   export interface product$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1516,8 +1434,7 @@ export namespace Leaderboard {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | product$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | product$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1530,7 +1447,7 @@ export namespace Leaderboard {
   export interface items$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base,
+  > extends $Select.Bases.Base,
       $NamedTypes.$LeaderboardItem<_$Scalars> {}
 
   // --- expanded ---
@@ -1557,7 +1474,7 @@ export namespace Leaderboard {
 export interface LeaderboardItem<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $$Utilities.DocumentBuilderKit.Select.Bases.ObjectLike {
+> extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `LeaderboardItem` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -1565,9 +1482,7 @@ export interface LeaderboardItem<
    */
   id?:
     | LeaderboardItem.id$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        LeaderboardItem.id<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<LeaderboardItem.id<_$Scalars>>;
   /**
    *
    * Select the `wallet` field on the `LeaderboardItem` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -1575,9 +1490,7 @@ export interface LeaderboardItem<
    */
   wallet?:
     | LeaderboardItem.wallet$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        LeaderboardItem.wallet<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<LeaderboardItem.wallet<_$Scalars>>;
   /**
    *
    * Select the `ranking` field on the `LeaderboardItem` object. Its type is `Int` (a `ScalarStandard` kind of type).
@@ -1585,9 +1498,7 @@ export interface LeaderboardItem<
    */
   ranking?:
     | LeaderboardItem.ranking$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        LeaderboardItem.ranking<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<LeaderboardItem.ranking<_$Scalars>>;
   /**
    *
    * Select the `scoring` field on the `LeaderboardItem` object. Its type is `Int` (a `ScalarStandard` kind of type).
@@ -1595,9 +1506,7 @@ export interface LeaderboardItem<
    */
   scoring?:
     | LeaderboardItem.scoring$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        LeaderboardItem.scoring<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<LeaderboardItem.scoring<_$Scalars>>;
 
   /**
    *
@@ -1621,16 +1530,15 @@ export interface LeaderboardItem<
    *
    */
   __typename?:
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator$Expanded
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<$$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator>;
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
 }
 
 export interface LeaderboardItem$FragmentInline<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
 > extends LeaderboardItem<_$Scalars>,
-    $$Utilities.DocumentBuilderKit.Select.Directive.$Groups.InlineFragment
-      .Fields {}
+    $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
@@ -1638,14 +1546,12 @@ export namespace LeaderboardItem {
   export type id<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1660,8 +1566,7 @@ export namespace LeaderboardItem {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1669,14 +1574,12 @@ export namespace LeaderboardItem {
   export type wallet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | wallet$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
 
   export interface wallet$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1691,8 +1594,7 @@ export namespace LeaderboardItem {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | wallet$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1700,14 +1602,12 @@ export namespace LeaderboardItem {
   export type ranking<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | ranking$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | ranking$SelectionSet<_$Scalars>;
 
   export interface ranking$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1722,8 +1622,7 @@ export namespace LeaderboardItem {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | ranking$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | ranking$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1731,14 +1630,12 @@ export namespace LeaderboardItem {
   export type scoring<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | scoring$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | scoring$SelectionSet<_$Scalars>;
 
   export interface scoring$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1753,8 +1650,7 @@ export namespace LeaderboardItem {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | scoring$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | scoring$SelectionSet<_$Scalars>
   >;
 }
 
@@ -1767,7 +1663,7 @@ export namespace LeaderboardItem {
 export interface Points<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $$Utilities.DocumentBuilderKit.Select.Bases.ObjectLike {
+> extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `Points` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -1775,9 +1671,7 @@ export interface Points<
    */
   id?:
     | Points.id$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Points.id<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Points.id<_$Scalars>>;
   /**
    *
    * Select the `domainName` field on the `Points` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -1785,9 +1679,7 @@ export interface Points<
    */
   domainName?:
     | Points.domainName$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Points.domainName<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Points.domainName<_$Scalars>>;
   /**
    *
    * Select the `placement` field on the `Points` object. Its type is `Int` (a `ScalarStandard` kind of type).
@@ -1795,9 +1687,7 @@ export interface Points<
    */
   placement?:
     | Points.placement$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Points.placement<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Points.placement<_$Scalars>>;
   /**
    *
    * Select the `wallet` field on the `Points` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -1805,9 +1695,7 @@ export interface Points<
    */
   wallet?:
     | Points.wallet$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Points.wallet<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Points.wallet<_$Scalars>>;
   /**
    *
    * Select the `amount` field on the `Points` object. Its type is `Int` (a `ScalarStandard` kind of type).
@@ -1815,9 +1703,7 @@ export interface Points<
    */
   amount?:
     | Points.amount$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        Points.amount<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<Points.amount<_$Scalars>>;
 
   /**
    *
@@ -1839,16 +1725,15 @@ export interface Points<
    *
    */
   __typename?:
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator$Expanded
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<$$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator>;
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
 }
 
 export interface Points$FragmentInline<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
 > extends Points<_$Scalars>,
-    $$Utilities.DocumentBuilderKit.Select.Directive.$Groups.InlineFragment
-      .Fields {}
+    $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
@@ -1856,14 +1741,12 @@ export namespace Points {
   export type id<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1878,8 +1761,7 @@ export namespace Points {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1887,14 +1769,12 @@ export namespace Points {
   export type domainName<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | domainName$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | domainName$SelectionSet<_$Scalars>;
 
   export interface domainName$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1909,8 +1789,7 @@ export namespace Points {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | domainName$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | domainName$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1918,14 +1797,12 @@ export namespace Points {
   export type placement<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | placement$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | placement$SelectionSet<_$Scalars>;
 
   export interface placement$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1940,8 +1817,7 @@ export namespace Points {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | placement$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | placement$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1949,14 +1825,12 @@ export namespace Points {
   export type wallet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | wallet$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
 
   export interface wallet$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1971,8 +1845,7 @@ export namespace Points {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | wallet$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -1980,14 +1853,12 @@ export namespace Points {
   export type amount<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | amount$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
 
   export interface amount$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2002,8 +1873,7 @@ export namespace Points {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | amount$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
   >;
 }
 
@@ -2016,7 +1886,7 @@ export namespace Points {
 export interface TokenHolding<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $$Utilities.DocumentBuilderKit.Select.Bases.ObjectLike {
+> extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `TokenHolding` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -2024,9 +1894,7 @@ export interface TokenHolding<
    */
   id?:
     | TokenHolding.id$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        TokenHolding.id<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<TokenHolding.id<_$Scalars>>;
   /**
    *
    * Select the `wallet` field on the `TokenHolding` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -2034,9 +1902,7 @@ export interface TokenHolding<
    */
   wallet?:
     | TokenHolding.wallet$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        TokenHolding.wallet<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<TokenHolding.wallet<_$Scalars>>;
   /**
    *
    * Select the `amount` field on the `TokenHolding` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -2044,9 +1910,7 @@ export interface TokenHolding<
    */
   amount?:
     | TokenHolding.amount$Expanded<_$Scalars>
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<
-        TokenHolding.amount<_$Scalars>
-      >;
+    | $Select.SelectAlias.SelectAlias<TokenHolding.amount<_$Scalars>>;
 
   /**
    *
@@ -2070,16 +1934,15 @@ export interface TokenHolding<
    *
    */
   __typename?:
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator$Expanded
-    | $$Utilities.DocumentBuilderKit.Select.SelectAlias.SelectAlias<$$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator>;
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
 }
 
 export interface TokenHolding$FragmentInline<
   _$Scalars extends
     $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
 > extends TokenHolding<_$Scalars>,
-    $$Utilities.DocumentBuilderKit.Select.Directive.$Groups.InlineFragment
-      .Fields {}
+    $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
@@ -2087,14 +1950,12 @@ export namespace TokenHolding {
   export type id<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2109,8 +1970,7 @@ export namespace TokenHolding {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | id$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -2118,14 +1978,12 @@ export namespace TokenHolding {
   export type wallet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | wallet$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
 
   export interface wallet$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2140,8 +1998,7 @@ export namespace TokenHolding {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | wallet$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------
@@ -2149,14 +2006,12 @@ export namespace TokenHolding {
   export type amount<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > =
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | amount$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
 
   export interface amount$SelectionSet<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $$Utilities.DocumentBuilderKit.Select.Bases.Base {}
+  > extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2171,8 +2026,7 @@ export namespace TokenHolding {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    | $$Utilities.DocumentBuilderKit.Select.Indicator.NoArgsIndicator
-    | amount$SelectionSet<_$Scalars>
+    $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
   >;
 }
 

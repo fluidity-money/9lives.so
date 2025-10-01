@@ -1,5 +1,5 @@
-import * as $$Data from "./data.js";
-import * as $$Scalar from "./scalar.js";
+import * as $$Data from "./data";
+import * as $$Scalar from "./scalar";
 import type { Schema as $ } from "graffle/utilities-for-generated";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 
@@ -24,8 +24,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Query {
-    kind: "Object";
+  export interface Query extends $.OutputObject {
     name: "Query";
     fields: {
       __typename: Query.__typename;
@@ -53,8 +52,7 @@ export namespace Schema {
   }
 
   export namespace Query {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -67,8 +65,7 @@ export namespace Schema {
     /**
      * Campaign List that can be filtered according to categories
      */
-    export interface campaigns {
-      kind: "OutputField";
+    export interface campaigns extends $.OutputField {
       name: "campaigns";
       arguments: {
         category: {
@@ -115,8 +112,7 @@ export namespace Schema {
     /**
      * Get a campaign by its ID. May or may not exist.
      */
-    export interface campaignById {
-      kind: "OutputField";
+    export interface campaignById extends $.OutputField {
       name: "campaignById";
       arguments: {
         id: {
@@ -133,8 +129,7 @@ export namespace Schema {
     /**
      * Suggested headlines for the day based on AI input.
      */
-    export interface suggestedHeadlines {
-      kind: "OutputField";
+    export interface suggestedHeadlines extends $.OutputField {
       name: "suggestedHeadlines";
       arguments: {};
       inlineType: [1, [1]];
@@ -144,8 +139,7 @@ export namespace Schema {
     /**
      * Any new changelog items that have come up recently.
      */
-    export interface changelog {
-      kind: "OutputField";
+    export interface changelog extends $.OutputField {
       name: "changelog";
       arguments: {};
       inlineType: [1, [0]];
@@ -155,8 +149,7 @@ export namespace Schema {
     /**
      * Returns user's buy and sell activities
      */
-    export interface userActivity {
-      kind: "OutputField";
+    export interface userActivity extends $.OutputField {
       name: "userActivity";
       arguments: {
         address: {
@@ -192,8 +185,7 @@ export namespace Schema {
      * Returns user's participated positions as pool address of the campaigns
      * and bought and sought outcome ids
      */
-    export interface userParticipatedCampaigns {
-      kind: "OutputField";
+    export interface userParticipatedCampaigns extends $.OutputField {
       name: "userParticipatedCampaigns";
       arguments: {
         address: {
@@ -210,8 +202,7 @@ export namespace Schema {
     /**
      * Returns total volume of user's all buy and sell actions
      */
-    export interface userTotalVolume {
-      kind: "OutputField";
+    export interface userTotalVolume extends $.OutputField {
       name: "userTotalVolume";
       arguments: {
         address: {
@@ -228,8 +219,7 @@ export namespace Schema {
     /**
      * Returns active positions acitvity history
      */
-    export interface positionsHistory {
-      kind: "OutputField";
+    export interface positionsHistory extends $.OutputField {
       name: "positionsHistory";
       arguments: {
         address: {
@@ -252,8 +242,7 @@ export namespace Schema {
     /**
      * Return user's claim rewards details
      */
-    export interface userClaims {
-      kind: "OutputField";
+    export interface userClaims extends $.OutputField {
       name: "userClaims";
       arguments: {
         address: {
@@ -273,8 +262,7 @@ export namespace Schema {
       namedType: $$NamedTypes.$$Claim;
     }
 
-    export interface userProfile {
-      kind: "OutputField";
+    export interface userProfile extends $.OutputField {
       name: "userProfile";
       arguments: {
         address: {
@@ -291,8 +279,7 @@ export namespace Schema {
     /**
      * Returns user's staked liquidity to the markets
      */
-    export interface userLiquidity {
-      kind: "OutputField";
+    export interface userLiquidity extends $.OutputField {
       name: "userLiquidity";
       arguments: {
         address: {
@@ -316,8 +303,7 @@ export namespace Schema {
      * Though the user should only ever create a referrer once, we should assume there might be
      * more, so we'll return more here, and let the frontend decide. Returns the codes.
      */
-    export interface referrersForAddress {
-      kind: "OutputField";
+    export interface referrersForAddress extends $.OutputField {
       name: "referrersForAddress";
       arguments: {
         address: {
@@ -334,8 +320,7 @@ export namespace Schema {
     /**
      * Leaderboards for this week.
      */
-    export interface leaderboards {
-      kind: "OutputField";
+    export interface leaderboards extends $.OutputField {
       name: "leaderboards";
       arguments: {};
       inlineType: [1];
@@ -345,8 +330,7 @@ export namespace Schema {
     /**
      * Get referrer address by its generated code.
      */
-    export interface referrerByCode {
-      kind: "OutputField";
+    export interface referrerByCode extends $.OutputField {
       name: "referrerByCode";
       arguments: {
         code: {
@@ -365,8 +349,7 @@ export namespace Schema {
      * Combines liquidity changes, hourly volume, current liquidity, and buy/sell volume,
      * then ranks pools and returns recent shown buy/sell events with these metrics.
      */
-    export interface featuredCampaign {
-      kind: "OutputField";
+    export interface featuredCampaign extends $.OutputField {
       name: "featuredCampaign";
       arguments: {
         limit: {
@@ -383,8 +366,7 @@ export namespace Schema {
     /**
      * Return users active liquidity staked to the campaigns
      */
-    export interface userLPs {
-      kind: "OutputField";
+    export interface userLPs extends $.OutputField {
       name: "userLPs";
       arguments: {
         address: {
@@ -401,8 +383,7 @@ export namespace Schema {
     /**
      * Get the count of the referees
      */
-    export interface countReferees {
-      kind: "OutputField";
+    export interface countReferees extends $.OutputField {
       name: "countReferees";
       arguments: {
         referrerAddress: {
@@ -419,8 +400,7 @@ export namespace Schema {
     /**
      * Returns won campaigns profit according to share's total cost
      */
-    export interface userWonCampaignsProfits {
-      kind: "OutputField";
+    export interface userWonCampaignsProfits extends $.OutputField {
       name: "userWonCampaignsProfits";
       arguments: {
         address: {
@@ -437,8 +417,7 @@ export namespace Schema {
     /**
      * Gets comments of a campaign
      */
-    export interface campaignComments {
-      kind: "OutputField";
+    export interface campaignComments extends $.OutputField {
       name: "campaignComments";
       arguments: {
         campaignId: {
@@ -473,8 +452,7 @@ export namespace Schema {
     /**
      * Get historical prices change events to create a price chart timeline
      */
-    export interface campaignPriceEvents {
-      kind: "OutputField";
+    export interface campaignPriceEvents extends $.OutputField {
       name: "campaignPriceEvents";
       arguments: {
         poolAddress: {
@@ -493,8 +471,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Mutation {
-    kind: "Object";
+  export interface Mutation extends $.OutputObject {
     name: "Mutation";
     fields: {
       __typename: Mutation.__typename;
@@ -512,8 +489,7 @@ export namespace Schema {
   }
 
   export namespace Mutation {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -526,8 +502,7 @@ export namespace Schema {
     /**
      * Post new comment to a campaign
      */
-    export interface postComment {
-      kind: "OutputField";
+    export interface postComment extends $.OutputField {
       name: "postComment";
       arguments: {
         campaignId: {
@@ -574,8 +549,7 @@ export namespace Schema {
     /**
      * Delete a comment owned
      */
-    export interface deleteComment {
-      kind: "OutputField";
+    export interface deleteComment extends $.OutputField {
       name: "deleteComment";
       arguments: {
         campaignId: {
@@ -629,8 +603,7 @@ export namespace Schema {
      * Request that the Paymaster service this request and deduct funds from the user's USDC
      * EOA using a Permit blob.
      */
-    export interface requestPaymaster {
-      kind: "OutputField";
+    export interface requestPaymaster extends $.OutputField {
       name: "requestPaymaster";
       arguments: {
         /**
@@ -820,8 +793,7 @@ export namespace Schema {
      * "Explain" a campaign, so an on-chain campaign creation is listed in the frontend.
      * Campaign is then spooled in a would-be frontend aggregation table.
      */
-    export interface explainCampaign {
-      kind: "OutputField";
+    export interface explainCampaign extends $.OutputField {
       name: "explainCampaign";
       arguments: {
         /**
@@ -977,8 +949,7 @@ export namespace Schema {
      * revealCommitment2, which takes a signature. This will always return false,
      * unless the frontend should be prompted to provide a signature.
      */
-    export interface revealCommitment {
-      kind: "OutputField";
+    export interface revealCommitment extends $.OutputField {
       name: "revealCommitment";
       arguments: {
         /**
@@ -1036,8 +1007,7 @@ export namespace Schema {
      * gated with a signature, and will reject the user's submission unless they provide a
      * correct signature. True will always be returned here.
      */
-    export interface revealCommitment2 {
-      kind: "OutputField";
+    export interface revealCommitment2 extends $.OutputField {
       name: "revealCommitment2";
       arguments: {
         /**
@@ -1116,8 +1086,7 @@ export namespace Schema {
       namedType: $$NamedTypes.$$Boolean;
     }
 
-    export interface synchProfile {
-      kind: "OutputField";
+    export interface synchProfile extends $.OutputField {
       name: "synchProfile";
       arguments: {
         walletAddress: {
@@ -1140,8 +1109,7 @@ export namespace Schema {
     /**
      * Generate a referrer code, using the identifier that the user gave us.
      */
-    export interface genReferrer {
-      kind: "OutputField";
+    export interface genReferrer extends $.OutputField {
       name: "genReferrer";
       arguments: {
         /**
@@ -1173,8 +1141,7 @@ export namespace Schema {
      *
      * Referral(address sender,address referrer,uint256 deadline)
      */
-    export interface associateReferral {
-      kind: "OutputField";
+    export interface associateReferral extends $.OutputField {
       name: "associateReferral";
       arguments: {
         /**
@@ -1232,8 +1199,7 @@ export namespace Schema {
     /**
      * Updates meow domains avatar and name for user's profile
      */
-    export interface updateMeowDomain {
-      kind: "OutputField";
+    export interface updateMeowDomain extends $.OutputField {
       name: "updateMeowDomain";
       arguments: {
         walletAddress: {
@@ -1280,8 +1246,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface PriceEvent {
-    kind: "Object";
+  export interface PriceEvent extends $.OutputObject {
     name: "PriceEvent";
     fields: {
       __typename: PriceEvent.__typename;
@@ -1291,8 +1256,7 @@ export namespace Schema {
   }
 
   export namespace PriceEvent {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1302,16 +1266,14 @@ export namespace Schema {
       };
     }
 
-    export interface createdAt {
-      kind: "OutputField";
+    export interface createdAt extends $.OutputField {
       name: "createdAt";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
     }
 
-    export interface shares {
-      kind: "OutputField";
+    export interface shares extends $.OutputField {
       name: "shares";
       arguments: {};
       inlineType: [1, [0]];
@@ -1323,8 +1285,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface CommentInvestment {
-    kind: "Object";
+  export interface CommentInvestment extends $.OutputObject {
     name: "CommentInvestment";
     fields: {
       __typename: CommentInvestment.__typename;
@@ -1334,8 +1295,7 @@ export namespace Schema {
   }
 
   export namespace CommentInvestment {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1345,16 +1305,14 @@ export namespace Schema {
       };
     }
 
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface amount {
-      kind: "OutputField";
+    export interface amount extends $.OutputField {
       name: "amount";
       arguments: {};
       inlineType: [1];
@@ -1366,8 +1324,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Comment {
-    kind: "Object";
+  export interface Comment extends $.OutputObject {
     name: "Comment";
     fields: {
       __typename: Comment.__typename;
@@ -1381,8 +1338,7 @@ export namespace Schema {
   }
 
   export namespace Comment {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1392,48 +1348,42 @@ export namespace Schema {
       };
     }
 
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
     }
 
-    export interface campaignId {
-      kind: "OutputField";
+    export interface campaignId extends $.OutputField {
       name: "campaignId";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface createdAt {
-      kind: "OutputField";
+    export interface createdAt extends $.OutputField {
       name: "createdAt";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
     }
 
-    export interface walletAddress {
-      kind: "OutputField";
+    export interface walletAddress extends $.OutputField {
       name: "walletAddress";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface content {
-      kind: "OutputField";
+    export interface content extends $.OutputField {
       name: "content";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface investments {
-      kind: "OutputField";
+    export interface investments extends $.OutputField {
       name: "investments";
       arguments: {};
       inlineType: [1, [0]];
@@ -1445,8 +1395,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface LP {
-    kind: "Object";
+  export interface LP extends $.OutputObject {
     name: "LP";
     fields: {
       __typename: LP.__typename;
@@ -1456,8 +1405,7 @@ export namespace Schema {
   }
 
   export namespace LP {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1467,16 +1415,14 @@ export namespace Schema {
       };
     }
 
-    export interface liquidity {
-      kind: "OutputField";
+    export interface liquidity extends $.OutputField {
       name: "liquidity";
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface campaign {
-      kind: "OutputField";
+    export interface campaign extends $.OutputField {
       name: "campaign";
       arguments: {};
       inlineType: [0];
@@ -1488,8 +1434,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface CampaignProfit {
-    kind: "Object";
+  export interface CampaignProfit extends $.OutputObject {
     name: "CampaignProfit";
     fields: {
       __typename: CampaignProfit.__typename;
@@ -1500,8 +1445,7 @@ export namespace Schema {
   }
 
   export namespace CampaignProfit {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1511,24 +1455,21 @@ export namespace Schema {
       };
     }
 
-    export interface poolAddress {
-      kind: "OutputField";
+    export interface poolAddress extends $.OutputField {
       name: "poolAddress";
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface profit {
-      kind: "OutputField";
+    export interface profit extends $.OutputField {
       name: "profit";
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$Int;
     }
 
-    export interface winner {
-      kind: "OutputField";
+    export interface winner extends $.OutputField {
       name: "winner";
       arguments: {};
       inlineType: [0];
@@ -1540,8 +1481,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Settings {
-    kind: "Object";
+  export interface Settings extends $.OutputObject {
     name: "Settings";
     fields: {
       __typename: Settings.__typename;
@@ -1553,8 +1493,7 @@ export namespace Schema {
   }
 
   export namespace Settings {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1567,8 +1506,7 @@ export namespace Schema {
     /**
      * Multiple settings can be added here
      */
-    export interface notification {
-      kind: "OutputField";
+    export interface notification extends $.OutputField {
       name: "notification";
       arguments: {};
       inlineType: [0];
@@ -1578,8 +1516,7 @@ export namespace Schema {
     /**
      * Did the user click a referrer link that we should hint to the browser?
      */
-    export interface refererr {
-      kind: "OutputField";
+    export interface refererr extends $.OutputField {
       name: "refererr";
       arguments: {};
       inlineType: [0];
@@ -1589,8 +1526,7 @@ export namespace Schema {
     /**
      * meow domain avatar
      */
-    export interface meowAvatar {
-      kind: "OutputField";
+    export interface meowAvatar extends $.OutputField {
       name: "meowAvatar";
       arguments: {};
       inlineType: [0];
@@ -1600,8 +1536,7 @@ export namespace Schema {
     /**
      * meow domain name
      */
-    export interface meowName {
-      kind: "OutputField";
+    export interface meowName extends $.OutputField {
       name: "meowName";
       arguments: {};
       inlineType: [0];
@@ -1613,8 +1548,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Profile {
-    kind: "Object";
+  export interface Profile extends $.OutputObject {
     name: "Profile";
     fields: {
       __typename: Profile.__typename;
@@ -1625,8 +1559,7 @@ export namespace Schema {
   }
 
   export namespace Profile {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1636,24 +1569,21 @@ export namespace Schema {
       };
     }
 
-    export interface walletAddress {
-      kind: "OutputField";
+    export interface walletAddress extends $.OutputField {
       name: "walletAddress";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface email {
-      kind: "OutputField";
+    export interface email extends $.OutputField {
       name: "email";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface settings {
-      kind: "OutputField";
+    export interface settings extends $.OutputField {
       name: "settings";
       arguments: {};
       inlineType: [0];
@@ -1668,8 +1598,7 @@ export namespace Schema {
   /**
    * User reward claims as a winner of a prediction market
    */
-  export interface Claim {
-    kind: "Object";
+  export interface Claim extends $.OutputObject {
     name: "Claim";
     fields: {
       __typename: Claim.__typename;
@@ -1682,8 +1611,7 @@ export namespace Schema {
   }
 
   export namespace Claim {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1693,40 +1621,35 @@ export namespace Schema {
       };
     }
 
-    export interface sharesSpent {
-      kind: "OutputField";
+    export interface sharesSpent extends $.OutputField {
       name: "sharesSpent";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface fusdcReceived {
-      kind: "OutputField";
+    export interface fusdcReceived extends $.OutputField {
       name: "fusdcReceived";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface winner {
-      kind: "OutputField";
+    export interface winner extends $.OutputField {
       name: "winner";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface content {
-      kind: "OutputField";
+    export interface content extends $.OutputField {
       name: "content";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Campaign;
     }
 
-    export interface createdAt {
-      kind: "OutputField";
+    export interface createdAt extends $.OutputField {
       name: "createdAt";
       arguments: {};
       inlineType: [1];
@@ -1741,8 +1664,7 @@ export namespace Schema {
   /**
    * Participated pool address of the campaign and bought and sought outcome ids
    */
-  export interface Position {
-    kind: "Object";
+  export interface Position extends $.OutputObject {
     name: "Position";
     fields: {
       __typename: Position.__typename;
@@ -1753,8 +1675,7 @@ export namespace Schema {
   }
 
   export namespace Position {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1764,24 +1685,21 @@ export namespace Schema {
       };
     }
 
-    export interface campaignId {
-      kind: "OutputField";
+    export interface campaignId extends $.OutputField {
       name: "campaignId";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface outcomeIds {
-      kind: "OutputField";
+    export interface outcomeIds extends $.OutputField {
       name: "outcomeIds";
       arguments: {};
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface content {
-      kind: "OutputField";
+    export interface content extends $.OutputField {
       name: "content";
       arguments: {};
       inlineType: [0];
@@ -1796,8 +1714,7 @@ export namespace Schema {
   /**
    * Ongoing prediction market competition.
    */
-  export interface Campaign {
-    kind: "Object";
+  export interface Campaign extends $.OutputObject {
     name: "Campaign";
     fields: {
       __typename: Campaign.__typename;
@@ -1829,8 +1746,7 @@ export namespace Schema {
   }
 
   export namespace Campaign {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -1844,8 +1760,7 @@ export namespace Schema {
      * Name of the campaign. Also used to look up the campaign based on the slug
      * if needed (hyphenated).
      */
-    export interface name {
-      kind: "OutputField";
+    export interface name extends $.OutputField {
       name: "name";
       arguments: {};
       inlineType: [1];
@@ -1855,8 +1770,7 @@ export namespace Schema {
     /**
      * Description of the campaign in simple text.
      */
-    export interface description {
-      kind: "OutputField";
+    export interface description extends $.OutputField {
       name: "description";
       arguments: {};
       inlineType: [1];
@@ -1866,8 +1780,7 @@ export namespace Schema {
     /**
      * Picture of the campaign.
      */
-    export interface picture {
-      kind: "OutputField";
+    export interface picture extends $.OutputField {
       name: "picture";
       arguments: {};
       inlineType: [0];
@@ -1877,8 +1790,7 @@ export namespace Schema {
     /**
      * Creator of the campaign.
      */
-    export interface creator {
-      kind: "OutputField";
+    export interface creator extends $.OutputField {
       name: "creator";
       arguments: {};
       inlineType: [1];
@@ -1889,8 +1801,7 @@ export namespace Schema {
      * Timestamp of the creation of the creation of this campaign (specifically, when it was
      * included).
      */
-    export interface createdAt {
-      kind: "OutputField";
+    export interface createdAt extends $.OutputField {
       name: "createdAt";
       arguments: {};
       inlineType: [1];
@@ -1900,8 +1811,7 @@ export namespace Schema {
     /**
      * Defines the method used to determine the winner of a campaign.
      */
-    export interface settlement {
-      kind: "OutputField";
+    export interface settlement extends $.OutputField {
       name: "settlement";
       arguments: {};
       inlineType: [1];
@@ -1911,8 +1821,7 @@ export namespace Schema {
     /**
      * Oracle description defines under which conditions campaigns conclude
      */
-    export interface oracleDescription {
-      kind: "OutputField";
+    export interface oracleDescription extends $.OutputField {
       name: "oracleDescription";
       arguments: {};
       inlineType: [0];
@@ -1922,8 +1831,7 @@ export namespace Schema {
     /**
      * Oracle URLs are helper sources for documents when the infrastructure market is used as a settlement source.
      */
-    export interface oracleUrls {
-      kind: "OutputField";
+    export interface oracleUrls extends $.OutputField {
       name: "oracleUrls";
       arguments: {};
       inlineType: [0, [0]];
@@ -1934,8 +1842,7 @@ export namespace Schema {
      * Identifier that's used to do offline derivation of the campaign pool,
      * and the outcome shares. Is keccak256(concatenated outcome ids)[:8].
      */
-    export interface identifier {
-      kind: "OutputField";
+    export interface identifier extends $.OutputField {
       name: "identifier";
       arguments: {};
       inlineType: [1];
@@ -1945,8 +1852,7 @@ export namespace Schema {
     /**
      * Pool address to purchase shares, and to receive the cost function.
      */
-    export interface poolAddress {
-      kind: "OutputField";
+    export interface poolAddress extends $.OutputField {
       name: "poolAddress";
       arguments: {};
       inlineType: [1];
@@ -1957,8 +1863,7 @@ export namespace Schema {
      * Outcomes associated with this campaign. If there are only two, it defaults
      * to a "yes", or "no".
      */
-    export interface outcomes {
-      kind: "OutputField";
+    export interface outcomes extends $.OutputField {
       name: "outcomes";
       arguments: {};
       inlineType: [1, [1]];
@@ -1968,8 +1873,7 @@ export namespace Schema {
     /**
      * Expected starting timestamp.
      */
-    export interface starting {
-      kind: "OutputField";
+    export interface starting extends $.OutputField {
       name: "starting";
       arguments: {};
       inlineType: [1];
@@ -1979,8 +1883,7 @@ export namespace Schema {
     /**
      * Ending date of the campaign in timestamp
      */
-    export interface ending {
-      kind: "OutputField";
+    export interface ending extends $.OutputField {
       name: "ending";
       arguments: {};
       inlineType: [1];
@@ -1990,8 +1893,7 @@ export namespace Schema {
     /**
      * X/Twitter username
      */
-    export interface x {
-      kind: "OutputField";
+    export interface x extends $.OutputField {
       name: "x";
       arguments: {};
       inlineType: [0];
@@ -2001,8 +1903,7 @@ export namespace Schema {
     /**
      * Telegram username
      */
-    export interface telegram {
-      kind: "OutputField";
+    export interface telegram extends $.OutputField {
       name: "telegram";
       arguments: {};
       inlineType: [0];
@@ -2012,8 +1913,7 @@ export namespace Schema {
     /**
      * Web url
      */
-    export interface web {
-      kind: "OutputField";
+    export interface web extends $.OutputField {
       name: "web";
       arguments: {};
       inlineType: [0];
@@ -2023,8 +1923,7 @@ export namespace Schema {
     /**
      * If any outcome declared as winner, it returns bytes8 id
      */
-    export interface winner {
-      kind: "OutputField";
+    export interface winner extends $.OutputField {
       name: "winner";
       arguments: {};
       inlineType: [0];
@@ -2034,8 +1933,7 @@ export namespace Schema {
     /**
      * It returns total volume (buys+sells+vested) as usd
      */
-    export interface totalVolume {
-      kind: "OutputField";
+    export interface totalVolume extends $.OutputField {
       name: "totalVolume";
       arguments: {};
       inlineType: [1];
@@ -2045,8 +1943,7 @@ export namespace Schema {
     /**
      * It returns current vested amount as usd
      */
-    export interface liquidityVested {
-      kind: "OutputField";
+    export interface liquidityVested extends $.OutputField {
       name: "liquidityVested";
       arguments: {};
       inlineType: [1];
@@ -2056,8 +1953,7 @@ export namespace Schema {
     /**
      * Represents investment results bytes8 ids to amounts.
      */
-    export interface investmentAmounts {
-      kind: "OutputField";
+    export interface investmentAmounts extends $.OutputField {
       name: "investmentAmounts";
       arguments: {};
       inlineType: [1, [0]];
@@ -2067,8 +1963,7 @@ export namespace Schema {
     /**
      * Any moderator sent banners notifying people of a change in this market.
      */
-    export interface banners {
-      kind: "OutputField";
+    export interface banners extends $.OutputField {
       name: "banners";
       arguments: {};
       inlineType: [1, [1]];
@@ -2078,8 +1973,7 @@ export namespace Schema {
     /**
      * Campaigns can be tagged with multiple categories
      */
-    export interface categories {
-      kind: "OutputField";
+    export interface categories extends $.OutputField {
       name: "categories";
       arguments: {};
       inlineType: [1, [1]];
@@ -2089,8 +1983,7 @@ export namespace Schema {
     /**
      * For dpm markets it is true, for amms false
      */
-    export interface isDpm {
-      kind: "OutputField";
+    export interface isDpm extends $.OutputField {
       name: "isDpm";
       arguments: {};
       inlineType: [0];
@@ -2100,8 +1993,7 @@ export namespace Schema {
     /**
      * Latest total shares of the campaign to calculate prices of the outcomes
      */
-    export interface shares {
-      kind: "OutputField";
+    export interface shares extends $.OutputField {
       name: "shares";
       arguments: {};
       inlineType: [1, [0]];
@@ -2116,8 +2008,7 @@ export namespace Schema {
   /**
    * Campaign outcome share with identifier to match
    */
-  export interface CampaignShare {
-    kind: "Object";
+  export interface CampaignShare extends $.OutputObject {
     name: "CampaignShare";
     fields: {
       __typename: CampaignShare.__typename;
@@ -2127,8 +2018,7 @@ export namespace Schema {
   }
 
   export namespace CampaignShare {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2138,16 +2028,14 @@ export namespace Schema {
       };
     }
 
-    export interface shares {
-      kind: "OutputField";
+    export interface shares extends $.OutputField {
       name: "shares";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
 
-    export interface identifier {
-      kind: "OutputField";
+    export interface identifier extends $.OutputField {
       name: "identifier";
       arguments: {};
       inlineType: [1];
@@ -2162,8 +2050,7 @@ export namespace Schema {
   /**
    * Leaderboard position that's sent via the UI.
    */
-  export interface LeaderboardPosition {
-    kind: "Object";
+  export interface LeaderboardPosition extends $.OutputObject {
     name: "LeaderboardPosition";
     fields: {
       __typename: LeaderboardPosition.__typename;
@@ -2173,8 +2060,7 @@ export namespace Schema {
   }
 
   export namespace LeaderboardPosition {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2187,8 +2073,7 @@ export namespace Schema {
     /**
      * Address of the position participant.
      */
-    export interface address {
-      kind: "OutputField";
+    export interface address extends $.OutputField {
       name: "address";
       arguments: {};
       inlineType: [1];
@@ -2198,8 +2083,7 @@ export namespace Schema {
     /**
      * Accumulated volume that the user has created, rounded down in USDC.
      */
-    export interface volume {
-      kind: "OutputField";
+    export interface volume extends $.OutputField {
       name: "volume";
       arguments: {};
       inlineType: [1];
@@ -2214,8 +2098,7 @@ export namespace Schema {
   /**
    * Weekly leaderboard display that's sent via the leaderboard endpoint.
    */
-  export interface LeaderboardWeekly {
-    kind: "Object";
+  export interface LeaderboardWeekly extends $.OutputObject {
     name: "LeaderboardWeekly";
     fields: {
       __typename: LeaderboardWeekly.__typename;
@@ -2226,8 +2109,7 @@ export namespace Schema {
   }
 
   export namespace LeaderboardWeekly {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2240,8 +2122,7 @@ export namespace Schema {
     /**
      * Top referrers. Only the top 25.
      */
-    export interface referrers {
-      kind: "OutputField";
+    export interface referrers extends $.OutputField {
       name: "referrers";
       arguments: {};
       inlineType: [1, [1]];
@@ -2251,8 +2132,7 @@ export namespace Schema {
     /**
      * Top volume. Only the top 25.
      */
-    export interface volume {
-      kind: "OutputField";
+    export interface volume extends $.OutputField {
       name: "volume";
       arguments: {};
       inlineType: [1, [1]];
@@ -2262,8 +2142,7 @@ export namespace Schema {
     /**
      * Top campaign creators by volume. Only the top 25.
      */
-    export interface creators {
-      kind: "OutputField";
+    export interface creators extends $.OutputField {
       name: "creators";
       arguments: {};
       inlineType: [1, [1]];
@@ -2275,8 +2154,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface InvestmentAmounts {
-    kind: "Object";
+  export interface InvestmentAmounts extends $.OutputObject {
     name: "InvestmentAmounts";
     fields: {
       __typename: InvestmentAmounts.__typename;
@@ -2287,8 +2165,7 @@ export namespace Schema {
   }
 
   export namespace InvestmentAmounts {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2301,8 +2178,7 @@ export namespace Schema {
     /**
      * outcome id bytes8
      */
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
@@ -2312,8 +2188,7 @@ export namespace Schema {
     /**
      * 6 decimals fusdc
      */
-    export interface usdc {
-      kind: "OutputField";
+    export interface usdc extends $.OutputField {
       name: "usdc";
       arguments: {};
       inlineType: [1];
@@ -2323,8 +2198,7 @@ export namespace Schema {
     /**
      * 6 decimals share
      */
-    export interface share {
-      kind: "OutputField";
+    export interface share extends $.OutputField {
       name: "share";
       arguments: {};
       inlineType: [1];
@@ -2336,8 +2210,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Outcome {
-    kind: "Object";
+  export interface Outcome extends $.OutputObject {
     name: "Outcome";
     fields: {
       __typename: Outcome.__typename;
@@ -2349,8 +2222,7 @@ export namespace Schema {
   }
 
   export namespace Outcome {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2363,8 +2235,7 @@ export namespace Schema {
     /**
      * Name of this campaign.
      */
-    export interface name {
-      kind: "OutputField";
+    export interface name extends $.OutputField {
       name: "name";
       arguments: {};
       inlineType: [1];
@@ -2374,8 +2245,7 @@ export namespace Schema {
     /**
      * Picture of the outcome.
      */
-    export interface picture {
-      kind: "OutputField";
+    export interface picture extends $.OutputField {
       name: "picture";
       arguments: {};
       inlineType: [0];
@@ -2386,8 +2256,7 @@ export namespace Schema {
      * Identifier hex encoded associated with this outcome. Used to derive addresses.
      * Is of the form keccak256("o" . name . "d" . description . "s" . seed)[:8]
      */
-    export interface identifier {
-      kind: "OutputField";
+    export interface identifier extends $.OutputField {
       name: "identifier";
       arguments: {};
       inlineType: [1];
@@ -2397,8 +2266,7 @@ export namespace Schema {
     /**
      * Share address to trade this outcome.
      */
-    export interface share {
-      kind: "OutputField";
+    export interface share extends $.OutputField {
       name: "share";
       arguments: {};
       inlineType: [1];
@@ -2413,8 +2281,7 @@ export namespace Schema {
   /**
    * Wallet of the creator.
    */
-  export interface Wallet {
-    kind: "Object";
+  export interface Wallet extends $.OutputObject {
     name: "Wallet";
     fields: {
       __typename: Wallet.__typename;
@@ -2423,8 +2290,7 @@ export namespace Schema {
   }
 
   export namespace Wallet {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2437,8 +2303,7 @@ export namespace Schema {
     /**
      * Wallet address of this wallet, in hex.
      */
-    export interface address {
-      kind: "OutputField";
+    export interface address extends $.OutputField {
       name: "address";
       arguments: {};
       inlineType: [1];
@@ -2453,8 +2318,7 @@ export namespace Schema {
   /**
    * Share representing the outcome of the current amount.
    */
-  export interface Share {
-    kind: "Object";
+  export interface Share extends $.OutputObject {
     name: "Share";
     fields: {
       __typename: Share.__typename;
@@ -2463,8 +2327,7 @@ export namespace Schema {
   }
 
   export namespace Share {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2477,8 +2340,7 @@ export namespace Schema {
     /**
      * ERC20 address of this campaign.
      */
-    export interface address {
-      kind: "OutputField";
+    export interface address extends $.OutputField {
       name: "address";
       arguments: {};
       inlineType: [1];
@@ -2505,8 +2367,7 @@ export namespace Schema {
    *
    * This is converted to HTML.
    */
-  export interface Changelog {
-    kind: "Object";
+  export interface Changelog extends $.OutputObject {
     name: "Changelog";
     fields: {
       __typename: Changelog.__typename;
@@ -2518,8 +2379,7 @@ export namespace Schema {
   }
 
   export namespace Changelog {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2529,8 +2389,7 @@ export namespace Schema {
       };
     }
 
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
@@ -2540,8 +2399,7 @@ export namespace Schema {
     /**
      * The title of the changelog item.
      */
-    export interface title {
-      kind: "OutputField";
+    export interface title extends $.OutputField {
       name: "title";
       arguments: {};
       inlineType: [1];
@@ -2551,8 +2409,7 @@ export namespace Schema {
     /**
      * The timestamp that this item is relevant for after.
      */
-    export interface afterTs {
-      kind: "OutputField";
+    export interface afterTs extends $.OutputField {
       name: "afterTs";
       arguments: {};
       inlineType: [1];
@@ -2562,8 +2419,7 @@ export namespace Schema {
     /**
      * HTML rendered from the Markdown CHANGELOG.md file.
      */
-    export interface html {
-      kind: "OutputField";
+    export interface html extends $.OutputField {
       name: "html";
       arguments: {};
       inlineType: [1];
@@ -2578,8 +2434,7 @@ export namespace Schema {
   /**
    * Represents a buy or sell activity.
    */
-  export interface Activity {
-    kind: "Object";
+  export interface Activity extends $.OutputObject {
     name: "Activity";
     fields: {
       __typename: Activity.__typename;
@@ -2602,8 +2457,7 @@ export namespace Schema {
   }
 
   export namespace Activity {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -2616,8 +2470,7 @@ export namespace Schema {
     /**
      * Transaction hash of the activity.
      */
-    export interface txHash {
-      kind: "OutputField";
+    export interface txHash extends $.OutputField {
       name: "txHash";
       arguments: {};
       inlineType: [1];
@@ -2627,8 +2480,7 @@ export namespace Schema {
     /**
      * Address of the recipient involved in the activity.
      */
-    export interface recipient {
-      kind: "OutputField";
+    export interface recipient extends $.OutputField {
       name: "recipient";
       arguments: {};
       inlineType: [1];
@@ -2638,8 +2490,7 @@ export namespace Schema {
     /**
      * Pool address associated with the activity.
      */
-    export interface poolAddress {
-      kind: "OutputField";
+    export interface poolAddress extends $.OutputField {
       name: "poolAddress";
       arguments: {};
       inlineType: [1];
@@ -2649,8 +2500,7 @@ export namespace Schema {
     /**
      * Amount of the asset being transferred from.
      */
-    export interface fromAmount {
-      kind: "OutputField";
+    export interface fromAmount extends $.OutputField {
       name: "fromAmount";
       arguments: {};
       inlineType: [1];
@@ -2660,8 +2510,7 @@ export namespace Schema {
     /**
      * Symbol of the asset being transferred from.
      */
-    export interface fromSymbol {
-      kind: "OutputField";
+    export interface fromSymbol extends $.OutputField {
       name: "fromSymbol";
       arguments: {};
       inlineType: [1];
@@ -2671,8 +2520,7 @@ export namespace Schema {
     /**
      * Amount of the asset being transferred to.
      */
-    export interface toAmount {
-      kind: "OutputField";
+    export interface toAmount extends $.OutputField {
       name: "toAmount";
       arguments: {};
       inlineType: [1];
@@ -2682,8 +2530,7 @@ export namespace Schema {
     /**
      * Symbol of the asset being transferred to.
      */
-    export interface toSymbol {
-      kind: "OutputField";
+    export interface toSymbol extends $.OutputField {
       name: "toSymbol";
       arguments: {};
       inlineType: [1];
@@ -2693,8 +2540,7 @@ export namespace Schema {
     /**
      * Type of the activity (buy, sell).
      */
-    export interface type {
-      kind: "OutputField";
+    export interface type extends $.OutputField {
       name: "type";
       arguments: {};
       inlineType: [1];
@@ -2704,8 +2550,7 @@ export namespace Schema {
     /**
      * ID of the outcome associated with the activity.
      */
-    export interface outcomeId {
-      kind: "OutputField";
+    export interface outcomeId extends $.OutputField {
       name: "outcomeId";
       arguments: {};
       inlineType: [1];
@@ -2715,8 +2560,7 @@ export namespace Schema {
     /**
      * Name of the outcome associated with the activity.
      */
-    export interface outcomeName {
-      kind: "OutputField";
+    export interface outcomeName extends $.OutputField {
       name: "outcomeName";
       arguments: {};
       inlineType: [1];
@@ -2726,8 +2570,7 @@ export namespace Schema {
     /**
      * Picture of the outcome associated with the activity.
      */
-    export interface outcomePic {
-      kind: "OutputField";
+    export interface outcomePic extends $.OutputField {
       name: "outcomePic";
       arguments: {};
       inlineType: [0];
@@ -2737,8 +2580,7 @@ export namespace Schema {
     /**
      * Name of the campaign associated with the activity.
      */
-    export interface campaignName {
-      kind: "OutputField";
+    export interface campaignName extends $.OutputField {
       name: "campaignName";
       arguments: {};
       inlineType: [1];
@@ -2748,8 +2590,7 @@ export namespace Schema {
     /**
      * ID of the campaign associated with the activity.
      */
-    export interface campaignId {
-      kind: "OutputField";
+    export interface campaignId extends $.OutputField {
       name: "campaignId";
       arguments: {};
       inlineType: [1];
@@ -2759,8 +2600,7 @@ export namespace Schema {
     /**
      * Total volume of the activity.
      */
-    export interface totalVolume {
-      kind: "OutputField";
+    export interface totalVolume extends $.OutputField {
       name: "totalVolume";
       arguments: {};
       inlineType: [1];
@@ -2770,8 +2610,7 @@ export namespace Schema {
     /**
      * Timestamp of when the activity was created.
      */
-    export interface createdAt {
-      kind: "OutputField";
+    export interface createdAt extends $.OutputField {
       name: "createdAt";
       arguments: {};
       inlineType: [1];
@@ -2802,8 +2641,7 @@ export namespace Schema {
   /**
    * Outcome associated with a Campaign creation that's notified to the graph.
    */
-  export interface OutcomeInput {
-    kind: "InputObject";
+  export interface OutcomeInput extends $.InputObject {
     name: "OutcomeInput";
     isAllFieldsNullable: true;
     fields: {
@@ -2817,8 +2655,7 @@ export namespace Schema {
     /**
      * Name of the campaign outcome. Ie, "Donald Trump" for the election.
      */
-    export interface name {
-      kind: "InputField";
+    export interface name extends $.InputField {
       name: "name";
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
@@ -2827,8 +2664,7 @@ export namespace Schema {
     /**
      * Randomly chosen seed for the creation of the identifier.
      */
-    export interface seed {
-      kind: "InputField";
+    export interface seed extends $.InputField {
       name: "seed";
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
@@ -2837,8 +2673,7 @@ export namespace Schema {
     /**
      * Picture of the outcome.
      */
-    export interface picture {
-      kind: "InputField";
+    export interface picture extends $.InputField {
       name: "picture";
       inlineType: [0];
       namedType: $$NamedTypes.$$String;
@@ -2897,8 +2732,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface PaymasterOperation {
-    kind: "Enum";
+  export interface PaymasterOperation extends $.Enum {
     name: "PaymasterOperation";
     members: [
       "MINT",
@@ -2927,8 +2761,7 @@ export namespace Schema {
    * "DELETE" - Delete this modification.
    * "PUT" - Create this modification.
    */
-  export interface Modification {
-    kind: "Enum";
+  export interface Modification extends $.Enum {
     name: "Modification";
     members: ["DELETE", "PUT"];
     membersUnion: "DELETE" | "PUT";
@@ -2947,8 +2780,7 @@ export namespace Schema {
    * "AI" - A.I Resolver.
    * "CONTRACT" - Contract State.
    */
-  export interface SettlementType {
-    kind: "Enum";
+  export interface SettlementType extends $.Enum {
     name: "SettlementType";
     members: ["ORACLE", "POLL", "AI", "CONTRACT"];
     membersUnion: "ORACLE" | "POLL" | "AI" | "CONTRACT";
@@ -2961,8 +2793,7 @@ export namespace Schema {
   /**
    * Represents the type of an activity.
    */
-  export interface ActivityType {
-    kind: "Enum";
+  export interface ActivityType extends $.Enum {
     name: "ActivityType";
     members: ["buy", "sell"];
     membersUnion: "buy" | "sell";
@@ -3100,7 +2931,7 @@ export namespace Schema {
 
 export interface Schema<
   $Scalars extends $$Utilities.Schema.Scalar.Registry = $$Scalar.$Registry,
-> {
+> extends $ {
   name: $$Data.Name;
   operationsAvailable: ["query", "mutation"];
   RootUnion: Schema.Query | Schema.Mutation;

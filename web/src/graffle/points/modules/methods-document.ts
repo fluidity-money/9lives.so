@@ -1,17 +1,14 @@
-import type * as $$SelectionSets from "./selection-sets.js";
-import type * as $$Schema from "./schema.js";
+import * as $$SelectionSets from "./selection-sets";
+import * as $$Schema from "./schema";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 
-export interface Document<$Context> {
+export interface Document<$Context extends $$Utilities.Context> {
   <$Document>(
     document: $$Utilities.ExactNonEmpty<
       $Document,
-      $$SelectionSets.$Document<
-        // @ts-expect-error Context constraint missing to avoid TS compare depth limit.
-        $Context["scalars"]
-      >
+      $$SelectionSets.$Document<$Context["scalars"]>
     >,
-  ): $$Utilities.DocumentBuilderKit.DocumentRunner<
+  ): $$Utilities.DocumentRunner<
     $Context,
     $$Schema.Schema,
     // @ts-expect-error We use Exact instead of constraint on this function. TypeScript does not see that as
@@ -21,5 +18,6 @@ export interface Document<$Context> {
 }
 
 export interface BuilderMethodsDocumentFn extends $$Utilities.TypeFunction {
+  // @ts-expect-error parameter is Untyped.
   return: Document<this["params"]>;
 }

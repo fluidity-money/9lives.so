@@ -1,5 +1,5 @@
-import * as $$Data from "./data.js";
-import * as $$Scalar from "./scalar.js";
+import * as $$Data from "./data";
+import * as $$Scalar from "./scalar";
 import type { Schema as $ } from "graffle/utilities-for-generated";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 
@@ -24,8 +24,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Query {
-    kind: "Object";
+  export interface Query extends $.OutputObject {
     name: "Query";
     fields: {
       __typename: Query.__typename;
@@ -42,8 +41,7 @@ export namespace Schema {
   }
 
   export namespace Query {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -56,8 +54,7 @@ export namespace Schema {
     /**
      * Get points for the address given.
      */
-    export interface points {
-      kind: "OutputField";
+    export interface points extends $.OutputField {
       name: "points";
       arguments: {
         wallet: {
@@ -77,8 +74,7 @@ export namespace Schema {
      * their wallet, they're included as the last row if they weren't included in the results list
      * along with their place in the results.
      */
-    export interface leaderboard {
-      kind: "OutputField";
+    export interface leaderboard extends $.OutputField {
       name: "leaderboard";
       arguments: {
         from: {
@@ -102,8 +98,7 @@ export namespace Schema {
      * Get achievements for the address given, or the category.
      * If the product is requested, then the count will be 0.
      */
-    export interface achievements {
-      kind: "OutputField";
+    export interface achievements extends $.OutputField {
       name: "achievements";
       arguments: {
         wallet: {
@@ -120,8 +115,7 @@ export namespace Schema {
     /**
      * Gets a sorted ranking of the address * achievement count for a specific product.
      */
-    export interface leaderboards {
-      kind: "OutputField";
+    export interface leaderboards extends $.OutputField {
       name: "leaderboards";
       arguments: {
         product: {
@@ -144,8 +138,7 @@ export namespace Schema {
     /**
      * Number of users who used this product.
      */
-    export interface productUserCount {
-      kind: "OutputField";
+    export interface productUserCount extends $.OutputField {
       name: "productUserCount";
       arguments: {
         product: {
@@ -163,8 +156,7 @@ export namespace Schema {
      * Returns html string with embded points data for the wallet.
      * This is a common points component to be used in every products.
      */
-    export interface getPointsComponent {
-      kind: "OutputField";
+    export interface getPointsComponent extends $.OutputField {
       name: "getPointsComponent";
       arguments: {
         wallet: {
@@ -181,8 +173,7 @@ export namespace Schema {
     /**
      * Get a user's address using their wallet address.
      */
-    export interface getAddressByDiscord {
-      kind: "OutputField";
+    export interface getAddressByDiscord extends $.OutputField {
       name: "getAddressByDiscord";
       arguments: {
         addr: {
@@ -200,8 +191,7 @@ export namespace Schema {
      * Return the address associated with a Discord handle.
      * Authenticated user only.
      */
-    export interface getDiscordName {
-      kind: "OutputField";
+    export interface getDiscordName extends $.OutputField {
       name: "getDiscordName";
       arguments: {
         handle: {
@@ -218,8 +208,7 @@ export namespace Schema {
     /**
      * Get a leaderboard of the top holders of a token given.
      */
-    export interface getTokenLeaderboard {
-      kind: "OutputField";
+    export interface getTokenLeaderboard extends $.OutputField {
       name: "getTokenLeaderboard";
       arguments: {
         token: {
@@ -238,8 +227,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Mutation {
-    kind: "Object";
+  export interface Mutation extends $.OutputObject {
     name: "Mutation";
     fields: {
       __typename: Mutation.__typename;
@@ -254,8 +242,7 @@ export namespace Schema {
   }
 
   export namespace Mutation {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -269,8 +256,7 @@ export namespace Schema {
      * Authenticate with the info service using the key given. Secret string that should be set
      * with Authorization.
      */
-    export interface auth {
-      kind: "OutputField";
+    export interface auth extends $.OutputField {
       name: "auth";
       arguments: {
         key: {
@@ -287,8 +273,7 @@ export namespace Schema {
     /**
      * Add achievement for an address or Discord handle given.
      */
-    export interface addAchievement {
-      kind: "OutputField";
+    export interface addAchievement extends $.OutputField {
       name: "addAchievement";
       arguments: {
         /**
@@ -336,8 +321,7 @@ export namespace Schema {
      * Register a Discord username with an address given. Does verification
      * to see if a trusted user is making this association.
      */
-    export interface registerDiscord {
-      kind: "OutputField";
+    export interface registerDiscord extends $.OutputField {
       name: "registerDiscord";
       arguments: {
         /**
@@ -376,8 +360,7 @@ export namespace Schema {
      * Calculate points based on the data lake available. Does so using a function with an
      * advisory lock. Can only be used by an authenticated user sending a Authentication token.
      */
-    export interface calculatePoints {
-      kind: "OutputField";
+    export interface calculatePoints extends $.OutputField {
       name: "calculatePoints";
       arguments: {
         yes: {
@@ -394,8 +377,7 @@ export namespace Schema {
     /**
      * Remove a campaign using special powers from the frontpage.
      */
-    export interface hideCampaign {
-      kind: "OutputField";
+    export interface hideCampaign extends $.OutputField {
       name: "hideCampaign";
       arguments: {
         id: {
@@ -412,8 +394,7 @@ export namespace Schema {
     /**
      * Adjust a campaign's categories based on its id.
      */
-    export interface setCampaignCategories {
-      kind: "OutputField";
+    export interface setCampaignCategories extends $.OutputField {
       name: "setCampaignCategories";
       arguments: {
         id: {
@@ -437,8 +418,7 @@ export namespace Schema {
      * Request tokens, but only for hackathons participants. Should be manually disabled in
      * the database if not taking place.
      */
-    export interface requestTokensHackathon {
-      kind: "OutputField";
+    export interface requestTokensHackathon extends $.OutputField {
       name: "requestTokensHackathon";
       arguments: {
         /**
@@ -503,8 +483,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Achievement {
-    kind: "Object";
+  export interface Achievement extends $.OutputObject {
     name: "Achievement";
     fields: {
       __typename: Achievement.__typename;
@@ -521,8 +500,7 @@ export namespace Schema {
   }
 
   export namespace Achievement {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -532,8 +510,7 @@ export namespace Schema {
       };
     }
 
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
@@ -543,8 +520,7 @@ export namespace Schema {
     /**
      * Name of the achievement earned.
      */
-    export interface name {
-      kind: "OutputField";
+    export interface name extends $.OutputField {
       name: "name";
       arguments: {};
       inlineType: [0];
@@ -554,8 +530,7 @@ export namespace Schema {
     /**
      * Number of the achievement that was won. May be a unscaled number.
      */
-    export interface count {
-      kind: "OutputField";
+    export interface count extends $.OutputField {
       name: "count";
       arguments: {};
       inlineType: [1];
@@ -567,8 +542,7 @@ export namespace Schema {
      * interaction. It might be better to not display the count of in a "this is how many
      * people have this" context if it's the former.
      */
-    export interface shouldCountMatter {
-      kind: "OutputField";
+    export interface shouldCountMatter extends $.OutputField {
       name: "shouldCountMatter";
       arguments: {};
       inlineType: [1];
@@ -579,8 +553,7 @@ export namespace Schema {
      * Is the count financial? This could dissuade the UI from displaying this item if so. Or,
      * enabling some scaling functionality.
      */
-    export interface isCountFinancial {
-      kind: "OutputField";
+    export interface isCountFinancial extends $.OutputField {
       name: "isCountFinancial";
       arguments: {};
       inlineType: [1];
@@ -590,8 +563,7 @@ export namespace Schema {
     /**
      * The descirption of this achievement.
      */
-    export interface description {
-      kind: "OutputField";
+    export interface description extends $.OutputField {
       name: "description";
       arguments: {};
       inlineType: [1];
@@ -601,8 +573,7 @@ export namespace Schema {
     /**
      * Product that this achievement was for.
      */
-    export interface product {
-      kind: "OutputField";
+    export interface product extends $.OutputField {
       name: "product";
       arguments: {};
       inlineType: [1];
@@ -612,8 +583,7 @@ export namespace Schema {
     /**
      * The season that this achievement is for.
      */
-    export interface season {
-      kind: "OutputField";
+    export interface season extends $.OutputField {
       name: "season";
       arguments: {};
       inlineType: [1];
@@ -623,8 +593,7 @@ export namespace Schema {
     /**
      * The amount of scoring for this achievement. NOTE THAT THESE ARE NOT POINTS!
      */
-    export interface scoring {
-      kind: "OutputField";
+    export interface scoring extends $.OutputField {
       name: "scoring";
       arguments: {};
       inlineType: [1];
@@ -636,8 +605,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Leaderboard {
-    kind: "Object";
+  export interface Leaderboard extends $.OutputObject {
     name: "Leaderboard";
     fields: {
       __typename: Leaderboard.__typename;
@@ -648,8 +616,7 @@ export namespace Schema {
   }
 
   export namespace Leaderboard {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -659,8 +626,7 @@ export namespace Schema {
       };
     }
 
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
@@ -670,8 +636,7 @@ export namespace Schema {
     /**
      * The product this leaderboard is for. Could be 9lives or longtail.
      */
-    export interface product {
-      kind: "OutputField";
+    export interface product extends $.OutputField {
       name: "product";
       arguments: {};
       inlineType: [1];
@@ -681,8 +646,7 @@ export namespace Schema {
     /**
      * The amount of items in this leaderboard.
      */
-    export interface items {
-      kind: "OutputField";
+    export interface items extends $.OutputField {
       name: "items";
       arguments: {};
       inlineType: [1, [1]];
@@ -694,8 +658,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface LeaderboardItem {
-    kind: "Object";
+  export interface LeaderboardItem extends $.OutputObject {
     name: "LeaderboardItem";
     fields: {
       __typename: LeaderboardItem.__typename;
@@ -707,8 +670,7 @@ export namespace Schema {
   }
 
   export namespace LeaderboardItem {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -718,8 +680,7 @@ export namespace Schema {
       };
     }
 
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
@@ -729,8 +690,7 @@ export namespace Schema {
     /**
      * The wallet that sits in the leaderboard this way.
      */
-    export interface wallet {
-      kind: "OutputField";
+    export interface wallet extends $.OutputField {
       name: "wallet";
       arguments: {};
       inlineType: [1];
@@ -740,8 +700,7 @@ export namespace Schema {
     /**
      * The ranking of the wallet. Ie, 1 for first place (the top).
      */
-    export interface ranking {
-      kind: "OutputField";
+    export interface ranking extends $.OutputField {
       name: "ranking";
       arguments: {};
       inlineType: [1];
@@ -751,8 +710,7 @@ export namespace Schema {
     /**
      * The scoring of the wallet for their cumulative count achievement value.
      */
-    export interface scoring {
-      kind: "OutputField";
+    export interface scoring extends $.OutputField {
       name: "scoring";
       arguments: {};
       inlineType: [1];
@@ -764,8 +722,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface Points {
-    kind: "Object";
+  export interface Points extends $.OutputObject {
     name: "Points";
     fields: {
       __typename: Points.__typename;
@@ -778,8 +735,7 @@ export namespace Schema {
   }
 
   export namespace Points {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -792,8 +748,7 @@ export namespace Schema {
     /**
      * ID of the points of the form "address"
      */
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
@@ -803,8 +758,7 @@ export namespace Schema {
     /**
      * Meow Domain, if any.
      */
-    export interface domainName {
-      kind: "OutputField";
+    export interface domainName extends $.OutputField {
       name: "domainName";
       arguments: {};
       inlineType: [0];
@@ -814,8 +768,7 @@ export namespace Schema {
     /**
      * Placement of the user's points in the leaderboard rankings.
      */
-    export interface placement {
-      kind: "OutputField";
+    export interface placement extends $.OutputField {
       name: "placement";
       arguments: {};
       inlineType: [1];
@@ -825,8 +778,7 @@ export namespace Schema {
     /**
      * Wallet address of the user whom these points are for.
      */
-    export interface wallet {
-      kind: "OutputField";
+    export interface wallet extends $.OutputField {
       name: "wallet";
       arguments: {};
       inlineType: [1];
@@ -836,8 +788,7 @@ export namespace Schema {
     /**
      * Amount of points that're given to this user so far.
      */
-    export interface amount {
-      kind: "OutputField";
+    export interface amount extends $.OutputField {
       name: "amount";
       arguments: {};
       inlineType: [1];
@@ -849,8 +800,7 @@ export namespace Schema {
   // --------------------------------------------------------------------------------------------------
   //
 
-  export interface TokenHolding {
-    kind: "Object";
+  export interface TokenHolding extends $.OutputObject {
     name: "TokenHolding";
     fields: {
       __typename: TokenHolding.__typename;
@@ -861,8 +811,7 @@ export namespace Schema {
   }
 
   export namespace TokenHolding {
-    export interface __typename {
-      kind: "OutputField";
+    export interface __typename extends $.OutputField {
       name: "__typename";
       arguments: {};
       inlineType: [1];
@@ -872,8 +821,7 @@ export namespace Schema {
       };
     }
 
-    export interface id {
-      kind: "OutputField";
+    export interface id extends $.OutputField {
       name: "id";
       arguments: {};
       inlineType: [1];
@@ -883,8 +831,7 @@ export namespace Schema {
     /**
      * The wallet that holds this token amount.
      */
-    export interface wallet {
-      kind: "OutputField";
+    export interface wallet extends $.OutputField {
       name: "wallet";
       arguments: {};
       inlineType: [1];
@@ -894,8 +841,7 @@ export namespace Schema {
     /**
      * Amount in the form of a base10 string encoded int.
      */
-    export interface amount {
-      kind: "OutputField";
+    export interface amount extends $.OutputField {
       name: "amount";
       arguments: {};
       inlineType: [1];
@@ -1087,7 +1033,7 @@ export namespace Schema {
 
 export interface Schema<
   $Scalars extends $$Utilities.Schema.Scalar.Registry = $$Scalar.$Registry,
-> {
+> extends $ {
   name: $$Data.Name;
   operationsAvailable: ["query", "mutation"];
   RootUnion: Schema.Query | Schema.Mutation;

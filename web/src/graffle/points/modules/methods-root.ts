@@ -1,9 +1,10 @@
-import type * as $$SelectionSets from "./selection-sets.js";
-import type * as $$Schema from "./schema.js";
+import * as $$SelectionSets from "./selection-sets";
+import * as $$Schema from "./schema";
 import type * as $$Utilities from "graffle/utilities-for-generated";
+import type { InferResult } from "graffle/schema";
 
 export interface QueryMethods<$Context extends $$Utilities.Context> {
-  $batch: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  $batch: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -14,18 +15,18 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       (null | {}) &
         $$Utilities.HandleOutput<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             $$Utilities.AssertExtendsObject<$SelectionSet>,
             $$Schema.Schema<$Context["scalars"]>
           >
         >
     >
   >;
-  __typename: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  __typename: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     () => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
           { __typename: "Query" },
           "__typename"
@@ -35,7 +36,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Get points for the address given.
    */
-  points: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  points: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -44,9 +45,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { points: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -60,7 +61,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
    * their wallet, they're included as the last row if they weren't included in the results list
    * along with their place in the results.
    */
-  leaderboard: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  leaderboard: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -69,9 +70,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { leaderboard: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -83,7 +84,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
    * Get achievements for the address given, or the category.
    * If the product is requested, then the count will be 0.
    */
-  achievements: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  achievements: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -92,9 +93,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { achievements: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -105,7 +106,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Gets a sorted ranking of the address * achievement count for a specific product.
    */
-  leaderboards: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  leaderboards: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -114,9 +115,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { leaderboards: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -127,7 +128,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Number of users who used this product.
    */
-  productUserCount: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  productUserCount: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -136,9 +137,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { productUserCount: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -150,7 +151,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
    * Returns html string with embded points data for the wallet.
    * This is a common points component to be used in every products.
    */
-  getPointsComponent: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  getPointsComponent: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet?: $$Utilities.Exact<
@@ -159,9 +160,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { getPointsComponent: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -172,7 +173,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Get a user's address using their wallet address.
    */
-  getAddressByDiscord: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  getAddressByDiscord: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -181,9 +182,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { getAddressByDiscord: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -195,7 +196,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
    * Return the address associated with a Discord handle.
    * Authenticated user only.
    */
-  getDiscordName: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  getDiscordName: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -204,9 +205,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { getDiscordName: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -217,7 +218,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
   /**
    * Get a leaderboard of the top holders of a token given.
    */
-  getTokenLeaderboard: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  getTokenLeaderboard: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -226,9 +227,9 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationQuery<
+          InferResult.OperationQuery<
             { getTokenLeaderboard: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -239,7 +240,7 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
-  $batch: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  $batch: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -250,18 +251,18 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       (null | {}) &
         $$Utilities.HandleOutput<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
+          InferResult.OperationMutation<
             $$Utilities.AssertExtendsObject<$SelectionSet>,
             $$Schema.Schema<$Context["scalars"]>
           >
         >
     >
   >;
-  __typename: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  __typename: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     () => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
           { __typename: "Mutation" },
           "__typename"
@@ -272,7 +273,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * Authenticate with the info service using the key given. Secret string that should be set
    * with Authorization.
    */
-  auth: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  auth: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -281,9 +282,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
+          InferResult.OperationMutation<
             { auth: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -294,7 +295,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   /**
    * Add achievement for an address or Discord handle given.
    */
-  addAchievement: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  addAchievement: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -303,9 +304,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
+          InferResult.OperationMutation<
             { addAchievement: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -317,7 +318,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * Register a Discord username with an address given. Does verification
    * to see if a trusted user is making this association.
    */
-  registerDiscord: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  registerDiscord: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -326,9 +327,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
+          InferResult.OperationMutation<
             { registerDiscord: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -340,7 +341,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * Calculate points based on the data lake available. Does so using a function with an
    * advisory lock. Can only be used by an authenticated user sending a Authentication token.
    */
-  calculatePoints: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  calculatePoints: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -349,9 +350,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
+          InferResult.OperationMutation<
             { calculatePoints: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -362,7 +363,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   /**
    * Remove a campaign using special powers from the frontpage.
    */
-  hideCampaign: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  hideCampaign: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -371,9 +372,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
+          InferResult.OperationMutation<
             { hideCampaign: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -384,7 +385,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   /**
    * Adjust a campaign's categories based on its id.
    */
-  setCampaignCategories: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  setCampaignCategories: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -393,9 +394,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
+          InferResult.OperationMutation<
             { setCampaignCategories: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
@@ -407,7 +408,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * Request tokens, but only for hackathons participants. Should be manually disabled in
    * the database if not taking place.
    */
-  requestTokensHackathon: $$Utilities.GraffleKit.Context.Configuration.Check.Preflight<
+  requestTokensHackathon: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
@@ -416,9 +417,9 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
       >,
     ) => Promise<
       (null | {}) &
-        $$Utilities.HandleOutputDocumentBuilderRootField<
+        $$Utilities.HandleOutputGraffleRootField<
           $Context,
-          $$Utilities.DocumentBuilderKit.InferResult.OperationMutation<
+          InferResult.OperationMutation<
             { requestTokensHackathon: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,

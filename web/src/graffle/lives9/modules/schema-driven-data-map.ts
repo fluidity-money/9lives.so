@@ -1,4 +1,4 @@
-import * as $$Scalar from "./scalar.js";
+import * as $$Scalar from "./scalar";
 import type * as $$Utilities from "graffle/utilities-for-generated";
 //
 //

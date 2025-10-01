@@ -1,8 +1,8 @@
-import * as $$Data from "./data.js";
-import * as $$Schema from "./schema.js";
-import * as $$SelectionSets from "./selection-sets.js";
+import * as $$Data from "./data";
+import * as $$Schema from "./schema";
+import * as $$SelectionSets from "./selection-sets";
 import type { OperationTypeNode } from "graphql";
-import type * as $$Utilities from "graffle/utilities-for-generated";
+import type { InferResult } from "graffle/schema";
 
 //
 //
@@ -19,7 +19,6 @@ import type * as $$Utilities from "graffle/utilities-for-generated";
 //
 //
 //
-
 import { createSelect } from "graffle/client";
 export const Select = createSelect($$Data.Name);
 
@@ -44,13 +43,13 @@ export namespace Select {
   // --------------------------------------------------------------------------------------------------
   //
   export type Query<$SelectionSet extends $$SelectionSets.Query> =
-    $$Utilities.DocumentBuilderKit.InferResult.Operation<
+    InferResult.Operation<
       $SelectionSet,
       $$Schema.Schema,
       OperationTypeNode.QUERY
     >;
   export type Mutation<$SelectionSet extends $$SelectionSets.Mutation> =
-    $$Utilities.DocumentBuilderKit.InferResult.Operation<
+    InferResult.Operation<
       $SelectionSet,
       $$Schema.Schema,
       OperationTypeNode.MUTATION
@@ -59,32 +58,32 @@ export namespace Select {
   // --------------------------------------------------------------------------------------------------
   //
   export type Achievement<$SelectionSet extends $$SelectionSets.Achievement> =
-    $$Utilities.DocumentBuilderKit.InferResult.OutputObjectLike<
+    InferResult.OutputObjectLike<
       $SelectionSet,
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Achievement"]
     >;
   export type Leaderboard<$SelectionSet extends $$SelectionSets.Leaderboard> =
-    $$Utilities.DocumentBuilderKit.InferResult.OutputObjectLike<
+    InferResult.OutputObjectLike<
       $SelectionSet,
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Leaderboard"]
     >;
   export type LeaderboardItem<
     $SelectionSet extends $$SelectionSets.LeaderboardItem,
-  > = $$Utilities.DocumentBuilderKit.InferResult.OutputObjectLike<
+  > = InferResult.OutputObjectLike<
     $SelectionSet,
     $$Schema.Schema,
     $$Schema.Schema["allTypes"]["LeaderboardItem"]
   >;
   export type Points<$SelectionSet extends $$SelectionSets.Points> =
-    $$Utilities.DocumentBuilderKit.InferResult.OutputObjectLike<
+    InferResult.OutputObjectLike<
       $SelectionSet,
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Points"]
     >;
   export type TokenHolding<$SelectionSet extends $$SelectionSets.TokenHolding> =
-    $$Utilities.DocumentBuilderKit.InferResult.OutputObjectLike<
+    InferResult.OutputObjectLike<
       $SelectionSet,
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["TokenHolding"]

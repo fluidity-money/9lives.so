@@ -54,8 +54,8 @@ importers:
         specifier: ^6.14.0
         version: 6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       graffle:
-        specifier: 8.0.0-next.173
-        version: 8.0.0-next.173(@opentelemetry/api@1.9.0)(graphql@16.11.0)(prettier@3.6.2)
+        specifier: 8.0.0-next.140
+        version: 8.0.0-next.140(@opentelemetry/api@1.9.0)(graphql@16.11.0)(prettier@3.6.2)
       graphql:
         specifier: ^16.11.0
         version: 16.11.0
@@ -4019,8 +4019,8 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
-  graffle@8.0.0-next.173:
-    resolution: {integrity: sha512-H02EGMhLg0XWMXmlMCRS+hdzTNXpHKN5W2mMk0CVP5aMHP72Re32wjEWChPmYpd1gnTpc7ox7vPic+DY0Omt7Q==}
+  graffle@8.0.0-next.140:
+    resolution: {integrity: sha512-cbOc4StbPCuv7Uir8r9spVFi64khMbGmDKQorVR7lvcbzVa27aRBBvj18V1nUTOOaMf9woe+zpq45JaA/WY6Uw==}
     hasBin: true
     peerDependencies:
       '@dprint/formatter': ^0.4.0
@@ -11431,7 +11431,7 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  graffle@8.0.0-next.173(@opentelemetry/api@1.9.0)(graphql@16.11.0)(prettier@3.6.2):
+  graffle@8.0.0-next.140(@opentelemetry/api@1.9.0)(graphql@16.11.0)(prettier@3.6.2):
     dependencies:
       '@0no-co/graphql.web': 1.1.2(graphql@16.11.0)
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
@@ -11439,7 +11439,6 @@ snapshots:
       es-toolkit: 1.39.8
       graphql: 16.11.0
       is-plain-obj: 4.1.0
-      type-fest: 4.41.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       prettier: 3.6.2
