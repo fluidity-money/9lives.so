@@ -83,7 +83,7 @@ export default function UserLpedCampaignsListItem({
       </td>
       <td>
         {displayClaimBtn ? (
-          <div className="justifty-end flex items-center">
+          <div className="flex items-center justify-end">
             <ClaimLiquidityButton
               tradingAddr={data.poolAddress as `0x${string}`}
               campaignId={data.identifier as `0x${string}`}
