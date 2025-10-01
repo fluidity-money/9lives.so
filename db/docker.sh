@@ -7,6 +7,7 @@ docker build -t ninelives/database .
 docker run \
 	-e POSTGRES_USER=${POSTGRES_USER:-superposition} \
 	-e POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-superposition} \
+	-v "$(pwd)/volume":/var/lib/postgresql/data \
 	-p 5432:5432 \
 	docker.io/ninelives/database \
 	-c log_statement=all
