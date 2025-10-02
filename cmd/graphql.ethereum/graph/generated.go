@@ -224,8 +224,6 @@ type ComplexityRoot struct {
 	}
 
 	Settings struct {
-		MeowAvatar   func(childComplexity int) int
-		MeowName     func(childComplexity int) int
 		Notification func(childComplexity int) int
 		Refererr     func(childComplexity int) int
 	}
@@ -1263,20 +1261,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.UserWonCampaignsProfits(childComplexity, args["address"].(string)), true
-
-	case "Settings.meowAvatar":
-		if e.complexity.Settings.MeowAvatar == nil {
-			break
-		}
-
-		return e.complexity.Settings.MeowAvatar(childComplexity), true
-
-	case "Settings.meowName":
-		if e.complexity.Settings.MeowName == nil {
-			break
-		}
-
-		return e.complexity.Settings.MeowName(childComplexity), true
 
 	case "Settings.notification":
 		if e.complexity.Settings.Notification == nil {
@@ -6823,10 +6807,6 @@ func (ec *executionContext) fieldContext_Profile_settings(_ context.Context, fie
 				return ec.fieldContext_Settings_notification(ctx, field)
 			case "refererr":
 				return ec.fieldContext_Settings_refererr(ctx, field)
-			case "meowAvatar":
-				return ec.fieldContext_Settings_meowAvatar(ctx, field)
-			case "meowName":
-				return ec.fieldContext_Settings_meowName(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Settings", field.Name)
 		},
@@ -8393,88 +8373,6 @@ func (ec *executionContext) fieldContext_Settings_refererr(_ context.Context, fi
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Settings_meowAvatar(ctx context.Context, field graphql.CollectedField, obj *types.Settings) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Settings_meowAvatar(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.MeowAvatar, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Settings_meowAvatar(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Settings",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Settings_meowName(ctx context.Context, field graphql.CollectedField, obj *types.Settings) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Settings_meowName(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.MeowName, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Settings_meowName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Settings",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -13058,10 +12956,6 @@ func (ec *executionContext) _Settings(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "meowAvatar":
-			out.Values[i] = ec._Settings_meowAvatar(ctx, field, obj)
-		case "meowName":
-			out.Values[i] = ec._Settings_meowName(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
