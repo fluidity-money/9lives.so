@@ -10,7 +10,6 @@ import { Suspense } from "react";
 import LiFiProvider from "./lifi";
 import FarcasterProvider from "./farcaster";
 import RelayProvider from "./relay";
-import MeowDomainProvider from "./meowDomains";
 
 export default function Providers({
   children,
@@ -31,7 +30,6 @@ export default function Providers({
         <WebSocketProvider />
         <FarcasterProvider />
         <RelayProvider />
-        <MeowDomainProvider />
         <Suspense>
           <ReferralHandler />
         </Suspense>
