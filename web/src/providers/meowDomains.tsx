@@ -65,4 +65,5 @@ export default function MeowDomainProvider() {
       checkAndStoreMeowAvatar(account);
     }
   }, [account, isSuccess, profile?.settings?.meowAvatar]);
+  return null;
 }
