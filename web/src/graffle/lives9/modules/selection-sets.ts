@@ -1085,14 +1085,6 @@ export interface Mutation<
   associateReferral?:
     | Mutation.associateReferral<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.associateReferral<_$Scalars>>;
-  /**
-   *
-   * Select the `updateMeowDomain` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
-   *
-   */
-  updateMeowDomain?:
-    | Mutation.updateMeowDomain<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Mutation.updateMeowDomain<_$Scalars>>;
 
   /**
    *
@@ -1698,46 +1690,6 @@ export namespace Mutation {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<associateReferral$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type updateMeowDomain<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = updateMeowDomain$SelectionSet<_$Scalars>;
-
-  export interface updateMeowDomain$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
-    /**
-     * Arguments for `updateMeowDomain` field. All arguments are required so you must include this.
-     */
-    $: updateMeowDomain$Arguments<_$Scalars>;
-  }
-
-  export interface updateMeowDomain$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    walletAddress: string;
-    image: string;
-    name: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `updateMeowDomain` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type updateMeowDomain$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<updateMeowDomain$SelectionSet<_$Scalars>>;
 }
 
 //
@@ -2626,22 +2578,6 @@ export interface Settings<
   refererr?:
     | Settings.refererr$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Settings.refererr<_$Scalars>>;
-  /**
-   *
-   * Select the `meowAvatar` field on the `Settings` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  meowAvatar?:
-    | Settings.meowAvatar$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Settings.meowAvatar<_$Scalars>>;
-  /**
-   *
-   * Select the `meowName` field on the `Settings` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  meowName?:
-    | Settings.meowName$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Settings.meowName<_$Scalars>>;
 
   /**
    *
@@ -2730,62 +2666,6 @@ export namespace Settings {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | refererr$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type meowAvatar<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | meowAvatar$SelectionSet<_$Scalars>;
-
-  export interface meowAvatar$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `meowAvatar` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type meowAvatar$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | meowAvatar$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type meowName<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | meowName$SelectionSet<_$Scalars>;
-
-  export interface meowName$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `meowName` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type meowName$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | meowName$SelectionSet<_$Scalars>
   >;
 }
 

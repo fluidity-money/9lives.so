@@ -20,10 +20,18 @@ import useBalance from "@/hooks/useBalance";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
 
+function Badge({ address }: { address: string }) {
+  const { data: domainOrAddress } = useMeowDomains(address);
+  return (
+    <span className="rounded-[3px] border border-9black bg-9gray p-1 font-geneva text-xs uppercase tracking-wide text-9black md:self-start">
+      {domainOrAddress}
+    </span>
+  );
+}
+
 export default function PortfolioHeader() {
   const account = useActiveAccount();
   const { data: balance } = useBalance(account);
-  const domainOrAddress = useMeowDomains(account?.address);
   const { connect } = useConnectWallet();
   const { data: achievmentCount } = useAchievmentCount(account?.address);
   const positionsValue = usePortfolioStore((s) => s.positionsValue);
@@ -55,10 +63,8 @@ export default function PortfolioHeader() {
                 </span>
               </div>
             </div>
-            {account ? (
-              <span className="rounded-[3px] border border-9black bg-9gray p-1 font-geneva text-xs uppercase tracking-wide text-9black md:self-start">
-                {domainOrAddress}
-              </span>
+            {account?.address ? (
+              <Badge address={account.address} />
             ) : (
               <Button
                 title="Connect your wallet"

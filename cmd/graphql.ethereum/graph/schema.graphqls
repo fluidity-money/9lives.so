@@ -142,16 +142,6 @@ type Settings {
   Did the user click a referrer link that we should hint to the browser?
   """
   refererr: String
-
-  """
-  meow domain avatar
-  """
-  meowAvatar: String
-
-  """
-  meow domain name
-  """
-  meowName: String
 }
 
 type Profile {

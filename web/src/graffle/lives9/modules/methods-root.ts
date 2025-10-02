@@ -720,28 +720,6 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
-  /**
-   * Updates meow domains avatar and name for user's profile
-   */
-  updateMeowDomain: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Mutation.updateMeowDomain<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationMutation<
-            { updateMeowDomain: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "updateMeowDomain"
-        >
-    >
-  >;
 }
 
 export interface BuilderMethodsRoot<$Context extends $$Utilities.Context> {

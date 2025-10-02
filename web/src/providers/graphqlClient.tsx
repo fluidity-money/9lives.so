@@ -282,8 +282,6 @@ export const requestProfile = (address: string) =>
     email: true,
     settings: {
       refererr: true,
-      meowAvatar: true,
-      meowName: true,
     },
   });
 
@@ -570,17 +568,6 @@ export const deleteComment = ({
   graph9Lives.mutation.deleteComment({
     $: { id, campaignId, walletAddress, content, rr, s, v },
   });
-
-export const updateMeowDomain = ({
-  walletAddress,
-  image,
-  name,
-}: {
-  walletAddress: string;
-  image: string;
-  name: string;
-}) =>
-  graph9Lives.mutation.updateMeowDomain({ $: { name, walletAddress, image } });
 
 export const requestPriceChanges = (poolAddress: string) =>
   graph9Lives.query.campaignPriceEvents({

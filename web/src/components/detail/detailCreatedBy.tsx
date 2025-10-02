@@ -11,7 +11,7 @@ export default function DetailCreatedBy({
   prefix?: boolean;
   isCreator?: boolean;
 }) {
-  const domain = useMeowDomains(address);
+  const { data: domain } = useMeowDomains(address);
   return (
     <div className="flex items-center">
       <span
