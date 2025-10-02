@@ -3,7 +3,7 @@ import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import { Campaign } from "@/types";
 import formatFusdc from "@/utils/formatFusdc";
-import { CountdownTimer } from "../countdownTimer";
+import CountdownTimer from "../countdownTimer";
 import ClaimFeesButton from "../claimFeesButton";
 import { useEffect, useState } from "react";
 import useClaimAllFees from "@/hooks/useClaimAllFees";

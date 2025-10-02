@@ -1,7 +1,7 @@
 import formatFusdc from "@/utils/formatFusdc";
 import WatchlistButton from "../watchlistButton";
 import { Campaign } from "@/types";
-import { CountdownTimer } from "../countdownTimer";
+import CountdownTimer from "../countdownTimer";
 
 const weekDuration = 60 * 60 * 24 * 7;
 export default function CampaignItemFooter({ data }: { data: Campaign }) {

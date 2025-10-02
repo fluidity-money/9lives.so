@@ -8,7 +8,7 @@ import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
-import { CountdownTimer } from "../countdownTimer";
+import CountdownTimer from "../countdownTimer";
 import { ReactNode, useEffect, useState } from "react";
 import Modal from "../themed/modal";
 import ManageLiquidityDialog from "../manageLiquidityDialog";
