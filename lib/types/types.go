@@ -217,10 +217,6 @@ type (
 
 		// Referrer is sent to the user with the address of the referrer.
 		Referrer string `json:"referrer"`
-
-		MeowAvatar string `json:"meowAvatar"`
-
-		MeowName string `json:"meowName"`
 	}
 
 	Profile struct {

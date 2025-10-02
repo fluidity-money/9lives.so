@@ -553,11 +553,6 @@ type Mutation {
     """
     v: Int!
   ): Boolean
-
-  """
-  Updates meow domains avatar and name for user's profile
-  """
-  updateMeowDomain(walletAddress:String!,image:String!, name:String!): Boolean
 }
 
 """

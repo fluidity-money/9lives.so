@@ -1097,22 +1097,6 @@ func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string,
 	return &t, nil
 }
 
-// UpdateMeowDomain is the resolver for the updateMeowDomain field.
-func (r *mutationResolver) UpdateMeowDomain(ctx context.Context, walletAddress string, image string, name string) (*bool, error) {
-	res := true
-	walletAddress = strings.ToLower(walletAddress)
-	err := r.DB.Exec(`
-		UPDATE ninelives_users_1
-		SET settings = COALESCE(settings, '{}'::jsonb) || jsonb_build_object('meowAvatar', ?::text, 'meowName', ?::text)
-		WHERE wallet_address = ?;
-	`, image, name, walletAddress).Error
-	if err != nil {
-		res = false
-		return &res, fmt.Errorf("Error updating meow avatar")
-	}
-	return &res, nil
-}
-
 // OutcomeIds is the resolver for the outcomeIds field.
 func (r *positionResolver) OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error) {
 	if obj == nil {
