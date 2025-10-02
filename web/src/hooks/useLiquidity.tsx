@@ -4,6 +4,7 @@ import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
+  encode,
   getContract,
   prepareContractCall,
   sendTransaction,
@@ -13,6 +14,23 @@ import {
 import { Account } from "thirdweb/wallets";
 import { useAllowanceCheck } from "./useAllowanceCheck";
 import { MaxUint256 } from "ethers";
+import {
+  useActiveWallet,
+  useActiveWalletChain,
+  useSwitchActiveWalletChain,
+} from "thirdweb/react";
+import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
+import { viemAdapter } from "thirdweb/adapters/viem";
+import RelayTxToaster from "@/components/relayTxToaster";
+interface AddInput {
+  amount: number;
+  fromToken: string;
+  fromChain: number;
+  toToken: string;
+  toChain: number;
+  fromDecimals?: number;
+}
+type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 
 export default function useLiquidity({
   tradingAddr,
@@ -29,6 +47,9 @@ export default function useLiquidity({
     chain: config.destinationChain,
   });
   const { checkAndAprove } = useAllowanceCheck();
+  const chain = useActiveWalletChain();
+  const wallet = useActiveWallet();
+  const switchChain = useSwitchActiveWalletChain();
   const add = async (account: Account, fusdc: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
@@ -72,6 +93,171 @@ export default function useLiquidity({
             type: "addLiquidity",
             tradingAddr,
             campaignId,
+          });
+          res(null);
+        } catch (e) {
+          rej(e);
+        }
+      }),
+      {
+        loading: "Adding liquidity...",
+        success: "Liquidity added successfully!",
+        error: "Failed to add.",
+      },
+    );
+  const addWithRelay = async (
+    account: Account,
+    input: AddInput,
+    fromDecimals?: number,
+  ) =>
+    toast.promise(
+      new Promise(async (res, rej) => {
+        let usdValueBigInt = "0";
+        try {
+          if (!fromDecimals) throw new Error("fromDecimals is undefined");
+          if (!wallet) throw new Error("No wallet is detected");
+          if (!chain) throw new Error("No chain is detected");
+          const fromAmountBigInt = toUnits(
+            input.amount.toString(),
+            fromDecimals,
+          );
+          const toAmountRes = await fetch("https://api.relay.link/quote", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              user: account?.address,
+              originChainId: input.fromChain,
+              destinationChainId: input.toChain,
+              originCurrency: input.fromToken,
+              destinationCurrency: input.toToken,
+              recipient: account?.address,
+              referrer: "9lives.so",
+              amount: fromAmountBigInt.toString(),
+              tradeType: "EXACT_INPUT" as TradeType,
+            }),
+          });
+          if (toAmountRes.status !== 200) {
+            throw new Error("Selected token is not supported.");
+          }
+          const toAmountData = await toAmountRes.json();
+          const toAmount = toAmountData.details.currencyOut.amount as string;
+
+          const addLiquidityTx = (simulatedShare?: bigint) => {
+            const minShares = simulatedShare
+              ? (simulatedShare * BigInt(95)) / BigInt(100)
+              : BigInt(0);
+            const maxShares = simulatedShare
+              ? (simulatedShare * BigInt(105)) / BigInt(100)
+              : MaxUint256;
+            return prepareContractCall({
+              contract: tradingContract,
+              method: "addLiquidityB9DDA952",
+              params: [BigInt(toAmount), account.address, minShares, maxShares],
+            });
+          };
+          // const simulatedShare = await simulateTransaction({
+          //   transaction: addLiquidityTx(),
+          //   account,
+          // });
+          // await sendTransaction({
+          //   transaction: addLiquidityTx(simulatedShare),
+          //   account,
+          // });
+          const calldata = await encode(addLiquidityTx());
+
+          const options = {
+            user: account.address,
+            chainId: input.fromChain,
+            toChainId: input.toChain,
+            currency: input.fromToken,
+            toCurrency: input.toToken,
+            recipient: account.address,
+            referrer: "9lives.so",
+            amount: usdValueBigInt, // Total value of all txs
+            tradeType: "EXACT_OUTPUT" as TradeType,
+            txs: [
+              {
+                to: tradingContract.address,
+                value: usdValueBigInt, // Must match total amount
+                data: calldata,
+              },
+            ],
+          };
+
+          const relayClient = getClient();
+
+          const quote = await relayClient.actions.getQuote(options);
+
+          let targetChain = chain;
+
+          if (input.fromChain !== chain.id) {
+            targetChain = Object.values(config.chains).find(
+              (c) => c.id === input.fromChain,
+            )!;
+            await switchChain(targetChain);
+          }
+
+          const walletClient = viemAdapter.wallet.toViem({
+            client: config.thirdweb.client,
+            chain: targetChain,
+            wallet,
+          });
+          let requestId: string | undefined;
+          await relayClient.actions.execute({
+            quote,
+            wallet: adaptViemWallet(walletClient as any),
+            onProgress: ({ currentStep, currentStepItem }) => {
+              if (currentStep && currentStepItem) {
+                requestId = currentStep?.requestId;
+                if (currentStepItem.error) {
+                  toast.error(
+                    `${currentStep.action}: ${currentStepItem.errorData?.cause?.shortMessage ?? currentStepItem.error}`,
+                    { id: requestId },
+                  );
+                } else if (currentStepItem.checkStatus === "success") {
+                  toast.success(currentStep.description, { id: requestId });
+                } else {
+                  toast.loading(
+                    `${currentStep.action}: ${currentStepItem.progressState}`,
+                    { id: requestId },
+                  );
+                }
+              }
+            },
+          });
+
+          if (requestId) {
+            toast.custom(
+              (t) => (
+                <RelayTxToaster
+                  tx={requestId!}
+                  close={() => toast.dismiss(t.id)}
+                />
+              ),
+              {
+                duration: Infinity,
+                position: "bottom-right",
+              },
+            );
+          }
+
+          queryClient.invalidateQueries({
+            queryKey: ["campaign", campaignId],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["userLiquidity", account.address, tradingAddr],
+          });
+          track(EVENTS.ADD_LIQUIDITY, {
+            fromAmount: input.amount,
+            toAmount: toAmount,
+            type: "addLiquidityWithRelay",
+            tradingAddr,
+            campaignId,
+            fromChain: input.fromChain,
+            fromToken: input.fromToken,
+            fromDecimals,
           });
           res(null);
         } catch (e) {
@@ -183,5 +369,5 @@ export default function useLiquidity({
     return BigInt(lpRewards ?? 0);
   };
 
-  return { add, remove, claim, checkLpRewards };
+  return { add, remove, claim, checkLpRewards, addWithRelay };
 }
