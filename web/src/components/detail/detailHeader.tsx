@@ -92,7 +92,9 @@ export default function DetailHeader({
   ];
 
   useEffect(() => {
-    if (data.creator.address === account?.address) {
+    if (
+      data.creator.address.toLowerCase() === account?.address?.toLowerCase()
+    ) {
       (async () => {
         const unclaimedFees = await checkClaimFees(data.poolAddress, account);
         if (unclaimedFees > BigInt(0)) {
