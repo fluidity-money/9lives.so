@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import useSeedLiquidity from "./useSeedLiquidity";
+
 const lpRewardPerc = 0.02; // LP fee
+
 const computeAPY = ({
   initialLiquidity,
   withdrawableLiquidity,
@@ -22,25 +25,31 @@ const computeAPY = ({
 
   const finalValue = initialLiquidity + feeEarnings;
 
+  console.log("finalValue", finalValue);
+
   const roi = (finalValue - initialLiquidity) / initialLiquidity;
 
+  console.log("roi", roi);
+
   const apyMarket = Math.pow(1 + roi, 365 / daysActive) - 1;
+  console.log("apyMarket", apyMarket);
 
   return apyMarket;
 };
 
 export default function useAPY({
-  initialLiquidity,
+  poolAddress,
   withdrawableLiquidity,
   totalVolume,
   startDate,
 }: {
-  initialLiquidity: number;
+  poolAddress: string;
   withdrawableLiquidity: number;
   totalVolume: number;
   startDate: number;
 }) {
   const [APY, setAPY] = useState(0);
+  const { data: initialLiquidity } = useSeedLiquidity(poolAddress);
   useEffect(() => {
     if (initialLiquidity && withdrawableLiquidity && startDate && totalVolume) {
       setAPY(

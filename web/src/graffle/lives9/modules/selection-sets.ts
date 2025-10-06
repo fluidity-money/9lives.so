@@ -215,7 +215,7 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.campaignPriceEvents<_$Scalars>>;
   /**
    *
-   * Select the `seedLiquidityOfCampaign` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   * Select the `seedLiquidityOfCampaign` field on the `Query` object. Its type is `Int` (a `ScalarStandard` kind of type).
    *
    */
   seedLiquidityOfCampaign?:

@@ -478,7 +478,7 @@ export namespace Schema {
         };
       };
       inlineType: [1];
-      namedType: $$NamedTypes.$$String;
+      namedType: $$NamedTypes.$$Int;
     }
   }
 

@@ -16,6 +16,7 @@ import Button from "../themed/button";
 import useClaimAllFees from "@/hooks/useClaimAllFees";
 import { useActiveAccount } from "thirdweb/react";
 import ClaimFeesButton from "../claimFeesButton";
+import useAPY from "@/hooks/useAPY";
 
 const HeaderBox = ({
   title,
@@ -63,6 +64,12 @@ export default function DetailHeader({
   const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
   const displayCreatorFees = unclaimedFees > BigInt(0);
   const { checkClaimFees } = useClaimAllFees();
+  const APY = useAPY({
+    poolAddress: data.poolAddress,
+    withdrawableLiquidity: data.liquidityVested,
+    totalVolume: data.totalVolume,
+    startDate: data.starting,
+  });
   const LiquidityComp = () => (
     <div className="flex flex-row gap-1">
       <Button title="+" intent={"yes"} onClick={() => setIsModalOpen(true)} />
@@ -87,6 +94,12 @@ export default function DetailHeader({
       value: `$${formatFusdc(unclaimedFees, 2)}`,
       show: displayCreatorFees,
       rightComp: <ClaimFeesButton addresses={[data.poolAddress]} />,
+      shrink: true,
+    },
+    {
+      title: "APY",
+      value: `${(APY * 100).toFixed(0)}%`,
+      show: !!APY,
       shrink: true,
     },
   ];
