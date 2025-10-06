@@ -213,6 +213,14 @@ export interface Query<
   campaignPriceEvents?:
     | Query.campaignPriceEvents<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.campaignPriceEvents<_$Scalars>>;
+  /**
+   *
+   * Select the `seedLiquidityOfCampaign` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  seedLiquidityOfCampaign?:
+    | Query.seedLiquidityOfCampaign<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.seedLiquidityOfCampaign<_$Scalars>>;
 
   /**
    *
@@ -1001,6 +1009,44 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<campaignPriceEvents$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type seedLiquidityOfCampaign<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = seedLiquidityOfCampaign$SelectionSet<_$Scalars>;
+
+  export interface seedLiquidityOfCampaign$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `seedLiquidityOfCampaign` field. All arguments are required so you must include this.
+     */
+    $: seedLiquidityOfCampaign$Arguments<_$Scalars>;
+  }
+
+  export interface seedLiquidityOfCampaign$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    poolAddress: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `seedLiquidityOfCampaign` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type seedLiquidityOfCampaign$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<seedLiquidityOfCampaign$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

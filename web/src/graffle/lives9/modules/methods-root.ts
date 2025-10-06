@@ -475,6 +475,26 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+
+  seedLiquidityOfCampaign: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.seedLiquidityOfCampaign<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { seedLiquidityOfCampaign: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "seedLiquidityOfCampaign"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {

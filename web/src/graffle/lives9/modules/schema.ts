@@ -48,6 +48,7 @@ export namespace Schema {
       userWonCampaignsProfits: Query.userWonCampaignsProfits;
       campaignComments: Query.campaignComments;
       campaignPriceEvents: Query.campaignPriceEvents;
+      seedLiquidityOfCampaign: Query.seedLiquidityOfCampaign;
     };
   }
 
@@ -464,6 +465,20 @@ export namespace Schema {
       };
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$PriceEvent;
+    }
+
+    export interface seedLiquidityOfCampaign extends $.OutputField {
+      name: "seedLiquidityOfCampaign";
+      arguments: {
+        poolAddress: {
+          kind: "InputField";
+          name: "poolAddress";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
   }
 
