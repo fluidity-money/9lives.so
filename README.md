@@ -152,32 +152,31 @@ The error table lives in ERRORS.md.
 
 ### Superposition testnet
 
-|        Deployment name        |              Deployment address              |
-|-------------------------------|----------------------------------------------|
+|        Deployment name        |              Deployment address            |
+|-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5` |
-| Factory 1 implementation      | `0xc4d1349abae80d4ad470966cce20bb6fc58742b2` |
-| Factory 2 implementation      | `0xc3e8901f8bf1b395e5213cc54f5be2a8288559cd` |
-| Lockup implementation         | `0x9500564a4f594182eb0fcb12adc945295521c924` |
-| Optimistic infra predict impl | `0x64a1d1d8b5770ce5aeca12ace58b699b703b78b1` |
+| Factory 1 implementation      | `0xfe2abd224b193d7e71603648be18d86494090ce6` |
+| Factory 2 implementation      | `0x1b819633bf6a86abfe0a36a827d1a21e48136988` |
+| Lockup implementation         | `0xaf1d785c71749390fda7fae7ac94db8b5783075e` |
+| Optimistic infra predict impl | `0xad425edab6c94e2f9f0d1b2bba59bb5d18673c52` |
 | Trading DPM mint impl         | `0x0000000000000000000000000000000000000000` |
 | Trading DPM extras impl       | `0x0000000000000000000000000000000000000000` |
 | Trading DPM quotes impl       | `0x0000000000000000000000000000000000000000` |
 | Trading DPM price impl        | `0x0000000000000000000000000000000000000000` |
-| Trading AMM mint impl         | `0x458321343a09aec4ade38251218d94e454081836` |
-| Trading AMM extras impl       | `0x6998f606506c3214d1a9b666b9e910c96eb71b8e` |
-| Trading AMM quotes impl       | `0xb65ea61d199a9add83ab9c567aecad0f36241a80` |
-| Trading AMM price impl        | `0xad1b31aa97d9488e37ff0502179971043eb0659d` |
-| Share implementation          | `0xe008c42B0B748e049812Ed72da7d8a72324786CF` |
-| Lockup token implementation   | `0xBC4Fa1Ad69A250606A46A49A5506723f6998F911` |
-| Infrastructure market proxy   | `0x05c030a4ab5f59ce0fb7e67dc8e2d2a822b206bb` |
-| Lockup proxy                  | `0x6a9f01bbc3e531a589e01246a0f5d11b283fdd9d` |
-| Lockup token proxy            | `0xc7dad59cd832019c19346ecb71ea46f9fc9b64af` |
-| Factory proxy                 | `0x1e808277ad4568ec0b4206358cb695826e2207b6` |
-| Helper factory                | `0x90BD4E4cdb543862Bf5AAfbd036702be4cD93f93` |
-| LensesV1                      | `0xFfAB4c9E961935eC297b9da89B7bB68b0403aBE4` |
-| Beauty contest implementation | `0x15d10b0a82697c8df8b2428eb7506b83f8b8aa16` |
-| Beauty contest proxy          | `0xf08510da798567e6d6029699c6d9b75b739b2913` |
+| Trading AMM mint impl         | `0xf79fc540aa17e71f2d475de7a6962b5e5e5f54dc` |
+| Trading AMM extras impl       | `0xaabe32254d850521ee0511aee6b165e6bea2b838` |
+| Trading AMM quotes impl       | `0x628875b043b2863f7e90f10eb80dd2b74c2e9250` |
+| Trading AMM price impl        | `0x2216a510742221cbf2078612f773eca4434af141` |
+| Share implementation          | `0x57Dbe6699441636Ed0730e07ac3c8A3e9fF5879b` |
+| Lockup token implementation   | `0x2bDd60d3bf40762D214655E876d8D9BE576EaD3D` |
+| Infrastructure market proxy   | `0xfbab524c5afdc95bc5c61ced8555875bfc76c96e` |
+| Lockup proxy                  | `0x09cfac6adafba8612c5813ca6091bc3a5b2df638` |
+| Lockup token proxy            | `0x1e9a5f8a0aab7051e31bdcf109cecd31154bcaac` |
+| Factory proxy                 | `0x23ff36d696e7ddcf1ad4041c1c3a26a9e39eb107` |
+| Helper factory                | `0x7981902295474DD10F323A0BFeaF0b54Eb77a7Ef` |
+| LensesV1                      | `0xb5f6B68b9E8E8a5eBa1288291AAfbe026DE5ce67` |
+| Beauty contest implementation | `0x8030b6db88b33f875e4a2cc19208844e3f5f897d` |
+| Beauty contest proxy          | `0xfa120236026e35eb9bdea6c38ad3b571ca1d01c2` |
 | Sarp AI Resolver              | `0x0000000000000000000000000000000000000000` |
-| Claimant helper               | `0xE443aEae0a0704991dfa6b10dA40303931804Dc6` |
-| Paymaster                     | `0xFb5C4F362A769948Cb8DC607278220FfF0A86940` |
-| BuyHelper2                    | `0xC05472e906907aF0b36573f7D7B15AcB47806cC2` |
+| Claimant helper               | `0x8910D0975DC2FF98a462C507531AA3Ee00C4603B` |
+| Paymaster                     | `0x64dAf14239A980969ACe1900A34C8a098AD21A8d` |
