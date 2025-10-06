@@ -1772,6 +1772,21 @@ func (r *queryResolver) CampaignPriceEvents(ctx context.Context, poolAddress str
 	return events, nil
 }
 
+// SeedLiquidityOfCampaign is the resolver for the seedLiquidityOfCampaign field.
+func (r *queryResolver) SeedLiquidityOfCampaign(ctx context.Context, poolAddress string) (string, error) {
+	var liquidity string
+	err := r.DB.Raw(`
+	SELECT fusdc_amt AS liquidity
+	FROM ninelives_events_liquidity_added
+	WHERE emitter_addr = ?
+	ORDER BY created_by DESC
+	LIMIT 1;`, poolAddress).Scan(&liquidity).Error
+	if err != nil {
+		return "0", fmt.Errorf("Error getting seed liquidity")
+	}
+	return liquidity, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {

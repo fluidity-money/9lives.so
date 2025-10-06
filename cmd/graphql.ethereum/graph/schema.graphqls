@@ -99,7 +99,9 @@ type Query {
   """
   Get historical prices change events to create a price chart timeline
   """
-  campaignPriceEvents(poolAddress:String!): [PriceEvent]! 
+  campaignPriceEvents(poolAddress:String!): [PriceEvent]!
+
+  seedLiquidityOfCampaign(poolAddress: String!): String!
 }
 
 type PriceEvent {
@@ -142,6 +144,7 @@ type Settings {
   Did the user click a referrer link that we should hint to the browser?
   """
   refererr: String
+
 }
 
 type Profile {
