@@ -325,7 +325,7 @@ type QueryResolver interface {
 	UserWonCampaignsProfits(ctx context.Context, address string) ([]*types.CampaignProfit, error)
 	CampaignComments(ctx context.Context, campaignID string, onlyHolders *bool, page *int, pageSize *int) ([]*types.Comment, error)
 	CampaignPriceEvents(ctx context.Context, poolAddress string) ([]*types.PriceEvent, error)
-	SeedLiquidityOfCampaign(ctx context.Context, poolAddress string) (string, error)
+	SeedLiquidityOfCampaign(ctx context.Context, poolAddress string) (int, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -8224,9 +8224,9 @@ func (ec *executionContext) _Query_seedLiquidityOfCampaign(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_seedLiquidityOfCampaign(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8236,7 +8236,7 @@ func (ec *executionContext) fieldContext_Query_seedLiquidityOfCampaign(ctx conte
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	defer func() {

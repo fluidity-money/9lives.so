@@ -1773,8 +1773,8 @@ func (r *queryResolver) CampaignPriceEvents(ctx context.Context, poolAddress str
 }
 
 // SeedLiquidityOfCampaign is the resolver for the seedLiquidityOfCampaign field.
-func (r *queryResolver) SeedLiquidityOfCampaign(ctx context.Context, poolAddress string) (string, error) {
-	var liquidity string
+func (r *queryResolver) SeedLiquidityOfCampaign(ctx context.Context, poolAddress string) (int, error) {
+	var liquidity int
 	err := r.DB.Raw(`
 	SELECT fusdc_amt AS liquidity
 	FROM ninelives_events_liquidity_added
@@ -1782,7 +1782,7 @@ func (r *queryResolver) SeedLiquidityOfCampaign(ctx context.Context, poolAddress
 	ORDER BY created_by DESC
 	LIMIT 1;`, poolAddress).Scan(&liquidity).Error
 	if err != nil {
-		return "0", fmt.Errorf("Error getting seed liquidity")
+		return 0, fmt.Errorf("Error getting seed liquidity")
 	}
 	return liquidity, nil
 }
