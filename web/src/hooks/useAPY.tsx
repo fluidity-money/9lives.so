@@ -25,14 +25,9 @@ const computeAPY = ({
 
   const finalValue = initialLiquidity + feeEarnings;
 
-  console.log("finalValue", finalValue);
-
   const roi = (finalValue - initialLiquidity) / initialLiquidity;
 
-  console.log("roi", roi);
-
   const apyMarket = Math.pow(1 + roi, 365 / daysActive) - 1;
-  console.log("apyMarket", apyMarket);
 
   return apyMarket;
 };
