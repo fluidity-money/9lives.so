@@ -165,7 +165,7 @@ body:not(.degen-mode) main {
 }
 
 body:not(.degen-mode) main > div:first-child {
-  @apply max-w-screen-xl;
+  @apply max-w-full md:max-w-screen-xl;
 }
 
 .changelog {

@@ -47,7 +47,7 @@ export default function AssetScene({
       </TabList>
       <TabPanels className={"md:min-w-[480px]"}>
         <TabPanel>
-          <ShadowCard className="rounded-tl-none p-3 md:p-5">
+          <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
             <PositionTable
               isDetailDpm={isDetailDpm}
               detailPage={detailPage}
@@ -57,26 +57,26 @@ export default function AssetScene({
           </ShadowCard>
         </TabPanel>
         <TabPanel>
-          <ShadowCard className="rounded-tl-none p-3 md:p-5">
+          <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
             <ActivityTable campaignId={campaignId} />
           </ShadowCard>
         </TabPanel>
         {detailPage ? null : (
           <TabPanel>
-            <ShadowCard className="rounded-tl-none p-3 md:p-5">
+            <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
               <UserCampaignsList />
             </ShadowCard>
           </TabPanel>
         )}
         <TabPanel>
-          <ShadowCard className="rounded-tl-none p-3 md:p-5">
+          <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
             <ClaimedRewardsTable campaignId={campaignId} />
           </ShadowCard>
         </TabPanel>
       </TabPanels>
       {detailPage ? null : (
         <TabPanel>
-          <ShadowCard className="rounded-tl-none p-3 md:p-5">
+          <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
             <UserLpedCampaignsList />
           </ShadowCard>
         </TabPanel>
