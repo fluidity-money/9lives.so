@@ -54,7 +54,7 @@ export default function ManageLiquidityDialog({
         </p>
       </div>
 
-      <TabGroup className={"flex flex-col gap-4"} tabIndex={tabIndex}>
+      <TabGroup className={"flex flex-col gap-4"} selectedIndex={tabIndex}>
         <TabList className={"flex items-center gap-2"}>
           {data.winner ? null : (
             <Tab as={Fragment}>
