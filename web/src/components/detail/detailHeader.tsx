@@ -213,7 +213,7 @@ export default function DetailHeader({
         setIsOpen={setIsModalOpen}
         title="MANAGE LIQUIDITY"
       >
-        <ManageLiquidityDialog data={data} />
+        <ManageLiquidityDialog data={data} APY={APY} />
       </Modal>
     </div>
   );

@@ -18,8 +18,10 @@ const VarButton = ({ title, value }: { title: string; value: string }) => (
 );
 export default function ManageLiquidityDialog({
   data,
+  APY,
 }: {
   data: CampaignDetail;
+  APY?: number;
 }) {
   const account = useActiveAccount();
   const [unclaimedRewards, setUnclaimedRewards] = useState(BigInt(0));
@@ -59,7 +61,9 @@ export default function ManageLiquidityDialog({
             title="My liquidity"
             value={`$${formatFusdc(userLiquidity ?? "0")}`}
           />
-          {/* <VarButton title="Apy Rate" value="%50" /> */}
+          {APY ? (
+            <VarButton title="Apy Rate" value={`%${(APY * 100).toFixed(0)}`} />
+          ) : null}
         </div>
         <p className="text-center font-chicago text-xs">
           Higher liquidity means better trading stability and lower slippage.
