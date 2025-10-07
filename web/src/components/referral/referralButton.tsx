@@ -4,8 +4,13 @@ import Modal from "../themed/modal";
 import ReferrerlDialog from "./referrerDialog";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import { combineClass } from "@/utils/combineClass";
 
-export default function ReferralButton() {
+export default function ReferralButton({
+  hideOnMobile = true,
+}: {
+  hideOnMobile?: boolean;
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
@@ -17,9 +22,17 @@ export default function ReferralButton() {
     <>
       <div
         onClick={handleClick}
-        className="hidden h-10 cursor-pointer items-center justify-center border-l-2 border-l-black px-4 font-chicago xl:flex"
+        className={combineClass(
+          hideOnMobile ? "hidden md:flex" : "flex",
+          "h-10 cursor-pointer items-center justify-center px-4 font-chicago md:border-l-2 md:border-l-black",
+        )}
       >
-        Referral 🎁
+        <span
+          className={hideOnMobile ? "hidden xl:inline" : "text-xs underline"}
+        >
+          Referral{" "}
+        </span>
+        🎁
       </div>
       <Modal
         title="Referral System"

@@ -8,6 +8,7 @@ import DisclaimerButton from "./disclaimerButton";
 import DegenModeMobileWrapper from "./degenMode/degenModeMobileWrapper";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import ReferralButton from "./referral/referralButton";
 
 export default function MobileMenu() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function MobileMenu() {
             >
               Create Campaign
             </Link>
+            <ReferralButton hideOnMobile={false} />
             <DegenModeMobileWrapper />
             <DisclaimerButton />
           </div>
