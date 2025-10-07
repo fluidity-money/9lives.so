@@ -17,6 +17,8 @@ import useClaimAllFees from "@/hooks/useClaimAllFees";
 import { useActiveAccount } from "thirdweb/react";
 import ClaimFeesButton from "../claimFeesButton";
 import useAPY from "@/hooks/useAPY";
+import useUserLiquidity from "@/hooks/useUserLiquidity";
+import useLiquidity from "@/hooks/useLiquidity";
 
 const HeaderBox = ({
   title,
@@ -61,6 +63,7 @@ export default function DetailHeader({
   const weekDuration = 60 * 60 * 24 * 7;
   const inThisWeek = weekDuration >= left && left > 0;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
   const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
   const displayCreatorFees = unclaimedFees > BigInt(0);
   const { checkClaimFees } = useClaimAllFees();
@@ -70,10 +73,63 @@ export default function DetailHeader({
     totalVolume: data.totalVolume,
     startDate: data.starting,
   });
+  const { data: userLiquidity, isSuccess } = useUserLiquidity({
+    address: account?.address,
+    tradingAddr: data.poolAddress,
+  });
+  const [unclaimedRewards, setUnclaimedRewards] = useState(BigInt(0));
+  const { checkLpRewards } = useLiquidity({
+    tradingAddr: data.poolAddress,
+    campaignId: data.identifier,
+  });
+
+  const displayWithdrawBtn =
+    isSuccess &&
+    Number(userLiquidity) > 0 &&
+    Number(data.liquidityVested) > 1e6;
+  const displayClaimBtn = !!unclaimedRewards && unclaimedRewards > BigInt(0);
+
+  useEffect(() => {
+    (async function () {
+      if (!account) return;
+      const fees = await checkLpRewards(account);
+      if (fees && BigInt(fees) > BigInt(0)) {
+        setUnclaimedRewards(fees);
+      }
+    })();
+  }, [account, checkLpRewards]);
   const LiquidityComp = () => (
     <div className="flex flex-row gap-1">
-      <Button title="+" intent={"yes"} onClick={() => setIsModalOpen(true)} />
-      <Button title="-" intent={"no"} onClick={() => setIsModalOpen(true)} />
+      {data.winner ? null : (
+        <Button
+          title="+"
+          intent={"yes"}
+          onClick={() => {
+            setTabIndex(0);
+            setIsModalOpen(true);
+          }}
+        />
+      )}
+      {!data.winner && displayWithdrawBtn ? (
+        <Button
+          title="-"
+          intent={"no"}
+          onClick={() => {
+            setTabIndex(1);
+            setIsModalOpen(true);
+          }}
+        />
+      ) : null}
+      {data.winner && displayClaimBtn ? (
+        <Button
+          title="Claim"
+          intent={"cta"}
+          onClick={() => {
+            setTabIndex(0);
+            setIsModalOpen(true);
+          }}
+        />
+      ) : null}
     </div>
   );
 
@@ -213,7 +269,15 @@ export default function DetailHeader({
         setIsOpen={setIsModalOpen}
         title="MANAGE LIQUIDITY"
       >
-        <ManageLiquidityDialog data={data} APY={APY} />
+        <ManageLiquidityDialog
+          data={data}
+          APY={APY}
+          tabIndex={tabIndex}
+          unclaimedRewards={unclaimedRewards}
+          displayClaimBtn={displayClaimBtn}
+          displayWithdrawBtn={displayWithdrawBtn}
+          userLiquidity={userLiquidity}
+        />
       </Modal>
     </div>
   );

@@ -2,11 +2,8 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import AddLiquidityDialog from "./addLiquidityDialog";
 import { CampaignDetail } from "@/types";
 import Button from "./themed/button";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import RemoveLiquidityDialog from "./removeLiquidityDialog";
-import useUserLiquidity from "@/hooks/useUserLiquidity";
-import { useActiveAccount } from "thirdweb/react";
-import useLiquidity from "@/hooks/useLiquidity";
 import ClaimLiquidityDialog from "./claimLiquidityDialog";
 import formatFusdc from "@/utils/formatFusdc";
 
@@ -19,36 +16,20 @@ const VarButton = ({ title, value }: { title: string; value: string }) => (
 export default function ManageLiquidityDialog({
   data,
   APY,
+  tabIndex,
+  displayWithdrawBtn,
+  displayClaimBtn,
+  unclaimedRewards,
+  userLiquidity,
 }: {
   data: CampaignDetail;
   APY?: number;
+  tabIndex: number;
+  displayWithdrawBtn: boolean;
+  displayClaimBtn: boolean;
+  unclaimedRewards: bigint;
+  userLiquidity?: string;
 }) {
-  const account = useActiveAccount();
-  const [unclaimedRewards, setUnclaimedRewards] = useState(BigInt(0));
-  const { checkLpRewards } = useLiquidity({
-    tradingAddr: data.poolAddress,
-    campaignId: data.identifier,
-  });
-  const { data: userLiquidity, isSuccess } = useUserLiquidity({
-    address: account?.address,
-    tradingAddr: data.poolAddress,
-  });
-  const displayWithdrawBtn =
-    isSuccess &&
-    Number(userLiquidity) > 0 &&
-    Number(data.liquidityVested) > 1e6;
-  const displayClaimBtn = unclaimedRewards && unclaimedRewards > BigInt(0);
-
-  useEffect(() => {
-    (async function () {
-      if (!account) return;
-      const fees = await checkLpRewards(account);
-      if (fees && BigInt(fees) > BigInt(0)) {
-        setUnclaimedRewards(fees);
-      }
-    })();
-  }, [account, checkLpRewards]);
-
   return (
     <div className="flex flex-col gap-4">
       <h5 className="text-center font-chicago text-base">
@@ -73,7 +54,7 @@ export default function ManageLiquidityDialog({
         </p>
       </div>
 
-      <TabGroup className={"flex flex-col gap-4"}>
+      <TabGroup className={"flex flex-col gap-4"} tabIndex={tabIndex}>
         <TabList className={"flex items-center gap-2"}>
           {data.winner ? null : (
             <Tab as={Fragment}>
@@ -112,7 +93,7 @@ export default function ManageLiquidityDialog({
               <AddLiquidityDialog data={data} />
             </TabPanel>
           )}
-          {displayWithdrawBtn && !data.winner ? (
+          {displayWithdrawBtn && userLiquidity && !data.winner ? (
             <TabPanel>
               <RemoveLiquidityDialog
                 userLiquidity={userLiquidity}

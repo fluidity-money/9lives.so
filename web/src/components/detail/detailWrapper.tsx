@@ -14,7 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 import { requestCampaignById } from "@/providers/graphqlClient";
 import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
-import useUserLiquidity from "@/hooks/useUserLiquidity";
 import { useActiveAccount } from "thirdweb/react";
 import DetailComments from "./detailComments";
 import PriceChart from "../priceChart";
@@ -26,7 +25,6 @@ export default function DetailWrapper({
   initialData: CampaignDetail;
   priceEvents: PriceEvent[];
 }) {
-  const account = useActiveAccount();
   const outcomeId = useSearchParams()?.get("outcomeId");
   const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcome>({
     id:
