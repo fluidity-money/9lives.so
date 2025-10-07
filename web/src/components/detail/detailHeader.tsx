@@ -155,7 +155,7 @@ export default function DetailHeader({
     {
       title: "APY",
       value: `${(APY * 100).toFixed(0)}%`,
-      show: !!APY,
+      show: !!APY && !data.winner,
       shrink: true,
     },
   ];
