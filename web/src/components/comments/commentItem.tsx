@@ -67,7 +67,7 @@ export default function CommentItem({
                       key={i?.id}
                       className="ml-1 max-w-[150px] truncate bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide"
                     >
-                      ${formatFusdc(i?.amount ?? 0, 0)} {outcome?.name}
+                      ${+formatFusdc(i?.amount ?? 0, 1)} {outcome?.name}
                     </span>
                   );
                 })
