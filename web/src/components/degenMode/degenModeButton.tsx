@@ -19,7 +19,10 @@ export default function DegenModeButton() {
         alt=""
         src={RightCaretIcon}
         width={20}
-        className={combineClass(degenModeEnabled && "rotate-90")}
+        className={combineClass(
+          degenModeEnabled && "rotate-90",
+          "transition-transform",
+        )}
       />
       <div
         className={combineClass(
