@@ -16,7 +16,7 @@ const computeAPY = ({
 }) => {
   const daysActive = Math.max(
     1,
-    (Date.now() - startDate * 1000) / (1000 * 60 * 60 * 24),
+    (Math.floor(Date.now() / 1000) - startDate) / (60 * 60 * 24),
   );
 
   const lpShare = initialLiquidity / withdrawableLiquidity;
