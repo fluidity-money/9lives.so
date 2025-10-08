@@ -237,6 +237,18 @@ export default function AddLiquidityDialog({
         disabled={isFunding}
         onClick={handleSubmitWithAccount}
       />
+      <p className="text-center text-xs">
+        Make sure you fully understand how to provide liquidity in order to
+        prevent any losses.{" "}
+        <a
+          href="https://docs.superposition.so/native-dapps/9lives/guide-providing-liquidity-to-your-market"
+          target="_blank"
+          className="underline"
+        >
+          Check guide here
+        </a>
+        .
+      </p>
     </div>
   );
 }
