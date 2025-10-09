@@ -594,7 +594,7 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: PriceEvent, <-- Assigned later to avoid potential circular dependency.
     },
-    seedLiquidityOfCampaign: {
+    campaignWeeklyVolume: {
       a: {
         poolAddress: {
           nt: String,

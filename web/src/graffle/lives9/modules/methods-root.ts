@@ -476,22 +476,22 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
     >
   >;
 
-  seedLiquidityOfCampaign: $$Utilities.ClientTransports.PreflightCheck<
+  campaignWeeklyVolume: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
         $SelectionSet,
-        $$SelectionSets.Query.seedLiquidityOfCampaign<$Context["scalars"]>
+        $$SelectionSets.Query.campaignWeeklyVolume<$Context["scalars"]>
       >,
     ) => Promise<
       (null | {}) &
         $$Utilities.HandleOutputGraffleRootField<
           $Context,
           InferResult.OperationQuery<
-            { seedLiquidityOfCampaign: $SelectionSet },
+            { campaignWeeklyVolume: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
-          "seedLiquidityOfCampaign"
+          "campaignWeeklyVolume"
         >
     >
   >;
