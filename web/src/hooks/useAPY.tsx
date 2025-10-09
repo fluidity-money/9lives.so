@@ -1,61 +1,21 @@
 import { useEffect, useState } from "react";
-import useSeedLiquidity from "./useSeedLiquidity";
+import useWeeklyVolume from "./useWeeklyVolume";
 
 const lpRewardPerc = 0.02; // LP fee
-
-const computeAPY = ({
-  initialLiquidity,
-  withdrawableLiquidity,
-  totalVolume,
-  startDate,
-}: {
-  initialLiquidity: number;
-  withdrawableLiquidity: number;
-  totalVolume: number;
-  startDate: number;
-}) => {
-  const daysActive = Math.max(
-    1,
-    (Math.floor(Date.now() / 1000) - startDate) / (60 * 60 * 24),
-  );
-
-  const lpShare = initialLiquidity / withdrawableLiquidity;
-
-  const feeEarnings = totalVolume * lpRewardPerc * lpShare;
-
-  const finalValue = initialLiquidity + feeEarnings;
-
-  const roi = (finalValue - initialLiquidity) / initialLiquidity;
-
-  const apyMarket = Math.pow(1 + roi, 365 / daysActive) - 1;
-
-  return apyMarket;
+const computeAPY = (weeklyVolume: number, totalLiquidity: number) => {
+  const weeklyFees = lpRewardPerc * weeklyVolume;
+  const annualFees = weeklyFees * 52;
+  const apy = (annualFees / totalLiquidity) * 100;
+  return apy;
 };
 
-export default function useAPY({
-  poolAddress,
-  withdrawableLiquidity,
-  totalVolume,
-  startDate,
-}: {
-  poolAddress: string;
-  withdrawableLiquidity: number;
-  totalVolume: number;
-  startDate: number;
-}) {
+export default function useAPY(poolAddress: string, totalLiquidity: number) {
   const [APY, setAPY] = useState(0);
-  const { data: initialLiquidity } = useSeedLiquidity(poolAddress);
+  const { data: weeklyVolume, isSuccess } = useWeeklyVolume(poolAddress);
   useEffect(() => {
-    if (initialLiquidity && withdrawableLiquidity && startDate && totalVolume) {
-      setAPY(
-        computeAPY({
-          initialLiquidity,
-          withdrawableLiquidity,
-          startDate,
-          totalVolume,
-        }),
-      );
+    if (isSuccess && weeklyVolume) {
+      setAPY(computeAPY(weeklyVolume, totalLiquidity));
     }
-  }, [initialLiquidity, withdrawableLiquidity, startDate]);
+  }, [isSuccess]);
   return APY;
 }
