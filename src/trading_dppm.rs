@@ -55,49 +55,44 @@ impl StorageTrading {
             self.dppm_outcome_shares.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
-        // Set the global amounts that were invested.
-        let dppm_outcome_invested_before = self.dppm_outcome_invested.get(outcome_id);
-        // We need to increase by the amount we allocate, the AMM should do that
-        // internally. Some extra fields are needed for the DPM's calculations.
-        // We can assume that the DPM is in use if the amount is negative. We don't
-        // allow negative numbers with any code that touches the DPM.
-        let shares = {
-            let shares_before = self.dppm_outcome_shares.get(outcome_id);
-            let shares = c!(self.internal_calc_dppm_mint(outcome_id, value));
-            self.dppm_outcome_shares
-                .setter(outcome_id)
-                .set(c!(shares_before
-                    .checked_add(shares)
-                    .ok_or(Error::CheckedAddOverflow)));
-            self.dppm_global_shares.set(c!(self
-                .dppm_global_shares
-                .get()
-                .checked_add(shares)
-                .ok_or(Error::CheckedAddOverflow)));
-            shares
+        let outcome_a = self.outcome_list.get(0).unwrap();
+        let outcome_b = self.outcome_list.get(1).unwrap();
+        let price_before_a = self.internal_dppm_price(outcome_a)?;
+        let price_before_b = self.internal_dppm_price(outcome_b)?;
+        let m1_before = self.dppm_outcome_invested.get(outcome_a);
+        let m2_before = self.dppm_outcome_invested.get(outcome_b);
+        let out_of_m1_before = self.dppm_out_of.get(outcome_a);
+        let out_of_m2_before = self.dppm_out_of.get(outcome_b);
+        let shares = self.internal_calc_dppm_mint(outcome_id, value)?;
+        {
+            let x = self.dppm_outcome_invested.get(outcome_id);
+            self.dppm_outcome_invested
+                .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
+        }
+        let outcome_other = if outcome_a == outcome_id {
+            outcome_b
+        } else {
+            outcome_a
         };
-        // Get the address of the share, then mint some in line with the
-        // shares we made to the user's address!
+        {
+            let x = self.dppm_out_of.get(outcome_other);
+            self.dppm_out_of.setter(outcome_other).set(
+                x.checked_add(shares.checked_sub(value).ok_or(Error::CheckedSub)?)
+                    .ok_or(Error::CheckedAdd)?,
+            );
+        }
         let share_addr = proxy::get_share_addr(
             self.factory_addr.get(),
             contract_address(),
             self.share_impl.get(),
             outcome_id,
         );
-        self.dppm_outcome_invested
-            .setter(outcome_id)
-            .set(c!(dppm_outcome_invested_before
-                .checked_add(value)
-                .ok_or(Error::CheckedAddOverflow)));
-        self.dppm_global_invested.set(c!(self
-            .dppm_global_invested
-            .get()
-            .checked_add(value)
-            .ok_or(Error::CheckedAddOverflow)));
-
+        {
+            let x = self.dppm_global_invested.get();
+            self.dppm_global_invested.set(x + value);
+        }
         assert_or!(shares > U256::ZERO, Error::UnusualAmountCreated);
         c!(share_call::mint(share_addr, recipient, shares));
-
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,
@@ -105,7 +100,6 @@ impl StorageTrading {
             recipient,
             fusdcSpent: value,
         });
-
         Ok(shares)
     }
 
@@ -141,7 +135,6 @@ impl StorageTrading {
         Ok(fusdc)
     }
 
-    // Shares returned by the DPM. Does not set any state.
     #[allow(unused)]
     fn internal_calc_dppm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let n_1 = self.dppm_outcome_shares.get(outcome_id);

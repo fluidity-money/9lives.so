@@ -62,7 +62,7 @@ pub struct StorageTrading {
 
     /// Operator account that's able to drain funds from this campaign once
     /// it's concluded, as well as set the fee for SPN.
-    pub __unused: StorageAddress,
+    pub __unused_1: StorageAddress,
 
     /// The current mint fee for the creator. 2 = 0.2%.
     pub fee_creator: StorageU256,
@@ -90,11 +90,11 @@ pub struct StorageTrading {
     pub is_protocol_fee_disabled: StorageBool,
 
     /* ~~~~~~~~~~ DPPM ONLY ~~~~~~~~~~ */
+    //
     /// Shares invested in every outcome cumulatively.
-    pub dppm_global_shares: StorageU256,
+    pub __unused_2: StorageU256,
 
-    /// Shares available to buy in the pool.
-    pub dppm_outcome_shares: StorageMap<FixedBytes<8>, StorageU256>,
+    pub dppm_out_of: StorageMap<FixedBytes<8>, StorageU256>,
 
     /// Global amount invested to this pool of the native asset.
     pub dppm_global_invested: StorageU256,
@@ -103,6 +103,7 @@ pub struct StorageTrading {
     pub dppm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /* ~~~~~~~~~~ AMM ONLY ~~~~~~~~~~ */
+    //
     pub amm_liquidity: StorageU256,
 
     pub amm_outcome_prices: StorageMap<FixedBytes<8>, StorageU256>,
@@ -243,7 +244,8 @@ pub fn strat_storage_trading(
                             // associated).
                             let mut dppm_global_invested = U256::ZERO;
                             let mut dppm_global_shares = U256::ZERO;
-                            for (outcome_id, dppm_outcome_shares, dppm_outcome_invested) in &outcomes
+                            for (outcome_id, dppm_outcome_shares, dppm_outcome_invested) in
+                                &outcomes
                             {
                                 c.dppm_outcome_invested
                                     .setter(*outcome_id)
