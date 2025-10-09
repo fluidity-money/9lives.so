@@ -27,13 +27,17 @@ macro_rules! div {
 }
 
 #[allow(non_snake_case)]
-pub fn dppm_price(M1: U256, M2: U256, m: U256) -> Result<U256, Error> {
-    todo!()
+pub fn dppm_price(M1: U256, M2: U256) -> Result<U256, Error> {
+    Ok(div!(M1, add!(M1, M2)))
 }
 
 #[allow(non_snake_case)]
 pub fn dppm_shares(M1: U256, M2: U256, m: U256) -> Result<U256, Error> {
-    todo!()
+    let outofm2 = M2;
+    Ok(add!(
+        m,
+        mul!(div!(add!(M1, m), add!(M1, add!(M2, m))), sub!(M2, outofm2))
+    ))
 }
 
 /// Get the payoff for the shares given, with M being the globally

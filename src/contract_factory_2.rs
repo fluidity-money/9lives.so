@@ -1,13 +1,9 @@
 use stylus_sdk::{alloy_primitives::*, evm};
 
-#[cfg(target_arch = "wasm32")]
-use alloc::vec::Vec;
-
 use crate::{
     error::*,
     events, fusdc_call,
     immutables::*,
-    proxy,
     utils::{contract_address, msg_sender},
 };
 

@@ -178,7 +178,6 @@ impl StorageTrading {
                     self.dppm_global_invested.get(),
                     self.dppm_outcome_invested.get(id),
                 ))?,
-            U256::ZERO,
         )
     }
 }
