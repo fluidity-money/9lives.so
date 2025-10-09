@@ -181,21 +181,46 @@ contract BuyHelper2 {
 
     function addLiquidity(
         address _tradingAddr,
+        address _asset,
         uint256 _amount,
         address _recipient,
         uint256 _minLiquidity,
         uint256 _maxLiquidity,
+        uint256 _rebate,
         AddLiquidityTokens[] calldata _tokens
     ) external returns (AddLiquidityRes memory res) {
+       uint256 amountIn  = _amount - _rebate;
+        if (_asset != address(0)) {
+            require(_rebate == 0, "rebate not possible for erc20");
+            IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
+        } else {
+            require(_amount == msg.value, "inconsistent value");
+            WETH.deposit{value: amountIn}();
+            _asset = address(WETH);
+        }
+        uint256 fusdc;
+        if (_asset != address(FUSDC)) {
+            IERC20(_asset).approve(address(CAMELOT_SWAP_ROUTER), amountIn);
+            fusdc = CAMELOT_SWAP_ROUTER.exactInputSingle(ExactInputSingleParams({
+                tokenIn: _asset,
+                tokenOut: address(FUSDC),
+                recipient: address(this),
+                deadline: _deadline,
+                amountIn: amountIn,
+                amountOutMinimum: 0,
+                limitSqrtPrice: 0
+            }));
+        } else {
+            fusdc = _amount;
+        }
         res.liq = INineLivesTrading(_tradingAddr).addLiquidityB9DDA952(
-            _amount,
+            fusdc,
             _recipient,
             _minLiquidity,
             _maxLiquidity
         );
         res.tokens = new AddLiquidityResToken[](_tokens.length);
-        FUSDC.approve(_tradingAddr, _amount);
-        FUSDC.transferFrom(msg.sender, address(this), _amount);
+        FUSDC.approve(_tradingAddr, fusdc);
         for (uint i = 0; i < _tokens.length; ++i) {
             IERC20 t = getShareAddr(FACTORY, _tradingAddr, _tokens[i].identifier);
             uint256 b = t.balanceOf(address(this));
