@@ -187,8 +187,9 @@ contract BuyHelper2 {
         uint256 _minLiquidity,
         uint256 _maxLiquidity,
         uint256 _rebate,
-        AddLiquidityTokens[] calldata _tokens
-    ) external returns (AddLiquidityRes memory res) {
+        AddLiquidityTokens[] calldata _tokens,
+        uint256 _deadline
+    ) external payable returns (AddLiquidityRes memory res) {
        uint256 amountIn  = _amount - _rebate;
         if (_asset != address(0)) {
             require(_rebate == 0, "rebate not possible for erc20");
