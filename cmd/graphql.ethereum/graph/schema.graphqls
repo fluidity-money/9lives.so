@@ -101,7 +101,7 @@ type Query {
   """
   campaignPriceEvents(poolAddress:String!): [PriceEvent]!
 
-  seedLiquidityOfCampaign(poolAddress: String!): Int!
+  campaignWeeklyVolume(poolAddress: String!): Int!
 }
 
 type PriceEvent {

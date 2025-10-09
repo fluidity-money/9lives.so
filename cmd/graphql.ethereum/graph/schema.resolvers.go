@@ -1772,19 +1772,20 @@ func (r *queryResolver) CampaignPriceEvents(ctx context.Context, poolAddress str
 	return events, nil
 }
 
-// SeedLiquidityOfCampaign is the resolver for the seedLiquidityOfCampaign field.
-func (r *queryResolver) SeedLiquidityOfCampaign(ctx context.Context, poolAddress string) (int, error) {
-	var liquidity int
+// CampaignWeeklyVolume is the resolver for the campaignWeeklyVolume field.
+func (r *queryResolver) CampaignWeeklyVolume(ctx context.Context, poolAddress string) (int, error) {
+	var volume int
+	poolAddress = strings.ToLower(poolAddress)
 	err := r.DB.Raw(`
-	SELECT fusdc_amt AS liquidity
-	FROM ninelives_events_liquidity_added
-	WHERE emitter_addr = ?
-	ORDER BY created_by DESC
-	LIMIT 1;`, poolAddress).Scan(&liquidity).Error
+	select
+	sum(case when type = 'buy' THEN from_amount else to_amount end)
+	from ninelives_buys_and_sells_1
+	where emitter_addr = ? and created_by >= NOW() - INTERVAL '7 days';
+	`, poolAddress).Scan(&volume).Error
 	if err != nil {
-		return 0, fmt.Errorf("Error getting seed liquidity")
+		return 0, fmt.Errorf("Error getting weekly volume")
 	}
-	return liquidity, nil
+	return volume, nil
 }
 
 // Refererr is the resolver for the refererr field.
