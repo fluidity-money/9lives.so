@@ -8,7 +8,8 @@ import { Signature } from "ethers";
 import DetailCreatedBy from "../detail/detailCreatedBy";
 import formatFusdc from "@/utils/formatFusdc";
 import Image from "next/image";
-import DefaultMeowAvatar from "#/images/meow.svg";
+import makeBlockie from "ethereum-blockies-base64";
+
 export default function CommentItem({
   outcomes,
   data,
@@ -50,7 +51,7 @@ export default function CommentItem({
           width={36}
           height={36}
           className="size-9 shrink-0 border border-9black bg-9gray"
-          src={DefaultMeowAvatar}
+          src={makeBlockie(data.walletAddress)}
         />
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2.5">

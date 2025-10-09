@@ -38,6 +38,7 @@
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "ethereum-blockies-base64": "^1.0.2",
     "ethers": "^6.14.0",
     "graffle": "8.0.0-next.140",
     "graphql": "^16.11.0",
