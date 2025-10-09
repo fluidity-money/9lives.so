@@ -149,7 +149,7 @@ export default function DetailHeader({
     },
     {
       title: "APY",
-      value: `${(APY * 100).toFixed(0)}%`,
+      value: `${(APY * 100).toFixed(2)}%`,
       show: !!APY && !data.winner,
       shrink: true,
     },
