@@ -83,7 +83,7 @@ impl StorageTrading {
     pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
         #[cfg(feature = "trading-backend-dppm")]
         return Ok((
-            self.dppm_outcome_shares.get(outcome_id),
+            self.dppm_out_of.get(outcome_id),
             self.dppm_outcome_invested.get(outcome_id),
             self.dppm_global_invested.get(),
             self.winner.get(),
@@ -106,7 +106,7 @@ impl StorageTrading {
 
     pub fn global_shares(&self) -> R<U256> {
         #[cfg(feature = "trading-backend-dppm")]
-        return Ok(self.dppm_global_shares.get());
+        return Ok(U256::ZERO);
         #[cfg(not(feature = "trading-backend-dppm"))]
         return Ok(self.amm_liquidity.get());
     }

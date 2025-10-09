@@ -20,9 +20,6 @@ impl StorageTrading {
         // us, and we set them as the factory.
         let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;
         self.dppm_global_invested.set(seed_liquidity);
-        let outcomes_len: i64 = outcomes.len().try_into().unwrap();
-        self.dppm_global_shares
-            .set(U256::from(outcomes_len) * SHARE_DECIMALS_EXP);
         // Start to go through each outcome, and seed it with its initial amount.
         // And set each slot in the storage with the outcome id for Longtail
         // later.
@@ -31,12 +28,10 @@ impl StorageTrading {
             // behaviour with this being possible (ie, payoff before the end date).
             assert_or!(!outcome_id.is_zero(), Error::OutcomeIsZero);
             // We always set this to 1 now.
+            self.dppm_out_of.setter(outcome_id).set(SHARE_DECIMALS_EXP);
             self.dppm_outcome_invested
                 .setter(outcome_id)
                 .set(SHARE_DECIMALS_EXP);
-            self.dppm_outcome_shares
-                .setter(outcome_id)
-                .set(U256::from(1) * SHARE_DECIMALS_EXP);
             self.outcome_list.push(outcome_id);
         }
         Ok(())
@@ -52,22 +47,16 @@ impl StorageTrading {
     ) -> R<U256> {
         // Make sure that the outcome exists by checking if we set this up with some shares.
         assert_or!(
-            self.dppm_outcome_shares.get(outcome_id) > U256::ZERO,
+            self.dppm_out_of.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
         let outcome_a = self.outcome_list.get(0).unwrap();
         let outcome_b = self.outcome_list.get(1).unwrap();
-        let price_before_a = self.internal_dppm_price(outcome_a)?;
-        let price_before_b = self.internal_dppm_price(outcome_b)?;
-        let m1_before = self.dppm_outcome_invested.get(outcome_a);
-        let m2_before = self.dppm_outcome_invested.get(outcome_b);
-        let out_of_m1_before = self.dppm_out_of.get(outcome_a);
-        let out_of_m2_before = self.dppm_out_of.get(outcome_b);
         let shares = self.internal_calc_dppm_mint(outcome_id, value)?;
         {
             let x = self.dppm_outcome_invested.get(outcome_id);
             self.dppm_outcome_invested
-                .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
+                .setter(outcome_id).set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
         }
         let outcome_other = if outcome_a == outcome_id {
             outcome_b
@@ -77,8 +66,8 @@ impl StorageTrading {
         {
             let x = self.dppm_out_of.get(outcome_other);
             self.dppm_out_of.setter(outcome_other).set(
-                x.checked_add(shares.checked_sub(value).ok_or(Error::CheckedSub)?)
-                    .ok_or(Error::CheckedAdd)?,
+                x.checked_add(shares.checked_sub(value).ok_or(Error::CheckedSubOverflow(shares, value))?)
+                    .ok_or(Error::CheckedAddOverflow)?,
             );
         }
         let share_addr = proxy::get_share_addr(
@@ -137,7 +126,6 @@ impl StorageTrading {
 
     #[allow(unused)]
     fn internal_calc_dppm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
-        let n_1 = self.dppm_outcome_shares.get(outcome_id);
         let dppm_outcome_invested = self.dppm_outcome_invested.get(outcome_id);
         maths::dppm_shares(
             dppm_outcome_invested,
@@ -153,7 +141,7 @@ impl StorageTrading {
     ) -> R<U256> {
         maths::dppm_payoff(
             share_bal,
-            self.dppm_outcome_shares.get(outcome_id),
+            self.dppm_outcome_invested.get(outcome_id),
             self.dppm_global_invested.get(),
         )
     }

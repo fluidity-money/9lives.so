@@ -84,7 +84,7 @@ impl StorageTrading {
     #[mutants::skip]
     fn internal_dppm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         assert_or!(
-            self.dppm_outcome_shares.get(outcome_id) > U256::ZERO,
+            self.dppm_out_of.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
         maths::dppm_shares(
