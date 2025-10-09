@@ -67,12 +67,7 @@ export default function DetailHeader({
   const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
   const displayCreatorFees = unclaimedFees > BigInt(0);
   const { checkClaimFees } = useClaimAllFees();
-  const APY = useAPY({
-    poolAddress: data.poolAddress,
-    withdrawableLiquidity: data.liquidityVested,
-    totalVolume: data.totalVolume,
-    startDate: data.starting,
-  });
+  const APY = useAPY(data.poolAddress, data.liquidityVested);
   const { data: userLiquidity, isSuccess } = useUserLiquidity({
     address: account?.address,
     tradingAddr: data.poolAddress,
