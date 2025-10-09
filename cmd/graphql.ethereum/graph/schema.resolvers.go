@@ -581,6 +581,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 						{"Content", p},
 						{"Paymaster address", r.PaymasterAddr},
 						{"Sender", p.Owner},
+						{"Amount", p.AmountToSpend},
 						{"Market", p.Market},
 						{"Type", actionDesc},
 						{"Calldata", cd},
