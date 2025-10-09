@@ -576,5 +576,5 @@ export const requestPriceChanges = (poolAddress: string) =>
     shares: { shares: true, identifier: true },
   });
 
-export const requestSeedLiquidityOfCampaign = (poolAddress: string) =>
-  graph9Lives.query.seedLiquidityOfCampaign({ $: { poolAddress } });
+export const requestWeeklyVolume = (poolAddress: string) =>
+  graph9Lives.query.campaignWeeklyVolume({ $: { poolAddress } });
