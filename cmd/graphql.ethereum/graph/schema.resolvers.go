@@ -1778,7 +1778,7 @@ func (r *queryResolver) CampaignWeeklyVolume(ctx context.Context, poolAddress st
 	poolAddress = strings.ToLower(poolAddress)
 	err := r.DB.Raw(`
 	select
-	sum(case when type = 'buy' THEN from_amount else to_amount end)
+	sum(case when type = 'buy' THEN from_amount else to_amount end) as volume
 	from ninelives_buys_and_sells_1
 	where emitter_addr = ? and created_by >= NOW() - INTERVAL '7 days';
 	`, poolAddress).Scan(&volume).Error
