@@ -43,7 +43,7 @@ export default function ManageLiquidityDialog({
             value={`$${formatFusdc(userLiquidity ?? "0")}`}
           />
           {APY && !data.winner ? (
-            <VarButton title="Apy Rate" value={`%${(APY * 100).toFixed(0)}`} />
+            <VarButton title="Apy Rate" value={`%${+(APY * 100).toFixed(2)}`} />
           ) : null}
         </div>
         <p className="text-center font-chicago text-xs">
