@@ -51,21 +51,21 @@ export SPN_LOCKUP_IMPL_ADDR="${SPN_LOCKUP_IMPL_ADDR:-$(./deploy-stylus.sh contra
 [ -z "$SPN_LOCKUP_IMPL_ADDR" ] && exit 1
 log "SPN_LOCKUP_IMPL_ADDR=$SPN_LOCKUP_IMPL_ADDR"
 
-export SPN_TRADING_DPM_EXTRAS_IMPL_ADDR="${SPN_TRADING_DPM_EXTRAS_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dpm-extras.wasm)}"
-[ -z "$SPN_TRADING_DPM_EXTRAS_IMPL_ADDR" ] && exit 1
-log "SPN_TRADING_DPM_EXTRAS_IMPL_ADDR=$SPN_TRADING_DPM_EXTRAS_IMPL_ADDR"
+export SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR="${SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dppm-extras.wasm)}"
+[ -z "$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR" ] && exit 1
+log "SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR=$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR"
 
-export SPN_TRADING_DPM_MINT_IMPL_ADDR="${SPN_TRADING_DPM_MINT_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dpm-mint.wasm)}"
-[ -z "$SPN_TRADING_DPM_MINT_IMPL_ADDR" ] && exit 1
-log "SPN_TRADING_DPM_MINT_IMPL_ADDR=$SPN_TRADING_DPM_MINT_IMPL_ADDR"
+export SPN_TRADING_DPPM_MINT_IMPL_ADDR="${SPN_TRADING_DPPM_MINT_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dppm-mint.wasm)}"
+[ -z "$SPN_TRADING_DPPM_MINT_IMPL_ADDR" ] && exit 1
+log "SPN_TRADING_DPPM_MINT_IMPL_ADDR=$SPN_TRADING_DPPM_MINT_IMPL_ADDR"
 
-export SPN_TRADING_DPM_QUOTES_IMPL_ADDR="${SPN_TRADING_DPM_QUOTES_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dpm-quotes.wasm)}"
-[ -z "$SPN_TRADING_DPM_QUOTES_IMPL_ADDR" ] && exit 1
-log "SPN_TRADING_DPM_QUOTES_IMPL_ADDR=$SPN_TRADING_DPM_QUOTES_IMPL_ADDR"
+export SPN_TRADING_DPPM_QUOTES_IMPL_ADDR="${SPN_TRADING_DPPM_QUOTES_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dppm-quotes.wasm)}"
+[ -z "$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR" ] && exit 1
+log "SPN_TRADING_DPPM_QUOTES_IMPL_ADDR=$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR"
 
-export SPN_TRADING_DPM_PRICE_IMPL_ADDR="${SPN_TRADING_DPM_PRICE_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dpm-price.wasm)}"
-[ -z "$SPN_TRADING_DPM_PRICE_IMPL_ADDR" ] && exit 1
-log "SPN_TRADING_DPM_PRICE_IMPL_ADDR=$SPN_TRADING_DPM_PRICE_IMPL_ADDR"
+export SPN_TRADING_DPPM_PRICE_IMPL_ADDR="${SPN_TRADING_DPPM_PRICE_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dppm-price.wasm)}"
+[ -z "$SPN_TRADING_DPPM_PRICE_IMPL_ADDR" ] && exit 1
+log "SPN_TRADING_DPPM_PRICE_IMPL_ADDR=$SPN_TRADING_DPPM_PRICE_IMPL_ADDR"
 
 export SPN_TRADING_AMM_EXTRAS_IMPL_ADDR="${SPN_TRADING_AMM_EXTRAS_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-amm-extras.wasm)}"
 [ -z "$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR" ] && exit 1
@@ -120,10 +120,10 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Factory 2 implementation      | \`$SPN_FACTORY_2_IMPL_ADDR\` |
 | Lockup implementation         | \`$SPN_LOCKUP_IMPL_ADDR\` |
 | Optimistic infra predict impl | \`$SPN_INFRA_MARKET_IMPL_ADDR\` |
-| Trading DPM mint impl         | \`$SPN_TRADING_DPM_MINT_IMPL_ADDR\` |
-| Trading DPM extras impl       | \`$SPN_TRADING_DPM_EXTRAS_IMPL_ADDR\` |
-| Trading DPM quotes impl       | \`$SPN_TRADING_DPM_QUOTES_IMPL_ADDR\` |
-| Trading DPM price impl        | \`$SPN_TRADING_DPM_PRICE_IMPL_ADDR\` |
+| Trading DPPM mint impl        | \`$SPN_TRADING_DPPM_MINT_IMPL_ADDR\` |
+| Trading DPPM extras impl      | \`$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR\` |
+| Trading DPPM quotes impl      | \`$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR\` |
+| Trading DPPM price impl       | \`$SPN_TRADING_DPPM_PRICE_IMPL_ADDR\` |
 | Trading AMM mint impl         | \`$SPN_TRADING_AMM_MINT_IMPL_ADDR\` |
 | Trading AMM extras impl       | \`$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR\` |
 | Trading AMM quotes impl       | \`$SPN_TRADING_AMM_QUOTES_IMPL_ADDR\` |
@@ -144,5 +144,5 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 EOF
 
 cat <<EOF
-{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "lockupImplementation":"$SPN_LOCKUP_IMPL_ADDR", "optimisticInfraMarketImplementation":"$SPN_INFRA_MARKET_IMPL_ADDR", "tradingDpmMintImplementation":"$SPN_TRADING_DPM_MINT_IMPL_ADDR", "tradingDpmExtrasImplementation":"$SPN_TRADING_DPM_EXTRAS_IMPL_ADDR", "tradingDpmPriceImplementation":"$SPN_TRADING_DPM_PRICE_IMPL_ADDR", "tradingDpmQuotesImplementation":"$SPN_TRADING_DPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "lockupTokenImplementation":"$SPN_LOCKUP_TOKEN_IMPL_ADDR", "beautyContest": "$SPN_BEAUTY_CONTEST_IMPL_ADDR", "infrastructureMarketProxy":"$SPN_INFRA_MARKET_PROXY_ADDR", "lockupProxyImpl":"$SPN_LOCKUP_PROXY_ADDR", "lockupProxyToken": "$SPN_FACTORY_PROXY_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR", "helperFactory": "$SPN_HELPER_FACTORY", "lensesV1": "$SPN_LENSESV1", "sarpAi": "$SPN_SARP_AI", "beautyContestProxy": "$SPN_BEAUTY_CONTEST_PROXY_ADDR", "claimantHelper": "$SPN_CLAIMANT_HELPER_ADDR", "paymaster": "$SPN_PAYMASTER_ADDR" }
+{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "lockupImplementation":"$SPN_LOCKUP_IMPL_ADDR", "optimisticInfraMarketImplementation":"$SPN_INFRA_MARKET_IMPL_ADDR", "tradingDppmMintImplementation":"$SPN_TRADING_DPPM_MINT_IMPL_ADDR", "tradingDppmExtrasImplementation":"$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR", "tradingDppmPriceImplementation":"$SPN_TRADING_DPPM_PRICE_IMPL_ADDR", "tradingDppmQuotesImplementation":"$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "lockupTokenImplementation":"$SPN_LOCKUP_TOKEN_IMPL_ADDR", "beautyContest": "$SPN_BEAUTY_CONTEST_IMPL_ADDR", "infrastructureMarketProxy":"$SPN_INFRA_MARKET_PROXY_ADDR", "lockupProxyImpl":"$SPN_LOCKUP_PROXY_ADDR", "lockupProxyToken": "$SPN_FACTORY_PROXY_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR", "helperFactory": "$SPN_HELPER_FACTORY", "lensesV1": "$SPN_LENSESV1", "sarpAi": "$SPN_SARP_AI", "beautyContestProxy": "$SPN_BEAUTY_CONTEST_PROXY_ADDR", "claimantHelper": "$SPN_CLAIMANT_HELPER_ADDR", "paymaster": "$SPN_PAYMASTER_ADDR" }
 EOF

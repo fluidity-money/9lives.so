@@ -17,7 +17,7 @@ use lib9lives::{
 use proptest::proptest;
 
 #[test]
-#[cfg(feature = "trading-backend-dpm")]
+#[cfg(feature = "trading-backend-dppm")]
 fn test_e2e_mint_dpm() {
     use lib9lives::storage_trading::StorageTrading;
     with_contract::<_, StorageTrading, _>(|c| {
@@ -60,7 +60,7 @@ fn test_e2e_mint_dpm() {
 
 proptest! {
     #[test]
-    #[cfg(feature = "trading-backend-dpm")]
+    #[cfg(feature = "trading-backend-dppm")]
     fn test_e2e_based_on_js(
         outcome_1 in strat_fixed_bytes::<8>(),
         outcome_2 in strat_fixed_bytes::<8>(),

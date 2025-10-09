@@ -30,10 +30,10 @@ build: \
 	${OUT_SHARE} \
 	contract-factory-1 \
 	contract-factory-2 \
-	contract-trading-dpm-mint \
-	contract-trading-dpm-extras \
-	contract-trading-dpm-quotes \
-	contract-trading-dpm-price \
+	contract-trading-dppm-mint \
+	contract-trading-dppm-extras \
+	contract-trading-dppm-quotes \
+	contract-trading-dppm-price \
 	contract-trading-amm-mint \
 	contract-trading-amm-extras \
 	contract-trading-amm-quotes \
@@ -55,10 +55,10 @@ OUT_COVERAGE := coverage-out/index.html
 contract-factory-1: contract-factory-1.wasm
 contract-factory-2: contract-factory-2.wasm
 
-contract-trading-dpm-mint: contract-trading-dpm-mint.wasm
-contract-trading-dpm-extras: contract-trading-dpm-extras.wasm
-contract-trading-dpm-quotes: contract-trading-dpm-quotes.wasm
-contract-trading-dpm-price: contract-trading-dpm-price.wasm
+contract-trading-dppm-mint: contract-trading-dppm-mint.wasm
+contract-trading-dppm-extras: contract-trading-dppm-extras.wasm
+contract-trading-dppm-quotes: contract-trading-dppm-quotes.wasm
+contract-trading-dppm-price: contract-trading-dppm-price.wasm
 
 contract-trading-amm-mint: contract-trading-amm-mint.wasm
 contract-trading-amm-extras: contract-trading-amm-extras.wasm
@@ -85,25 +85,25 @@ contract-factory-2.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-factory-2${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_OPT_9LIVES} contract-factory-2.wasm
 
-contract-trading-dpm-mint.wasm: $(shell find src -type f -name '*.rs')
+contract-trading-dppm-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-mint.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-mint,trading-backend-dpm${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-mint.wasm
+	@${CARGO_BUILD_STYLUS} contract-trading-mint,trading-backend-dppm${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dppm-mint.wasm
 
-contract-trading-dpm-extras.wasm: $(shell find src -type f -name '*.rs')
+contract-trading-dppm-extras.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-extras.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-extras,trading-backend-dpm${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-extras.wasm
+	@${CARGO_BUILD_STYLUS} contract-trading-extras,trading-backend-dppm${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dppm-extras.wasm
 
-contract-trading-dpm-quotes.wasm: $(shell find src -type f -name '*.rs')
+contract-trading-dppm-quotes.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-quotes.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-quotes,trading-backend-dpm${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-quotes.wasm
+	@${CARGO_BUILD_STYLUS} contract-trading-quotes,trading-backend-dppm${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dppm-quotes.wasm
 
-contract-trading-dpm-price.wasm: $(shell find src -type f -name '*.rs')
+contract-trading-dppm-price.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-price.wasm
-	@${CARGO_BUILD_STYLUS} contract-trading-price,trading-backend-dpm${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dpm-price.wasm
+	@${CARGO_BUILD_STYLUS} contract-trading-price,trading-backend-dppm${CARGO_EXTRA_FEATURES}
+	@${RELEASE_WASM_OPT_9LIVES} contract-trading-dppm-price.wasm
 
 contract-trading-amm-mint.wasm: $(shell find src -type f -name '*.rs')
 	@rm -f contract-trading-mint.wasm
@@ -160,10 +160,10 @@ clean:
 		contract-trading-amm-extras.wasm \
 		contract-trading-amm-extras-admin.wasm \
 		contract-trading-amm-mint.wasm \
-		contract-trading-dpm-extras.wasm \
-		contract-trading-dpm-mint.wasm \
-		contract-trading-dpm-trading-extras.wasm \
-		contract-trading-dpm-trading-mint.wasm \
+		contract-trading-dppm-extras.wasm \
+		contract-trading-dppm-mint.wasm \
+		contract-trading-dppm-trading-extras.wasm \
+		contract-trading-dppm-trading-mint.wasm \
 		contract-infra-market-testing.wasm \
 		factory-2.wasm \
 		factory-extras-.wasm \

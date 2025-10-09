@@ -453,6 +453,7 @@ async fn main() -> Result<(), Error> {
                 let v = if let Some(v) = storage_written.get(&word) {
                     *v
                 } else {
+                dbg!("LOOKING UP PROVIDER INFO");
                     let v = PROVIDER
                         .get()
                         .unwrap()

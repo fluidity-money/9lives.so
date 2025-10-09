@@ -23,9 +23,9 @@ impl StorageTrading {
     // other than a user has created a junk campaign with seed liquidity
     // that we want to redistribute.
     pub fn shift(&mut self, _user: Address, _target: Address) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         unimplemented!();
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(not(feature = "trading-backend-dppm"))]
         {
             assert_or!(msg_sender() == DAO_OP_ADDR, Error::NotOperator);
             let (fusdc_amt, _, _) = self.internal_amm_remove_liquidity(

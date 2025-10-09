@@ -89,18 +89,18 @@ pub struct StorageTrading {
     /// Is the protocol fee disabled? This will only ever be set in testing.
     pub is_protocol_fee_disabled: StorageBool,
 
-    /* ~~~~~~~~~~ DPM ONLY ~~~~~~~~~~ */
+    /* ~~~~~~~~~~ DPPM ONLY ~~~~~~~~~~ */
     /// Shares invested in every outcome cumulatively.
-    pub dpm_global_shares: StorageU256,
+    pub dppm_global_shares: StorageU256,
 
     /// Shares available to buy in the pool.
-    pub dpm_outcome_shares: StorageMap<FixedBytes<8>, StorageU256>,
+    pub dppm_outcome_shares: StorageMap<FixedBytes<8>, StorageU256>,
 
     /// Global amount invested to this pool of the native asset.
-    pub dpm_global_invested: StorageU256,
+    pub dppm_global_invested: StorageU256,
 
     /// The amount invested in a specific outcome.
-    pub dpm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
+    pub dppm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /* ~~~~~~~~~~ AMM ONLY ~~~~~~~~~~ */
     pub amm_liquidity: StorageU256,
@@ -156,7 +156,7 @@ impl std::fmt::Debug for StorageTrading {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         write!(
             f,
-            "StorageTrading {{ created: {:?}, factory addr: {:?}, when decided: {:?}, is shutdown: {:?}, fee recipient: {:?}, time start: {:?}, time ending: {:?}, oracle: {:?}, share impl: {:?}, dpm global shares: {:?}, .., dpm seed invested: {:?}, dpm global invested: {:?}, .., winner: {:?}, should buffer time: {:?}, amm liquidity: {:?}, amm shares: {:?}, amm total shares: {:?}, amm sender user liquidity shares for msg sender: {:?} }}",
+            "StorageTrading {{ created: {:?}, factory addr: {:?}, when decided: {:?}, is shutdown: {:?}, fee recipient: {:?}, time start: {:?}, time ending: {:?}, oracle: {:?}, share impl: {:?}, dppm global shares: {:?}, .., dppm seed invested: {:?}, dppm global invested: {:?}, .., winner: {:?}, should buffer time: {:?}, amm liquidity: {:?}, amm shares: {:?}, amm total shares: {:?}, amm sender user liquidity shares for msg sender: {:?} }}",
             self.created,
             self.factory_addr,
             self.when_decided,
@@ -166,9 +166,9 @@ impl std::fmt::Debug for StorageTrading {
             self.time_ending,
             self.oracle,
             self.share_impl,
-            self.dpm_global_shares,
+            self.dppm_global_shares,
             self.amm_liquidity,
-            self.dpm_global_invested,
+            self.dppm_global_invested,
             self.winner,
             self.should_buffer_time,
             self.amm_liquidity,
@@ -241,22 +241,22 @@ pub fn strat_storage_trading(
                             // We don't enforce consistency with the seed invested argument. That
                             // might warrant more fine-grained use of this storage (and functions
                             // associated).
-                            let mut dpm_global_invested = U256::ZERO;
-                            let mut dpm_global_shares = U256::ZERO;
-                            for (outcome_id, dpm_outcome_shares, dpm_outcome_invested) in &outcomes
+                            let mut dppm_global_invested = U256::ZERO;
+                            let mut dppm_global_shares = U256::ZERO;
+                            for (outcome_id, dppm_outcome_shares, dppm_outcome_invested) in &outcomes
                             {
-                                c.dpm_outcome_invested
+                                c.dppm_outcome_invested
                                     .setter(*outcome_id)
-                                    .set(*dpm_outcome_invested);
-                                c.dpm_outcome_shares
+                                    .set(*dppm_outcome_invested);
+                                c.dppm_outcome_shares
                                     .setter(*outcome_id)
-                                    .set(*dpm_outcome_shares);
-                                dpm_global_invested += dpm_outcome_invested;
-                                dpm_global_shares += dpm_outcome_shares;
+                                    .set(*dppm_outcome_shares);
+                                dppm_global_invested += dppm_outcome_invested;
+                                dppm_global_shares += dppm_outcome_shares;
                                 c.outcome_list.push(*outcome_id);
                             }
-                            c.dpm_global_shares.set(dpm_global_shares);
-                            c.dpm_global_invested.set(dpm_global_invested);
+                            c.dppm_global_shares.set(dppm_global_shares);
+                            c.dppm_global_invested.set(dppm_global_invested);
                             if should_set_winner {
                                 let i = (rng.next_u64() % outcomes.len() as u64) as usize;
                                 c.winner.set(outcomes[i].0);

@@ -36,7 +36,7 @@ The following are any areas of concern a security researcher might be interested
 1. Can the CPMM be griefed with dusted amounts? Are our estimation methods correct? Is our
 reference correctly implemented?
 
-2. Does the DPM scale correctly?
+2. Does the DPPM perform correctly?
 
 3. Are there any unforeseen reentrancy bugs, since we have the feature disabled?
 
@@ -52,7 +52,7 @@ about it. We use a router to do the swapping. The router can be imperfctly desig
 The following files may be of interest to any would-be security researcher depending on
 the scope of your audit.
 
-The DPM is implemented according to a reference at `tests/reference.py`. The AMM is
+The DPPM is implemented according to a reference at `tests/reference.py`. The AMM is
 implemented according to a reference at `tests/amm_pred.py`. Any differences that do not
 relate to scaling beneficial to the contract should be considered a bug.
 
@@ -79,7 +79,7 @@ src/maths.rs
 src/outcome.rs
 src/storage_lockup.rs
 src/storage_trading.rs
-src/trading_dpm.rs
+src/trading_dppm.rs
 src/trading_amm.rs
 src/trading_private.rs
 src/Share.sol
@@ -100,7 +100,7 @@ src/maths.rs
 src/outcome.rs
 src/storage_lockup.rs
 src/storage_trading.rs
-src/trading_dpm.rs
+src/trading_dppm.rs
 src/trading_private.rs
 src/Share.sol
 ```

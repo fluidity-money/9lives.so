@@ -194,8 +194,12 @@ contract MockTrading is INineLivesTrading {
         return 0;
     }
 
+    function isDppm() external pure returns (bool) {
+        return false;
+    }
+
     function isDpm() external pure returns (bool) {
-        return true;
+        return false;
     }
 
     function globalShares() external pure returns (uint256) {

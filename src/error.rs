@@ -229,7 +229,7 @@ pub enum Error {
     /// Camelot had an error, we'll bubble up what happened. UNUSED.
     CamelotError(Vec<u8>),
 
-    /// DPM you can only set 1!
+    /// DPPM you can only set 1!
     BadSeedAmount,
 
     /// Error using the locked ARB code!
@@ -449,8 +449,8 @@ pub enum Error {
     // The caller has already declared their commitment!
     AlreadyCommitted,
 
-    // DPM only (for now).
-    DPMOnly,
+    // DPPM only (for now).
+    DPPMOnly,
 
     // Bad trading configuration!
     BadTradingCtor,
@@ -469,8 +469,8 @@ pub enum Error {
     // at this point.
     OutcomeIsZero,
 
-    // A negative amount was used in the mint function when the DPM is in use.
-    NegativeAmountWhenDPM,
+    // A negative amount was used in the mint function when the DPPM is in use.
+    NegativeAmountWhenDPPM,
 
     // Only the AMM can sell.
     AMMOnly,

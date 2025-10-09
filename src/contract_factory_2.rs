@@ -21,10 +21,10 @@ impl StorageFactory {
     pub fn ctor(
         &mut self,
         share_impl: Address,
-        trading_dpm_extras_impl: Address,
-        trading_dpm_mint_impl: Address,
-        trading_dpm_quotes_impl: Address,
-        trading_dpm_price_impl: Address,
+        trading_dppm_extras_impl: Address,
+        trading_dppm_mint_impl: Address,
+        trading_dppm_quotes_impl: Address,
+        trading_dppm_price_impl: Address,
         trading_amm_extras_impl: Address,
         trading_amm_mint_impl: Address,
         trading_amm_quotes_impl: Address,
@@ -35,10 +35,10 @@ impl StorageFactory {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);
         self.share_impl.set(share_impl);
-        self.trading_dpm_extras_impl.set(trading_dpm_extras_impl);
-        self.trading_dpm_mint_impl.set(trading_dpm_mint_impl);
-        self.trading_dpm_quotes_impl.set(trading_dpm_quotes_impl);
-        self.trading_dpm_price_impl.set(trading_dpm_price_impl);
+        self.trading_dppm_extras_impl.set(trading_dppm_extras_impl);
+        self.trading_dppm_mint_impl.set(trading_dppm_mint_impl);
+        self.trading_dppm_quotes_impl.set(trading_dppm_quotes_impl);
+        self.trading_dppm_price_impl.set(trading_dppm_price_impl);
         self.trading_amm_extras_impl.set(trading_amm_extras_impl);
         self.trading_amm_mint_impl.set(trading_amm_mint_impl);
         self.trading_amm_quotes_impl.set(trading_amm_quotes_impl);
@@ -60,7 +60,7 @@ impl StorageFactory {
         Ok(self.should_take_mod_fee.get())
     }
 
-    pub fn dpm_trading_hash(&self) -> R<FixedBytes<32>> {
+    pub fn dppm_trading_hash(&self) -> R<FixedBytes<32>> {
         Ok(FixedBytes::from_slice(&trading_proxy_hash(
             contract_address(),
             true,
@@ -75,7 +75,7 @@ impl StorageFactory {
     }
 
     pub fn trading_hashes(&self) -> R<(FixedBytes<32>, FixedBytes<32>)> {
-        Ok((c!(self.dpm_trading_hash()), c!(self.amm_trading_hash())))
+        Ok((c!(self.dppm_trading_hash()), c!(self.amm_trading_hash())))
     }
 
     pub fn erc20_hash(&self) -> R<FixedBytes<32>> {
@@ -142,7 +142,7 @@ impl StorageFactory {
     }
 
     #[mutants::skip]
-    pub fn upgrade_dpm_contracts(
+    pub fn upgrade_dppm_contracts(
         &mut self,
         extras: Address,
         mint: Address,
@@ -151,16 +151,16 @@ impl StorageFactory {
     ) -> R<()> {
         assert_or!(self.operator.get() == msg_sender(), Error::NotOperator);
         if !extras.is_zero() {
-            self.trading_dpm_extras_impl.set(extras);
+            self.trading_dppm_extras_impl.set(extras);
         }
         if !mint.is_zero() {
-            self.trading_dpm_mint_impl.set(mint);
+            self.trading_dppm_mint_impl.set(mint);
         }
         if !quotes.is_zero() {
-            self.trading_dpm_quotes_impl.set(quotes);
+            self.trading_dppm_quotes_impl.set(quotes);
         }
         if !price.is_zero() {
-            self.trading_dpm_price_impl.set(price);
+            self.trading_dppm_price_impl.set(price);
         }
         Ok(())
     }
@@ -211,33 +211,33 @@ impl StorageFactory {
         Ok(())
     }
 
-    pub fn mint_addr(&self, is_dpm: bool) -> Address {
-        if is_dpm {
-            self.trading_dpm_mint_impl.get()
+    pub fn mint_addr(&self, is_dppm: bool) -> Address {
+        if is_dppm {
+            self.trading_dppm_mint_impl.get()
         } else {
             self.trading_amm_mint_impl.get()
         }
     }
 
-    pub fn quotes_addr(&self, is_dpm: bool) -> Address {
-        if is_dpm {
-            self.trading_dpm_quotes_impl.get()
+    pub fn quotes_addr(&self, is_dppm: bool) -> Address {
+        if is_dppm {
+            self.trading_dppm_quotes_impl.get()
         } else {
             self.trading_amm_quotes_impl.get()
         }
     }
 
-    pub fn price_addr(&self, is_dpm: bool) -> Address {
-        if is_dpm {
-            self.trading_dpm_price_impl.get()
+    pub fn price_addr(&self, is_dppm: bool) -> Address {
+        if is_dppm {
+            self.trading_dppm_price_impl.get()
         } else {
             self.trading_amm_price_impl.get()
         }
     }
 
-    pub fn extras_addr(&self, is_dpm: bool) -> Address {
-        if is_dpm {
-            self.trading_dpm_extras_impl.get()
+    pub fn extras_addr(&self, is_dppm: bool) -> Address {
+        if is_dppm {
+            self.trading_dppm_extras_impl.get()
         } else {
             self.trading_amm_extras_impl.get()
         }

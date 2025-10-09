@@ -7,13 +7,13 @@ export \
 
 make solidity
 
-# cargo test --features testing,trading-backend-dpm $@
+# cargo test --features testing,trading-backend-dppm $@
 
 cargo test --features testing,trading-backend-amm $@
 
 #cargo mutants \
-#	--features testing,trading-backend-dpm \
-#	$(printf -- '-f %s ' src/*dpm*.rs) $@
+#	--features testing,trading-backend-dppm \
+#	$(printf -- '-f %s ' src/*dppm*.rs) $@
 
 #cargo mutants \
 #	--features testing,trading-backend-amm \

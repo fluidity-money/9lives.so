@@ -1,5 +1,5 @@
 #![cfg(all(
-    feature = "trading-backend-dpm",
+    feature = "trading-backend-dppm",
     feature = "testing",
     not(target_arch = "wasm32")
 ))]

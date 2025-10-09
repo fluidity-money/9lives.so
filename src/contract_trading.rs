@@ -8,13 +8,13 @@
         feature = "contract-trading-dumper",
         feature = "contract-trading-extras-admin"
     ),
-    not(any(feature = "trading-backend-dpm", feature = "trading-backend-amm"))
+    not(any(feature = "trading-backend-dppm", feature = "trading-backend-amm"))
 ))]
-compile_error!("trading-backend-dpm or trading-backend-amm must be configured.");
+compile_error!("trading-backend-dppm or trading-backend-amm must be configured.");
 
-#[cfg(all(feature = "trading-backend-dpm", feature = "trading-backend-amm"))]
+#[cfg(all(feature = "trading-backend-dppm", feature = "trading-backend-amm"))]
 compile_error!(
-    "trading-backend-dpm and trading-backenda-amm cannot be configured at the same time."
+    "trading-backend-dppm and trading-backenda-amm cannot be configured at the same time."
 );
 
 #[cfg(feature = "contract-trading-mint")]

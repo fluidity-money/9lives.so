@@ -16,4 +16,4 @@ export \
 	SPN_SUPERPOSITION_URL=https://testnet-rpc.superposition.so \
 	SPN_WETH_ADDR=0x22b9fa698b68bBA071B513959794E9a47d19214c
 
-make -B
+make -B contract-trading-dppm-mint contract-trading-dppm-extras contract-trading-dppm-quotes contract-trading-dppm-price

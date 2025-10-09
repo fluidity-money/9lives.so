@@ -136,7 +136,10 @@ interface INineLivesTrading {
     function escape() external;
 
     /// @notice is this trading contract running the DPM?
-    function isDpm() external view returns (bool);
+    function isDpm() external pure returns (bool);
+
+    /// @notice is this trading contract running the DPPM?
+    function isDppm() external pure returns (bool);
 
     /// @notice global shares minted.
     function globalShares() external view returns (uint256);

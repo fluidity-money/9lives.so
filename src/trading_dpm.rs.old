@@ -1,3 +1,5 @@
+/// The original 9lives model, left here for posterity reasons.
+
 use crate::{
     decimal::MAX_UINT256,
     decimal::{

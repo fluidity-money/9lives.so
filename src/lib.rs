@@ -6,7 +6,6 @@ pub mod error;
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub use error::panic_guard;
 
-pub mod decimal;
 pub mod maths;
 
 pub mod events;
@@ -77,7 +76,7 @@ pub mod contract_factory_2;
 pub mod storage_factory;
 
 mod trading_amm;
-mod trading_dpm;
+mod trading_dppm;
 mod trading_private;
 
 pub mod contract_trading;

@@ -1,4 +1,4 @@
-#![cfg(all(feature = "trading-backend-dpm", not(target_arch = "wasm32")))]
+#![cfg(all(feature = "trading-backend-dppm", not(target_arch = "wasm32")))]
 
 use proptest::prelude::*;
 

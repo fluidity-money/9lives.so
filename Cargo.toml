@@ -1,12 +1,11 @@
 [package]
 name = "ninelives"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 rust-version = "1.85"
 
 [lib]
 name = "lib9lives"
-edition = "2021"
 
 [[bin]]
 name = "ninelives"
@@ -48,7 +47,6 @@ alloy-primitives = { version = "=0.8.14", default-features = false, features = [
 array-concat = "0.5.5"
 const-hex = { version = "1.12.0", default-features = false }
 paste = "1.0.15"
-rust_decimal = { version =  "1.36.0", default-features = false, features = ["maths"] }
 keccak-const = "0.2.0"
 alloy-sol-macro-expander = "=0.7.6"
 alloy-sol-macro-input = "=0.7.6"
@@ -69,7 +67,6 @@ features = ["reentrant"]
 [dev-dependencies]
 proptest = "1.5.0"
 const-hex = { version = "1.12.0", features = ["alloc"] }
-rust_decimal_macros = "1.36.0"
 arrayvec = "0.7.6"
 map-macro = "0.3.0"
 serde_json = { version = "1.0.133", default-features = false, features = ["alloc"] }
@@ -102,7 +99,7 @@ testing-dbg = []
 testing = []
 harness-stylus-interpreter = []
 trading-backend-amm = []
-trading-backend-dpm = []
+trading-backend-dppm = []
 contract-infra-market-testing = []
 e2e-adjust-time = []
 contract-trading-dumper = []

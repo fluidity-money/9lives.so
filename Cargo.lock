@@ -1001,7 +1001,7 @@ checksum = "bc0287524726960e07b119cebd01678f852f147742ae0d925e6a520dca956126"
 
 [[package]]
 name = "ninelives"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "alloy-core",
  "alloy-primitives",
@@ -1024,7 +1024,6 @@ dependencies = [
  "proptest-derive",
  "ruint",
  "rust_decimal",
- "rust_decimal_macros",
  "serde",
  "serde_json",
  "strum",
@@ -1449,16 +1448,6 @@ dependencies = [
  "arrayvec",
  "num-traits",
  "proptest",
-]
-
-[[package]]
-name = "rust_decimal_macros"
-version = "1.37.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6268b74858287e1a062271b988a0c534bf85bbeb567fe09331bf40ed78113d5"
-dependencies = [
- "quote",
- "syn 2.0.101",
 ]
 
 [[package]]

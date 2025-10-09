@@ -14,7 +14,7 @@ link](https://docs.google.com/forms/d/e/1FAIpQLSfYfgLuQ0GU8K5vGj-kU0PciqHHQCCD60
 9Lives is an Arbitrum Stylus smart contract implemented with a simple factory/pair
 pattern. A factory takes a list of outcomes, and creates a variable number of contracts
 with a minimal viable proxy pointing to share ERC20s, and a trading contract. It either
-supports the Dynamic Pari-Mutuel Market (DPM) model to solve liquidity issues in
+supports the Dynamic Pari-Mutuel Market (DPPM) model to solve liquidity issues in
 orderbooks, or a Constant Product Market Maker model to be totally separate.
 
 To get started with the contract entrypoint, src/lib.rs contains the matching of features
@@ -121,10 +121,10 @@ The error table lives in ERRORS.md.
 | Factory 2 implementation      | `0x928b627add9c2a3578b5c178423724f4d20202ed` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPM mint impl         | `0x7b203ff48f76b163bed86b5f2cb66ce6a46d62d4` |
-| Trading DPM extras impl       | `0x81eebeda7eb9f68c9a825c619f5e0d13a117e5f6` |
-| Trading DPM price impl        | `0x8fc31d39edec596e8089b313920c05642e86d549` |
-| Trading DPM quotes impl       | `0x7439ec52bd28c21f59b07a7a12a09c1f7feac7cf` |
+| Trading DPPM mint impl        | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
 | Trading AMM price impl        | `0xb393ea32f302a9cc798f8296f5328172096553d2` |
@@ -159,10 +159,10 @@ The error table lives in ERRORS.md.
 | Factory 2 implementation      | `0x1b819633bf6a86abfe0a36a827d1a21e48136988` |
 | Lockup implementation         | `0xaf1d785c71749390fda7fae7ac94db8b5783075e` |
 | Optimistic infra predict impl | `0xad425edab6c94e2f9f0d1b2bba59bb5d18673c52` |
-| Trading DPM mint impl         | `0x0000000000000000000000000000000000000000` |
-| Trading DPM extras impl       | `0x0000000000000000000000000000000000000000` |
-| Trading DPM quotes impl       | `0x0000000000000000000000000000000000000000` |
-| Trading DPM price impl        | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM mint impl        | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
 | Trading AMM mint impl         | `0xf79fc540aa17e71f2d475de7a6962b5e5e5f54dc` |
 | Trading AMM extras impl       | `0xaabe32254d850521ee0511aee6b165e6bea2b838` |
 | Trading AMM quotes impl       | `0x628875b043b2863f7e90f10eb80dd2b74c2e9250` |

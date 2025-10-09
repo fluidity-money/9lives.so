@@ -10,7 +10,7 @@ use crate::{
     utils::{block_timestamp, msg_sender},
 };
 
-#[cfg(not(feature = "trading-backend-dpm"))]
+#[cfg(not(feature = "trading-backend-dppm"))]
 use crate::immutables;
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
@@ -57,9 +57,9 @@ impl StorageTrading {
         let value = c!(value
             .checked_sub(fees)
             .ok_or(Error::CheckedSubOverflow(value, fees)));
-        #[cfg(feature = "trading-backend-dpm")]
-        return self.internal_dpm_mint(outcome, value, recipient);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(feature = "trading-backend-dppm")]
+        return self.internal_dppm_mint(outcome, value, recipient);
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return self.internal_amm_mint(outcome, value, recipient);
     }
 
@@ -78,9 +78,9 @@ impl StorageTrading {
         _recipient: Address,
     ) -> R<(U256, U256)> {
         self.require_not_done_predicting()?;
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(not(feature = "trading-backend-dppm"))]
         {
             let fusdc = if _should_estimate_shares_burn {
                 self.internal_amm_estimate_burn(_outcome, _amount)?

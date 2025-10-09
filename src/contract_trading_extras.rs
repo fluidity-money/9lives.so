@@ -81,14 +81,14 @@ impl StorageTrading {
     }
 
     pub fn details(&self, outcome_id: FixedBytes<8>) -> R<(U256, U256, U256, FixedBytes<8>)> {
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         return Ok((
-            self.dpm_outcome_shares.get(outcome_id),
-            self.dpm_outcome_invested.get(outcome_id),
-            self.dpm_global_invested.get(),
+            self.dppm_outcome_shares.get(outcome_id),
+            self.dppm_outcome_invested.get(outcome_id),
+            self.dppm_global_invested.get(),
             self.winner.get(),
         ));
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return Ok((
             self.amm_shares.get(outcome_id),
             self.amm_total_shares.get(outcome_id),
@@ -105,16 +105,23 @@ impl StorageTrading {
     }
 
     pub fn global_shares(&self) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
-        return Ok(self.dpm_global_shares.get());
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(feature = "trading-backend-dppm")]
+        return Ok(self.dppm_global_shares.get());
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return Ok(self.amm_liquidity.get());
     }
 
     pub fn is_dpm(&self) -> bool {
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         return true;
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(not(feature = "trading-backend-dppm"))]
+        return false;
+    }
+
+    pub fn is_dppm(&self) -> bool {
+        #[cfg(feature = "trading-backend-dppm")]
+        return true;
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return false;
     }
 
@@ -125,9 +132,9 @@ impl StorageTrading {
 
     #[mutants::skip]
     pub fn invested(&self) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
-        return Ok(self.dpm_global_invested.get());
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(feature = "trading-backend-dppm")]
+        return Ok(self.dppm_global_invested.get());
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return Ok(self.amm_liquidity.get());
     }
 

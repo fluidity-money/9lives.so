@@ -7,7 +7,7 @@ use alloc::vec::Vec;
 
 pub use crate::{immutables, immutables::DAO_EARN_ADDR, storage_trading::*, utils::msg_sender};
 
-#[cfg(not(feature = "trading-backend-dpm"))]
+#[cfg(not(feature = "trading-backend-dppm"))]
 use crate::fusdc_call;
 
 #[cfg_attr(feature = "contract-trading-price", stylus_sdk::prelude::public)]
@@ -18,18 +18,18 @@ impl StorageTrading {
         if !self.when_decided.get().is_zero() {
             return Ok(U256::ZERO);
         }
-        #[cfg(feature = "trading-backend-dpm")]
-        return self.internal_dpm_price(id);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(feature = "trading-backend-dppm")]
+        return self.internal_dppm_price(id);
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return self.internal_amm_price(id);
     }
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn claim_all_fees_332_D_7968(&mut self, _recipient: Address) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return self.internal_amm_claim_all_fees(
             match msg_sender() {
                 immutables::DAO_OP_ADDR => {
@@ -51,9 +51,9 @@ impl StorageTrading {
         _min_liquidity: U256,
         _max_liquidity: U256,
     ) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return {
             c!(fusdc_call::take_from_sender(_amount));
             let (shares, _) =
@@ -70,9 +70,9 @@ impl StorageTrading {
         _amount_liq: U256,
         _recipient: Address,
     ) -> R<(U256, U256)> {
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(not(feature = "trading-backend-dppm"))]
         {
             let sender = if msg_sender() == immutables::PAYMASTER_ADDR {
                 _recipient

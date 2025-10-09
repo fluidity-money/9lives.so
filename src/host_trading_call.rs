@@ -57,6 +57,10 @@ pub fn is_dpm(_addr: Address) -> Result<bool, Error> {
     Ok(false)
 }
 
+pub fn is_dppm(_addr: Address) -> Result<bool, Error> {
+    Ok(false)
+}
+
 pub fn price(_addr: Address, _outcome: FixedBytes<8>) -> Result<U256, Error> {
     Ok(U256::ZERO)
 }

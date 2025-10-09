@@ -1,9 +1,6 @@
-use stylus_sdk::{
-    alloy_primitives::{aliases::*, *},
-};
+use stylus_sdk::alloy_primitives::{aliases::*, *};
 
 use crate::{
-    decimal::{fusdc_u256_to_decimal, share_decimal_to_u256, share_u256_to_decimal},
     error::*,
     fusdc_call,
     immutables::DAO_OP_ADDR,
@@ -28,9 +25,9 @@ impl StorageTrading {
         let value = value
             .checked_sub(fee)
             .ok_or(Error::CheckedSubOverflow(value, fee))?;
-        #[cfg(feature = "trading-backend-dpm")]
-        return Ok((self.internal_dpm_quote(outcome_id, value)?, fee));
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(feature = "trading-backend-dppm")]
+        return Ok((self.internal_dppm_quote(outcome_id, value)?, fee));
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return Ok((self.internal_amm_quote_mint(outcome_id, value)?, fee));
     }
 
@@ -41,9 +38,9 @@ impl StorageTrading {
         if !self.when_decided.get().is_zero() {
             return Ok(U256::ZERO);
         }
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return self.internal_amm_estimate_burn(_outcome_id, _value);
     }
 
@@ -54,9 +51,9 @@ impl StorageTrading {
         amt: U256,
         recipient: Address,
     ) -> R<U256> {
-        #[cfg(feature = "trading-backend-dpm")]
-        return self.internal_dpm_payoff(outcome_id, amt, recipient);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(feature = "trading-backend-dppm")]
+        return self.internal_dppm_payoff(outcome_id, amt, recipient);
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return self.internal_amm_payoff(outcome_id, amt, recipient);
     }
 
@@ -85,27 +82,15 @@ impl StorageTrading {
 impl StorageTrading {
     #[allow(unused)]
     #[mutants::skip]
-    fn internal_dpm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
+    fn internal_dppm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         assert_or!(
-            self.dpm_outcome_shares.get(outcome_id) > U256::ZERO,
+            self.dppm_outcome_shares.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
-        let m_1 = c!(fusdc_u256_to_decimal(
-            self.dpm_outcome_invested.get(outcome_id)
-        ));
-        let n_1 = self.dpm_outcome_shares.get(outcome_id);
-        let n_2 = self.dpm_global_shares.get() - n_1;
-        let n_1 = c!(share_u256_to_decimal(n_1));
-        let n_2 = c!(share_u256_to_decimal(n_2));
-        let m_2 = c!(fusdc_u256_to_decimal(
-            self.dpm_global_invested.get() - self.dpm_outcome_invested.get(outcome_id),
-        ));
-        Ok(c!(share_decimal_to_u256(c!(maths::dpm_shares(
-            m_1,
-            m_2,
-            n_1,
-            n_2,
-            c!(fusdc_u256_to_decimal(value))
-        )))))
+        maths::dppm_shares(
+            self.dppm_outcome_invested.get(outcome_id),
+            self.dppm_global_invested.get() - self.dppm_outcome_invested.get(outcome_id),
+            value,
+        )
     }
 }

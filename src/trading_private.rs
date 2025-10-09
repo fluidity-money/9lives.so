@@ -12,7 +12,7 @@ use crate::{
 
 use alloc::vec::Vec;
 
-#[cfg(feature = "trading-backend-dpm")]
+#[cfg(feature = "trading-backend-dppm")]
 use crate::factory_call;
 
 // CalcFees, determined by the contract state.
@@ -84,9 +84,9 @@ impl StorageTrading {
         self.fee_minter.set(U256::from(fee_minter));
         self.fee_lp.set(U256::from(fee_lp));
         self.fee_referrer.set(U256::from(fee_referrer));
-        #[cfg(feature = "trading-backend-dpm")]
-        return self.internal_dpm_ctor(outcomes);
-        #[cfg(not(feature = "trading-backend-dpm"))]
+        #[cfg(feature = "trading-backend-dppm")]
+        return self.internal_dppm_ctor(outcomes);
+        #[cfg(not(feature = "trading-backend-dppm"))]
         return self.internal_amm_ctor(outcomes);
     }
 
@@ -94,7 +94,7 @@ impl StorageTrading {
         // Notify Longtail to pause trading on every outcome pool.
         assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
         // We only do the shutdown if the backend is the DPM!
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         factory_call::disable_shares(
             self.factory_addr.get(),
             &self.outcome_ids_iter().collect::<Vec<_>>(),
@@ -248,10 +248,10 @@ mod proptesting {
         utils::{strat_address_not_empty, strat_medium_u256},
     };
 
-    #[cfg(feature = "trading-backend-dpm")]
+    #[cfg(feature = "trading-backend-dppm")]
     use crate::{error::Error, panic_guard};
 
-    #[cfg(feature = "trading-backend-dpm")]
+    #[cfg(feature = "trading-backend-dppm")]
     use stylus_sdk::alloy_primitives::FixedBytes;
 
     use stylus_sdk::alloy_primitives::{Address, U256};
@@ -278,7 +278,7 @@ mod proptesting {
 
     proptest! {
         #[test]
-        #[cfg(feature = "trading-backend-dpm")]
+        #[cfg(feature = "trading-backend-dppm")]
         fn test_dpm_ctor_only_two_outcomes_1(
             mut c in strat_storage_trading(false),
             outcomes in proptest::collection::vec(any::<FixedBytes<8>>(), 2..4)
