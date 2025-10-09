@@ -8,12 +8,6 @@ macro_rules! add {
     };
 }
 
-macro_rules! mul {
-    ($x:expr, $y:expr) => {
-        c!($x.checked_mul($y).ok_or(Error::CheckedMulOverflow))
-    };
-}
-
 macro_rules! sub {
     ($x:expr, $y:expr) => {
         c!($x.checked_sub($y).ok_or(Error::CheckedSubOverflowD))
@@ -32,11 +26,14 @@ pub fn dppm_price(M1: U256, M2: U256) -> Result<U256, Error> {
 }
 
 #[allow(non_snake_case)]
-pub fn dppm_shares(M1: U256, M2: U256, m: U256) -> Result<U256, Error> {
-    let outofm2 = M2;
+pub fn dppm_shares(M_A: U256, M_B: U256, m: U256, out_of_b: U256) -> Result<U256, Error> {
     Ok(add!(
         m,
-        mul!(div!(add!(M1, m), add!(M1, add!(M2, m))), sub!(M2, outofm2))
+        mul_div(
+            add!(M_A, m),
+            sub!(M_B, out_of_b),
+            add!(add!(M_A, M_B), m)
+        )?.0
     ))
 }
 
@@ -45,7 +42,7 @@ pub fn dppm_shares(M1: U256, M2: U256, m: U256) -> Result<U256, Error> {
 /// won, and n is the user's amount of shares.
 #[allow(non_snake_case)]
 pub fn dppm_payoff(n: U256, N_1: U256, M: U256) -> Result<U256, Error> {
-    Ok(mul!(div!(n, N_1), M))
+    Ok(mul_div(n, N_1, M)?.0)
 }
 
 // Using this operation is the equivalent of pow(x, 1/n).

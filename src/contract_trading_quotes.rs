@@ -87,10 +87,19 @@ impl StorageTrading {
             self.dppm_out_of.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
+        let out_of_other = self.dppm_out_of.get(
+            if outcome_id == self.outcome_list.get(0).unwrap() {
+                self.outcome_list.get(1)
+            } else {
+                self.outcome_list.get(0)
+            }
+            .unwrap(),
+        );
         maths::dppm_shares(
             self.dppm_outcome_invested.get(outcome_id),
             self.dppm_global_invested.get() - self.dppm_outcome_invested.get(outcome_id),
             value,
+            out_of_other,
         )
     }
 }

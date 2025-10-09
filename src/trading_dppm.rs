@@ -56,7 +56,8 @@ impl StorageTrading {
         {
             let x = self.dppm_outcome_invested.get(outcome_id);
             self.dppm_outcome_invested
-                .setter(outcome_id).set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
+                .setter(outcome_id)
+                .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
         }
         let outcome_other = if outcome_a == outcome_id {
             outcome_b
@@ -66,8 +67,12 @@ impl StorageTrading {
         {
             let x = self.dppm_out_of.get(outcome_other);
             self.dppm_out_of.setter(outcome_other).set(
-                x.checked_add(shares.checked_sub(value).ok_or(Error::CheckedSubOverflow(shares, value))?)
-                    .ok_or(Error::CheckedAddOverflow)?,
+                x.checked_add(
+                    shares
+                        .checked_sub(value)
+                        .ok_or(Error::CheckedSubOverflow(shares, value))?,
+                )
+                .ok_or(Error::CheckedAddOverflow)?,
             );
         }
         let share_addr = proxy::get_share_addr(
@@ -127,10 +132,25 @@ impl StorageTrading {
     #[allow(unused)]
     fn internal_calc_dppm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
         let dppm_outcome_invested = self.dppm_outcome_invested.get(outcome_id);
+        let out_of_other = self.dppm_out_of.get(
+            if outcome_id == self.outcome_list.get(0).unwrap() {
+                self.outcome_list.get(1)
+            } else {
+                self.outcome_list.get(0)
+            }
+            .unwrap(),
+        );
         maths::dppm_shares(
             dppm_outcome_invested,
-            self.dppm_global_invested.get() - dppm_outcome_invested,
+            self.dppm_global_invested
+                .get()
+                .checked_sub(dppm_outcome_invested)
+                .ok_or(Error::CheckedSubOverflow(
+                    self.dppm_global_invested.get(),
+                    dppm_outcome_invested,
+                ))?,
             value,
+            out_of_other,
         )
     }
 
