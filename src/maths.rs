@@ -29,11 +29,11 @@ pub fn dppm_price(M1: U256, M2: U256) -> Result<U256, Error> {
 pub fn dppm_shares(M_A: U256, M_B: U256, m: U256, out_of_b: U256) -> Result<U256, Error> {
     Ok(add!(
         m,
-        mul_div(
+        mul_div_round_up(
             add!(M_A, m),
             sub!(M_B, out_of_b),
             add!(add!(M_A, M_B), m)
-        )?.0
+        )?
     ))
 }
 
