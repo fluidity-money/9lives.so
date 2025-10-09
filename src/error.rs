@@ -449,8 +449,8 @@ pub enum Error {
     // The caller has already declared their commitment!
     AlreadyCommitted,
 
-    // DPPM only (for now).
-    DPPMOnly,
+    // (Deprecated) flag that the DPM was the only supported model.
+    DPMOnly,
 
     // Bad trading configuration!
     BadTradingCtor,

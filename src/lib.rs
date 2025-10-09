@@ -44,14 +44,6 @@ pub mod wasm_erc20_call;
 
 pub mod fusdc_call;
 
-pub mod amm_call;
-pub mod host_longtail_call;
-pub mod wasm_longtail_call;
-
-pub mod factory_call;
-pub mod host_factory_call;
-pub mod wasm_factory_call;
-
 pub mod host_lockup_call;
 pub mod lockup_call;
 pub mod wasm_lockup_call;

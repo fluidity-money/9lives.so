@@ -4,7 +4,6 @@ use stylus_sdk::{alloy_primitives::*, evm};
 use alloc::vec::Vec;
 
 use crate::{
-    amm_call,
     error::*,
     events, fusdc_call,
     immutables::*,
@@ -46,9 +45,6 @@ impl StorageFactory {
         self.infra_market.set(oracle_addr);
         self.version.set(U8::from(1));
         self.operator.set(operator_addr);
-        // Make sure that you always remove the approvals from this in a
-        // migration.
-        fusdc_call::approve(oracle_addr, U256::MAX)?;
         Ok(())
     }
 
@@ -185,28 +181,6 @@ impl StorageFactory {
         }
         if !price.is_zero() {
             self.trading_amm_price_impl.set(price);
-        }
-        Ok(())
-    }
-
-    /// Disable shares from being traded via Longtail.
-    pub fn disable_shares(&self, outcomes: Vec<FixedBytes<8>>) -> R<()> {
-        // Check if the caller is a trading contract by checking the map
-        // of created contracts. This check should be safe since the trading
-        // backend enum is only ever 1 or 2.
-        assert_or!(
-            !self.trading_backends.get(msg_sender()).is_zero(),
-            Error::NotTradingContract
-        );
-        // Start to derive the outcomes that were given to find the share addresses.
-        // It should be safe to do this as we rederive the share address every time.
-        for outcome_id in outcomes {
-            c!(amm_call::pause_pool(proxy::get_share_addr(
-                contract_address(),    // Factory address.
-                msg_sender(),          // Trading address (this is the caller).
-                self.share_impl.get(), // The share address.
-                outcome_id,            // The outcome that should be banned from continuing.
-            )));
         }
         Ok(())
     }

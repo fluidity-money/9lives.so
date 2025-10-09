@@ -10,7 +10,6 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-    amm_call,
     error::*,
     events,
     fees::*,
@@ -123,21 +122,8 @@ impl StorageFactory {
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
             let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
                 .map_err(Error::DeployError)?;
-
             // Set up the share ERC20 asset, with the description.
             share_call::ctor(erc20_addr, outcome_name.clone(), trading_addr)?;
-
-            // Use the current AMM to create a pool of this share for
-            // aftermarket trading. Longtail should revert if the sqrt
-            // price is bad. This will not run if the backend is the AMM!
-            if backend_is_dpm {
-                amm_call::enable_pool(amm_call::create_pool(
-                    erc20_addr,
-                    *_sqrt_price,
-                    LONGTAIL_FEE,
-                )?)?;
-            }
-
             evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_id,
                 erc20Identifier: erc20_identifier,

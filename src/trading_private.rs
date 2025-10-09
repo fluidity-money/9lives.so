@@ -12,9 +12,6 @@ use crate::{
 
 use alloc::vec::Vec;
 
-#[cfg(feature = "trading-backend-dppm")]
-use crate::factory_call;
-
 // CalcFees, determined by the contract state.
 #[derive(Debug, PartialEq, Clone)]
 pub struct CalcFees {
@@ -93,12 +90,8 @@ impl StorageTrading {
     pub fn internal_shutdown(&mut self) -> R<U256> {
         // Notify Longtail to pause trading on every outcome pool.
         assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
-        // We only do the shutdown if the backend is the DPM!
-        #[cfg(feature = "trading-backend-dppm")]
-        factory_call::disable_shares(
-            self.factory_addr.get(),
-            &self.outcome_ids_iter().collect::<Vec<_>>(),
-        )?;
+        // This was previously used for hooks, specifically shutting Longtail trading:
+        // ... But now that's not the case. It's still there for posterity reasons.
         self.is_shutdown.set(true);
         Ok(U256::ZERO)
     }
