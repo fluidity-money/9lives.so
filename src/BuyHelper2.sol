@@ -70,7 +70,8 @@ contract BuyHelper2 {
         address _recipient
     ) external payable returns (uint256) {
        uint256 amountIn  = _amount - _rebate;
-        if (_asset != address(0)) {
+       // TODO: Relay hack (fix)
+        if (msg.value == 0) {
             require(_rebate == 0, "rebate not possible for erc20");
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
         } else {

@@ -148,6 +148,4 @@ if (!appVars.success) {
   throw new Error(appVars.error.message);
 }
 
-// Whitespace commit
-
 export default appVars.data;
