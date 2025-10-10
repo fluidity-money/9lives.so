@@ -36,7 +36,7 @@ export default function PriceChart({
     "#b8b7b7",
   ];
 
-  if (isSuccess && 2 > priceEvents.length) {
+  if (!isSuccess || priceEvents.length < 2) {
     return null;
   }
 
@@ -63,6 +63,32 @@ export default function PriceChart({
       );
       return Object.assign(event, outcomes);
     });
+
+  const minTs = data[0]?.timestamp;
+  const maxTs = data[data.length - 1]?.timestamp;
+  const durationSeconds = maxTs - minTs;
+  const durationDays = durationSeconds / 86400;
+
+  const formatFn = (ts: number) => {
+    const date = new Date(ts * 1000);
+    if (durationDays <= 1) {
+      return date.toLocaleString("default", { hour: "2-digit" });
+    } else if (durationDays <= 30) {
+      return date.toLocaleString("default", { day: "numeric", month: "short" });
+    } else {
+      return date.toLocaleString("default", { month: "short" });
+    }
+  };
+
+  const tickValues: number[] = [];
+  let lastLabel: string | null = null;
+  data.forEach((d) => {
+    const label = formatFn(d.timestamp);
+    if (label !== lastLabel) {
+      tickValues.push(d.timestamp);
+      lastLabel = label;
+    }
+  });
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -103,10 +129,8 @@ export default function PriceChart({
           }}
           dataKey="timestamp"
           axisLine={{ stroke: "#0C0C0C", strokeWidth: 1 }}
-          tickFormatter={(ts) => {
-            const date = new Date(ts * 1000);
-            return date.toLocaleString("default", { month: "short" });
-          }}
+          ticks={tickValues}
+          tickFormatter={formatFn}
         />
         <Tooltip
           labelFormatter={(ts: any) => {
