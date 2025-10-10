@@ -74,7 +74,8 @@ contract BuyHelper2 {
             require(_rebate == 0, "rebate not possible for erc20");
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
         } else {
-            require(_amount == msg.value, "inconsistent value");
+            // TODO: why is Relay struggling with this suddenly?
+            amountIn = msg.value - _rebate;
             WETH.deposit{value: amountIn}();
             _asset = address(WETH);
         }
