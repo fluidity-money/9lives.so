@@ -76,6 +76,9 @@ export default function DetailBuyAction({
     supply: z.coerce.number().gt(0, { message: "Invalid amount to spend" }),
     toChain: z.number().min(0),
     toToken: z.string(),
+    usdValue: z.coerce
+      .number()
+      .gte(2, { message: "Investment need to be higher than 2$" }),
     fromChain: z
       .number({ message: "You need to select a chain to pay from" })
       .min(0),
@@ -104,6 +107,7 @@ export default function DetailBuyAction({
       supply: 0,
       toChain: config.chains.superposition.id,
       toToken: ZeroAddress,
+      usdValue: 0,
       fromChain: isInMiniApp
         ? config.chains.arbitrum.id
         : config.chains.superposition.id,
@@ -250,6 +254,11 @@ export default function DetailBuyAction({
       };
     }
   }, []);
+  useEffect(() => {
+    if (usdValue) {
+      setValue("usdValue", usdValue);
+    }
+  }, [usdValue]);
   const handleNetworkChange = async (chain: Chain) => {
     // lifi auto switch handle this for now
     // await switchChain(chain);
@@ -409,11 +418,13 @@ export default function DetailBuyAction({
                 onFocus={handleFocus}
                 className={combineClass(
                   "w-full flex-1 text-center",
-                  errors.supply && "border-2 border-red-500",
+                  (errors.supply || errors.usdValue) &&
+                    "border-2 border-red-500",
                 )}
               />
             </div>
             {errors.supply && <ErrorInfo text={errors.supply.message} />}
+            {errors.usdValue && <ErrorInfo text={errors.usdValue.message} />}
             {enabledRelay ? (
               <ChainSelector
                 handleNetworkChange={handleNetworkChange}
