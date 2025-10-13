@@ -5,20 +5,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Account } from "thirdweb/wallets";
 import ClaimLiquidityButton from "../claimLiquidityButton";
+import { requestUserLPs } from "@/providers/graphqlClient";
 
 export default function UserLpedCampaignsListItem({
-  data,
-  liquidity,
+  data: { campaign: data, liquidity },
   account,
 }: {
-  data: {
-    identifier: string;
-    picture: string | null;
-    name: string;
-    winner: string | null;
-    poolAddress: string;
-  };
-  liquidity: string;
+  data: NonNullable<Awaited<ReturnType<typeof requestUserLPs>>[number]>;
   account?: Account;
 }) {
   const [unclaimedRewards, setUnclaimedRewards] = useState(BigInt(0));
@@ -73,6 +66,15 @@ export default function UserLpedCampaignsListItem({
       </td>
       <td className="pl-2">
         <span className="font-chicago text-xs">
+          {new Date(data?.ending ?? 0).toLocaleString("default", {
+            day: "numeric",
+            month: "short",
+            year: "2-digit",
+          })}
+        </span>
+      </td>
+      <td>
+        <span className="font-chicago text-xs">
           ${formatFusdc(liquidity ?? "0", 2)}
         </span>
       </td>
@@ -85,8 +87,8 @@ export default function UserLpedCampaignsListItem({
         {displayClaimBtn ? (
           <div className="flex items-center justify-end">
             <ClaimLiquidityButton
-              tradingAddr={data.poolAddress as `0x${string}`}
-              campaignId={data.identifier as `0x${string}`}
+              tradingAddr={data?.poolAddress as `0x${string}`}
+              campaignId={data?.identifier as `0x${string}`}
             />
           </div>
         ) : null}

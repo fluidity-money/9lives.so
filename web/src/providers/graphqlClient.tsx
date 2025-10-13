@@ -428,6 +428,7 @@ export const requestUserLPs = (address: string) =>
       picture: true,
       poolAddress: true,
       winner: true,
+      ending: true,
     },
   });
 

@@ -6,6 +6,7 @@ import UserLpedCampaignsListItem from "./lpedCampaignsItem";
 export default function UserLpedCampaignsList() {
   const headerItems = [
     "Campaign",
+    "End Date",
     "Provided Liquidity",
     "Unclaimed Rewards",
     "Actions",
@@ -47,11 +48,11 @@ export default function UserLpedCampaignsList() {
             colSpan={headerItems.length}
           />
         ) : (
-          campaigns?.map(({ campaign: data, liquidity }) => (
+          campaigns?.map((data) => (
             <UserLpedCampaignsListItem
-              key={data!.identifier}
-              data={data!}
-              liquidity={liquidity!}
+              account={account}
+              key={data.campaign?.identifier}
+              data={data}
             />
           ))
         )}
