@@ -24,11 +24,11 @@ export default function Header({ simple = false }: { simple?: boolean }) {
         {simple ? <DisclaimerButton /> : <SimpleModeButton />}
       </div>
       <div className="hidden h-10 flex-1 border-x-2 border-x-black md:flex">
-        <NavigationMenu />
+        <NavigationMenu simple={simple} />
       </div>
       <CreateCampaingButton />
       <div className="relative flex items-center">
-        <MobileMenu />
+        <MobileMenu simple={simple} />
         <ConnectButton />
         {simple ? <AdvancedModeButton /> : <DegenModeButton />}
         <ReferralButton />
