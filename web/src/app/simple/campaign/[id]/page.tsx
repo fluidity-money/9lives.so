@@ -1,20 +1,14 @@
-import DetailWrapper from "@/components/detail/detailWrapper";
+import AssetPriceChart from "@/components/assetPriceChart";
 import config from "@/config";
 import {
   requestCampaignById,
-  requestPriceChanges,
+  requestSimpleMarket,
 } from "@/providers/graphqlClient";
-import { getCampaignsForSSG } from "@/serverData/getCampaigns";
-import { CampaignDetailDto } from "@/types";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 type Params = Promise<{ id: string }>;
-export const dynamicParams = true;
-export const revalidate = 60;
 export async function generateStaticParams() {
-  const campaigns = await getCampaignsForSSG();
-  return campaigns.map((campaign) => ({
-    id: campaign.identifier,
+  return config.simpleMarkets.map((id) => ({
+    id,
   }));
 }
 export async function generateMetadata({ params }: { params: Params }) {
@@ -26,21 +20,31 @@ export async function generateMetadata({ params }: { params: Params }) {
     other: {
       "fc:miniapp": JSON.stringify({
         version: config.frame.version,
-        imageUrl: `${config.metadata.metadataBase.origin}/campaign/${id}/farcaster-image`,
+        imageUrl: `${config.metadata.metadataBase.origin}/simple/campaign/${id}/farcaster-image`,
         button: config.frame.button,
       }),
     },
   };
 }
-export default async function DetailPage({ params }: { params: Params }) {
+export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
-  const response = await requestCampaignById(id);
-  if (!response) notFound();
-  const campaign = JSON.parse(JSON.stringify(new CampaignDetailDto(response)));
-  const priceEvents = await requestPriceChanges(response.poolAddress);
+  const data = await requestSimpleMarket(id);
+  if (!data) notFound();
   return (
-    <Suspense>
-      <DetailWrapper initialData={campaign} priceEvents={priceEvents} />
-    </Suspense>
+    <div>
+      <h2>{data.name}</h2>
+      <div className="flex items-center justify-between">
+        <span>{data.basePrice}</span>
+        <span>
+          {new Date(data.ending).toLocaleString("default", { hour: "2-digit" })}
+        </span>
+      </div>
+      <AssetPriceChart
+        id={data.identifier}
+        symbol={data.symbol}
+        starting={data.starting}
+        ending={data.ending}
+      />
+    </div>
   );
 }

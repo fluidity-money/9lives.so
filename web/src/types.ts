@@ -332,3 +332,10 @@ export type Comment = NonNullable<
 export type PriceEvent = Awaited<
   ReturnType<typeof requestPriceChanges>
 >[number];
+
+export type PricePointResponse = {
+  id: number;
+  amount: number;
+  created_by: string;
+};
+export type PricePoint = { id: number; price: number; timestamp: number };
