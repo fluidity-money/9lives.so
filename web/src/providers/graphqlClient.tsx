@@ -579,3 +579,32 @@ export const requestPriceChanges = (poolAddress: string) =>
 
 export const requestWeeklyVolume = (poolAddress: string) =>
   graph9Lives.query.campaignWeeklyVolume({ $: { poolAddress } });
+
+export const requestSimpleMarket = (symbol: string) => {
+  return {
+    identifier: "0x99",
+    starting: Date.now(),
+    ending: Date.now() + 1000 * 60 * 60,
+    poolAddress: "0x0",
+    outcomes: ["0x1", "0x2"],
+    investments: [1500, 750],
+    basePrice: 11080,
+    symbol,
+    name: "$BTC above $110714.90 on Oct 14, 12:00 UTC?",
+  };
+};
+
+export const requestAssetPrice = (symbol: string, starting: string) =>
+  graph9LivesSubs
+    .gql(
+      `
+query {
+  oracles_ninelives_prices_1(order_by: {created_by: desc}, where: {created_by: {_gte: "${starting}"} base: {_eq: "${symbol}"}}) {
+    id
+    amount
+    created_by
+  }
+}
+`,
+    )
+    .send();
