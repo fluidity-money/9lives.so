@@ -68,11 +68,7 @@ export default function AssetPriceChart({
   });
 
   return (
-    <ChartPriceProvider
-      id={id}
-      symbol={symbol}
-      starting={new Date(starting).toUTCString()}
-    >
+    <ChartPriceProvider id={id} symbol={symbol} starting={starting}>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
@@ -92,6 +88,7 @@ export default function AssetPriceChart({
               fontSize: 12,
               fill: "#0C0C0C",
             }}
+            dataKey={"price"}
             axisLine={{ stroke: "#0C0C0C", strokeWidth: 1 }}
             orientation="right"
             width="auto"
