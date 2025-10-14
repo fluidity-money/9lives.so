@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import ReferralButton from "./referral/referralButton";
 
-export default function MobileMenu() {
+export default function MobileMenu({ simple = false }: { simple?: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function MobileMenu() {
         title="Menu"
       >
         <div className="flex flex-col items-center justify-center gap-4">
-          <NavigationMenu />
+          <NavigationMenu simple={simple} />
           <div className="flex flex-col items-center">
             <Link
               href={"/create-campaign"}

@@ -1,11 +1,15 @@
 import { combineClass } from "@/utils/combineClass";
 import Link from "next/link";
 import PointMenuButton from "./pointsMenuButton";
-export default function NavigationMenu() {
+export default function NavigationMenu({
+  simple = false,
+}: {
+  simple?: boolean;
+}) {
   const menu = [
     {
       title: "Markets",
-      page: "/",
+      page: simple ? "/simple" : "/",
     },
     // {
     //   title: "Leaderboard",
