@@ -17,7 +17,7 @@ function List({ items }: { items: string[] }) {
       {items.map((item) => {
         const [title, description] = item.split(":");
         return (
-          <li key={item.slice(0, 10)}>
+          <li key={item.slice(0, 20)}>
             <strong>{title}</strong> {description}
           </li>
         );

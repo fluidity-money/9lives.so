@@ -1,6 +1,7 @@
 "use client";
 import { useModalStore } from "@/stores/modalStore";
 import Link from "next/link";
+import DisclaimerButton from "./disclaimerButton";
 const gitHash = process.env.NEXT_PUBLIC_GIT_HASH;
 const socials = [
   {
@@ -57,7 +58,7 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
     {item.title}
   </Link>
 );
-export default function Footer() {
+export default function Footer({ simple = false }: { simple?: boolean }) {
   const { setModal } = useModalStore();
   return (
     <footer className="flex flex-col items-center justify-between gap-4 self-stretch border-t-2 border-t-black bg-9blueLight px-4 py-8 md:mb-0 md:flex-row">
@@ -65,6 +66,7 @@ export default function Footer() {
         {menu.map((item) => (
           <MenuItem item={item} key={item.title} />
         ))}
+        {simple ? null : <DisclaimerButton isInFooter />}
       </nav>
       <nav className="flex flex-col items-center justify-end gap-4 text-xs md:flex-row">
         <div
