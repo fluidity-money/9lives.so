@@ -1,9 +1,6 @@
 import AssetPriceChart from "@/components/assetPriceChart";
 import config from "@/config";
-import {
-  requestCampaignById,
-  requestSimpleMarket,
-} from "@/providers/graphqlClient";
+import { requestSimpleMarket } from "@/providers/graphqlClient";
 import { notFound } from "next/navigation";
 type Params = Promise<{ id: string }>;
 export async function generateStaticParams() {
@@ -13,7 +10,7 @@ export async function generateStaticParams() {
 }
 export async function generateMetadata({ params }: { params: Params }) {
   const { id } = await params;
-  const response = await requestCampaignById(id);
+  const response = await requestSimpleMarket(id);
   return {
     title: response?.name ?? "Predict on 9LIVES.so",
     description: response?.description,

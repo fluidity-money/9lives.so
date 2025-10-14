@@ -28,7 +28,7 @@ export default function ChartPriceProvider({
 }: {
   id: string;
   symbol: string;
-  starting: string;
+  starting: number;
   children: Readonly<React.ReactNode>;
 }) {
   const queryClient = useQueryClient();
@@ -37,7 +37,10 @@ export default function ChartPriceProvider({
     const unsubPrices = wsClient.subscribe<PricePointResponse[]>(
       {
         query: subPricesForDuration,
-        variables: { symbol, starting },
+        variables: {
+          symbol: symbol.toUpperCase(),
+          starting: new Date(starting).toISOString(),
+        },
       },
       {
         next: async ({ data: nextData }) => {
