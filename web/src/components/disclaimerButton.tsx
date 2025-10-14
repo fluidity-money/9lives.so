@@ -1,16 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "./themed/modal";
 import Image from "next/image";
 import InfoIcon from "#/icons/info.svg";
 import Disclaimer from "./disclaimer";
-export default function DisclaimerButton() {
+import { combineClass } from "@/utils/combineClass";
+export default function DisclaimerButton({
+  isInFooter = false,
+}: {
+  isInFooter?: boolean;
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <>
       <button
-        className="flex h-10 items-center justify-center gap-1 border-9black px-4 md:border-l-2"
+        className={combineClass(
+          !isInFooter && "h-10 px-4 md:border-l-2",
+          "flex items-center justify-center gap-1 border-9black",
+        )}
         onClick={() => setIsModalOpen(true)}
       >
         <span className="font-chicago text-xs underline md:hidden lg:inline">

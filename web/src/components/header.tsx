@@ -7,8 +7,10 @@ import DisclaimerButton from "./disclaimerButton";
 import DegenModeButton from "./degenMode/degenModeButton";
 import ReferralButton from "./referral/referralButton";
 import MobileMenu from "./mobileMenu";
+import SimpleModeButton from "./simple/simpleModeButton";
+import AdvancedModeButton from "./advanced/advancedModeButton";
 
-export default function Header() {
+export default function Header({ simple = false }: { simple?: boolean }) {
   return (
     <header className="flex items-center justify-between self-stretch border-b-2 border-b-black bg-9blueLight text-xs">
       <Link
@@ -19,7 +21,7 @@ export default function Header() {
         <HeaderLogo />
       </Link>
       <div className="hidden md:flex">
-        <DisclaimerButton />
+        {simple ? <DisclaimerButton /> : <SimpleModeButton />}
       </div>
       <div className="hidden h-10 flex-1 border-x-2 border-x-black md:flex">
         <NavigationMenu />
@@ -28,7 +30,7 @@ export default function Header() {
       <div className="relative flex items-center">
         <MobileMenu />
         <ConnectButton />
-        <DegenModeButton />
+        {simple ? <AdvancedModeButton /> : <DegenModeButton />}
         <ReferralButton />
       </div>
     </header>

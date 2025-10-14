@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "@/providers";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
 import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
@@ -11,7 +9,6 @@ import CustomToaster from "@/components/customToaster";
 import { getCachedCampaigns } from "@/serverData/getCampaigns";
 import { getCachedTotalUserCount } from "@/serverData/getTotalUserCount";
 import CookieBanner from "@/components/cookieBanner";
-import DegenModeWrapper from "@/components/degenMode/degenModeWrapper";
 import { BuyAndSellResponse, CreationResponse } from "@/types";
 import {
   getCachedBuysAndSells,
@@ -101,12 +98,7 @@ export default async function RootLayout({
             degenBuysAndSells,
           }}
         >
-          <Header />
-          <main className="flex flex-1 gap-2">
-            <div className="flex-1 p-4">{children}</div>
-            <DegenModeWrapper />
-          </main>
-          <Footer />
+          {children}
           <DegenModeFloatingButton />
           <EmailSuggester />
           <Changelog />

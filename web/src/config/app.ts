@@ -62,13 +62,10 @@ export const categories = [
   "All",
   "Crypto",
   "Opinion Poll",
-  "Price Prediction",
   "Sports",
   "Politics",
-  "Pop Culture",
-  "Business",
-  "Jailtime.fun",
 ];
+export const simpleMarkets = ["BTC", "ETH", "XPR", "SOL"];
 const appSchema = z.object({
   /**
    * Generated metadata of the web app and wagmi will use this object
@@ -84,18 +81,9 @@ const appSchema = z.object({
     colors: z.record(z.string(), z.string()),
     fees: z.record(z.string(), z.bigint()),
   }),
+  simpleMarkets: z.array(z.enum(["BTC", "ETH", "XPR", "SOL"])),
   categories: z.array(
-    z.enum([
-      "All",
-      "Crypto",
-      "Opinion Poll",
-      "Price Prediction",
-      "Sports",
-      "Politics",
-      "Pop Culture",
-      "Business",
-      "Jailtime.fun",
-    ]),
+    z.enum(["All", "Crypto", "Opinion Poll", "Sports", "Politics"]),
   ),
   frame: z.any(),
 });
@@ -139,6 +127,7 @@ const appVars = appSchema.safeParse({
     colors: infraMarketStateColors,
     fees: infraMarketStateFees,
   },
+  simpleMarkets,
   categories,
   frame,
 });
