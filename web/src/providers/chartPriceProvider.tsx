@@ -43,11 +43,11 @@ export default function ChartPriceProvider({
       },
       {
         next: async ({ data }) => {
-          queryClient.setQueryData<PricePoint[]>(
-            ["assetPrice", symbol, id],
-            (previousData) => {
-              const nextData = data?.oracles_ninelives_prices_1;
-              if (nextData && nextData.length > 0) {
+          const nextData = data?.oracles_ninelives_prices_1;
+          if (nextData && nextData.length > 0) {
+            queryClient.setQueryData<PricePoint[]>(
+              ["assetPrice", symbol, id],
+              (previousData) => {
                 const onlyNewItems = nextData
                   .filter(
                     (i) => !previousData?.find((pi) => pi.id === i.id)?.id,
@@ -62,10 +62,9 @@ export default function ChartPriceProvider({
                 } else {
                   return onlyNewItems;
                 }
-              }
-              return [];
-            },
-          );
+              },
+            );
+          }
         },
         error: (error) => {
           console.error("WebSocket error for chart token", symbol, id, error);
