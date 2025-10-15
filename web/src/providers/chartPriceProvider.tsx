@@ -22,18 +22,15 @@ subscription($symbol: String!, $starting: timestamp!) {
 export default function ChartPriceProvider({
   id,
   symbol,
-  starting,
   children,
 }: {
   id: string;
   symbol: string;
-  starting: number;
   children: Readonly<React.ReactNode>;
 }) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const duration = Date.now() - 1000 * 30;
     const unsubPrices = wsClient.subscribe<{
       oracles_ninelives_prices_1: PricePointResponse[];
     }>(
@@ -41,19 +38,17 @@ export default function ChartPriceProvider({
         query: subPricesForDuration,
         variables: {
           symbol: symbol.toUpperCase(),
-          starting: new Date(duration).toISOString(),
+          starting: new Date().toISOString(),
         },
       },
       {
-        next: async ({ data: nextData }) => {
+        next: async ({ data }) => {
           queryClient.setQueryData<PricePoint[]>(
             ["assetPrice", symbol, id],
             (previousData) => {
-              if (
-                nextData?.oracles_ninelives_prices_1 &&
-                nextData?.oracles_ninelives_prices_1.length > 0
-              ) {
-                const next = nextData.oracles_ninelives_prices_1
+              const nextData = data?.oracles_ninelives_prices_1;
+              if (nextData && nextData.length > 0) {
+                const onlyNewItems = nextData
                   .filter(
                     (i) => !previousData?.find((pi) => pi.id === i.id)?.id,
                   )
@@ -63,9 +58,9 @@ export default function ChartPriceProvider({
                     timestamp: new Date(i.created_by).getTime(),
                   }));
                 if (previousData) {
-                  return [...previousData, ...next];
+                  return [...previousData, ...onlyNewItems];
                 } else {
-                  return next;
+                  return onlyNewItems;
                 }
               }
               return [];

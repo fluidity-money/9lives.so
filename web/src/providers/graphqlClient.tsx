@@ -2,7 +2,7 @@ import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
-import { CampaignFilters, OutcomeInput } from "@/types";
+import { CampaignFilters, OutcomeInput, PricePointResponse } from "@/types";
 import { MaxUint256 } from "ethers";
 
 const graph9Lives = Lives9.create().transport({
@@ -608,4 +608,6 @@ query {
 }
 `,
     )
-    .send();
+    .send() as Promise<{
+    oracles_ninelives_prices_1: PricePointResponse[];
+  }> | null;
