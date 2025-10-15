@@ -1,4 +1,4 @@
-use stylus_sdk::alloy_primitives::{U64, U256};
+use stylus_sdk::alloy_primitives::{U256, U64};
 
 use crate::{error::Error, fees::FEE_SCALING};
 
@@ -45,24 +45,21 @@ pub fn ninetails_shares(shares: U256, t_half: U64, t_end: U64) -> Result<U256, E
     // shares the user owns
     // t_end is when you buy the shares
     // t_half is the halfpoint of the market's time alive
-    let b = t_end
-        .checked_sub(t_half)
-        .ok_or(Error::CheckedSubOverflow64(t_end, t_half))?
-        .pow(U64::from(2));
     shares
-        .checked_mul(U256::from(b))
+        .checked_mul(U256::from(sub!(t_end, t_half).pow(U64::from(2))))
         .ok_or(Error::CheckedMulOverflow)
 }
 
+#[allow(non_snake_case)]
 pub fn ninetails_payoff(
     boosted_shares: U256,
     all_boosted_shares: U256,
     M1: U256,
     M2: U256,
     out_of_m1: U256,
-    out_of_m2: U256
+    out_of_m2: U256,
 ) -> Result<U256, Error> {
-    let leftovers = M1 - M2 + out_of_m1 + out_of_m2;
+    let leftovers = add!(add!(sub!(M1, M2), out_of_m1), out_of_m2);
     Ok(mul_div(boosted_shares, leftovers, all_boosted_shares)?.0)
 }
 

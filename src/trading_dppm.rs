@@ -166,7 +166,7 @@ impl StorageTrading {
 
     pub fn internal_dppm_simulate_payoff(
         &self,
-        outcome_id: FixedBytes<8>,
+        _outcome_id: FixedBytes<8>,
         share_bal: U256,
     ) -> R<U256> {
         maths::dppm_payoff(share_bal)
