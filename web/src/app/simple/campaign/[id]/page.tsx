@@ -37,6 +37,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
         </span>
       </div>
       <AssetPriceChart
+        basePrice={data.basePrice}
         id={data.identifier}
         symbol={data.symbol}
         starting={data.starting}
