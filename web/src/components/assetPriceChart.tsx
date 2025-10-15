@@ -2,7 +2,7 @@
 
 import ChartPriceProvider from "@/providers/chartPriceProvider";
 import { requestAssetPrice } from "@/providers/graphqlClient";
-import { PricePoint, PricePointResponse } from "@/types";
+import { PricePoint } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   LineChart,
@@ -12,6 +12,7 @@ import {
   YAxis,
   Tooltip,
   ReferenceLine,
+  ReferenceDot,
 } from "recharts";
 
 export default function AssetPriceChart({
@@ -83,26 +84,75 @@ export default function AssetPriceChart({
   const maxPrice = Math.max(...prices, basePrice);
   const digits = minPrice.toString().length;
   const margin = 1 / Math.pow(10, digits - 2);
-  const minY = minPrice - minPrice * margin;
-  const maxY = maxPrice + maxPrice * margin;
-
+  const minY = Math.floor(minPrice - minPrice * margin);
+  const maxY = Math.floor(maxPrice + maxPrice * margin);
+  const PulseDot = ({ cx, cy }: { cx: number; cy: number }) => {
+    return (
+      <circle
+        cx={cx}
+        r="10"
+        cy={cy}
+        fill={priceIsAbove ? "#B8F2AA" : "#FFB3B3"}
+      >
+        <animate
+          attributeName="r"
+          from="8"
+          to="20"
+          dur="1.5s"
+          begin="0s"
+          repeatCount="indefinite"
+        />
+      </circle>
+    );
+  };
   return (
     <ChartPriceProvider id={id} symbol={symbol}>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
-          margin={{ top: 5, right: 60, bottom: 5, left: 30 }}
+          margin={{ top: 16, right: 60, bottom: 5, left: 30 }}
         >
+          <ReferenceDot
+            x={data[data.length - 1].timestamp}
+            y={data[data.length - 1].price}
+            shape={PulseDot}
+          />
+          <ReferenceLine
+            y={data[data.length - 1].price}
+            stroke="tranparent"
+            rotate={45}
+            label={{
+              value: `${priceIsAbove ? "▲" : "▼"} $${data[data.length - 1].price}`,
+              position: "right",
+              fill: priceIsAbove ? "#5dd341" : "#f96565",
+              fontSize: 12,
+              fontWeight: "bold",
+              fontFamily: "var(--font-chicago)",
+              transform: "translate(-100, -15)",
+            }}
+          />
+          <ReferenceLine
+            y={basePrice}
+            label={{
+              value: `$${basePrice}`,
+              position: "centerBottom",
+              color: "#000",
+              dy: -10,
+              fontSize: 12,
+              fontWeight: "bold",
+              fontFamily: "var(--font-chicago)",
+            }}
+          />
           <ReferenceLine
             y={basePrice}
             stroke="#aaa"
             strokeDasharray="3 3"
             label={{
-              value: "BASELINE",
+              value: "PRICE TO BEAT",
               position: "centerBottom",
               fill: "#aaa",
-              dy: 16,
-              fontSize: 12,
+              dy: 10,
+              fontSize: 10,
               fontFamily: "var(--font-geneva)",
             }}
           />

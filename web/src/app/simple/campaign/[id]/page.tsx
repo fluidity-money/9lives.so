@@ -29,13 +29,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   if (!data) notFound();
   return (
     <div>
-      <h2>{data.name}</h2>
-      <div className="flex items-center justify-between">
-        <span>{data.basePrice}</span>
-        <span>
-          {new Date(data.ending).toLocaleString("default", { hour: "2-digit" })}
-        </span>
-      </div>
+      <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
       <AssetPriceChart
         basePrice={data.basePrice}
         id={data.identifier}
