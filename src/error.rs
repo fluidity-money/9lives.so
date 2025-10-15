@@ -533,6 +533,9 @@ pub enum Error {
 
     // Too much liquidity was taken when the user indicated that shouldn't be the case!
     TooMuchLiquidityTaken,
+
+    /// Checked subtraction overflowed!
+    CheckedSubOverflow64(u64, u64),
 }
 
 #[cfg(any(

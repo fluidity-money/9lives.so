@@ -181,6 +181,7 @@ impl StorageFactory {
         Ok(())
     }
 
+    // The mint address for some proxies to use. Needed for backwards compatibility.
     pub fn mint_addr(&self, is_dppm: bool) -> Address {
         if is_dppm {
             self.trading_dppm_mint_impl.get()
@@ -189,6 +190,9 @@ impl StorageFactory {
         }
     }
 
+    // The quotes address for some proxies to use. Needed for backwards
+    // compatibility with deployments before the 15th of October 2025,
+    // the time of which we shifted to a new Huff proxy.
     pub fn quotes_addr(&self, is_dppm: bool) -> Address {
         if is_dppm {
             self.trading_dppm_quotes_impl.get()
@@ -197,6 +201,7 @@ impl StorageFactory {
         }
     }
 
+    // The price address for some proxies to use. Needed for backwards compatibility.
     pub fn price_addr(&self, is_dppm: bool) -> Address {
         if is_dppm {
             self.trading_dppm_price_impl.get()
@@ -205,11 +210,30 @@ impl StorageFactory {
         }
     }
 
+    // The extras address for some proxies to use. Needed for backwards compatibility.
     pub fn extras_addr(&self, is_dppm: bool) -> Address {
         if is_dppm {
             self.trading_dppm_extras_impl.get()
         } else {
             self.trading_amm_extras_impl.get()
+        }
+    }
+
+    pub fn amm_impl(&self, x: FixedBytes<4>) -> Address {
+        match x[2] {
+            1 => self.trading_amm_mint_impl.get(),
+            2 => self.trading_amm_quotes_impl.get(),
+            3 => self.trading_amm_price_impl.get(),
+            _ => self.trading_amm_extras_impl.get()
+        }
+    }
+
+    pub fn dppm_impl(&self, x: FixedBytes<4>) -> Address {
+        match x[2] {
+            1 => self.trading_dppm_mint_impl.get(),
+            2 => self.trading_dppm_quotes_impl.get(),
+            3 => self.trading_dppm_price_impl.get(),
+            _ => self.trading_dppm_extras_impl.get()
         }
     }
 }

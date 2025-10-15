@@ -3,7 +3,7 @@ pragma solidity 0.8.20;
 
 import { ITradingBeacon } from "./ITradingBeacon.sol";
 
-contract TradingBeacon is ITradingBeacon {
+contract TradingBeacon2 is ITradingBeacon {
     address public admin;
     address public mint;
     address public quotes;
@@ -28,6 +28,14 @@ contract TradingBeacon is ITradingBeacon {
         quotes = _quotesImpl;
         price = _priceImpl;
         extras = _extrasImpl;
+    }
+
+    function implementation(bytes4 _sel) external view returns (address) {
+        uint8 sel = uint8(_sel[2]);
+        if (sel == 1) return mint;
+        else if (sel == 2) return quotes;
+        else if (sel == 3) return price;
+        else return extras;
     }
 
     /**

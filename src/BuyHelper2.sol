@@ -193,10 +193,12 @@ contract BuyHelper2 {
         uint256 _deadline
     ) external payable returns (AddLiquidityRes memory res) {
        uint256 amountIn  = _amount - _rebate;
-        if (_asset != address(0)) {
+        if (msg.value == 0) {
             require(_rebate == 0, "rebate not possible for erc20");
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
         } else {
+            // TODO: Relay fix
+            amountIn = msg.value - _rebate;
             require(_amount == msg.value, "inconsistent value");
             WETH.deposit{value: amountIn}();
             _asset = address(WETH);

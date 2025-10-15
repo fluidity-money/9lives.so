@@ -5,7 +5,7 @@ use stylus_sdk::{
 
 use alloc::vec::Vec;
 
-use crate::immutables::{boring_proxy_code, trading_proxy_code};
+use crate::immutables::{boring_proxy_code, trading_amm_proxy, trading_dppm_proxy};
 
 // Deploy a new ERC20 using CREATE2 and the seed given. Returns the
 // address.
@@ -34,24 +34,16 @@ pub fn deploy_proxy(impl_addr: Address) -> Result<Address, Vec<u8>> {
 
 // Deploy a new Trading contract using CREATE2 and the seed given.
 // Returns the address.
-#[cfg(not(feature = "harness-stylus-interpreter"))]
 pub fn deploy_trading(
     factory_addr: Address,
     is_dpm: bool,
     seed: FixedBytes<32>,
 ) -> Result<Address, Vec<u8>> {
     let d = RawDeploy::new().salt(seed);
-    let c = trading_proxy_code(factory_addr, is_dpm);
-    unsafe { d.deploy(&c, U256::ZERO) }
-}
-
-#[cfg(feature = "harness-stylus-interpreter")]
-pub fn deploy_trading(
-    factory: Address,
-    is_dpm: bool,
-    _seed: FixedBytes<32>,
-) -> Result<Address, Vec<u8>> {
-    let d = RawDeploy::new();
-    let c = trading_proxy_code(factory, is_dpm);
+    let c = if is_dpm {
+        trading_dppm_proxy(factory_addr)
+    } else {
+        trading_amm_proxy(factory_addr)
+    };
     unsafe { d.deploy(&c, U256::ZERO) }
 }

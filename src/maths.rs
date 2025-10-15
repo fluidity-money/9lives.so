@@ -29,11 +29,7 @@ pub fn dppm_price(M1: U256, M2: U256) -> Result<U256, Error> {
 pub fn dppm_shares(M_A: U256, M_B: U256, m: U256, out_of_b: U256) -> Result<U256, Error> {
     Ok(add!(
         m,
-        mul_div_round_up(
-            add!(M_A, m),
-            sub!(M_B, out_of_b),
-            add!(add!(M_A, M_B), m)
-        )?
+        mul_div_round_up(add!(M_A, m), sub!(M_B, out_of_b), add!(add!(M_A, M_B), m))?
     ))
 }
 
@@ -43,6 +39,17 @@ pub fn dppm_shares(M_A: U256, M_B: U256, m: U256, out_of_b: U256) -> Result<U256
 #[allow(non_snake_case)]
 pub fn dppm_payoff(n: U256, N_1: U256, M: U256) -> Result<U256, Error> {
     Ok(mul_div(n, N_1, M)?.0)
+}
+
+pub fn boost(shares: U256, t_end: u64) -> Result<U256, Error> {
+    let t_half = t_end / 2;
+    let b = t_end
+        .checked_sub(t_half)
+        .ok_or(Error::CheckedSubOverflow64(t_end, t_half))?
+        .pow(2);
+    shares
+        .checked_mul(U256::from(b))
+        .ok_or(Error::CheckedMulOverflow)
 }
 
 // Using this operation is the equivalent of pow(x, 1/n).
