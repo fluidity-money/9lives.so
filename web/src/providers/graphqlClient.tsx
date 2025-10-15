@@ -583,7 +583,7 @@ export const requestWeeklyVolume = (poolAddress: string) =>
 export const requestSimpleMarket = (symbol: string) => {
   return {
     identifier: "0x99",
-    starting: Date.now(),
+    starting: Date.now() - 1000 * 60 * 1,
     description: "$BTC above $110714.90 on Oct 14, 12:00 UTC?",
     ending: Date.now() + 1000 * 60 * 60,
     poolAddress: "0x0",
@@ -600,7 +600,8 @@ export const requestAssetPrice = (symbol: string, starting: string) =>
     .gql(
       `
 query {
-  oracles_ninelives_prices_1(order_by: {created_by: desc}, where: {created_by: {_gte: "${starting}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
+  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
+    id
     amount
     created_by
   }

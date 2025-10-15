@@ -4,7 +4,6 @@ import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
 import { PricePoint, PricePointResponse } from "@/types";
-import { requestAssetPrice } from "./graphqlClient";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -13,7 +12,7 @@ export const wsClient = createClient({
 
 const subPricesForDuration = `
 subscription($symbol: String!, $starting: String!) {
-  oracles_ninelives_prices_1(order_by: {created_by: desc}, where: {created_by: {_gte: $starting} base: {_eq: $symbol}}) {
+  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: $starting} base: {_eq: $symbol}}) {
     id
     amount
     created_by
