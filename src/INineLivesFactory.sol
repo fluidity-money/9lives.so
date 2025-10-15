@@ -29,7 +29,7 @@ interface INineLivesFactory {
      * @param feeMinter pct to take as fees for users using the mint function.
      * @return tradingAddr address of the newly created Trading contract deployment.
      */
-    function newTrading320E32E9(
+    function newTrading(
         FactoryOutcome[] memory outcomes,
         address oracle,
         uint64 timeStart,
@@ -39,7 +39,8 @@ interface INineLivesFactory {
         uint64 feeCreator,
         uint64 feeLp,
         uint64 feeMinter,
-        uint64 feeReferrer
+        uint64 feeReferrer,
+        bool backendIsDppm
     ) external returns (address tradingAddr);
 
     /**

@@ -131,9 +131,9 @@ pub struct StorageTrading {
 
     /* ~~~~~~~~~~ NINETAILS ONLY ~~~~~~~~~~ */
     //
-    pub ninetails_user_boosted_shares: StorageMap<Address, StorageU256>,
+    pub ninetails_user_boosted_shares: StorageMap<Address, StorageMap<FixedBytes<8>, StorageU256>>,
 
-    pub ninetails_global_boosted_shares: StorageU256
+    pub ninetails_global_boosted_shares: StorageMap<FixedBytes<8>, StorageU256>,
 }
 
 // Storage accessors to simplify lookup.
@@ -163,7 +163,7 @@ impl std::fmt::Debug for StorageTrading {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         write!(
             f,
-            "StorageTrading {{ created: {:?}, factory addr: {:?}, when decided: {:?}, is shutdown: {:?}, fee recipient: {:?}, time start: {:?}, time ending: {:?}, oracle: {:?}, share impl: {:?}, dppm global shares: {:?}, .., dppm seed invested: {:?}, dppm global invested: {:?}, .., winner: {:?}, should buffer time: {:?}, amm liquidity: {:?}, amm shares: {:?}, amm total shares: {:?}, amm sender user liquidity shares for msg sender: {:?} }}",
+            "StorageTrading {{ created: {:?}, factory addr: {:?}, when decided: {:?}, is shutdown: {:?}, fee recipient: {:?}, time start: {:?}, time ending: {:?}, oracle: {:?}, share impl: {:?}, .., dppm seed invested: {:?}, dppm global invested: {:?}, .., winner: {:?}, should buffer time: {:?}, amm liquidity: {:?}, amm shares: {:?}, amm total shares: {:?}, amm sender user liquidity shares for msg sender: {:?} }}",
             self.created,
             self.factory_addr,
             self.when_decided,
@@ -173,7 +173,6 @@ impl std::fmt::Debug for StorageTrading {
             self.time_ending,
             self.oracle,
             self.share_impl,
-            self.dppm_global_shares,
             self.amm_liquidity,
             self.dppm_global_invested,
             self.winner,
@@ -256,14 +255,10 @@ pub fn strat_storage_trading(
                                 c.dppm_outcome_invested
                                     .setter(*outcome_id)
                                     .set(*dppm_outcome_invested);
-                                c.dppm_outcome_shares
-                                    .setter(*outcome_id)
-                                    .set(*dppm_outcome_shares);
                                 dppm_global_invested += dppm_outcome_invested;
                                 dppm_global_shares += dppm_outcome_shares;
                                 c.outcome_list.push(*outcome_id);
                             }
-                            c.dppm_global_shares.set(dppm_global_shares);
                             c.dppm_global_invested.set(dppm_global_invested);
                             if should_set_winner {
                                 let i = (rng.next_u64() % outcomes.len() as u64) as usize;

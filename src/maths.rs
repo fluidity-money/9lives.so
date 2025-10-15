@@ -45,6 +45,7 @@ pub fn ninetails_shares(shares: U256, t_half: U64, t_end: U64) -> Result<U256, E
     // shares the user owns
     // t_end is when you buy the shares
     // t_half is the halfpoint of the market's time alive
+    dbg!(t_end, t_half);
     shares
         .checked_mul(U256::from(sub!(t_end, t_half).pow(U64::from(2))))
         .ok_or(Error::CheckedMulOverflow)
@@ -177,35 +178,6 @@ fn test_calc_lp_sell_fee() {
 fn test_calc_buy_fee() {
     let x = U256::from(500e6 as u64);
     assert_eq_u!(10e6 as u64, calc_fee(x, U256::from(20)).unwrap());
-}
-
-#[test]
-fn test_price_single() {
-    dbg!(dpm_shares(
-        U256::from(524),
-        U256::from(387),
-        U256::from(173),
-        U256::from(411),
-        U256::from(182)
-    )
-    .unwrap());
-}
-
-#[test]
-fn test_shares_edge_1() {
-    use rust_decimal_macros::dec;
-
-    assert_eq!(
-        dpm_shares(
-            dec!(0.1),
-            dec!(4.370954),
-            dec!(1),
-            dec!(2),
-            dec!(32699704.75266),
-        )
-        .unwrap(),
-        dec!(49545632.553194709597488661811)
-    )
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]

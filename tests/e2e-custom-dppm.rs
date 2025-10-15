@@ -7,9 +7,10 @@
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    actions::*, error::Error, fees::FEE_SCALING, host, immutables::*, implement_action,
-    interactions_clear_after, maths, panic_guard, proxy, should_spend, should_spend_fusdc_contract,
-    should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
+    host, proxy,
+    testing_addrs::{CONTRACT, SHARE},
+    utils::{block_timestamp, msg_sender},
+    StorageTrading, should_spend_fusdc_sender
 };
 
 use proptest::prelude::*;
@@ -45,4 +46,25 @@ macro_rules! setup_contract {
             );
         }
     };
+}
+
+#[test]
+fn test_simple() {
+    // An hour long deadline:
+    let mut c = StorageTrading::default();
+    let o = [
+        fixed_bytes!("04c4eb8d625af112"),
+        fixed_bytes!("0c5829d33c3ab9f6")
+    ];
+    setup_contract!(&mut c, o);
+    c.time_ending.set(U64::from(block_timestamp() + 60 * 60));
+    should_spend_fusdc_sender!(
+        5e6,
+        c.mint_8_A_059_B_6_E(
+            o[0],
+            U256::from(5e6),
+            Address::ZERO,
+            msg_sender()
+        )
+    );
 }

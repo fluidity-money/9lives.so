@@ -79,7 +79,7 @@ contract MockFactory is INineLivesFactory {
         return keccak256(abi.encodePacked(address(4)));
     }
 
-    function dpmTradingHash() external pure returns (bytes32) {
+    function dppmTradingHash() external pure returns (bytes32) {
         return keccak256(abi.encodePacked(address(5)));
     }
 
