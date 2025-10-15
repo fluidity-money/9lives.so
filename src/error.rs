@@ -24,7 +24,7 @@ use {
     },
 };
 
-use stylus_sdk::alloy_primitives::{Address, U256};
+use stylus_sdk::alloy_primitives::{Address, U256, U64};
 
 macro_rules! err_pre {
     ($name:ident, $val:literal) => {
@@ -535,7 +535,7 @@ pub enum Error {
     TooMuchLiquidityTaken,
 
     /// Checked subtraction overflowed!
-    CheckedSubOverflow64(u64, u64),
+    CheckedSubOverflow64(U64, U64),
 }
 
 #[cfg(any(

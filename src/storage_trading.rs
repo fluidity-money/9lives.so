@@ -96,10 +96,10 @@ pub struct StorageTrading {
 
     pub dppm_out_of: StorageMap<FixedBytes<8>, StorageU256>,
 
-    /// Global amount invested to this pool of the native asset.
+    /// Global amount of USD invested to this pool.
     pub dppm_global_invested: StorageU256,
 
-    /// The amount invested in a specific outcome.
+    /// The amount of USD invested in a specific outcome.
     pub dppm_outcome_invested: StorageMap<FixedBytes<8>, StorageU256>,
 
     /* ~~~~~~~~~~ AMM ONLY ~~~~~~~~~~ */
@@ -128,6 +128,12 @@ pub struct StorageTrading {
     /// identifier, we use this in the mint functions to check if the outcome
     /// exists.
     pub amm_outcome_exists: StorageMap<FixedBytes<8>, StorageBool>,
+
+    /* ~~~~~~~~~~ NINETAILS ONLY ~~~~~~~~~~ */
+    //
+    pub ninetails_user_boosted_shares: StorageMap<Address, StorageU256>,
+
+    pub ninetails_global_boosted_shares: StorageU256
 }
 
 // Storage accessors to simplify lookup.

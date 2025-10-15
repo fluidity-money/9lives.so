@@ -1,4 +1,4 @@
-use stylus_sdk::alloy_primitives::U256;
+use stylus_sdk::alloy_primitives::{U64, U256};
 
 use crate::{error::Error, fees::FEE_SCALING};
 
@@ -27,71 +27,43 @@ pub fn dppm_price(M1: U256, M2: U256) -> Result<U256, Error> {
 
 #[allow(non_snake_case)]
 pub fn dppm_shares(M_A: U256, M_B: U256, m: U256, out_of_b: U256) -> Result<U256, Error> {
+    // cost + (self.M1 + cost) / (self.M1 + self.M2 + cost) * (self.M2 - self.outofM2)
+    // m + ((M_A + m) * (M_B - out_of_b) / ((M_A + M_B) + m))
     Ok(add!(
         m,
-        mul_div_round_up(
-            add!(M_A, m),
-            sub!(M_B, out_of_b),
-            add!(add!(M_A, M_B), m)
-        )?
+        mul_div_round_up(add!(M_A, m), sub!(M_B, out_of_b), add!(add!(M_A, M_B), m))?
     ))
 }
 
-/// Get the payoff for the shares given, with M being the globally
-/// invested amount, N_1 is the amount of shares for the outcome that's
-/// won, and n is the user's amount of shares.
-#[allow(non_snake_case)]
-pub fn dppm_payoff(n: U256, N_1: U256, M: U256) -> Result<U256, Error> {
-    Ok(mul_div(n, N_1, M)?.0)
+/// Get the payoff for the shares given. This should be the amount of shares
+/// the user has.
+pub fn dppm_payoff(n: U256) -> Result<U256, Error> {
+    Ok(n)
 }
 
-/// Return the amount of "boosted" shares that a user has. We mint these and send it to the users
-fn boost(shares: U256, t_half: u64, t_end: u64) -> Result<U256, Error> {
+pub fn ninetails_shares(shares: U256, t_half: U64, t_end: U64) -> Result<U256, Error> {
     // shares the user owns
     // t_end is when you buy the shares
     // t_half is the halfpoint of the market's time alive
     let b = t_end
         .checked_sub(t_half)
         .ok_or(Error::CheckedSubOverflow64(t_end, t_half))?
-        .pow(2);
+        .pow(U64::from(2));
     shares
         .checked_mul(U256::from(b))
         .ok_or(Error::CheckedMulOverflow)
 }
 
-/// Calculate the boosted shares payoff,
-pub fn boost_payoff(
-    boosted_shares: U256,
-    all_boosted_shares: U256,
-    t_half: u64,
-    t_end: u64,
-    leftovers: U256,
-) -> Result<U256, Error> {
-    Ok(mul_div(boosted_shares, leftover, all_boosted_shares)?.0)
-}
-
 pub fn ninetails_payoff(
     boosted_shares: U256,
     all_boosted_shares: U256,
-    t_half: u64,
-    t_end: u64,
-    boring_shares: U256,
-    all_boring_shares: U256,
-    globally_invested: U256,
+    M1: U256,
+    M2: U256,
+    out_of_m1: U256,
+    out_of_m2: U256
 ) -> Result<U256, Error> {
-    // M1: the liquidity in the first outcome
-    // M2: the liquidity in the second outcome
-    // all_boosted_shares: all shares in the winning market that are boosted
-    // outofM1: "reserved shares" for outcome 1
-    // outofM2: "reserved shares" for outcome 2
-    let leftover = M1
-        .checked_add(M2)
-        .ok_or(Error::CheckedAddOverflow(M1, M2))?
-        .checked_sub(
-            outofM1
-                .checked_sub(outofM2)
-                .ok_or(Error::CheckedSubOverflow(outofM1, outofM2)),
-        );
+    let leftovers = M1 - M2 + out_of_m1 + out_of_m2;
+    Ok(mul_div(boosted_shares, leftovers, all_boosted_shares)?.0)
 }
 
 // Using this operation is the equivalent of pow(x, 1/n).

@@ -85,6 +85,21 @@ impl StorageTrading {
             let x = self.dppm_global_invested.get();
             self.dppm_global_invested.set(x + value);
         }
+        let t_end = self.time_start.get();
+        let half = (self.time_ending.get() - t_end) / U64::from(2);
+        let ninetails_shares = maths::ninetails_shares(shares, half, t_end)?;
+        {
+            let s = self.ninetails_user_boosted_shares.get(recipient);
+            self.ninetails_user_boosted_shares.setter(recipient).set(
+                s.checked_add(ninetails_shares)
+                    .ok_or(Error::CheckedAddOverflow)?,
+            );
+            let g = self.ninetails_global_boosted_shares.get();
+            self.ninetails_global_boosted_shares.set(
+                g.checked_add(ninetails_shares)
+                    .ok_or(Error::CheckedAddOverflow)?,
+            );
+        }
         assert_or!(shares > U256::ZERO, Error::UnusualAmountCreated);
         c!(share_call::mint(share_addr, recipient, shares));
         evm::log(events::SharesMinted {
@@ -131,27 +146,22 @@ impl StorageTrading {
 
     #[allow(unused)]
     fn internal_calc_dppm_mint(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
-        let dppm_outcome_invested = self.dppm_outcome_invested.get(outcome_id);
-        let out_of_other = self.dppm_out_of.get(
-            if outcome_id == self.outcome_list.get(0).unwrap() {
-                self.outcome_list.get(1)
-            } else {
-                self.outcome_list.get(0)
-            }
-            .unwrap(),
-        );
-        maths::dppm_shares(
-            dppm_outcome_invested,
-            self.dppm_global_invested
-                .get()
-                .checked_sub(dppm_outcome_invested)
-                .ok_or(Error::CheckedSubOverflow(
-                    self.dppm_global_invested.get(),
-                    dppm_outcome_invested,
-                ))?,
-            value,
-            out_of_other,
-        )
+        #[allow(non_snake_case)]
+        let M_A = self.dppm_outcome_invested.get(outcome_id);
+        let outcome_b = if outcome_id == self.outcome_list.get(0).unwrap() {
+            self.outcome_list.get(1)
+        } else {
+            self.outcome_list.get(0)
+        }
+        .unwrap();
+        #[allow(non_snake_case)]
+        let M_B = self.dppm_outcome_invested.get(outcome_b);
+        let out_of_b = self.dppm_out_of.get(outcome_b);
+        let shares = maths::dppm_shares(M_A, M_B, value, out_of_b)?;
+        let new_dppm_shares = out_of_b
+            .checked_sub(shares)
+            .ok_or(Error::CheckedSubOverflow(out_of_b, shares))?;
+        Ok(shares)
     }
 
     pub fn internal_dppm_simulate_payoff(
@@ -159,11 +169,7 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         share_bal: U256,
     ) -> R<U256> {
-        maths::dppm_payoff(
-            share_bal,
-            self.dppm_outcome_invested.get(outcome_id),
-            self.dppm_global_invested.get(),
-        )
+        maths::dppm_payoff(share_bal)
     }
 
     pub fn internal_dppm_price(&self, id: FixedBytes<8>) -> R<U256> {

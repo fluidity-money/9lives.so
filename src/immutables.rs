@@ -72,12 +72,12 @@ pub const NORMAL_PROXY_BYTECODE_2: [u8; 16] = [
     0x5a, 0xf4, 0x3d, 0x5f, 0x5f, 0x3e, 0x60, 0x29, 0x57, 0x3d, 0x5f, 0xfd, 0x5b, 0x3d, 0x5f, 0xf3,
 ];
 
-pub fn trading_dppm_proxy(addr: Address) -> [u8; 42 + 20 + 33] {
+pub fn trading_dppm_proxy(addr: Address) -> [u8; 90] {
     //dppmImpl(bytes4)
     bobcat_proxy::make_beacon_sel_proxy_sel([0x6f, 0x73, 0xcb, 0xd8], **addr)
 }
 
-pub fn trading_amm_proxy(addr: Address) -> [u8; 42 + 20 + 33] {
+pub fn trading_amm_proxy(addr: Address) -> [u8; 90] {
     //ammImpl(bytes4)
     bobcat_proxy::make_beacon_sel_proxy_sel([0x6b, 0x8e, 0x8d, 0x96], **addr)
 }

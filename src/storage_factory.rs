@@ -6,7 +6,7 @@ use stylus_sdk::storage::StorageType;
 #[derive(Debug)]
 #[repr(C)]
 pub enum TradingBackendType {
-    DPM = 1,
+    DPPM = 1,
     AMM = 2,
 }
 
