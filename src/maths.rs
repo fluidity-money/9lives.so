@@ -41,13 +41,12 @@ pub fn dppm_payoff(n: U256) -> Result<U256, Error> {
     Ok(n)
 }
 
-pub fn ninetails_shares(shares: U256, t_half: U64, t_end: U64) -> Result<U256, Error> {
+pub fn ninetails_shares(shares: U256, t_half: U64, t_buy: U64) -> Result<U256, Error> {
     // shares the user owns
-    // t_end is when you buy the shares
+    // t_buy is when you buy the shares
     // t_half is the halfpoint of the market's time alive
-    dbg!(t_end, t_half);
     shares
-        .checked_mul(U256::from(sub!(t_end, t_half).pow(U64::from(2))))
+        .checked_mul(U256::from(sub!(t_buy, t_half).pow(U64::from(2))))
         .ok_or(Error::CheckedMulOverflow)
 }
 

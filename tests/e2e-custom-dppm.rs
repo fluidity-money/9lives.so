@@ -7,10 +7,12 @@
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    host, proxy,
+    host,
+    host::set_block_timestamp,
+    proxy, should_spend_fusdc_sender,
     testing_addrs::{CONTRACT, SHARE},
     utils::{block_timestamp, msg_sender},
-    StorageTrading, should_spend_fusdc_sender
+    StorageTrading,
 };
 
 use proptest::prelude::*;
@@ -54,17 +56,25 @@ fn test_simple() {
     let mut c = StorageTrading::default();
     let o = [
         fixed_bytes!("04c4eb8d625af112"),
-        fixed_bytes!("0c5829d33c3ab9f6")
+        fixed_bytes!("0c5829d33c3ab9f6"),
     ];
     setup_contract!(&mut c, o);
     c.time_ending.set(U64::from(block_timestamp() + 60 * 60));
-    should_spend_fusdc_sender!(
+    set_block_timestamp(5 * 60);
+    let shares = should_spend_fusdc_sender!(
         5e6,
-        c.mint_8_A_059_B_6_E(
-            o[0],
-            U256::from(5e6),
-            Address::ZERO,
-            msg_sender()
-        )
+        c.mint_8_A_059_B_6_E(o[0], U256::from(5e6), Address::ZERO, msg_sender())
     );
+    dbg!(
+        c.ninetails_user_boosted_shares
+            .getter(msg_sender())
+            .get(o[0]),
+        c.ninetails_global_boosted_shares.get(o[0])
+    );
+    set_block_timestamp(30 * 60);
+    let shares = should_spend_fusdc_sender!(
+        5e6,
+        c.mint_8_A_059_B_6_E(o[0], U256::from(5e6), Address::ZERO, msg_sender())
+    );
+    dbg!(shares);
 }

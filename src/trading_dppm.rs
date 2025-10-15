@@ -4,7 +4,7 @@ use crate::{
     immutables::*,
     maths, proxy, share_call,
     storage_trading::*,
-    utils::{contract_address, msg_sender},
+    utils::{contract_address, msg_sender, block_timestamp},
 };
 
 use stylus_sdk::{
@@ -29,7 +29,6 @@ impl StorageTrading {
             // behaviour with this being possible (ie, payoff before the end date).
             assert_or!(!outcome_id.is_zero(), Error::OutcomeIsZero);
             // We always set this to 1 now.
-            self.dppm_out_of.setter(outcome_id).set(SHARE_DECIMALS_EXP);
             self.dppm_outcome_invested
                 .setter(outcome_id)
                 .set(SHARE_DECIMALS_EXP);
@@ -48,7 +47,7 @@ impl StorageTrading {
     ) -> R<U256> {
         // Make sure that the outcome exists by checking if we set this up with some shares.
         assert_or!(
-            self.dppm_out_of.get(outcome_id) > U256::ZERO,
+            self.dppm_outcome_invested.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
         let outcome_a = self.outcome_list.get(0).unwrap();
@@ -87,8 +86,12 @@ impl StorageTrading {
             self.dppm_global_invested.set(x + value);
         }
         let t_end = self.time_ending.get();
-        let half = (self.time_ending.get() - t_end) / U64::from(2);
-        let ninetails_shares = maths::ninetails_shares(shares, half, t_end)?;
+        let t_since = U64::from(block_timestamp()) - self.time_start.get();
+        let t_half = (t_end - self.time_start.get()) / U64::from(2);
+        let t_buy = t_end
+            .checked_sub(t_since)
+            .ok_or(Error::CheckedSubOverflow64(t_end, t_since))?;
+        let ninetails_shares = maths::ninetails_shares(shares, t_half, t_buy)?;
         {
             let s = self
                 .ninetails_user_boosted_shares
@@ -187,6 +190,7 @@ impl StorageTrading {
         #[allow(non_snake_case)]
         let M_B = self.dppm_outcome_invested.get(outcome_b);
         let out_of_b = self.dppm_out_of.get(outcome_b);
+        dbg!(M_A, M_B, value, out_of_b);
         let shares = maths::dppm_shares(M_A, M_B, value, out_of_b)?;
         Ok(shares)
     }
