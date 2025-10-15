@@ -28,17 +28,18 @@ export default function AssetPriceChart({
   const { data, isSuccess } = useQuery<PricePoint[]>({
     queryKey: ["assetPrice", symbol, id],
     queryFn: async () => {
-      const res = (await requestAssetPrice(
+      const res = await requestAssetPrice(
         symbol.toUpperCase(),
         new Date(starting).toISOString(),
-      )) as { oracles_ninelives_prices_1: PricePointResponse[] };
-      return res?.oracles_ninelives_prices_1
-        ? res?.oracles_ninelives_prices_1.map((i) => ({
-            price: i.amount,
-            id: i.id,
-            timestamp: new Date(i.created_by).getTime(),
-          }))
-        : [];
+      );
+      if (res?.oracles_ninelives_prices_1) {
+        return res?.oracles_ninelives_prices_1.map((i) => ({
+          price: i.amount,
+          id: i.id,
+          timestamp: new Date(i.created_by).getTime(),
+        }));
+      }
+      return [];
     },
   });
 
@@ -75,11 +76,15 @@ export default function AssetPriceChart({
     }
   });
   const prices = data.map((i) => i.price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const digits = min.toString().length;
+  const margin = (10 / 10) * (digits - 1);
+  const minPrice = min - margin;
+  const maxPrice = max + margin;
 
   return (
-    <ChartPriceProvider id={id} symbol={symbol} starting={starting}>
+    <ChartPriceProvider id={id} symbol={symbol}>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
