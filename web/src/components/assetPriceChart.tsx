@@ -2,7 +2,7 @@
 
 import ChartPriceProvider from "@/providers/chartPriceProvider";
 import { requestAssetPrice } from "@/providers/graphqlClient";
-import { PricePoint } from "@/types";
+import { PricePoint, PricePointResponse } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   LineChart,
@@ -30,10 +30,16 @@ export default function AssetPriceChart({
     queryKey: ["assetPrice", symbol, id],
     queryFn: async () => {
       const res = (await requestAssetPrice(
-        symbol,
+        symbol.toUpperCase(),
         new Date(starting).toISOString(),
-      )) as { data?: { oracles_ninelives_prices_1?: PricePoint[] } };
-      return res?.data?.oracles_ninelives_prices_1 ?? [];
+      )) as { oracles_ninelives_prices_1: PricePointResponse[] };
+      return res?.oracles_ninelives_prices_1
+        ? res?.oracles_ninelives_prices_1.map((i) => ({
+            price: i.amount,
+            id: i.id,
+            timestamp: new Date(i.created_by).getTime(),
+          }))
+        : [];
     },
   });
 
@@ -44,12 +50,15 @@ export default function AssetPriceChart({
   const minTs = starting;
   const maxTs = ending;
   const durationSeconds = maxTs - minTs;
-  const durationDays = durationSeconds / 86400;
+  const durationDays = durationSeconds / 86400 / 1000;
 
   const formatFn = (ts: number) => {
-    const date = new Date(ts * 1000);
+    const date = new Date(ts);
     if (durationDays <= 1) {
-      return date.toLocaleString("default", { hour: "2-digit" });
+      return date.toLocaleString("default", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     } else if (durationDays <= 30) {
       return date.toLocaleString("default", { day: "numeric", month: "short" });
     } else {
@@ -66,17 +75,21 @@ export default function AssetPriceChart({
       lastLabel = label;
     }
   });
+  const prices = data.map((i) => i.price);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
 
   return (
     <ChartPriceProvider id={id} symbol={symbol} starting={starting}>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
-          margin={{ top: 5, right: 40, bottom: 5, left: 0 }}
+          margin={{ top: 5, right: 60, bottom: 5, left: 0 }}
         >
           <CartesianGrid stroke="#aaa" strokeDasharray="1 3" vertical={false} />
           <Line
             dot={false}
+            dataKey={"price"}
             type="monotone"
             stroke={"#5dd341"}
             strokeWidth={2}
@@ -88,16 +101,12 @@ export default function AssetPriceChart({
               fontSize: 12,
               fill: "#0C0C0C",
             }}
+            domain={[minPrice, maxPrice]}
             dataKey={"price"}
             axisLine={{ stroke: "#0C0C0C", strokeWidth: 1 }}
             orientation="right"
             width="auto"
-            tickFormatter={(value) => `${value}%`}
-          />
-          <Legend
-            align="left"
-            verticalAlign="top"
-            wrapperStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
+            tickFormatter={(value) => `$${value}`}
           />
           <XAxis
             tick={{
@@ -107,12 +116,12 @@ export default function AssetPriceChart({
             }}
             dataKey="timestamp"
             axisLine={{ stroke: "#0C0C0C", strokeWidth: 1 }}
-            ticks={tickValues}
+            ticks={[starting, ...tickValues, ending]}
             tickFormatter={formatFn}
           />
           <Tooltip
             labelFormatter={(ts: any) => {
-              const date = new Date(ts * 1000);
+              const date = new Date(ts);
               return date.toLocaleString("default", {
                 day: "numeric",
                 month: "short",
@@ -120,7 +129,7 @@ export default function AssetPriceChart({
                 minute: "2-digit",
               });
             }}
-            formatter={(c) => `${c}%`}
+            formatter={(c) => `$${c}`}
             contentStyle={{
               borderColor: "#0C0C0C",
               borderRadius: 3,
