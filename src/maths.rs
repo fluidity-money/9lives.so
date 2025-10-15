@@ -41,8 +41,11 @@ pub fn dppm_payoff(n: U256, N_1: U256, M: U256) -> Result<U256, Error> {
     Ok(mul_div(n, N_1, M)?.0)
 }
 
-pub fn boost(shares: U256, t_end: u64) -> Result<U256, Error> {
-    let t_half = t_end / 2;
+/// Return the amount of "boosted" shares that a user has. We mint these and send it to the users
+fn boost(shares: U256, t_half: u64, t_end: u64) -> Result<U256, Error> {
+    // shares the user owns
+    // t_end is when you buy the shares
+    // t_half is the halfpoint of the market's time alive
     let b = t_end
         .checked_sub(t_half)
         .ok_or(Error::CheckedSubOverflow64(t_end, t_half))?
@@ -50,6 +53,41 @@ pub fn boost(shares: U256, t_end: u64) -> Result<U256, Error> {
     shares
         .checked_mul(U256::from(b))
         .ok_or(Error::CheckedMulOverflow)
+}
+
+/// Calculate the boosted shares payoff,
+pub fn boost_payoff(
+    boosted_shares: U256,
+    all_boosted_shares: U256,
+    t_half: u64,
+    t_end: u64,
+    leftovers: U256,
+) -> Result<U256, Error> {
+    Ok(mul_div(boosted_shares, leftover, all_boosted_shares)?.0)
+}
+
+pub fn ninetails_payoff(
+    boosted_shares: U256,
+    all_boosted_shares: U256,
+    t_half: u64,
+    t_end: u64,
+    boring_shares: U256,
+    all_boring_shares: U256,
+    globally_invested: U256,
+) -> Result<U256, Error> {
+    // M1: the liquidity in the first outcome
+    // M2: the liquidity in the second outcome
+    // all_boosted_shares: all shares in the winning market that are boosted
+    // outofM1: "reserved shares" for outcome 1
+    // outofM2: "reserved shares" for outcome 2
+    let leftover = M1
+        .checked_add(M2)
+        .ok_or(Error::CheckedAddOverflow(M1, M2))?
+        .checked_sub(
+            outofM1
+                .checked_sub(outofM2)
+                .ok_or(Error::CheckedSubOverflow(outofM1, outofM2)),
+        );
 }
 
 // Using this operation is the equivalent of pow(x, 1/n).
