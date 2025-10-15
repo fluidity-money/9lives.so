@@ -11,8 +11,8 @@ export const wsClient = createClient({
 });
 
 const subPricesForDuration = `
-subscription($symbol: String!, $starting: String!) {
-  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: $starting} base: {_eq: $symbol}}) {
+subscription($symbol: String!, $starting: timestamp!) {
+  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: $starting}, base: {_eq: $symbol}}) {
     id
     amount
     created_by
@@ -33,12 +33,15 @@ export default function ChartPriceProvider({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const unsubPrices = wsClient.subscribe<PricePointResponse[]>(
+    const duration = Date.now() - 1000 * 30;
+    const unsubPrices = wsClient.subscribe<{
+      oracles_ninelives_prices_1: PricePointResponse[];
+    }>(
       {
         query: subPricesForDuration,
         variables: {
           symbol: symbol.toUpperCase(),
-          starting: new Date(starting).toISOString(),
+          starting: new Date(duration).toISOString(),
         },
       },
       {
@@ -46,8 +49,11 @@ export default function ChartPriceProvider({
           queryClient.setQueryData<PricePoint[]>(
             ["assetPrice", symbol, id],
             (previousData) => {
-              if (nextData && nextData.length > 0)
-                return nextData
+              if (
+                nextData?.oracles_ninelives_prices_1 &&
+                nextData?.oracles_ninelives_prices_1.length > 0
+              ) {
+                const next = nextData.oracles_ninelives_prices_1
                   .filter(
                     (i) => !previousData?.find((pi) => pi.id === i.id)?.id,
                   )
@@ -56,6 +62,12 @@ export default function ChartPriceProvider({
                     price: i.amount,
                     timestamp: new Date(i.created_by).getTime(),
                   }));
+                if (previousData) {
+                  return [...previousData, ...next];
+                } else {
+                  return next;
+                }
+              }
               return [];
             },
           );
@@ -71,7 +83,7 @@ export default function ChartPriceProvider({
     return () => {
       unsubPrices();
     };
-  }, [queryClient, symbol, id, starting]);
+  }, [queryClient, symbol, id]);
 
   return children;
 }
