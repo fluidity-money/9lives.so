@@ -71,7 +71,7 @@ export default function ChartPriceProvider({
     return () => {
       unsubPrices();
     };
-  }, [queryClient]);
+  }, [queryClient, symbol, id, starting]);
 
   return children;
 }

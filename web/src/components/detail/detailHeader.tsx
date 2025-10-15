@@ -166,7 +166,7 @@ export default function DetailHeader({
         }
       })();
     }
-  }, [account?.address]);
+  }, [account, checkClaimFees, data.creator.address, data.poolAddress]);
 
   return (
     <div className="flex flex-col gap-4">
