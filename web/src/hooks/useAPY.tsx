@@ -16,6 +16,6 @@ export default function useAPY(poolAddress: string, totalLiquidity: number) {
     if (isSuccess && weeklyVolume) {
       setAPY(computeAPY(weeklyVolume, totalLiquidity));
     }
-  }, [isSuccess]);
+  }, [isSuccess, totalLiquidity, weeklyVolume]);
   return APY;
 }

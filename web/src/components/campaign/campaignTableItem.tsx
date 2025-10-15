@@ -32,7 +32,7 @@ export default function CampaignTableItem({
         }
       })();
     }
-  }, [account]);
+  }, [account, checkClaimFees, data.poolAddress]);
 
   return (
     <tr>

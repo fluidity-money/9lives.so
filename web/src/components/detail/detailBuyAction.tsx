@@ -258,7 +258,7 @@ export default function DetailBuyAction({
     if (usdValue) {
       setValue("usdValue", usdValue);
     }
-  }, [usdValue]);
+  }, [usdValue, setValue]);
   const handleNetworkChange = async (chain: Chain) => {
     // lifi auto switch handle this for now
     // await switchChain(chain);
