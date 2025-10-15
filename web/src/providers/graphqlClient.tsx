@@ -589,7 +589,7 @@ export const requestSimpleMarket = (symbol: string) => {
     poolAddress: "0x0",
     outcomes: ["0x1", "0x2"],
     investments: [1500, 750],
-    basePrice: 11080,
+    basePrice: 112078,
     symbol,
     name: "$BTC above $110714.90 on Oct 14, 12:00 UTC?",
   };

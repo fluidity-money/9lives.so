@@ -8,20 +8,22 @@ import {
   LineChart,
   ResponsiveContainer,
   Line,
-  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
+  ReferenceLine,
 } from "recharts";
 
 export default function AssetPriceChart({
   id,
   symbol,
+  basePrice,
   starting,
   ending,
 }: {
   id: string;
   symbol: string;
+  basePrice: number;
   starting: number;
   ending: number;
 }) {
@@ -46,11 +48,12 @@ export default function AssetPriceChart({
   if (!isSuccess || data.length < 2) {
     return null;
   }
-
+  const latestPrice = data[data.length - 1].price;
   const minTs = starting;
   const maxTs = ending;
   const durationSeconds = maxTs - minTs;
   const durationDays = durationSeconds / 86400 / 1000;
+  const priceIsAbove = latestPrice > basePrice;
 
   const formatFn = (ts: number) => {
     const date = new Date(ts);
@@ -76,28 +79,40 @@ export default function AssetPriceChart({
     }
   });
   const prices = data.map((i) => i.price);
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  const digits = min.toString().length;
-  const margin = (10 / 10) * (digits - 1);
-  const minPrice = min - margin;
-  const maxPrice = max + margin;
+  const minPrice = Math.min(...prices, basePrice);
+  const maxPrice = Math.max(...prices, basePrice);
+  const digits = minPrice.toString().length;
+  const margin = 1 / Math.pow(10, digits - 2);
+  const minY = minPrice - minPrice * margin;
+  const maxY = maxPrice + maxPrice * margin;
 
   return (
     <ChartPriceProvider id={id} symbol={symbol}>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
-          margin={{ top: 5, right: 60, bottom: 5, left: 0 }}
+          margin={{ top: 5, right: 60, bottom: 5, left: 30 }}
         >
-          <CartesianGrid stroke="#aaa" strokeDasharray="1 3" vertical={false} />
+          <ReferenceLine
+            y={basePrice}
+            stroke="#aaa"
+            strokeDasharray="3 3"
+            label={{
+              value: "BASELINE",
+              position: "centerBottom",
+              fill: "#aaa",
+              dy: 16,
+              fontSize: 12,
+              fontFamily: "var(--font-geneva)",
+            }}
+          />
           <Line
             dot={false}
             dataKey={"price"}
             type="monotone"
-            stroke={"#5dd341"}
+            stroke={priceIsAbove ? "#5dd341" : "#f96565"}
             strokeWidth={2}
-            name={"Up"}
+            name={priceIsAbove ? "Above" : "Below"}
           />
           <YAxis
             tick={{
@@ -105,7 +120,7 @@ export default function AssetPriceChart({
               fontSize: 12,
               fill: "#0C0C0C",
             }}
-            domain={[minPrice, maxPrice]}
+            domain={[minY, maxY]}
             dataKey={"price"}
             axisLine={{ stroke: "#0C0C0C", strokeWidth: 1 }}
             orientation="right"
