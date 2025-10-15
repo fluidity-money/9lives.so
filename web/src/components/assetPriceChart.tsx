@@ -60,7 +60,7 @@ export default function AssetPriceChart({
     const date = new Date(ts);
     if (durationDays <= 1) {
       return date.toLocaleString("default", {
-        hour: "2-digit",
+        hour: "numeric",
         minute: "2-digit",
       });
     } else if (durationDays <= 30) {
@@ -120,7 +120,6 @@ export default function AssetPriceChart({
           <ReferenceLine
             y={data[data.length - 1].price}
             stroke="tranparent"
-            rotate={45}
             label={{
               value: `${priceIsAbove ? "▲" : "▼"} $${data[data.length - 1].price}`,
               position: "right",
@@ -176,6 +175,7 @@ export default function AssetPriceChart({
             orientation="right"
             width="auto"
             tickFormatter={(value) => `$${value}`}
+            ticks={[minY, basePrice, maxY]}
           />
           <XAxis
             tick={{
