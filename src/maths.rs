@@ -59,7 +59,7 @@ pub fn ninetails_payoff(
     out_of_m1: U256,
     out_of_m2: U256,
 ) -> Result<U256, Error> {
-    let leftovers = add!(add!(sub!(M1, M2), out_of_m1), out_of_m2);
+    let leftovers = sub!(sub!(add!(M1, M2), out_of_m1), out_of_m2);
     Ok(mul_div(boosted_shares, leftovers, all_boosted_shares)?.0)
 }
 
