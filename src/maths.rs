@@ -31,7 +31,7 @@ pub fn dppm_shares(M_A: U256, M_B: U256, m: U256, out_of_b: U256) -> Result<U256
     // m + ((M_A + m) * (M_B - out_of_b) / ((M_A + M_B) + m))
     Ok(add!(
         m,
-        mul_div_round_up(add!(M_A, m), sub!(M_B, out_of_b), add!(add!(M_A, M_B), m))?
+        mul_div(add!(M_A, m), sub!(M_B, out_of_b), add!(add!(M_A, M_B), m))?.0
     ))
 }
 
@@ -56,10 +56,11 @@ pub fn ninetails_payoff(
     all_boosted_shares: U256,
     M1: U256,
     M2: U256,
-    out_of_m1: U256,
-    out_of_m2: U256,
+    global_dppm_shares_outcome: U256
 ) -> Result<U256, Error> {
-    let leftovers = sub!(sub!(add!(M1, M2), out_of_m1), out_of_m2);
+    dbg!(M1, M2, global_dppm_shares_outcome);
+    let leftovers = sub!(add!(M1, M2), global_dppm_shares_outcome);
+    dbg!(leftovers);
     Ok(mul_div(boosted_shares, leftovers, all_boosted_shares)?.0)
 }
 

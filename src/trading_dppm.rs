@@ -4,7 +4,7 @@ use crate::{
     immutables::*,
     maths, proxy, share_call,
     storage_trading::*,
-    utils::{contract_address, msg_sender, block_timestamp},
+    utils::{block_timestamp, contract_address, msg_sender},
 };
 
 use stylus_sdk::{
@@ -57,7 +57,7 @@ impl StorageTrading {
             let x = self.dppm_outcome_invested.get(outcome_id);
             self.dppm_outcome_invested
                 .setter(outcome_id)
-                .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
+                .set(x.checked_add(value).ok_or(Error::CheckedAddOverflow)?);
         }
         let outcome_other = if outcome_a == outcome_id {
             outcome_b
@@ -91,6 +91,7 @@ impl StorageTrading {
         let t_buy = t_end
             .checked_sub(t_since)
             .ok_or(Error::CheckedSubOverflow64(t_end, t_since))?;
+        dbg!(t_end, t_since, t_half, t_buy);
         let ninetails_shares = maths::ninetails_shares(shares, t_half, t_buy)?;
         {
             let s = self
@@ -111,6 +112,12 @@ impl StorageTrading {
             );
         }
         assert_or!(shares > U256::ZERO, Error::UnusualAmountCreated);
+        {
+            let x = self.dppm_shares_outcome.get(outcome_id);
+            self.dppm_shares_outcome
+                .setter(outcome_id)
+                .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
+        }
         c!(share_call::mint(share_addr, recipient, shares));
         evm::log(events::SharesMinted {
             identifier: outcome_id,
@@ -147,20 +154,20 @@ impl StorageTrading {
             .get(msg_sender())
             .get(outcome_id);
         let all_boosted_shares = self.ninetails_global_boosted_shares.get(outcome_id);
+        dbg!(all_boosted_shares);
         let outcome_1 = self.outcome_list.get(0).unwrap();
         let outcome_2 = self.outcome_list.get(1).unwrap();
         let M1 = self.dppm_outcome_invested.get(outcome_1);
         let M2 = self.dppm_outcome_invested.get(outcome_2);
-        let out_of_m1 = self.dppm_out_of.get(outcome_1);
-        let out_of_m2 = self.dppm_out_of.get(outcome_2);
+        dbg!(M1, M2);
+        let dppm_shares = self.dppm_shares_outcome.get(outcome_id);
         let fusdc = self.internal_dppm_simulate_payoff(
             share_bal,
             boosted_shares,
             all_boosted_shares,
             M1,
             M2,
-            out_of_m1,
-            out_of_m2,
+            dppm_shares
         )?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
@@ -190,7 +197,6 @@ impl StorageTrading {
         #[allow(non_snake_case)]
         let M_B = self.dppm_outcome_invested.get(outcome_b);
         let out_of_b = self.dppm_out_of.get(outcome_b);
-        dbg!(M_A, M_B, value, out_of_b);
         let shares = maths::dppm_shares(M_A, M_B, value, out_of_b)?;
         Ok(shares)
     }
@@ -203,8 +209,7 @@ impl StorageTrading {
         all_boosted_shares: U256,
         M1: U256,
         M2: U256,
-        out_of_m1: U256,
-        out_of_m2: U256,
+        global_dppm_shares_outcome: U256,
     ) -> R<U256> {
         Ok(maths::dppm_payoff(share_bal)?
             .checked_add(maths::ninetails_payoff(
@@ -212,8 +217,7 @@ impl StorageTrading {
                 all_boosted_shares,
                 M1,
                 M2,
-                out_of_m1,
-                out_of_m2,
+                global_dppm_shares_outcome,
             )?)
             .ok_or(Error::CheckedAddOverflow)?)
     }

@@ -134,6 +134,8 @@ pub struct StorageTrading {
     pub ninetails_user_boosted_shares: StorageMap<Address, StorageMap<FixedBytes<8>, StorageU256>>,
 
     pub ninetails_global_boosted_shares: StorageMap<FixedBytes<8>, StorageU256>,
+
+    pub dppm_shares_outcome: StorageMap<FixedBytes<8>, StorageU256>,
 }
 
 // Storage accessors to simplify lookup.
