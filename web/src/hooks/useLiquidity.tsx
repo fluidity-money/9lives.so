@@ -22,6 +22,7 @@ import {
 import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
 import { viemAdapter } from "thirdweb/adapters/viem";
 import RelayTxToaster from "@/components/relayTxToaster";
+
 interface AddInput {
   amount: number;
   fromToken: string;
@@ -69,9 +70,19 @@ export default function useLiquidity({
               ? (simulatedShare * BigInt(105)) / BigInt(100)
               : MaxUint256;
             return prepareContractCall({
-              contract: tradingContract,
-              method: "addLiquidityB9DDA952",
-              params: [amount, account.address, minShares, maxShares],
+              contract: config.contracts.buyHelper2,
+              method: "addLiquidity",
+              params: [
+                tradingAddr,
+                config.NEXT_PUBLIC_FUSDC_ADDR,
+                amount,
+                account.address,
+                minShares,
+                maxShares,
+                BigInt(0),
+                [],
+                BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
+              ],
             });
           };
           const simulatedShare = await simulateTransaction({
@@ -112,7 +123,6 @@ export default function useLiquidity({
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
-        let usdValueBigInt = "0";
         try {
           if (!fromDecimals) throw new Error("fromDecimals is undefined");
           if (!wallet) throw new Error("No wallet is detected");
@@ -152,9 +162,19 @@ export default function useLiquidity({
               ? (simulatedShare * BigInt(105)) / BigInt(100)
               : MaxUint256;
             return prepareContractCall({
-              contract: tradingContract,
-              method: "addLiquidityB9DDA952",
-              params: [BigInt(toAmount), account.address, minShares, maxShares],
+              contract: config.contracts.buyHelper2,
+              method: "addLiquidity",
+              params: [
+                tradingAddr,
+                input.toToken,
+                BigInt(toAmount),
+                account.address,
+                minShares,
+                maxShares,
+                BigInt(0),
+                [],
+                BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
+              ],
             });
           };
           // const simulatedShare = await simulateTransaction({
@@ -175,12 +195,12 @@ export default function useLiquidity({
             toCurrency: input.toToken,
             recipient: account.address,
             referrer: "9lives.so",
-            amount: usdValueBigInt, // Total value of all txs
+            amount: toAmount, // Total value of all txs
             tradeType: "EXACT_OUTPUT" as TradeType,
             txs: [
               {
-                to: tradingContract.address,
-                value: usdValueBigInt, // Must match total amount
+                to: config.contracts.buyHelper2.address,
+                value: toAmount, // Must match total amount
                 data: calldata,
               },
             ],

@@ -127,6 +127,32 @@ contract BuyHelper2 {
         return shares;
     }
 
+    struct MintTwice {
+        bytes8 outcome;
+        uint256 amount;
+    }
+
+    /**
+     * @notice Mint more than one outcome at once, without any protections for slippage.
+     *         Best used when the market was created for the first time.
+     */
+    function mintTwice(
+        address _tradingAddr,
+        MintTwice[] memory _outcomes,
+        address _recipient
+    ) external {
+        uint256 amt;
+        for (uint i = 0; i < _outcomes.length; ++i) amt += _outcomes[i].amount;
+        FUSDC.transferFrom(msg.sender, address(this), amt);
+        for (uint i = 0; i < _outcomes.length; ++i)
+             INineLivesTrading(_tradingAddr).mint8A059B6E(
+                _outcomes[i].outcome,
+                _outcomes[i].amount,
+                address(0),
+                _recipient
+            );
+    }
+
     function burn(
         address _tradingAddr,
         bytes8 _outcome,
@@ -193,10 +219,12 @@ contract BuyHelper2 {
         uint256 _deadline
     ) external payable returns (AddLiquidityRes memory res) {
        uint256 amountIn  = _amount - _rebate;
-        if (_asset != address(0)) {
+        if (msg.value == 0) {
             require(_rebate == 0, "rebate not possible for erc20");
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
         } else {
+            // TODO: Relay fix
+            amountIn = msg.value - _rebate;
             require(_amount == msg.value, "inconsistent value");
             WETH.deposit{value: amountIn}();
             _asset = address(WETH);

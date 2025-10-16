@@ -86,7 +86,7 @@ const useBuyWithRelay = ({
               method: "mint",
               params: [
                 tradingAddr,
-                config.contracts.fusdc.address,
+                toToken,
                 outcomeId,
                 minSharesOut,
                 maxSharesOut,

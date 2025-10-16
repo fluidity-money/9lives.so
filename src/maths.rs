@@ -1,4 +1,4 @@
-use stylus_sdk::alloy_primitives::U256;
+use stylus_sdk::alloy_primitives::{U256, U64};
 
 use crate::{error::Error, fees::FEE_SCALING};
 
@@ -27,22 +27,40 @@ pub fn dppm_price(M1: U256, M2: U256) -> Result<U256, Error> {
 
 #[allow(non_snake_case)]
 pub fn dppm_shares(M_A: U256, M_B: U256, m: U256, out_of_b: U256) -> Result<U256, Error> {
+    // cost + (self.M1 + cost) / (self.M1 + self.M2 + cost) * (self.M2 - self.outofM2)
+    // m + ((M_A + m) * (M_B - out_of_b) / ((M_A + M_B) + m))
     Ok(add!(
         m,
-        mul_div_round_up(
-            add!(M_A, m),
-            sub!(M_B, out_of_b),
-            add!(add!(M_A, M_B), m)
-        )?
+        mul_div_round_up(add!(M_A, m), sub!(M_B, out_of_b), add!(add!(M_A, M_B), m))?
     ))
 }
 
-/// Get the payoff for the shares given, with M being the globally
-/// invested amount, N_1 is the amount of shares for the outcome that's
-/// won, and n is the user's amount of shares.
+/// Get the payoff for the shares given. This should be the amount of shares
+/// the user has.
+pub fn dppm_payoff(n: U256) -> Result<U256, Error> {
+    Ok(n)
+}
+
+pub fn ninetails_shares(shares: U256, t_half: U64, t_buy: U64) -> Result<U256, Error> {
+    // shares the user owns
+    // t_buy is when you buy the shares
+    // t_half is the halfpoint of the market's time alive
+    shares
+        .checked_mul(U256::from(sub!(t_buy, t_half).pow(U64::from(2))))
+        .ok_or(Error::CheckedMulOverflow)
+}
+
 #[allow(non_snake_case)]
-pub fn dppm_payoff(n: U256, N_1: U256, M: U256) -> Result<U256, Error> {
-    Ok(mul_div(n, N_1, M)?.0)
+pub fn ninetails_payoff(
+    boosted_shares: U256,
+    all_boosted_shares: U256,
+    M1: U256,
+    M2: U256,
+    out_of_m1: U256,
+    out_of_m2: U256,
+) -> Result<U256, Error> {
+    let leftovers = sub!(sub!(add!(M1, M2), out_of_m1), out_of_m2);
+    Ok(mul_div(boosted_shares, leftovers, all_boosted_shares)?.0)
 }
 
 // Using this operation is the equivalent of pow(x, 1/n).
@@ -159,35 +177,6 @@ fn test_calc_lp_sell_fee() {
 fn test_calc_buy_fee() {
     let x = U256::from(500e6 as u64);
     assert_eq_u!(10e6 as u64, calc_fee(x, U256::from(20)).unwrap());
-}
-
-#[test]
-fn test_price_single() {
-    dbg!(dpm_shares(
-        U256::from(524),
-        U256::from(387),
-        U256::from(173),
-        U256::from(411),
-        U256::from(182)
-    )
-    .unwrap());
-}
-
-#[test]
-fn test_shares_edge_1() {
-    use rust_decimal_macros::dec;
-
-    assert_eq!(
-        dpm_shares(
-            dec!(0.1),
-            dec!(4.370954),
-            dec!(1),
-            dec!(2),
-            dec!(32699704.75266),
-        )
-        .unwrap(),
-        dec!(49545632.553194709597488661811)
-    )
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]

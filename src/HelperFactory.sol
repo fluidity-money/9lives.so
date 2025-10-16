@@ -34,6 +34,7 @@ struct CreateArgs {
     uint64 feeMinter;
     uint64 feeReferrer;
     uint256 seedLiquidity;
+    bool isDppm;
 }
 
 /**
@@ -65,7 +66,7 @@ contract HelperFactory {
     /// Create a new campaign, ignoring the CreateArgs oracle argument.
     function create(address _oracle, CreateArgs calldata _a) internal returns (address) {
         require(_a.timeEnding > block.timestamp, "time ending before timestamp");
-        INineLivesTrading t = INineLivesTrading(FACTORY.newTrading320E32E9(
+        INineLivesTrading t = INineLivesTrading(FACTORY.newTrading3F989FB1(
             _a.outcomes,
             _oracle,
             uint64(block.timestamp),
@@ -75,7 +76,8 @@ contract HelperFactory {
             _a.feeCreator,
             _a.feeLp,
             _a.feeMinter,
-            _a.feeReferrer
+            _a.feeReferrer,
+            _a.isDppm
         ));
         if (_a.seedLiquidity > 0) {
             FUSDC.transferFrom(msg.sender, address(this), _a.seedLiquidity);

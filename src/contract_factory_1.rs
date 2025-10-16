@@ -28,7 +28,7 @@ impl StorageFactory {
     // as much as the amount that the pool was made for. For now, we take the
     // default winner as the first outcome that was supplied to this function.
     #[allow(non_snake_case, clippy::too_many_arguments)]
-    pub fn new_trading_320_E_32_E_9(
+    pub fn new_trading_3_F_989_F_B_1(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
@@ -40,6 +40,7 @@ impl StorageFactory {
         fee_lp: u64,
         fee_minter: u64,
         fee_referrer: u64,
+        backend_is_dppm: bool
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
@@ -51,16 +52,14 @@ impl StorageFactory {
             .map(|c| c.as_slice())
             .collect::<Vec<_>>());
 
-        // For now, every backend will be the AMM form, until we have Longtail supported.
-        let backend_is_dpm = false;
-        let backend_type = if backend_is_dpm {
-            TradingBackendType::DPM as u8
+        let backend_type = if backend_is_dppm {
+            TradingBackendType::DPPM as u8
         } else {
             TradingBackendType::AMM as u8
         };
 
         // Deploy the contract, and emit a log that it was created.
-        let trading_addr = c!((if backend_is_dpm {
+        let trading_addr = c!((if backend_is_dppm {
             proxy::deploy_trading(contract_address(), true, trading_id)
         } else {
             proxy::deploy_trading(contract_address(), false, trading_id)
@@ -84,7 +83,7 @@ impl StorageFactory {
         // send it to the trading contract, which assumes it has the money it's entitled to.
         // We don't need setup liquidity for the AMM!
 
-        if backend_is_dpm {
+        if backend_is_dppm {
             let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
             fusdc_call::take_from_sender_to(trading_addr, seed_liq)?;
         }

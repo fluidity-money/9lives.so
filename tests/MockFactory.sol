@@ -26,7 +26,7 @@ contract MockFactory is INineLivesFactory {
         address /* operator */
     ) external {}
 
-    function newTrading320E32E9(
+    function newTrading3F989FB1(
         FactoryOutcome[] memory _outcomes,
         address _oracle,
         uint64 _timeStart,
@@ -36,7 +36,8 @@ contract MockFactory is INineLivesFactory {
         uint64 /* feeCreator */,
         uint64 /* feeLp */,
         uint64 /* feeMinter */,
-        uint64 /* feeReferrer */
+        uint64 /* feeReferrer */,
+        bool /* backendIsDpm */
     ) external returns (address) {
         MockTrading t = new MockTrading(ADDR_FUSDC, address(0));
         bytes8[] memory outcomes = new bytes8[](_outcomes.length);
@@ -79,7 +80,7 @@ contract MockFactory is INineLivesFactory {
         return keccak256(abi.encodePacked(address(4)));
     }
 
-    function dpmTradingHash() external pure returns (bytes32) {
+    function dppmTradingHash() external pure returns (bytes32) {
         return keccak256(abi.encodePacked(address(5)));
     }
 

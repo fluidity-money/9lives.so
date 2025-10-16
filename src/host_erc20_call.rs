@@ -5,7 +5,6 @@ use std::{cell::RefCell, collections::HashMap};
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use crate::{
-    decimal::u256_to_decimal,
     error::{rename_addr, Error},
     immutables, testing_addrs,
     utils::contract_address,
@@ -154,10 +153,7 @@ pub fn burn(addr: Address, spender: Address, amt: U256) {
 fn safe_print(x: U256, d: u8) -> String {
     match x {
         U256::MAX => "max".to_string(),
-        _ => match u256_to_decimal(x, d) {
-            Ok(x) => x.to_string(),
-            Err(_) => format!("massive number: {x}"),
-        },
+        x => (x / U256::from(10).pow(U256::from(d))).to_string()
     }
 }
 
