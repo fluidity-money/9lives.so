@@ -142,7 +142,7 @@ The error table lives in ERRORS.md.
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0x6e95B1fcca9aBb2D94213AE3ccFCaf5BB8406E6B` |
-| BuyHelper2                    | `0x46172C0409a8Dd5237f335f85C6B4c5D25039E39` |
+| BuyHelper2                    | `0xD30DdcB95745E9A796E06022d57aBfc82B8e4a0E` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
 | Claimant helper               | `0x00FA0a5d3b25Da03ef651045d42B9F7137486b03` |

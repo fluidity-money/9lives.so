@@ -129,7 +129,6 @@ export default function useLiquidity({
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
-        let usdValueBigInt = "0";
         try {
           if (!fromDecimals) throw new Error("fromDecimals is undefined");
           if (!wallet) throw new Error("No wallet is detected");
@@ -206,12 +205,12 @@ export default function useLiquidity({
             toCurrency: input.toToken,
             recipient: account.address,
             referrer: "9lives.so",
-            amount: usdValueBigInt, // Total value of all txs
+            amount: toAmount, // Total value of all txs
             tradeType: "EXACT_OUTPUT" as TradeType,
             txs: [
               {
                 to: config.contracts.buyHelper2.address,
-                value: usdValueBigInt, // Must match total amount
+                value: toAmount, // Must match total amount
                 data: calldata,
               },
             ],
