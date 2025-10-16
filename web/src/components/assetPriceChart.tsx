@@ -21,12 +21,14 @@ export default function AssetPriceChart({
   basePrice,
   starting,
   ending,
+  simple = false,
 }: {
   id: string;
   symbol: string;
   basePrice: number;
   starting: number;
   ending: number;
+  simple?: boolean;
 }) {
   const { data, isSuccess } = useQuery<PricePoint[]>({
     queryKey: ["assetPrice", symbol, id],
@@ -39,7 +41,9 @@ export default function AssetPriceChart({
         return res?.oracles_ninelives_prices_1.map((i) => ({
           price: i.amount,
           id: i.id,
-          timestamp: new Date(i.created_by).getTime(),
+          timestamp:
+            new Date(i.created_by).getTime() -
+            new Date().getTimezoneOffset() * 60 * 1000,
         }));
       }
       return [];
@@ -72,13 +76,15 @@ export default function AssetPriceChart({
 
   const tickValues: number[] = [];
   let lastLabel: string | null = null;
-  data.forEach((d) => {
-    const label = formatFn(d.timestamp);
-    if (label !== lastLabel) {
-      tickValues.push(d.timestamp);
-      lastLabel = label;
-    }
-  });
+  if (!simple) {
+    data.forEach((d) => {
+      const label = formatFn(d.timestamp);
+      if (label !== lastLabel) {
+        tickValues.push(d.timestamp);
+        lastLabel = label;
+      }
+    });
+  }
   const prices = data.map((i) => i.price);
   const minPrice = Math.min(...prices, basePrice);
   const maxPrice = Math.max(...prices, basePrice);
@@ -132,6 +138,7 @@ export default function AssetPriceChart({
           />
           <ReferenceLine
             y={basePrice}
+            id="basePriceAmount"
             label={{
               value: `$${basePrice}`,
               position: "centerBottom",
@@ -144,6 +151,7 @@ export default function AssetPriceChart({
           />
           <ReferenceLine
             y={basePrice}
+            id="basePriceTitle"
             stroke="#aaa"
             strokeDasharray="3 3"
             label={{
@@ -163,19 +171,38 @@ export default function AssetPriceChart({
             strokeWidth={2}
             name={priceIsAbove ? "Above" : "Below"}
           />
+          {simple ? (
+            <YAxis
+              yAxisId="lefty"
+              dataKey={"price"}
+              domain={[minY, maxY]}
+              axisLine={{
+                stroke: "#0C0C0C",
+                strokeWidth: 1,
+                strokeDasharray: "3 2",
+              }}
+              orientation="left"
+              ticks={[minY, maxY]}
+            />
+          ) : null}
           <YAxis
             tick={{
               fontFamily: "var(--font-chicago)",
               fontSize: 12,
               fill: "#0C0C0C",
             }}
+            type="number"
+            yAxisId="righty"
             domain={[minY, maxY]}
             dataKey={"price"}
-            axisLine={{ stroke: "#0C0C0C", strokeWidth: 1 }}
+            axisLine={{
+              stroke: "#0C0C0C",
+              strokeWidth: 1,
+              strokeDasharray: simple ? "3 2" : undefined,
+            }}
             orientation="right"
-            width="auto"
             tickFormatter={(value) => `$${value}`}
-            ticks={[minY, basePrice, maxY]}
+            ticks={simple ? [] : [minY, basePrice, maxY]}
           />
           <XAxis
             tick={{
@@ -183,8 +210,9 @@ export default function AssetPriceChart({
               fontSize: 12,
               fill: "#0C0C0C",
             }}
+            type={simple ? "number" : "category"}
             dataKey="timestamp"
-            axisLine={{ stroke: "#0C0C0C", strokeWidth: 1 }}
+            axisLine={{ stroke: "#0C0C0C", strokeWidth: simple ? 0 : 1 }}
             ticks={[starting, ...tickValues, ending]}
             tickFormatter={formatFn}
           />
