@@ -22,6 +22,7 @@ import {
 import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
 import { viemAdapter } from "thirdweb/adapters/viem";
 import RelayTxToaster from "@/components/relayTxToaster";
+import { Outcome } from "@/types";
 interface AddInput {
   amount: number;
   fromToken: string;
@@ -35,9 +36,11 @@ type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 export default function useLiquidity({
   tradingAddr,
   campaignId,
+  outcomes,
 }: {
   tradingAddr: `0x${string}`;
   campaignId: `0x${string}`;
+  outcomes: Outcome[];
 }) {
   const queryClient = useQueryClient();
   const tradingContract = getContract({
@@ -69,9 +72,23 @@ export default function useLiquidity({
               ? (simulatedShare * BigInt(105)) / BigInt(100)
               : MaxUint256;
             return prepareContractCall({
-              contract: tradingContract,
-              method: "addLiquidityB9DDA952",
-              params: [amount, account.address, minShares, maxShares],
+              contract: config.contracts.buyHelper2,
+              method: "addLiquidity",
+              params: [
+                tradingAddr,
+                config.NEXT_PUBLIC_FUSDC_ADDR,
+                amount,
+                account.address,
+                minShares,
+                maxShares,
+                BigInt(0),
+                outcomes.map((o) => ({
+                  identifier: o.identifier,
+                  minToken: BigInt(0),
+                  maxToken: MaxUint256,
+                })),
+                BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
+              ],
             });
           };
           const simulatedShare = await simulateTransaction({
@@ -152,9 +169,23 @@ export default function useLiquidity({
               ? (simulatedShare * BigInt(105)) / BigInt(100)
               : MaxUint256;
             return prepareContractCall({
-              contract: tradingContract,
-              method: "addLiquidityB9DDA952",
-              params: [BigInt(toAmount), account.address, minShares, maxShares],
+              contract: config.contracts.buyHelper2,
+              method: "addLiquidity",
+              params: [
+                tradingAddr,
+                input.toToken,
+                BigInt(toAmount),
+                account.address,
+                minShares,
+                maxShares,
+                BigInt(0),
+                outcomes.map((o) => ({
+                  identifier: o.identifier,
+                  minToken: BigInt(0),
+                  maxToken: MaxUint256,
+                })),
+                BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
+              ],
             });
           };
           // const simulatedShare = await simulateTransaction({
@@ -179,7 +210,7 @@ export default function useLiquidity({
             tradeType: "EXACT_OUTPUT" as TradeType,
             txs: [
               {
-                to: tradingContract.address,
+                to: config.contracts.buyHelper2.address,
                 value: usdValueBigInt, // Must match total amount
                 data: calldata,
               },

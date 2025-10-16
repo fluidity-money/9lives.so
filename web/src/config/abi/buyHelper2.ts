@@ -118,6 +118,11 @@ const buyHelper2Abi = [
         internalType: "address",
       },
       {
+        name: "_asset",
+        type: "address",
+        internalType: "address",
+      },
+      {
         name: "_amount",
         type: "uint256",
         internalType: "uint256",
@@ -134,6 +139,11 @@ const buyHelper2Abi = [
       },
       {
         name: "_maxLiquidity",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "_rebate",
         type: "uint256",
         internalType: "uint256",
       },
@@ -158,6 +168,11 @@ const buyHelper2Abi = [
             internalType: "uint256",
           },
         ],
+      },
+      {
+        name: "_deadline",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     outputs: [
@@ -191,7 +206,7 @@ const buyHelper2Abi = [
         ],
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
   },
   {
     type: "function",
@@ -339,6 +354,41 @@ const buyHelper2Abi = [
       },
     ],
     stateMutability: "payable",
+  },
+  {
+    type: "function",
+    name: "mintTwice",
+    inputs: [
+      {
+        name: "_tradingAddr",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "_outcomes",
+        type: "tuple[]",
+        internalType: "struct BuyHelper2.MintTwice[]",
+        components: [
+          {
+            name: "outcome",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
+          {
+            name: "amount",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
+      },
+      {
+        name: "_recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
