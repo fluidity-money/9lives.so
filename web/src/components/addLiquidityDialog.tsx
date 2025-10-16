@@ -85,7 +85,6 @@ export default function AddLiquidityDialog({
   const { add, addWithRelay } = useLiquidity({
     campaignId: data.identifier,
     tradingAddr: data.poolAddress,
-    outcomes: data.outcomes,
   });
   const { add: addWithPaymaster } = useLiquidityWithPaymaster({
     data,

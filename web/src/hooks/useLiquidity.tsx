@@ -22,7 +22,7 @@ import {
 import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
 import { viemAdapter } from "thirdweb/adapters/viem";
 import RelayTxToaster from "@/components/relayTxToaster";
-import { Outcome } from "@/types";
+
 interface AddInput {
   amount: number;
   fromToken: string;
@@ -36,11 +36,9 @@ type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 export default function useLiquidity({
   tradingAddr,
   campaignId,
-  outcomes,
 }: {
   tradingAddr: `0x${string}`;
   campaignId: `0x${string}`;
-  outcomes: Outcome[];
 }) {
   const queryClient = useQueryClient();
   const tradingContract = getContract({
