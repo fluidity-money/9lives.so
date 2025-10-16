@@ -28,7 +28,7 @@ impl StorageFactory {
     // as much as the amount that the pool was made for. For now, we take the
     // default winner as the first outcome that was supplied to this function.
     #[allow(non_snake_case, clippy::too_many_arguments)]
-    pub fn new_trading(
+    pub fn new_trading_3_F_989_F_B_1(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,

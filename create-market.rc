@@ -1,17 +1,27 @@
 #!/usr/bin/env -S rc -e
 
-Automated script to make a market that assumes the following:
+# Automated script to make a market that assumes the following:
 
-1. The user has enough starting liquidity for $2, and for however much they want to
-allocate as an argument here.
+# 1. The user has enough starting liquidity for $2, and for however much
+# they want to allocate as an argument here.
 
-2. The user has provided some odds they like, expressed scaled by 100. These will be used
-for an initial purchase.
+# 2. The user has provided some amounts to buy both sides with. These
+# will be used for an initial purchase.
 
-3. The user has provided some starting liquidity to be used to set the odds. This is aside
-from the $2 and is a separate purchase that takes place.
+# 3. The user has provided a valid admin secret, as this script assumes
+# a permissioned user using one of the private oracle types (ie, the
+# PRICE_ORACLE oracle type).
 
-4. The user has provided a valid admin secret.
+# At each step, environment variables will be printed which can be set
+# to restart from the point after which they were printed.
 
-At each step, environment variables will be printed which can be set to restart from that
-point.
+# The metadata should be encoded in JSON like the following, and it should be provided in
+# stdin:
+
+# { "base": "BTC", "quote": "UTC", "ending_price": "182831"}
+
+if(~ \
+	$SPN_SUPERPOSITON_URL \
+	$SPN_SUPERPOSITION_KEY \
+	$SPN_SENDER_ADDR \
+	$SPN_METADATA

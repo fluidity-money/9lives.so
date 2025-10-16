@@ -29,7 +29,7 @@ interface INineLivesFactory {
      * @param feeMinter pct to take as fees for users using the mint function.
      * @return tradingAddr address of the newly created Trading contract deployment.
      */
-    function newTrading(
+    function newTrading3F989FB1(
         FactoryOutcome[] memory outcomes,
         address oracle,
         uint64 timeStart,
@@ -61,9 +61,9 @@ interface INineLivesFactory {
     function shareImpl() external pure returns (address);
 
     /**
-     * @notice return the keccak256 hash of the trading contract in DPM form.
+     * @notice return the keccak256 hash of the trading contract in DPPM form.
      */
-    function dpmTradingHash() external view returns (bytes32);
+    function dppmTradingHash() external view returns (bytes32);
 
     /**
      * @notice return the keccak256 hash of the trading contract in AMM form.
