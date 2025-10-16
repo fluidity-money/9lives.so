@@ -244,6 +244,7 @@ contract BuyHelper2 {
         } else {
             fusdc = _amount;
         }
+        FUSDC.approve(_tradingAddr, fusdc);
         res.liq = INineLivesTrading(_tradingAddr).addLiquidityB9DDA952(
             fusdc,
             _recipient,
@@ -251,7 +252,6 @@ contract BuyHelper2 {
             _maxLiquidity
         );
         res.tokens = new AddLiquidityResToken[](_tokens.length);
-        FUSDC.approve(_tradingAddr, fusdc);
         for (uint i = 0; i < _tokens.length; ++i) {
             IERC20 t = getShareAddr(FACTORY, _tradingAddr, _tokens[i].identifier);
             uint256 b = t.balanceOf(address(this));

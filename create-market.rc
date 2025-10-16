@@ -39,7 +39,7 @@ if(test `{echo $* | wc -w} -lt 2) \
 
 sum=`{{ for(n) echo $n } | awk '{ sum += $1 } END { print sum }' }
 
-if(~ \
+if(~ ( \
 	$SPN_SUPERPOSITION_URL \
 	$SPN_SUPERPOSITION_KEY \
 	$SPN_SENDER_ADDR \
@@ -52,8 +52,8 @@ if(~ \
 	$SPN_DEADLINE \
 	$SPN_END_QUOTE_PRICE \
 	$SPN_ORACLE_ADDR \
-	$SPN_FACTORY_ADDR \
-	''
+	$SPN_FACTORY_ADDR ) \
+	'' \
 ) \
 	usage_envs
 
