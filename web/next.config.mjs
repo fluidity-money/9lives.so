@@ -1,6 +1,10 @@
 import * as childProcess from "child_process";
 import { withSentryConfig } from "@sentry/nextjs";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const gitHash = childProcess
   .execSync("git rev-parse --short HEAD")
   .toString()
@@ -24,7 +28,7 @@ const nextConfig = {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
-  outputFileTracingRoot: false,
+  outputFileTracingRoot: __dirname,
   images: {
     remotePatterns: [
       {
