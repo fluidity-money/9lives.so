@@ -82,11 +82,7 @@ export default function useLiquidity({
                 minShares,
                 maxShares,
                 BigInt(0),
-                outcomes.map((o) => ({
-                  identifier: o.identifier,
-                  minToken: BigInt(0),
-                  maxToken: MaxUint256,
-                })),
+                [],
                 BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
               ],
             });
@@ -178,11 +174,7 @@ export default function useLiquidity({
                 minShares,
                 maxShares,
                 BigInt(0),
-                outcomes.map((o) => ({
-                  identifier: o.identifier,
-                  minToken: BigInt(0),
-                  maxToken: MaxUint256,
-                })),
+                [],
                 BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
               ],
             });
