@@ -88,10 +88,15 @@ export default function AssetPriceChart({
   const prices = data.map((i) => i.price);
   const minPrice = Math.min(...prices, basePrice);
   const maxPrice = Math.max(...prices, basePrice);
+  const simpleDiff = Math.max(basePrice - minPrice, basePrice - maxPrice);
   const digits = minPrice.toString().length;
   const margin = 1 / Math.pow(10, digits - 2);
-  const minY = Math.floor(minPrice - minPrice * margin);
-  const maxY = Math.floor(maxPrice + maxPrice * margin);
+  const minY = simple
+    ? basePrice - simpleDiff
+    : Math.floor(minPrice - minPrice * margin);
+  const maxY = simple
+    ? basePrice + simpleDiff
+    : Math.floor(maxPrice + maxPrice * margin);
   const PulseDot = ({ cx, cy }: { cx: number; cy: number }) => {
     return (
       <circle
@@ -116,7 +121,12 @@ export default function AssetPriceChart({
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
-          margin={{ top: 16, right: 60, bottom: 5, left: 30 }}
+          margin={{
+            top: simple ? 0 : 16,
+            right: simple ? 0 : 60,
+            bottom: 0,
+            left: simple ? 0 : 30,
+          }}
         >
           <ReferenceDot
             x={data[data.length - 1].timestamp}
@@ -138,7 +148,6 @@ export default function AssetPriceChart({
           />
           <ReferenceLine
             y={basePrice}
-            id="basePriceAmount"
             label={{
               value: `$${basePrice}`,
               position: "centerBottom",
@@ -151,7 +160,6 @@ export default function AssetPriceChart({
           />
           <ReferenceLine
             y={basePrice}
-            id="basePriceTitle"
             stroke="#aaa"
             strokeDasharray="3 3"
             label={{
@@ -173,16 +181,15 @@ export default function AssetPriceChart({
           />
           {simple ? (
             <YAxis
-              yAxisId="lefty"
+              yAxisId="1"
               dataKey={"price"}
-              domain={[minY, maxY]}
               axisLine={{
                 stroke: "#0C0C0C",
                 strokeWidth: 1,
                 strokeDasharray: "3 2",
               }}
               orientation="left"
-              ticks={[minY, maxY]}
+              ticks={[]}
             />
           ) : null}
           <YAxis
@@ -191,8 +198,7 @@ export default function AssetPriceChart({
               fontSize: 12,
               fill: "#0C0C0C",
             }}
-            type="number"
-            yAxisId="righty"
+            yAxisId="0"
             domain={[minY, maxY]}
             dataKey={"price"}
             axisLine={{
