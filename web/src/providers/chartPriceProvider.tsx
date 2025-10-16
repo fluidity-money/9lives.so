@@ -55,7 +55,9 @@ export default function ChartPriceProvider({
                   .map((i) => ({
                     id: i.id,
                     price: i.amount,
-                    timestamp: new Date(i.created_by).getTime(),
+                    timestamp:
+                      new Date(i.created_by).getTime() -
+                      new Date().getTimezoneOffset() * 60 * 1000,
                   }));
                 if (previousData) {
                   return [...previousData, ...onlyNewItems];
