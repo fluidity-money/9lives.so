@@ -122,10 +122,10 @@ export default function AssetPriceChart({
         <LineChart
           data={data}
           margin={{
-            top: simple ? 0 : 16,
-            right: simple ? 0 : 60,
+            top: simple ? 0 : 12,
+            right: simple ? 0 : 4,
             bottom: 0,
-            left: simple ? 0 : 30,
+            left: 0,
           }}
         >
           <ReferenceDot
