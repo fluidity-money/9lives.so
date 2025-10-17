@@ -30,7 +30,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   const data = await requestSimpleMarket(id);
   if (!data) notFound();
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <Image src={BTC} width={60} height={60} alt={data.name} />
         <div className="flex flex-col gap-1">
