@@ -169,11 +169,6 @@ export default function AssetPriceChart({
           <ReferenceDot
             x={data[data.length - 1].timestamp}
             y={data[data.length - 1].price}
-            shape={PriceInd}
-          />
-          <ReferenceDot
-            x={data[data.length - 1].timestamp}
-            y={data[data.length - 1].price}
             shape={PulseDot}
           />
           <ReferenceDot
@@ -276,6 +271,11 @@ export default function AssetPriceChart({
             }}
             labelStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
             itemStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
+          />
+          <ReferenceDot
+            x={data[data.length - 1].timestamp}
+            y={data[data.length - 1].price}
+            shape={PriceInd}
           />
         </LineChart>
       </ResponsiveContainer>
