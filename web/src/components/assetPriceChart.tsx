@@ -54,36 +54,59 @@ export default function AssetPriceChart({
     return null;
   }
   const latestPrice = data[data.length - 1].price;
-  const minTs = starting;
-  const maxTs = ending;
-  const durationSeconds = maxTs - minTs;
-  const durationDays = durationSeconds / 86400 / 1000;
   const priceIsAbove = latestPrice > basePrice;
-
+  const diff = ending - starting;
+  const MIN = 1000 * 60;
+  const HOUR = MIN * 60;
+  const DAY = HOUR * 24;
+  const MONTH = DAY * 30;
+  const YEAR = MONTH * 12;
   const formatFn = (ts: number) => {
     const date = new Date(ts);
-    if (durationDays <= 1) {
-      return date.toLocaleString("default", {
-        hour: "numeric",
-        minute: "2-digit",
-      });
-    } else if (durationDays <= 30) {
-      return date.toLocaleString("default", { day: "numeric", month: "short" });
-    } else {
-      return date.toLocaleString("default", { month: "short" });
+    switch (true) {
+      case diff > MONTH:
+        return date.toLocaleString("default", {
+          month: "short",
+          year: diff > YEAR ? "2-digit" : undefined,
+        });
+      case MONTH >= diff && diff > DAY:
+        return date.toLocaleString("default", {
+          day: "numeric",
+          month: "short",
+        });
+      case DAY >= diff && diff > HOUR:
+        return date.toLocaleString("default", { hour: "numeric" });
+      default:
+        return date.toLocaleString("default", {
+          hour: "numeric",
+          minute: "2-digit",
+        });
     }
   };
-
   const tickValues: number[] = [];
-  let lastLabel: string | null = null;
   if (!simple) {
-    data.forEach((d) => {
-      const label = formatFn(d.timestamp);
-      if (label !== lastLabel) {
-        tickValues.push(d.timestamp);
-        lastLabel = label;
-      }
-    });
+    let divider;
+    switch (true) {
+      case diff > MONTH:
+        divider = MONTH;
+        break;
+      case MONTH >= diff && diff > DAY:
+        divider = 5 * DAY;
+        break;
+      case DAY >= diff && diff > HOUR:
+        divider = HOUR;
+        break;
+      default:
+        divider = 5 * MIN;
+        break;
+    }
+    for (
+      let t = starting + divider;
+      t < Date.now() && t <= ending;
+      t += divider
+    ) {
+      tickValues.push(t);
+    }
   }
   const prices = data.map((i) => i.price);
   const minPrice = Math.min(...prices, basePrice);
@@ -246,10 +269,11 @@ export default function AssetPriceChart({
               fontSize: 12,
               fill: "#0C0C0C",
             }}
+            scale={"time"}
             type={simple ? "number" : "category"}
             dataKey="timestamp"
             axisLine={{ stroke: "#0C0C0C", strokeWidth: simple ? 0 : 1 }}
-            ticks={[starting, ...tickValues, ending]}
+            ticks={simple ? [starting, ending] : [starting, ...tickValues]}
             tickFormatter={formatFn}
           />
           <Tooltip
