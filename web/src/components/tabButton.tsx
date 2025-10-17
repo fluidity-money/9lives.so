@@ -79,10 +79,10 @@ interface TabButtonProps
   extends HTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonTitle> {
   title: string;
-  active: boolean;
-  hover: boolean;
-  focus: boolean;
-  autofocus: boolean;
+  active?: boolean;
+  hover?: boolean;
+  focus?: boolean;
+  autofocus?: boolean;
   selected: boolean;
 }
 const leftBorderUnselectedMap: Record<

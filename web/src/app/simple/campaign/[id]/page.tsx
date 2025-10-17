@@ -4,6 +4,7 @@ import { requestSimpleMarket } from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import BTC from "#/images/tokens/btc.webp";
+import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 type Params = Promise<{ id: string }>;
 export async function generateStaticParams() {
   return config.simpleMarkets.map((id) => ({
@@ -31,6 +32,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   if (!data) notFound();
   return (
     <div className="flex flex-col gap-4">
+      <SimpleNavMenu />
       <div className="flex items-center gap-2">
         <Image src={BTC} width={60} height={60} alt={data.name} />
         <div className="flex flex-col gap-1">
