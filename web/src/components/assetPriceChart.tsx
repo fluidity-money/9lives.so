@@ -239,19 +239,17 @@ export default function AssetPriceChart({
             strokeWidth={2}
             name={symbol.toUpperCase()}
           />
-          {simple ? (
-            <YAxis
-              yAxisId="1"
-              dataKey={"price"}
-              axisLine={{
-                stroke: "#0C0C0C",
-                strokeWidth: 1,
-                strokeDasharray: "3 2",
-              }}
-              orientation="left"
-              ticks={[]}
-            />
-          ) : null}
+          <YAxis
+            yAxisId="1"
+            dataKey={"price"}
+            axisLine={{
+              stroke: "#0C0C0C",
+              strokeWidth: simple ? 1 : 0,
+              strokeDasharray: "3 2",
+            }}
+            orientation="left"
+            ticks={[]}
+          />
           <YAxis
             tick={{
               fontFamily: "var(--font-chicago)",
