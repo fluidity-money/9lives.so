@@ -119,6 +119,41 @@ export default function AssetPriceChart({
       </circle>
     );
   };
+  const Dot = ({ cx, cy }: { cx: number; cy: number }) => {
+    return (
+      <circle
+        cx={cx}
+        r="4"
+        cy={cy}
+        stroke="#fff"
+        strokeWidth={2}
+        fill={priceIsAbove ? "#5dd341" : "#f96565"}
+      />
+    );
+  };
+  const PriceInd = ({ cx, cy }: { cx: number; cy: number }) => (
+    <g transform="translate(0,-32)">
+      <rect
+        x={cx - 40}
+        y={cy - 10}
+        width={80}
+        height={20}
+        fill={priceIsAbove ? "#5dd341" : "#f96565"}
+        rx={4}
+      />
+      <text
+        x={cx}
+        y={cy + 4}
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="bold"
+        fill={"#fff"}
+        fontFamily="var(--font-chicago)"
+      >
+        {priceIsAbove ? "▲" : "▼"} ${data[data.length - 1].price}
+      </text>
+    </g>
+  );
   return (
     <ChartPriceProvider id={id} symbol={symbol}>
       <ResponsiveContainer width="100%" height={400}>
@@ -134,20 +169,17 @@ export default function AssetPriceChart({
           <ReferenceDot
             x={data[data.length - 1].timestamp}
             y={data[data.length - 1].price}
+            shape={PriceInd}
+          />
+          <ReferenceDot
+            x={data[data.length - 1].timestamp}
+            y={data[data.length - 1].price}
             shape={PulseDot}
           />
-          <ReferenceLine
+          <ReferenceDot
+            x={data[data.length - 1].timestamp}
             y={data[data.length - 1].price}
-            stroke="tranparent"
-            label={{
-              value: `${priceIsAbove ? "▲" : "▼"} $${data[data.length - 1].price}`,
-              position: "right",
-              fill: priceIsAbove ? "#5dd341" : "#f96565",
-              fontSize: 12,
-              fontWeight: "bold",
-              fontFamily: "var(--font-chicago)",
-              transform: "translate(-100, -15)",
-            }}
+            shape={Dot}
           />
           <ReferenceLine
             y={basePrice}
