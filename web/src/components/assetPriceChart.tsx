@@ -53,6 +53,7 @@ export default function AssetPriceChart({
   if (!isSuccess || data.length < 2) {
     return null;
   }
+
   const latestPrice = data[data.length - 1].price;
   const priceIsAbove = latestPrice > basePrice;
   const diff = ending - starting;
@@ -61,6 +62,23 @@ export default function AssetPriceChart({
   const DAY = HOUR * 24;
   const MONTH = DAY * 30;
   const YEAR = MONTH * 12;
+  const tickValues: number[] = [];
+  const prices = data.map((i) => i.price);
+  const minPrice = Math.min(...prices, basePrice);
+  const maxPrice = Math.max(...prices, basePrice);
+  const simpleDiff = Math.max(
+    Math.abs(basePrice - minPrice),
+    Math.abs(basePrice - maxPrice),
+  );
+  const digits = minPrice.toString().length;
+  const margin = 1 / Math.pow(10, digits - 2);
+  const minY = simple
+    ? basePrice - simpleDiff
+    : Math.floor(minPrice - minPrice * margin);
+  const maxY = simple
+    ? basePrice + simpleDiff
+    : Math.floor(maxPrice + maxPrice * margin);
+
   const formatFn = (ts: number) => {
     const date = new Date(ts);
     switch (true) {
@@ -83,7 +101,7 @@ export default function AssetPriceChart({
         });
     }
   };
-  const tickValues: number[] = [];
+
   if (!simple) {
     let divider;
     switch (true) {
@@ -108,21 +126,7 @@ export default function AssetPriceChart({
       tickValues.push(t);
     }
   }
-  const prices = data.map((i) => i.price);
-  const minPrice = Math.min(...prices, basePrice);
-  const maxPrice = Math.max(...prices, basePrice);
-  const simpleDiff = Math.max(
-    Math.abs(basePrice - minPrice),
-    Math.abs(basePrice - maxPrice),
-  );
-  const digits = minPrice.toString().length;
-  const margin = 1 / Math.pow(10, digits - 2);
-  const minY = simple
-    ? basePrice - simpleDiff
-    : Math.floor(minPrice - minPrice * margin);
-  const maxY = simple
-    ? basePrice + simpleDiff
-    : Math.floor(maxPrice + maxPrice * margin);
+
   const PulseDot = ({ cx, cy }: { cx: number; cy: number }) => {
     return (
       <circle
@@ -142,6 +146,7 @@ export default function AssetPriceChart({
       </circle>
     );
   };
+
   const Dot = ({ cx, cy }: { cx: number; cy: number }) => {
     return (
       <circle
@@ -154,6 +159,7 @@ export default function AssetPriceChart({
       />
     );
   };
+
   const PriceInd = ({ cx, cy }: { cx: number; cy: number }) => (
     <g transform="translate(0,-32)">
       <rect
@@ -177,11 +183,12 @@ export default function AssetPriceChart({
       </text>
     </g>
   );
+
   return (
     <ChartPriceProvider id={id} symbol={symbol}>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
-          data={data}
+          data={[{ id: 1, timestamp: starting, price: basePrice }, ...data]}
           margin={{
             top: simple ? 0 : 12,
             right: simple ? 0 : 4,
@@ -230,7 +237,7 @@ export default function AssetPriceChart({
             type="monotone"
             stroke={priceIsAbove ? "#5dd341" : "#f96565"}
             strokeWidth={2}
-            name={priceIsAbove ? "Above" : "Below"}
+            name={symbol.toUpperCase()}
           />
           {simple ? (
             <YAxis
@@ -272,6 +279,7 @@ export default function AssetPriceChart({
             scale={"time"}
             type={simple ? "number" : "category"}
             dataKey="timestamp"
+            domain={[starting, ending]}
             axisLine={{ stroke: "#0C0C0C", strokeWidth: simple ? 0 : 1 }}
             ticks={simple ? [starting, ending] : [starting, ...tickValues]}
             tickFormatter={formatFn}
