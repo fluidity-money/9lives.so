@@ -1,6 +1,8 @@
 
 # Stylus Interpreter (sid)
 
+WARNING!! This is a piece of crap.
+
 The Stylus Interpreter is a configurable wasm runner that lets you override local state,
 simulate calls and persist the output, and more! It currently only supports CREATE1, some
 standard operations, and calls without static call.

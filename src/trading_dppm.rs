@@ -85,14 +85,14 @@ impl StorageTrading {
             let x = self.dppm_global_invested.get();
             self.dppm_global_invested.set(x + value);
         }
-        let t_end = self.time_ending.get();
-        let t_since = U64::from(block_timestamp()) - self.time_start.get();
-        let t_half = (t_end - self.time_start.get()) / U64::from(2);
-        let t_buy = t_end
-            .checked_sub(t_since)
-            .ok_or(Error::CheckedSubOverflow64(t_end, t_since))?;
-        dbg!(t_end, t_since, t_half, t_buy);
-        let ninetails_shares = maths::ninetails_shares(shares, t_half, t_buy)?;
+        let t_start = self.time_start.get();
+        let t_end = self.time_ending.get() - self.time_start.get();
+        let t_now = U64::from(block_timestamp());
+        // current time - start time for the market
+        let t_buy = t_now
+            .checked_sub(t_start)
+            .ok_or(Error::CheckedSubOverflow64(t_now, t_start))?;
+        let ninetails_shares = maths::ninetails_shares(shares, t_buy, t_end)?;
         {
             let s = self
                 .ninetails_user_boosted_shares
@@ -105,8 +105,15 @@ impl StorageTrading {
                     s.checked_add(ninetails_shares)
                         .ok_or(Error::CheckedAddOverflow)?,
                 );
-            let g = self.ninetails_global_boosted_shares.get(outcome_id);
-            self.ninetails_global_boosted_shares.setter(outcome_id).set(
+            let g = self.ninetails_outcome_boosted_shares.get(outcome_id);
+            self.ninetails_outcome_boosted_shares
+                .setter(outcome_id)
+                .set(
+                    g.checked_add(ninetails_shares)
+                        .ok_or(Error::CheckedAddOverflow)?,
+                );
+            let g = self.ninetails_global_boosted_shares.get();
+            self.ninetails_global_boosted_shares.set(
                 g.checked_add(ninetails_shares)
                     .ok_or(Error::CheckedAddOverflow)?,
             );
@@ -149,25 +156,25 @@ impl StorageTrading {
         let share_bal = U256::min(share_call::balance_of(share_addr, msg_sender())?, amt);
         assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
         share_call::burn(share_addr, msg_sender(), share_bal)?;
-        let boosted_shares = self
+        let user_boosted_shares = self
             .ninetails_user_boosted_shares
             .get(msg_sender())
             .get(outcome_id);
-        let all_boosted_shares = self.ninetails_global_boosted_shares.get(outcome_id);
-        dbg!(all_boosted_shares);
+        let outcome_boosted_shares = self.ninetails_outcome_boosted_shares.get(outcome_id);
+        let all_boosted_shares = self.ninetails_global_boosted_shares.get();
         let outcome_1 = self.outcome_list.get(0).unwrap();
         let outcome_2 = self.outcome_list.get(1).unwrap();
         let M1 = self.dppm_outcome_invested.get(outcome_1);
         let M2 = self.dppm_outcome_invested.get(outcome_2);
-        dbg!(M1, M2);
-        let dppm_shares = self.dppm_shares_outcome.get(outcome_id);
+        let winning_dppm_shares = self.dppm_shares_outcome.get(outcome_id);
         let fusdc = self.internal_dppm_simulate_payoff(
             share_bal,
-            boosted_shares,
+            user_boosted_shares,
+            outcome_boosted_shares,
             all_boosted_shares,
             M1,
             M2,
-            dppm_shares
+            winning_dppm_shares,
         )?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
@@ -205,21 +212,62 @@ impl StorageTrading {
     pub fn internal_dppm_simulate_payoff(
         &self,
         share_bal: U256,
-        boosted_shares: U256,
+        user_boosted_shares: U256,
+        outcome_boosted_shares: U256,
         all_boosted_shares: U256,
         M1: U256,
         M2: U256,
         global_dppm_shares_outcome: U256,
     ) -> R<U256> {
+        let M = M1.checked_add(M2).ok_or(Error::CheckedAddOverflow)?;
+        let leftovers = M
+            .checked_sub(global_dppm_shares_outcome)
+            .ok_or(Error::CheckedSubOverflow(M, global_dppm_shares_outcome))?;
         Ok(maths::dppm_payoff(share_bal)?
-            .checked_add(maths::ninetails_payoff(
-                boosted_shares,
+            .checked_add(maths::ninetails_payoff_winners(
+                leftovers,
+                user_boosted_shares,
+                outcome_boosted_shares,
                 all_boosted_shares,
-                M1,
-                M2,
-                global_dppm_shares_outcome,
             )?)
             .ok_or(Error::CheckedAddOverflow)?)
+    }
+
+    pub fn simulate_loser_payoff(
+        &self,
+        outcome_id: FixedBytes<8>,
+        user_boosted_shares: U256,
+        winning_outcome_dppm_shares: U256,
+    ) -> R<U256> {
+        let all_boosted_shares = self.ninetails_global_boosted_shares.get();
+        let outcome_1 = self.outcome_list.get(0).unwrap();
+        let outcome_2 = self.outcome_list.get(1).unwrap();
+        let M1 = self.dppm_outcome_invested.get(outcome_1);
+        let M2 = self.dppm_outcome_invested.get(outcome_2);
+        let M = M1.checked_add(M2).ok_or(Error::CheckedAddOverflow)?;
+        let leftovers = M
+            .checked_sub(winning_outcome_dppm_shares)
+            .ok_or(Error::CheckedSubOverflow(M, winning_outcome_dppm_shares))?;
+        maths::ninetails_payoff_losers(leftovers, user_boosted_shares, all_boosted_shares)
+    }
+
+    pub fn internal_dppm_loser_payoff(
+        &mut self,
+        outcome_id: FixedBytes<8>,
+        recipient: Address,
+    ) -> R<U256> {
+        let shares = self
+            .ninetails_user_boosted_shares
+            .getter(msg_sender())
+            .get(outcome_id);
+        let winning_outcome_shares = self.dppm_shares_outcome.get(self.winner.get());
+        let fusdc = self.simulate_loser_payoff(outcome_id, shares, winning_outcome_shares)?;
+        self.ninetails_user_boosted_shares
+            .setter(msg_sender())
+            .setter(outcome_id)
+            .set(U256::ZERO);
+        fusdc_call::transfer(recipient, fusdc)?;
+        Ok(fusdc)
     }
 
     pub fn internal_dppm_price(&self, id: FixedBytes<8>) -> R<U256> {

@@ -41,27 +41,39 @@ pub fn dppm_payoff(n: U256) -> Result<U256, Error> {
     Ok(n)
 }
 
-pub fn ninetails_shares(shares: U256, t_half: U64, t_buy: U64) -> Result<U256, Error> {
+pub fn ninetails_shares(shares: U256, t_buy: U64, t_end: U64) -> Result<U256, Error> {
     // shares the user owns
-    // t_buy is when you buy the shares
-    // t_half is the halfpoint of the market's time alive
+    // t_buy are the number of seconds since the market started
+    // t_end is the end of the market
+    // shares * ((t_buy - t_end) ^ 2)
     shares
-        .checked_mul(U256::from(sub!(t_buy, t_half).pow(U64::from(2))))
+        .checked_mul(U256::from(t_buy.wrapping_sub(t_end).pow(U64::from(2))))
         .ok_or(Error::CheckedMulOverflow)
 }
 
-#[allow(non_snake_case)]
-pub fn ninetails_payoff(
-    boosted_shares: U256,
-    all_boosted_shares: U256,
-    M1: U256,
-    M2: U256,
-    global_dppm_shares_outcome: U256
+/// Ninetails payoff function that only losers can call.
+pub fn ninetails_payoff_losers(
+    leftovers: U256,
+    user_boosted_shares: U256,
+    global_boosted_shares: U256,
 ) -> Result<U256, Error> {
-    dbg!(M1, M2, global_dppm_shares_outcome);
-    let leftovers = sub!(add!(M1, M2), global_dppm_shares_outcome);
-    dbg!(leftovers);
-    Ok(mul_div(boosted_shares, leftovers, all_boosted_shares)?.0)
+    let refund = mul_div(leftovers, U256::from(3e6), U256::from(10e6))?.0;
+    Ok(mul_div(user_boosted_shares, refund, global_boosted_shares)?.0)
+}
+
+/// Ninetails payoff function that winners can call as a part of the
+/// payoff path.
+#[allow(non_snake_case)]
+pub fn ninetails_payoff_winners(
+    leftovers: U256,
+    user_boosted_shares: U256,
+    outcome_boosted_shares: U256,
+    global_boosted_shares: U256,
+) -> Result<U256, Error> {
+    let boost = mul_div(leftovers, U256::from(7e6), U256::from(10e6))?.0;
+    let winnings = mul_div(user_boosted_shares, boost, outcome_boosted_shares)?.0;
+    let refund = ninetails_payoff_losers(leftovers, user_boosted_shares, global_boosted_shares)?;
+    Ok(add!(winnings, refund))
 }
 
 // Using this operation is the equivalent of pow(x, 1/n).

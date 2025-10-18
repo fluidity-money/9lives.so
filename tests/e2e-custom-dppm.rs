@@ -69,13 +69,6 @@ fn test_dppm_simple() {
                 5e6,
                 c.mint_8_A_059_B_6_E(o[0], U256::from(5e6), Address::ZERO, msg_sender())
             );
-            dbg!(
-                shares_ivan,
-                c.ninetails_user_boosted_shares
-                    .getter(msg_sender())
-                    .get(o[0]),
-                c.ninetails_global_boosted_shares.get(o[0])
-            );
         },
         ERIK => {
             set_block_timestamp(30 * 60);
@@ -83,20 +76,17 @@ fn test_dppm_simple() {
                 10e6,
                 c.mint_8_A_059_B_6_E(o[1], U256::from(10e6), Address::ZERO, msg_sender())
             );
-            dbg!(shares_erik);
         },
         IVAN => {
             c.decide(o[0]).unwrap();
         },
         IVAN => {
-            dbg!(should_spend_fusdc_contract!(7e6,
-                c.payoff_C_B_6_F_2565(o[0], shares_ivan, msg_sender()))
-            );
+            should_spend_fusdc_contract!(15617565,
+                c.payoff_C_B_6_F_2565(o[0], shares_ivan, msg_sender())
+            )
         },
         ERIK => {
-            dbg!(should_spend_fusdc_contract!(7e6,
-                c.payoff_C_B_6_F_2565(o[0], shares_erik, msg_sender()))
-            );
+            should_spend_fusdc_contract!(1382433, c.loser_payoff(o[1], ERIK));
         }
     }
 }

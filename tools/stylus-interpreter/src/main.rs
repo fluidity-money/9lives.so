@@ -453,7 +453,7 @@ async fn main() -> Result<(), Error> {
                 let v = if let Some(v) = storage_written.get(&word) {
                     *v
                 } else {
-                dbg!("LOOKING UP PROVIDER INFO");
+                    dbg!("LOOKING UP PROVIDER INFO");
                     let v = PROVIDER
                         .get()
                         .unwrap()
@@ -729,12 +729,175 @@ async fn main() -> Result<(), Error> {
             unreachable!()
         },
     )?;
-    linker.func_wrap(
+    linker.func_wrap_async(
         "vm_hooks",
         "static_call_contract",
-        |_: Caller<_>, _: i32, _: i32, _: i32, _: i64, _: i32| -> i32 {
-            // TODO
-            unreachable!()
+        move |mut caller: Caller<_>,
+              (contract_ptr, calldata_ptr, calldata_len, value_ptr, gas, return_data_len_ptr): (
+            i32,
+            i32,
+            i32,
+            i32,
+            i64,
+            i32,
+        )| {
+            Box::new(async move {
+                // Copy of the call implementation.
+                let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+                let mut contract = [0_u8; 20];
+                let mut calldata = Vec::with_capacity(calldata_len as usize);
+                let mut value = [0_u8; 32];
+                unsafe {
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(contract_ptr as isize),
+                        contract.as_mut_ptr(),
+                        contract.len(),
+                    );
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(calldata_ptr as isize),
+                        calldata.as_mut_ptr(),
+                        calldata_len as usize,
+                    );
+                    calldata.set_len(calldata_len as usize);
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(value_ptr as isize),
+                        value.as_mut_ptr(),
+                        value.len(),
+                    );
+                }
+                let contract = Address::from(contract);
+                // Below, we're using debug_tracecall for this. It would
+                // be preferable to use eth_simulate now.
+                let trace = PROVIDER
+                    .get()
+                    .unwrap()
+                    .lock()
+                    .await
+                    .debug_trace_call(
+                        {
+                            let mut t = TransactionRequest::default();
+                            t.from = Some(*ADDR.get().unwrap());
+                            t.to = Some(TxKind::Call(contract));
+                            t.input = TransactionInput {
+                                input: Some(Bytes::copy_from_slice(&calldata)),
+                                data: None,
+                            };
+                            t.gas = if gas > 0 {
+                                Some(gas.try_into().unwrap())
+                            } else {
+                                None
+                            };
+                            t.value = Some(U256::from_be_bytes(value));
+                            t
+                        },
+                        BlockId::Number(BlockNumberOrTag::Number(*BLOCK.get().unwrap())),
+                        GethDebugTracingCallOptions {
+                            tracing_options: GethDebugTracingOptions::mux_tracer({
+                                let mut h = MuxConfig::default();
+                                h.0.insert(
+                                    GethDebugBuiltInTracerType::CallTracer,
+                                    Some(
+                                        CallConfig {
+                                            only_top_call: Some(true),
+                                            with_log: Some(false),
+                                        }
+                                        .into(),
+                                    ),
+                                );
+                                h.0.insert(
+                                    GethDebugBuiltInTracerType::PreStateTracer,
+                                    Some(
+                                        PreStateConfig {
+                                            diff_mode: Some(true),
+                                            disable_code: Some(true),
+                                            disable_storage: None,
+                                        }
+                                        .into(),
+                                    ),
+                                );
+                                h
+                            }),
+                            block_overrides: Some({
+                                let mut b = BlockOverrides::default();
+                                b.time = Some(*TIMESTAMP.get().unwrap() as u64);
+                                b
+                            }),
+                            state_overrides: Some(
+                                STATE_OVERRIDES.get().unwrap().lock().await.clone(),
+                            ),
+                        },
+                    )
+                    .await;
+                let trace = trace.unwrap().try_into_mux_frame().unwrap();
+                match trace
+                    .0
+                    .get(&GethDebugBuiltInTracerType::PreStateTracer)
+                    .unwrap()
+                {
+                    PreStateTracer(PreStateFrame::Diff(DiffMode { post, .. })) => {
+                        let mut state_overrides = STATE_OVERRIDES.get().unwrap().lock().await;
+                        for (addr, state) in post {
+                            if *addr == address!("A4b05FffffFffFFFFfFFfffFfffFFfffFfFfFFFf") {
+                                eprintln!("refusing to set to arbos with a state override");
+                                continue;
+                            }
+                            // It's not clear to me whether this is needed, but we're explicitly
+                            // merging this anyway.
+                            let o = state_overrides
+                                .entry(*addr)
+                                .or_insert_with(AccountOverride::default);
+                            o.balance = state.balance;
+                            o.nonce = state.nonce;
+                            o.code = state.code.clone();
+                            let storage = state.storage.iter();
+                            match &mut o.state {
+                                Some(state) => state.extend(storage),
+                                None => {
+                                    let mut h = HashMap::with_hasher(FbBuildHasher::default());
+                                    h.extend(storage);
+                                    o.state = Some(h)
+                                }
+                            }
+                        }
+                    }
+                    a => panic!("not diff prestate tracer in mux: {a:?}"),
+                };
+                let (d, status) = match trace
+                    .0
+                    .get(&GethDebugBuiltInTracerType::CallTracer)
+                    .unwrap()
+                {
+                    CallTracer(CallFrame { output, error, .. }) => (
+                        output,
+                        match error {
+                            None => 0,
+                            Some(_) => 1,
+                        },
+                    ),
+                    a => panic!("not calltracer in mux: {a:?}"),
+                };
+                if let Some(d) = d.clone() {
+                    unsafe {
+                        std::ptr::copy(
+                            d.len().to_le_bytes().as_ptr(),
+                            mem.data_ptr(&mut caller)
+                                .offset(return_data_len_ptr as isize),
+                            std::mem::size_of::<u64>(),
+                        )
+                    }
+                }
+                let block = *BLOCK.get().unwrap();
+                if *VERBOSE.get().unwrap() {
+                    eprintln!(
+                    "spn call --block {block} --from {} {contract} {} # => status {status}: {:x}",
+                    ADDR.get().unwrap(),
+                    const_hex::encode(&calldata),
+                    d.clone().unwrap_or_default()
+                );
+                }
+                *LAST_CALL_CALLDATA.get().unwrap().lock().await = d.clone();
+                status
+            })
         },
     )?;
     linker.func_wrap_async(
@@ -838,10 +1001,11 @@ async fn main() -> Result<(), Error> {
     )?;
     linker.func_wrap("vm_hooks", "pay_for_memory_grow", |_: Caller<_>, _: i32| {})?;
     linker.func_wrap("vm_hooks", "exit_early", |_: Caller<_>, code: i32| {
-            eprintln!("exit_early was invoked: {code}");
-            process::exit(code);
-            #[allow(unused)]
-            Ok(())})?;
+        eprintln!("exit_early was invoked: {code}");
+        process::exit(code);
+        #[allow(unused)]
+        Ok(())
+    })?;
 
     // Handy console logging functions that Stylus gives us.
     linker.func_wrap("console", "log_f32", |_: Caller<_>, value: f32| {

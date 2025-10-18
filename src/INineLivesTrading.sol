@@ -73,11 +73,6 @@ interface INineLivesTrading {
 
     function claimAllFees332D7968(address recipient) external returns (uint256);
 
-    struct UserLiqAdded {
-        bytes8 outcome;
-        uint256 sharesReceived;
-    }
-
     function addLiquidityB9DDA952(
         uint256 liquidity,
         address recipient,
@@ -95,11 +90,6 @@ interface INineLivesTrading {
         uint256 fusdcAmount,
         uint256 lpFeesEarned
     );
-
-    struct UserLiqRemoved {
-        bytes8 outcome;
-        uint256 sharesReceived;
-    }
 
     /// @notice Get the price of an outcome in fUSDC.
     /// @param outcome to test for

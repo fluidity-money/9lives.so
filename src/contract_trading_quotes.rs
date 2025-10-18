@@ -57,6 +57,13 @@ impl StorageTrading {
         return self.internal_amm_payoff(outcome_id, amt, recipient);
     }
 
+    pub fn loser_payoff(&mut self, outcome_id: FixedBytes<8>, recipient: Address) -> R<U256> {
+        #[cfg(feature = "trading-backend-dppm")]
+        return self.internal_dppm_loser_payoff(outcome_id, recipient);
+        #[cfg(not(feature = "trading-backend-dppm"))]
+        unimplemented!()
+    }
+
     #[allow(non_snake_case)]
     pub fn fees_62_D_A_A_154(&self) -> R<(U256, U256, U256, U256)> {
         Ok((
