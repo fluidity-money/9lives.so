@@ -282,6 +282,11 @@ export default function AssetPriceChart({
             ticks={simple ? [starting, ending] : [starting, ...tickValues]}
             tickFormatter={formatFn}
           />
+          <ReferenceDot
+            x={data[data.length - 1].timestamp}
+            y={data[data.length - 1].price}
+            shape={PriceInd}
+          />
           <Tooltip
             labelFormatter={(ts: any) => {
               const date = new Date(ts);
@@ -301,11 +306,6 @@ export default function AssetPriceChart({
             }}
             labelStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
             itemStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
-          />
-          <ReferenceDot
-            x={data[data.length - 1].timestamp}
-            y={data[data.length - 1].price}
-            shape={PriceInd}
           />
         </LineChart>
       </ResponsiveContainer>
