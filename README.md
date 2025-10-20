@@ -141,7 +141,7 @@ The error table lives in ERRORS.md.
 | Beauty contest implementation | `0xb7f978f707dc03b392d7215426cf98dc812d9454` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
-| Helper factory                | `0x6e95B1fcca9aBb2D94213AE3ccFCaf5BB8406E6B` |
+| Helper factory                | `0x25F4506E82fac0021C17a3595452B0D03D0c742D` |
 | BuyHelper2                    | `0x7aD7eDd9A72512335e2A7A980047Ec2eD233D21c` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |

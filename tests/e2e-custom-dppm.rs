@@ -86,7 +86,29 @@ fn test_dppm_simple() {
             )
         },
         ERIK => {
-            should_spend_fusdc_contract!(1382433, c.loser_payoff(o[1], ERIK));
+            should_spend_fusdc_contract!(1382433, c.payoff_C_B_6_F_2565(o[1], 0, ERIK));
         }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct DppmAction {
+    outcome: FixedBytes<8>,
+    fusdc_amt: U256,
+}
+
+fn strat_dppm_action(o_0: FixedBytes<8>, o_1: FixedBytes<8>) -> impl Strategy<Value = DppmAction> {
+    (strat_tiny_u256(), any::<bool>()).prop_map(|(a, b)| (a, if b { o_0 } else { o_1 }))
+}
+
+fn strat_dppm_actions() -> impl Strategy<Value = (FixedBytes<8>, FixedBytes<8>, Vec<DppmAction>)> {
+    proptest::collections::vec::<strat_dpm_action>(200).prop_map(|items| {})
+}
+
+proptest! {
+    #[test]
+    fn test_basic_invariants() {
+        // Test that the contract will always remain solvent, not that the users
+        // will necessarily make money.
     }
 }
