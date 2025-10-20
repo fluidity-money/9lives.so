@@ -47,7 +47,7 @@ export function calcTimeLeft(endTime: number) {
   const minutes = Math.floor((differenceInMs % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((differenceInMs % (1000 * 60)) / 1000);
   return {
-    full: `${days}D:${hours}H:${minutes}M:${seconds}S`,
+    full: `${days ? `${days}D:` : ""}${hours ? `${hours}H:` : ""}${minutes ? `${minutes}M:` : ""}${seconds}S`,
     short: `${days}D:${hours}H:${minutes}M`,
     days,
     hours,
@@ -102,7 +102,7 @@ export function calcSecondsLeft(timeleft: number) {
   const minutes = Math.floor((timeleft % (60 * 60)) / 60);
   const seconds = Math.floor(timeleft % 60);
   return {
-    full: `${days}D:${hours}H:${minutes}M:${seconds}S`,
+    full: `${days ? `${days}D:` : ""}${hours ? `${hours}H:` : ""}${minutes ? `${minutes}M:` : ""}${seconds}S`,
     short: `${days}D:${hours}H:${minutes}M`,
     days,
     hours,

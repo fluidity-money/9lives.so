@@ -1,9 +1,5 @@
-"use client";
-
 import ChartPriceProvider from "@/providers/chartPriceProvider";
-import { requestAssetPrice } from "@/providers/graphqlClient";
 import { PricePoint } from "@/types";
-import { useQuery } from "@tanstack/react-query";
 import {
   LineChart,
   ResponsiveContainer,
@@ -16,11 +12,12 @@ import {
 } from "recharts";
 
 export default function AssetPriceChart({
-  id,
   symbol,
   basePrice,
   starting,
   ending,
+  assetPrices,
+  assetsLoaded,
   simple = false,
 }: {
   id: string;
@@ -29,32 +26,15 @@ export default function AssetPriceChart({
   starting: number;
   ending: number;
   simple?: boolean;
+  assetsLoaded: boolean;
+  assetPrices?: PricePoint[];
 }) {
-  const { data, isSuccess } = useQuery<PricePoint[]>({
-    queryKey: ["assetPrice", symbol, id],
-    queryFn: async () => {
-      const res = await requestAssetPrice(
-        symbol.toUpperCase(),
-        new Date(starting).toISOString(),
-      );
-      if (res?.oracles_ninelives_prices_1) {
-        return res?.oracles_ninelives_prices_1.map((i) => ({
-          price: i.amount,
-          id: i.id,
-          timestamp:
-            new Date(i.created_by).getTime() -
-            new Date().getTimezoneOffset() * 60 * 1000,
-        }));
-      }
-      return [];
-    },
-  });
-
-  if (!isSuccess || data.length < 2) {
+  if (!assetsLoaded || !assetPrices || assetPrices.length < 2) {
     return null;
   }
-
-  const latestPrice = data[data.length - 1].price;
+  const latestPoint = assetPrices?.[assetPrices.length - 1];
+  const latestPrice = latestPoint.price;
+  const latestTimestamp = latestPoint.timestamp;
   const priceIsAbove = latestPrice > basePrice;
   const diff = ending - starting;
   const MIN = 1000 * 60;
@@ -63,7 +43,7 @@ export default function AssetPriceChart({
   const MONTH = DAY * 30;
   const YEAR = MONTH * 12;
   const tickValues: number[] = [];
-  const prices = data.map((i) => i.price);
+  const prices = assetPrices.map((i) => i.price);
   const minPrice = Math.min(...prices, basePrice);
   const maxPrice = Math.max(...prices, basePrice);
   const simpleDiff = Math.max(
@@ -179,16 +159,19 @@ export default function AssetPriceChart({
         fill={"#fff"}
         fontFamily="var(--font-chicago)"
       >
-        {priceIsAbove ? "▲" : "▼"} ${data[data.length - 1].price}
+        {priceIsAbove ? "▲" : "▼"} ${latestPrice}
       </text>
     </g>
   );
 
   return (
-    <ChartPriceProvider id={id} symbol={symbol}>
-      <ResponsiveContainer width="100%" height={400}>
+    <ChartPriceProvider starting={starting} symbol={symbol}>
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart
-          data={[{ id: 1, timestamp: starting, price: basePrice }, ...data]}
+          data={[
+            { id: 1, timestamp: starting, price: basePrice },
+            ...assetPrices,
+          ]}
           margin={{
             top: simple ? 0 : 12,
             right: simple ? 0 : 4,
@@ -196,16 +179,8 @@ export default function AssetPriceChart({
             left: 0,
           }}
         >
-          <ReferenceDot
-            x={data[data.length - 1].timestamp}
-            y={data[data.length - 1].price}
-            shape={PulseDot}
-          />
-          <ReferenceDot
-            x={data[data.length - 1].timestamp}
-            y={data[data.length - 1].price}
-            shape={Dot}
-          />
+          <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PulseDot} />
+          <ReferenceDot x={latestTimestamp} y={latestPrice} shape={Dot} />
           <ReferenceLine
             y={basePrice}
             label={{
@@ -282,11 +257,7 @@ export default function AssetPriceChart({
             ticks={simple ? [starting, ending] : [starting, ...tickValues]}
             tickFormatter={formatFn}
           />
-          <ReferenceDot
-            x={data[data.length - 1].timestamp}
-            y={data[data.length - 1].price}
-            shape={PriceInd}
-          />
+          <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PriceInd} />
           <Tooltip
             labelFormatter={(ts: any) => {
               const date = new Date(ts);

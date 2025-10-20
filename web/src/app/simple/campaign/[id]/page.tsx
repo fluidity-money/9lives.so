@@ -1,10 +1,10 @@
-import AssetPriceChart from "@/components/assetPriceChart";
 import config from "@/config";
 import { requestSimpleMarket } from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
+import SimpleBody from "@/components/simple/simpleBody";
 type Params = Promise<{ id: string }>;
 export async function generateStaticParams() {
   return config.simpleMarkets.map((id) => ({
@@ -48,14 +48,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
           </span>
         </div>
       </div>
-      <AssetPriceChart
-        simple
-        basePrice={data.basePrice}
-        id={data.identifier}
-        symbol={data.symbol}
-        starting={data.starting}
-        ending={data.ending}
-      />
+      <SimpleBody data={data} />
     </div>
   );
 }

@@ -20,11 +20,11 @@ subscription($symbol: String!, $starting: timestamp!) {
 }
 `;
 export default function ChartPriceProvider({
-  id,
+  starting,
   symbol,
   children,
 }: {
-  id: string;
+  starting: number;
   symbol: string;
   children: Readonly<React.ReactNode>;
 }) {
@@ -46,7 +46,7 @@ export default function ChartPriceProvider({
           const nextData = data?.oracles_ninelives_prices_1;
           if (nextData && nextData.length > 0) {
             queryClient.setQueryData<PricePoint[]>(
-              ["assetPrice", symbol, id],
+              ["assetPrice", symbol, starting],
               (previousData) => {
                 const onlyNewItems = nextData
                   .filter(
@@ -69,17 +69,22 @@ export default function ChartPriceProvider({
           }
         },
         error: (error) => {
-          console.error("WebSocket error for chart token", symbol, id, error);
+          console.error(
+            "WebSocket error for chart token",
+            symbol,
+            starting,
+            error,
+          );
         },
         complete: () => {
-          console.log("WebSocket chart subscription closed.", symbol, id);
+          console.log("WebSocket chart subscription closed.", symbol, starting);
         },
       },
     );
     return () => {
       unsubPrices();
     };
-  }, [queryClient, symbol, id]);
+  }, [queryClient, symbol, starting]);
 
   return children;
 }
