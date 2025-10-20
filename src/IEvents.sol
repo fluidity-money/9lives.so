@@ -110,6 +110,29 @@ interface IEvents {
         ShareDetail[] shares
     );
 
+    event NinetailsBoostedSharesReceived(
+        address indexed spender,
+        address indexed recipient,
+        uint256 indexed amountReceived,
+        bytes8 outcome
+    );
+
+    event NinetailsCumulativeWinnerPayoff(
+        address indexed spender,
+        address indexed recipient,
+        uint256 indexed sharesSpent,
+        uint256 fusdcReceived,
+        bytes8 outcome
+    );
+
+    event NinetailsLoserPayoff(
+        address indexed spender,
+        address indexed recipient,
+        uint256 indexed sharesSpent,
+        uint256 fusdcReceived,
+        bytes8 outcome
+    );
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

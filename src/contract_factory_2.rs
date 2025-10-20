@@ -7,6 +7,9 @@ use crate::{
     utils::{contract_address, msg_sender},
 };
 
+#[cfg(feature = "contract-factory-2")]
+use alloc::vec::Vec;
+
 pub use crate::storage_factory::*;
 
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
