@@ -114,17 +114,17 @@ The error table lives in ERRORS.md.
 
 ### Superposition mainnet
 
-|        Deployment name        |              Deployment address            |
-|-------------------------------|--------------------------------------------|
+|        Deployment name        |              Deployment address              |
+|-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x3302ac14ad6b38baf789571395cc3a54f0f65e52` |
-| Factory 2 implementation      | `0x928b627add9c2a3578b5c178423724f4d20202ed` |
+| Factory 1 implementation      | `0x7c4864006d0927dc65507a457c274db71d3f17b7` |
+| Factory 2 implementation      | `0x7ec69f0785dbb944c57fc98e89e244710d00600b` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPPM mint impl        | `0x0000000000000000000000000000000000000000` |
-| Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
-| Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
-| Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM mint impl        | `0x8c6f1ac8cfffa4207127dc985d510e5aaa76f0c2` |
+| Trading DPPM extras impl      | `0xea9a1b3b0a5987b882fe770cd89ba352be1419f2` |
+| Trading DPPM price impl       | `0xfd11d4fcae3b18937589cde65a160a61ea87e1c1` |
+| Trading DPPM quotes impl      | `0x029992ae712ce8195591d9b68c54ab36e0e69bd1` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
 | Trading AMM price impl        | `0xb393ea32f302a9cc798f8296f5328172096553d2` |
@@ -142,7 +142,7 @@ The error table lives in ERRORS.md.
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
 | Helper factory                | `0x6e95B1fcca9aBb2D94213AE3ccFCaf5BB8406E6B` |
-| BuyHelper2                    | `0x2088Bd1629c7207C033fEcb2dD3F4FeF217533a3` |
+| BuyHelper2                    | `0x7aD7eDd9A72512335e2A7A980047Ec2eD233D21c` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
 | Claimant helper               | `0x00FA0a5d3b25Da03ef651045d42B9F7137486b03` |
