@@ -583,15 +583,15 @@ export const requestWeeklyVolume = (poolAddress: string) =>
 export const requestSimpleMarket = (symbol: string) => {
   return {
     identifier: "0x99",
-    starting: new Date("2025-10-20T13:00:00Z").getTime(),
+    starting: new Date("2025-10-21T09:00:00Z").getTime(),
     description: "$BTC above $110714.90 on Oct 14, 12:00 UTC?",
-    ending: new Date("2025-10-20T14:00:00Z").getTime(),
+    ending: new Date("2025-10-21T10:00:00Z").getTime(),
     poolAddress: "0x0",
     outcomes: ["0x1", "0x2"],
     investments: [1500, 750],
-    basePrice: 111870,
+    basePrice: 107581,
     symbol,
-    name: "$BTC above $111870 on Oct 20, 14:00 UTC?",
+    name: "$BTC above $107581 on Oct 21, 10:00 UTC?",
   };
 };
 

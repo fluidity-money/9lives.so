@@ -12,8 +12,8 @@ export function calcTimeLeft(endTime: number) {
     endTimeInMs = endTime * 1000;
   } else if (endTime === 0) {
     return {
-      full: "End date is already due.",
-      short: "End date is already due.",
+      full: "Event has ended",
+      short: "Event has ended",
       days: 0,
       hours: 0,
       minutes: 0,
@@ -32,8 +32,8 @@ export function calcTimeLeft(endTime: number) {
   const differenceInMs = new Date(endTimeInMs).getTime() - Date.now();
   if (0 >= differenceInMs) {
     return {
-      full: "End date is already due.",
-      short: "End date is already due.",
+      full: "Event has ended",
+      short: "Event has ended",
       days: 0,
       hours: 0,
       minutes: 0,
