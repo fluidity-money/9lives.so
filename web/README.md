@@ -24,5 +24,5 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 | Infrastructure market proxy | `0x330656e0f5f3d9eb6315df356176ce0251cf7a31` |
 | Factory proxy | `0xe1fc0068ac7809d2a4635de64b59d18fdd9ce22d` |
-| Helper factory | `0xC0A66BFb62178B9048b3189Cb6f50AE67b5479bB` |
+| Helper factory | `0xC555D6819C9293ec0A703dF4A5CcDAF0BdEdD1Cd` |
 | LensesV1 | `0x38710FC5EA5984A5eC7867c61910a7364b4620DE` |
