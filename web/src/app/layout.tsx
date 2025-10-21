@@ -1,22 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Providers from "@/providers";
 import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
 import CustomToaster from "@/components/customToaster";
-import { getCachedCampaigns } from "@/serverData/getCampaigns";
-import { getCachedTotalUserCount } from "@/serverData/getTotalUserCount";
 import CookieBanner from "@/components/cookieBanner";
-import { BuyAndSellResponse, CreationResponse } from "@/types";
-import {
-  getCachedBuysAndSells,
-  getCachedCreations,
-} from "../serverData/getActions";
-import DegenModeFloatingButton from "@/components/degenMode/degenModeFloatingButton";
-import EmailSuggester from "@/components/emailSuggester";
-import Changelog from "@/components/changelog";
 
 const chicago = localFont({
   src: [
@@ -72,13 +61,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [campaigns, totalUserCount, degenCreations, degenBuysAndSells] =
-    await Promise.all([
-      getCachedCampaigns(),
-      getCachedTotalUserCount(),
-      getCachedCreations() as Promise<CreationResponse>,
-      getCachedBuysAndSells() as Promise<BuyAndSellResponse>,
-    ]);
   return (
     <html
       lang="en"
@@ -90,19 +72,7 @@ export default async function RootLayout({
       ])}
     >
       <body className="flex min-h-screen flex-col bg-9layer">
-        <Providers
-          initialData={{
-            campaigns,
-            totalUserCount,
-            degenCreations,
-            degenBuysAndSells,
-          }}
-        >
-          {children}
-          <DegenModeFloatingButton />
-          <EmailSuggester />
-          <Changelog />
-        </Providers>
+        {children}
         <CookieBanner />
         <CustomToaster />
       </body>

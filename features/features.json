@@ -19,5 +19,6 @@
 	"enable paymaster remove liquidity": false,
 	"display odds on campaign items": true,
 	"enable relay create": false,
-	"enable relay add liquidity": true
+	"enable relay add liquidity": true,
+	"enable simple mode": false
 }

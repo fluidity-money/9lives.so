@@ -1,10 +1,11 @@
 import config from "@/config";
 import { requestSimpleMarket } from "@/providers/graphqlClient";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
+import appConfig from "@/config";
 type Params = Promise<{ id: string }>;
 export async function generateStaticParams() {
   return config.simpleMarkets.map((id) => ({
@@ -28,6 +29,13 @@ export async function generateMetadata({ params }: { params: Params }) {
 }
 export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
+
+  // Remove this when feature is completed begin
+  const res = await fetch(appConfig.NEXT_PUBLIC_FEATURES_URL);
+  const features = (await res.json()) as { "enable simple mode": boolean };
+  if (!features["enable simple mode"]) redirect("/");
+  // Remove this when feature is completed end
+
   const data = await requestSimpleMarket(id);
   if (!data) notFound();
   return (

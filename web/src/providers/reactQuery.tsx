@@ -8,16 +8,14 @@ import {
   Campaign,
   CreationResponse,
 } from "@/types";
-import { getTotalUserCount } from "@/serverData/getTotalUserCount";
 
 export default function ReactQueryProvider({
   children,
   initialData,
 }: {
   children: React.ReactNode;
-  initialData: {
+  initialData?: {
     campaigns: Campaign[];
-    totalUserCount?: number;
     degenBuysAndSells: BuyAndSellResponse;
     degenCreations: CreationResponse;
   };
@@ -33,33 +31,31 @@ export default function ReactQueryProvider({
       },
     });
 
-    client.setQueryData(
-      ["campaigns", undefined, "trending", "", undefined],
-      () => ({
-        pages: [initialData.campaigns],
-        pageParams: [0],
-      }),
-    );
-
-    client.setQueryDefaults(["totalUserCount"], {
-      queryFn: getTotalUserCount,
-      initialData: initialData.totalUserCount,
-    });
-
-    const buyAndSellActions =
-      initialData.degenBuysAndSells.ninelives_buys_and_sells_1.map(
-        (e) => new ActionFromBuysAndSells(e),
+    if (initialData) {
+      client.setQueryData(
+        ["campaigns", undefined, "trending", "", undefined],
+        () => ({
+          pages: [initialData.campaigns],
+          pageParams: [0],
+        }),
       );
-    const creationActions =
-      initialData.degenCreations.ninelives_campaigns_1.map(
-        (c) => new ActionFromCreation(c),
-      );
-    client.setQueryDefaults(["actions"], {
-      initialData: [...creationActions, ...buyAndSellActions].sort(
-        (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-      ),
-    });
+
+      const buyAndSellActions =
+        initialData.degenBuysAndSells.ninelives_buys_and_sells_1.map(
+          (e) => new ActionFromBuysAndSells(e),
+        );
+      const creationActions =
+        initialData.degenCreations.ninelives_campaigns_1.map(
+          (c) => new ActionFromCreation(c),
+        );
+      client.setQueryDefaults(["actions"], {
+        initialData: [...creationActions, ...buyAndSellActions].sort(
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+        ),
+      });
+    }
+
     return client;
   });
 

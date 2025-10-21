@@ -16,9 +16,8 @@ export default function Providers({
   initialData,
 }: {
   children: React.ReactNode;
-  initialData: {
+  initialData?: {
     campaigns: Campaign[];
-    totalUserCount?: number;
     degenBuysAndSells: BuyAndSellResponse;
     degenCreations: CreationResponse;
   };
