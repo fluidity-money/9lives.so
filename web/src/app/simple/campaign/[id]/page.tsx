@@ -8,7 +8,7 @@ import { notFound, redirect } from "next/navigation";
 import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
-import appConfig from "@/config";
+import CountdownTimer from "@/components/countdownTimer";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
 export const revalidate = 60;
@@ -35,14 +35,6 @@ export async function generateMetadata({ params }: { params: Params }) {
 export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
 
-  // Remove this when feature is completed begin
-  const featuresRes = await fetch(appConfig.NEXT_PUBLIC_FEATURES_URL);
-  const features = (await featuresRes.json()) as {
-    "enable simple mode": boolean;
-  };
-  if (!features["enable simple mode"]) redirect("/");
-  // Remove this when feature is completed end
-
   const data = await requestSimpleMarket(id);
   if (!data) notFound();
   const initialAssetPrices = await requestAssetPrice(
@@ -67,15 +59,18 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
         <Image src={BTC} width={60} height={60} alt={data.name} />
         <div className="flex flex-col gap-1">
           <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
-          <span className="font-geneva text-xs uppercase text-[#808080]">
-            {new Date(data.starting).toLocaleString("default", {
-              hour: "numeric",
-            })}{" "}
-            -{" "}
-            {new Date(data.ending).toLocaleString("default", {
-              hour: "numeric",
-            })}
-          </span>
+          <div className="flex items-center gap-1 text-xs">
+            <span className="font-geneva uppercase text-[#808080]">
+              {new Date(data.starting).toLocaleString("default", {
+                hour: "numeric",
+              })}{" "}
+              -{" "}
+              {new Date(data.ending).toLocaleString("default", {
+                hour: "numeric",
+              })}
+            </span>
+            <CountdownTimer endTime={data.ending} />
+          </div>
         </div>
       </div>
       <SimpleBody data={data} initialAssetPrices={initialAssetPrices} />

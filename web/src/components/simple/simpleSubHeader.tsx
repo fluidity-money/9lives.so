@@ -10,7 +10,7 @@ export default function SimpleSubHeader({
   ending: number;
   latestPrice?: number;
 }) {
-  const timeleft = useCountdown(ending);
+  // const timeleft = useCountdown(ending);
   const subHeaderMap = [
     {
       title: "Base Price",
@@ -22,11 +22,11 @@ export default function SimpleSubHeader({
       value: `$${latestPrice}`,
       show: true,
     },
-    {
-      title: "Ends In",
-      value: `${timeleft}`,
-      show: true,
-    },
+    // {
+    //   title: "Ends In",
+    //   value: `${timeleft}`,
+    //   show: true,
+    // },
   ];
   return (
     <div className="flex flex-wrap items-center gap-2.5">

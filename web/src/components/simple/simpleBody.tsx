@@ -74,7 +74,14 @@ export default function SimpleBody({
         assetPrices={assetPrices}
         assetsLoaded={assetsLoaded}
       />
-      <div className="flex items-center gap-2">
+      <div className="flex flex-row items-center gap-1">
+        <span className="font-chicago text-sm">%{+(0.2 * 100).toFixed(0)}</span>
+        <div className="h-2 flex-1 bg-9red">
+          <div className="h-2 bg-9green" style={{ width: `${0.2 * 100}%` }} />
+        </div>
+        <span className="font-chicago text-sm">%{+(0.8 * 100).toFixed(0)}</span>
+      </div>
+      <div className="md:background-transparent sticky bottom-0 left-0 right-0 flex items-center gap-2 bg-9layer p-2 md:static md:p-0">
         <Button
           title="Up"
           intent={"yes"}
@@ -89,12 +96,6 @@ export default function SimpleBody({
           className={"flex-1"}
           onClick={() => setIsBuyDialogOpen(true)}
         />
-      </div>
-      <div className="flex flex-row items-center gap-1">
-        <span className="font-chicago text-sm">%{+(0.2 * 100).toFixed(0)}</span>
-        <div className="h-2 flex-1 bg-9red">
-          <div className="h-2 bg-9green" style={{ width: `${0.2 * 100}%` }} />
-        </div>
       </div>
       <Modal
         isOpen={isBuyDialogOpen}
