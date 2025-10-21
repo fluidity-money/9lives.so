@@ -143,6 +143,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
                   feeMinter: zeroFee,
                   feeReferrer: defaultFee,
                   seedLiquidity: seedLiquidityBigInt,
+                  isDppm: false,
                 },
               ],
             });

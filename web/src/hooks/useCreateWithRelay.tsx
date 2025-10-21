@@ -187,6 +187,7 @@ const useCreateWithRelay = ({
                   feeMinter: zeroFee,
                   feeReferrer: defaultFee,
                   seedLiquidity: BigInt(usdValueBigInt),
+                  isDppm: false,
                 },
               ],
             });
