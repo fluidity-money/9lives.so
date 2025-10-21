@@ -174,9 +174,9 @@ export default function AssetPriceChart({
           ]}
           margin={{
             top: simple ? 0 : 12,
-            right: simple ? 0 : 4,
+            right: simple ? -60 : 4,
             bottom: 0,
-            left: 0,
+            left: simple ? -60 : 0,
           }}
         >
           <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PulseDot} />
