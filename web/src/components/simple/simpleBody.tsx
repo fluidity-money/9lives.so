@@ -10,12 +10,16 @@ import { PricePoint } from "@/types";
 import SimpleSubHeader from "./simpleSubHeader";
 import Button from "../themed/button";
 import Link from "next/link";
+import Modal from "../themed/modal";
+import SimpleBuyDialog from "../simpleBuyDialog";
+import { useState } from "react";
 
 export default function SimpleBody({
   data,
 }: {
   data: Awaited<ReturnType<typeof requestSimpleMarket>>;
 }) {
+  const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
     {
       queryKey: ["assetPrice", data.symbol, data.starting],
@@ -73,12 +77,14 @@ export default function SimpleBody({
           intent={"yes"}
           size={"xlarge"}
           className={"flex-1"}
+          onClick={() => setIsBuyDialogOpen(true)}
         />
         <Button
           title="Down"
           intent={"no"}
           size={"xlarge"}
           className={"flex-1"}
+          onClick={() => setIsBuyDialogOpen(true)}
         />
       </div>
       <div className="flex flex-row items-center gap-1">
@@ -87,6 +93,13 @@ export default function SimpleBody({
           <div className="h-2 bg-9green" style={{ width: `${0.2 * 100}%` }} />
         </div>
       </div>
+      <Modal
+        isOpen={isBuyDialogOpen}
+        setIsOpen={setIsBuyDialogOpen}
+        title="Predict Price"
+      >
+        <SimpleBuyDialog />
+      </Modal>
     </>
   );
 }
