@@ -136,7 +136,7 @@ The error table lives in ERRORS.md.
 | Lockup proxy                  | `0x20d2360706086ec9814d15a52ad2d2aec2c43caa` |
 | Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
-| Helper factory                | `0xA5687541fE959E05d3057EaEE141EfA11131D29D` |
+| Helper factory                | `0xC555D6819C9293ec0A703dF4A5CcDAF0BdEdD1Cd` |
 | LensesV1                      | `0x8036d656D2E0c36d90DF47b7Da625fDC16375f87` |
 | Beauty contest implementation | `0xb7f978f707dc03b392d7215426cf98dc812d9454` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
