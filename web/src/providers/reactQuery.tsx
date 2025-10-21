@@ -15,7 +15,6 @@ export default function ReactQueryProvider({
 }: {
   children: React.ReactNode;
   initialData?: {
-    campaigns: Campaign[];
     degenBuysAndSells: BuyAndSellResponse;
     degenCreations: CreationResponse;
   };
@@ -32,14 +31,6 @@ export default function ReactQueryProvider({
     });
 
     if (initialData) {
-      client.setQueryData(
-        ["campaigns", undefined, "trending", "", undefined],
-        () => ({
-          pages: [initialData.campaigns],
-          pageParams: [0],
-        }),
-      );
-
       const buyAndSellActions =
         initialData.degenBuysAndSells.ninelives_buys_and_sells_1.map(
           (e) => new ActionFromBuysAndSells(e),

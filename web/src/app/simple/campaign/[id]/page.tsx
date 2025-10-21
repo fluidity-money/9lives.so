@@ -1,5 +1,8 @@
 import config from "@/config";
-import { requestSimpleMarket } from "@/providers/graphqlClient";
+import {
+  requestAssetPrice,
+  requestSimpleMarket,
+} from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import BTC from "#/images/tokens/btc.webp";
@@ -7,6 +10,8 @@ import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import appConfig from "@/config";
 type Params = Promise<{ id: string }>;
+export const dynamicParams = true;
+export const revalidate = 60;
 export async function generateStaticParams() {
   return config.simpleMarkets.map((id) => ({
     id,
@@ -31,13 +36,30 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
 
   // Remove this when feature is completed begin
-  const res = await fetch(appConfig.NEXT_PUBLIC_FEATURES_URL);
-  const features = (await res.json()) as { "enable simple mode": boolean };
+  const featuresRes = await fetch(appConfig.NEXT_PUBLIC_FEATURES_URL);
+  const features = (await featuresRes.json()) as {
+    "enable simple mode": boolean;
+  };
   if (!features["enable simple mode"]) redirect("/");
   // Remove this when feature is completed end
 
   const data = await requestSimpleMarket(id);
   if (!data) notFound();
+  const initialAssetPrices = await requestAssetPrice(
+    data.symbol.toUpperCase(),
+    new Date(data.starting).toISOString(),
+  )?.then((res) => {
+    if (res?.oracles_ninelives_prices_1) {
+      return res?.oracles_ninelives_prices_1.map((i) => ({
+        price: i.amount,
+        id: i.id,
+        timestamp:
+          new Date(i.created_by).getTime() -
+          new Date().getTimezoneOffset() * 60 * 1000,
+      }));
+    }
+    return [];
+  });
   return (
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />
@@ -56,7 +78,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
           </span>
         </div>
       </div>
-      <SimpleBody data={data} />
+      <SimpleBody data={data} initialAssetPrices={initialAssetPrices} />
     </div>
   );
 }

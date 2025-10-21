@@ -16,8 +16,10 @@ import { useState } from "react";
 
 export default function SimpleBody({
   data,
+  initialAssetPrices,
 }: {
   data: Awaited<ReturnType<typeof requestSimpleMarket>>;
+  initialAssetPrices?: PricePoint[];
 }) {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
@@ -39,6 +41,7 @@ export default function SimpleBody({
         }
         return [];
       },
+      initialData: initialAssetPrices,
     },
   );
 

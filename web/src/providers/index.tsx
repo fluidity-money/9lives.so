@@ -17,7 +17,6 @@ export default function Providers({
 }: {
   children: React.ReactNode;
   initialData?: {
-    campaigns: Campaign[];
     degenBuysAndSells: BuyAndSellResponse;
     degenCreations: CreationResponse;
   };
