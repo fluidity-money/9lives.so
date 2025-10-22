@@ -175,7 +175,7 @@ export default function AssetPriceChart({
           margin={{
             top: simple ? 0 : 12,
             right: simple ? -60 : 4,
-            bottom: 0,
+            bottom: simple ? -10 : 0,
             left: simple ? -60 : 0,
           }}
         >
@@ -248,6 +248,7 @@ export default function AssetPriceChart({
               fontFamily: "var(--font-chicago)",
               fontSize: 12,
               fill: "#0C0C0C",
+              transform: simple ? "translate(-6,0)" : undefined,
             }}
             scale={"time"}
             type={simple ? "number" : "category"}

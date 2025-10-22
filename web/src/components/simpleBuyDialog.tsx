@@ -45,10 +45,10 @@ export default function SimpleBuyDialog() {
 
         {/* <!-- Quick add buttons --> */}
         <div className="flex justify-between text-sm">
-          <Button title="+$1" />
-          <Button title="+$120" />
-          <Button title="+$100" />
-          <Button title="MAX" />
+          <Button title="+$1" className={"flex-1"} />
+          <Button title="+$20" className={"flex-1"} />
+          <Button title="+$100" className={"flex-1"} />
+          <Button title="MAX" className={"flex-1"} />
         </div>
 
         {/* <!-- Number pad --> */}
