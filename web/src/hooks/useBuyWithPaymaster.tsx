@@ -12,17 +12,13 @@ import { usePaymasterStore } from "@/stores/paymasterStore";
 
 const useBuyWithPaymaster = ({
   shareAddr,
-  tradingAddr,
   outcomeId,
   data,
-  outcomes,
   openFundModal,
 }: {
   shareAddr: `0x${string}`;
-  tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
   data: CampaignDetail;
-  outcomes: Outcome[];
   openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();
@@ -50,15 +46,15 @@ const useBuyWithPaymaster = ({
       }),
     onMutate: async (newRequest) => {
       await queryClient.cancelQueries({
-        queryKey: ["positions", tradingAddr, outcomes, account],
+        queryKey: ["positions", data.poolAddress, data.outcomes, account],
       });
       let newPosition: MintedPosition;
       let newPositions: MintedPosition[];
       const previousPositions =
         queryClient.getQueryData<MintedPosition[]>([
           "positions",
-          tradingAddr,
-          outcomes,
+          data.poolAddress,
+          data.outcomes,
           account,
         ]) ?? [];
       const alreadyExistedPosition = previousPositions?.find(
@@ -82,7 +78,7 @@ const useBuyWithPaymaster = ({
           newPosition,
         ];
       } else {
-        const investedOutcome = outcomes.find(
+        const investedOutcome = data.outcomes.find(
           (o) => o.identifier === newRequest.outcome,
         );
         newPosition = {
@@ -97,7 +93,7 @@ const useBuyWithPaymaster = ({
 
       // Optimistically update the cache
       queryClient.setQueryData(
-        ["positions", tradingAddr, outcomes, account],
+        ["positions", data.poolAddress, data.outcomes, account],
         () => newPositions,
       );
 
@@ -127,7 +123,7 @@ const useBuyWithPaymaster = ({
     onError: (err, newRequest, context) => {
       if (context?.previousPositions) {
         queryClient.setQueryData(
-          ["positions", tradingAddr, outcomes, account],
+          ["positions", data.poolAddress, data.outcomes, account],
           context.previousPositions,
         );
       }
@@ -191,7 +187,7 @@ const useBuyWithPaymaster = ({
             amountToSpend: amount,
             outcome: outcomeId,
             opType: "MINT",
-            tradingAddr: tradingAddr,
+            tradingAddr: data.poolAddress,
             outgoingChainEid: 0,
             minimumBack: "0",
             referrer,
@@ -210,7 +206,7 @@ const useBuyWithPaymaster = ({
               outcomeId,
               shareAddr,
               type: "buyWithPaymaster",
-              tradingAddr,
+              tradingAddr: data.poolAddress,
             });
             res(result.ticketId);
           } else {

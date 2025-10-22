@@ -14,12 +14,12 @@ import useConnectWallet from "@/hooks/useConnectWallet";
 import { useActiveAccount } from "thirdweb/react";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useProfile from "@/hooks/useProfile";
-import useBuyDppm from "@/hooks/useBuyDppm";
-import useBuyDppmWithPaymaster from "@/hooks/useBuyDppmWithPaymaster";
-import useBuyDppmWithRelay from "@/hooks/useBuyDppmWithRelay";
 import Modal from "./themed/modal";
 import Funding from "./fundingBalanceDialog";
 import { requestSimpleMarket } from "@/providers/graphqlClient";
+import useBuy from "@/hooks/useBuy";
+import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
+import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 
 export default function SimpleBuyDialog({
   data,
@@ -38,7 +38,7 @@ export default function SimpleBuyDialog({
   const enabledPaymaster = useFeatureFlag("enable paymaster dppm buy");
   const { data: profile } = useProfile();
   const account = useActiveAccount();
-  const { buyDppm } = useBuyDppm({
+  const { buy } = useBuy({
     shareAddr: selectedOutcome.share.address,
     outcomeId: selectedOutcome.identifier,
     outcomes: data.outcomes,
@@ -46,13 +46,13 @@ export default function SimpleBuyDialog({
     campaignId: data.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
-  const { buyDppmWithPaymaster } = useBuyDppmWithPaymaster({
+  const { buy: buyWithPaymaster } = useBuyWithPaymaster({
     shareAddr: selectedOutcome.share.address,
     outcomeId: selectedOutcome.identifier,
     data,
     openFundModal: () => setFundModalOpen(true),
   });
-  const { buyDppmWithRelay } = useBuyDppmWithRelay({
+  const { buyWithRelay } = useBuyWithRelay({
     shareAddr: selectedOutcome.share.address,
     outcomeId: selectedOutcome.identifier,
     tradingAddr: data.poolAddress,
@@ -135,7 +135,7 @@ export default function SimpleBuyDialog({
     try {
       setIsMinting(true);
       if (fromChain !== config.chains.superposition.id) {
-        await buyDppmWithRelay(
+        await buyWithRelay(
           account!,
           Number(supply),
           usdValue,
@@ -148,7 +148,7 @@ export default function SimpleBuyDialog({
           fromDecimals,
         );
       } else {
-        let action = enabledPaymaster ? buyDppmWithPaymaster : buyDppm;
+        let action = enabledPaymaster ? buyWithPaymaster : buy;
         await action(Number(supply), profile?.settings?.refererr ?? "");
       }
     } finally {
