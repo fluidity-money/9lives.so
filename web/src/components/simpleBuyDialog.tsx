@@ -1,5 +1,15 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import Button from "./themed/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { formatUnits, ZeroAddress } from "ethers";
+import config from "@/config";
+import { useUserStore } from "@/stores/userStore";
+import z from "zod";
+import { combineClass } from "@/utils/combineClass";
+import useTokens from "@/hooks/useTokens";
+import useTokensWithBalances from "@/hooks/useTokensWithBalances";
+import AssetSelector from "./assetSelector";
 
 export default function SimpleBuyDialog({
   predictUp,
@@ -8,10 +18,79 @@ export default function SimpleBuyDialog({
   predictUp: boolean;
   setPredictUp: React.Dispatch<boolean>;
 }) {
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
+  const formSchema = z.object({
+    supply: z.string(),
+    toChain: z.number().min(0),
+    toToken: z.string(),
+    usdValue: z.coerce
+      .number()
+      .gte(2, { message: "Investment need to be higher than 2$" }),
+    fromChain: z
+      .number({ message: "You need to select a chain to pay from" })
+      .min(0),
+    fromToken: z.string({ message: "You need to select a token to pay with" }),
+  });
+  type FormData = z.infer<typeof formSchema>;
+  const {
+    watch,
+    handleSubmit,
+    setValue,
+    clearErrors,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      supply: "0",
+      toChain: config.chains.superposition.id,
+      toToken: ZeroAddress,
+      usdValue: 0,
+      fromChain: isInMiniApp
+        ? config.chains.arbitrum.id
+        : config.chains.superposition.id,
+      fromToken: ZeroAddress,
+    },
+  });
+  const supply = watch("supply");
+  const fromChain = watch("fromChain");
+  const fromToken = watch("fromToken");
+  const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
+  const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
+  const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
+  const usdValue = tokens
+    ? Number(supply) *
+      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+    : Number(supply);
+  const selectedTokenBalance = tokensWithBalances?.find(
+    (t) =>
+      t.token_address.toLowerCase() === fromToken.toLowerCase() ||
+      (fromToken === ZeroAddress &&
+        t.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+  )?.balance;
+  const selectedTokenSymbol = tokens?.find(
+    (t) =>
+      t.address.toLowerCase() === fromToken.toLowerCase() ||
+      (fromToken === ZeroAddress &&
+        t.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+  )?.symbol;
+  const setToMaxShare = async () => {
+    if (!selectedTokenBalance) return;
+    const maxBalance = formatUnits(selectedTokenBalance, fromDecimals);
+    setValue("supply", maxBalance);
+    if (Number(maxBalance) > 0) clearErrors();
+  };
+  const handleTokenChange = useCallback(
+    (addr: string) => setValue("fromToken", addr),
+    [setValue],
+  );
+  useEffect(() => {
+    if (usdValue) {
+      setValue("usdValue", usdValue);
+    }
+  }, [usdValue, setValue]);
   return (
     <div className="flex flex-col items-center bg-9layer font-chicago">
       <div className="w-full space-y-4">
-        {/* <!-- Header --> */}
         <div className="flex items-center justify-between">
           <div className="flex flex-1 flex-row space-x-1">
             <Button
@@ -29,30 +108,53 @@ export default function SimpleBuyDialog({
           </div>
         </div>
 
-        <p className="text-center text-xs underline">From Arbitrum with ETH</p>
+        <div className="max-auto flex items-center justify-between gap-2">
+          <span className="font-chicago text-xs">From</span>
+          <span>Superposition</span>
+          <span className="font-chicago text-xs">With</span>
+          <AssetSelector
+            tokens={tokens}
+            tokensWithBalances={tokensWithBalances}
+            isSuccess={isTokensSuccess}
+            fromToken={fromToken}
+            fromChain={fromChain}
+            setValue={handleTokenChange}
+          />
+        </div>
 
-        {/* <!-- Amount --> */}
         <div className="space-y-1 text-center">
           <div className="font-geneva text-sm uppercase text-gray-500">
             Amount
           </div>
-          <div className="text-4xl font-bold">
-            0.0001 <span>ETH</span>
-          </div>
-          <div className="text-base text-[#808080]">
-            <strong>$20.98</strong>
-          </div>
+          <span
+            className={combineClass(
+              "w-full flex-1 border-0 bg-9layer text-center text-4xl font-bold",
+              (errors.supply || errors.usdValue) && "border-2 border-red-500",
+            )}
+          >
+            {`${supply} ${selectedTokenSymbol ?? "$"}`}
+          </span>
+          {usdValue && usdValue > 0 ? (
+            <div className="text-base text-[#808080]">
+              <strong>${+usdValue.toFixed(3)}</strong>
+            </div>
+          ) : null}
         </div>
 
-        {/* <!-- If you're right --> */}
-        <div className="text-center">
+        <div
+          className={combineClass(
+            Number(supply) > 0 ? "visible" : "hidden",
+            "text-center",
+          )}
+        >
           <div className="font-geneva text-sm font-medium uppercase text-gray-500">
             If you&apos;re right
           </div>
-          <div className="text-3xl font-semibold text-green-500">$76.9</div>
+          <div className="text-3xl font-semibold text-green-500">
+            ${usdValue * 2}
+          </div>
         </div>
 
-        {/* <!-- Login button --> */}
         <Button
           size={"xlarge"}
           title="BUY"
@@ -60,28 +162,48 @@ export default function SimpleBuyDialog({
           className={"w-full"}
         />
 
-        {/* <!-- Quick add buttons --> */}
-        <div className="flex justify-between text-sm">
-          <Button title="+$1" className={"flex-1"} />
-          <Button title="+$20" className={"flex-1"} />
-          <Button title="+$100" className={"flex-1"} />
-          <Button title="MAX" className={"flex-1"} />
+        <div className="flex text-sm">
+          <Button
+            title="+1"
+            className={"flex-auto"}
+            onClick={() => setValue("supply", (Number(supply) + 1).toString())}
+          />
+          <Button
+            title="+10"
+            className={"flex-auto"}
+            onClick={() => setValue("supply", (Number(supply) + 10).toString())}
+          />
+          <Button
+            title="+100"
+            className={"flex-auto"}
+            onClick={() =>
+              setValue("supply", (Number(supply) + 100).toString())
+            }
+          />
+          <Button title="MAX" className={"flex-auto"} onClick={setToMaxShare} />
         </div>
 
-        {/* <!-- Number pad --> */}
         <div className="grid grid-cols-3 gap-3 text-center text-lg font-medium">
-          <Button title="1" />
-          <Button title="2" />
-          <Button title="3" />
-          <Button title="4" />
-          <Button title="5" />
-          <Button title="6" />
-          <Button title="7" />
-          <Button title="8" />
-          <Button title="9" />
-          <Button title="." />
-          <Button title="0" />
-          <Button title="DEL" />
+          {Array.from(Array(9), (_, i) => i + 1).map((n) => (
+            <Button
+              key={"btn" + n}
+              title={n.toString()}
+              onClick={() =>
+                setValue("supply", (Number(supply) || "") + n.toString())
+              }
+            />
+          ))}
+          <Button title="." onClick={() => setValue("supply", supply + ".")} />
+          <Button
+            title="0"
+            onClick={() => supply !== "0" && setValue("supply", supply + 0)}
+          />
+          <Button
+            title="DEL"
+            onClick={() =>
+              setValue("supply", supply.slice(0, supply.length - 1))
+            }
+          />
         </div>
       </div>
     </div>
