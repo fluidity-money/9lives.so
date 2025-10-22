@@ -44,6 +44,7 @@ export default function SimpleBody({
       initialData: initialAssetPrices,
     },
   );
+  const [predictUp, setPredictUp] = useState(true);
 
   return (
     <>
@@ -87,22 +88,29 @@ export default function SimpleBody({
           intent={"yes"}
           size={"xlarge"}
           className={"flex-1"}
-          onClick={() => setIsBuyDialogOpen(true)}
+          onClick={() => {
+            setPredictUp(true);
+            setIsBuyDialogOpen(true);
+          }}
         />
         <Button
           title="Down"
           intent={"no"}
           size={"xlarge"}
           className={"flex-1"}
-          onClick={() => setIsBuyDialogOpen(true)}
+          onClick={() => {
+            setPredictUp(false);
+            setIsBuyDialogOpen(true);
+          }}
         />
       </div>
       <Modal
         isOpen={isBuyDialogOpen}
         setIsOpen={setIsBuyDialogOpen}
         title="Predict Price"
+        boxContainerClass="md:max-w-screen max-w-[400px]"
       >
-        <SimpleBuyDialog />
+        <SimpleBuyDialog predictUp={predictUp} setPredictUp={setPredictUp} />
       </Modal>
     </>
   );

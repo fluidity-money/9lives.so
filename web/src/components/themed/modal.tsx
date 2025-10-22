@@ -5,6 +5,7 @@ import {
   DialogPanel,
 } from "@headlessui/react";
 import RetroCard from "../cardRetro";
+import { combineClass } from "@/utils/combineClass";
 interface ModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<boolean>;
@@ -12,6 +13,7 @@ interface ModalProps {
   children: React.ReactNode;
   title: string;
   disabled?: boolean;
+  boxContainerClass?: string;
 }
 export default function Modal({
   isOpen,
@@ -20,6 +22,7 @@ export default function Modal({
   children,
   title,
   disabled = false,
+  boxContainerClass,
 }: ModalProps) {
   function closeModal() {
     !disabled && setIsOpen(false);
@@ -33,7 +36,11 @@ export default function Modal({
         className="relative z-30 focus:outline-none"
         onClose={closeModal}
       >
-        <div className="fixed inset-0 z-30 w-screen overflow-y-auto bg-9blueLight/70 backdrop-blur">
+        <div
+          className={
+            "fixed inset-0 z-30 w-screen overflow-y-auto bg-9blueLight/70 backdrop-blur"
+          }
+        >
           <div className="flex min-h-full items-center justify-center">
             <TransitionChild
               enter="ease-out duration-300"
@@ -43,7 +50,12 @@ export default function Modal({
               leaveFrom="opacity-100 transform-[scale(100%)]"
               leaveTo="opacity-0 transform-[scale(95%)]"
             >
-              <DialogPanel className="w-full max-w-3xl">
+              <DialogPanel
+                className={combineClass(
+                  boxContainerClass ?? "max-w-3xl",
+                  "w-full",
+                )}
+              >
                 <RetroCard title={title} onClose={closeModal} position="middle">
                   {children}
                 </RetroCard>

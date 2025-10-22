@@ -1,14 +1,31 @@
+import React from "react";
 import Button from "./themed/button";
 
-export default function SimpleBuyDialog() {
+export default function SimpleBuyDialog({
+  predictUp,
+  setPredictUp,
+}: {
+  predictUp: boolean;
+  setPredictUp: React.Dispatch<boolean>;
+}) {
   return (
-    <div className="flex items-center justify-center bg-gray-100 font-chicago">
-      <div className="space-y-6 p-6">
+    <div className="flex flex-col items-center bg-9layer font-chicago">
+      <div className="w-full space-y-4">
         {/* <!-- Header --> */}
         <div className="flex items-center justify-between">
           <div className="flex flex-1 flex-row space-x-1">
-            <Button intent={"yes"} title="UP ↑" className={"flex-1"} />
-            <Button intent={"default"} title="DOWN ↓" className={"flex-1"} />
+            <Button
+              intent={predictUp ? "yes" : "default"}
+              title="UP ↑"
+              className={"flex-1"}
+              onClick={() => setPredictUp(true)}
+            />
+            <Button
+              intent={predictUp ? "default" : "no"}
+              title="DOWN ↓"
+              className={"flex-1"}
+              onClick={() => setPredictUp(false)}
+            />
           </div>
         </div>
 
@@ -22,7 +39,7 @@ export default function SimpleBuyDialog() {
           <div className="text-4xl font-bold">
             0.0001 <span>ETH</span>
           </div>
-          <div className="font-arial text-base text-9black">
+          <div className="text-base text-[#808080]">
             <strong>$20.98</strong>
           </div>
         </div>
@@ -64,7 +81,7 @@ export default function SimpleBuyDialog() {
           <Button title="9" />
           <Button title="." />
           <Button title="0" />
-          <Button title="⌫" />
+          <Button title="DEL" />
         </div>
       </div>
     </div>
