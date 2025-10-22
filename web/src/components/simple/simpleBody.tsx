@@ -81,7 +81,7 @@ export default function SimpleBody({
         </div>
         <span className="font-chicago text-sm">%{+(0.8 * 100).toFixed(0)}</span>
       </div>
-      <div className="md:background-transparent sticky bottom-0 left-0 right-0 flex items-center gap-2 bg-9layer p-2 md:static md:p-0">
+      <div className="md:background-transparent sticky bottom-0 left-0 right-0 flex items-center gap-2 bg-9layer pb-2 md:static md:p-0">
         <Button
           title="Up"
           intent={"yes"}
