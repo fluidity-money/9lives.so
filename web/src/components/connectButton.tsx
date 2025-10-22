@@ -8,6 +8,8 @@ import Image from "next/image";
 import LoginIcon from "#/icons/login.svg";
 import { useUserStore } from "@/stores/userStore";
 import { farcasterWallet } from "@/providers/farcaster";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
+import { combineClass } from "@/utils/combineClass";
 export default function ConnectButton() {
   const account = useActiveAccount();
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
@@ -17,9 +19,14 @@ export default function ConnectButton() {
         ? Object.values(appConfig.farcasterChains)
         : Object.values(appConfig.chains)
       : [appConfig.destinationChain];
-
+  const enableCreate = useFeatureFlag("enable campaign create");
   return (
-    <div className="flex items-center justify-center border-l-2 border-l-black">
+    <div
+      className={combineClass(
+        enableCreate ? "border-l-2" : "border-0",
+        "flex items-center justify-center border-l-black",
+      )}
+    >
       <ThirdWebButton
         client={appConfig.thirdweb.client}
         chains={chains}
