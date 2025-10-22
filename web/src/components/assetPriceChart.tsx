@@ -176,7 +176,7 @@ export default function AssetPriceChart({
             top: simple ? 0 : 12,
             right: simple ? -60 : 4,
             bottom: simple ? -10 : 0,
-            left: simple ? -60 : 0,
+            left: 0,
           }}
         >
           <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PulseDot} />
@@ -214,24 +214,31 @@ export default function AssetPriceChart({
             strokeWidth={2}
             name={symbol.toUpperCase()}
           />
-          <YAxis
-            yAxisId="1"
-            dataKey={"price"}
-            axisLine={{
-              stroke: "#0C0C0C",
-              strokeWidth: simple ? 1 : 0,
-              strokeDasharray: "3 2",
-            }}
-            orientation="left"
-            ticks={[]}
-          />
+          {simple ? (
+            <ReferenceLine
+              x={starting}
+              strokeWidth={1}
+              stroke="#0C0C0C"
+              strokeDasharray="3 2"
+              label={{
+                value: new Date(starting).toLocaleString("default", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+                fontFamily: "var(--font-chicago)",
+                fontSize: 12,
+                fill: "#0C0C0C",
+                position: "insideBottomLeft",
+                dy: 22,
+              }}
+            />
+          ) : null}
           <YAxis
             tick={{
               fontFamily: "var(--font-chicago)",
               fontSize: 12,
               fill: "#0C0C0C",
             }}
-            yAxisId="0"
             domain={[minY, maxY]}
             dataKey={"price"}
             axisLine={{
