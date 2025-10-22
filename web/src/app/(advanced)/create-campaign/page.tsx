@@ -1,8 +1,18 @@
 import CreateCampaignForm from "@/components/createCampaign/createCampaignForm";
 import CreateCampaignPreview from "@/components/createCampaign/createCampaignPreview";
 import CreateCampaignTutorial from "@/components/createCampaign/createCampaignTutorial";
+import appConfig from "@/config";
+import { redirect } from "next/navigation";
 
-export default function CreateCampaign() {
+export default async function CreateCampaign() {
+  // Remove this when feature works again: begin
+  const featuresRes = await fetch(appConfig.NEXT_PUBLIC_FEATURES_URL);
+  const features = (await featuresRes.json()) as {
+    "enable campaign create": boolean;
+  };
+  if (!features["enable campaign create"]) redirect("/");
+  // Remove this when feature works again: end
+
   return (
     <div className="flex flex-1 flex-col gap-7">
       <div className="flex flex-col items-center justify-center gap-4">

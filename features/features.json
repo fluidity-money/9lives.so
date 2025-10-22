@@ -20,5 +20,6 @@
 	"display odds on campaign items": true,
 	"enable relay create": false,
 	"enable relay add liquidity": true,
-	"enable simple mode": false
+	"enable simple mode": false,
+	"enable campaign create": false
 }

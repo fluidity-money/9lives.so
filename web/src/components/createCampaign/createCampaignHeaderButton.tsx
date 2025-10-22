@@ -2,8 +2,11 @@
 import Image from "next/image";
 import PlusIcon from "#/icons/plus.svg";
 import Link from "next/link";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function CreateCampaingButton() {
+  const enableCreate = useFeatureFlag("enable campaign create");
+  if (!enableCreate) return null;
   return (
     <div className="h-10">
       <Link href={"/create-campaign"}>
