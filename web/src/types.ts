@@ -34,6 +34,9 @@ export type CampaignDetail = Campaign & {
   investmentAmounts: { id: string; usdc: number; share: number }[];
   liquidityVested: number;
   isDpm: boolean | null;
+  basePrice?: number;
+  symbol?: string;
+  isDppm?: boolean | null;
 };
 export type Outcome = {
   name: string;

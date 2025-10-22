@@ -9,6 +9,7 @@ import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import CountdownTimer from "@/components/countdownTimer";
+import { CampaignDetail } from "@/types";
 import appConfig from "@/config";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
@@ -44,7 +45,10 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   if (!features["enable simple mode"]) redirect("/");
   // Remove this when feature is completed end
 
-  const data = await requestSimpleMarket(id);
+  const data = (await requestSimpleMarket(id)) as CampaignDetail & {
+    symbol: string;
+    basePrice: number;
+  };
   if (!data) notFound();
   const initialAssetPrices = await requestAssetPrice(
     data.symbol.toUpperCase(),

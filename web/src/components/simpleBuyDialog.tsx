@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Button from "./themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -10,22 +10,59 @@ import { combineClass } from "@/utils/combineClass";
 import useTokens from "@/hooks/useTokens";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import AssetSelector from "./assetSelector";
+import useConnectWallet from "@/hooks/useConnectWallet";
+import { useActiveAccount } from "thirdweb/react";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
+import useProfile from "@/hooks/useProfile";
+import useBuyDppm from "@/hooks/useBuyDppm";
+import useBuyDppmWithPaymaster from "@/hooks/useBuyDppmWithPaymaster";
+import useBuyDppmWithRelay from "@/hooks/useBuyDppmWithRelay";
+import Modal from "./themed/modal";
+import Funding from "./fundingBalanceDialog";
+import { requestSimpleMarket } from "@/providers/graphqlClient";
 
 export default function SimpleBuyDialog({
-  predictUp,
-  setPredictUp,
+  data,
+  outcomeIdx,
+  setOutcomeIdx,
 }: {
-  predictUp: boolean;
-  setPredictUp: React.Dispatch<boolean>;
+  data: Awaited<ReturnType<typeof requestSimpleMarket>>;
+  outcomeIdx: number;
+  setOutcomeIdx: React.Dispatch<number>;
 }) {
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
+  const [isMinting, setIsMinting] = useState(false);
+  const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
+  const { connect, isConnecting } = useConnectWallet();
+  const selectedOutcome = data.outcomes[outcomeIdx];
+  const enabledPaymaster = useFeatureFlag("enable paymaster dppm buy");
+  const { data: profile } = useProfile();
+  const account = useActiveAccount();
+  const { buyDppm } = useBuyDppm({
+    shareAddr: selectedOutcome.share.address,
+    outcomeId: selectedOutcome.identifier,
+    outcomes: data.outcomes,
+    tradingAddr: data.poolAddress,
+    campaignId: data.identifier,
+    openFundModal: () => setFundModalOpen(true),
+  });
+  const { buyDppmWithPaymaster } = useBuyDppmWithPaymaster({
+    shareAddr: selectedOutcome.share.address,
+    outcomeId: selectedOutcome.identifier,
+    data,
+    openFundModal: () => setFundModalOpen(true),
+  });
+  const { buyDppmWithRelay } = useBuyDppmWithRelay({
+    shareAddr: selectedOutcome.share.address,
+    outcomeId: selectedOutcome.identifier,
+    tradingAddr: data.poolAddress,
+    campaignId: data.identifier,
+  });
   const formSchema = z.object({
     supply: z.string(),
     toChain: z.number().min(0),
     toToken: z.string(),
-    usdValue: z.coerce
-      .number()
-      .gte(2, { message: "Investment need to be higher than 2$" }),
+    usdValue: z.coerce.number().gte(2, { message: "usd value > 2$" }),
     fromChain: z
       .number({ message: "You need to select a chain to pay from" })
       .min(0),
@@ -41,7 +78,7 @@ export default function SimpleBuyDialog({
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      supply: "0",
+      supply: "",
       toChain: config.chains.superposition.id,
       toToken: ZeroAddress,
       usdValue: 0,
@@ -88,22 +125,54 @@ export default function SimpleBuyDialog({
       setValue("usdValue", usdValue);
     }
   }, [usdValue, setValue]);
+  async function handleBuy({
+    supply,
+    fromChain,
+    fromToken,
+    toChain,
+    toToken,
+  }: FormData) {
+    try {
+      setIsMinting(true);
+      if (fromChain !== config.chains.superposition.id) {
+        await buyDppmWithRelay(
+          account!,
+          Number(supply),
+          usdValue,
+          fromChain,
+          fromToken,
+          toChain,
+          toToken,
+          data.outcomes,
+          profile?.settings?.refererr ?? "",
+          fromDecimals,
+        );
+      } else {
+        let action = enabledPaymaster ? buyDppmWithPaymaster : buyDppm;
+        await action(Number(supply), profile?.settings?.refererr ?? "");
+      }
+    } finally {
+      setIsMinting(false);
+    }
+  }
+  const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
+
   return (
-    <div className="flex flex-col items-center bg-9layer font-chicago">
+    <div className="flex min-h-[600px] flex-col items-center justify-between bg-9layer font-chicago">
       <div className="w-full space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-1 flex-row space-x-1">
             <Button
-              intent={predictUp ? "yes" : "default"}
+              intent={outcomeIdx === 0 ? "yes" : "default"}
               title="UP ↑"
               className={"flex-1"}
-              onClick={() => setPredictUp(true)}
+              onClick={() => setOutcomeIdx(0)}
             />
             <Button
-              intent={predictUp ? "default" : "no"}
+              intent={outcomeIdx === 1 ? "no" : "default"}
               title="DOWN ↓"
               className={"flex-1"}
-              onClick={() => setPredictUp(false)}
+              onClick={() => setOutcomeIdx(1)}
             />
           </div>
         </div>
@@ -122,28 +191,37 @@ export default function SimpleBuyDialog({
           />
         </div>
 
-        <div className="space-y-1 text-center">
+        <div className="flex-1 space-y-1 text-center">
           <div className="font-geneva text-sm uppercase text-gray-500">
             Amount
           </div>
           <span
             className={combineClass(
               "w-full flex-1 border-0 bg-9layer text-center text-4xl font-bold",
-              (errors.supply || errors.usdValue) && "border-2 border-red-500",
             )}
           >
-            {`${supply} ${selectedTokenSymbol ?? "$"}`}
+            {`${supply || "0"} ${selectedTokenSymbol ?? "$"}`}
           </span>
-          {usdValue && usdValue > 0 ? (
-            <div className="text-base text-[#808080]">
+          <div className="flex items-center justify-center gap-1">
+            <div
+              className={combineClass(
+                usdValue && usdValue > 0 ? "visible" : "invisible",
+                "text-base text-[#808080]",
+              )}
+            >
               <strong>${+usdValue.toFixed(3)}</strong>
             </div>
-          ) : null}
+            {errors.usdValue ? (
+              <span className="text-xs text-red-500">
+                {errors.usdValue.message}
+              </span>
+            ) : null}
+          </div>
         </div>
 
         <div
           className={combineClass(
-            Number(supply) > 0 ? "visible" : "hidden",
+            Number(supply) > 0 ? "visible" : "invisible",
             "text-center",
           )}
         >
@@ -151,15 +229,20 @@ export default function SimpleBuyDialog({
             If you&apos;re right
           </div>
           <div className="text-3xl font-semibold text-green-500">
-            ${usdValue * 2}
+            ${+(usdValue * 2).toFixed(3)}
           </div>
         </div>
 
         <Button
           size={"xlarge"}
-          title="BUY"
           intent={"yes"}
-          className={"w-full"}
+          disabled={isMinting || isConnecting}
+          title={isMinting ? "Loading.." : "BUY"}
+          className={combineClass(
+            Number(supply) > 0 ? "visible" : "invisible",
+            "w-full uppercase",
+          )}
+          onClick={onSubmit}
         />
 
         <div className="flex text-sm">
@@ -188,15 +271,13 @@ export default function SimpleBuyDialog({
             <Button
               key={"btn" + n}
               title={n.toString()}
-              onClick={() =>
-                setValue("supply", (Number(supply) || "") + n.toString())
-              }
+              onClick={() => setValue("supply", supply + n)}
             />
           ))}
           <Button title="." onClick={() => setValue("supply", supply + ".")} />
           <Button
             title="0"
-            onClick={() => supply !== "0" && setValue("supply", supply + 0)}
+            onClick={() => supply !== "" && setValue("supply", supply + 0)}
           />
           <Button
             title="DEL"
@@ -206,6 +287,19 @@ export default function SimpleBuyDialog({
           />
         </div>
       </div>
+      <Modal
+        isOpen={isFundModalOpen}
+        setIsOpen={setFundModalOpen}
+        title="MINT FUNDING"
+      >
+        <Funding
+          type="buy"
+          closeModal={() => setFundModalOpen(false)}
+          campaignId={data.identifier}
+          title={data.name}
+          fundToBuy={Number(supply)}
+        />
+      </Modal>
     </div>
   );
 }

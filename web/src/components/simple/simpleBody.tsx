@@ -18,7 +18,10 @@ export default function SimpleBody({
   data,
   initialAssetPrices,
 }: {
-  data: Awaited<ReturnType<typeof requestSimpleMarket>>;
+  data: Awaited<ReturnType<typeof requestSimpleMarket>> & {
+    symbol: string;
+    basePrice: number;
+  };
   initialAssetPrices?: PricePoint[];
 }) {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
@@ -44,7 +47,7 @@ export default function SimpleBody({
       initialData: initialAssetPrices,
     },
   );
-  const [predictUp, setPredictUp] = useState(true);
+  const [outcomeIdx, setOutcomeIdx] = useState(0);
 
   return (
     <>
@@ -87,9 +90,9 @@ export default function SimpleBody({
           title="Up"
           intent={"yes"}
           size={"xlarge"}
-          className={"flex-1"}
+          className={"flex-auto"}
           onClick={() => {
-            setPredictUp(true);
+            setOutcomeIdx(0);
             setIsBuyDialogOpen(true);
           }}
         />
@@ -97,9 +100,9 @@ export default function SimpleBody({
           title="Down"
           intent={"no"}
           size={"xlarge"}
-          className={"flex-1"}
+          className={"flex-auto"}
           onClick={() => {
-            setPredictUp(false);
+            setOutcomeIdx(11);
             setIsBuyDialogOpen(true);
           }}
         />
@@ -110,7 +113,11 @@ export default function SimpleBody({
         title="Predict Price"
         boxContainerClass="md:max-w-screen max-w-[400px]"
       >
-        <SimpleBuyDialog predictUp={predictUp} setPredictUp={setPredictUp} />
+        <SimpleBuyDialog
+          data={data}
+          outcomeIdx={outcomeIdx}
+          setOutcomeIdx={setOutcomeIdx}
+        />
       </Modal>
     </>
   );

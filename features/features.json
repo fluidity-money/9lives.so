@@ -21,5 +21,6 @@
 	"enable relay create": false,
 	"enable relay add liquidity": true,
 	"enable simple mode": false,
-	"enable campaign create": false
+	"enable campaign create": false,
+	"enable paymaster dppm buy": false
 }

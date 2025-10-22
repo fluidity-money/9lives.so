@@ -2,7 +2,12 @@ import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
-import { CampaignFilters, OutcomeInput, PricePointResponse } from "@/types";
+import {
+  CampaignDetail,
+  CampaignFilters,
+  OutcomeInput,
+  PricePointResponse,
+} from "@/types";
 import { MaxUint256 } from "ethers";
 
 const graph9Lives = Lives9.create().transport({
@@ -580,15 +585,43 @@ export const requestPriceChanges = (poolAddress: string) =>
 export const requestWeeklyVolume = (poolAddress: string) =>
   graph9Lives.query.campaignWeeklyVolume({ $: { poolAddress } });
 
-export const requestSimpleMarket = (symbol: string) => {
+export const requestSimpleMarket = (symbol: string): CampaignDetail => {
   return {
     identifier: "0x99",
     starting: new Date("2025-10-22T08:00:00Z").getTime(),
     description: "$BTC above $110714.90 on Oct 14, 12:00 UTC?",
     ending: new Date("2025-10-22T09:00:00Z").getTime(),
     poolAddress: "0x0",
-    outcomes: ["0x1", "0x2"],
-    investments: [1500, 750],
+    outcomes: [
+      {
+        identifier: "0x1" as `0x${string}`,
+        name: "Up",
+        picture: null,
+        share: { address: `0x999` as `0x${string}` },
+      },
+      {
+        identifier: "0x2" as `0x${string}`,
+        name: "Down",
+        picture: null,
+        share: { address: `0x998` as `0x${string}` },
+      },
+    ],
+    shares: [],
+    isDpm: null,
+    liquidityVested: 0,
+    picture: null,
+    isYesNo: true,
+    isDppm: true,
+    oracleDescription: "",
+    oracleUrls: [],
+    totalVolume: 2500,
+    creator: { address: "0xfab" },
+    settlement: "AI",
+    winner: null,
+    investmentAmounts: [
+      { usdc: 1500, share: 1500, id: "0x" },
+      { usdc: 750, share: 750, id: "0x" },
+    ],
     basePrice: 108330,
     symbol,
     name: "$BTC above $108330 on Oct 22, 09:00 UTC?",
