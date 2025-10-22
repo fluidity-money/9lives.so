@@ -71,7 +71,6 @@ fn send {
 
 fn call {
 	cast call \
-		--json \
 		--rpc-url $SPN_SUPERPOSITION_URL \
 		--private-key $SPN_SUPERPOSITION_KEY \
 		$*
@@ -105,6 +104,7 @@ allowance_factory=`{\
 	call $SPN_FUSDC_ADDR 'allowance(address,address)(uint256)' \
 		$SPN_SENDER_ADDR \
 		$SPN_FACTORY_ADDR \
+			| cut -f1 -d' '
 }
 
 if(test $allowance_factory -lt 2000000) {
@@ -119,6 +119,7 @@ allowance_buy_helper=`{\
 	call $SPN_FUSDC_ADDR 'allowance(address,address)(uint256)' \
 		$SPN_SENDER_ADDR \
 		$SPN_BUY_HELPER \
+			| cut -f1 -d' '
 }
 
 if(test $allowance_buy_helper -lt $sum) {
