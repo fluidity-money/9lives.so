@@ -53,7 +53,7 @@ alloy-sol-macro-input = "=0.7.6"
 strum = { version = "0.26.3", default-features = false, features = ["derive"] }
 mutants = "0.0.3"
 ruint = { version = "1.14.0", default-features = false }
-bobcat-proxy = "0.4.2"
+bobcat-proxy = "0.5.1"
 bobcat-maths = "0.5.0"
 
 [dependencies.stylus-sdk]

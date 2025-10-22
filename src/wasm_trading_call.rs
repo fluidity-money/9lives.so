@@ -45,13 +45,21 @@ pub fn ctor(
         },
     }
     .abi_encode();
-    unsafe { RawCall::new().call(addr, &a).map_err(Error::TradingError)? };
+    unsafe {
+        RawCall::new()
+            .call(addr, &a)
+            .map_err(Error::TradingErrorCtor)?
+    };
     Ok(())
 }
 
 pub fn decide(addr: Address, winner: FixedBytes<8>) -> Result<U256, Error> {
     let a = decideCall { outcome: winner }.abi_encode();
-    let b = unsafe { RawCall::new().call(addr, &a).map_err(Error::TradingError)? };
+    let b = unsafe {
+        RawCall::new()
+            .call(addr, &a)
+            .map_err(Error::TradingErrorDecide)?
+    };
     unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
 
@@ -59,7 +67,7 @@ pub fn global_shares(addr: Address) -> Result<U256, Error> {
     let b = unsafe {
         RawCall::new()
             .call(addr, &globalSharesCall {}.abi_encode())
-            .map_err(Error::TradingError)?
+            .map_err(Error::TradingErrorGlobalShares)?
     };
     unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
@@ -77,7 +85,7 @@ pub fn details(
                 }
                 .abi_encode(),
             )
-            .map_err(Error::TradingError)?
+            .map_err(Error::TradingErrorDetails)?
     };
     unpack_details(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
@@ -86,7 +94,7 @@ pub fn escape(addr: Address) -> Result<(), Error> {
     unsafe {
         RawCall::new()
             .call(addr, &escapeCall {}.abi_encode())
-            .map_err(Error::TradingError)?
+            .map_err(Error::TradingErrorEscape)?
     };
     Ok(())
 }
@@ -95,7 +103,7 @@ pub fn time_ending(addr: Address) -> Result<u64, Error> {
     let b = unsafe {
         RawCall::new()
             .call(addr, &timeEndingCall {}.abi_encode())
-            .map_err(Error::TradingError)?
+            .map_err(Error::TradingErrorTimeEnding)?
     };
     unpack_u64(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
@@ -105,7 +113,7 @@ pub fn add_liquidity(
     amt: U256,
     recipient: Address,
     min_liquidity: U256,
-    max_shares: U256
+    max_shares: U256,
 ) -> Result<U256, Error> {
     let b = unsafe {
         RawCall::new()
@@ -115,11 +123,11 @@ pub fn add_liquidity(
                     liquidity: amt,
                     recipient,
                     minShares: min_liquidity,
-                    maxShares: max_shares
+                    maxShares: max_shares,
                 }
                 .abi_encode(),
             )
-            .map_err(Error::TradingError)?
+            .map_err(Error::TradingErrorAddLiq)?
     };
     unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
@@ -128,16 +136,16 @@ pub fn outcome_list(addr: Address) -> Result<Vec<FixedBytes<8>>, Error> {
     let b = unsafe {
         RawCall::new()
             .call(addr, &outcomeListCall {}.abi_encode())
-            .map_err(Error::TradingError)?
+            .map_err(Error::TradingErrorOutcomeList)?
     };
     unpack_outcome_list(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
 
-pub fn is_dpm(addr: Address) -> Result<bool, Error> {
+pub fn is_dppm(addr: Address) -> Result<bool, Error> {
     let b = unsafe {
         RawCall::new()
             .call(addr, &isDpmCall {}.abi_encode())
-            .map_err(Error::TradingError)?
+            .map_err(Error::TradingErrorIsDppm)?
     };
     unpack_bool(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }
@@ -146,7 +154,7 @@ pub fn price(addr: Address, outcome: FixedBytes<8>) -> Result<U256, Error> {
     let b = unsafe {
         RawCall::new()
             .call(addr, &priceA827ED27Call { outcome }.abi_encode())
-            .map_err(Error::TradingError)?
+            .map_err(Error::TradingErrorPrice)?
     };
     unpack_u256(&b).ok_or(Error::TradingUnableToUnpack(addr, b))
 }

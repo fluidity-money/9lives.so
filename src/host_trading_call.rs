@@ -45,7 +45,7 @@ pub fn time_ending(_addr: Address) -> Result<u64, Error> {
     Ok(0)
 }
 
-pub fn add_liquidity(_: Address, _: U256, _: Address, _: U256) -> Result<U256, Error> {
+pub fn add_liquidity(_: Address, _: U256, _: Address, _: U256, _: U256) -> Result<U256, Error> {
     Ok(U256::ZERO)
 }
 

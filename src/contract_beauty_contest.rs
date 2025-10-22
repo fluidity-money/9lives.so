@@ -39,7 +39,7 @@ impl StorageBeautyContest {
         outcome_ids.sort();
         outcome_ids.dedup();
         let outcome_fst = outcome_ids[0];
-        if c!(trading_call::is_dpm(trading_addr)) {
+        if c!(trading_call::is_dppm(trading_addr)) {
             let (count_shares, _, min_shares, winning_outcome) = outcome_ids.into_iter().try_fold(
                 (U256::ZERO, U256::ZERO, U256::ZERO, outcome_fst),
                 |(count_shares, max_shares, min_shares, winning_outcome), outcome_id| {

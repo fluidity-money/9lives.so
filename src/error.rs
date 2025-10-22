@@ -61,7 +61,7 @@ macro_rules! assert_eq_u {
 err_pre!(ERR_LONGTAIL_PREAMBLE, 0x00);
 err_pre!(ERR_ERC20_TRANSFER_PREAMBLE, 0x01);
 err_pre!(ERR_SHARE_PREAMBLE, 0x02);
-err_pre!(ERR_TRADING_PREAMBLE, 0x03);
+err_pre!(ERR_TRADING_CTOR_PREAMBLE, 0x03);
 err_pre!(ERR_ERC20_TRANSFER_FROM_PREAMBLE, 0x04);
 err_pre!(ERR_ERC20_PERMIT_PREAMBLE, 0x05);
 err_pre!(ERR_ERC20_BALANCE_OF_PREAMBLE, 0x06);
@@ -69,7 +69,16 @@ err_pre!(ERR_LOCKED_ARB_PREAMBLE, 0x07);
 err_pre!(ERR_FACTORY_PREAMBLE, 0x07);
 err_pre!(ERR_INFRA_MARKET_PREAMBLE, 0x08);
 err_pre!(ERR_GENERAL_PREAMBLE, 0x09);
-err_pre!(ERR_LOCKED_PREAMBLE, 0x10);
+err_pre!(ERR_LOCKED_PREAMBLE, 0x0a);
+err_pre!(ERR_TRADING_DECIDE_PREAMBLE, 0x0b);
+err_pre!(ERR_TRADING_GLOBAL_SHARES_PREAMBLE, 0x0c);
+err_pre!(ERR_TRADING_DETAILS_PREAMBLE, 0x0d);
+err_pre!(ERR_TRADING_ESCAPE_PREAMBLE, 0x0e);
+err_pre!(ERR_TRADING_TIME_ENDING_PREAMBLE, 0x0f);
+err_pre!(ERR_TRADING_OUTCOME_LIST_PREAMBLE, 0x10);
+err_pre!(ERR_TRADING_IS_DPPM_PREAMBLE, 0x11);
+err_pre!(ERR_TRADING_ADD_LIQ, 0x12);
+err_pre!(ERR_TRADING_PRICE, 0x13);
 
 // Some testing affordances to make life easier with tracing the source
 // of issues.
@@ -159,8 +168,8 @@ pub enum Error {
     /// ERC20 error on transfer!
     ERC20ErrorTransfer(Address, Vec<u8>),
 
-    /// Trading error! Probably during construction.
-    TradingError(Vec<u8>),
+    /// Trading error during ctor! Probably during construction.
+    TradingErrorCtor(Vec<u8>),
 
     /// ERC20 unable to unpack a value!
     ERC20UnableToUnpack,
@@ -536,6 +545,28 @@ pub enum Error {
 
     /// Checked subtraction overflowed!
     CheckedSubOverflow64(U64, U64),
+
+    /// Trading error during decide!
+    TradingErrorDecide(Vec<u8>),
+
+    /// Trading error during geting the trading global shares!
+    TradingErrorGlobalShares(Vec<u8>),
+
+    TradingErrorDetails(Vec<u8>),
+
+    TradingErrorEscape(Vec<u8>),
+
+    TradingErrorTimeEnding(Vec<u8>),
+
+    TradingErrorOutcomeList(Vec<u8>),
+
+    TradingErrorIsDppm(Vec<u8>),
+
+    TradingPrice(Vec<u8>),
+
+    TradingErrorAddLiq(Vec<u8>),
+
+    TradingErrorPrice(Vec<u8>)
 }
 
 #[cfg(any(
@@ -690,7 +721,16 @@ impl From<Error> for Vec<u8> {
             Error::LockedARBError(addr, b) => ext(&ERR_LOCKED_ARB_PREAMBLE, &[&b, addr.as_slice()]),
             Error::LockupError(addr, b) => ext(&ERR_LOCKED_PREAMBLE, &[addr.as_slice(), &b]),
             Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
-            Error::TradingError(b) => ext(&ERR_TRADING_PREAMBLE, &[&b]),
+            Error::TradingErrorCtor(b) => ext(&ERR_TRADING_CTOR_PREAMBLE, &[&b]),
+            Error::TradingErrorDecide(b) => ext(&ERR_TRADING_DECIDE_PREAMBLE, &[&b]),
+            Error::TradingErrorGlobalShares(b) => ext(&ERR_TRADING_GLOBAL_SHARES_PREAMBLE, &[&b]),
+            Error::TradingErrorDetails(b) => ext(&ERR_TRADING_DETAILS_PREAMBLE, &[&b]),
+            Error::TradingErrorEscape(b) => ext(&ERR_TRADING_ESCAPE_PREAMBLE, &[&b]),
+            Error::TradingErrorTimeEnding(b) => ext(&ERR_TRADING_TIME_ENDING_PREAMBLE, &[&b]),
+            Error::TradingErrorOutcomeList(b) => ext(&ERR_TRADING_OUTCOME_LIST_PREAMBLE, &[&b]),
+            Error::TradingErrorIsDppm(b) => ext(&ERR_TRADING_IS_DPPM_PREAMBLE, &[&b]),
+            Error::TradingErrorAddLiq(b) => ext(&ERR_TRADING_ADD_LIQ, &[&b]),
+            Error::TradingPrice(b) => ext(&ERR_TRADING_PRICE, &[&b]),
             Error::FactoryCallError(b) => ext(&ERR_FACTORY_PREAMBLE, &[&b]),
             Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
             Error::NotInCommitReveal(whinge_ts, cur_ts) => {

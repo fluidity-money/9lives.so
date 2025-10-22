@@ -11,7 +11,7 @@ link](https://docs.google.com/forms/d/e/1FAIpQLSfYfgLuQ0GU8K5vGj-kU0PciqHHQCCD60
 
 ---
 
-9Lives is an Arbitrum Stylus smart contract implemented with a simple factory/pair
+9lives is an Arbitrum Stylus smart contract implemented with a simple factory/pair
 pattern. A factory takes a list of outcomes, and creates a variable number of contracts
 with a minimal viable proxy pointing to share ERC20s, and a trading contract. It either
 supports the Dynamic Pari-Mutuel Market (DPPM) model to solve liquidity issues in
@@ -117,7 +117,7 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address              |
 |-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x7c4864006d0927dc65507a457c274db71d3f17b7` |
+| Factory 1 implementation      | `0x58b4a0947bfa1022cd853e4058d8d217aca4bcc7` |
 | Factory 2 implementation      | `0x7ec69f0785dbb944c57fc98e89e244710d00600b` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |

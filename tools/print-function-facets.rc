@@ -4,7 +4,7 @@
 # part of the selector matches a magic byte.
 
 fn selectors {
-	forge selectors list INineLivesTrading \
+	forge selectors list INineLivesFactory \
 		| awk -F'|' '/Function/ { print $3,";",$4 }' \
 		| sed 's/ //g'
 }

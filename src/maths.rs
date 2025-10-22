@@ -47,7 +47,7 @@ pub fn ninetails_shares(shares: U256, t_buy: U64, t_end: U64) -> Result<U256, Er
     // t_end is the end of the market
     // shares * ((t_buy - t_end) ^ 2)
     shares
-        .checked_mul(U256::from(t_buy.wrapping_sub(t_end).pow(U64::from(2))))
+        .checked_mul(U256::from(t_end.wrapping_sub(t_buy)))
         .ok_or(Error::CheckedMulOverflow)
 }
 

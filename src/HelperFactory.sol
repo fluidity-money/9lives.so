@@ -66,7 +66,7 @@ contract HelperFactory {
     /// Create a new campaign, ignoring the CreateArgs oracle argument.
     function create(address _oracle, CreateArgs calldata _a) internal returns (address) {
         require(_a.timeEnding > block.timestamp, "time ending before timestamp");
-        INineLivesTrading t = INineLivesTrading(FACTORY.newTrading3F989FB1(
+        INineLivesTrading t = INineLivesTrading(FACTORY.newTrading9A87E788(
             _a.outcomes,
             _oracle,
             uint64(block.timestamp),

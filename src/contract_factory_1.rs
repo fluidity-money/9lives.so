@@ -28,7 +28,7 @@ impl StorageFactory {
     // as much as the amount that the pool was made for. For now, we take the
     // default winner as the first outcome that was supplied to this function.
     #[allow(non_snake_case, clippy::too_many_arguments)]
-    pub fn new_trading_3_F_989_F_B_1(
+    pub fn new_trading_9_A_8_7_E_788(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
@@ -40,17 +40,15 @@ impl StorageFactory {
         fee_lp: u64,
         fee_minter: u64,
         fee_referrer: u64,
-        backend_is_dppm: bool
+        backend_is_dppm: bool,
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
         let outcome_ids = outcomes.iter().map(|(c, _, _)| *c).collect::<Vec<_>>();
 
         // Create the trading identifier to derive the outcome addresses from.
-        let trading_id = proxy::create_identifier(&outcome_ids
-            .iter()
-            .map(|c| c.as_slice())
-            .collect::<Vec<_>>());
+        let trading_id =
+            proxy::create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
 
         let backend_type = if backend_is_dppm {
             TradingBackendType::DPPM as u8
@@ -129,7 +127,6 @@ impl StorageFactory {
                 erc20Addr: erc20_addr,
             });
         }
-
         c!(trading_call::ctor(
             trading_addr,
             outcome_ids.clone(),

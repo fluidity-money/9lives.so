@@ -339,6 +339,177 @@ async fn main() -> Result<(), Error> {
                     PreStateTracer(PreStateFrame::Diff(DiffMode { post, .. })) => {
                         let mut state_overrides = STATE_OVERRIDES.get().unwrap().lock().await;
                         for (addr, state) in post {
+                            if *addr == address!("A4b05FffffFffFFFFfFFfffFfffFFfffFfFfFFFf") {
+                                eprintln!("refusing to set to arbos with a state override");
+                                continue;
+                            }
+                            // It's not clear to me whether this is needed, but we're explicitly
+                            // merging this anyway.
+                            let o = state_overrides
+                                .entry(*addr)
+                                .or_insert_with(AccountOverride::default);
+                            o.balance = state.balance;
+                            o.nonce = state.nonce;
+                            o.code = state.code.clone();
+                            let storage = state.storage.iter();
+                            match &mut o.state {
+                                Some(state) => state.extend(storage),
+                                None => {
+                                    let mut h = HashMap::with_hasher(FbBuildHasher::default());
+                                    h.extend(storage);
+                                    o.state = Some(h)
+                                }
+                            }
+                        }
+                    }
+                    a => panic!("not diff prestate tracer in mux: {a:?}"),
+                };
+                let (contract, output, status) = match trace
+                    .0
+                    .get(&GethDebugBuiltInTracerType::CallTracer)
+                    .unwrap()
+                {
+                    CallTracer(CallFrame {
+                        to, output, error, ..
+                    }) => (
+                        to,
+                        output,
+                        match error {
+                            None => 0,
+                            Some(_) => 1,
+                        },
+                    ),
+                    a => panic!("not calltracer in mux: {a:?}"),
+                };
+                if status == 0 {
+                    if *VERBOSE.get().unwrap() {
+                        eprintln!(
+                            "success deploying {} to {}",
+                            const_hex::encode(&code),
+                            contract.unwrap()
+                        );
+                    }
+                    if let Some(c) = contract.clone() {
+                        unsafe {
+                            std::ptr::copy(
+                                c.as_ptr(),
+                                mem.data_ptr(&mut caller).offset(contract_ptr as isize),
+                                20,
+                            )
+                        }
+                    }
+                } else {
+                    if *VERBOSE.get().unwrap() {
+                        eprintln!("fail deploying {}", const_hex::encode(code));
+                    }
+                    // Since we reverted, we need to set the revert_data variable!
+                    if let Some(d) = output {
+                        if *VERBOSE.get().unwrap() {
+                            eprintln!("revert message for deploy: {d}");
+                        }
+                        unsafe {
+                            std::ptr::copy(
+                                d.len().to_be_bytes().as_ptr(),
+                                mem.data_ptr(&mut caller).offset(revert_data_len as isize),
+                                d.len(),
+                            )
+                        }
+                    }
+                    *LAST_CALL_CALLDATA.get().unwrap().lock().await = output.clone()
+                }
+            })
+        },
+    )?;
+    linker.func_wrap_async(
+        "vm_hooks",
+        "create2",
+        |mut caller: Caller<_>,
+         (code_ptr, code_len, endowment, _salt, contract_ptr, revert_data_len): (i32, i32, i32, i32, i32, i32)| {
+            // We have the same implementation as the create1 here, but without any work involving the salt.
+            Box::new(async move {
+                let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+                let mut code = Vec::with_capacity(code_len as usize);
+                unsafe {
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(code_ptr as isize),
+                        code.as_mut_ptr(),
+                        code_len as usize,
+                    );
+                    code.set_len(code_len as usize);
+                }
+                let trace = PROVIDER
+                    .get()
+                    .unwrap()
+                    .lock()
+                    .await
+                    .debug_trace_call(
+                        {
+                            let mut t = TransactionRequest::default();
+                            t.from = Some(*ADDR.get().unwrap());
+                            t.to = Some(TxKind::Create);
+                            t.input = TransactionInput {
+                                input: Some(Bytes::copy_from_slice(&code)),
+                                data: None,
+                            };
+                            t
+                        },
+                        BlockId::Number(BlockNumberOrTag::Number(*BLOCK.get().unwrap())),
+                        GethDebugTracingCallOptions {
+                            tracing_options: GethDebugTracingOptions::mux_tracer({
+                                let mut h = MuxConfig::default();
+                                h.0.insert(
+                                    GethDebugBuiltInTracerType::CallTracer,
+                                    Some(
+                                        CallConfig {
+                                            only_top_call: Some(true),
+                                            with_log: Some(false),
+                                        }
+                                        .into(),
+                                    ),
+                                );
+                                h.0.insert(
+                                    GethDebugBuiltInTracerType::PreStateTracer,
+                                    Some(
+                                        PreStateConfig {
+                                            diff_mode: Some(true),
+                                            disable_code: Some(true),
+                                            disable_storage: None,
+                                        }
+                                        .into(),
+                                    ),
+                                );
+                                h
+                            }),
+                            block_overrides: Some({
+                                let mut b = BlockOverrides::default();
+                                b.time = Some(*TIMESTAMP.get().unwrap() as u64);
+                                b
+                            }),
+                            state_overrides: Some({
+                                // We might not exist, so we need to set the balance to the max here for the
+                                // contract in our overrides.
+                                let mut s = STATE_OVERRIDES.get().unwrap().lock().await.clone();
+                                s.entry(*ADDR.get().unwrap())
+                                    .or_insert_with(AccountOverride::default)
+                                    .balance = Some(U256::MAX);
+                                s
+                            }),
+                        },
+                    )
+                    .await;
+                let trace = trace.unwrap().try_into_mux_frame().unwrap();
+                match trace
+                    .0
+                    .get(&GethDebugBuiltInTracerType::PreStateTracer)
+                    .unwrap()
+                {
+                    PreStateTracer(PreStateFrame::Diff(DiffMode { post, .. })) => {
+                        let mut state_overrides = STATE_OVERRIDES.get().unwrap().lock().await;
+                        for (addr, state) in post {
+                            if *addr == address!("A4b05FffffFffFFFFfFFfffFfffFFfffFfFfFFFf") {
+                                eprintln!("refusing to set to arbos with a state override");
+                                continue;
+                            }
                             // It's not clear to me whether this is needed, but we're explicitly
                             // merging this anyway.
                             let o = state_overrides
@@ -415,20 +586,6 @@ async fn main() -> Result<(), Error> {
                     *LAST_CALL_CALLDATA.get().unwrap().lock().await = output.clone()
                 }
             })
-        },
-    )?;
-    linker.func_wrap(
-        "vm_hooks",
-        "create2",
-        |_: Caller<_>,
-         _code: i32,
-         _code_len: i32,
-         _endowment: i32,
-         _salt: i32,
-         _contract: i32,
-         _revert_data_len: i32| {
-            // Use a similar process as create1.
-            unimplemented!()
         },
     )?;
     linker.func_wrap_async(
@@ -733,8 +890,7 @@ async fn main() -> Result<(), Error> {
         "vm_hooks",
         "static_call_contract",
         move |mut caller: Caller<_>,
-              (contract_ptr, calldata_ptr, calldata_len, value_ptr, gas, return_data_len_ptr): (
-            i32,
+              (contract_ptr, calldata_ptr, calldata_len, gas, return_data_len_ptr): (
             i32,
             i32,
             i32,
@@ -746,7 +902,6 @@ async fn main() -> Result<(), Error> {
                 let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
                 let mut contract = [0_u8; 20];
                 let mut calldata = Vec::with_capacity(calldata_len as usize);
-                let mut value = [0_u8; 32];
                 unsafe {
                     std::ptr::copy(
                         mem.data_ptr(&mut caller).offset(contract_ptr as isize),
@@ -759,11 +914,6 @@ async fn main() -> Result<(), Error> {
                         calldata_len as usize,
                     );
                     calldata.set_len(calldata_len as usize);
-                    std::ptr::copy(
-                        mem.data_ptr(&mut caller).offset(value_ptr as isize),
-                        value.as_mut_ptr(),
-                        value.len(),
-                    );
                 }
                 let contract = Address::from(contract);
                 // Below, we're using debug_tracecall for this. It would
@@ -787,7 +937,6 @@ async fn main() -> Result<(), Error> {
                             } else {
                                 None
                             };
-                            t.value = Some(U256::from_be_bytes(value));
                             t
                         },
                         BlockId::Number(BlockNumberOrTag::Number(*BLOCK.get().unwrap())),
