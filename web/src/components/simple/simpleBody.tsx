@@ -102,7 +102,7 @@ export default function SimpleBody({
           size={"xlarge"}
           className={"flex-auto"}
           onClick={() => {
-            setOutcomeIdx(11);
+            setOutcomeIdx(1);
             setIsBuyDialogOpen(true);
           }}
         />
