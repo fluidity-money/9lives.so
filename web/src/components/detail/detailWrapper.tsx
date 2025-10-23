@@ -66,12 +66,13 @@ export default function DetailWrapper({
   const symbol = data.priceMetadata?.baseAsset?.toLowerCase();
   const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
     {
-      queryKey: ["assetPrice", symbol, data.starting],
+      queryKey: ["assetPrice", symbol, data.starting, data.ending],
       queryFn: async () => {
         if (symbol) {
           const res = await requestAssetPrice(
             symbol.toUpperCase(),
             new Date(data.starting).toISOString(),
+            new Date(data.ending).toISOString(),
           );
           if (res?.oracles_ninelives_prices_1) {
             return res?.oracles_ninelives_prices_1.map((i) => ({

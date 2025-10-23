@@ -21,10 +21,12 @@ subscription($symbol: String!, $starting: timestamp!) {
 `;
 export default function ChartPriceProvider({
   starting,
+  ending,
   symbol,
   children,
 }: {
   starting: number;
+  ending: number;
   symbol: string;
   children: Readonly<React.ReactNode>;
 }) {
@@ -46,7 +48,7 @@ export default function ChartPriceProvider({
           const nextData = data?.oracles_ninelives_prices_1;
           if (nextData && nextData.length > 0) {
             queryClient.setQueryData<PricePoint[]>(
-              ["assetPrice", _symbol, starting],
+              ["assetPrice", _symbol, starting, ending],
               (previousData) => {
                 const onlyNewItems = nextData
                   .filter(

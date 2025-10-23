@@ -6,7 +6,7 @@ import {
   requestPriceChanges,
 } from "@/providers/graphqlClient";
 import { getCampaignsForSSG } from "@/serverData/getCampaigns";
-import { CampaignDetailDto } from "@/types";
+import { CampaignDetailDto, PricePoint } from "@/types";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 type Params = Promise<{ id: string }>;
@@ -39,12 +39,15 @@ export default async function DetailPage({ params }: { params: Params }) {
   if (!response) notFound();
   const campaign = JSON.parse(JSON.stringify(new CampaignDetailDto(response)));
   const priceEvents = await requestPriceChanges(response.poolAddress);
-  const initialAssetPrices = await requestAssetPrice(
-    response.priceMetadata!.baseAsset.toUpperCase(),
-    new Date(response.starting).toISOString(),
-  )?.then((res) => {
-    if (res?.oracles_ninelives_prices_1) {
-      return res?.oracles_ninelives_prices_1.map((i) => ({
+  let initialAssetPrices: PricePoint[] = [];
+  if (response.isDppm) {
+    const res = await requestAssetPrice(
+      response.priceMetadata!.baseAsset.toUpperCase(),
+      new Date(campaign.starting).toISOString(),
+      new Date(campaign.ending).toISOString(),
+    );
+    if (res && res.oracles_ninelives_prices_1) {
+      initialAssetPrices = res?.oracles_ninelives_prices_1.map((i) => ({
         price: i.amount,
         id: i.id,
         timestamp:
@@ -52,8 +55,8 @@ export default async function DetailPage({ params }: { params: Params }) {
           new Date().getTimezoneOffset() * 60 * 1000,
       }));
     }
-    return [];
-  });
+  }
+
   return (
     <Suspense>
       <DetailWrapper

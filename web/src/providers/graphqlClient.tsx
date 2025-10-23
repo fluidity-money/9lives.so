@@ -636,12 +636,16 @@ export const requestSimpleMarket = (symbol: string): CampaignDetail => {
   };
 };
 
-export const requestAssetPrice = (symbol: string, starting: string) =>
+export const requestAssetPrice = (
+  symbol: string,
+  starting: string,
+  ending: string,
+) =>
   graph9LivesSubs
     .gql(
       `
 query {
-  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
+  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
     id
     amount
     created_by

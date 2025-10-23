@@ -9,7 +9,7 @@ import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import CountdownTimer from "@/components/countdownTimer";
-import { CampaignDetail } from "@/types";
+import { CampaignDetail, PricePoint } from "@/types";
 import appConfig from "@/config";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
@@ -50,21 +50,23 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
     basePrice: number;
   };
   if (!data) notFound();
-  const initialAssetPrices = await requestAssetPrice(
+
+  let initialAssetPrices: PricePoint[] = [];
+  const res = await requestAssetPrice(
     data.symbol.toUpperCase(),
     new Date(data.starting).toISOString(),
-  )?.then((res) => {
-    if (res?.oracles_ninelives_prices_1) {
-      return res?.oracles_ninelives_prices_1.map((i) => ({
-        price: i.amount,
-        id: i.id,
-        timestamp:
-          new Date(i.created_by).getTime() -
-          new Date().getTimezoneOffset() * 60 * 1000,
-      }));
-    }
-    return [];
-  });
+    new Date(data.ending).toISOString(),
+  );
+  if (res && res.oracles_ninelives_prices_1) {
+    initialAssetPrices = res.oracles_ninelives_prices_1.map((i) => ({
+      price: i.amount,
+      id: i.id,
+      timestamp:
+        new Date(i.created_by).getTime() -
+        new Date().getTimezoneOffset() * 60 * 1000,
+    }));
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />

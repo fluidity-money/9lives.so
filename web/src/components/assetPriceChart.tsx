@@ -165,7 +165,7 @@ export default function AssetPriceChart({
   );
 
   return (
-    <ChartPriceProvider starting={starting} symbol={symbol}>
+    <ChartPriceProvider starting={starting} ending={ending} symbol={symbol}>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart
           data={[
