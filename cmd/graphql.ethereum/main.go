@@ -4,7 +4,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
 	"math/big"
 	"net/http"
 	"os"
