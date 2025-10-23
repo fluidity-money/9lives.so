@@ -1,6 +1,7 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
 import config from "@/config";
 import {
+  requestAssetPrice,
   requestCampaignById,
   requestPriceChanges,
 } from "@/providers/graphqlClient";
@@ -38,9 +39,28 @@ export default async function DetailPage({ params }: { params: Params }) {
   if (!response) notFound();
   const campaign = JSON.parse(JSON.stringify(new CampaignDetailDto(response)));
   const priceEvents = await requestPriceChanges(response.poolAddress);
+  const initialAssetPrices = await requestAssetPrice(
+    response.priceMetadata!.baseAsset.toUpperCase(),
+    new Date(response.starting).toISOString(),
+  )?.then((res) => {
+    if (res?.oracles_ninelives_prices_1) {
+      return res?.oracles_ninelives_prices_1.map((i) => ({
+        price: i.amount,
+        id: i.id,
+        timestamp:
+          new Date(i.created_by).getTime() -
+          new Date().getTimezoneOffset() * 60 * 1000,
+      }));
+    }
+    return [];
+  });
   return (
     <Suspense>
-      <DetailWrapper initialData={campaign} priceEvents={priceEvents} />
+      <DetailWrapper
+        initialData={campaign}
+        priceEvents={priceEvents}
+        initialAssetPrices={initialAssetPrices}
+      />
     </Suspense>
   );
 }

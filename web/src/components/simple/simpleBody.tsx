@@ -25,12 +25,13 @@ export default function SimpleBody({
   initialAssetPrices?: PricePoint[];
 }) {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  const symbol = data.symbol.toLowerCase();
   const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
     {
-      queryKey: ["assetPrice", data.symbol, data.starting],
+      queryKey: ["assetPrice", symbol, data.starting],
       queryFn: async () => {
         const res = await requestAssetPrice(
-          data.symbol.toUpperCase(),
+          symbol.toUpperCase(),
           new Date(data.starting).toISOString(),
         );
         if (res?.oracles_ninelives_prices_1) {
@@ -85,7 +86,7 @@ export default function SimpleBody({
         </div>
         <span className="font-chicago text-sm">%{+(0.8 * 100).toFixed(0)}</span>
       </div>
-      <div className="md:background-transparent sticky bottom-0 left-0 right-0 flex items-center gap-2 bg-9layer pb-2 md:static md:p-0">
+      <div className="sticky inset-x-0 bottom-0 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
         <Button
           title="Up"
           intent={"yes"}

@@ -1,5 +1,10 @@
 "use client";
-import { CampaignDetail, CampaignDetailDto, PriceEvent } from "@/types";
+import {
+  CampaignDetail,
+  CampaignDetailDto,
+  PriceEvent,
+  PricePoint,
+} from "@/types";
 import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
@@ -11,19 +16,24 @@ import { useSearchParams } from "next/navigation";
 import AssetScene from "../user/assetScene";
 import DetailResults from "./detailResults";
 import { useQuery } from "@tanstack/react-query";
-import { requestCampaignById } from "@/providers/graphqlClient";
+import {
+  requestAssetPrice,
+  requestCampaignById,
+} from "@/providers/graphqlClient";
 import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
-import { useActiveAccount } from "thirdweb/react";
 import DetailComments from "./detailComments";
 import PriceChart from "../priceChart";
+import AssetPriceChart from "../assetPriceChart";
 
 export default function DetailWrapper({
   initialData,
   priceEvents,
+  initialAssetPrices,
 }: {
   initialData: CampaignDetail;
   priceEvents: PriceEvent[];
+  initialAssetPrices?: PricePoint[];
 }) {
   const outcomeId = useSearchParams()?.get("outcomeId");
   const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcome>({
@@ -53,6 +63,32 @@ export default function DetailWrapper({
     },
     initialData,
   });
+  const symbol = data.priceMetadata?.baseAsset?.toLowerCase();
+  const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
+    {
+      queryKey: ["assetPrice", symbol, data.starting],
+      queryFn: async () => {
+        if (symbol) {
+          const res = await requestAssetPrice(
+            symbol.toUpperCase(),
+            new Date(data.starting).toISOString(),
+          );
+          if (res?.oracles_ninelives_prices_1) {
+            return res?.oracles_ninelives_prices_1.map((i) => ({
+              price: i.amount,
+              id: i.id,
+              timestamp:
+                new Date(i.created_by).getTime() -
+                new Date().getTimezoneOffset() * 60 * 1000,
+            }));
+          }
+        }
+        return [];
+      },
+      initialData: initialAssetPrices,
+      enabled: data.isDppm,
+    },
+  );
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   return (
     <section
@@ -62,17 +98,24 @@ export default function DetailWrapper({
       )}
     >
       <div className="flex flex-[2] flex-col gap-8">
-        <DetailHeader
-          data={data}
-          isEnded={isEnded}
-          isConcluded={isConcluded}
-          isDpm={data.isDpm}
-        />
-        <PriceChart
-          poolAddress={data.poolAddress}
-          outcomes={data.outcomes}
-          initialData={priceEvents}
-        />
+        <DetailHeader data={data} isEnded={isEnded} isConcluded={isConcluded} />
+        {data.isDppm && data.priceMetadata ? (
+          <AssetPriceChart
+            id={data.identifier}
+            starting={data.starting}
+            ending={data.ending}
+            basePrice={Number(data.priceMetadata.priceTargetForUp)}
+            symbol={data.priceMetadata.baseAsset}
+            assetsLoaded={assetsLoaded}
+            assetPrices={assetPrices}
+          />
+        ) : (
+          <PriceChart
+            poolAddress={data.poolAddress}
+            outcomes={data.outcomes}
+            initialData={priceEvents}
+          />
+        )}
         <DetailOutcomeTable
           data={data}
           isDpm={data.isDpm}

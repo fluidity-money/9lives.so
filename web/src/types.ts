@@ -23,20 +23,21 @@ export interface CampaignFilters {
 }
 export type Campaign = Omit<
   Awaited<ReturnType<typeof requestCampaignList>>[number],
-  "outcomes"
+  "outcomes" | "identifier" | "poolAddress"
 > & {
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
   isYesNo: boolean;
   outcomes: Outcome[];
 };
-export type CampaignDetail = Campaign & {
-  investmentAmounts: { id: string; usdc: number; share: number }[];
-  liquidityVested: number;
-  isDpm: boolean | null;
-  basePrice?: number;
-  symbol?: string;
-  isDppm?: boolean | null;
+export type CampaignDetail = Omit<
+  NonNullable<Awaited<ReturnType<typeof requestCampaignById>>>,
+  "outcomes" | "identifier" | "poolAddress"
+> & {
+  identifier: `0x${string}`;
+  poolAddress: `0x${string}`;
+  isYesNo: boolean;
+  outcomes: Outcome[];
 };
 export type Outcome = {
   name: string;
@@ -234,16 +235,23 @@ export class CampaignDto implements Campaign {
     this.shares = rawCampaign.shares;
   }
 }
-export class CampaignDetailDto extends CampaignDto {
+export class CampaignDetailDto extends CampaignDto implements CampaignDetail {
+  isDppm: boolean;
   investmentAmounts: { id: string; usdc: number; share: number }[];
   liquidityVested: number;
   isDpm: boolean | null;
+  priceMetadata: {
+    baseAsset: string;
+    priceTargetForUp: string;
+  } | null;
   constructor(rc: Awaited<ReturnType<typeof requestCampaignById>>) {
     if (!rc) throw new Error("Campaign dto can not be null");
     super(rc);
     this.liquidityVested = rc.liquidityVested;
     this.investmentAmounts = rc.investmentAmounts.filter((a) => !!a);
     this.isDpm = rc.isDpm;
+    this.isDppm = rc.isDppm;
+    this.priceMetadata = rc.priceMetadata;
   }
 }
 class OutcomeDto implements Outcome {

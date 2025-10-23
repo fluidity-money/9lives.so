@@ -110,6 +110,7 @@ export const requestCreateCampaign = (params: {
       telegram: params.telegram,
       web: params.web,
       isFake: params.isFake,
+      isDppm: false,
     },
   });
 export const requestGetAITitles = graph9Lives.query.suggestedHeadlines();
@@ -194,6 +195,11 @@ export const requestCampaignById = (id: string) =>
       id: true,
       share: true,
       usdc: true,
+    },
+    isDppm: true,
+    priceMetadata: {
+      baseAsset: true,
+      priceTargetForUp: true,
     },
   });
 
@@ -622,8 +628,10 @@ export const requestSimpleMarket = (symbol: string): CampaignDetail => {
       { usdc: 1500, share: 1500, id: "0x" },
       { usdc: 750, share: 750, id: "0x" },
     ],
-    basePrice: 108330,
-    symbol,
+    priceMetadata: {
+      baseAsset: "BTC",
+      priceTargetForUp: "108330",
+    },
     name: "$BTC above $108330 on Oct 22, 09:00 UTC?",
   };
 };

@@ -29,7 +29,7 @@ export default function ChartPriceProvider({
   children: Readonly<React.ReactNode>;
 }) {
   const queryClient = useQueryClient();
-
+  const _symbol = symbol.toLowerCase();
   useEffect(() => {
     const unsubPrices = wsClient.subscribe<{
       oracles_ninelives_prices_1: PricePointResponse[];
@@ -46,7 +46,7 @@ export default function ChartPriceProvider({
           const nextData = data?.oracles_ninelives_prices_1;
           if (nextData && nextData.length > 0) {
             queryClient.setQueryData<PricePoint[]>(
-              ["assetPrice", symbol, starting],
+              ["assetPrice", _symbol, starting],
               (previousData) => {
                 const onlyNewItems = nextData
                   .filter(

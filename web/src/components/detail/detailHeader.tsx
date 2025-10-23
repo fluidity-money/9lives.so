@@ -25,12 +25,10 @@ export default function DetailHeader({
   data,
   isEnded,
   isConcluded,
-  isDpm,
 }: {
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
-  isDpm: boolean | null;
 }) {
   const account = useActiveAccount();
   const left = data.ending - Math.floor(Date.now() / 1000);
@@ -104,27 +102,27 @@ export default function DetailHeader({
 
   const subHeaderMap = [
     {
-      title: isDpm ? "TVL" : "Total Vol.",
+      title: data.isDpm ? "TVL" : "Total Vol.",
       value: `$${formatFusdc(data.totalVolume, 2)}`,
       show: true,
     },
     {
       title: "Total Liq.",
       value: `$${formatFusdc(data.liquidityVested, 2)}`,
-      show: !isDpm,
+      show: !(data.isDpm || data.isDppm),
       rightComp: <LiquidityComp />,
     },
     {
       title: "Creator Fees",
       value: `$${formatFusdc(unclaimedFees, 2)}`,
-      show: displayCreatorFees,
+      show: !(data.isDpm || data.isDppm) || displayCreatorFees,
       rightComp: <ClaimFeesButton addresses={[data.poolAddress]} />,
       shrink: true,
     },
     {
       title: "APY",
       value: `${+(APY * 100).toFixed(2)}%`,
-      show: !!APY && !data.winner,
+      show: !(data.isDpm || data.isDppm) && !!APY && !data.winner,
       shrink: true,
     },
   ];
@@ -206,7 +204,13 @@ export default function DetailHeader({
                 data.ending.toString().length === 10
                   ? data.ending * 1000
                   : data.ending,
-              ).toDateString()}
+              ).toLocaleString("default", {
+                year: data.isDppm ? undefined : "numeric",
+                month: "short",
+                day: "2-digit",
+                hour: data.isDppm ? "2-digit" : undefined,
+                minute: data.isDppm ? "2-digit" : undefined,
+              })}
             </span>
           )}
         </div>
