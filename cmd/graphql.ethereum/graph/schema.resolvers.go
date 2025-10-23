@@ -644,6 +644,8 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 // ExplainCampaign is the resolver for the explainCampaign field.
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, priceMetadata *model.PriceMetadataInput) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
+	adminSecret, _ := ctx.Value("admin secret").(string)
+	hasValidAdminSecret := adminSecret == r.AdminSecret
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
 		return nil, fmt.Errorf("negative seed")
@@ -666,7 +668,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		err         error
 	)
 	if isDppm && r.F.Is(features.FeatureDppmMarketsMustBeMadeByAdmin) {
-		if r.AdminSecret != ctx.Value("admin secret").(string) {
+		if !hasValidAdminSecret {
 			return nil, fmt.Errorf("bad admin secret for dppm creation")
 		}
 	}
@@ -869,7 +871,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	}
 	var priceMetadataField *types.PriceMetadata
 	if priceMetadata != nil {
-		if r.AdminSecret != ctx.Value("admin secret").(string) {
+		if !hasValidAdminSecret {
 			return nil, fmt.Errorf("bad admin secret for price metadata field")
 		}
 		priceMetadataField = &types.PriceMetadata{

@@ -22,8 +22,8 @@ fee_minter=3
 fee_referrer=3
 backend_is_dppm=true
 
-if(~ $OUTCOME_0_SEED '') OUTCOME_0_SEED=`{date +%s%3N}
-if(~ $OUTCOME_1_SEED '') OUTCOME_1_SEED=`{date +%s%3N}
+if(~ $OUTCOME_0_SEED '') OUTCOME_0_SEED=`{date +%s}
+if(~ $OUTCOME_1_SEED '') OUTCOME_1_SEED=`{date +%s}
 
 fn usage_args {
 	echo `{basename $0} '([0-9]+),?..' >[1=2]
@@ -78,7 +78,7 @@ fn call {
 
 fn call_and_send {
 	resp=`{call $*}
-	send $* >[1=2]
+	#send $* >[1=2]
 	echo $resp
 }
 
@@ -139,7 +139,7 @@ if(test $allowance_buy_helper -lt $sum) {
 trading_addr=`{
 	call_and_send \
 		$SPN_FACTORY_ADDR \
-		'newTrading9A87E788((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool)' \
+		'newTrading9A87E788((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool)(address)' \
 		$outcome_args \
 		$SPN_ORACLE_ADDR \
 		$SPN_STARTED_BY \
@@ -153,4 +153,7 @@ trading_addr=`{
 		true
 }
 
-echo $trading_addr
+curl https://graph.9lives.so \
+	-H 'Content-Type: application/json' \
+	-d '
+{"query":"mutation { explainCampaign( type: PUT, name: \"Hello\", description: \"World\", seed: 100, outcomes: [ { name: \"'$"outcome_0_desc'\", seed: '$OUTCOME_0_SEED', picture: \"\" }, { name: \"'$"outcome_1_desc'\", seed: '$OUTCOME_1_SEED', picture: \"\" } ], ending: '$SPN_DEADLINE', creator: \"'$SPN_SENDER_ADDR'\", isFake: true, starting: '$SPN_STARTED_BY', isDppm: true, priceMetadata: { baseAsset: \"'$SPN_BASE_ASSET'\", quoteAsset: \"'$SPN_QUOTE_ASSET'\", priceTargetForUp: \"'$SPN_END_QUOTE_PRICE'\" })}"}'
