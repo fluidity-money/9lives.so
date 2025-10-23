@@ -145,7 +145,7 @@ func main() {
 			AdminSecret:             adminSecret,
 			PaymasterMinimumUSDCGas: paymasterMinFee,
 			PaymasterSenderAddr:     ethCommon.HexToAddress(paymasterSenderAddr),
-			PriceResolverAddr: ethCommon.HexToAddress(config.PriceResolverAddr)
+			PriceResolverAddr: ethCommon.HexToAddress(config.PriceResolverAddress),
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})
