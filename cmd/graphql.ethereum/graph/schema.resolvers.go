@@ -1837,7 +1837,7 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string) (*t
 	SELECT *
 	FROM ninelives_campaigns_1
 	WHERE content->'priceMetadata'->>'baseAsset' = ?
-	AND EXTRACT(EPOCH FROM NOW()) BETWEEN content->>'starting' AND content->>'ending'
+	AND EXTRACT(EPOCH FROM NOW()) BETWEEN (content->>'starting')::numeric AND (content->>'ending')::numeric
 	LIMIT 1 
 	`, symbol).Scan(&campaign).Error
 	if err != nil {
