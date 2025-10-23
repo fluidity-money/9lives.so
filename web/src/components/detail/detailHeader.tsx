@@ -229,6 +229,7 @@ export default function DetailHeader({
               value={`$${data.priceMetadata?.priceTargetForUp}`}
             />
             <DetailCurrentPriceBox
+              isEnded={isEnded}
               starting={data.starting * 1000}
               ending={data.ending * 1000}
               symbol={data.priceMetadata!.baseAsset}

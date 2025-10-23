@@ -7,10 +7,12 @@ export default function DetailCurrentPriceBox({
   symbol,
   starting,
   ending,
+  isEnded,
 }: {
   symbol: string;
   ending: number;
   starting: number;
+  isEnded: boolean;
 }) {
   const _symbol = symbol.toLowerCase();
   const { data, isSuccess } = useQuery({
@@ -31,5 +33,10 @@ export default function DetailCurrentPriceBox({
 
   if (!isSuccess) return null;
 
-  return <HeaderBox title={"Current Price"} value={`$${data}`} />;
+  return (
+    <HeaderBox
+      title={isEnded ? "Final Price" : "Current Price"}
+      value={`$${data}`}
+    />
+  );
 }
