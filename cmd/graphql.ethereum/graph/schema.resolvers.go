@@ -1830,6 +1830,22 @@ func (r *queryResolver) CampaignWeeklyVolume(ctx context.Context, poolAddress st
 	return volume, nil
 }
 
+// CampaignBySymbol is the resolver for the campaignBySymbol field.
+func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string) (*types.Campaign, error) {
+	var campaign *types.Campaign
+	err := r.DB.Raw(`
+	SELECT *
+	FROM ninelives_campaigns_1
+	WHERE content->'priceMetadata'->>'baseAsset' = ?
+	AND EXTRACT(EPOCH FROM NOW()) BETWEEN content->>'starting' AND content->>'ending'
+	LIMIT 1 
+	`, symbol).Scan(&campaign).Error
+	if err != nil {
+		return nil, fmt.Errorf("Error getting the live campaign by symbol")
+	}
+	return campaign, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {

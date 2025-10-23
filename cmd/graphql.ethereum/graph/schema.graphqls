@@ -102,6 +102,11 @@ type Query {
   campaignPriceEvents(poolAddress:String!): [PriceEvent]!
 
   campaignWeeklyVolume(poolAddress: String!): Int!
+
+  """
+  Get the live campaign by token symbol for price prediction
+  """
+  campaignBySymbol(symbol: String!): Campaign
 }
 
 type PriceEvent {
