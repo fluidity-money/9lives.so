@@ -98,9 +98,9 @@ pub fn erc20_proxy_hash(erc20_impl: Address) -> [u8; 32] {
         .finalize()
 }
 
-pub fn trading_proxy_hash(factory: Address, is_dpm: bool) -> [u8; 32] {
+pub fn trading_proxy_hash(factory: Address, is_dppm: bool) -> [u8; 32] {
     Keccak256::new()
-        .update(&if is_dpm {
+        .update(&if is_dppm {
             trading_dppm_proxy(factory)
         } else {
             trading_amm_proxy(factory)

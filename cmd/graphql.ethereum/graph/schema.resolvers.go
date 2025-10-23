@@ -287,7 +287,10 @@ func (r *campaignResolver) Shares(ctx context.Context, obj *types.Campaign) ([]*
 
 // PriceMetadata is the resolver for the priceMetadata field.
 func (r *campaignResolver) PriceMetadata(ctx context.Context, obj *types.Campaign) (*types.PriceMetadata, error) {
-	panic(fmt.Errorf("not implemented: PriceMetadata - priceMetadata"))
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return &obj.PriceMetadata, nil
 }
 
 // ID is the resolver for the id field.

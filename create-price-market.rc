@@ -22,8 +22,8 @@ fee_minter=3
 fee_referrer=3
 backend_is_dppm=true
 
-if(~ $OUTCOME_0_SEED '') OUTCOME_0_SEED=`{date +%s}
-if(~ $OUTCOME_1_SEED '') OUTCOME_1_SEED=`{date +%s}
+if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=`{date +%s}
+if(~ $SPN_OUTCOME_1_SEED '') SPN_OUTCOME_1_SEED=`{date +%s}
 
 fn usage_args {
 	echo `{basename $0} '([0-9]+),?..' >[1=2]
@@ -43,14 +43,12 @@ sum=`{{ for(n) echo $n } | awk '{ sum += $1 } END { print sum }' }
 vars=(\
 	SPN_SUPERPOSITION_URL \
 	SPN_SUPERPOSITION_KEY \
+	SPN_TIMESCALE_URL \
 	SPN_SENDER_ADDR \
 	SPN_ADMIN_SECRET \
 	SPN_FUSDC_ADDR \
 	SPN_BASE_ASSET \
 	SPN_QUOTE_ASSET \
-	SPN_STARTED_BY \
-	SPN_DEADLINE \
-	SPN_END_QUOTE_PRICE \
 	SPN_ORACLE_ADDR \
 	SPN_BUY_HELPER \
 	SPN_FACTORY_ADDR \
@@ -58,8 +56,13 @@ vars=(\
 
 for(a in $vars) if(~ $$a '') usage_envs $a
 
-echo OUTCOME_0_SEED=$OUTCOME_0_SEED >[1=2]
-echo OUTCOME_1_SEED=$OUTCOME_1_SEED >[1=2]
+if(~ SPN_STARTED_BY '') SPN_STARTED_BY=`{date +%s}
+if(~ $SPN_DEADLINE '') SPN_DEADLINE=`{echo $SPN_STARTED_BY' + 3600' | bc}
+
+echo SPN_OUTCOME_0_SEED=$SPN_OUTCOME_0_SEED >[1=2]
+echo SPN_OUTCOME_1_SEED=$SPN_OUTCOME_1_SEED >[1=2]
+echo SPN_STARTED_BY=$SPN_STARTED_BY >[1=2]
+echo SPN_DEADLINE=$SPN_DEADLINE >[1=2]
 
 fn send {
 	cast send \
@@ -78,7 +81,7 @@ fn call {
 
 fn call_and_send {
 	resp=`{call $*}
-	#send $* >[1=2]
+	send $* >[1=2]
 	echo $resp
 }
 
@@ -86,19 +89,11 @@ fn take_outcome_id {
 	shasum -a512 | cut -f1 | dd bs=1 count=16 status=none
 }
 
-fn big_endian {
-	python3 -c '
-import struct
-print(struct.pack(''>Q'', int(input())).hex())'
-}
-
 outcome_0_desc=`{echo $SPN_BASE_ASSET will end up below '$'$SPN_END_QUOTE_PRICE before $SPN_DEADLINE}
 outcome_1_desc=`{echo $SPN_BASE_ASSET will end up above '$'$SPN_END_QUOTE_PRICE before $SPN_DEADLINE}
-outcome_0_seed_hex=`{echo $OUTCOME_0_SEED | big_endian }
-outcome_1_seed_hex=`{echo $OUTCOME_1_SEED | big_endian }
 
-outcome_0_id=0x`{echo -n $outcome_0_desc$outcome_0_seed_hex | take_outcome_id }
-outcome_1_id=0x`{echo -n $outcome_1_desc$outcome_1_seed_hex | take_outcome_id }
+outcome_0_id=`{go run scripts/outcome-id.go $"outcome_0_desc $SPN_OUTCOME_0_SEED}
+outcome_1_id=`{go run scripts/outcome-id.go $"outcome_1_desc $SPN_OUTCOME_1_SEED}
 
 outcome_args='[('$outcome_0_id','$*(1)','$"outcome_0_desc'),('$outcome_1_id','$*(1)','$"outcome_1_desc')]'
 
@@ -136,24 +131,27 @@ if(test $allowance_buy_helper -lt $sum) {
 		$sum
 }
 
-trading_addr=`{
-	call_and_send \
-		$SPN_FACTORY_ADDR \
-		'newTrading9A87E788((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool)(address)' \
-		$outcome_args \
-		$SPN_ORACLE_ADDR \
-		$SPN_STARTED_BY \
-		$SPN_DEADLINE \
-		$documentation_h \
-		$SPN_SENDER_ADDR \
-		$fee_creator \
-		$fee_lp \
-		$fee_minter \
-		$fee_referrer \
-		true
+if(~ $SPN_TRADING_ADDR '') {
+	SPN_TRADING_ADDR=`{
+		call_and_send \
+			$SPN_FACTORY_ADDR \
+			'newTrading9A87E788((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool)(address)' \
+			$outcome_args \
+			$SPN_ORACLE_ADDR \
+			$SPN_STARTED_BY \
+			$SPN_DEADLINE \
+			$documentation_h \
+			$SPN_SENDER_ADDR \
+			$fee_creator \
+			$fee_lp \
+			$fee_minter \
+			$fee_referrer \
+			true
+	}
 }
+
+echo 'SPN_TRADING_ADDR='$SPN_TRADING_ADDR >[1=2]
 
 curl https://graph.9lives.so \
 	-H 'Content-Type: application/json' \
-	-d '
-{"query":"mutation { explainCampaign( type: PUT, name: \"Hello\", description: \"World\", seed: 100, outcomes: [ { name: \"'$"outcome_0_desc'\", seed: '$OUTCOME_0_SEED', picture: \"\" }, { name: \"'$"outcome_1_desc'\", seed: '$OUTCOME_1_SEED', picture: \"\" } ], ending: '$SPN_DEADLINE', creator: \"'$SPN_SENDER_ADDR'\", isFake: true, starting: '$SPN_STARTED_BY', isDppm: true, priceMetadata: { baseAsset: \"'$SPN_BASE_ASSET'\", quoteAsset: \"'$SPN_QUOTE_ASSET'\", priceTargetForUp: \"'$SPN_END_QUOTE_PRICE'\" })}"}'
+	-sd '{"query":"mutation { explainCampaign( type: PUT, name: \"'$"outcome_1_desc'\", description: \"\", seed: 100, outcomes: [ { name: \"'$"outcome_0_desc'\", seed: '$SPN_OUTCOME_0_SEED', picture: \"\" }, { name: \"'$"outcome_1_desc'\", seed: '$SPN_OUTCOME_1_SEED', picture: \"\" } ], ending: '$SPN_DEADLINE', creator: \"'$SPN_SENDER_ADDR'\", isFake: false, starting: '$SPN_STARTED_BY', isDppm: true, priceMetadata: { baseAsset: \"'$SPN_BASE_ASSET'\", quoteAsset: \"'$SPN_QUOTE_ASSET'\", priceTargetForUp: \"'$SPN_END_QUOTE_PRICE'\" })}"}'

@@ -24,6 +24,7 @@ type (
 		InvestmentAmounts InvestmentAmountsList `json:"investmentAmounts" gorm:"type:jsonb"`
 		LiquidityVested   int                   `json:"liquidityVested"`
 		Shares            CampaignShares        `json:"shares"`
+		PriceMetadata     PriceMetadata         `json:"priceMetadata"`
 	}
 
 	CommentInput struct {
