@@ -208,7 +208,7 @@ export default function DetailHeader({
                 year: data.isDppm ? undefined : "numeric",
                 month: "short",
                 day: "2-digit",
-                hour: data.isDppm ? "2-digit" : undefined,
+                hour: data.isDppm ? "numeric" : undefined,
                 minute: data.isDppm ? "2-digit" : undefined,
               })}
             </span>

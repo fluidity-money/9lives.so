@@ -11,8 +11,8 @@ export const wsClient = createClient({
 });
 
 const subPricesForDuration = `
-subscription($symbol: String!, $starting: timestamp!) {
-  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: $starting}, base: {_eq: $symbol}}) {
+subscription($symbol: String!, $starting: timestamp!, $ending: timestamp!) {
+  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: $starting, _lte: $ending}, base: {_eq: $symbol}}) {
     id
     amount
     created_by
@@ -41,6 +41,7 @@ export default function ChartPriceProvider({
         variables: {
           symbol: symbol.toUpperCase(),
           starting: new Date().toISOString(),
+          ending: new Date(ending).toISOString(),
         },
       },
       {
@@ -75,18 +76,24 @@ export default function ChartPriceProvider({
             "WebSocket error for chart token",
             symbol,
             starting,
+            ending,
             error,
           );
         },
         complete: () => {
-          console.log("WebSocket chart subscription closed.", symbol, starting);
+          console.log(
+            "WebSocket chart subscription closed.",
+            symbol,
+            starting,
+            ending,
+          );
         },
       },
     );
     return () => {
       unsubPrices();
     };
-  }, [queryClient, symbol, starting]);
+  }, [queryClient, symbol, starting, ending]);
 
   return children;
 }
