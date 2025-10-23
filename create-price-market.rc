@@ -55,7 +55,7 @@ vars=(\
 
 for(a in $vars) if(~ $$a '') usage_envs $a
 
-if(~ SPN_STARTED_BY '') SPN_STARTED_BY=`{date +%s}
+if(~ $SPN_STARTED_BY '') SPN_STARTED_BY=`{date +%s}
 if(~ $SPN_DEADLINE '') SPN_DEADLINE=`{echo $SPN_STARTED_BY' + 3600' | bc}
 
 echo SPN_OUTCOME_0_SEED=$SPN_OUTCOME_0_SEED >[1=2]
@@ -64,11 +64,16 @@ echo SPN_STARTED_BY=$SPN_STARTED_BY >[1=2]
 echo SPN_DEADLINE=$SPN_DEADLINE >[1=2]
 
 fn send {
-	cast send \
-		--json \
-		--rpc-url $SPN_SUPERPOSITION_URL \
-		--private-key $SPN_SUPERPOSITION_KEY \
-		$*
+	if(~ $SPN_DRYRUN '') {
+		cast send \
+			--json \
+			--rpc-url $SPN_SUPERPOSITION_URL \
+			--private-key $SPN_SUPERPOSITION_KEY \
+			$*
+	}
+	if not {
+		echo
+	}
 }
 
 fn call {
@@ -80,7 +85,7 @@ fn call {
 
 fn call_and_send {
 	resp=`{call $*}
-	send $* >[1=2]
+	if(~ $SPN_DRYRUN '') send $* >[1=2]
 	echo $resp
 }
 
@@ -151,7 +156,11 @@ if(~ $SPN_TRADING_ADDR '') {
 
 echo 'SPN_TRADING_ADDR='$SPN_TRADING_ADDR >[1=2]
 
+is_fake='false'
+
+if(! ~ $SPN_DRYRUN '') is_fake=true
+
 curl https://graph.9lives.so \
 	-H 'Content-Type: application/json' \
-	-H 'Authorization: '$SPN_ADMIN_SECRET' \
-	-sd '{"query":"mutation { explainCampaign( type: PUT, name: \"'$"outcome_1_desc'\", description: \"\", seed: 100, outcomes: [ { name: \"'$"outcome_0_desc'\", seed: '$SPN_OUTCOME_0_SEED', picture: \"\" }, { name: \"'$"outcome_1_desc'\", seed: '$SPN_OUTCOME_1_SEED', picture: \"\" } ], ending: '$SPN_DEADLINE', creator: \"'$SPN_SENDER_ADDR'\", isFake: false, starting: '$SPN_STARTED_BY', isDppm: true, priceMetadata: { baseAsset: \"'$SPN_BASE_ASSET'\", quoteAsset: \"'$SPN_QUOTE_ASSET'\", priceTargetForUp: \"'$SPN_END_QUOTE_PRICE'\" })}"}'
+	-H 'Authorization: '$SPN_ADMIN_SECRET \
+	-sd '{"query":"mutation { explainCampaign( type: PUT, name: \"'$"outcome_1_desc'\", description: \"\", seed: 100, outcomes: [ { name: \"'$"outcome_0_desc'\", seed: '$SPN_OUTCOME_0_SEED', picture: \"\" }, { name: \"'$"outcome_1_desc'\", seed: '$SPN_OUTCOME_1_SEED', picture: \"\" } ], ending: '$SPN_DEADLINE', creator: \"'$SPN_SENDER_ADDR'\", isFake: '$is_fake', starting: '$SPN_STARTED_BY', isDppm: true, priceMetadata: { baseAsset: \"'$SPN_BASE_ASSET'\", quoteAsset: \"'$SPN_QUOTE_ASSET'\", priceTargetForUp: \"'$SPN_END_QUOTE_PRICE'\" })}"}'

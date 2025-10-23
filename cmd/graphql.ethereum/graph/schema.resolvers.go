@@ -648,6 +648,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, priceMetadata *model.PriceMetadataInput) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
 	adminSecret, _ := ctx.Value("admin secret").(string)
+	slog.Info("admin secret is", "admin secret", adminSecret)
 	hasValidAdminSecret := adminSecret == r.AdminSecret
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
