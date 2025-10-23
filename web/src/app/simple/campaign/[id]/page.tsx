@@ -53,7 +53,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
 
   let initialAssetPrices: PricePoint[] = [];
   const res = await requestAssetPrice(
-    data.symbol.toUpperCase(),
+    data.symbol,
     new Date(data.starting).toISOString(),
     new Date(data.ending).toISOString(),
   );

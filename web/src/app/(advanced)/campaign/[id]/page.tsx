@@ -42,7 +42,7 @@ export default async function DetailPage({ params }: { params: Params }) {
   let initialAssetPrices: PricePoint[] = [];
   if (response.isDppm) {
     const res = await requestAssetPrice(
-      response.priceMetadata!.baseAsset.toUpperCase(),
+      response.priceMetadata!.baseAsset,
       new Date(campaign.starting).toISOString(),
       new Date(campaign.ending).toISOString(),
     );

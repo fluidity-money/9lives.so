@@ -31,7 +31,7 @@ export default function SimpleBody({
       queryKey: ["assetPrice", symbol, data.starting, data.ending],
       queryFn: async () => {
         const res = await requestAssetPrice(
-          symbol.toUpperCase(),
+          symbol,
           new Date(data.starting).toISOString(),
           new Date(data.ending).toISOString(),
         );

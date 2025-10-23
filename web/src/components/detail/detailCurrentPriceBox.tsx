@@ -17,7 +17,7 @@ export default function DetailCurrentPriceBox({
     queryKey: ["assetPrice", _symbol, starting, ending],
     queryFn: async () => {
       const res = await requestAssetPrice(
-        symbol.toUpperCase(),
+        _symbol,
         new Date(starting).toISOString(),
         new Date(ending).toISOString(),
       );
