@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"math/big"
 	"net/http"
 	"os"
@@ -85,7 +86,7 @@ func (m corsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if len(ipAddrs) > 0 {
 		ipAddr = ipAddrs[0]
 	}
-	ctx = context.WithValue(r.Context(), "ip addr", ipAddr)
+	ctx = context.WithValue(ctx, "ip addr", ipAddr)
 	m.srv.ServeHTTP(w, r.WithContext(ctx))
 }
 
