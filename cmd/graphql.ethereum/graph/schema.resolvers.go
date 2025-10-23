@@ -686,6 +686,9 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			return nil, fmt.Errorf("error retrieving oracle type")
 		}
 	}
+	if settlement == "PRICE_ORACLE" && !isDppm {
+		return nil, fmt.Errorf("DPPM only for price oracle markets")
+	}
 	err = r.F.On(features.FeatureUseAiForCheckingIfCampaignMakesSense, func() error {
 		_, err = ai.RequestFromAi(
 			r.LambdaClient,
