@@ -593,7 +593,7 @@ export const requestWeeklyVolume = (poolAddress: string) =>
 
 export const requestSimpleMarket = (symbol: string) =>
   graph9Lives.query.campaignBySymbol({
-    $: { symbol },
+    $: { symbol: symbol.toUpperCase() },
     identifier: true,
     starting: true,
     ending: true,

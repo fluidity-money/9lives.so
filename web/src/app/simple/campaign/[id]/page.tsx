@@ -37,14 +37,6 @@ export async function generateMetadata({ params }: { params: Params }) {
 export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
 
-  // Remove this when feature is completed begin
-  const featuresRes = await fetch(appConfig.NEXT_PUBLIC_FEATURES_URL);
-  const features = (await featuresRes.json()) as {
-    "enable simple mode": boolean;
-  };
-  if (!features["enable simple mode"]) redirect("/");
-  // Remove this when feature is completed end
-
   const data = await requestSimpleMarket(id);
   if (!data || !data.priceMetadata) notFound();
 
