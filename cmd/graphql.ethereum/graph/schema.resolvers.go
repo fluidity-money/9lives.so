@@ -268,6 +268,15 @@ func (r *campaignResolver) IsDpm(ctx context.Context, obj *types.Campaign) (*boo
 	return obj.Content.IsDpm, nil
 }
 
+// IsDppm is the resolver for the isDppm field.
+func (r *campaignResolver) IsDppm(ctx context.Context, obj *types.Campaign) (bool, error) {
+	if obj == nil {
+		return false, fmt.Errorf("empty campaign")
+	}
+	isDppm := obj.Content.IsDppm != nil && *obj.Content.IsDppm
+	return isDppm, nil
+}
+
 // Shares is the resolver for the shares field.
 func (r *campaignResolver) Shares(ctx context.Context, obj *types.Campaign) ([]*types.CampaignShare, error) {
 	if obj == nil {
@@ -277,7 +286,7 @@ func (r *campaignResolver) Shares(ctx context.Context, obj *types.Campaign) ([]*
 }
 
 // PriceMetadata is the resolver for the priceMetadata field.
-func (r *campaignResolver) PriceMetadata(ctx context.Context, obj *types.Campaign) (*model.PriceMetadata, error) {
+func (r *campaignResolver) PriceMetadata(ctx context.Context, obj *types.Campaign) (*types.PriceMetadata, error) {
 	panic(fmt.Errorf("not implemented: PriceMetadata - priceMetadata"))
 }
 
@@ -858,6 +867,17 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	if err != nil {
 		return nil, err
 	}
+	var priceMetadataField *types.PriceMetadata
+	if priceMetadata != nil {
+		if r.AdminSecret != ctx.Value("admin secret").(string) {
+			return nil, fmt.Errorf("bad admin secret for price metadata field")
+		}
+		priceMetadataField = &types.PriceMetadata{
+			BaseAsset:        priceMetadata.BaseAsset,
+			QuoteAsset:       priceMetadata.QuoteAsset,
+			PriceTargetForUp: priceMetadata.PriceTargetForUp,
+		}
+	}
 	campaign := types.CampaignInsertion{
 		ID: hexCampaignId,
 		Content: types.CampaignContent{
@@ -879,6 +899,8 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			X:                 x,
 			Telegram:          telegram,
 			Web:               web,
+			IsDppm:            &isDppm,
+			PriceMetadata:     priceMetadataField,
 		},
 	}
 	if isNotPrecommit {

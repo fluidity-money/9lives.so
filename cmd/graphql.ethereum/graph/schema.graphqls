@@ -703,6 +703,11 @@ type Campaign {
   isDpm: Boolean
 
   """
+  Is this market a DPPM market?
+  """
+  isDppm: Boolean!
+
+  """
   Latest total shares of the campaign to calculate prices of the outcomes
   """
   shares: [CampaignShare]!

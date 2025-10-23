@@ -85,6 +85,7 @@ type ComplexityRoot struct {
 		Identifier        func(childComplexity int) int
 		InvestmentAmounts func(childComplexity int) int
 		IsDpm             func(childComplexity int) int
+		IsDppm            func(childComplexity int) int
 		LiquidityVested   func(childComplexity int) int
 		Name              func(childComplexity int) int
 		OracleDescription func(childComplexity int) int
@@ -275,8 +276,9 @@ type CampaignResolver interface {
 	Banners(ctx context.Context, obj *types.Campaign) ([]string, error)
 	Categories(ctx context.Context, obj *types.Campaign) ([]string, error)
 	IsDpm(ctx context.Context, obj *types.Campaign) (*bool, error)
+	IsDppm(ctx context.Context, obj *types.Campaign) (bool, error)
 	Shares(ctx context.Context, obj *types.Campaign) ([]*types.CampaignShare, error)
-	PriceMetadata(ctx context.Context, obj *types.Campaign) (*model.PriceMetadata, error)
+	PriceMetadata(ctx context.Context, obj *types.Campaign) (*types.PriceMetadata, error)
 }
 type ChangelogResolver interface {
 	ID(ctx context.Context, obj *changelog.Changelog) (string, error)
@@ -525,6 +527,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.IsDpm(childComplexity), true
+
+	case "Campaign.isDppm":
+		if e.complexity.Campaign.IsDppm == nil {
+			break
+		}
+
+		return e.complexity.Campaign.IsDppm(childComplexity), true
 
 	case "Campaign.liquidityVested":
 		if e.complexity.Campaign.LiquidityVested == nil {
@@ -4275,6 +4284,50 @@ func (ec *executionContext) fieldContext_Campaign_isDpm(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Campaign_isDppm(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_isDppm(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().IsDppm(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_isDppm(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Campaign_shares(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Campaign_shares(ctx, field)
 	if err != nil {
@@ -4348,9 +4401,9 @@ func (ec *executionContext) _Campaign_priceMetadata(ctx context.Context, field g
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.PriceMetadata)
+	res := resTmp.(*types.PriceMetadata)
 	fc.Result = res
-	return ec.marshalOPriceMetadata2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐPriceMetadata(ctx, field.Selections, res)
+	return ec.marshalOPriceMetadata2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceMetadata(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Campaign_priceMetadata(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4978,6 +5031,8 @@ func (ec *executionContext) fieldContext_Claim_content(_ context.Context, field 
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "isDppm":
+				return ec.fieldContext_Campaign_isDppm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
@@ -5646,6 +5701,8 @@ func (ec *executionContext) fieldContext_LP_campaign(_ context.Context, field gr
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "isDppm":
+				return ec.fieldContext_Campaign_isDppm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
@@ -6713,6 +6770,8 @@ func (ec *executionContext) fieldContext_Position_content(_ context.Context, fie
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "isDppm":
+				return ec.fieldContext_Campaign_isDppm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
@@ -6818,7 +6877,7 @@ func (ec *executionContext) fieldContext_PriceEvent_shares(_ context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _PriceMetadata_baseAsset(ctx context.Context, field graphql.CollectedField, obj *model.PriceMetadata) (ret graphql.Marshaler) {
+func (ec *executionContext) _PriceMetadata_baseAsset(ctx context.Context, field graphql.CollectedField, obj *types.PriceMetadata) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PriceMetadata_baseAsset(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6862,7 +6921,7 @@ func (ec *executionContext) fieldContext_PriceMetadata_baseAsset(_ context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _PriceMetadata_quoteAsset(ctx context.Context, field graphql.CollectedField, obj *model.PriceMetadata) (ret graphql.Marshaler) {
+func (ec *executionContext) _PriceMetadata_quoteAsset(ctx context.Context, field graphql.CollectedField, obj *types.PriceMetadata) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PriceMetadata_quoteAsset(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6906,7 +6965,7 @@ func (ec *executionContext) fieldContext_PriceMetadata_quoteAsset(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _PriceMetadata_priceTargetForUp(ctx context.Context, field graphql.CollectedField, obj *model.PriceMetadata) (ret graphql.Marshaler) {
+func (ec *executionContext) _PriceMetadata_priceTargetForUp(ctx context.Context, field graphql.CollectedField, obj *types.PriceMetadata) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PriceMetadata_priceTargetForUp(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7170,6 +7229,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "isDppm":
+				return ec.fieldContext_Campaign_isDppm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
@@ -7274,6 +7335,8 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "isDppm":
+				return ec.fieldContext_Campaign_isDppm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
@@ -8115,6 +8178,8 @@ func (ec *executionContext) fieldContext_Query_featuredCampaign(ctx context.Cont
 				return ec.fieldContext_Campaign_categories(ctx, field)
 			case "isDpm":
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "isDppm":
+				return ec.fieldContext_Campaign_isDppm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
@@ -11646,6 +11711,42 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "isDppm":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_isDppm(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "shares":
 			field := field
 
@@ -12788,7 +12889,7 @@ func (ec *executionContext) _PriceEvent(ctx context.Context, sel ast.SelectionSe
 
 var priceMetadataImplementors = []string{"PriceMetadata"}
 
-func (ec *executionContext) _PriceMetadata(ctx context.Context, sel ast.SelectionSet, obj *model.PriceMetadata) graphql.Marshaler {
+func (ec *executionContext) _PriceMetadata(ctx context.Context, sel ast.SelectionSet, obj *types.PriceMetadata) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, priceMetadataImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -15074,7 +15175,7 @@ func (ec *executionContext) marshalOPriceEvent2ᚖgithubᚗcomᚋfluidityᚑmone
 	return ec._PriceEvent(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOPriceMetadata2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐPriceMetadata(ctx context.Context, sel ast.SelectionSet, v *model.PriceMetadata) graphql.Marshaler {
+func (ec *executionContext) marshalOPriceMetadata2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPriceMetadata(ctx context.Context, sel ast.SelectionSet, v *types.PriceMetadata) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

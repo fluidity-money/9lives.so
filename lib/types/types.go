@@ -148,8 +148,14 @@ type (
 		// If any outcome declared as winner, it returns bytes8 id
 		Winner *string `json:"winner"`
 
-		// for dpm markets it is true, for amms false
+		// IsDpm for markets it is true, for amms false
 		IsDpm *bool `json:"isDpm"`
+
+		// IsDppm market?
+		IsDppm *bool `json:"isDppm"`
+
+		// PriceMetadata that's used for displaying to the frontend in a structured way.
+		PriceMetadata *PriceMetadata `json:"priceMetadata"`
 	}
 
 	// Wallet of the creator of a campaign.
@@ -244,6 +250,12 @@ type (
 	PriceEvent struct {
 		CreatedAt time.Time      `json:"createdAt"`
 		Shares    CampaignShares `json:"shares"`
+	}
+
+	PriceMetadata struct {
+		BaseAsset        string `json:"baseAsset"`
+		QuoteAsset       string `json:"quoteAsset"`
+		PriceTargetForUp string `json:"priceTargetForUp"`
 	}
 )
 
