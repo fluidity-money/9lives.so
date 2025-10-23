@@ -43,7 +43,6 @@ sum=`{{ for(n) echo $n } | awk '{ sum += $1 } END { print sum }' }
 vars=(\
 	SPN_SUPERPOSITION_URL \
 	SPN_SUPERPOSITION_KEY \
-	SPN_TIMESCALE_URL \
 	SPN_SENDER_ADDR \
 	SPN_ADMIN_SECRET \
 	SPN_FUSDC_ADDR \
