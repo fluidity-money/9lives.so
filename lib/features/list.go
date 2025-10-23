@@ -44,4 +44,7 @@ const (
 	// FeatureShouldReportPaymasterFailure is enabled if we want to alert via Twist if an error
 	// took place simulating a Paymaster transaction, including details.
 	FeatureShouldReportPaymasterFailure = "paymaster should report failure"
+
+	// FeatureDppmMarketsMustBeMadeByAdmin only using the admin secret.
+	FeatureDppmMarketsMustBeMadeByAdmin = "dppm markets must be made by admin"
 )

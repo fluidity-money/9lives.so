@@ -70,8 +70,6 @@ const (
 // ChangelogLen to send to the user at max on request for the changelog endpoint.
 const ChangelogLen = 10
 
-const XForwardedFor = "X-Forwarded-For"
-
 type corsMiddleware struct{ srv *handler.Server }
 
 func (m corsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -147,6 +145,7 @@ func main() {
 			AdminSecret:             adminSecret,
 			PaymasterMinimumUSDCGas: paymasterMinFee,
 			PaymasterSenderAddr:     ethCommon.HexToAddress(paymasterSenderAddr),
+			PriceResolverAddr: ethCommon.HexToAddress(config.PriceResolverAddr)
 		},
 	}))
 	http.Handle("/", corsMiddleware{srv})

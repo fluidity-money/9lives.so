@@ -36,4 +36,5 @@ type Resolver struct {
 	LambdaMiscAiBackendName string                // Lambda function name
 	AdminSecret             string                // administrative secret needed for some admin paths
 	PaymasterMinimumUSDCGas *big.Int              // minimum to ask user for in maximum gas
+	PriceResolverAddr       ethCommon.Address     // price resolver oracle address
 }

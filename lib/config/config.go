@@ -27,6 +27,7 @@ type C struct {
 	LifiDiamondAddress, PaymasterAddress    string
 	LayerzeroEndpointAddress, DineroAddress string
 	SudoswapFactoryAddress, PunkDomainsTld  string
+	PriceResolverAddress                    string
 	ChainId                                 int
 }
 
@@ -95,6 +96,10 @@ func Get() C {
 	if punkDomainsTldAddr == "" {
 		setup.Exitf("SPN_PUNK_DOMAINS_TLD_ADDR not set")
 	}
+	priceResolverAddr := strings.ToLower(os.Getenv("SPN_PRICE_RESOLVER_ADDR"))
+	if priceResolverAddr == "" {
+		setup.Exitf("SPN_PRICE_RESOLVER_ADDR not set")
+	}
 	return C{
 		W:                        w,
 		GethUrls:                 gethUrls,
@@ -110,6 +115,7 @@ func Get() C {
 		LayerzeroEndpointAddress: layerzeroEndpointAddr,
 		DineroAddress:            dineroAddr,
 		PunkDomainsTld:           punkDomainsTldAddr,
+		PriceResolverAddress:     priceResolverAddr,
 		ChainId:                  DefaultChainId,
 	}
 }

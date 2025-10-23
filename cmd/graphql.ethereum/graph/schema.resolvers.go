@@ -628,7 +628,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {
@@ -651,6 +651,11 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		settlement  string             = "ORACLE"
 		err         error
 	)
+	if isDppm && r.F.Is(features.FeatureDppmMarketsMustBeMadeByAdmin) {
+		if r.AdminSecret != ctx.Value("admin secret").(string) {
+			return nil, fmt.Errorf("bad admin secret for dppm creation")
+		}
+	}
 	if isNotPrecommit {
 		tradingAddr, err = getTradingAddr(r.Geth, r.FactoryAddr, marketId)
 		if err != nil {
@@ -668,6 +673,7 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			r.InfraMarketAddr,
 			r.BeautyContestAddr,
 			r.SarpAiAddr,
+			r.PriceResolverAddr,
 			*tradingAddr,
 		)
 		if err != nil {

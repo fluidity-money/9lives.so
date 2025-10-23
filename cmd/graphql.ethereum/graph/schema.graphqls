@@ -401,7 +401,12 @@ type Mutation {
     """
     Should this be a fake execution as a dry run?
     """
-    isFake: Boolean
+    isFake: Boolean,
+
+    """
+    Is this a DPPM market?
+    """
+    isDppm: Boolean!
   ): Boolean
 
   """

@@ -122,10 +122,11 @@ func getShareAddr(c *ethclient.Client, tradingAddr ethCommon.Address, outcomeId 
 // getSettlementTypeDesc reported by the factory by looking up the
 // trading address given. Once the address has been recovered, it does
 // some comparison work to determine based on the addresses of the oracle
-// types to know what's in use. Either "ORACLE", "POLL", "AI", or
-// "CONTRACT". CONTRACT is an inclusive catch-all settlement type,
-// indicating that a custom address is being used for settlement.
-func getSettlementTypeDesc(c *ethclient.Client, infraMarketAddr, beautyContestAddr, sarpAiAddr, tradingAddr ethCommon.Address) (string, error) {
+// types to know what's in use. Either "ORACLE", "POLL", "AI",
+// "PRICE_PREDICTION", or "CONTRACT". CONTRACT is an inclusive catch-all
+// settlement type, indicating that a custom address is being used for
+// settlement.
+func getSettlementTypeDesc(c *ethclient.Client, infraMarketAddr, beautyContestAddr, sarpAiAddr, priceResolverAddr, tradingAddr ethCommon.Address) (string, error) {
 	calldata, err := tradingAbi.Pack("oracle")
 	if err != nil {
 		slog.Error("oracle calldata could not be prepared",
@@ -161,6 +162,8 @@ func getSettlementTypeDesc(c *ethclient.Client, infraMarketAddr, beautyContestAd
 		return "POLL", nil
 	case sarpAiAddr:
 		return "AI", nil
+	case priceResolverAddr:
+		return "PRICE_RESOLVER", nil
 	default:
 		return "CONTRACT", nil
 	}

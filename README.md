@@ -149,6 +149,7 @@ The error table lives in ERRORS.md.
 | Paymaster implementation      | `0x552BbaEc8D75c010435C810fA890B3E03e9C6445` |
 | Paymaster proxy               | `0xE990f05e2264f56435Fd7589FA2F70A879B0cE9f` |
 | Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |
+| Price resolver oracle         | `0xa2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab` |
 
 ### Superposition testnet
 
