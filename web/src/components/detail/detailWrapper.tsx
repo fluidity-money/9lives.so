@@ -103,8 +103,8 @@ export default function DetailWrapper({
         {data.isDppm && data.priceMetadata ? (
           <AssetPriceChart
             id={data.identifier}
-            starting={data.starting}
-            ending={data.ending}
+            starting={data.starting * 1000}
+            ending={data.ending * 1000}
             basePrice={Number(data.priceMetadata.priceTargetForUp)}
             symbol={data.priceMetadata.baseAsset}
             assetsLoaded={assetsLoaded}

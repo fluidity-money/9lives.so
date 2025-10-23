@@ -20,6 +20,7 @@ import useAPY from "@/hooks/useAPY";
 import useUserLiquidity from "@/hooks/useUserLiquidity";
 import useLiquidity from "@/hooks/useLiquidity";
 import { HeaderBox } from "./detailHeaderBox";
+import DetailCurrentPriceBox from "./detailCurrentPriceBox";
 
 export default function DetailHeader({
   data,
@@ -200,11 +201,7 @@ export default function DetailHeader({
               )}
             >
               {isEnded ? "Ended" : "End Date"}:{" "}
-              {new Date(
-                data.ending.toString().length === 10
-                  ? data.ending * 1000
-                  : data.ending,
-              ).toLocaleString("default", {
+              {new Date(data.ending * 1000).toLocaleString("default", {
                 year: data.isDppm ? undefined : "numeric",
                 month: "short",
                 day: "2-digit",
@@ -225,6 +222,19 @@ export default function DetailHeader({
         )}
       </div>
       <div className="flex flex-wrap items-center gap-2.5">
+        {data.isDppm ? (
+          <>
+            <HeaderBox
+              title={"Base Price"}
+              value={`$${data.priceMetadata?.priceTargetForUp}`}
+            />
+            <DetailCurrentPriceBox
+              starting={data.starting * 1000}
+              ending={data.ending * 1000}
+              symbol={data.priceMetadata!.baseAsset}
+            />
+          </>
+        ) : null}
         {subHeaderMap
           .filter((i) => i.show)
           .map((i) => (
