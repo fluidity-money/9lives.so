@@ -276,6 +276,11 @@ func (r *campaignResolver) Shares(ctx context.Context, obj *types.Campaign) ([]*
 	return obj.Shares, nil
 }
 
+// PriceMetadata is the resolver for the priceMetadata field.
+func (r *campaignResolver) PriceMetadata(ctx context.Context, obj *types.Campaign) (*model.PriceMetadata, error) {
+	panic(fmt.Errorf("not implemented: PriceMetadata - priceMetadata"))
+}
+
 // ID is the resolver for the id field.
 func (r *changelogResolver) ID(ctx context.Context, obj *changelog.Changelog) (string, error) {
 	if obj == nil {
@@ -628,7 +633,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, priceMetadata *model.PriceMetadataInput) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
 	outcomes_ := make([]crypto.Outcome, len(outcomes))
 	if seed < 0 {

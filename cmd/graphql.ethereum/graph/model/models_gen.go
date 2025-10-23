@@ -39,6 +39,25 @@ type OutcomeInput struct {
 	Picture *string `json:"picture,omitempty"`
 }
 
+type PriceMetadata struct {
+	// Base asset that's used for this market. This is the other asset, like BTC, or ETH.
+	BaseAsset string `json:"baseAsset"`
+	// The quote asset that's used for this market. This is usually USDC.
+	QuoteAsset string `json:"quoteAsset"`
+	// The price target that this needs to be above for the "yes" outcome to resolve.
+	PriceTargetForUp string `json:"priceTargetForUp"`
+}
+
+// Price metadata that's needed for display to the short-term price prediction data.
+type PriceMetadataInput struct {
+	// Base asset that's used for this market. This is the other asset, like BTC, or ETH.
+	BaseAsset string `json:"baseAsset"`
+	// The quote asset that's used for this market. This is usually USDC.
+	QuoteAsset string `json:"quoteAsset"`
+	// The price target that this needs to be above for the "yes" outcome to resolve.
+	PriceTargetForUp string `json:"priceTargetForUp"`
+}
+
 type Query struct {
 }
 

@@ -92,6 +92,7 @@ type ComplexityRoot struct {
 		Outcomes          func(childComplexity int) int
 		Picture           func(childComplexity int) int
 		PoolAddress       func(childComplexity int) int
+		PriceMetadata     func(childComplexity int) int
 		Settlement        func(childComplexity int) int
 		Shares            func(childComplexity int) int
 		Starting          func(childComplexity int) int
@@ -167,7 +168,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v int) int
 		DeleteComment     func(childComplexity int, campaignID string, id int, walletAddress string, content string, rr string, s string, v int) int
-		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool) int
+		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, priceMetadata *model.PriceMetadataInput) int
 		GenReferrer       func(childComplexity int, walletAddress string, code string) int
 		PostComment       func(childComplexity int, campaignID string, walletAddress string, content string, rr string, s string, v int) int
 		RequestPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) int
@@ -192,6 +193,12 @@ type ComplexityRoot struct {
 	PriceEvent struct {
 		CreatedAt func(childComplexity int) int
 		Shares    func(childComplexity int) int
+	}
+
+	PriceMetadata struct {
+		BaseAsset        func(childComplexity int) int
+		PriceTargetForUp func(childComplexity int) int
+		QuoteAsset       func(childComplexity int) int
 	}
 
 	Profile struct {
@@ -269,6 +276,7 @@ type CampaignResolver interface {
 	Categories(ctx context.Context, obj *types.Campaign) ([]string, error)
 	IsDpm(ctx context.Context, obj *types.Campaign) (*bool, error)
 	Shares(ctx context.Context, obj *types.Campaign) ([]*types.CampaignShare, error)
+	PriceMetadata(ctx context.Context, obj *types.Campaign) (*model.PriceMetadata, error)
 }
 type ChangelogResolver interface {
 	ID(ctx context.Context, obj *changelog.Changelog) (string, error)
@@ -289,7 +297,7 @@ type MutationResolver interface {
 	PostComment(ctx context.Context, campaignID string, walletAddress string, content string, rr string, s string, v int) (*bool, error)
 	DeleteComment(ctx context.Context, campaignID string, id int, walletAddress string, content string, rr string, s string, v int) (*bool, error)
 	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) (*string, error)
-	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool) (*bool, error)
+	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, priceMetadata *model.PriceMetadataInput) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
 	SynchProfile(ctx context.Context, walletAddress string, email string) (*bool, error)
@@ -566,6 +574,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.PoolAddress(childComplexity), true
+
+	case "Campaign.priceMetadata":
+		if e.complexity.Campaign.PriceMetadata == nil {
+			break
+		}
+
+		return e.complexity.Campaign.PriceMetadata(childComplexity), true
 
 	case "Campaign.settlement":
 		if e.complexity.Campaign.Settlement == nil {
@@ -881,7 +896,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(*string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string), args["isFake"].(*bool), args["isDppm"].(bool)), true
+		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(*string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string), args["isFake"].(*bool), args["isDppm"].(bool), args["priceMetadata"].(*model.PriceMetadataInput)), true
 
 	case "Mutation.genReferrer":
 		if e.complexity.Mutation.GenReferrer == nil {
@@ -1017,6 +1032,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PriceEvent.Shares(childComplexity), true
+
+	case "PriceMetadata.baseAsset":
+		if e.complexity.PriceMetadata.BaseAsset == nil {
+			break
+		}
+
+		return e.complexity.PriceMetadata.BaseAsset(childComplexity), true
+
+	case "PriceMetadata.priceTargetForUp":
+		if e.complexity.PriceMetadata.PriceTargetForUp == nil {
+			break
+		}
+
+		return e.complexity.PriceMetadata.PriceTargetForUp(childComplexity), true
+
+	case "PriceMetadata.quoteAsset":
+		if e.complexity.PriceMetadata.QuoteAsset == nil {
+			break
+		}
+
+		return e.complexity.PriceMetadata.QuoteAsset(childComplexity), true
 
 	case "Profile.email":
 		if e.complexity.Profile.Email == nil {
@@ -1313,6 +1349,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputOutcomeInput,
+		ec.unmarshalInputPriceMetadataInput,
 	)
 	first := true
 
@@ -1696,6 +1733,15 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 		}
 	}
 	args["isDppm"] = arg15
+	var arg16 *model.PriceMetadataInput
+	if tmp, ok := rawArgs["priceMetadata"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceMetadata"))
+		arg16, err = ec.unmarshalOPriceMetadataInput2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐPriceMetadataInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["priceMetadata"] = arg16
 	return args, nil
 }
 
@@ -4279,6 +4325,55 @@ func (ec *executionContext) fieldContext_Campaign_shares(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Campaign_priceMetadata(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_priceMetadata(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Campaign().PriceMetadata(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PriceMetadata)
+	fc.Result = res
+	return ec.marshalOPriceMetadata2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐPriceMetadata(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_priceMetadata(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "baseAsset":
+				return ec.fieldContext_PriceMetadata_baseAsset(ctx, field)
+			case "quoteAsset":
+				return ec.fieldContext_PriceMetadata_quoteAsset(ctx, field)
+			case "priceTargetForUp":
+				return ec.fieldContext_PriceMetadata_priceTargetForUp(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PriceMetadata", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CampaignProfit_poolAddress(ctx context.Context, field graphql.CollectedField, obj *types.CampaignProfit) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CampaignProfit_poolAddress(ctx, field)
 	if err != nil {
@@ -4885,6 +4980,8 @@ func (ec *executionContext) fieldContext_Claim_content(_ context.Context, field 
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
+			case "priceMetadata":
+				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5551,6 +5648,8 @@ func (ec *executionContext) fieldContext_LP_campaign(_ context.Context, field gr
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
+			case "priceMetadata":
+				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -5966,7 +6065,7 @@ func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(*string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string), fc.Args["isFake"].(*bool), fc.Args["isDppm"].(bool))
+		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(*string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string), fc.Args["isFake"].(*bool), fc.Args["isDppm"].(bool), fc.Args["priceMetadata"].(*model.PriceMetadataInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6616,6 +6715,8 @@ func (ec *executionContext) fieldContext_Position_content(_ context.Context, fie
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
+			case "priceMetadata":
+				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -6712,6 +6813,138 @@ func (ec *executionContext) fieldContext_PriceEvent_shares(_ context.Context, fi
 				return ec.fieldContext_CampaignShare_identifier(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CampaignShare", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PriceMetadata_baseAsset(ctx context.Context, field graphql.CollectedField, obj *model.PriceMetadata) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PriceMetadata_baseAsset(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BaseAsset, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PriceMetadata_baseAsset(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PriceMetadata",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PriceMetadata_quoteAsset(ctx context.Context, field graphql.CollectedField, obj *model.PriceMetadata) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PriceMetadata_quoteAsset(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.QuoteAsset, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PriceMetadata_quoteAsset(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PriceMetadata",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PriceMetadata_priceTargetForUp(ctx context.Context, field graphql.CollectedField, obj *model.PriceMetadata) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PriceMetadata_priceTargetForUp(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PriceTargetForUp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PriceMetadata_priceTargetForUp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PriceMetadata",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6939,6 +7172,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
+			case "priceMetadata":
+				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -7041,6 +7276,8 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
+			case "priceMetadata":
+				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -7880,6 +8117,8 @@ func (ec *executionContext) fieldContext_Query_featuredCampaign(ctx context.Cont
 				return ec.fieldContext_Campaign_isDpm(ctx, field)
 			case "shares":
 				return ec.fieldContext_Campaign_shares(ctx, field)
+			case "priceMetadata":
+				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -10375,6 +10614,47 @@ func (ec *executionContext) unmarshalInputOutcomeInput(ctx context.Context, obj 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPriceMetadataInput(ctx context.Context, obj interface{}) (model.PriceMetadataInput, error) {
+	var it model.PriceMetadataInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"baseAsset", "quoteAsset", "priceTargetForUp"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "baseAsset":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("baseAsset"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BaseAsset = data
+		case "quoteAsset":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("quoteAsset"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.QuoteAsset = data
+		case "priceTargetForUp":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceTargetForUp"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PriceTargetForUp = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -11379,6 +11659,39 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "priceMetadata":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Campaign_priceMetadata(ctx, field, obj)
 				return res
 			}
 
@@ -12450,6 +12763,55 @@ func (ec *executionContext) _PriceEvent(ctx context.Context, sel ast.SelectionSe
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var priceMetadataImplementors = []string{"PriceMetadata"}
+
+func (ec *executionContext) _PriceMetadata(ctx context.Context, sel ast.SelectionSet, obj *model.PriceMetadata) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, priceMetadataImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PriceMetadata")
+		case "baseAsset":
+			out.Values[i] = ec._PriceMetadata_baseAsset(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "quoteAsset":
+			out.Values[i] = ec._PriceMetadata_quoteAsset(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "priceTargetForUp":
+			out.Values[i] = ec._PriceMetadata_priceTargetForUp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -14710,6 +15072,21 @@ func (ec *executionContext) marshalOPriceEvent2ᚖgithubᚗcomᚋfluidityᚑmone
 		return graphql.Null
 	}
 	return ec._PriceEvent(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPriceMetadata2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐPriceMetadata(ctx context.Context, sel ast.SelectionSet, v *model.PriceMetadata) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PriceMetadata(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOPriceMetadataInput2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐPriceMetadataInput(ctx context.Context, v interface{}) (*model.PriceMetadataInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPriceMetadataInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOProfile2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐProfile(ctx context.Context, sel ast.SelectionSet, v *types.Profile) graphql.Marshaler {

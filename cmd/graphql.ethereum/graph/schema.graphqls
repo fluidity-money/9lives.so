@@ -201,6 +201,26 @@ input OutcomeInput {
   picture: String
 }
 
+"""
+Price metadata that's needed for display to the short-term price prediction data.
+"""
+input PriceMetadataInput {
+    """
+    Base asset that's used for this market. This is the other asset, like BTC, or ETH.
+    """
+    baseAsset: String!
+
+    """
+    The quote asset that's used for this market. This is usually USDC.
+    """
+    quoteAsset: String!
+
+     """
+     The price target that this needs to be above for the "yes" outcome to resolve.
+     """
+    priceTargetForUp: String!
+}
+
 enum PaymasterOperation {
     MINT,
     SELL,
@@ -404,9 +424,15 @@ type Mutation {
     isFake: Boolean,
 
     """
-    Is this a DPPM market?
+    Is this a DPPM market? This is needed for price prediction market types.
     """
-    isDppm: Boolean!
+    isDppm: Boolean!,
+
+    """
+    Price metadata field is needed for automated resolution of some kinds of DPPM markets.
+    The admin secret is needed for this.
+    """
+    priceMetadata: PriceMetadataInput
   ): Boolean
 
   """
@@ -680,6 +706,11 @@ type Campaign {
   Latest total shares of the campaign to calculate prices of the outcomes
   """
   shares: [CampaignShare]!
+
+  """
+  Price metadata if this is a short-term market.
+  """
+  priceMetadata: PriceMetadata
 }
 
 """
@@ -948,4 +979,21 @@ type Activity {
   Timestamp of when the activity was created.
   """
   createdAt: Int!
+}
+
+type PriceMetadata {
+    """
+    Base asset that's used for this market. This is the other asset, like BTC, or ETH.
+    """
+    baseAsset: String!
+
+    """
+    The quote asset that's used for this market. This is usually USDC.
+    """
+    quoteAsset: String!
+
+     """
+     The price target that this needs to be above for the "yes" outcome to resolve.
+     """
+    priceTargetForUp: String!
 }

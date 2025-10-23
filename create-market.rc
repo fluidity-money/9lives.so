@@ -76,6 +76,12 @@ fn call {
 		$*
 }
 
+fn call_and_send {
+	resp=`{call $*}
+	send $* >[1=2]
+	echo $resp
+}
+
 fn take_outcome_id {
 	shasum -a512 | cut -f1 | dd bs=1 count=16 status=none
 }
@@ -130,40 +136,21 @@ if(test $allowance_buy_helper -lt $sum) {
 		$sum
 }
 
-call \
-	$SPN_FACTORY_ADDR \
-	'newTrading9A87E788((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool)' \
-	$outcome_args \
-	$SPN_ORACLE_ADDR \
-	$SPN_STARTED_BY \
-	$SPN_DEADLINE \
-	$documentation_h \
-	$SPN_SENDER_ADDR \
-	$fee_creator \
-	$fee_lp \
-	$fee_minter \
-	$fee_referrer \
-	true
-exit 0
+trading_addr=`{
+	call_and_send \
+		$SPN_FACTORY_ADDR \
+		'newTrading9A87E788((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool)' \
+		$outcome_args \
+		$SPN_ORACLE_ADDR \
+		$SPN_STARTED_BY \
+		$SPN_DEADLINE \
+		$documentation_h \
+		$SPN_SENDER_ADDR \
+		$fee_creator \
+		$fee_lp \
+		$fee_minter \
+		$fee_referrer \
+		true
+}
 
-stylus-interpreter -v \
-	-u $SPN_SUPERPOSITION_URL \
-	-a $SPN_FACTORY_ADDR \
-	-b `{cast bn --rpc-url $SPN_SUPERPOSITION_URL} \
-	-s $SPN_SENDER_ADDR \
-	contract-factory-1.wasm \
-	`{
-		cast calldata \
-			'newTrading9A87E788((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool)' \
-			$outcome_args \
-			$SPN_ORACLE_ADDR \
-			$SPN_STARTED_BY \
-			$SPN_DEADLINE \
-			$documentation_h \
-			$SPN_SENDER_ADDR \
-			$fee_creator \
-			$fee_lp \
-			$fee_minter \
-			$fee_referrer \
-			true
-	}
+echo $trading_addr
