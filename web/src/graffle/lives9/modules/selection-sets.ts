@@ -221,6 +221,14 @@ export interface Query<
   campaignWeeklyVolume?:
     | Query.campaignWeeklyVolume<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.campaignWeeklyVolume<_$Scalars>>;
+  /**
+   *
+   * Select the `campaignBySymbol` field on the `Query` object. Its type is `Campaign` (a `OutputObject` kind of type).
+   *
+   */
+  campaignBySymbol?:
+    | Query.campaignBySymbol<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.campaignBySymbol<_$Scalars>>;
 
   /**
    *
@@ -1047,6 +1055,45 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<campaignWeeklyVolume$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type campaignBySymbol<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = campaignBySymbol$SelectionSet<_$Scalars>;
+
+  export interface campaignBySymbol$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Campaign<_$Scalars> {
+    /**
+     * Arguments for `campaignBySymbol` field. All arguments are required so you must include this.
+     */
+    $: campaignBySymbol$Arguments<_$Scalars>;
+  }
+
+  export interface campaignBySymbol$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    symbol: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `campaignBySymbol` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type campaignBySymbol$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<campaignBySymbol$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

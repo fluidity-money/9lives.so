@@ -5,7 +5,6 @@ export default function SimpleSubHeader({
   latestPrice,
 }: {
   basePrice: number;
-  ending: number;
   latestPrice?: number;
 }) {
   const subHeaderMap = [

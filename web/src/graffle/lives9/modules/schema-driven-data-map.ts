@@ -623,6 +623,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    campaignBySymbol: {
+      a: {
+        symbol: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -997,6 +1006,7 @@ Query.f[`userLPs`]!.nt = LP;
 Query.f[`userWonCampaignsProfits`]!.nt = CampaignProfit;
 Query.f[`campaignComments`]!.nt = Comment;
 Query.f[`campaignPriceEvents`]!.nt = PriceEvent;
+Query.f[`campaignBySymbol`]!.nt = Campaign;
 
 //
 //

@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   const response = await requestSimpleMarket(id);
   return {
     title: response?.name ?? "Predict on 9LIVES.so",
-    description: response?.description,
+    description: response?.name ?? "Predict token prices in hourly markets",
     other: {
       "fc:miniapp": JSON.stringify({
         version: config.frame.version,
@@ -45,17 +45,14 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   if (!features["enable simple mode"]) redirect("/");
   // Remove this when feature is completed end
 
-  const data = (await requestSimpleMarket(id)) as CampaignDetail & {
-    symbol: string;
-    basePrice: number;
-  };
-  if (!data) notFound();
+  const data = await requestSimpleMarket(id);
+  if (!data || !data.priceMetadata) notFound();
 
   let initialAssetPrices: PricePoint[] = [];
   const res = await requestAssetPrice(
-    data.symbol,
-    new Date(data.starting).toISOString(),
-    new Date(data.ending).toISOString(),
+    data.priceMetadata.baseAsset,
+    new Date(data.starting * 1000).toISOString(),
+    new Date(data.ending * 1000).toISOString(),
   );
   if (res && res.oracles_ninelives_prices_1) {
     initialAssetPrices = res.oracles_ninelives_prices_1.map((i) => ({
@@ -88,7 +85,10 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
           </div>
         </div>
       </div>
-      <SimpleBody data={data} initialAssetPrices={initialAssetPrices} />
+      <SimpleBody
+        data={{ ...data, priceMetadata: data.priceMetadata! }}
+        initialAssetPrices={initialAssetPrices}
+      />
     </div>
   );
 }

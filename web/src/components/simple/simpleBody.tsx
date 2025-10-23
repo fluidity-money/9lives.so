@@ -18,14 +18,14 @@ export default function SimpleBody({
   data,
   initialAssetPrices,
 }: {
-  data: Awaited<ReturnType<typeof requestSimpleMarket>> & {
-    symbol: string;
-    basePrice: number;
+  data: NonNullable<Awaited<ReturnType<typeof requestSimpleMarket>>> & {
+    priceMetadata: { baseAsset: string; priceTargetForUp: string };
   };
   initialAssetPrices?: PricePoint[];
 }) {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
-  const symbol = data.symbol.toLowerCase();
+  const symbol = data.priceMetadata.baseAsset.toLowerCase();
+  const basePrice = Number(data.priceMetadata.priceTargetForUp);
   const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
     {
       queryKey: ["assetPrice", symbol, data.starting, data.ending],
@@ -66,27 +66,32 @@ export default function SimpleBody({
         </h5>
       </div>
       <SimpleSubHeader
-        ending={data.ending}
-        basePrice={data.basePrice}
+        basePrice={basePrice}
         latestPrice={assetPrices?.[assetPrices?.length - 1]?.price ?? 0}
       />
       <AssetPriceChart
         simple
-        basePrice={data.basePrice}
+        basePrice={basePrice}
         id={data.identifier}
-        symbol={data.symbol}
-        starting={data.starting}
-        ending={data.ending}
+        symbol={symbol}
+        starting={data.starting * 1000}
+        ending={data.ending * 1000}
         assetPrices={assetPrices}
         assetsLoaded={assetsLoaded}
       />
-      <div className="flex flex-row items-center gap-1">
-        <span className="font-chicago text-sm">%{+(0.2 * 100).toFixed(0)}</span>
-        <div className="h-2 flex-1 bg-9red">
-          <div className="h-2 bg-9green" style={{ width: `${0.2 * 100}%` }} />
+      {data.investmentAmounts.length > 1 ? (
+        <div className="flex flex-row items-center gap-1">
+          <span className="font-chicago text-sm">
+            %{+(0.2 * 100).toFixed(0)}
+          </span>
+          <div className="h-2 flex-1 bg-9red">
+            <div className="h-2 bg-9green" style={{ width: `${0.2 * 100}%` }} />
+          </div>
+          <span className="font-chicago text-sm">
+            %{+(0.8 * 100).toFixed(0)}
+          </span>
         </div>
-        <span className="font-chicago text-sm">%{+(0.8 * 100).toFixed(0)}</span>
-      </div>
+      ) : null}
       <div className="sticky inset-x-0 bottom-0 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
         <Button
           title="Up"

@@ -49,6 +49,7 @@ export namespace Schema {
       campaignComments: Query.campaignComments;
       campaignPriceEvents: Query.campaignPriceEvents;
       campaignWeeklyVolume: Query.campaignWeeklyVolume;
+      campaignBySymbol: Query.campaignBySymbol;
     };
   }
 
@@ -479,6 +480,23 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Get the live campaign by token symbol for price prediction
+     */
+    export interface campaignBySymbol extends $.OutputField {
+      name: "campaignBySymbol";
+      arguments: {
+        symbol: {
+          kind: "InputField";
+          name: "symbol";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Campaign;
     }
   }
 
