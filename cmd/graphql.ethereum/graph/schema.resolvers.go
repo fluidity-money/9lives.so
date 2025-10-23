@@ -290,7 +290,7 @@ func (r *campaignResolver) PriceMetadata(ctx context.Context, obj *types.Campaig
 	if obj == nil {
 		return nil, fmt.Errorf("campaign is nil")
 	}
-	return &obj.PriceMetadata, nil
+	return obj.Content.PriceMetadata, nil
 }
 
 // ID is the resolver for the id field.
