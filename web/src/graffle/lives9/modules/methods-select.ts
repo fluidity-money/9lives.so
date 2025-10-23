@@ -39,6 +39,7 @@ export interface $MethodsSelect {
   Share: Share;
   Changelog: Changelog;
   Activity: Activity;
+  PriceMetadata: PriceMetadata;
 }
 
 //
@@ -214,6 +215,15 @@ export interface Changelog {
 export interface Activity {
   <$SelectionSet>(
     selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Activity>,
+  ): $SelectionSet;
+}
+
+export interface PriceMetadata {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.PriceMetadata
+    >,
   ): $SelectionSet;
 }
 

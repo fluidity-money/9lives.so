@@ -177,6 +177,13 @@ export namespace Select {
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["Activity"]
     >;
+  export type PriceMetadata<
+    $SelectionSet extends $$SelectionSets.PriceMetadata,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["PriceMetadata"]
+  >;
   //                                               Union
   // --------------------------------------------------------------------------------------------------
   //

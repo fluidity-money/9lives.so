@@ -103,6 +103,15 @@ const OutcomeInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
   },
 };
 
+const PriceMetadataInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
+  n: "PriceMetadataInput",
+  f: {
+    baseAsset: {},
+    quoteAsset: {},
+    priceTargetForUp: {},
+  },
+};
+
 //
 //
 //
@@ -235,8 +244,12 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     banners: {},
     categories: {},
     isDpm: {},
+    isDppm: {},
     shares: {
       // nt: CampaignShare, <-- Assigned later to avoid potential circular dependency.
+    },
+    priceMetadata: {
+      // nt: PriceMetadata, <-- Assigned later to avoid potential circular dependency.
     },
   },
 };
@@ -326,6 +339,14 @@ const Activity: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     campaignId: {},
     totalVolume: {},
     createdAt: {},
+  },
+};
+
+const PriceMetadata: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    baseAsset: {},
+    quoteAsset: {},
+    priceTargetForUp: {},
   },
 };
 
@@ -817,6 +838,14 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: Boolean,
           it: [0],
         },
+        isDppm: {
+          nt: Boolean,
+          it: [1],
+        },
+        priceMetadata: {
+          nt: PriceMetadataInput,
+          it: [0],
+        },
       },
     },
     revealCommitment: {
@@ -949,6 +978,7 @@ Campaign.f[`creator`]!.nt = Wallet;
 Campaign.f[`outcomes`]!.nt = Outcome;
 Campaign.f[`investmentAmounts`]!.nt = InvestmentAmounts;
 Campaign.f[`shares`]!.nt = CampaignShare;
+Campaign.f[`priceMetadata`]!.nt = PriceMetadata;
 LeaderboardWeekly.f[`referrers`]!.nt = LeaderboardPosition;
 LeaderboardWeekly.f[`volume`]!.nt = LeaderboardPosition;
 LeaderboardWeekly.f[`creators`]!.nt = LeaderboardPosition;
@@ -1000,6 +1030,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     SettlementType,
     ActivityType,
     OutcomeInput,
+    PriceMetadataInput,
     PriceEvent,
     CommentInvestment,
     Comment,
@@ -1019,6 +1050,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Share,
     Changelog,
     Activity,
+    PriceMetadata,
     Query,
     Mutation,
   },

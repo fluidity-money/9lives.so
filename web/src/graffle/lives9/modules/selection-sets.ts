@@ -1374,7 +1374,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `explainCampaign` field. Some (8/15) arguments are required so you must include this.
+     * Arguments for `explainCampaign` field. Some (9/17) arguments are required so you must include this.
      */
     $: explainCampaign$Arguments<_$Scalars>;
   }
@@ -1446,6 +1446,18 @@ export namespace Mutation {
      * Should this be a fake execution as a dry run?
      */
     isFake?: boolean | undefined | null;
+    /**
+     * Is this a DPPM market? This is needed for price prediction market types.
+     */
+    isDppm: boolean;
+    /**
+     * Price metadata field is needed for automated resolution of some kinds of DPPM markets.
+     * The admin secret is needed for this.
+     */
+    priceMetadata?:
+      | $NamedTypes.$PriceMetadataInput<_$Scalars>
+      | undefined
+      | null;
   }
 
   // --- expanded ---
@@ -1822,6 +1834,27 @@ export interface OutcomeInput<
    * Picture of the outcome.
    */
   picture?: string | undefined | null;
+}
+
+/**
+ * Price metadata that's needed for display to the short-term price prediction data.
+ */
+export interface PriceMetadataInput<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> {
+  /**
+   * Base asset that's used for this market. This is the other asset, like BTC, or ETH.
+   */
+  baseAsset: string;
+  /**
+   * The quote asset that's used for this market. This is usually USDC.
+   */
+  quoteAsset: string;
+  /**
+   * The price target that this needs to be above for the "yes" outcome to resolve.
+   */
+  priceTargetForUp: string;
 }
 
 //
@@ -3444,12 +3477,28 @@ export interface Campaign<
     | $Select.SelectAlias.SelectAlias<Campaign.isDpm<_$Scalars>>;
   /**
    *
+   * Select the `isDppm` field on the `Campaign` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  isDppm?:
+    | Campaign.isDppm$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.isDppm<_$Scalars>>;
+  /**
+   *
    * Select the `shares` field on the `Campaign` object. Its type is `CampaignShare` (a `OutputObject` kind of type).
    *
    */
   shares?:
     | Campaign.shares$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Campaign.shares<_$Scalars>>;
+  /**
+   *
+   * Select the `priceMetadata` field on the `Campaign` object. Its type is `PriceMetadata` (a `OutputObject` kind of type).
+   *
+   */
+  priceMetadata?:
+    | Campaign.priceMetadata$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.priceMetadata<_$Scalars>>;
 
   /**
    *
@@ -4132,6 +4181,34 @@ export namespace Campaign {
 
   // --------------------------------------------------------------------------------------------------
 
+  export type isDppm<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | isDppm$SelectionSet<_$Scalars>;
+
+  export interface isDppm$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `isDppm` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type isDppm$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | isDppm$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
   export type shares<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
@@ -4156,6 +4233,33 @@ export namespace Campaign {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<shares$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type priceMetadata<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = priceMetadata$SelectionSet<_$Scalars>;
+
+  export interface priceMetadata$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$PriceMetadata<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `priceMetadata` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type priceMetadata$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<priceMetadata$SelectionSet<_$Scalars>>;
 }
 
 //                                           CampaignShare
@@ -5846,6 +5950,163 @@ export namespace Activity {
   >;
 }
 
+//                                           PriceMetadata
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface PriceMetadata<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `baseAsset` field on the `PriceMetadata` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  baseAsset?:
+    | PriceMetadata.baseAsset$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<PriceMetadata.baseAsset<_$Scalars>>;
+  /**
+   *
+   * Select the `quoteAsset` field on the `PriceMetadata` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  quoteAsset?:
+    | PriceMetadata.quoteAsset$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<PriceMetadata.quoteAsset<_$Scalars>>;
+  /**
+   *
+   * Select the `priceTargetForUp` field on the `PriceMetadata` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  priceTargetForUp?:
+    | PriceMetadata.priceTargetForUp$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<
+        PriceMetadata.priceTargetForUp<_$Scalars>
+      >;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | PriceMetadata$FragmentInline<_$Scalars>
+    | PriceMetadata$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface PriceMetadata$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends PriceMetadata<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace PriceMetadata {
+  export type baseAsset<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | baseAsset$SelectionSet<_$Scalars>;
+
+  export interface baseAsset$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `baseAsset` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type baseAsset$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | baseAsset$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type quoteAsset<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | quoteAsset$SelectionSet<_$Scalars>;
+
+  export interface quoteAsset$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `quoteAsset` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type quoteAsset$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | quoteAsset$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type priceTargetForUp<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | priceTargetForUp$SelectionSet<_$Scalars>;
+
+  export interface priceTargetForUp$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `priceTargetForUp` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type priceTargetForUp$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | priceTargetForUp$SelectionSet<_$Scalars>
+  >;
+}
+
 /**
  * [1] These definitions serve to allow field selection interfaces to extend their respective object type without
  *     name clashing between the field name and the object name.
@@ -5870,6 +6131,10 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = OutcomeInput<_$Scalars>;
+  export type $PriceMetadataInput<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = PriceMetadataInput<_$Scalars>;
   export type $PriceEvent<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
@@ -5946,4 +6211,8 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = Activity<_$Scalars>;
+  export type $PriceMetadata<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = PriceMetadata<_$Scalars>;
 }

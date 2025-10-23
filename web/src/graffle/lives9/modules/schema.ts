@@ -948,6 +948,25 @@ export namespace Schema {
           inlineType: [0];
           namedType: $$NamedTypes.$$Boolean;
         };
+        /**
+         * Is this a DPPM market? This is needed for price prediction market types.
+         */
+        isDppm: {
+          kind: "InputField";
+          name: "isDppm";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Boolean;
+        };
+        /**
+         * Price metadata field is needed for automated resolution of some kinds of DPPM markets.
+         * The admin secret is needed for this.
+         */
+        priceMetadata: {
+          kind: "InputField";
+          name: "priceMetadata";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$PriceMetadataInput;
+        };
       };
       inlineType: [0];
       namedType: $$NamedTypes.$$Boolean;
@@ -1704,7 +1723,9 @@ export namespace Schema {
       banners: Campaign.banners;
       categories: Campaign.categories;
       isDpm: Campaign.isDpm;
+      isDppm: Campaign.isDppm;
       shares: Campaign.shares;
+      priceMetadata: Campaign.priceMetadata;
     };
   }
 
@@ -1954,6 +1975,16 @@ export namespace Schema {
     }
 
     /**
+     * Is this market a DPPM market?
+     */
+    export interface isDppm extends $.OutputField {
+      name: "isDppm";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
      * Latest total shares of the campaign to calculate prices of the outcomes
      */
     export interface shares extends $.OutputField {
@@ -1961,6 +1992,16 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$CampaignShare;
+    }
+
+    /**
+     * Price metadata if this is a short-term market.
+     */
+    export interface priceMetadata extends $.OutputField {
+      name: "priceMetadata";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$PriceMetadata;
     }
   }
 
@@ -2581,6 +2622,62 @@ export namespace Schema {
     }
   }
 
+  //                                           PriceMetadata
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface PriceMetadata extends $.OutputObject {
+    name: "PriceMetadata";
+    fields: {
+      __typename: PriceMetadata.__typename;
+      baseAsset: PriceMetadata.baseAsset;
+      quoteAsset: PriceMetadata.quoteAsset;
+      priceTargetForUp: PriceMetadata.priceTargetForUp;
+    };
+  }
+
+  export namespace PriceMetadata {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "PriceMetadata";
+      };
+    }
+
+    /**
+     * Base asset that's used for this market. This is the other asset, like BTC, or ETH.
+     */
+    export interface baseAsset extends $.OutputField {
+      name: "baseAsset";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * The quote asset that's used for this market. This is usually USDC.
+     */
+    export interface quoteAsset extends $.OutputField {
+      name: "quoteAsset";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * The price target that this needs to be above for the "yes" outcome to resolve.
+     */
+    export interface priceTargetForUp extends $.OutputField {
+      name: "priceTargetForUp";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+  }
+
   //
   //
   //
@@ -2639,6 +2736,52 @@ export namespace Schema {
     export interface picture extends $.InputField {
       name: "picture";
       inlineType: [0];
+      namedType: $$NamedTypes.$$String;
+    }
+  }
+
+  //                                         PriceMetadataInput
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Price metadata that's needed for display to the short-term price prediction data.
+   */
+  export interface PriceMetadataInput extends $.InputObject {
+    name: "PriceMetadataInput";
+    isAllFieldsNullable: false;
+    fields: {
+      baseAsset: PriceMetadataInput.baseAsset;
+      quoteAsset: PriceMetadataInput.quoteAsset;
+      priceTargetForUp: PriceMetadataInput.priceTargetForUp;
+    };
+  }
+
+  export namespace PriceMetadataInput {
+    /**
+     * Base asset that's used for this market. This is the other asset, like BTC, or ETH.
+     */
+    export interface baseAsset extends $.InputField {
+      name: "baseAsset";
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * The quote asset that's used for this market. This is usually USDC.
+     */
+    export interface quoteAsset extends $.InputField {
+      name: "quoteAsset";
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * The price target that this needs to be above for the "yes" outcome to resolve.
+     */
+    export interface priceTargetForUp extends $.InputField {
+      name: "priceTargetForUp";
+      inlineType: [1];
       namedType: $$NamedTypes.$$String;
     }
   }
@@ -2864,7 +3007,9 @@ export namespace Schema {
     export type $$Share = Share;
     export type $$Changelog = Changelog;
     export type $$Activity = Activity;
+    export type $$PriceMetadata = PriceMetadata;
     export type $$OutcomeInput = OutcomeInput;
+    export type $$PriceMetadataInput = PriceMetadataInput;
     export type $$PaymasterOperation = PaymasterOperation;
     export type $$Modification = Modification;
     export type $$SettlementType = SettlementType;
@@ -2929,6 +3074,7 @@ export interface Schema<
     Share: Schema.Share;
     Changelog: Schema.Changelog;
     Activity: Schema.Activity;
+    PriceMetadata: Schema.PriceMetadata;
   };
   objects: {
     PriceEvent: Schema.PriceEvent;
@@ -2950,6 +3096,7 @@ export interface Schema<
     Share: Schema.Share;
     Changelog: Schema.Changelog;
     Activity: Schema.Activity;
+    PriceMetadata: Schema.PriceMetadata;
   };
   unions: {};
   interfaces: {};
