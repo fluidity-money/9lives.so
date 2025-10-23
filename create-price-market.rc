@@ -1,4 +1,4 @@
-#!/usr/bin/env -S rc -ex
+#!/usr/bin/env -S rc -e
 
 # Automated script to make a market that assumes the following:
 

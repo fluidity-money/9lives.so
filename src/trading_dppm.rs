@@ -155,7 +155,7 @@ impl StorageTrading {
             .getter(msg_sender())
             .get(outcome_id);
         let winning_outcome_shares = self.dppm_shares_outcome.get(self.winner.get());
-        let fusdc = self.simulate_loser_payoff(shares, winning_outcome_shares)?;
+        let fusdc = self.internal_dppm_simulate_loser_payoff(shares, winning_outcome_shares)?;
         self.ninetails_user_boosted_shares
             .setter(msg_sender())
             .setter(outcome_id)
@@ -235,7 +235,12 @@ impl StorageTrading {
         Ok(fusdc)
     }
 
-    pub fn internal_dppm_payoff(&mut self, outcome_id: FixedBytes<8>, amt: U256, recipient: Address) -> R<U256> {
+    pub fn internal_dppm_payoff(
+        &mut self,
+        outcome_id: FixedBytes<8>,
+        amt: U256,
+        recipient: Address,
+    ) -> R<U256> {
         assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
         if self.winner.get() == outcome_id {
             self.internal_dppm_payoff_winner(outcome_id, amt, recipient)
@@ -287,7 +292,7 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn simulate_loser_payoff(
+    pub fn internal_dppm_simulate_loser_payoff(
         &self,
         user_boosted_shares: U256,
         winning_outcome_dppm_shares: U256,

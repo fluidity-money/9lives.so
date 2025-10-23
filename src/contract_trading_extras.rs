@@ -1,4 +1,4 @@
-use stylus_sdk::{evm, alloy_primitives::*};
+use stylus_sdk::{alloy_primitives::*, evm};
 
 use crate::{
     error::*,
@@ -163,6 +163,51 @@ impl StorageTrading {
             newDeadline: new_ts,
         });
         Ok(())
+    }
+
+    pub fn dppm_simulate_mint(&self, _fusdc: U256) -> R<(U256, U256)> {
+        todo!()
+    }
+
+    pub fn dppm_simulate_payoff(
+        &self,
+        shares: U256,
+        boosted_shares: U256,
+        outcome_id: FixedBytes<8>,
+    ) -> R<(U256, U256)> {
+        #[cfg(feature = "trading-backend-dppm")]
+        {
+            let outcome_1 = self.outcome_list.get(0).unwrap();
+            let outcome_2 = self.outcome_list.get(1).unwrap();
+            let outcome_boosted_shares = self
+                .ninetails_outcome_boosted_shares
+                .get(outcome_id)
+                .checked_add(boosted_shares)
+                .ok_or(Error::CheckedAddOverflow)?;
+            let all_boosted_shares = self
+                .ninetails_global_boosted_shares
+                .get()
+                .checked_add(boosted_shares)
+                .ok_or(Error::CheckedAddOverflow)?;
+            let M1 = self.dppm_outcome_invested.get(outcome_1);
+            let M2 = self.dppm_outcome_invested.get(outcome_2);
+            let winning_dppm_shares = self
+                .dppm_shares_outcome
+                .get(outcome_id)
+                .checked_add(shares)
+                .ok_or(Error::CheckedAddOverflow)?;
+            return self.internal_dppm_simulate_payoff(
+                shares,
+                boosted_shares,
+                outcome_boosted_shares,
+                all_boosted_shares,
+                M1,
+                M2,
+                winning_dppm_shares,
+            );
+        }
+        #[cfg(not(feature = "trading-backend-dppm"))]
+        unimplemented!()
     }
 }
 

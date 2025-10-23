@@ -159,4 +159,13 @@ interface INineLivesTrading {
     function userLiquidityShares(address spender) external view returns (uint256);
 
     function outcomeList() external view returns (bytes8[] memory outcomes);
+
+    function dppmSimulatePayoff(
+        uint256 shares,
+        uint256 boostedShares,
+        bytes8 outcome
+    ) external returns (
+        uint256 dppmFusdc,
+        uint256 ninetailsFusdc
+    );
 }
