@@ -78,7 +78,7 @@ func (m corsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := context.WithValue(
 		r.Context(),
 		"admin secret",
-		r.Header.Get("Authorization"),
+		r.Header.Get("Authentication"),
 	)
 	ipAddrs := strings.Split(r.Header.Get("X-Forwarded-For"), ",")
 	var ipAddr string
