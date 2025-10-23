@@ -11,7 +11,7 @@ export default function useDpmChances({
   investmentAmounts: CampaignDetail["investmentAmounts"];
 }) {
   return outcomeIds.map((oId) => {
-    const investedOutcome = investmentAmounts.find((i) => i.id === oId);
+    const investedOutcome = investmentAmounts.find((i) => i?.id === oId);
     return {
       id: oId,
       chance:

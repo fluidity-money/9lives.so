@@ -134,11 +134,9 @@ export default function DetailBuyAction({
     openFundModal: () => setFundModalOpen(true),
   });
   const { buy: buyWithPaymaster } = useBuyWithPaymaster({
-    tradingAddr: data.poolAddress,
     shareAddr: outcome.share.address,
     outcomeId: outcome.identifier,
     data,
-    outcomes: data.outcomes,
     openFundModal: () => setFundModalOpen(true),
   });
   const { buyWithRelay } = useBuyWithRelay({

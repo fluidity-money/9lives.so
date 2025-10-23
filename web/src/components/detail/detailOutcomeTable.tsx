@@ -55,7 +55,7 @@ export default function DetailOutcomes({
         {data.outcomes.map((outcome) => {
           const amount =
             data.investmentAmounts.find(
-              (item) => item.id === outcome.identifier,
+              (item) => item?.id === outcome.identifier,
             )?.usdc ?? 0;
           const sharePrice =
             sharePrices?.find((item) => item.id === outcome.identifier)

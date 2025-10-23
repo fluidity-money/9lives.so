@@ -40,7 +40,7 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
     (p) => p.id === data.winner,
   )?.balance;
   const totalSharesOfWinner =
-    data.investmentAmounts.find((i) => i.id === data.winner)?.share ?? 0;
+    data.investmentAmounts.find((i) => i?.id === data.winner)?.share ?? 0;
   // const totalShares = data.investmentAmounts.reduce(
   //   (acc, v) => acc + v.share,
   //   0,
@@ -53,7 +53,7 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
     isDpm,
   });
   const totalVolumeOfWinner =
-    data.investmentAmounts.find((ia) => ia.id === data.winner)?.usdc ?? 0;
+    data.investmentAmounts.find((ia) => ia?.id === data.winner)?.usdc ?? 0;
   const winnerChance = (totalVolumeOfWinner / data.totalVolume) * 100;
   const avgPrice = data.totalVolume / totalSharesOfWinner;
   const userRewardDpm = accountShares ? +accountShares * avgPrice : 0;

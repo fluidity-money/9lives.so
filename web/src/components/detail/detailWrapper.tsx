@@ -71,11 +71,11 @@ export default function DetailWrapper({
         if (symbol) {
           const res = await requestAssetPrice(
             symbol,
-            new Date(data.starting).toISOString(),
-            new Date(data.ending).toISOString(),
+            new Date(data.starting * 1000).toISOString(),
+            new Date(data.ending * 1000).toISOString(),
           );
           if (res?.oracles_ninelives_prices_1) {
-            return res?.oracles_ninelives_prices_1.map((i) => ({
+            return res.oracles_ninelives_prices_1.map((i) => ({
               price: i.amount,
               id: i.id,
               timestamp:
@@ -137,6 +137,7 @@ export default function DetailWrapper({
           <DetailResults data={data} isDpm={data.isDpm} />
         ) : (
           <DetailCall2Action
+            isDppm={data.isDppm}
             isDpm={data.isDpm}
             shouldStopAction={isEnded || isConcluded}
             selectedOutcome={selectedOutcome}
