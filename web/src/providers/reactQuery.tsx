@@ -1,14 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import appConfig from "@/config";
-import {
-  ActionFromBuysAndSells,
-  ActionFromCreation,
-  BuyAndSellResponse,
-  CreationResponse,
-  PricePoint,
-} from "@/types";
+import { BuyAndSellResponse, CreationResponse, PricePoint } from "@/types";
 import getAndFormatAssetPrices from "@/data/assetPrices";
+import {
+  formatActionFromBuysAndSells,
+  formatActionFromCreation,
+} from "@/utils/format/formatActions";
 
 export default function ReactQueryProvider({
   children,
@@ -33,12 +31,12 @@ export default function ReactQueryProvider({
 
     if (initialData) {
       const buyAndSellActions =
-        initialData.degenBuysAndSells.ninelives_buys_and_sells_1.map(
-          (e) => new ActionFromBuysAndSells(e),
+        initialData.degenBuysAndSells.ninelives_buys_and_sells_1.map((e) =>
+          formatActionFromBuysAndSells(e),
         );
       const creationActions =
-        initialData.degenCreations.ninelives_campaigns_1.map(
-          (c) => new ActionFromCreation(c),
+        initialData.degenCreations.ninelives_campaigns_1.map((c) =>
+          formatActionFromCreation(c),
         );
       client.setQueryDefaults(["actions"], {
         initialData: [...creationActions, ...buyAndSellActions].sort(

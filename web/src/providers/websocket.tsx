@@ -4,8 +4,6 @@ import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Action,
-  ActionFromBuysAndSells,
-  ActionFromCreation,
   CreationResponse,
   PaymasterAttempt,
   PaymasterAttemptResponse,
@@ -14,6 +12,10 @@ import { BuyAndSellResponse } from "../types";
 import { mergeSortedActions } from "@/utils/mergeSortedActions";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 import handleTicketAttempts from "@/utils/handleAttempts";
+import {
+  formatActionFromBuysAndSells,
+  formatActionFromCreation,
+} from "@/utils/format/formatActions";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -73,8 +75,8 @@ export default function WebSocketProvider() {
         next: ({ data }) => {
           const campaigns = data?.ninelives_campaigns_1;
           if (campaigns) {
-            const newActions: Action[] = campaigns.map(
-              (c) => new ActionFromCreation(c),
+            const newActions: Action[] = campaigns.map((c) =>
+              formatActionFromCreation(c),
             );
             queryClient.setQueryData<Action[]>(["actions"], (data) =>
               mergeSortedActions(data ?? [], newActions),
@@ -95,8 +97,8 @@ export default function WebSocketProvider() {
         next: async ({ data }) => {
           const events = data?.ninelives_buys_and_sells_1;
           if (events) {
-            const newActions: Action[] = events.map(
-              (event) => new ActionFromBuysAndSells(event),
+            const newActions: Action[] = events.map((event) =>
+              formatActionFromBuysAndSells(event),
             );
             queryClient.setQueryData<Action[]>(["actions"], (data) =>
               mergeSortedActions(newActions, data ?? []),

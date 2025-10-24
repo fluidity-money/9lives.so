@@ -157,55 +157,6 @@ export type CreationResponse = {
     updated_at: string;
   }[];
 };
-export class ActionFromCreation implements Action {
-  id: string;
-  campaignName: string;
-  campaignId: string;
-  type: "create";
-  campaignPic: string | null;
-  timestamp: string;
-
-  constructor(response: CreationResponse["ninelives_campaigns_1"][number]) {
-    this.id = response.id;
-    this.campaignId = response.id;
-    this.type = "create";
-    this.campaignName = response.content.name;
-    this.timestamp = response.created_at;
-    this.campaignPic = response.content.picture;
-  }
-}
-export class ActionFromBuysAndSells implements Action {
-  id: string;
-  campaignName: string;
-  campaignId: string;
-  type: "buy" | "sell";
-  campaignPic: string | null;
-  timestamp: string;
-  campaignVol?: string;
-  actionValue?: string;
-  outcomeName?: string;
-
-  constructor(
-    response: BuyAndSellResponse["ninelives_buys_and_sells_1"][number],
-  ) {
-    ((this.id = response.transaction_hash),
-      (this.type = response.type),
-      (this.campaignId = response.campaign_id),
-      (this.campaignName = response.campaign_content.name),
-      (this.timestamp = response.created_by),
-      (this.campaignPic = response.campaign_content.picture),
-      (this.campaignVol = formatFusdc(response.total_volume, 2)),
-      (this.actionValue = formatFusdc(
-        response.from_symbol === "FUSDC"
-          ? response.from_amount
-          : response.to_amount,
-        2,
-      )),
-      (this.outcomeName = response.campaign_content.outcomes.find(
-        (o) => o.identifier === `0x${response.outcome_id}`,
-      )?.name));
-  }
-}
 
 export type PositionsProps = {
   campaignName: string;
