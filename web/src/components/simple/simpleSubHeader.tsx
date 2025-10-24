@@ -3,9 +3,11 @@ import { HeaderBox } from "../detail/detailHeaderBox";
 export default function SimpleSubHeader({
   basePrice,
   latestPrice,
+  isEnded,
 }: {
   basePrice: number;
   latestPrice?: number;
+  isEnded: boolean;
 }) {
   const subHeaderMap = [
     {
@@ -14,7 +16,7 @@ export default function SimpleSubHeader({
       show: true,
     },
     {
-      title: "Current Price",
+      title: isEnded ? "Final Price" : "Current Price",
       value: `$${latestPrice}`,
       show: true,
     },

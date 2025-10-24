@@ -44,6 +44,7 @@ export default function SimpleBody({
         </h5>
       </div>
       <SimpleSubHeader
+        isEnded={isEnded}
         basePrice={basePrice}
         latestPrice={assetPrices?.[assetPrices?.length - 1]?.price ?? 0}
       />
