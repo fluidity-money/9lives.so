@@ -86,6 +86,7 @@ const appSchema = z.object({
     z.enum(["All", "Crypto", "Opinion Poll", "Sports", "Politics"]),
   ),
   frame: z.any(),
+  weekDuration: z.number(),
 });
 const requiredChains = Object.values(farcasterChains).map(
   (chain) => `eip155:${chain.id}`,
@@ -130,6 +131,7 @@ const appVars = appSchema.safeParse({
   simpleMarkets,
   categories,
   frame,
+  weekDuration: 60 * 60 * 24 * 7 * 1000,
 });
 
 if (!appVars.success) {

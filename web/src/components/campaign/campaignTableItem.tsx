@@ -8,6 +8,7 @@ import ClaimFeesButton from "../claimFeesButton";
 import { useEffect, useState } from "react";
 import useClaimAllFees from "@/hooks/useClaimAllFees";
 import { Account } from "thirdweb/wallets";
+import config from "@/config";
 
 export default function CampaignTableItem({
   data,
@@ -16,9 +17,8 @@ export default function CampaignTableItem({
   data: Campaign;
   account?: Account;
 }) {
-  const left = data.ending - Math.floor(Date.now() / 1000);
-  const weekDuration = 60 * 60 * 24 * 7;
-  const inThisWeek = weekDuration >= left && left > 0;
+  const left = data.ending - Date.now();
+  const inThisWeek = config.weekDuration >= left && left > 0;
   const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
   const { checkClaimFees } = useClaimAllFees();
   const displayClaimButton = unclaimedFees > BigInt(0);

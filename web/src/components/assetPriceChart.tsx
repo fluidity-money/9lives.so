@@ -36,7 +36,7 @@ export default function AssetPriceChart({
   const latestPrice = latestPoint.price;
   const latestTimestamp = latestPoint.timestamp;
   const priceIsAbove = latestPrice > basePrice;
-  const timeDiff = (ending - starting) * 1000;
+  const timeDiff = ending - starting;
   const MIN = 1000 * 60;
   const HOUR = MIN * 60;
   const DAY = HOUR * 24;

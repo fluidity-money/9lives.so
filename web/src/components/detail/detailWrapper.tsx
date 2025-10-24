@@ -38,10 +38,7 @@ export default function DetailWrapper({
   const outcomeIds = initialData.outcomes.map(
     (o) => o.identifier as `0x${string}`,
   );
-  const isEnded =
-    initialData.ending.toString().length === 10
-      ? initialData.ending < Date.now() / 1000
-      : initialData.ending < Date.now();
+  const isEnded = initialData.ending < Date.now();
   const isConcluded = Boolean(initialData.winner);
   const { data: sharePrices } = useSharePrices({
     tradingAddr: initialData.poolAddress as `0x${string}`,

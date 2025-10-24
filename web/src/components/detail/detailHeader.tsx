@@ -21,6 +21,7 @@ import useUserLiquidity from "@/hooks/useUserLiquidity";
 import useLiquidity from "@/hooks/useLiquidity";
 import { HeaderBox } from "./detailHeaderBox";
 import DetailCurrentPriceBox from "./detailCurrentPriceBox";
+import config from "@/config";
 
 export default function DetailHeader({
   data,
@@ -34,9 +35,8 @@ export default function DetailHeader({
   initialAssetPrices?: PricePoint[];
 }) {
   const account = useActiveAccount();
-  const left = data.ending - Math.floor(Date.now() / 1000);
-  const weekDuration = 60 * 60 * 24 * 7;
-  const inThisWeek = weekDuration >= left && left > 0;
+  const left = data.ending - Date.now();
+  const inThisWeek = config.weekDuration >= left && left > 0;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
