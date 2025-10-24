@@ -36,7 +36,7 @@ export default function AssetPriceChart({
   const latestPrice = latestPoint.price;
   const latestTimestamp = latestPoint.timestamp;
   const priceIsAbove = latestPrice > basePrice;
-  const diff = ending - starting;
+  const timeDiff = (ending - starting) * 1000;
   const MIN = 1000 * 60;
   const HOUR = MIN * 60;
   const DAY = HOUR * 24;
@@ -62,17 +62,17 @@ export default function AssetPriceChart({
   const formatFn = (ts: number) => {
     const date = new Date(ts);
     switch (true) {
-      case diff > MONTH:
+      case timeDiff > MONTH:
         return date.toLocaleString("default", {
           month: "short",
-          year: diff > YEAR ? "2-digit" : undefined,
+          year: timeDiff > YEAR ? "2-digit" : undefined,
         });
-      case MONTH >= diff && diff > DAY:
+      case MONTH >= timeDiff && timeDiff > DAY:
         return date.toLocaleString("default", {
           day: "numeric",
           month: "short",
         });
-      case DAY >= diff && diff > HOUR:
+      case DAY >= timeDiff && timeDiff > HOUR:
         return date.toLocaleString("default", { hour: "numeric" });
       default:
         return date.toLocaleString("default", {
@@ -85,13 +85,13 @@ export default function AssetPriceChart({
   if (!simple) {
     let divider;
     switch (true) {
-      case diff > MONTH:
+      case timeDiff > MONTH:
         divider = MONTH;
         break;
-      case MONTH >= diff && diff > DAY:
+      case MONTH >= timeDiff && timeDiff > DAY:
         divider = 5 * DAY;
         break;
-      case DAY >= diff && diff > HOUR:
+      case DAY >= timeDiff && timeDiff > HOUR:
         divider = HOUR;
         break;
       default:
@@ -99,8 +99,8 @@ export default function AssetPriceChart({
         break;
     }
     for (
-      let t = starting + divider;
-      t < Date.now() && t <= ending;
+      let t = starting * 1000 + divider;
+      t < Date.now() && t <= ending * 1000;
       t += divider
     ) {
       tickValues.push(t);
@@ -216,12 +216,12 @@ export default function AssetPriceChart({
           />
           {simple ? (
             <ReferenceLine
-              x={starting}
+              x={starting * 1000}
               strokeWidth={1}
               stroke="#0C0C0C"
               strokeDasharray="3 2"
               label={{
-                value: new Date(starting).toLocaleString("default", {
+                value: new Date(starting * 1000).toLocaleString("default", {
                   hour: "2-digit",
                   minute: "2-digit",
                 }),
@@ -260,9 +260,13 @@ export default function AssetPriceChart({
             scale={"time"}
             type={simple ? "number" : "category"}
             dataKey="timestamp"
-            domain={[starting, ending]}
+            domain={[starting * 1000, ending * 1000]}
             axisLine={{ stroke: "#0C0C0C", strokeWidth: simple ? 0 : 1 }}
-            ticks={simple ? [starting, ending] : [starting, ...tickValues]}
+            ticks={
+              simple
+                ? [starting * 1000, ending * 1000]
+                : [starting * 1000, ...tickValues]
+            }
             tickFormatter={formatFn}
           />
           <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PriceInd} />
