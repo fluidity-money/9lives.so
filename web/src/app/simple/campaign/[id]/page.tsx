@@ -34,13 +34,13 @@ export async function generateMetadata({ params }: { params: Params }) {
 export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
 
-  const data = await requestSimpleMarket(id);
-  if (!data || !data.priceMetadata) notFound();
-  const simpleMarket = formatSimpleCampaignDetail(data);
+  const res = await requestSimpleMarket(id);
+  if (!res || !res.priceMetadata) notFound();
+  const data = formatSimpleCampaignDetail(res);
   const initialAssetPrices = await getAndFormatAssetPrices({
-    symbol: simpleMarket.priceMetadata.baseAsset,
-    starting: simpleMarket.starting,
-    ending: simpleMarket.ending,
+    symbol: data.priceMetadata.baseAsset,
+    starting: data.starting,
+    ending: data.ending,
   });
   return (
     <div className="flex flex-col gap-4">
@@ -63,7 +63,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
           </div>
         </div>
       </div>
-      <SimpleBody data={simpleMarket} initialAssetPrices={initialAssetPrices} />
+      <SimpleBody data={data} initialAssetPrices={initialAssetPrices} />
     </div>
   );
 }
