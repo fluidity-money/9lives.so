@@ -1,6 +1,6 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
 import config from "@/config";
-import getAndFormatAssetPrices from "@/data/assetPrices";
+import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import {
   requestCampaignById,
   requestPriceChanges,

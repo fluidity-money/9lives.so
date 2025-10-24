@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import appConfig from "@/config";
 import { BuyAndSellResponse, CreationResponse, PricePoint } from "@/types";
-import getAndFormatAssetPrices from "@/data/assetPrices";
+import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import {
   formatActionFromBuysAndSells,
   formatActionFromCreation,

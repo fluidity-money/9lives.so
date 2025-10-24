@@ -6,7 +6,7 @@ import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import CountdownTimer from "@/components/countdownTimer";
-import getAndFormatAssetPrices from "@/data/assetPrices";
+import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
