@@ -1,12 +1,8 @@
 "use client";
 
 import AssetPriceChart from "../assetPriceChart";
-import {
-  requestAssetPrice,
-  requestSimpleMarket,
-} from "../../providers/graphqlClient";
 import { useQuery } from "@tanstack/react-query";
-import { PricePoint } from "@/types";
+import { PricePoint, SimpleCampaignDetail } from "@/types";
 import SimpleSubHeader from "./simpleSubHeader";
 import Button from "../themed/button";
 import Link from "next/link";
@@ -18,9 +14,7 @@ export default function SimpleBody({
   data,
   initialAssetPrices,
 }: {
-  data: NonNullable<Awaited<ReturnType<typeof requestSimpleMarket>>> & {
-    priceMetadata: { baseAsset: string; priceTargetForUp: string };
-  };
+  data: SimpleCampaignDetail;
   initialAssetPrices?: PricePoint[];
 }) {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);

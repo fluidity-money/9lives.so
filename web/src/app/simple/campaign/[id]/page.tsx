@@ -1,15 +1,13 @@
 import config from "@/config";
-import {
-  requestAssetPrice,
-  requestSimpleMarket,
-} from "@/providers/graphqlClient";
+import { requestSimpleMarket } from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import CountdownTimer from "@/components/countdownTimer";
-import { PricePoint } from "@/types";
+import getAndFormatAssetPrices from "@/data/assetPrices";
+import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
 export const revalidate = 60;
@@ -39,22 +37,12 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   const data = await requestSimpleMarket(id);
   if (!data || !data.priceMetadata) notFound();
 
-  let initialAssetPrices: PricePoint[] = [];
-  const res = await requestAssetPrice(
-    data.priceMetadata.baseAsset,
-    new Date(data.starting * 1000).toISOString(),
-    new Date(data.ending * 1000).toISOString(),
-  );
-  if (res && res.oracles_ninelives_prices_1) {
-    initialAssetPrices = res.oracles_ninelives_prices_1.map((i) => ({
-      price: i.amount,
-      id: i.id,
-      timestamp:
-        new Date(i.created_by).getTime() -
-        new Date().getTimezoneOffset() * 60 * 1000,
-    }));
-  }
-
+  const initialAssetPrices = await getAndFormatAssetPrices({
+    symbol: data.priceMetadata.baseAsset,
+    starting: data.starting,
+    ending: data.ending,
+  });
+  const simpleMarket = formatSimpleCampaignDetail(data);
   return (
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />
@@ -76,10 +64,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
           </div>
         </div>
       </div>
-      <SimpleBody
-        data={{ ...data, priceMetadata: data.priceMetadata! }}
-        initialAssetPrices={initialAssetPrices}
-      />
+      <SimpleBody data={simpleMarket} initialAssetPrices={initialAssetPrices} />
     </div>
   );
 }

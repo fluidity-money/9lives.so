@@ -9,6 +9,7 @@ import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/formatFusdc";
+import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 // import fs from "fs";
 // import path from "path";
 
@@ -47,6 +48,7 @@ export default async function detailImageGenerator(
   size: { width: number; height: number },
 ) {
   const response = await requestCampaignById(id);
+
   if (!response)
     return new ImageResponse(
       (
@@ -58,11 +60,12 @@ export default async function detailImageGenerator(
         />
       ),
     );
+  const data = formatCampaignDetail(response);
 
   const baseUrl = config.metadata.metadataBase;
   const outcomes = await getPrices(
-    response.poolAddress,
-    response.outcomes as Outcome[],
+    data.poolAddress,
+    data.outcomes as Outcome[],
   );
   const borderList = new Array(6).fill(1);
   const TitleBorders = () => (
@@ -279,7 +282,7 @@ export default async function detailImageGenerator(
             }}
           >
             <div style={{ display: "flex", gap: "1.75rem", minHeight: 200 }}>
-              {outcomePic || response?.picture ? (
+              {outcomePic || data?.picture ? (
                 <div
                   style={{
                     display: "flex",
@@ -291,7 +294,7 @@ export default async function detailImageGenerator(
                   }}
                 >
                   <img
-                    src={outcomePic || response?.picture || ""}
+                    src={outcomePic || data?.picture || ""}
                     width={200}
                     height={200}
                     alt=""
@@ -312,7 +315,7 @@ export default async function detailImageGenerator(
                     fontSize: "2.5rem",
                   }}
                 >
-                  {response?.name ?? "Predict on 9lives.so"}
+                  {data?.name ?? "Predict on 9lives.so"}
                 </p>
                 <div
                   style={{
@@ -337,7 +340,7 @@ export default async function detailImageGenerator(
                       fontSize: "1.75rem",
                     }}
                   >
-                    END: {new Date(response.ending * 1000).toDateString()}
+                    END: {new Date(data.ending).toDateString()}
                   </span>
                 </div>
               </div>

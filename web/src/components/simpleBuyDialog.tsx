@@ -16,17 +16,17 @@ import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useProfile from "@/hooks/useProfile";
 import Modal from "./themed/modal";
 import Funding from "./fundingBalanceDialog";
-import { requestSimpleMarket } from "@/providers/graphqlClient";
 import useBuy from "@/hooks/useBuy";
 import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
 import useBuyWithRelay from "@/hooks/useBuyWithRelay";
+import { SimpleCampaignDetail } from "@/types";
 
 export default function SimpleBuyDialog({
   data,
   outcomeIdx,
   setOutcomeIdx,
 }: {
-  data: Awaited<ReturnType<typeof requestSimpleMarket>>;
+  data: SimpleCampaignDetail;
   outcomeIdx: number;
   setOutcomeIdx: React.Dispatch<number>;
 }) {

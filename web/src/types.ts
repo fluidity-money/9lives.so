@@ -7,12 +7,20 @@ import {
   requestPaymaster,
   requestComments,
   requestPriceChanges,
+  requestSimpleMarket,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
 import formatFusdc from "./utils/formatFusdc";
 import { Account } from "thirdweb/wallets";
-
+export type RawCampaign = Awaited<
+  ReturnType<typeof requestCampaignList>
+>[number];
+export type RawCampaignDetail = Awaited<ReturnType<typeof requestCampaignById>>;
+export type RawOutcome = NonNullable<RawCampaignDetail>["outcomes"][number];
+export type RawSimpleCampaignDetail = Awaited<
+  ReturnType<typeof requestSimpleMarket>
+>;
 export interface CampaignFilters {
   category?: typeof config.categories;
   orderBy?: "newest" | "volume" | "ending" | "ended" | "liquidity" | "trending";
@@ -22,7 +30,7 @@ export interface CampaignFilters {
   address?: string;
 }
 export type Campaign = Omit<
-  Awaited<ReturnType<typeof requestCampaignList>>[number],
+  RawCampaign,
   "outcomes" | "identifier" | "poolAddress"
 > & {
   identifier: `0x${string}`;
@@ -30,8 +38,16 @@ export type Campaign = Omit<
   isYesNo: boolean;
   outcomes: Outcome[];
 };
+export type SimpleCampaignDetail = NonNullable<RawSimpleCampaignDetail> & {
+  outcomes: Outcome[];
+  identifier: `0x${string}`;
+  poolAddress: `0x${string}`;
+  priceMetadata: NonNullable<
+    NonNullable<RawSimpleCampaignDetail>["priceMetadata"]
+  >;
+};
 export type CampaignDetail = Omit<
-  NonNullable<Awaited<ReturnType<typeof requestCampaignById>>>,
+  NonNullable<RawCampaignDetail>,
   "outcomes" | "identifier" | "poolAddress"
 > & {
   identifier: `0x${string}`;
@@ -190,86 +206,7 @@ export class ActionFromBuysAndSells implements Action {
       )?.name));
   }
 }
-export class CampaignDto implements Campaign {
-  identifier: `0x${string}`;
-  poolAddress: `0x${string}`;
-  isYesNo: boolean;
-  outcomes: Outcome[];
-  name: string;
-  description: string;
-  winner: string | null;
-  picture: string | null;
-  oracleDescription: string | null;
-  oracleUrls: (string | null)[] | null;
-  settlement: SettlementType;
-  ending: number;
-  starting: number;
-  shares: ({
-    shares: string;
-    identifier: string;
-  } | null)[];
-  totalVolume: number;
-  creator: { address: string };
-  constructor(
-    rawCampaign: Awaited<ReturnType<typeof requestCampaignList>>[number],
-  ) {
-    this.identifier = rawCampaign.identifier as `0x${string}`;
-    this.poolAddress = rawCampaign.poolAddress as `0x${string}`;
-    this.isYesNo =
-      rawCampaign.outcomes?.length === 2 &&
-      rawCampaign.outcomes.findIndex((outcome) => outcome.name === "Yes") !==
-        -1 &&
-      rawCampaign.outcomes.findIndex((outcome) => outcome.name === "No") !== -1;
-    this.outcomes = rawCampaign.outcomes?.map((o) => new OutcomeDto(o));
-    this.name = rawCampaign.name;
-    this.description = rawCampaign.description;
-    this.winner = rawCampaign.winner;
-    this.picture = rawCampaign.picture;
-    this.oracleDescription = rawCampaign.oracleDescription;
-    this.oracleUrls = rawCampaign.oracleUrls;
-    this.settlement = rawCampaign.settlement;
-    this.ending = rawCampaign.ending;
-    this.starting = rawCampaign.starting;
-    this.totalVolume = rawCampaign.totalVolume;
-    this.creator = rawCampaign.creator;
-    this.shares = rawCampaign.shares;
-  }
-}
-export class CampaignDetailDto extends CampaignDto implements CampaignDetail {
-  isDppm: boolean;
-  investmentAmounts: { id: string; usdc: number; share: number }[];
-  liquidityVested: number;
-  isDpm: boolean | null;
-  priceMetadata: {
-    baseAsset: string;
-    priceTargetForUp: string;
-  } | null;
-  constructor(rc: Awaited<ReturnType<typeof requestCampaignById>>) {
-    if (!rc) throw new Error("Campaign dto can not be null");
-    super(rc);
-    this.liquidityVested = rc.liquidityVested;
-    this.investmentAmounts = rc.investmentAmounts.filter((a) => !!a);
-    this.isDpm = rc.isDpm;
-    this.isDppm = rc.isDppm;
-    this.priceMetadata = rc.priceMetadata;
-  }
-}
-class OutcomeDto implements Outcome {
-  identifier: `0x${string}`;
-  name: string;
-  picture: string | null;
-  share: { address: `0x${string}` };
-  constructor(
-    ro: Awaited<
-      ReturnType<typeof requestCampaignList>
-    >[number]["outcomes"][number],
-  ) {
-    this.identifier = ro.identifier as `0x${string}`;
-    this.name = ro.name;
-    this.picture = ro.picture;
-    this.share = { address: ro.share.address as `0x${string}` };
-  }
-}
+
 export type PositionsProps = {
   campaignName: string;
   campaignId: `0x${string}`;
@@ -332,7 +269,7 @@ export type Ticket = {
   amount: string;
   account: Account;
   outcomeId?: string;
-  data?: CampaignDetail;
+  data?: CampaignDetail | SimpleCampaignDetail;
   opType: PaymasterOp;
 };
 

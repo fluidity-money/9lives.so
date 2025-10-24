@@ -1,12 +1,13 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
 import config from "@/config";
+import getAndFormatAssetPrices from "@/data/assetPrices";
 import {
-  requestAssetPrice,
   requestCampaignById,
   requestPriceChanges,
 } from "@/providers/graphqlClient";
 import { getCampaignsForSSG } from "@/serverData/getCampaigns";
-import { CampaignDetailDto, PricePoint } from "@/types";
+import { PricePoint } from "@/types";
+import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 type Params = Promise<{ id: string }>;
@@ -37,24 +38,15 @@ export default async function DetailPage({ params }: { params: Params }) {
   const { id } = await params;
   const response = await requestCampaignById(id);
   if (!response) notFound();
-  const campaign = JSON.parse(JSON.stringify(new CampaignDetailDto(response)));
+  const campaign = formatCampaignDetail(response);
   const priceEvents = await requestPriceChanges(response.poolAddress);
   let initialAssetPrices: PricePoint[] = [];
-  if (response.isDppm) {
-    const res = await requestAssetPrice(
-      response.priceMetadata!.baseAsset,
-      new Date(campaign.starting * 1000).toISOString(),
-      new Date(campaign.ending * 1000).toISOString(),
-    );
-    if (res && res.oracles_ninelives_prices_1) {
-      initialAssetPrices = res?.oracles_ninelives_prices_1.map((i) => ({
-        price: i.amount,
-        id: i.id,
-        timestamp:
-          new Date(i.created_by).getTime() -
-          new Date().getTimezoneOffset() * 60 * 1000,
-      }));
-    }
+  if (response.isDppm && response.priceMetadata) {
+    initialAssetPrices = await getAndFormatAssetPrices({
+      symbol: response.priceMetadata.baseAsset,
+      starting: response.starting,
+      ending: response.ending,
+    });
   }
 
   return (

@@ -1,15 +1,10 @@
 "use client";
-import {
-  CampaignDetail,
-  CampaignDetailDto,
-  PriceEvent,
-  PricePoint,
-} from "@/types";
+import { CampaignDetail, PriceEvent, PricePoint } from "@/types";
 import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
 import { SelectedOutcome } from "../../types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useSharePrices from "@/hooks/useSharePrices";
 import DetailInfo from "./detailInfo";
 import { useSearchParams } from "next/navigation";
@@ -22,6 +17,7 @@ import { combineClass } from "@/utils/combineClass";
 import DetailComments from "./detailComments";
 import PriceChart from "../priceChart";
 import AssetPriceChart from "../assetPriceChart";
+import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 
 export default function DetailWrapper({
   initialData,
@@ -55,7 +51,7 @@ export default function DetailWrapper({
     queryKey: ["campaign", initialData.identifier],
     queryFn: async () => {
       const res = (await requestCampaignById(initialData.identifier))!;
-      const campaign = new CampaignDetailDto(res);
+      const campaign = formatCampaignDetail(res);
       return campaign;
     },
     initialData,

@@ -1,7 +1,8 @@
 // import { requestCampaignList } from "@/providers/graphqlClient";
 import { unstable_cache } from "next/cache";
-import { Campaign, CampaignDto } from "@/types";
+import { Campaign, RawCampaign } from "@/types";
 import appConfig from "@/config";
+import { formatCampaign } from "@/utils/format/formatCampaign";
 const query = `
     query Campaigns {
       campaigns(pageSize: 32,orderBy:"trending") {
@@ -63,9 +64,10 @@ export async function getCampaigns() {
     body: JSON.stringify({ query }),
   });
   const result = await res.json();
-  const campaigns = result.data.campaigns.map((c: any) =>
-    JSON.parse(JSON.stringify(new CampaignDto(c))),
+  const campaigns = result.data.campaigns.map((c: RawCampaign) =>
+    formatCampaign(c),
   );
+
   return campaigns as Campaign[];
 }
 export const getCachedCampaigns = unstable_cache(

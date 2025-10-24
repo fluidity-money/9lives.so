@@ -99,8 +99,8 @@ export default function AssetPriceChart({
         break;
     }
     for (
-      let t = starting * 1000 + divider;
-      t < Date.now() && t <= ending * 1000;
+      let t = starting + divider;
+      t < Date.now() && t <= ending;
       t += divider
     ) {
       tickValues.push(t);
@@ -169,7 +169,7 @@ export default function AssetPriceChart({
       <ResponsiveContainer width="100%" height={300}>
         <LineChart
           data={[
-            { id: 1, timestamp: starting * 1000, price: basePrice },
+            { id: 1, timestamp: starting, price: basePrice },
             ...assetPrices,
           ]}
           margin={{
@@ -216,12 +216,12 @@ export default function AssetPriceChart({
           />
           {simple ? (
             <ReferenceLine
-              x={starting * 1000}
+              x={starting}
               strokeWidth={1}
               stroke="#0C0C0C"
               strokeDasharray="3 2"
               label={{
-                value: new Date(starting * 1000).toLocaleString("default", {
+                value: new Date(starting).toLocaleString("default", {
                   hour: "2-digit",
                   minute: "2-digit",
                 }),
@@ -260,13 +260,9 @@ export default function AssetPriceChart({
             scale={"time"}
             type={simple ? "number" : "category"}
             dataKey="timestamp"
-            domain={[starting * 1000, ending * 1000]}
+            domain={[starting, ending]}
             axisLine={{ stroke: "#0C0C0C", strokeWidth: simple ? 0 : 1 }}
-            ticks={
-              simple
-                ? [starting * 1000, ending * 1000]
-                : [starting * 1000, ...tickValues]
-            }
+            ticks={simple ? [starting, ending] : [starting, ...tickValues]}
             tickFormatter={formatFn}
           />
           <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PriceInd} />

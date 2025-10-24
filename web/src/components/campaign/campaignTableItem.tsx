@@ -63,7 +63,7 @@ export default function CampaignTableItem({
           <span
             className={combineClass("p-0.5 font-chicago text-xs uppercase")}
           >
-            {new Date(data.ending * 1000).toLocaleString("default", {
+            {new Date(data.ending).toLocaleString("default", {
               year: "2-digit",
               month: "short",
               day: "numeric",

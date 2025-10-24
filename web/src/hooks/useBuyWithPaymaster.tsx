@@ -3,7 +3,7 @@ import { prepareContractCall, simulateTransaction } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { CampaignDetail, MintedPosition, Outcome } from "@/types";
+import { CampaignDetail, MintedPosition, SimpleCampaignDetail } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
 import { useActiveAccount } from "thirdweb/react";
@@ -18,7 +18,7 @@ const useBuyWithPaymaster = ({
 }: {
   shareAddr: `0x${string}`;
   outcomeId: `0x${string}`;
-  data: CampaignDetail;
+  data: CampaignDetail | SimpleCampaignDetail;
   openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();

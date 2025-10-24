@@ -66,14 +66,11 @@ export default function UserLpedCampaignsListItem({
       </td>
       <td className="pl-2">
         <span className="font-chicago text-xs">
-          {new Date(data?.ending ? data.ending * 1000 : 0).toLocaleString(
-            "default",
-            {
-              day: "numeric",
-              month: "short",
-              year: "2-digit",
-            },
-          )}
+          {new Date(data?.ending ? data.ending : 0).toLocaleString("default", {
+            day: "numeric",
+            month: "short",
+            year: "2-digit",
+          })}
         </span>
       </td>
       <td>

@@ -24,7 +24,7 @@ export default function DetailCurrentPriceBox({
 
   if (!isSuccess && !data) return null;
 
-  const latestPrice = data[data.length - 1].price;
+  const latestPrice = data[data.length - 1]?.price;
 
   return (
     <HeaderBox

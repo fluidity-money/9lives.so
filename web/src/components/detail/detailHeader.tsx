@@ -203,7 +203,7 @@ export default function DetailHeader({
               )}
             >
               {isEnded ? "Ended" : "End Date"}:{" "}
-              {new Date(data.ending * 1000).toLocaleString("default", {
+              {new Date(data.ending).toLocaleString("default", {
                 year: data.isDppm ? undefined : "numeric",
                 month: "short",
                 day: "2-digit",

@@ -1,6 +1,7 @@
 import config from "@/config";
 import { requestCampaignList } from "@/providers/graphqlClient";
-import { Campaign, CampaignDto, CampaignFilters } from "@/types";
+import { Campaign, CampaignFilters } from "@/types";
+import { formatCampaign } from "@/utils/format/formatCampaign";
 import { useInfiniteQuery } from "@tanstack/react-query";
 export default function useCampaigns({
   category,
@@ -22,7 +23,7 @@ export default function useCampaigns({
         category: category && [category],
         address,
       })) as Campaign[];
-      return campaigns.map((campaign) => new CampaignDto(campaign));
+      return campaigns.map((campaign) => formatCampaign(campaign));
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, pages, lastPageParam) => {

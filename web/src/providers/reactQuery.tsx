@@ -8,7 +8,7 @@ import {
   CreationResponse,
   PricePoint,
 } from "@/types";
-import { requestAssetPrice } from "./graphqlClient";
+import getAndFormatAssetPrices from "@/data/assetPrices";
 
 export default function ReactQueryProvider({
   children,
@@ -56,21 +56,7 @@ export default function ReactQueryProvider({
           number,
           number,
         ];
-        const res = await requestAssetPrice(
-          symbol,
-          new Date(starting * 1000).toISOString(),
-          new Date(ending * 1000).toISOString(),
-        );
-        if (res?.oracles_ninelives_prices_1) {
-          return res.oracles_ninelives_prices_1.map((i) => ({
-            price: i.amount,
-            id: i.id,
-            timestamp:
-              new Date(i.created_by).getTime() -
-              new Date().getTimezoneOffset() * 60 * 1000,
-          }));
-        }
-        return [];
+        return await getAndFormatAssetPrices({ symbol, starting, ending });
       },
     });
 
