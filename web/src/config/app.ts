@@ -65,7 +65,7 @@ export const categories = [
   "Sports",
   "Politics",
 ];
-export const simpleMarkets = ["btc", "eth", "xrp", "sol"];
+export const simpleMarkets = ["btc"];
 const appSchema = z.object({
   /**
    * Generated metadata of the web app and wagmi will use this object
@@ -81,7 +81,7 @@ const appSchema = z.object({
     colors: z.record(z.string(), z.string()),
     fees: z.record(z.string(), z.bigint()),
   }),
-  simpleMarkets: z.array(z.enum(["btc", "eth", "xrp", "sol"])),
+  simpleMarkets: z.array(z.enum(["btc"])),
   categories: z.array(
     z.enum(["All", "Crypto", "Opinion Poll", "Sports", "Politics"]),
   ),
