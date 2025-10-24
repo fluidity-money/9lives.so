@@ -28,24 +28,7 @@ export default function SimpleBody({
   const basePrice = Number(data.priceMetadata.priceTargetForUp);
   const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
     {
-      queryKey: ["assetPrice", symbol, data.starting, data.ending],
-      queryFn: async () => {
-        const res = await requestAssetPrice(
-          symbol,
-          new Date(data.starting).toISOString(),
-          new Date(data.ending).toISOString(),
-        );
-        if (res?.oracles_ninelives_prices_1) {
-          return res?.oracles_ninelives_prices_1.map((i) => ({
-            price: i.amount,
-            id: i.id,
-            timestamp:
-              new Date(i.created_by).getTime() -
-              new Date().getTimezoneOffset() * 60 * 1000,
-          }));
-        }
-        return [];
-      },
+      queryKey: ["assetPrices", symbol, data.starting, data.ending],
       initialData: initialAssetPrices,
     },
   );

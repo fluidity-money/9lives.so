@@ -5,9 +5,9 @@ import {
   ActionFromBuysAndSells,
   ActionFromCreation,
   BuyAndSellResponse,
-  Campaign,
   CreationResponse,
 } from "@/types";
+import { requestAssetPrice } from "./graphqlClient";
 
 export default function ReactQueryProvider({
   children,
@@ -46,6 +46,34 @@ export default function ReactQueryProvider({
         ),
       });
     }
+
+    client.setQueryDefaults(["assetPrices"], {
+      queryFn: async ({ queryKey }) => {
+        const [, symbol, starting, ending] = queryKey as [
+          string,
+          string,
+          number,
+          number,
+        ];
+        if (symbol) {
+          const res = await requestAssetPrice(
+            symbol,
+            new Date(starting * 1000).toISOString(),
+            new Date(ending * 1000).toISOString(),
+          );
+          if (res?.oracles_ninelives_prices_1) {
+            return res.oracles_ninelives_prices_1.map((i) => ({
+              price: i.amount,
+              id: i.id,
+              timestamp:
+                new Date(i.created_by).getTime() -
+                new Date().getTimezoneOffset() * 60 * 1000,
+            }));
+          }
+        }
+        return [];
+      },
+    });
 
     return client;
   });

@@ -1,7 +1,7 @@
 "use client";
 import { HeaderBox } from "./detailHeaderBox";
 import { useQuery } from "@tanstack/react-query";
-import { requestAssetPrice } from "@/providers/graphqlClient";
+import { PricePoint } from "@/types";
 
 export default function DetailCurrentPriceBox({
   symbol,
@@ -15,28 +15,18 @@ export default function DetailCurrentPriceBox({
   isEnded: boolean;
 }) {
   const _symbol = symbol.toLowerCase();
-  const { data, isSuccess } = useQuery({
-    queryKey: ["assetPrice", _symbol, starting, ending],
-    queryFn: async () => {
-      const res = await requestAssetPrice(
-        _symbol,
-        new Date(starting).toISOString(),
-        new Date(ending).toISOString(),
-      );
-      if (res?.oracles_ninelives_prices_1) {
-        return res.oracles_ninelives_prices_1[
-          res.oracles_ninelives_prices_1.length - 1
-        ].amount;
-      }
-    },
+  const { data, isSuccess } = useQuery<PricePoint[]>({
+    queryKey: ["assetPrices", _symbol, starting, ending],
   });
 
-  if (!isSuccess) return null;
+  if (!isSuccess && !data) return null;
+
+  const latestPrice = data[data.length - 1].price;
 
   return (
     <HeaderBox
       title={isEnded ? "Final Price" : "Current Price"}
-      value={`$${data}`}
+      value={`$${latestPrice}`}
     />
   );
 }
