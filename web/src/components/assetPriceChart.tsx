@@ -169,7 +169,7 @@ export default function AssetPriceChart({
       <ResponsiveContainer width="100%" height={300}>
         <LineChart
           data={[
-            { id: 1, timestamp: starting, price: basePrice },
+            { id: 1, timestamp: starting * 1000, price: basePrice },
             ...assetPrices,
           ]}
           margin={{
