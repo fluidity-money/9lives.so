@@ -8,15 +8,18 @@ export default function DetailCurrentPriceBox({
   starting,
   ending,
   isEnded,
+  initialData,
 }: {
   symbol: string;
   ending: number;
   starting: number;
   isEnded: boolean;
+  initialData?: PricePoint[];
 }) {
   const _symbol = symbol.toLowerCase();
   const { data, isSuccess } = useQuery<PricePoint[]>({
     queryKey: ["assetPrices", _symbol, starting, ending],
+    initialData,
   });
 
   if (!isSuccess && !data) return null;

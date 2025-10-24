@@ -1,6 +1,6 @@
 import Image from "next/image";
 import WatchlistButton from "../watchlistButton";
-import { CampaignDetail } from "@/types";
+import { CampaignDetail, PricePoint } from "@/types";
 import ActiveIndicator from "#/images/active-indicator.svg";
 import InactiveIndicator from "#/images/inactive-indicator.svg";
 import { combineClass } from "@/utils/combineClass";
@@ -26,10 +26,12 @@ export default function DetailHeader({
   data,
   isEnded,
   isConcluded,
+  initialAssetPrices,
 }: {
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
+  initialAssetPrices?: PricePoint[];
 }) {
   const account = useActiveAccount();
   const left = data.ending - Math.floor(Date.now() / 1000);
@@ -229,9 +231,10 @@ export default function DetailHeader({
               value={`$${data.priceMetadata?.priceTargetForUp}`}
             />
             <DetailCurrentPriceBox
+              initialData={initialAssetPrices}
               isEnded={isEnded}
-              starting={data.starting * 1000}
-              ending={data.ending * 1000}
+              starting={data.starting}
+              ending={data.ending}
               symbol={data.priceMetadata!.baseAsset}
             />
           </>

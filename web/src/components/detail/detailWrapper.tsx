@@ -77,12 +77,17 @@ export default function DetailWrapper({
       )}
     >
       <div className="flex flex-[2] flex-col gap-8">
-        <DetailHeader data={data} isEnded={isEnded} isConcluded={isConcluded} />
+        <DetailHeader
+          data={data}
+          isEnded={isEnded}
+          isConcluded={isConcluded}
+          initialAssetPrices={initialAssetPrices}
+        />
         {data.isDppm && data.priceMetadata ? (
           <AssetPriceChart
             id={data.identifier}
-            starting={data.starting * 1000}
-            ending={data.ending * 1000}
+            starting={data.starting}
+            ending={data.ending}
             basePrice={Number(data.priceMetadata.priceTargetForUp)}
             symbol={data.priceMetadata.baseAsset}
             assetsLoaded={assetsLoaded}
