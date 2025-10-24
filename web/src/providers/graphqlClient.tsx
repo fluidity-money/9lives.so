@@ -2,12 +2,7 @@ import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
-import {
-  CampaignDetail,
-  CampaignFilters,
-  OutcomeInput,
-  PricePointResponse,
-} from "@/types";
+import { CampaignFilters, OutcomeInput, RawPricePoint } from "@/types";
 import { MaxUint256 } from "ethers";
 
 const graph9Lives = Lives9.create().transport({
@@ -615,7 +610,7 @@ export const requestSimpleMarket = (symbol: string) =>
     name: true,
   });
 
-export const requestAssetPrice = (
+export const requestAssetPrices = (
   symbol: string,
   starting: string,
   ending: string,
@@ -633,5 +628,5 @@ query {
 `,
     )
     .send() as Promise<{
-    oracles_ninelives_prices_1: PricePointResponse[];
+    oracles_ninelives_prices_1: RawPricePoint[];
   }> | null;

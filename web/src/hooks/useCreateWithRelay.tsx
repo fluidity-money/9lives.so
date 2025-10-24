@@ -26,7 +26,7 @@ import {
 } from "thirdweb/react";
 import { viemAdapter } from "thirdweb/adapters/viem";
 import RelayTxToaster from "@/components/relayTxToaster";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type Create =
   // | "createWithInfraMarket"

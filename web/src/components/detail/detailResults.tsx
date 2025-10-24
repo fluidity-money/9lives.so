@@ -11,7 +11,7 @@ import useClaim from "@/hooks/useClaim";
 import { useEffect, useState } from "react";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
 

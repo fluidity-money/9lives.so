@@ -3,7 +3,7 @@ import Button from "./themed/button";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { useState } from "react";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 
 export default function ClaimLiquidityDialog({
   unclaimedRewards,

@@ -1,5 +1,5 @@
-import { requestAssetPrice } from "@/providers/graphqlClient";
-import { PricePoint } from "@/types";
+import { requestAssetPrices } from "@/providers/graphqlClient";
+import { formatAssetPrices } from "@/utils/format/formatAssetPrice";
 
 export default async function getAndFormatAssetPrices({
   symbol,
@@ -10,20 +10,12 @@ export default async function getAndFormatAssetPrices({
   starting: number;
   ending: number;
 }) {
-  let data: PricePoint[] = [];
-  const res = await requestAssetPrice(
+  const res = await requestAssetPrices(
     symbol,
     new Date(starting).toISOString(),
     new Date(ending).toISOString(),
   );
-  if (res && res.oracles_ninelives_prices_1) {
-    data = res?.oracles_ninelives_prices_1.map((i) => ({
-      price: i.amount,
-      id: i.id,
-      timestamp:
-        new Date(i.created_by).getTime() -
-        new Date().getTimezoneOffset() * 60 * 1000,
-    }));
-  }
+
+  const data = formatAssetPrices(res);
   return data;
 }

@@ -12,7 +12,7 @@ import { fieldClass } from "./createCampaign/createCampaignForm";
 import Input from "./themed/input";
 import { combineClass } from "@/utils/combineClass";
 import ErrorInfo from "./themed/errorInfo";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import useLiquidityWithPaymaster from "@/hooks/useLiquidityWithPaymaster";
 import { CampaignDetail } from "@/types";
 import useFeatureFlag from "@/hooks/useFeatureFlag";

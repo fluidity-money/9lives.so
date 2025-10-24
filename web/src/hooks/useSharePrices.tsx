@@ -6,7 +6,7 @@ import {
   simulateTransaction,
 } from "thirdweb";
 import { useQuery } from "@tanstack/react-query";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 export default function useSharePrices({
   tradingAddr,
   outcomeIds,

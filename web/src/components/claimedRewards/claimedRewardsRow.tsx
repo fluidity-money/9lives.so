@@ -2,7 +2,7 @@ import Link from "next/link";
 import config from "@/config";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import { ClaimedRewards } from "@/types";
 import { calcTimePassed } from "@/utils/calcTimeDiff";
 

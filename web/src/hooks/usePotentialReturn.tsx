@@ -1,5 +1,5 @@
 import { CampaignDetail } from "@/types";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 
 interface usePotentialReturnProps {
   investmentAmounts: CampaignDetail["investmentAmounts"];

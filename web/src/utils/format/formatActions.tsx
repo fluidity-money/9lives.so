@@ -1,5 +1,5 @@
 import { Action, BuyAndSellResponse, CreationResponse } from "@/types";
-import formatFusdc from "../formatFusdc";
+import formatFusdc from "./formatUsdc";
 
 export function formatActionFromCreation(
   response: CreationResponse["ninelives_campaigns_1"][number],

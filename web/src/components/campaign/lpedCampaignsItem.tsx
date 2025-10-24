@@ -1,5 +1,5 @@
 import useLiquidity from "@/hooks/useLiquidity";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";

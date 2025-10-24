@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 // import fs from "fs";
 // import path from "path";

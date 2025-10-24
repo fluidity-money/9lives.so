@@ -4,7 +4,7 @@ import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import { useEffect, useState } from "react";
 import { usePortfolioStore } from "@/stores/portfolioStore";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import Button from "../themed/button";
 import DownCaret from "#/icons/down-caret.svg";
 import useClaim from "@/hooks/useClaim";

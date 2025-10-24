@@ -6,7 +6,7 @@ import useDeleteComment from "@/hooks/useDeleteComment";
 import { signMessage } from "thirdweb/utils";
 import { Signature } from "ethers";
 import DetailCreatedBy from "../detail/detailCreatedBy";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import Image from "next/image";
 import makeBlockie from "ethereum-blockies-base64";
 

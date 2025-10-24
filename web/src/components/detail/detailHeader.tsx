@@ -7,7 +7,7 @@ import { combineClass } from "@/utils/combineClass";
 import SadFaceIcon from "#/icons/sad-face.svg";
 import UsdIcon from "#/icons/usd.svg";
 import DetailCreatedBy from "./detailCreatedBy";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import CountdownTimer from "../countdownTimer";
 import { useEffect, useState } from "react";
 import Modal from "../themed/modal";

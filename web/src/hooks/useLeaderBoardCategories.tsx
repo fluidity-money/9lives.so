@@ -1,6 +1,6 @@
 import { requestLeaderboardCategories } from "@/providers/graphqlClient";
 import { Leader } from "@/types";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useLeaderBoardCategories() {

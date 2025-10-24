@@ -4,7 +4,7 @@ import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import { Activity } from "@/types";
 import { calcTimePassed } from "@/utils/calcTimeDiff";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 
 export default function ActivityRow({
   data,

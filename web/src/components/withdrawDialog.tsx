@@ -9,7 +9,7 @@ import { combineClass } from "@/utils/combineClass";
 import { FormEvent, useRef, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import chains from "@/config/chains";
 import ChainSelector from "./chainSelector";
 import { useUserStore } from "@/stores/userStore";

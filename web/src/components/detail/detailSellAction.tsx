@@ -27,7 +27,7 @@ import ERC20Abi from "@/config/abi/erc20";
 import thirdweb from "@/config/thirdweb";
 import usePositions from "@/hooks/usePositions";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useSellWithPaymaster from "@/hooks/useSellWithPaymaster";
 import usePositionHistory from "@/hooks/usePositionsHistory";

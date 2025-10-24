@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
-import { PricePoint, PricePointResponse } from "@/types";
+import { PricePoint, RawAssetPrices } from "@/types";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -33,9 +33,7 @@ export default function ChartPriceProvider({
   const queryClient = useQueryClient();
   const _symbol = symbol.toLowerCase();
   useEffect(() => {
-    const unsubPrices = wsClient.subscribe<{
-      oracles_ninelives_prices_1: PricePointResponse[];
-    }>(
+    const unsubPrices = wsClient.subscribe<RawAssetPrices>(
       {
         query: subPricesForDuration,
         variables: {

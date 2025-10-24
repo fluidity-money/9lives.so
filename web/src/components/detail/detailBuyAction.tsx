@@ -24,7 +24,7 @@ import Funding from "../fundingBalanceDialog";
 import DownIcon from "#/icons/down-caret.svg";
 import useReturnValue from "@/hooks/useReturnValue";
 import useDpmChances from "@/hooks/useDpmChances";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useBuyWithZaps from "@/hooks/useBuyWithZaps";
 import USDCImg from "#/images/usdc.svg";

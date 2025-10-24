@@ -5,7 +5,7 @@ import Button from "../themed/button";
 import useMeowDomains from "@/hooks/useMeowDomains";
 import AchYellow from "#/icons/ach-y.svg";
 import Image from "next/image";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import Link from "next/link";
 import { EVENTS, track } from "@/utils/analytics";

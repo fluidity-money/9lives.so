@@ -4,7 +4,7 @@ import { CampaignDetail } from "@/types";
 import { SelectedOutcome } from "../../types";
 import React from "react";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import useDpmChances from "@/hooks/useDpmChances";
 
 export default function DetailOutcomes({

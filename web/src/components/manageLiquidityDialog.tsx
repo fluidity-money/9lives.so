@@ -5,7 +5,7 @@ import Button from "./themed/button";
 import { Fragment } from "react";
 import RemoveLiquidityDialog from "./removeLiquidityDialog";
 import ClaimLiquidityDialog from "./claimLiquidityDialog";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 
 const VarButton = ({ title, value }: { title: string; value: string }) => (
   <div className="flex flex-1 items-center justify-between rounded-[3px] border-[1.5px] border-9black bg-9gray px-4 py-3 shadow-9liquidityVar">

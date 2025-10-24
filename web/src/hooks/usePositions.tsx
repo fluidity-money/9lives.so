@@ -1,6 +1,6 @@
 import config from "@/config";
 import { Outcome } from "@/types";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
 import { prepareContractCall, simulateTransaction } from "thirdweb";
 import { Account } from "thirdweb/wallets";

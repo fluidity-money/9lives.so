@@ -7,7 +7,7 @@ import { CampaignDetail, MintedPosition, SimpleCampaignDetail } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
 import { useActiveAccount } from "thirdweb/react";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 
 const useBuyWithPaymaster = ({

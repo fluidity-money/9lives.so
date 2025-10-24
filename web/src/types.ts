@@ -8,10 +8,11 @@ import {
   requestComments,
   requestPriceChanges,
   requestSimpleMarket,
+  requestAssetPrices,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
-import formatFusdc from "./utils/formatFusdc";
+import formatFusdc from "./utils/format/formatUsdc";
 import { Account } from "thirdweb/wallets";
 export type RawCampaign = Awaited<
   ReturnType<typeof requestCampaignList>
@@ -232,9 +233,10 @@ export type PriceEvent = Awaited<
   ReturnType<typeof requestPriceChanges>
 >[number];
 
-export type PricePointResponse = {
+export type RawPricePoint = {
   id: number;
   amount: number;
   created_by: string;
 };
 export type PricePoint = { id: number; price: number; timestamp: number };
+export type RawAssetPrices = Awaited<ReturnType<typeof requestAssetPrices>>;

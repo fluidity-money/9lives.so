@@ -1,4 +1,4 @@
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import WatchlistButton from "../watchlistButton";
 import { Campaign } from "@/types";
 import CountdownTimer from "../countdownTimer";

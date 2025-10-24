@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import { Campaign } from "@/types";
-import formatFusdc from "@/utils/formatFusdc";
+import formatFusdc from "@/utils/format/formatUsdc";
 import CountdownTimer from "../countdownTimer";
 import ClaimFeesButton from "../claimFeesButton";
 import { useEffect, useState } from "react";
