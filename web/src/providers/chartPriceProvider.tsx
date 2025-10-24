@@ -41,7 +41,7 @@ export default function ChartPriceProvider({
         variables: {
           symbol: symbol.toUpperCase(),
           starting: new Date().toISOString(),
-          ending: new Date(ending).toISOString(),
+          ending: new Date(ending * 1000).toISOString(),
         },
       },
       {
