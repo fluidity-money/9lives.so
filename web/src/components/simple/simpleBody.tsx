@@ -26,6 +26,7 @@ export default function SimpleBody({
       initialData: initialAssetPrices,
     },
   );
+  const isEnded = Date.now() > data.ending;
   const [outcomeIdx, setOutcomeIdx] = useState(0);
 
   return (
@@ -70,26 +71,34 @@ export default function SimpleBody({
         </div>
       ) : null}
       <div className="sticky inset-x-0 bottom-0 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
-        <Button
-          title="Up"
-          intent={"yes"}
-          size={"xlarge"}
-          className={"flex-auto"}
-          onClick={() => {
-            setOutcomeIdx(0);
-            setIsBuyDialogOpen(true);
-          }}
-        />
-        <Button
-          title="Down"
-          intent={"no"}
-          size={"xlarge"}
-          className={"flex-auto"}
-          onClick={() => {
-            setOutcomeIdx(1);
-            setIsBuyDialogOpen(true);
-          }}
-        />
+        {isEnded ? (
+          <p className="mx-auto bg-gray-500/50 font-chicago text-xs">
+            This campaign is ended, go to live campaign
+          </p>
+        ) : (
+          <>
+            <Button
+              title="Up"
+              intent={"yes"}
+              size={"xlarge"}
+              className={"flex-auto"}
+              onClick={() => {
+                setOutcomeIdx(0);
+                setIsBuyDialogOpen(true);
+              }}
+            />
+            <Button
+              title="Down"
+              intent={"no"}
+              size={"xlarge"}
+              className={"flex-auto"}
+              onClick={() => {
+                setOutcomeIdx(1);
+                setIsBuyDialogOpen(true);
+              }}
+            />
+          </>
+        )}
       </div>
       <Modal
         isOpen={isBuyDialogOpen}
