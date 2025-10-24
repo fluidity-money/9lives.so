@@ -9,17 +9,14 @@ import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
 import { SelectedOutcome } from "../../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSharePrices from "@/hooks/useSharePrices";
 import DetailInfo from "./detailInfo";
 import { useSearchParams } from "next/navigation";
 import AssetScene from "../user/assetScene";
 import DetailResults from "./detailResults";
 import { useQuery } from "@tanstack/react-query";
-import {
-  requestAssetPrice,
-  requestCampaignById,
-} from "@/providers/graphqlClient";
+import { requestCampaignById } from "@/providers/graphqlClient";
 import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
 import DetailComments from "./detailComments";
@@ -68,7 +65,7 @@ export default function DetailWrapper({
     {
       queryKey: ["assetPrices", symbol, data.starting, data.ending],
       initialData: initialAssetPrices,
-      enabled: data.isDppm,
+      enabled: !!data.isDppm,
     },
   );
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);

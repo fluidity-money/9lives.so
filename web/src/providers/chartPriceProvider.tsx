@@ -12,7 +12,7 @@ export const wsClient = createClient({
 
 const subPricesForDuration = `
 subscription($symbol: String!, $starting: timestamp!, $ending: timestamp!) {
-  oracles_ninelives_prices_1(order_by: {created_by: desc}, where: {created_by: {_gte: $starting, _lte: $ending}, base: {_eq: $symbol}}, limit: 1) {
+  oracles_ninelives_prices_1(order_by: {created_by: desc}, where: {created_by: {_gte: $starting, _lte: $ending}, base: {_eq: $symbol}}, limit: 2) {
     id
     amount
     created_by

@@ -4,13 +4,12 @@ import {
   requestSimpleMarket,
 } from "@/providers/graphqlClient";
 import Image from "next/image";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import CountdownTimer from "@/components/countdownTimer";
-import { CampaignDetail, PricePoint } from "@/types";
-import appConfig from "@/config";
+import { PricePoint } from "@/types";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
 export const revalidate = 60;
@@ -38,7 +37,6 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
 
   const data = await requestSimpleMarket(id);
-  console.log("data", data);
   if (!data || !data.priceMetadata) notFound();
 
   let initialAssetPrices: PricePoint[] = [];
