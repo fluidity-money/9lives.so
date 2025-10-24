@@ -43,8 +43,8 @@ export default async function DetailPage({ params }: { params: Params }) {
   if (response.isDppm) {
     const res = await requestAssetPrice(
       response.priceMetadata!.baseAsset,
-      new Date(campaign.starting).toISOString(),
-      new Date(campaign.ending).toISOString(),
+      new Date(campaign.starting * 1000).toISOString(),
+      new Date(campaign.ending * 1000).toISOString(),
     );
     if (res && res.oracles_ninelives_prices_1) {
       initialAssetPrices = res?.oracles_ninelives_prices_1.map((i) => ({

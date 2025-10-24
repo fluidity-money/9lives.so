@@ -57,8 +57,8 @@ export default function SimpleBody({
         basePrice={basePrice}
         id={data.identifier}
         symbol={symbol}
-        starting={data.starting * 1000}
-        ending={data.ending * 1000}
+        starting={data.starting}
+        ending={data.ending}
         assetPrices={assetPrices}
         assetsLoaded={assetsLoaded}
       />

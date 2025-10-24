@@ -58,8 +58,8 @@ export default function ReactQueryProvider({
         ];
         const res = await requestAssetPrice(
           symbol,
-          new Date(starting).toISOString(),
-          new Date(ending).toISOString(),
+          new Date(starting * 1000).toISOString(),
+          new Date(ending * 1000).toISOString(),
         );
         if (res?.oracles_ninelives_prices_1) {
           return res.oracles_ninelives_prices_1.map((i) => ({
