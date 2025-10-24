@@ -53,6 +53,8 @@ export function formatSimpleCampaignDetail(
   if (ro.priceMetadata === null) throw new Error("Price metadata is null");
   return {
     ...ro,
+    ending: ro.ending * 1000,
+    starting: ro.starting * 1000,
     priceMetadata: ro.priceMetadata,
     poolAddress: ro.poolAddress as `0x${string}`,
     identifier: ro.identifier as `0x${string}`,
