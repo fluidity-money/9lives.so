@@ -312,7 +312,7 @@ export default async function detailImageGenerator(
                     fontSize: "2.5rem",
                   }}
                 >
-                  {response?.name ?? "Predict on 9LIVES.so"}
+                  {response?.name ?? "Predict on 9lives.so"}
                 </p>
                 <div
                   style={{

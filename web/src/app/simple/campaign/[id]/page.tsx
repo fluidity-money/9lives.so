@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { id } = await params;
   const response = await requestSimpleMarket(id);
   return {
-    title: response?.name ?? "Predict on 9LIVES.so",
+    title: response?.name ?? "Predict on 9lives.so",
     description: response?.name ?? "Predict token prices in hourly markets",
     other: {
       "fc:miniapp": JSON.stringify({
@@ -38,6 +38,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
 
   const data = await requestSimpleMarket(id);
+  console.log("data", data);
   if (!data || !data.priceMetadata) notFound();
 
   let initialAssetPrices: PricePoint[] = [];

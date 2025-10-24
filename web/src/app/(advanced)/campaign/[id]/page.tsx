@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { id } = await params;
   const response = await requestCampaignById(id);
   return {
-    title: response?.name ?? "Predict on 9LIVES.so",
+    title: response?.name ?? "Predict on 9lives.so",
     description: response?.description,
     other: {
       "fc:miniapp": JSON.stringify({
