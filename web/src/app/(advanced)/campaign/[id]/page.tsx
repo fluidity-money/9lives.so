@@ -41,11 +41,11 @@ export default async function DetailPage({ params }: { params: Params }) {
   const campaign = formatCampaignDetail(response);
   const priceEvents = await requestPriceChanges(response.poolAddress);
   let initialAssetPrices: PricePoint[] = [];
-  if (response.isDppm && response.priceMetadata) {
+  if (campaign.isDppm && campaign.priceMetadata) {
     initialAssetPrices = await getAndFormatAssetPrices({
-      symbol: response.priceMetadata.baseAsset,
-      starting: response.starting,
-      ending: response.ending,
+      symbol: campaign.priceMetadata.baseAsset,
+      starting: campaign.starting,
+      ending: campaign.ending,
     });
   }
 

@@ -36,13 +36,12 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
 
   const data = await requestSimpleMarket(id);
   if (!data || !data.priceMetadata) notFound();
-
-  const initialAssetPrices = await getAndFormatAssetPrices({
-    symbol: data.priceMetadata.baseAsset,
-    starting: data.starting,
-    ending: data.ending,
-  });
   const simpleMarket = formatSimpleCampaignDetail(data);
+  const initialAssetPrices = await getAndFormatAssetPrices({
+    symbol: simpleMarket.priceMetadata.baseAsset,
+    starting: simpleMarket.starting,
+    ending: simpleMarket.ending,
+  });
   return (
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />
