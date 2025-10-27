@@ -19,37 +19,41 @@ var abiB []byte
 var abi, abiErr = ethAbi.JSON(bytes.NewReader(abiB))
 
 var (
-	TopicNewTrading2                = abi.Events["NewTrading2"].ID
-	TopicOutcomeCreated             = abi.Events["OutcomeCreated"].ID
-	TopicOutcomeDecided             = abi.Events["OutcomeDecided"].ID
-	TopicSharesMinted               = abi.Events["SharesMinted"].ID
-	TopicSharesBurned               = abi.Events["SharesBurned"].ID
-	TopicPayoffActivated            = abi.Events["PayoffActivated"].ID
-	TopicDeadlineExtension          = abi.Events["DeadlineExtension"].ID
-	TopicMarketCreated2             = abi.Events["MarketCreated2"].ID
-	TopicCallMade                   = abi.Events["CallMade"].ID
-	TopicInfraMarketClosed          = abi.Events["InfraMarketClosed"].ID
-	TopicDAOMoneyDistributed        = abi.Events["DAOMoneyDistributed"].ID
-	TopicCommitted                  = abi.Events["Committed"].ID
-	TopicCommitmentRevealed         = abi.Events["CommitmentRevealed"].ID
-	TopicWhinged                    = abi.Events["Whinged"].ID
-	TopicCampaignEscaped            = abi.Events["CampaignEscaped"].ID
-	TopicLockedUp                   = abi.Events["LockedUp"].ID
-	TopicDeclared                   = abi.Events["Declared"].ID
-	TopicWithdrew                   = abi.Events["Withdrew"].ID
-	TopicSlashed                    = abi.Events["Slashed"].ID
-	TopicFrozen                     = abi.Events["Frozen"].ID
-	TopicRequested                  = abi.Events["Requested"].ID
-	TopicConcluded                  = abi.Events["Concluded"].ID
-	TopicLiquidityAdded             = abi.Events["LiquidityAdded"].ID
-	TopicLiquidityAddedSharesSent   = abi.Events["LiquidityAddedSharesSent"].ID
-	TopicLiquidityRemoved           = abi.Events["LiquidityRemoved"].ID
-	TopicLiquidityRemovedSharesSent = abi.Events["LiquidityRemovedSharesSent"].ID
-	TopicLiquidityClaimed           = abi.Events["LiquidityClaimed"].ID
-	TopicLPFeesClaimed              = abi.Events["LPFeesClaimed"].ID
-	TopicAddressFeesClaimed         = abi.Events["AddressFeesClaimed"].ID
-	TopicReferrerEarnedFees         = abi.Events["ReferrerEarnedFees"].ID
-	TopicAmmDetails                 = abi.Events["AmmDetails"].ID
+	TopicNewTrading2                     = abi.Events["NewTrading2"].ID
+	TopicOutcomeCreated                  = abi.Events["OutcomeCreated"].ID
+	TopicOutcomeDecided                  = abi.Events["OutcomeDecided"].ID
+	TopicSharesMinted                    = abi.Events["SharesMinted"].ID
+	TopicSharesBurned                    = abi.Events["SharesBurned"].ID
+	TopicPayoffActivated                 = abi.Events["PayoffActivated"].ID
+	TopicDeadlineExtension               = abi.Events["DeadlineExtension"].ID
+	TopicMarketCreated2                  = abi.Events["MarketCreated2"].ID
+	TopicCallMade                        = abi.Events["CallMade"].ID
+	TopicInfraMarketClosed               = abi.Events["InfraMarketClosed"].ID
+	TopicDAOMoneyDistributed             = abi.Events["DAOMoneyDistributed"].ID
+	TopicCommitted                       = abi.Events["Committed"].ID
+	TopicCommitmentRevealed              = abi.Events["CommitmentRevealed"].ID
+	TopicWhinged                         = abi.Events["Whinged"].ID
+	TopicCampaignEscaped                 = abi.Events["CampaignEscaped"].ID
+	TopicLockedUp                        = abi.Events["LockedUp"].ID
+	TopicDeclared                        = abi.Events["Declared"].ID
+	TopicWithdrew                        = abi.Events["Withdrew"].ID
+	TopicSlashed                         = abi.Events["Slashed"].ID
+	TopicFrozen                          = abi.Events["Frozen"].ID
+	TopicRequested                       = abi.Events["Requested"].ID
+	TopicConcluded                       = abi.Events["Concluded"].ID
+	TopicLiquidityAdded                  = abi.Events["LiquidityAdded"].ID
+	TopicLiquidityAddedSharesSent        = abi.Events["LiquidityAddedSharesSent"].ID
+	TopicLiquidityRemoved                = abi.Events["LiquidityRemoved"].ID
+	TopicLiquidityRemovedSharesSent      = abi.Events["LiquidityRemovedSharesSent"].ID
+	TopicLiquidityClaimed                = abi.Events["LiquidityClaimed"].ID
+	TopicLPFeesClaimed                   = abi.Events["LPFeesClaimed"].ID
+	TopicAddressFeesClaimed              = abi.Events["AddressFeesClaimed"].ID
+	TopicReferrerEarnedFees              = abi.Events["ReferrerEarnedFees"].ID
+	TopicAmmDetails                      = abi.Events["AmmDetails"].ID
+	TopicNinetailsBoostedSharesReceived  = abi.Events["NinetailsBoostedSharesReceived"].ID
+	TopicNinetailsCumulativeWinnerPayoff = abi.Events["NinetailsCumulativeWinnerPayoff"].ID
+	TopicNinetailsLoserPayoff            = abi.Events["NinetailsLoserPayoff"].ID
+	TopicDppmClawback                    = abi.Events["DppmClawback"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
@@ -397,6 +401,74 @@ func UnpackAmmDetails(topic1 ethCommon.Hash, d []byte) (*events.EventAmmDetails,
 	return &events.EventAmmDetails{
 		Product: hashToNumber(topic1),
 		Shares:  shares,
+	}, nil
+}
+
+func UnpackNinetailsBoostedSharesReceived(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNinetailsBoostedSharesReceived, error) {
+	a, err := abi.Unpack("NinetailsBoostedSharesReceived", b)
+	if err != nil {
+		return nil, err
+	}
+	outcome, ok := a[0].([8]byte)
+	if !ok {
+		return nil, fmt.Errorf("bad outcome: %T", a[0])
+	}
+	return &events.EventNinetailsBoostedSharesReceived{
+		Spender:        hashToAddr(topic1),
+		Recipient:      hashToAddr(topic2),
+		AmountReceived: hashToNumber(topic3),
+		Outcome:        events.BytesFromSlice(outcome[:]),
+	}, nil
+}
+
+func UnpackNinetailsCumulativeWinnerPayoff(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNinetailsCumulativeWinnerPayoff, error) {
+	a, err := abi.Unpack("NinetailsCumulativeWinnerPayoff", b)
+	if err != nil {
+		return nil, err
+	}
+	fusdcReceived, ok := a[0].(*big.Int)
+	if !ok {
+		return nil, fmt.Errorf("bad fusdcReceived: %T", a[0])
+	}
+	outcome, ok := a[1].([8]byte)
+	if !ok {
+		return nil, fmt.Errorf("bad outcome: %T", a[1])
+	}
+	return &events.EventNinetailsCumulativeWinnerPayoff{
+		Spender:       hashToAddr(topic1),
+		Recipient:     hashToAddr(topic2),
+		SharesSpent:   hashToNumber(topic3),
+		FusdcReceived: events.NumberFromBig(fusdcReceived),
+		Outcome:       events.BytesFromSlice(outcome[:]),
+	}, nil
+}
+
+func UnpackNinetailsLoserPayoff(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNinetailsLoserPayoff, error) {
+	a, err := abi.Unpack("NinetailsLoserPayoff", b)
+	if err != nil {
+		return nil, err
+	}
+	fusdcReceived, ok := a[0].(*big.Int)
+	if !ok {
+		return nil, fmt.Errorf("bad fusdcReceived: %T", a[0])
+	}
+	outcome, ok := a[1].([8]byte)
+	if !ok {
+		return nil, fmt.Errorf("bad outcome: %T", a[1])
+	}
+	return &events.EventNinetailsLoserPayoff{
+		Spender:       hashToAddr(topic1),
+		Recipient:     hashToAddr(topic2),
+		SharesSpent:   hashToNumber(topic3),
+		FusdcReceived: events.NumberFromBig(fusdcReceived),
+		Outcome:       events.BytesFromSlice(outcome[:]),
+	}, nil
+}
+
+func UnpackDppmClawback(topic1, topic2 ethCommon.Hash) (*events.EventDppmClawback, error) {
+	return &events.EventDppmClawback{
+		Recipient:       hashToAddr(topic1),
+		FusdcClawedback: hashToNumber(topic2),
 	}, nil
 }
 

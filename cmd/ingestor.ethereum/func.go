@@ -18,11 +18,11 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
 	"github.com/fluidity-money/9lives.so/lib/events/lifi"
 	"github.com/fluidity-money/9lives.so/lib/events/onchaingm"
+	"github.com/fluidity-money/9lives.so/lib/events/paymaster"
+	"github.com/fluidity-money/9lives.so/lib/events/punk-domains"
 	"github.com/fluidity-money/9lives.so/lib/events/stargate"
 	"github.com/fluidity-money/9lives.so/lib/events/sudoswap"
 	"github.com/fluidity-money/9lives.so/lib/events/vendor"
-	"github.com/fluidity-money/9lives.so/lib/events/punk-domains"
-	"github.com/fluidity-money/9lives.so/lib/events/paymaster"
 
 	"gorm.io/gorm"
 
@@ -64,6 +64,10 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicAddressFeesClaimed,
 	events.TopicReferrerEarnedFees,
 	events.TopicAmmDetails,
+	events.TopicNinetailsBoostedSharesReceived,
+	events.TopicNinetailsCumulativeWinnerPayoff,
+	events.TopicNinetailsLoserPayoff,
+	events.TopicDppmClawback,
 	paymaster.TopicPaymasterPaidFor,
 	paymaster.TopicStargateBridged,
 	// Lifi
@@ -96,7 +100,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 type IngestorArgs struct {
 	Factory, InfraMarket, Lockup, SarpSignallerAi   ethCommon.Address
 	LifiDiamond, Layerzero, Dinero, SudoswapFactory ethCommon.Address
-	PunkDomainsTld, Paymaster ethCommon.Address
+	PunkDomainsTld, Paymaster                       ethCommon.Address
 }
 
 // Entry function, using the database to determine if polling should be
@@ -424,6 +428,26 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		table = "ninelives_events_amm_details"
 		logEvent("AmmDetails")
 		fromTrading = true
+	case events.TopicNinetailsBoostedSharesReceived:
+		a, err = events.UnpackNinetailsBoostedSharesReceived(topic1, topic2, topic3, data)
+		table = "ninelives_events_ninetails_boosted_shares_received"
+		logEvent("NinetailsBoostedSharesReceived")
+		fromTrading = true
+	case events.TopicNinetailsCumulativeWinnerPayoff:
+		a, err = events.UnpackNinetailsCumulativeWinnerPayoff(topic1, topic2, topic3, data)
+		table = "ninelives_events_ninetails_cumulative_winner_payoff"
+		logEvent("NinetailsCumulativeWinnerPayoff")
+		fromTrading = true
+	case events.TopicNinetailsLoserPayoff:
+		a, err = events.UnpackNinetailsLoserPayoff(topic1, topic2, topic3, data)
+		table = "ninelives_events_ninetails_loser_payoff"
+		logEvent("NinetailsLoserPayoff")
+		fromTrading = true
+	case events.TopicDppmClawback:
+		a, err = events.UnpackDppmClawback(topic1, topic2)
+		table = "ninelives_events_dppm_clawback"
+		logEvent("DppmClawback")
+		fromTrading = true
 	case paymaster.TopicPaymasterPaidFor:
 		a, err = paymaster.UnpackPaymasterPaidFor(topic1, topic2, topic3, data)
 		table = "ninelives_events_paymaster_paid_for"
@@ -521,16 +545,16 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		return false, fmt.Errorf("finding trading addr: %v", err)
 	}
 	var (
-		isFactory       = r.Factory == emitterAddr
-		isInfraMarket   = r.InfraMarket == emitterAddr
-		isLockup        = r.Lockup == emitterAddr
-		isSarpSignaller = r.SarpSignallerAi == emitterAddr
-		isLifi          = r.LifiDiamond == emitterAddr
-		isLayerzero     = r.Layerzero == emitterAddr
-		isDinero        = r.Dinero == emitterAddr
-		isSudoswap      = r.SudoswapFactory == emitterAddr
+		isFactory        = r.Factory == emitterAddr
+		isInfraMarket    = r.InfraMarket == emitterAddr
+		isLockup         = r.Lockup == emitterAddr
+		isSarpSignaller  = r.SarpSignallerAi == emitterAddr
+		isLifi           = r.LifiDiamond == emitterAddr
+		isLayerzero      = r.Layerzero == emitterAddr
+		isDinero         = r.Dinero == emitterAddr
+		isSudoswap       = r.SudoswapFactory == emitterAddr
 		isPunkDomainsTld = r.PunkDomainsTld == emitterAddr
-		isPaymaster = r.Paymaster == emitterAddr
+		isPaymaster      = r.Paymaster == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:

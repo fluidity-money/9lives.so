@@ -1,10 +1,10 @@
 package events
 
 import (
-	"time"
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"database/sql/driver"
+	"time"
 )
 
 type (
@@ -261,8 +261,44 @@ type (
 	EventAmmDetails struct {
 		Event
 
-		Product Number        `json:"product"`
+		Product Number       `json:"product"`
 		Shares  ShareDetails `json:"shares"`
+	}
+
+	EventNinetailsBoostedSharesReceived struct {
+		Event
+
+		Spender        Address `json:"spender"`
+		Recipient      Address `json:"recipient"`
+		AmountReceived Number  `json:"amount_received"`
+		Outcome        Bytes   `json:"outcome"`
+	}
+
+	EventNinetailsCumulativeWinnerPayoff struct {
+		Event
+
+		Spender       Address `json:"spender"`
+		Recipient     Address `json:"recipient"`
+		SharesSpent   Number  `json:"shares_spent"`
+		FusdcReceived Number  `json:"fusdc_received"`
+		Outcome       Bytes   `json:"outcome"`
+	}
+
+	EventNinetailsLoserPayoff struct {
+		Event
+
+		Spender       Address `json:"spender"`
+		Recipient     Address `json:"recipient"`
+		SharesSpent   Number  `json:"shares_spent"`
+		FusdcReceived Number  `json:"fusdc_received"`
+		Outcome       Bytes   `json:"outcome"`
+	}
+
+	EventDppmClawback struct {
+		Event
+
+		Recipient       Address `json:"recipient"`
+		FusdcClawedback Number  `json:"fusdc_clawedback"`
 	}
 )
 
