@@ -20,6 +20,8 @@ import useBuy from "@/hooks/useBuy";
 import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
 import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import { SimpleCampaignDetail } from "@/types";
+import ChainSelectorDropdown from "./chainSelectorDD";
+import { Chain } from "thirdweb";
 
 export default function SimpleBuyDialog({
   data,
@@ -156,6 +158,11 @@ export default function SimpleBuyDialog({
     }
   }
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
+  const handleNetworkChange = async (chain: Chain) => {
+    // lifi auto switch handle this for now
+    // await switchChain(chain);
+    setValue("fromChain", chain.id);
+  };
 
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between bg-9layer font-chicago">
@@ -179,7 +186,11 @@ export default function SimpleBuyDialog({
 
         <div className="max-auto flex items-center justify-between gap-2">
           <span className="font-chicago text-xs">From</span>
-          <span>Superposition</span>
+          <ChainSelectorDropdown
+            handleNetworkChange={handleNetworkChange}
+            selectedChainId={fromChain}
+            isInMiniApp={isInMiniApp}
+          />
           <span className="font-chicago text-xs">With</span>
           <AssetSelector
             tokens={tokens}
