@@ -7,12 +7,12 @@
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    host::{clear_storage, set_block_timestamp, register_addr},
+    error::Error,
+    host::{clear_storage, register_addr, reset_msg_sender, set_block_timestamp, set_msg_sender},
     interactions_clear_after, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_tiny_u256, strat_uniq_outcomes},
     StorageTrading,
-    error::Error,
 };
 
 use proptest::prelude::*;
@@ -81,13 +81,13 @@ fn test_dppm_simple() {
             c.decide(o[0]).unwrap();
         },
         IVAN => {
-            should_spend_fusdc_contract!(15617565,
+            should_spend_fusdc_contract!(15115113,
                 c.payoff_C_B_6_F_2565(o[0], shares_ivan, msg_sender())
             )
         },
         ERIK => {
             should_spend_fusdc_contract!(
-                1382433,
+                1884885,
                 c.payoff_C_B_6_F_2565(o[1], U256::ZERO, ERIK)
             );
         }
@@ -99,18 +99,22 @@ struct DppmAction {
     outcome: FixedBytes<8>,
     fusdc_amt: U256,
     time_since: u64,
-    sender: Address
+    sender: Address,
 }
 
 fn strat_dppm_action(o_0: FixedBytes<8>, o_1: FixedBytes<8>) -> impl Strategy<Value = DppmAction> {
-    (strat_tiny_u256(), any::<bool>(), 0..100_000u64, any::<Address>()).prop_map(move |(a, b, time_since, sender)| {
-        DppmAction {
+    (
+        strat_tiny_u256(),
+        any::<bool>(),
+        1..100_000u64,
+        any::<Address>(),
+    )
+        .prop_map(move |(a, b, time_since, sender)| DppmAction {
             outcome: if b { o_0 } else { o_1 },
             fusdc_amt: a,
             time_since,
             sender,
-        }
-    })
+        })
 }
 
 fn strat_dppm_actions() -> impl Strategy<Value = (FixedBytes<8>, FixedBytes<8>, Vec<DppmAction>)> {
@@ -125,29 +129,43 @@ proptest! {
     fn test_contract_solvency((o_0, o_1, actions) in strat_dppm_actions()) {
         let mut c = StorageTrading::default();
         clear_storage();
+        set_block_timestamp(1);
         setup_contract!(&mut c, [o_0, o_1]);
-        set_block_timestamp(0);
-        c.time_ending.set(U64::from(1) + U64::from(
+        c.time_ending.set(U64::from(2) + U64::from(
             actions.iter()
                     .map(|DppmAction { time_since, .. }| time_since)
                     .sum::<u64>()
         ));
         let mut contract_bal = U256::ZERO;
-        for DppmAction { outcome, fusdc_amt, time_since, sender } in actions {
-            contract_bal += fusdc_amt;
-            set_block_timestamp(block_timestamp() + time_since);
-            should_spend_fusdc_sender!(fusdc_amt, {
-                match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
-                    outcome,
-                    fusdc_amt,
-                    Address::ZERO,
-                    sender,
-                )) {
-                    (true, Ok(_)) => panic!("amount is zero but mint was ok"),
-                    (false, Ok(_)) | (true, Err(Error::ZeroAmount)) => Ok(()),
-                    (_, Err(e)) => Err(e)
-                }
-            });
+        let actions =
+            actions.into_iter().map(|DppmAction { outcome, fusdc_amt, time_since, sender }| {
+                contract_bal += fusdc_amt;
+                set_block_timestamp(block_timestamp() + time_since);
+                set_msg_sender(sender);
+                let s = should_spend_fusdc_sender!(fusdc_amt, {
+                    match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
+                        outcome,
+                        fusdc_amt,
+                        Address::ZERO,
+                        sender,
+                    )) {
+                        (true, Ok(_)) => panic!("amount is zero but mint was ok"),
+                        (false, Ok(s)) => Ok(s),
+                        (true, Err(Error::ZeroAmount)) => Ok(U256::ZERO),
+                        (_, Err(e)) => Err(e)
+                    }
+                });
+                (outcome, s, sender)
+            })
+            .collect::<Vec<_>>();
+        reset_msg_sender();
+        c.decide(o_0).unwrap();
+        for (o, s, sender) in actions {
+            set_msg_sender(sender);
+            let a = c.payoff_C_B_6_F_2565(o, if o == o_0 { s } else { U256::ZERO }, sender)
+                .unwrap();
+            contract_bal -= a;
         }
+        assert_eq!(U256::ZERO, contract_bal);
     }
 }
