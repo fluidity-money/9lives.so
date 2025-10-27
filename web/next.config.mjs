@@ -29,6 +29,15 @@ const nextConfig = {
     return config;
   },
   outputFileTracingRoot: __dirname,
+  async redirects() {
+    return [
+      {
+        source: '/simple',
+        destination: '/simple/campaign/btc',
+        permanent: true,
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {
