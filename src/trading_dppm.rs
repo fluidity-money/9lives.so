@@ -245,6 +245,7 @@ impl StorageTrading {
         if self.winner.get() == outcome_id {
             self.internal_dppm_payoff_winner(outcome_id, amt, recipient)
         } else {
+            assert_or!(amt.is_zero(), Error::ZeroSharesMustBeProvidedForLoser);
             self.internal_dppm_payoff_loser(outcome_id, recipient)
         }
     }

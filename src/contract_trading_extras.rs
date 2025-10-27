@@ -171,9 +171,9 @@ impl StorageTrading {
 
     pub fn dppm_simulate_payoff(
         &self,
-        shares: U256,
-        boosted_shares: U256,
-        outcome_id: FixedBytes<8>,
+        _shares: U256,
+        _boosted_shares: U256,
+        _outcome_id: FixedBytes<8>,
     ) -> R<(U256, U256)> {
         #[cfg(feature = "trading-backend-dppm")]
         {
@@ -181,24 +181,24 @@ impl StorageTrading {
             let outcome_2 = self.outcome_list.get(1).unwrap();
             let outcome_boosted_shares = self
                 .ninetails_outcome_boosted_shares
-                .get(outcome_id)
-                .checked_add(boosted_shares)
+                .get(_outcome_id)
+                .checked_add(_boosted_shares)
                 .ok_or(Error::CheckedAddOverflow)?;
             let all_boosted_shares = self
                 .ninetails_global_boosted_shares
                 .get()
-                .checked_add(boosted_shares)
+                .checked_add(_boosted_shares)
                 .ok_or(Error::CheckedAddOverflow)?;
             let M1 = self.dppm_outcome_invested.get(outcome_1);
             let M2 = self.dppm_outcome_invested.get(outcome_2);
             let winning_dppm_shares = self
                 .dppm_shares_outcome
-                .get(outcome_id)
-                .checked_add(shares)
+                .get(_outcome_id)
+                .checked_add(_shares)
                 .ok_or(Error::CheckedAddOverflow)?;
             return self.internal_dppm_simulate_payoff(
-                shares,
-                boosted_shares,
+                _shares,
+                _boosted_shares,
                 outcome_boosted_shares,
                 all_boosted_shares,
                 M1,

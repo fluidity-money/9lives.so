@@ -11,8 +11,9 @@ use lib9lives::{
     host::set_block_timestamp,
     interactions_clear_after, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
     testing_addrs::*,
-    utils::{block_timestamp, msg_sender},
+    utils::{block_timestamp, msg_sender, strat_tiny_u256, strat_uniq_outcomes},
     StorageTrading,
+    error::Error,
 };
 
 use proptest::prelude::*;
@@ -86,7 +87,10 @@ fn test_dppm_simple() {
             )
         },
         ERIK => {
-            should_spend_fusdc_contract!(1382433, c.payoff_C_B_6_F_2565(o[1], 0, ERIK));
+            should_spend_fusdc_contract!(
+                1382433,
+                c.payoff_C_B_6_F_2565(o[1], U256::ZERO, ERIK)
+            );
         }
     }
 }
@@ -95,20 +99,55 @@ fn test_dppm_simple() {
 struct DppmAction {
     outcome: FixedBytes<8>,
     fusdc_amt: U256,
+    time_since: u64,
+    sender: Address
 }
 
 fn strat_dppm_action(o_0: FixedBytes<8>, o_1: FixedBytes<8>) -> impl Strategy<Value = DppmAction> {
-    (strat_tiny_u256(), any::<bool>()).prop_map(|(a, b)| (a, if b { o_0 } else { o_1 }))
+    (strat_tiny_u256(), any::<bool>(), 0..100_000u64, any::<Address>()).prop_map(move |(a, b, time_since, sender)| {
+        DppmAction {
+            outcome: if b { o_0 } else { o_1 },
+            fusdc_amt: a,
+            time_since,
+            sender,
+        }
+    })
 }
 
 fn strat_dppm_actions() -> impl Strategy<Value = (FixedBytes<8>, FixedBytes<8>, Vec<DppmAction>)> {
-    proptest::collections::vec::<strat_dpm_action>(200).prop_map(|items| {})
+    strat_uniq_outcomes(2, 2).prop_flat_map(move |o| {
+        proptest::collection::vec(strat_dppm_action(o[0].clone(), o[1].clone()), 200)
+            .prop_map(move |x| (o[0], o[1], x))
+    })
 }
 
 proptest! {
     #[test]
-    fn test_basic_invariants() {
-        // Test that the contract will always remain solvent, not that the users
-        // will necessarily make money.
+    fn test_contract_solvency((o_0, o_1, actions) in strat_dppm_actions()) {
+        let mut c = StorageTrading::default();
+        setup_contract!(&mut c, [o_0, o_1]);
+        set_block_timestamp(0);
+        c.time_ending.set(U64::from(1) + U64::from(
+            actions.iter()
+                    .map(|DppmAction { time_since, .. }| time_since)
+                    .sum::<u64>()
+        ));
+        let mut contract_bal = U256::ZERO;
+        for DppmAction { outcome, fusdc_amt, time_since, sender } in actions {
+            contract_bal += fusdc_amt;
+            set_block_timestamp(block_timestamp() + time_since);
+            should_spend_fusdc_sender!(fusdc_amt, {
+                match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
+                    outcome,
+                    fusdc_amt,
+                    Address::ZERO,
+                    sender,
+                )) {
+                    (true, Ok(_)) => panic!("amount is zero but mint was ok"),
+                    (false, Ok(_)) | (true, Err(Error::ZeroAmount)) => Ok(()),
+                    (_, Err(e)) => Err(e)
+                }
+            });
+        }
     }
 }

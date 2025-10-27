@@ -566,7 +566,11 @@ pub enum Error {
 
     TradingErrorAddLiq(Vec<u8>),
 
-    TradingErrorPrice(Vec<u8>)
+    TradingErrorPrice(Vec<u8>),
+
+    /// Someone tried to pass more than zero shares to the payoff function,
+    /// when they're the loser!
+    ZeroSharesMustBeProvidedForLoser
 }
 
 #[cfg(any(

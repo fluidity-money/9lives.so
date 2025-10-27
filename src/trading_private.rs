@@ -126,14 +126,18 @@ impl StorageTrading {
     }
 
     /// Calculate fees based on the configuration in the pool, including
-    /// whether the action has a referrer.
-    pub fn calculate_fees(&self, value: U256, is_buy: bool) -> R<(U256, CalcFees)> {
+    /// whether the action has a referrer. Only includes the LP fee if the contract
+    /// was compiled for the AMM.
+    pub fn calculate_fees(&self, value: U256, _is_buy: bool) -> R<(U256, CalcFees)> {
         let fee_for_creator = maths::calc_fee(value, self.fee_creator.get())?;
-        let fee_for_lp = if is_buy {
+        #[cfg(feature = "trading-backend-amm")]
+        let fee_for_lp = if _is_buy {
             maths::calc_fee(value, self.fee_lp.get())?
         } else {
             maths::calc_lp_sell_fee(value, self.fee_lp.get())?
         };
+        #[cfg(not(feature = "trading-backend-amm"))]
+        let fee_for_lp = U256::ZERO;
         let fee_for_referrer = maths::calc_fee(value, self.fee_referrer.get())?;
         let fee_for_protocol = if !self.is_protocol_fee_disabled.get() {
             maths::calc_fee(value, FEE_SPN_MINT_PCT)?
@@ -172,7 +176,7 @@ impl StorageTrading {
             fee_cum,
             CalcFees {
                 fee_for_creator,
-                fee_for_lp,
+                fee_for_lp: _fee_for_lp,
                 fee_for_referrer,
                 fee_for_protocol,
             },
@@ -192,7 +196,7 @@ impl StorageTrading {
         self.amm_fees_collected_weighted.set(
             self.amm_fees_collected_weighted
                 .get()
-                .checked_add(fee_for_lp)
+                .checked_add(_fee_for_lp)
                 .ok_or(Error::CheckedAddOverflow)?,
         );
         // If the referrer isn't set, then we send it to the DAO.
@@ -307,11 +311,14 @@ mod proptesting {
             c.fee_lp.set(fee_for_lp);
             c.fee_referrer.set(fee_for_referrer);
             c.is_protocol_fee_disabled.set(false);
+            #[cfg(feature = "trading-backend-amm")]
             let lp_fee = if is_buy {
                 maths::calc_fee(value, fee_for_lp).unwrap()
             } else {
                 maths::calc_lp_sell_fee(value, fee_for_lp).unwrap()
             };
+            #[cfg(not(feature = "trading-backend-amm"))]
+            let lp_fee = U256::ZERO;
             let cum_fee =
                 maths::calc_fee(value, fee_for_creator).unwrap() +
                 lp_fee +
