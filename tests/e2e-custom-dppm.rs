@@ -7,8 +7,7 @@
 use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    host,
-    host::set_block_timestamp,
+    host::{clear_storage, set_block_timestamp, register_addr},
     interactions_clear_after, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_tiny_u256, strat_uniq_outcomes},
@@ -43,7 +42,7 @@ macro_rules! setup_contract {
         c.is_shutdown.set(false);
         c.winner.set(FixedBytes::<8>::ZERO);
         for (i, o) in outcomes.iter().enumerate() {
-            host::register_addr(
+            register_addr(
                 proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
                 format!("outcome share {o}, outcome id {i}"),
             );
@@ -125,6 +124,7 @@ proptest! {
     #[test]
     fn test_contract_solvency((o_0, o_1, actions) in strat_dppm_actions()) {
         let mut c = StorageTrading::default();
+        clear_storage();
         setup_contract!(&mut c, [o_0, o_1]);
         set_block_timestamp(0);
         c.time_ending.set(U64::from(1) + U64::from(

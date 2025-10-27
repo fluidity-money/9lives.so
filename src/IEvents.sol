@@ -133,6 +133,11 @@ interface IEvents {
         bytes8 outcome
     );
 
+    event DppmClawback(
+        address indexed recipient,
+        uint256 indexed fusdcClawedback
+    );
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

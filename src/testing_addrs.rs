@@ -27,6 +27,7 @@ defaults! {
     ZERO_FOR_MINT_ADDR,
     CLAIMANT,
     PAYMASTER,
+    CLAWBACK_RECIPIENT,
 
     IVAN,
     ERIK,

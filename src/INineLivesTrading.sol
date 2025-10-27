@@ -168,4 +168,6 @@ interface INineLivesTrading {
         uint256 dppmFusdc,
         uint256 ninetailsFusdc
     );
+
+    function dppmClawback() external returns (uint256);
 }

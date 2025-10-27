@@ -129,7 +129,7 @@ pub struct StorageTrading {
     /// exists.
     pub amm_outcome_exists: StorageMap<FixedBytes<8>, StorageBool>,
 
-    /* ~~~~~~~~~~ NINETAILS ONLY ~~~~~~~~~~ */
+    /* ~~~~~~~~~~ NINETAILS/DPPM EXTRA ONLY ~~~~~~~~~~ */
     //
     pub ninetails_user_boosted_shares: StorageMap<Address, StorageMap<FixedBytes<8>, StorageU256>>,
 
@@ -138,6 +138,10 @@ pub struct StorageTrading {
     pub ninetails_global_boosted_shares: StorageU256,
 
     pub dppm_shares_outcome: StorageMap<FixedBytes<8>, StorageU256>,
+
+    /// Can the designated clawback worker receive back the initial deposit if noone
+    /// used this money?
+    pub dppm_clawback_impossible: StorageBool,
 }
 
 // Storage accessors to simplify lookup.

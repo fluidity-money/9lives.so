@@ -570,7 +570,9 @@ pub enum Error {
 
     /// Someone tried to pass more than zero shares to the payoff function,
     /// when they're the loser!
-    ZeroSharesMustBeProvidedForLoser
+    ZeroSharesMustBeProvidedForLoser,
+
+    ClawbackAlreadyHappened,
 }
 
 #[cfg(any(

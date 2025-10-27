@@ -2,7 +2,7 @@ use stylus_sdk::{alloy_primitives::*, evm};
 
 use crate::{
     error::*,
-    events,
+    events, fusdc_call,
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
@@ -208,6 +208,26 @@ impl StorageTrading {
         }
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!()
+    }
+
+    pub fn dppm_clawback(&mut self) -> R<U256> {
+        #[cfg(not(feature = "trading-backend-dppm"))]
+        unimplemented!();
+        #[cfg(feature = "trading-backend-dppm")]
+        {
+            assert_or!(
+                self.dppm_clawback_impossible.get(),
+                Error::ClawbackAlreadyHappened
+            );
+            self.dppm_clawback_impossible.set(true);
+            let amt = fusdc_call::balance_of(contract_address())?;
+            fusdc_call::transfer(CLAWBACK_RECIPIENT_ADDR, amt)?;
+            evm::log(events::DppmClawback {
+                recipient: CLAWBACK_RECIPIENT_ADDR,
+                fusdcClawedback: amt,
+            });
+            Ok(amt)
+        }
     }
 }
 

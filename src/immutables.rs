@@ -51,6 +51,13 @@ env_addr!(CLAIMANT_HELPER, "SPN_CLAIMANT_HELPER_ADDR", CLAIMANT);
 // Claimant helper, but only to support selling.
 env_addr!(PAYMASTER_ADDR, "SPN_PAYMASTER_ADDR", PAYMASTER);
 
+// The recipient of clawback funds when a market wasn't used. DPPM only.
+env_addr!(
+    CLAWBACK_RECIPIENT_ADDR,
+    "SPN_CLAWBACK_RECIPIENT_ADDR",
+    CLAWBACK_RECIPIENT
+);
+
 // Scaling amount for checking if a bad predictor went above 50% in their
 // incorrect bets relative ot the winning outcome.
 pub const FIFTY_PCT_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
