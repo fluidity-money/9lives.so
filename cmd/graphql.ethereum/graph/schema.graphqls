@@ -434,6 +434,12 @@ type Mutation {
     isDppm: Boolean!,
 
     """
+    Explicitly set the categories, potentially requiring the user submit some credentials
+    to do so.
+    """
+    categories: [String!],
+
+    """
     Price metadata field is needed for automated resolution of some kinds of DPPM markets.
     The admin secret is needed for this.
     """

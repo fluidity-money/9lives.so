@@ -169,7 +169,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		AssociateReferral func(childComplexity int, sender string, code string, rr string, s string, v int) int
 		DeleteComment     func(childComplexity int, campaignID string, id int, walletAddress string, content string, rr string, s string, v int) int
-		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, priceMetadata *model.PriceMetadataInput) int
+		ExplainCampaign   func(childComplexity int, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, categories []string, priceMetadata *model.PriceMetadataInput) int
 		GenReferrer       func(childComplexity int, walletAddress string, code string) int
 		PostComment       func(childComplexity int, campaignID string, walletAddress string, content string, rr string, s string, v int) int
 		RequestPaymaster  func(childComplexity int, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) int
@@ -300,7 +300,7 @@ type MutationResolver interface {
 	PostComment(ctx context.Context, campaignID string, walletAddress string, content string, rr string, s string, v int) (*bool, error)
 	DeleteComment(ctx context.Context, campaignID string, id int, walletAddress string, content string, rr string, s string, v int) (*bool, error)
 	RequestPaymaster(ctx context.Context, ticket *int, typeArg model.Modification, nonce string, deadline int, permitAmount string, permitV int, permitR string, permitS string, operation model.PaymasterOperation, owner string, outcome *string, referrer *string, market string, maximumFee string, amountToSpend string, minimumBack string, originatingChainID string, outgoingChainEid int, rr string, s string, v int) (*string, error)
-	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, priceMetadata *model.PriceMetadataInput) (*bool, error)
+	ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, categories []string, priceMetadata *model.PriceMetadataInput) (*bool, error)
 	RevealCommitment(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string) (*bool, error)
 	RevealCommitment2(ctx context.Context, tradingAddr string, sender string, seed string, preferredOutcome string, rr string, s string, v string) (*bool, error)
 	SynchProfile(ctx context.Context, walletAddress string, email string) (*bool, error)
@@ -907,7 +907,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(*string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string), args["isFake"].(*bool), args["isDppm"].(bool), args["priceMetadata"].(*model.PriceMetadataInput)), true
+		return e.complexity.Mutation.ExplainCampaign(childComplexity, args["type"].(model.Modification), args["name"].(string), args["description"].(string), args["picture"].(*string), args["seed"].(int), args["outcomes"].([]model.OutcomeInput), args["ending"].(int), args["starting"].(int), args["creator"].(string), args["oracleDescription"].(*string), args["oracleUrls"].([]*string), args["x"].(*string), args["telegram"].(*string), args["web"].(*string), args["isFake"].(*bool), args["isDppm"].(bool), args["categories"].([]string), args["priceMetadata"].(*model.PriceMetadataInput)), true
 
 	case "Mutation.genReferrer":
 		if e.complexity.Mutation.GenReferrer == nil {
@@ -1756,15 +1756,24 @@ func (ec *executionContext) field_Mutation_explainCampaign_args(ctx context.Cont
 		}
 	}
 	args["isDppm"] = arg15
-	var arg16 *model.PriceMetadataInput
-	if tmp, ok := rawArgs["priceMetadata"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceMetadata"))
-		arg16, err = ec.unmarshalOPriceMetadataInput2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐPriceMetadataInput(ctx, tmp)
+	var arg16 []string
+	if tmp, ok := rawArgs["categories"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categories"))
+		arg16, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["priceMetadata"] = arg16
+	args["categories"] = arg16
+	var arg17 *model.PriceMetadataInput
+	if tmp, ok := rawArgs["priceMetadata"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceMetadata"))
+		arg17, err = ec.unmarshalOPriceMetadataInput2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋcmdᚋgraphqlᚗethereumᚋgraphᚋmodelᚐPriceMetadataInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["priceMetadata"] = arg17
 	return args, nil
 }
 
@@ -6151,7 +6160,7 @@ func (ec *executionContext) _Mutation_explainCampaign(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(*string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string), fc.Args["isFake"].(*bool), fc.Args["isDppm"].(bool), fc.Args["priceMetadata"].(*model.PriceMetadataInput))
+		return ec.resolvers.Mutation().ExplainCampaign(rctx, fc.Args["type"].(model.Modification), fc.Args["name"].(string), fc.Args["description"].(string), fc.Args["picture"].(*string), fc.Args["seed"].(int), fc.Args["outcomes"].([]model.OutcomeInput), fc.Args["ending"].(int), fc.Args["starting"].(int), fc.Args["creator"].(string), fc.Args["oracleDescription"].(*string), fc.Args["oracleUrls"].([]*string), fc.Args["x"].(*string), fc.Args["telegram"].(*string), fc.Args["web"].(*string), fc.Args["isFake"].(*bool), fc.Args["isDppm"].(bool), fc.Args["categories"].([]string), fc.Args["priceMetadata"].(*model.PriceMetadataInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

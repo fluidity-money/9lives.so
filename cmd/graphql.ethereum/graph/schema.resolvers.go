@@ -645,7 +645,7 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 }
 
 // ExplainCampaign is the resolver for the explainCampaign field.
-func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, priceMetadata *model.PriceMetadataInput) (*bool, error) {
+func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Modification, name string, description string, picture *string, seed int, outcomes []model.OutcomeInput, ending int, starting int, creator string, oracleDescription *string, oracleUrls []*string, x *string, telegram *string, web *string, isFake *bool, isDppm bool, categories []string, priceMetadata *model.PriceMetadataInput) (*bool, error) {
 	isNotPrecommit := isFake == nil || !*isFake
 	adminSecret, _ := ctx.Value("admin secret").(string)
 	hasValidAdminSecret := adminSecret == r.AdminSecret
@@ -851,26 +851,37 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		}
 		tradingPicUrl = &img
 	}
-	var categories []string
-	err = r.F.On(features.FeatureUseAIForCategories, func() error {
-		categories, err = ai.RequestFromAi(
-			r.LambdaClient,
-			ctx,
-			r.LambdaMiscAiBackendName,
-			"categories",
-			name,
-		)
+	if categories != nil {
+		err = r.F.On(features.FeatureCategoryOverridesShouldBeMadeByAdmin, func() error {
+			if !hasValidAdminSecret {
+				return fmt.Errorf("invalid secret for category override")
+			}
+			return nil
+		})
 		if err != nil {
-			slog.Error("Failed to look up a request for categories",
-				"name", name,
-				"err", err,
-			)
-			return fmt.Errorf("failed to look up request: %v", err)
+			return nil, fmt.Errorf("bad feature use for category override: %v", err)
 		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
+	} else {
+		err = r.F.On(features.FeatureUseAIForCategories, func() error {
+			categories, err = ai.RequestFromAi(
+				r.LambdaClient,
+				ctx,
+				r.LambdaMiscAiBackendName,
+				"categories",
+				name,
+			)
+			if err != nil {
+				slog.Error("Failed to look up a request for categories",
+					"name", name,
+					"err", err,
+				)
+				return fmt.Errorf("failed to look up request: %v", err)
+			}
+			return nil
+		})
+		if err != nil {
+			return nil, fmt.Errorf("bad feature use for ai: %v", err)
+		}
 	}
 	var priceMetadataField *types.PriceMetadata
 	if priceMetadata != nil {
@@ -1838,7 +1849,7 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string) (*t
 	FROM ninelives_campaigns_1
 	WHERE content->'priceMetadata'->>'baseAsset' = ?
 	AND EXTRACT(EPOCH FROM NOW()) BETWEEN (content->>'starting')::numeric AND (content->>'ending')::numeric
-	LIMIT 1 
+	LIMIT 1
 	`, symbol).Scan(&campaign).Error
 	if err != nil {
 		return nil, fmt.Errorf("Error getting the live campaign by symbol")

@@ -47,4 +47,7 @@ const (
 
 	// FeatureDppmMarketsMustBeMadeByAdmin only using the admin secret.
 	FeatureDppmMarketsMustBeMadeByAdmin = "dppm markets must be made by admin"
+
+	// FeatureCategoryOverridesShouldBeMadeByAdmin are the only users that can override categories.
+	FeatureCategoryOverridesShouldBeMadeByAdmin = "category overrides should be made by admin"
 )

@@ -23,5 +23,6 @@
 	"enable simple mode": false,
 	"enable campaign create": false,
 	"enable paymaster dppm buy": false,
-	"dppm markets must be made by admin": true
+	"dppm markets must be made by admin": true,
+	"category overrides should be made by admin": true
 }
