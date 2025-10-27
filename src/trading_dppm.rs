@@ -134,6 +134,12 @@ impl StorageTrading {
             recipient,
             fusdcSpent: value,
         });
+        evm::log(events::NinetailsBoostedSharesReceived {
+            spender: msg_sender(),
+            recipient,
+            amountReceived: ninetails_shares,
+            outcome: outcome_id,
+        });
         Ok(shares)
     }
 
