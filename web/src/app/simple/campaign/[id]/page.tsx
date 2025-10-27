@@ -1,5 +1,8 @@
 import config from "@/config";
-import { requestSimpleMarket } from "@/providers/graphqlClient";
+import {
+  requestCampaignById,
+  requestSimpleMarket,
+} from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import BTC from "#/images/tokens/btc.webp";
@@ -8,7 +11,9 @@ import SimpleBody from "@/components/simple/simpleBody";
 import CountdownTimer from "@/components/countdownTimer";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
+import { RawCampaignDetail, RawSimpleCampaignDetail } from "@/types";
 type Params = Promise<{ id: string }>;
+type SearchParams = Promise<{ cid: string }>;
 export const dynamicParams = true;
 export const revalidate = 60;
 export async function generateStaticParams() {
@@ -31,10 +36,21 @@ export async function generateMetadata({ params }: { params: Params }) {
     },
   };
 }
-export default async function SimpleDetailPage({ params }: { params: Params }) {
+export default async function SimpleDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const { id } = await params;
-
-  const res = await requestSimpleMarket(id);
+  const { cid } = await searchParams;
+  let res: RawSimpleCampaignDetail | RawCampaignDetail;
+  if (cid) {
+    res = await requestCampaignById(cid);
+  } else {
+    res = await requestSimpleMarket(id);
+  }
   if (!res || !res.priceMetadata) notFound();
   const data = formatSimpleCampaignDetail(res);
   const initialAssetPrices = await getAndFormatAssetPrices({
