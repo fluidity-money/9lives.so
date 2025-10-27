@@ -27,11 +27,13 @@ export default function DetailHeader({
   data,
   isEnded,
   isConcluded,
+  notStarted,
   initialAssetPrices,
 }: {
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
+  notStarted: boolean;
   initialAssetPrices?: PricePoint[];
 }) {
   const account = useActiveAccount();
@@ -191,19 +193,15 @@ export default function DetailHeader({
       <div className="flex flex-col items-center justify-between gap-2.5 md:flex-row">
         <div className="flex items-center gap-2.5">
           <DetailCreatedBy address={data.creator.address as `0x${string}`} />
-          {inThisWeek ? (
-            <div className="font-geneva text-xs">
-              <CountdownTimer endTime={data.ending} />
-            </div>
-          ) : (
+          {notStarted ? (
             <span
               className={combineClass(
                 isEnded ? "bg-[#CCC]" : "bg-9yellow",
                 "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
               )}
             >
-              {isEnded ? "Ended" : "End Date"}:{" "}
-              {new Date(data.ending).toLocaleString("default", {
+              {"Will start on: "}
+              {new Date(data.starting).toLocaleString("default", {
                 year: data.isDppm ? undefined : "numeric",
                 month: "short",
                 day: "2-digit",
@@ -211,6 +209,30 @@ export default function DetailHeader({
                 minute: data.isDppm ? "2-digit" : undefined,
               })}
             </span>
+          ) : (
+            <>
+              {inThisWeek ? (
+                <div className="font-geneva text-xs">
+                  <CountdownTimer endTime={data.ending} />
+                </div>
+              ) : (
+                <span
+                  className={combineClass(
+                    isEnded ? "bg-[#CCC]" : "bg-9yellow",
+                    "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
+                  )}
+                >
+                  {isEnded ? "Ended" : "End Date"}:{" "}
+                  {new Date(data.ending).toLocaleString("default", {
+                    year: data.isDppm ? undefined : "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: data.isDppm ? "numeric" : undefined,
+                    minute: data.isDppm ? "2-digit" : undefined,
+                  })}
+                </span>
+              )}
+            </>
           )}
         </div>
         {isConcluded || isEnded ? (

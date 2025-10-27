@@ -39,6 +39,7 @@ export default function DetailWrapper({
     (o) => o.identifier as `0x${string}`,
   );
   const isEnded = initialData.ending < Date.now();
+  const notStarted = initialData.starting > Date.now();
   const isConcluded = Boolean(initialData.winner);
   const { data: sharePrices } = useSharePrices({
     tradingAddr: initialData.poolAddress as `0x${string}`,
@@ -72,6 +73,7 @@ export default function DetailWrapper({
       <div className="flex flex-[2] flex-col gap-8">
         <DetailHeader
           data={data}
+          notStarted={notStarted}
           isEnded={isEnded}
           isConcluded={isConcluded}
           initialAssetPrices={initialAssetPrices}
@@ -115,7 +117,7 @@ export default function DetailWrapper({
           <DetailCall2Action
             isDppm={data.isDppm}
             isDpm={data.isDpm}
-            shouldStopAction={isEnded || isConcluded}
+            shouldStopAction={isEnded || isConcluded || notStarted}
             selectedOutcome={selectedOutcome}
             setSelectedOutcome={setSelectedOutcome}
             data={data}
