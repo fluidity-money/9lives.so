@@ -9,6 +9,7 @@ import Link from "next/link";
 import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
 import { useState } from "react";
+import ActiveCampaignProvider from "@/providers/activeCampaignProvider";
 
 export default function SimpleBody({
   data,
@@ -30,7 +31,7 @@ export default function SimpleBody({
   const [outcomeIdx, setOutcomeIdx] = useState(0);
 
   return (
-    <>
+    <ActiveCampaignProvider previousData={data} symbol={symbol}>
       <div className="flex flex-col gap-2 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] px-2 py-1 text-center text-xs shadow-9liqCard md:px-4 md:py-3">
         <h4 className="font-chicago">
           Simple Mode: Get started predicting the future with hourly markets
@@ -113,6 +114,6 @@ export default function SimpleBody({
           setOutcomeIdx={setOutcomeIdx}
         />
       </Modal>
-    </>
+    </ActiveCampaignProvider>
   );
 }
