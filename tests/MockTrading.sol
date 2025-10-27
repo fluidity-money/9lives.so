@@ -224,4 +224,8 @@ contract MockTrading is INineLivesTrading {
     function userLiquidityShares(address spender) external pure returns (uint256) {
         return uint256(keccak256(abi.encodePacked(spender)));
     }
+
+    function dppmSimulatePayoff(uint256, uint256, bytes8) external returns (uint256, uint256) {
+        return (0, 0);
+    }
 }

@@ -188,6 +188,7 @@ impl StorageTrading {
                         .ok_or(Error::CheckedAddOverflow)?,
                 );
         }
+        #[cfg(feature = "trading-backend-amm")]
         self.amm_fees_collected_weighted.set(
             self.amm_fees_collected_weighted
                 .get()
