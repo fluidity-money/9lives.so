@@ -19,6 +19,7 @@ export default function AssetSelector({
   isSuccess,
   tokens,
   tokensWithBalances,
+  variant = "default",
 }: {
   fromChain: number;
   fromToken: string;
@@ -26,6 +27,7 @@ export default function AssetSelector({
   isSuccess: boolean;
   tokens?: Token[];
   tokensWithBalances?: { balance: string; token_address: string }[];
+  variant?: "default" | "small";
 }) {
   useEffect(() => {
     if (isSuccess && tokens?.length) {
@@ -54,7 +56,8 @@ export default function AssetSelector({
     <Listbox value={fromToken} onChange={(selected) => setValue(selected)}>
       <ListboxButton
         className={combineClass(
-          "relative flex items-center gap-1 rounded-[3px] border border-9black py-2 pl-2.5 pr-8 shadow-9btnSecondaryIdle",
+          variant === "default" ? "py-2 pl-2.5 pr-8" : "py-1 pl-1 pr-6 text-xs",
+          "relative flex items-center gap-1 rounded-[3px] border border-9black shadow-9btnSecondaryIdle",
           "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
         )}
       >
@@ -74,8 +77,11 @@ export default function AssetSelector({
         <Image
           src={DownIcon}
           alt=""
-          width={16}
-          className="group pointer-events-none absolute right-2.5 top-2.5 size-4 fill-white/60"
+          width={variant === "default" ? 16 : 10}
+          className={combineClass(
+            variant === "default" ? "size-4" : "size-2.5",
+            "group pointer-events-none absolute right-2.5 top-2.5 fill-white/60",
+          )}
           aria-hidden="true"
         />
       </ListboxButton>
@@ -83,6 +89,7 @@ export default function AssetSelector({
         anchor={{ to: "bottom", gap: 4 }}
         transition
         className={combineClass(
+          variant === "small" && "text-xs",
           "w-max rounded-[3px] border border-9black bg-9layer p-1 [--anchor-gap:var(--spacing-1)] focus:outline-none",
           "z-30 transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0",
         )}
@@ -112,9 +119,12 @@ export default function AssetSelector({
               </div>
               <Image
                 src={CheckIcon}
-                className="invisible size-4 group-data-[selected]:visible"
+                className={combineClass(
+                  variant === "default" ? "size-4" : "size-2.5",
+                  "invisible group-data-[selected]:visible",
+                )}
                 alt=""
-                width={16}
+                width={variant === "default" ? 16 : 10}
               />
             </div>
             <span className="font-geneva text-xs">{token.balance}</span>
