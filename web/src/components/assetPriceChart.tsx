@@ -173,7 +173,7 @@ export default function AssetPriceChart({
             ...assetPrices,
           ]}
           margin={{
-            top: simple ? 40 : 12,
+            top: simple ? 40 : 32,
             right: simple ? -60 : 4,
             bottom: simple ? -10 : 0,
             left: 0,
