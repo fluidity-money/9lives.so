@@ -58,13 +58,14 @@ export default async function SimpleDetailPage({
     starting: data.starting,
     ending: data.ending,
   });
+  const dppmName = `${data.priceMetadata?.baseAsset} above $${data.priceMetadata?.priceTargetForUp} on ${new Date(data.ending).toLocaleString("default", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
   return (
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />
       <div className="flex items-center gap-2">
-        <Image src={BTC} width={60} height={60} alt={data.name} />
+        <Image src={BTC} width={60} height={60} alt={dppmName} />
         <div className="flex flex-col gap-1">
-          <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
+          <h1 className="font-chicago text-xl md:text-2xl">{dppmName}</h1>
           <div className="flex items-center gap-1 text-xs">
             <span className="font-geneva uppercase text-[#808080]">
               {new Date(data.starting).toLocaleString("default", {
