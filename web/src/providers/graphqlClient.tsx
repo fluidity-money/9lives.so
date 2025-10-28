@@ -25,6 +25,11 @@ export const requestCampaignList = (filterParams: CampaignFilters) =>
     oracleUrls: true,
     settlement: true,
     poolAddress: true,
+    isDppm: true,
+    priceMetadata: {
+      baseAsset: true,
+      priceTargetForUp: true,
+    },
     creator: {
       address: true,
     },

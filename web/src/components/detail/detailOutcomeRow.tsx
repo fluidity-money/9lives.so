@@ -19,6 +19,7 @@ export default function DetailOutcomeRow({
   isWinner,
   isConcluded,
   displayQuickActions,
+  isDppm,
   isDpm,
 }: {
   data: Outcome;
@@ -28,6 +29,7 @@ export default function DetailOutcomeRow({
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   isYesNo: boolean;
+  isDppm: boolean;
   isWinner: boolean;
   isConcluded: boolean;
   displayQuickActions?: boolean;
@@ -70,23 +72,27 @@ export default function DetailOutcomeRow({
                 src={CrownImg}
               />
             )}
-            {!!data.picture || (!data.picture && isYesNo) ? (
+            {!!data.picture || (!data.picture && (isYesNo || isDppm)) ? (
               <Image
                 width={40}
                 height={40}
                 alt={data.name}
                 src={
-                  isYesNo
-                    ? data.name === "Yes"
+                  isYesNo || isDppm
+                    ? data.name === "Yes" || data.name.includes("above")
                       ? YesOutcomeImg
                       : NoOutcomeImg
                     : data.picture
                 }
-                className={combineClass(!isYesNo && "border border-9black")}
+                className={combineClass(
+                  !isYesNo || (!isDppm && "border border-9black"),
+                )}
               />
             ) : null}
           </div>
-          <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
+          <h2 className="text-sm font-normal tracking-wide">
+            {isDppm ? (data.name.includes("above") ? "Up" : "Down") : data.name}
+          </h2>
         </div>
       </td>
       <td

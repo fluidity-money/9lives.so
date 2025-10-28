@@ -72,6 +72,7 @@ export default function DetailOutcomes({
             <DetailOutcomeRow
               isYesNo={data.isYesNo}
               isDpm={isDpm}
+              isDppm={data.isDppm}
               selectedOutcome={selectedOutcome}
               setSelectedOutcome={setSelectedOutcome}
               price={price}

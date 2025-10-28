@@ -290,10 +290,12 @@ export default function DetailBuyAction({
             minimized && "flex-col md:flex-row",
           )}
         >
-          {outcome.picture || (!outcome.picture && data.isYesNo) ? (
+          {outcome.picture ||
+          (!outcome.picture && (data.isYesNo || data.isDppm)) ? (
             <div
               className={combineClass(
-                !data.isYesNo && "size-10 overflow-hidden rounded-full",
+                !data.isYesNo ||
+                  (!data.isDppm && "size-10 overflow-hidden rounded-full"),
               )}
             >
               <Image
@@ -301,8 +303,8 @@ export default function DetailBuyAction({
                 height={40}
                 alt={outcome.name}
                 src={
-                  data.isYesNo
-                    ? outcome.name === "Yes"
+                  data.isYesNo || data.isDppm
+                    ? outcome.name === "Yes" || outcome.name.includes("above")
                       ? YesOutcomeImg
                       : NoOutcomeImg
                     : outcome.picture
@@ -318,7 +320,11 @@ export default function DetailBuyAction({
                 "font-chicago font-normal text-9black md:text-lg",
               )}
             >
-              {outcome.name}
+              {data.isDppm
+                ? outcome.name.includes("above")
+                  ? "Up"
+                  : "Down"
+                : outcome.name}
             </h3>
             <div
               className={combineClass(

@@ -10,6 +10,7 @@ interface CampaignItemOutcomesProps {
   outcomes: Outcome[];
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   isYesNo: boolean;
+  isDppm: boolean;
   isConcluded: boolean;
   shares: ({
     shares: string;
@@ -23,6 +24,7 @@ export default function CampaignItemOutcomes({
   shares,
   isYesNo,
   isConcluded,
+  isDppm,
 }: CampaignItemOutcomesProps) {
   const router = useRouter();
   const prices = useMemo(() => getAmmPrices(shares), [shares]);
@@ -39,14 +41,14 @@ export default function CampaignItemOutcomes({
       />
     );
 
-  if (isYesNo)
+  if (isYesNo || isDppm)
     return (
       <>
         <div className="flex flex-1 items-end gap-2">
           <Button
-            intent={isYesNo ? "yes" : "default"}
+            intent={"yes"}
             size={"large"}
-            title={outcomes[0].name}
+            title={isDppm ? "Up" : outcomes[0].name}
             onClick={(e) => {
               e.stopPropagation();
               router.push(`/campaign/${campaignId}`);
@@ -54,9 +56,9 @@ export default function CampaignItemOutcomes({
             className={"flex-1 truncate"}
           />
           <Button
-            intent={isYesNo ? "no" : "default"}
+            intent={"no"}
             size={"large"}
-            title={outcomes[1].name}
+            title={isDppm ? "Down" : outcomes[1].name}
             onClick={(e) => {
               e.stopPropagation();
               router.push(

@@ -1,16 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Campaign, Outcome } from "@/types";
+import { Campaign } from "@/types";
 interface CampaignItemHeaderProps {
   name: Campaign["name"];
   identifier: Campaign["identifier"];
   picture: Campaign["picture"];
-  outcomes: Outcome[];
-  isYesNo: boolean;
-  shares: ({
-    shares: string;
-    identifier: string;
-  } | null)[];
 }
 export default function CampaignItemHeader({
   name,

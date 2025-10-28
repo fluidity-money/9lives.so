@@ -20,6 +20,8 @@ export function formatCampaign(ro: RawCampaign): Campaign {
     outcomes: ro.outcomes?.map((o) => formatOutcome(o)),
     name: ro.name,
     description: ro.description,
+    isDppm: ro.isDppm,
+    priceMetadata: ro.priceMetadata,
     winner: ro.winner ?? null,
     picture: ro.picture ?? null,
     oracleDescription: ro.oracleDescription ?? null,

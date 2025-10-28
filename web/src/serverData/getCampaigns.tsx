@@ -13,6 +13,11 @@ const query = `
         settlement
         oracleDescription
         oracleUrls
+        isDppm
+        priceMetadata {
+          baseAsset
+          priceTargetForUp
+        }
         poolAddress
         creator {
           address
