@@ -126,7 +126,7 @@ impl StorageTrading {
                 .setter(outcome_id)
                 .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
         }
-        c!(share_call::mint(share_addr, recipient, shares));
+        share_call::mint(share_addr, recipient, shares)?;
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,
@@ -194,9 +194,8 @@ impl StorageTrading {
         );
         // Start to burn their share of the supply to convert to a payoff amount.
         // Take the max of what they asked.
-        let share_bal = U256::min(share_call::balance_of(share_addr, msg_sender())?, amt);
-        assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
-        share_call::burn(share_addr, msg_sender(), share_bal)?;
+        assert_or!(amt > U256::ZERO, Error::ZeroShares);
+        share_call::burn(share_addr, msg_sender(), amt)?;
         let user_boosted_shares = self
             .ninetails_user_boosted_shares
             .get(msg_sender())
@@ -209,7 +208,7 @@ impl StorageTrading {
         let M2 = self.dppm_outcome_invested.get(outcome_2);
         let winning_dppm_shares = self.dppm_shares_outcome.get(outcome_id);
         let (dppm_fusdc, ninetails_fusdc) = self.internal_dppm_simulate_payoff(
-            share_bal,
+            amt,
             user_boosted_shares,
             outcome_boosted_shares,
             all_boosted_shares,
@@ -219,7 +218,7 @@ impl StorageTrading {
         )?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
-            sharesSpent: share_bal,
+            sharesSpent: amt,
             spender: msg_sender(),
             recipient,
             fusdcReceived: dppm_fusdc,

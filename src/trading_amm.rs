@@ -525,18 +525,17 @@ impl StorageTrading {
             self.share_impl.get(),
             outcome_id,
         );
-        let share_bal = U256::min(share_call::balance_of(share_addr, msg_sender())?, share_amt);
-        assert_or!(share_bal > U256::ZERO, Error::ZeroShares);
-        share_call::burn(share_addr, msg_sender(), share_bal)?;
-        fusdc_call::transfer(recipient, share_bal)?;
+        assert_or!(share_amt > U256::ZERO, Error::ZeroShares);
+        share_call::burn(share_addr, msg_sender(), share_amt)?;
+        fusdc_call::transfer(recipient, share_amt)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
-            sharesSpent: share_bal,
+            sharesSpent: share_amt,
             spender: msg_sender(),
             recipient,
-            fusdcReceived: share_bal,
+            fusdcReceived: share_amt,
         });
-        Ok(share_bal)
+        Ok(share_amt)
     }
 
     pub fn internal_amm_mint(

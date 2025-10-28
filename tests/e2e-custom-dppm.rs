@@ -12,7 +12,7 @@ use lib9lives::{
     interactions_clear_after, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_tiny_u256, strat_uniq_outcomes},
-    StorageTrading,
+    StorageTrading, should_spend,
 };
 
 use proptest::prelude::*;
@@ -159,13 +159,25 @@ proptest! {
             })
             .collect::<Vec<_>>();
         reset_msg_sender();
+        c.oracle.set(msg_sender());
         c.decide(o_0).unwrap();
-        for (o, s, sender) in actions {
-            set_msg_sender(sender);
-            let a = c.payoff_C_B_6_F_2565(o, if o == o_0 { s } else { U256::ZERO }, sender)
-                .unwrap();
-            contract_bal -= a;
-        }
+        should_spend_fusdc_contract!(contract_bal, {
+            for (o, s, sender) in actions {
+                if s.is_zero() { continue }
+                set_msg_sender(sender);
+                if o == o_0 {
+                    contract_bal -= should_spend!(
+                        c.share_addr(o).unwrap(),
+                        { sender => s },
+                        c.payoff_C_B_6_F_2565(o, s, sender)
+                    )
+                } else {
+                        c.payoff_C_B_6_F_2565(o, U256::ZERO, sender)
+                            .unwrap();
+                }
+            }
+            Ok(())
+        });
         assert_eq!(U256::ZERO, contract_bal);
     }
 }
