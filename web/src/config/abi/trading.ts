@@ -220,6 +220,111 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "dppmClawback",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "dppmSimulateEarnings",
+    inputs: [
+      {
+        name: "invested",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+    ],
+    outputs: [
+      {
+        name: "returnFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "dppmSimulateMint",
+    inputs: [
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "value",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "dppmShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "ninetailsShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "dppmSimulatePayoff",
+    inputs: [
+      {
+        name: "shares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "boostedShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+    ],
+    outputs: [
+      {
+        name: "dppmFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "ninetailsFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "escape",
     inputs: [],
     outputs: [],
@@ -321,7 +426,20 @@ const tradingAbi = [
         internalType: "bool",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    name: "isDppm",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "pure",
   },
   {
     type: "function",
