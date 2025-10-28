@@ -60,7 +60,12 @@ fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut
         {
             should_spend_fusdc_sender!(
                 liquidity_amt,
-                c.add_liquidity_638_E_B_2_C_9(liquidity_amt, IVAN, U256::ZERO)
+                c.add_liquidity_B_9_D_D_A_952(
+                    liquidity_amt,
+                    IVAN,
+                    U256::ZERO,
+                    U256::MAX
+                )
             );
             Ok(())
         }
@@ -182,7 +187,12 @@ proptest! {
                 let liquidity_amt = U256::from(100e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_638_E_B_2_C_9(liquidity_amt, IVAN, U256::ZERO)
+                    c.add_liquidity_B_9_D_D_A_952(
+                        liquidity_amt,
+                        IVAN,
+                        U256::ZERO,
+                        U256::MAX
+                    )
                 );
                 /*assert_eq!(
                     U256::from(100e6 as u64),
@@ -191,7 +201,12 @@ proptest! {
                 let liquidity_amt = U256::from(1000e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_638_E_B_2_C_9(liquidity_amt, IVAN, U256::ZERO)
+                    c.add_liquidity_B_9_D_D_A_952(
+                        liquidity_amt,
+                        IVAN,
+                        U256::ZERO,
+                        U256::MAX
+                    )
                 );
                 assert_eq_u!(1100000000, c.amm_liquidity.get());
                 assert_eq_u!(1100000000, c.amm_shares.get(outcome_a));
@@ -240,7 +255,12 @@ proptest! {
                 let liquidity_amt = U256::from(1000e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
-                    c.add_liquidity_638_E_B_2_C_9(liquidity_amt, IVAN, U256::ZERO)
+                    c.add_liquidity_B_9_D_D_A_952(
+                        liquidity_amt,
+                        IVAN,
+                        U256::ZERO,
+                        U256::MAX
+                    )
                 );
                 assert_eq_u!(1772800379, c.amm_liquidity.get());
                 assert_eq_u!(818199300, c.amm_shares.get(outcome_a));

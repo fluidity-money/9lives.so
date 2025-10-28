@@ -52,10 +52,11 @@ macro_rules! test_add_liquidity {
         let buy_amt = U256::from($amt);
         should_spend_fusdc_sender!(
             buy_amt,
-            $c.add_liquidity_638_E_B_2_C_9(
+            $c.add_liquidity_B_9_D_D_A_952(
                 buy_amt,
                 msg_sender(),
-                U256::ZERO
+                U256::ZERO,
+                U256::MAX
             )
         )
     };

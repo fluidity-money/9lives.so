@@ -1,3 +1,4 @@
+
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use proptest::{prelude::*, prop_oneof};
@@ -5,6 +6,9 @@ use proptest::{prelude::*, prop_oneof};
 use proptest_derive::Arbitrary as P;
 
 use arbitrary::Arbitrary as A;
+
+#[cfg(feature = "trading-backend-amm")]
+use crate::utils::strat_uniq_outcomes;
 
 // Actions for use in property testing/fuzzing.
 
@@ -214,7 +218,12 @@ macro_rules! implement_action {
             Action::AddLiquidity(a) => {
                 should_spend_fusdc_sender!(
                     a.amount,
-                    $c.add_liquidity_638_E_B_2_C_9(a.amount, $sender, U256::ZERO)
+                    $c.add_liquidity_B_9_D_D_A_952(
+                        a.amount,
+                        $sender,
+                        U256::ZERO,
+                        U256::MAX
+                    )
                 );
             }
             #[cfg(feature = "trading-backend-amm")]

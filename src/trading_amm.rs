@@ -730,17 +730,6 @@ impl StorageTrading {
         Ok(current_usd)
     }
 
-    pub fn internal_amm_claim_addr_fees(&mut self, sender: Address, recipient: Address) -> R<U256> {
-        let owed = self.fees_owed_addresses.get(sender);
-        fusdc_call::transfer(recipient, owed)?;
-        self.fees_owed_addresses.setter(sender).set(U256::ZERO);
-        evm::log(events::AddressFeesClaimed {
-            recipient,
-            amount: owed,
-        });
-        Ok(owed)
-    }
-
     pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {
         self.internal_amm_get_prices()?;
         Ok(self.amm_outcome_prices.get(outcome))

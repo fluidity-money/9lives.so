@@ -8,15 +8,14 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256, U64};
 
 use lib9lives::{
     error::Error,
-    fusdc_call,
     host::{clear_storage, register_addr, reset_msg_sender, set_block_timestamp, set_msg_sender},
     host_erc20_call::{self, test_give_tokens},
-    interactions_clear_after, proxy, should_spend, should_spend_fusdc_contract,
+    immutables::{DAO_EARN_ADDR, DAO_OP_ADDR},
+    interactions_clear_after, maths, proxy, should_spend, should_spend_fusdc_contract,
     should_spend_fusdc_sender,
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_tiny_u256, strat_uniq_outcomes},
     StorageTrading,
-    maths::mul_div_round_up
 };
 
 use proptest::prelude::*;
@@ -63,7 +62,6 @@ fn test_dppm_simple() {
         fixed_bytes!("0c5829d33c3ab9f6"),
     ];
     let mut shares_ivan = U256::ZERO;
-    let mut shares_erik = U256::ZERO;
     interactions_clear_after! {
         IVAN => {
             setup_contract!(&mut c, o);
@@ -76,7 +74,7 @@ fn test_dppm_simple() {
         },
         ERIK => {
             set_block_timestamp(30 * 60);
-            shares_erik = should_spend_fusdc_sender!(
+            should_spend_fusdc_sender!(
                 10e6,
                 c.mint_8_A_059_B_6_E(o[1], U256::from(10e6), Address::ZERO, msg_sender())
             );
@@ -137,10 +135,11 @@ proptest! {
         creator_sink_addr in any::<Address>(),
         (o_0, o_1, actions) in strat_dppm_actions()
     ) {
-        let mut c = StorageTrading::default();
         clear_storage();
+        let mut c = StorageTrading::default();
         set_block_timestamp(1);
         setup_contract!(&mut c, [o_0, o_1]);
+        c.fee_recipient.set(creator_sink_addr);
         c.fee_creator.set(U256::from(fee_creator));
         c.fee_referrer.set(U256::from(fee_referrer));
         c.time_ending.set(U64::from(2) + U64::from(
@@ -156,20 +155,25 @@ proptest! {
                 contract_bal += fusdc_amt;
                 set_block_timestamp(block_timestamp() + time_since);
                 set_msg_sender(sender);
-                referrer_fee +=
-                    mul_div_round_up(fusdc_amt, U256::from(fee_referrer), U256::from(100)).unwrap();
-                creator_fee +=
-                    mul_div_round_up(fusdc_amt, U256::from(fee_referrer), U256::from(100)).unwrap();
+                referrer_fee +=  maths::calc_fee(fusdc_amt, U256::from(fee_referrer)).unwrap();
+                creator_fee += maths::calc_fee(fusdc_amt, U256::from(fee_creator)).unwrap();
                 let s = should_spend_fusdc_sender!(fusdc_amt, {
                     match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
                         outcome,
                         fusdc_amt,
-                        Address::ZERO,
+                        referrer_sink_addr,
                         sender,
                     )) {
                         (true, Ok(_)) => panic!("amount is zero but mint was ok"),
                         (false, Ok(s)) => Ok(s),
                         (true, Err(Error::ZeroAmount)) => Ok(U256::ZERO),
+                        (false, Err(Error::MintAmountTooLow)) => {
+                            // The amount here is zero, though we collect a fee. This is a divergence
+                            // from the on-chain behaviour, where the rollback would result in no
+                            // fees being collected. In this case, we collect fees, since a revert
+                            // doesn't change the storage. But we do assume nothing will be taken.
+                            Ok(U256::ZERO)
+                        },
                         (_, Err(e)) => Err(e)
                     }
                 });
@@ -196,9 +200,25 @@ proptest! {
                         .unwrap();
             }
         }
-        set_msg_sender(referrer_sink_addr);
-        assert_eq!(referrer_fee, c.claim_all_fees_332_D_7968(referrer_sink_addr).unwrap());
-        assert_eq!(creator_fee, c.claim_all_fees_332_D_7968(creator_sink_addr).unwrap());
+        let referrer_claimant = if referrer_sink_addr.is_zero() {
+            DAO_OP_ADDR
+        } else {
+            referrer_sink_addr
+        };
+        if referrer_claimant == creator_sink_addr || referrer_sink_addr == creator_sink_addr {
+            // If the claimant addresses are the same, collect them at once.
+            set_msg_sender(creator_sink_addr);
+            assert_eq!(
+                referrer_fee + creator_fee,
+                c.claim_all_fees_332_D_7968(creator_sink_addr).unwrap()
+            );
+        } else {
+            // If the claimant addresses are different, collect them separately.
+            set_msg_sender(referrer_claimant);
+            assert_eq!(referrer_fee, c.claim_all_fees_332_D_7968(DAO_EARN_ADDR).unwrap());
+            set_msg_sender(creator_sink_addr);
+            assert_eq!(creator_fee, c.claim_all_fees_332_D_7968(creator_sink_addr).unwrap());
+        }
         // The contract will collect dust, so we don't care about leftover
         // amounts.
         host_erc20_call::cleanup();

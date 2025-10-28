@@ -4,6 +4,7 @@ use crate::{
     error::*,
     events,
     fees::FEE_SPN_MINT_PCT,
+    fusdc_call,
     immutables::*,
     maths,
     storage_trading::*,
@@ -230,12 +231,23 @@ impl StorageTrading {
         Ok(fee_cum)
     }
 
+    pub fn internal_claim_addr_fees(&mut self, sender: Address, recipient: Address) -> R<U256> {
+        let owed = self.fees_owed_addresses.get(sender);
+        fusdc_call::transfer(recipient, owed)?;
+        self.fees_owed_addresses.setter(sender).set(U256::ZERO);
+        evm::log(events::AddressFeesClaimed {
+            recipient,
+            amount: owed,
+        });
+        Ok(owed)
+    }
+
     pub fn internal_claim_all_fees(&mut self, sender: Address, recipient: Address) -> R<U256> {
         #[cfg(feature = "trading-backend-amm")]
         let lp_fees = self.internal_amm_claim_lp_fees(sender, recipient)?;
         #[cfg(not(feature = "trading-backend-amm"))]
         let lp_fees = U256::ZERO;
-        let addr_fees = self.internal_amm_claim_addr_fees(sender, recipient)?;
+        let addr_fees = self.internal_claim_addr_fees(sender, recipient)?;
         Ok(lp_fees + addr_fees)
     }
 }

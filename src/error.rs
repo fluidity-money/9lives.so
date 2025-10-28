@@ -572,7 +572,11 @@ pub enum Error {
     /// when they're the loser!
     ZeroSharesMustBeProvidedForLoser,
 
+    /// The clawback already took place for this trading contract.
     ClawbackAlreadyHappened,
+
+    /// The amount the user is trying to mint is too low.
+    MintAmountTooLow,
 }
 
 #[cfg(any(

@@ -54,9 +54,7 @@ impl StorageTrading {
         }
         // Set the fees, including the AMM helper ones.
         let fees = self.calculate_and_set_fees(value, true, referrer)?;
-        let value = c!(value
-            .checked_sub(fees)
-            .ok_or(Error::CheckedSubOverflow(value, fees)));
+        let value = value.checked_sub(fees).ok_or(Error::MintAmountTooLow)?;
         #[cfg(feature = "trading-backend-dppm")]
         return self.internal_dppm_mint(outcome, value, recipient);
         #[cfg(not(feature = "trading-backend-dppm"))]
@@ -97,7 +95,7 @@ impl StorageTrading {
                 _outcome,
                 fusdc,
                 _min_shares,
-                _referrer
+                _referrer,
             )?;
             fusdc_call::transfer(_recipient, fusdc_to_return)?;
             evm::log(events::SharesBurned {

@@ -2,11 +2,14 @@ use stylus_sdk::{alloy_primitives::*, evm};
 
 use crate::{
     error::*,
-    events, fusdc_call,
+    events,
     immutables::*,
     proxy,
     utils::{block_timestamp, contract_address, msg_sender},
 };
+
+#[cfg(feature = "trading-backend-dppm")]
+use crate::fusdc_call;
 
 use alloc::{borrow::ToOwned, string::String, vec::Vec};
 
@@ -169,6 +172,7 @@ impl StorageTrading {
         todo!()
     }
 
+    #[allow(non_snake_case)]
     pub fn dppm_simulate_payoff(
         &self,
         _shares: U256,
