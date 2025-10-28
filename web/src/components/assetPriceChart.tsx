@@ -222,7 +222,7 @@ export default function AssetPriceChart({
               strokeDasharray="3 2"
               label={{
                 value: new Date(starting).toLocaleString("default", {
-                  hour: "2-digit",
+                  hour: "numeric",
                   minute: "2-digit",
                 }),
                 fontFamily: "var(--font-chicago)",
