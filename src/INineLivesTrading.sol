@@ -160,15 +160,6 @@ interface INineLivesTrading {
 
     function outcomeList() external view returns (bytes8[] memory outcomes);
 
-    function dppmSimulateMint(
-        bytes8 outcome,
-        uint256 value,
-        address recipient
-    ) external returns (
-        uint256 dppmShares,
-        uint256 ninetailsShares
-    );
-
     function dppmSimulatePayoff(
         uint256 shares,
         uint256 boostedShares,
