@@ -64,13 +64,13 @@ export default function DetailHeader({
 
   useEffect(() => {
     (async function () {
-      if (!account) return;
+      if (!account || data.isDppm) return;
       const fees = await checkLpRewards(account);
       if (fees && BigInt(fees) > BigInt(0)) {
         setUnclaimedRewards(fees);
       }
     })();
-  }, [account, checkLpRewards]);
+  }, [account, checkLpRewards, data.isDppm]);
   const LiquidityComp = () => (
     <div className="flex flex-row gap-1">
       {data.winner ? null : (
