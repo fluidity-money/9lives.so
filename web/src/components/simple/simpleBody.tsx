@@ -74,8 +74,17 @@ export default function SimpleBody({
       ) : null}
       <div className="sticky inset-x-0 bottom-0 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
         {isEnded ? (
-          <p className="mx-auto font-chicago text-xs">
-            This campaign is ended, go to live campaign
+          <p
+            className="mx-auto text-center font-chicago text-xs md:pointer-events-none"
+            onClick={() => {
+              window.scrollTo({
+                top: document.body.scrollHeight - 400,
+                behavior: "smooth",
+              });
+            }}
+          >
+            This campaign is ended
+            <span className="md:hidden">, scroll down to live campaign ↓</span>
           </p>
         ) : (
           <>
