@@ -60,6 +60,7 @@ const infraMarketStateFees: Record<InfraMarketState, bigint> = {
 } as const;
 export const categories = [
   "All",
+  "Hourly",
   "Crypto",
   "Opinion Poll",
   "Sports",
@@ -83,7 +84,7 @@ const appSchema = z.object({
   }),
   simpleMarkets: z.array(z.enum(["btc"])),
   categories: z.array(
-    z.enum(["All", "Crypto", "Opinion Poll", "Sports", "Politics"]),
+    z.enum(["All", "Hourly", "Crypto", "Opinion Poll", "Sports", "Politics"]),
   ),
   frame: z.any(),
   weekDuration: z.number(),
