@@ -229,6 +229,7 @@ export default function AssetPriceChart({
                 fontSize: 12,
                 fill: "#0C0C0C",
                 position: "insideBottomLeft",
+                dx: -4,
                 dy: 22,
               }}
             />
