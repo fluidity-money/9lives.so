@@ -115,10 +115,7 @@ impl StorageTrading {
     }
 
     pub fn is_dpm(&self) -> bool {
-        #[cfg(feature = "trading-backend-dppm")]
-        return true;
-        #[cfg(not(feature = "trading-backend-dppm"))]
-        return false;
+        false
     }
 
     pub fn is_dppm(&self) -> bool {
