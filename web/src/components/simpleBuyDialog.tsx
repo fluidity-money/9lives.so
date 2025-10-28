@@ -22,6 +22,7 @@ import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import { SimpleCampaignDetail } from "@/types";
 import ChainSelectorDropdown from "./chainSelectorDD";
 import { Chain } from "thirdweb";
+import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 
 export default function SimpleBuyDialog({
   data,
@@ -118,6 +119,11 @@ export default function SimpleBuyDialog({
     setValue("supply", maxBalance);
     if (Number(maxBalance) > 0) clearErrors();
   };
+  const estimation = useDppmWinEstimation({
+    tradingAddr: data.poolAddress,
+    usdValue,
+    outcomeId: selectedOutcome.identifier,
+  });
   const handleTokenChange = useCallback(
     (addr: string) => setValue("fromToken", addr),
     [setValue],
@@ -234,7 +240,7 @@ export default function SimpleBuyDialog({
 
         <div
           className={combineClass(
-            Number(supply) > 0 ? "visible" : "invisible",
+            estimation ? "visible" : "invisible",
             "text-center",
           )}
         >
@@ -242,7 +248,7 @@ export default function SimpleBuyDialog({
             If you&apos;re right
           </div>
           <div className="text-3xl font-semibold text-green-500">
-            ${+(usdValue * 2).toFixed(3)}
+            ${estimation}
           </div>
         </div>
 
