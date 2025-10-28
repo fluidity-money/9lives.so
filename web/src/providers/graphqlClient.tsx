@@ -407,6 +407,11 @@ export const requestFeaturedCampaigns = (
     oracleDescription: true,
     oracleUrls: true,
     settlement: true,
+    isDppm: true,
+    priceMetadata: {
+      baseAsset: true,
+      priceTargetForUp: true,
+    },
     poolAddress: true,
     creator: {
       address: true,
