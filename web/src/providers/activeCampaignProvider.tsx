@@ -101,7 +101,7 @@ export default function ActiveCampaignProvider({
             <CountdownTimer endTime={liveCampaign.ending} />
           </div>
           <Link
-            href={`/simple/campaign/${liveCampaign.priceMetadata.baseAsset}?cid=${liveCampaign.identifier}`}
+            href={`/simple/campaign/${liveCampaign.priceMetadata.baseAsset.toLowerCase()}?cid=${liveCampaign.identifier}`}
           >
             <Button intent={"cta"}>Be the winner of the hour!</Button>
           </Link>
