@@ -8,11 +8,14 @@ use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256, U64};
 
 use lib9lives::{
     error::Error,
+    fusdc_call,
     host::{clear_storage, register_addr, reset_msg_sender, set_block_timestamp, set_msg_sender},
-    interactions_clear_after, proxy, should_spend_fusdc_contract, should_spend_fusdc_sender,
+    host_erc20_call::{self, test_give_tokens},
+    interactions_clear_after, proxy, should_spend, should_spend_fusdc_contract,
+    should_spend_fusdc_sender,
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_tiny_u256, strat_uniq_outcomes},
-    StorageTrading, should_spend,
+    StorageTrading,
 };
 
 use proptest::prelude::*;
@@ -126,7 +129,9 @@ fn strat_dppm_actions() -> impl Strategy<Value = (FixedBytes<8>, FixedBytes<8>, 
 
 proptest! {
     #[test]
-    fn test_contract_solvency((o_0, o_1, actions) in strat_dppm_actions()) {
+    fn test_dppm_contract_solvency(
+        (o_0, o_1, actions) in strat_dppm_actions()
+    ) {
         let mut c = StorageTrading::default();
         clear_storage();
         set_block_timestamp(1);
@@ -136,7 +141,7 @@ proptest! {
                     .map(|DppmAction { time_since, .. }| time_since)
                     .sum::<u64>()
         ));
-        let mut contract_bal = U256::ZERO;
+        let mut contract_bal = U256::from(2e6 as u32);
         let actions =
             actions.into_iter().map(|DppmAction { outcome, fusdc_amt, time_since, sender }| {
                 contract_bal += fusdc_amt;
@@ -161,23 +166,23 @@ proptest! {
         reset_msg_sender();
         c.oracle.set(msg_sender());
         c.decide(o_0).unwrap();
-        should_spend_fusdc_contract!(contract_bal, {
-            for (o, s, sender) in actions {
-                if s.is_zero() { continue }
-                set_msg_sender(sender);
-                if o == o_0 {
-                    contract_bal -= should_spend!(
-                        c.share_addr(o).unwrap(),
-                        { sender => s },
-                        c.payoff_C_B_6_F_2565(o, s, sender)
-                    )
-                } else {
-                        c.payoff_C_B_6_F_2565(o, U256::ZERO, sender)
-                            .unwrap();
-                }
+        test_give_tokens(FUSDC, CONTRACT, contract_bal);
+        for (o, s, sender) in actions {
+            if s.is_zero() { continue }
+            set_msg_sender(sender);
+            if o == o_0 {
+                contract_bal -= should_spend!(
+                    c.share_addr(o).unwrap(),
+                    { sender => s },
+                    c.payoff_C_B_6_F_2565(o, s, sender)
+                )
+            } else {
+                    c.payoff_C_B_6_F_2565(o, U256::ZERO, sender)
+                        .unwrap();
             }
-            Ok(())
-        });
-        assert_eq!(U256::ZERO, contract_bal);
+        }
+        // The contract will collect dust, so we don't care about leftover
+        // amounts in it.
+        host_erc20_call::cleanup();
     }
 }

@@ -149,14 +149,14 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         recipient: Address,
     ) -> R<U256> {
-        assert_or!(
-            !self
-                .ninetails_user_boosted_shares
-                .getter(msg_sender())
-                .get(outcome_id)
-                .is_zero(),
-            Error::ZeroShares
-        );
+        if self
+            .ninetails_user_boosted_shares
+            .getter(msg_sender())
+            .get(outcome_id)
+            .is_zero()
+        {
+            return Ok(U256::ZERO)
+        }
         let shares = self
             .ninetails_user_boosted_shares
             .getter(msg_sender())
