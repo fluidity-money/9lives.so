@@ -247,7 +247,7 @@ impl StorageTrading {
         if FUSDC_DECIMALS_EXP > new_liq {
             return Err(Error::CannotRemoveAllLiquidity);
         }
-        let fees_earned = self.internal_amm_claim_all_fees(msg_sender(), recipient)?;
+        let fees_earned = self.internal_claim_all_fees(msg_sender(), recipient)?;
         self.rebalance_fees(msg_sender(), amount, false)?;
         self.amm_liquidity.set(new_liq);
         {
@@ -744,12 +744,6 @@ impl StorageTrading {
     pub fn internal_amm_price(&mut self, outcome: FixedBytes<8>) -> R<U256> {
         self.internal_amm_get_prices()?;
         Ok(self.amm_outcome_prices.get(outcome))
-    }
-
-    pub fn internal_amm_claim_all_fees(&mut self, sender: Address, recipient: Address) -> R<U256> {
-        let lp_fees = self.internal_amm_claim_lp_fees(sender, recipient)?;
-        let addr_fees = self.internal_amm_claim_addr_fees(sender, recipient)?;
-        Ok(lp_fees + addr_fees)
     }
 }
 

@@ -37,6 +37,12 @@ rpath = false
 debug-assertions = false
 incremental = false
 
+[profile.test.package.proptest]
+opt-level = 3
+
+[profile.test.package.rand_chacha]
+opt-level = 3
+
 [dependencies]
 tiny-keccak = "2.0.2"
 num-traits = { version = "0.2.19", default-features = false }

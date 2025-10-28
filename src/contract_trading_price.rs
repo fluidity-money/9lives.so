@@ -27,10 +27,7 @@ impl StorageTrading {
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn claim_all_fees_332_D_7968(&mut self, _recipient: Address) -> R<U256> {
-        #[cfg(feature = "trading-backend-dppm")]
-        return Err(Error::AMMOnly);
-        #[cfg(not(feature = "trading-backend-dppm"))]
-        return self.internal_amm_claim_all_fees(
+        return self.internal_claim_all_fees(
             match msg_sender() {
                 immutables::DAO_OP_ADDR => {
                     assert_or!(_recipient == DAO_EARN_ADDR, Error::IncorrectDAOClaiming);

@@ -16,6 +16,7 @@ use lib9lives::{
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_tiny_u256, strat_uniq_outcomes},
     StorageTrading,
+    maths::mul_div_round_up
 };
 
 use proptest::prelude::*;
@@ -130,23 +131,35 @@ fn strat_dppm_actions() -> impl Strategy<Value = (FixedBytes<8>, FixedBytes<8>, 
 proptest! {
     #[test]
     fn test_dppm_contract_solvency(
+        fee_creator in 0u64..10,
+        fee_referrer in 0u64..10,
+        referrer_sink_addr in any::<Address>(),
+        creator_sink_addr in any::<Address>(),
         (o_0, o_1, actions) in strat_dppm_actions()
     ) {
         let mut c = StorageTrading::default();
         clear_storage();
         set_block_timestamp(1);
         setup_contract!(&mut c, [o_0, o_1]);
+        c.fee_creator.set(U256::from(fee_creator));
+        c.fee_referrer.set(U256::from(fee_referrer));
         c.time_ending.set(U64::from(2) + U64::from(
             actions.iter()
                     .map(|DppmAction { time_since, .. }| time_since)
                     .sum::<u64>()
         ));
         let mut contract_bal = U256::from(2e6 as u32);
+        let mut referrer_fee = U256::ZERO;
+        let mut creator_fee = U256::ZERO;
         let actions =
             actions.into_iter().map(|DppmAction { outcome, fusdc_amt, time_since, sender }| {
                 contract_bal += fusdc_amt;
                 set_block_timestamp(block_timestamp() + time_since);
                 set_msg_sender(sender);
+                referrer_fee +=
+                    mul_div_round_up(fusdc_amt, U256::from(fee_referrer), U256::from(100)).unwrap();
+                creator_fee +=
+                    mul_div_round_up(fusdc_amt, U256::from(fee_referrer), U256::from(100)).unwrap();
                 let s = should_spend_fusdc_sender!(fusdc_amt, {
                     match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
                         outcome,
@@ -166,6 +179,8 @@ proptest! {
         reset_msg_sender();
         c.oracle.set(msg_sender());
         c.decide(o_0).unwrap();
+        assert!(!c.is_not_done_predicting());
+        assert!(!c.when_decided.is_zero());
         test_give_tokens(FUSDC, CONTRACT, contract_bal);
         for (o, s, sender) in actions {
             if s.is_zero() { continue }
@@ -181,8 +196,11 @@ proptest! {
                         .unwrap();
             }
         }
+        set_msg_sender(referrer_sink_addr);
+        assert_eq!(referrer_fee, c.claim_all_fees_332_D_7968(referrer_sink_addr).unwrap());
+        assert_eq!(creator_fee, c.claim_all_fees_332_D_7968(creator_sink_addr).unwrap());
         // The contract will collect dust, so we don't care about leftover
-        // amounts in it.
+        // amounts.
         host_erc20_call::cleanup();
     }
 }

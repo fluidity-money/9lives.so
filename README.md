@@ -1,8 +1,6 @@
 
 # 9lives
 
-You probably want to read [the guide](https://guide.9lives.so) as a developer!
-
 9lives is the most customisable and advanced prediction market in the web3 ecosystem, with
 an orderbook and AMM feature. We can support teams interested in releasing prediction
 markets themselves using 9lives, including hosting the graph for you. If you're interested
@@ -14,8 +12,8 @@ link](https://docs.google.com/forms/d/e/1FAIpQLSfYfgLuQ0GU8K5vGj-kU0PciqHHQCCD60
 9lives is an Arbitrum Stylus smart contract implemented with a simple factory/pair
 pattern. A factory takes a list of outcomes, and creates a variable number of contracts
 with a minimal viable proxy pointing to share ERC20s, and a trading contract. It either
-supports the Dynamic Pari-Mutuel Market (DPPM) model to solve liquidity issues in
-orderbooks, or a Constant Product Market Maker model to be totally separate.
+supports the Dynamic Pari-Mutuel Prediction Market (DPPM) model to solve liquidity issues
+in orderbooks, or a Constant Product Market Maker model hosted entirely in contract.
 
 To get started with the contract entrypoint, src/lib.rs contains the matching of features
 to deploy different contract facets. Testing is done with a mixture of property and
@@ -58,25 +56,6 @@ clause that could be "no" if a user were to try to estimate the price of somethi
 
 ![Diagram of the system](diagram.svg)
 
-## Roadmap
-
-- [X] UX improvements (shares are more visible, smart account behaviour)
-- [X] Mainnet is supported as well. Mainnet has disclosure that funds are locked up until the election is over.
-- Achievements and portfolio page is supported. Some socialfi elements.
-    1. [ ] Users can choose their favourite achievements to display in a minified form next to their Meow Domain.
-    2. [X] Meow domains is supported in the UI.
-- [X] Collect payoff from the campaign ending in the frontend.
-- [X] Custom fee collection and pool configuration supported (use beauty contest with fixed date, many outcomes if they want)
-- Anyone can create pools. Custom display of pools a la Ebay customisation.
-    1. [X] A fixed fee is sent to creator of when shares are created.
-    2. [X] Behind the scenes deferring to the AMM model if more than two outcomes.
-    3. [X] Customise the UI of the frontpage for the info
-    4. [X] Stack ranking is done for automated updating of frontpage
-    5. [ ] Campaign report functionality. Images are screened automatically for bad content with CSAM
-    6. [ ] API to update campaign by the original sender
-    9. [ ] Custom embed when sharing URL
-- [ ] Prediction market DAO. Token launch
-
 ## Building contracts
 
 	make build
@@ -91,6 +70,12 @@ Testing must be done with no trading or contract feature enabled. Testing is onl
 on the local environment, or with end to end tests with an Arbitrum node.
 
 	./tests.sh
+
+Testing coverage can be measured using mutation testing and `cargo-nextest`. This can be
+quite heavy, and will take a long time to run. `proptest` is configured using `PROPTEST_CASES`
+to reduce the time to 10, instead of the default 256.
+
+	./mutants.sh
 
 Interrogation of the deployment in the end to end testing library could be done using the
 `build.rs` use of `environment.lst`, which could be in turn read with a fresh deploy (and
