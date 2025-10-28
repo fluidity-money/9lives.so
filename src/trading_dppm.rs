@@ -39,6 +39,39 @@ impl StorageTrading {
 
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
+    pub fn internal_dppm_simulate_mint(
+        &self,
+        outcome_id: FixedBytes<8>,
+        value: U256,
+    ) -> R<(U256, U256)> {
+        let outcome_a = self.outcome_list.get(0).unwrap();
+        let outcome_b = self.outcome_list.get(1).unwrap();
+        let shares = self.internal_calc_dppm_mint(outcome_id, value)?;
+        {
+            let x = self.dppm_outcome_invested.get(outcome_id);
+            self.dppm_outcome_invested
+                .setter(outcome_id)
+                .set(x.checked_add(value).ok_or(Error::CheckedAddOverflow)?);
+        }
+        let outcome_other = if outcome_a == outcome_id {
+            outcome_b
+        } else {
+            outcome_a
+        };
+        let t_start = self.time_start.get();
+        let t_end = self.time_ending.get() - self.time_start.get();
+        let t_now = U64::from(block_timestamp());
+        // current time - start time for the market
+        let t_buy = t_now
+            .checked_sub(t_start)
+            .ok_or(Error::CheckedSubOverflow64(t_now, t_start))?;
+        let ninetails_shares = maths::ninetails_shares(shares, t_buy, t_end)?;
+        assert_or!(shares > U256::ZERO, Error::UnusualAmountCreated);
+        Ok((shares, ninetails_shares))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    #[allow(non_snake_case)]
     pub fn internal_dppm_mint(
         &mut self,
         outcome_id: FixedBytes<8>,
