@@ -8,6 +8,7 @@ import RetroCard from "@/components/cardRetro";
 import Link from "next/link";
 import Button from "@/components/themed/button";
 import CountdownTimer from "@/components/countdownTimer";
+import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -46,7 +47,7 @@ export default function ActiveCampaignProvider({
   const [liveCampaign, setLiveCampaign] = useState<SimpleCampaignDetail>();
   useEffect(() => {
     const unsubPrices = wsClient.subscribe<{
-      ninelives_campaigns_1: { content: SimpleCampaignDetail }[];
+      ninelives_campaigns_1: { content: SimpleCampaignDetail; id: string }[];
     }>(
       {
         query,
@@ -56,9 +57,15 @@ export default function ActiveCampaignProvider({
       },
       {
         next: async ({ data }) => {
-          const nextData = data?.ninelives_campaigns_1[0].content;
-          if (nextData && nextData.starting > previousData.starting) {
-            setLiveCampaign(nextData);
+          const _data = data?.ninelives_campaigns_1[0].content;
+          if (_data) {
+            const nextData = formatSimpleCampaignDetail({
+              ..._data,
+              identifier: data?.ninelives_campaigns_1[0].id,
+            });
+            if (nextData.starting > previousData.starting) {
+              setLiveCampaign(nextData);
+            }
           }
         },
         error: (error) => {
@@ -81,23 +88,23 @@ export default function ActiveCampaignProvider({
     <>
       {children}
       {liveCampaign ? (
-        <div className="fixed bottom-4 right-4 md:bottom-8">
-          <RetroCard
-            title="🔴 Live Campaign 🔴"
-            position="middle"
-            className="flex flex-col space-y-4"
-            showClose={false}
-          >
-            <Link
-              href={`/simple/campaign/${liveCampaign.priceMetadata.baseAsset}?id=${liveCampaign.identifier}`}
-              className="underlinve font-chicago text-xs"
-            >
-              New campaign is live!
-            </Link>
+        <RetroCard
+          title="🔴 Live Campaign 🔴"
+          position="middle"
+          className="flex flex-col items-center space-y-4"
+          showClose={false}
+        >
+          <span className="font-">New campaign is live!</span>
+          <div className="font-chicago">
             <CountdownTimer endTime={liveCampaign.ending} />
+          </div>
+          <Link
+            href={`/simple/campaign/${liveCampaign.priceMetadata.baseAsset}?cid=${liveCampaign.identifier}`}
+            className="underlinve font-chicago text-xs"
+          >
             <Button intent={"cta"}>Be the winner of the hour!</Button>
-          </RetroCard>
-        </div>
+          </Link>
+        </RetroCard>
       ) : null}
     </>
   );
