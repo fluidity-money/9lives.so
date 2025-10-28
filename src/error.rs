@@ -500,7 +500,7 @@ pub enum Error {
     NotDecided,
 
     // Someone called the muldiv function with a bad demoninator.
-    BadDenominator,
+    BadMuldiv,
 
     // We hit the maximum uint256 for a muldiv operation!
     MulDivIsU256Max,
@@ -512,8 +512,8 @@ pub enum Error {
     // No fees are available to claim!
     NoFeesToClaim,
 
-    // Pow overflowed inside the rooti function and became 0.
-    PowOverflow,
+    // Bad rooti argument.
+    BadRooti,
 
     // Subtraction underflow with a decimal function.
     CheckedSubOverflowD,
@@ -577,6 +577,9 @@ pub enum Error {
 
     /// The amount the user is trying to mint is too low.
     MintAmountTooLow,
+
+    /// Bad muldiv arguments.
+    BadMulDiv
 }
 
 #[cfg(any(

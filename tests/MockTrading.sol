@@ -225,15 +225,15 @@ contract MockTrading is INineLivesTrading {
         return uint256(keccak256(abi.encodePacked(spender)));
     }
 
-    function dppmSimulateMint(bytes8, uint256, address) external returns (uint256, uint256) {
+    function dppmSimulateMint(bytes8, uint256, address) external view returns (uint256, uint256) {
         return (0, 0);
     }
 
-    function dppmSimulatePayoff(uint256, uint256, bytes8) external returns (uint256, uint256) {
+    function dppmSimulatePayoff(uint256, uint256, bytes8) external view returns (uint256, uint256) {
         return (0, 0);
     }
 
-    function dppmSimulateEarnings(uint256, bytes8) external returns (uint256) {
+    function dppmSimulateEarnings(uint256, bytes8) external view returns (uint256) {
         return 0;
     }
 

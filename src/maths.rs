@@ -1,5 +1,7 @@
 use stylus_sdk::alloy_primitives::{U256, U64};
 
+use bobcat_maths::U;
+
 use crate::{error::Error, fees::FEE_SCALING};
 
 macro_rules! add {
@@ -76,50 +78,11 @@ pub fn ninetails_payoff_winners(
     Ok(add!(winnings, refund))
 }
 
-// Using this operation is the equivalent of pow(x, 1/n).
 pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {
-    if n == 0 {
-        return Err(Error::BadDenominator);
+    match U::from(x.to_be_bytes::<32>()).checked_rooti(n) {
+        Some(x) => Ok(U256::from_be_slice(&x.0)),
+        None => Err(Error::BadRooti),
     }
-    if x.is_zero() {
-        return Ok(U256::ZERO);
-    }
-    if n == 1 {
-        return Ok(x);
-    }
-    // Due to the nature of this iterative method, we must hardcode some
-    // values to have consistency with the reference.
-    if x == U256::from(4) && n == 2 {
-        return Ok(U256::from(2));
-    }
-    let n_u256 = U256::from(n);
-    let n_1 = n_u256 - U256::from(1);
-    // Initial guess: 2^ceil(bits(x)/n)
-    let mut b = 0;
-    let mut t = x;
-    while t != U256::ZERO {
-        b += 1;
-        t >>= 1;
-    }
-    let shift = (b + n as usize - 1) / n as usize;
-    let mut z = U256::from(1) << shift;
-    let mut y = x;
-    // Newton's method
-    while z < y {
-        y = z;
-        let p = z
-            .checked_pow(n_1)
-            .ok_or(Error::CheckedPowOverflow(z, n_1))?;
-        z = ((x / p) + (z * n_1)) / n_u256;
-    }
-    // Correct overshoot
-    if y.checked_pow(n_u256)
-        .ok_or(Error::CheckedPowOverflow(y, n_u256))?
-        > x
-    {
-        y -= U256::from(1);
-    }
-    Ok(y)
 }
 
 #[test]
@@ -128,33 +91,22 @@ fn test_rooti() {
 }
 
 /// Muldiv using the Chinese Remainder Theorem
-pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<(U256, bool), Error> {
-    if denom_and_rem == U256::ZERO {
-        return Err(Error::BadDenominator);
-    }
-    let mut mul_and_quo = a.widening_mul::<256, 4, 512, 8>(b);
-    unsafe {
-        ruint::algorithms::div(mul_and_quo.as_limbs_mut(), denom_and_rem.as_limbs_mut());
-    }
-    let limbs = mul_and_quo.into_limbs();
-    if limbs[4..] != [0_u64; 4] {
-        return Err(Error::BadDenominator);
-    }
-    let has_carry = denom_and_rem != U256::ZERO;
-    Ok((U256::from_limbs_slice(&limbs[0..4]), has_carry))
+pub fn mul_div(a: U256, b: U256, denom_and_rem: U256) -> Result<(U256, bool), Error> {
+    let a = U::from(a.to_be_bytes::<32>());
+    let b = U::from(b.to_be_bytes::<32>());
+    let denom_and_rem = U::from(denom_and_rem.to_be_bytes::<32>());
+    a.mul_div(&b, &denom_and_rem)
+        .ok_or(Error::BadMulDiv)
+        .map(|(x, b)| (U256::from_be_slice(&x.0), b))
 }
 
 pub fn mul_div_round_up(a: U256, b: U256, denominator: U256) -> Result<U256, Error> {
-    let (result, rem) = mul_div(a, b, denominator)?;
-    if rem {
-        if result == U256::MAX {
-            Err(Error::MulDivIsU256Max)
-        } else {
-            Ok(result + U256::from(1))
-        }
-    } else {
-        Ok(result)
-    }
+    let a = U::from(a.to_be_bytes::<32>());
+    let b = U::from(b.to_be_bytes::<32>());
+    let denominator = U::from(denominator.to_be_bytes::<32>());
+    a.mul_div_round_up(&b, &denominator)
+        .ok_or(Error::BadMulDiv)
+        .map(|x| U256::from_be_slice(&x.0))
 }
 
 pub fn calc_fee(x: U256, f: U256) -> Result<U256, Error> {

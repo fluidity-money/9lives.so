@@ -17,7 +17,7 @@ version = "0.8.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3d14d531c99995de71558e8e2206c27d709559ee8e5a0452b965ea82405a013"
 dependencies = [
- "alloy-primitives",
+ "alloy-primitives 0.8.14",
 ]
 
 [[package]]
@@ -32,7 +32,7 @@ dependencies = [
  "cfg-if",
  "const-hex",
  "derive_arbitrary",
- "derive_more",
+ "derive_more 1.0.0",
  "foldhash",
  "getrandom 0.2.16",
  "hashbrown",
@@ -49,6 +49,22 @@ dependencies = [
  "rustc-hash",
  "serde",
  "sha3",
+ "tiny-keccak",
+]
+
+[[package]]
+name = "alloy-primitives"
+version = "1.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc9485c56de23438127a731a6b4c87803d49faf1a7068dcd1d8768aca3a9edb9"
+dependencies = [
+ "bytes",
+ "cfg-if",
+ "const-hex",
+ "derive_more 2.0.1",
+ "itoa",
+ "paste",
+ "ruint",
  "tiny-keccak",
 ]
 
@@ -149,7 +165,7 @@ version = "0.8.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c9dc0fffe397aa17628160e16b89f704098bf3c9d74d5d369ebc239575936de5"
 dependencies = [
- "alloy-primitives",
+ "alloy-primitives 0.8.14",
  "alloy-sol-macro",
  "const-hex",
 ]
@@ -372,9 +388,9 @@ dependencies = [
 
 [[package]]
 name = "bobcat-cd"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67f326509cf25fd00c7460d2af4977d5930343a9443ffb881399900e2f40b845"
+checksum = "53755dc3fc95aadfa8a1984f316d9e7b405ad3493cb12dfa177bd50d395fae06"
 dependencies = [
  "array-concat",
  "bobcat-maths",
@@ -384,9 +400,9 @@ dependencies = [
 
 [[package]]
 name = "bobcat-interfaces"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f71c315b5239d2943c9d3417a8c96d7c2bd290649a2f8bba2db7f7bd36bdb50"
+checksum = "9afaa6e4e3e8aac3e5d11ecedfc28169cdab831e7d60d971621a57caf503a8a0"
 dependencies = [
  "array-concat",
  "bobcat-cd",
@@ -397,20 +413,22 @@ dependencies = [
 
 [[package]]
 name = "bobcat-maths"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6682e781f188cf5d5985d8ce3b803abb14506ea141907605cc658b9fc5aaabef"
+checksum = "c1a1e6f5fa12395d1c6a79e8706a61cd47f0146f629d31476c347d0d4b41b444"
 dependencies = [
+ "alloy-primitives 1.3.1",
  "cfg-if",
+ "const-hex",
  "mutants",
  "num-traits",
 ]
 
 [[package]]
 name = "bobcat-proxy"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6cbb0b8616f36b1c45846a5bceecdbbc556c9b74d0a86460e59205e6d441bb75"
+checksum = "527611de97eaf63401a5a0472cc96634af68cb58b12d28c82cafc76838ef13a8"
 dependencies = [
  "array-concat",
  "bobcat-interfaces",
@@ -420,9 +438,9 @@ dependencies = [
 
 [[package]]
 name = "bobcat-storage"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "582ebcef0a3dc00a64f0bcea693090d4a6fe7a869aeffc9b02ea29edbdcf94d3"
+checksum = "8d2da13ed038c5a03650addd0af719b2e1fc74e56770ea9082a4dfa586e9ea7e"
 dependencies = [
  "array-concat",
  "bobcat-maths",
@@ -606,7 +624,16 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a9b99b9cbbe49445b21764dc0625032a89b145a2642e67603e1c936f5458d05"
 dependencies = [
- "derive_more-impl",
+ "derive_more-impl 1.0.0",
+]
+
+[[package]]
+name = "derive_more"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "093242cf7570c207c83073cf82f79706fe7b8317e98620a47d5be7c3d8497678"
+dependencies = [
+ "derive_more-impl 2.0.1",
 ]
 
 [[package]]
@@ -614,6 +641,18 @@ name = "derive_more-impl"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb7330aeadfbe296029522e6c40f315320aba36fc43a5b3632f3795348f3bd22"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
+ "unicode-xid",
+]
+
+[[package]]
+name = "derive_more-impl"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bda628edc44c4bb645fbe0f758797143e4e07926f7ebf4e9bdfbd3d2ce621df3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1063,7 +1102,7 @@ name = "ninelives"
 version = "1.2.0"
 dependencies = [
  "alloy-core",
- "alloy-primitives",
+ "alloy-primitives 0.8.14",
  "alloy-sol-macro",
  "alloy-sol-macro-expander 0.7.6",
  "alloy-sol-macro-input 0.7.6",
@@ -1071,6 +1110,7 @@ dependencies = [
  "arbitrary",
  "array-concat",
  "arrayvec",
+ "bobcat-maths",
  "bobcat-proxy",
  "const-hex",
  "getrandom 0.2.16",
@@ -1757,7 +1797,7 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "38b0ee8d057be480a457704f982a38254e13a2a7d42bb4531132d3d440e371a6"
 dependencies = [
- "alloy-primitives",
+ "alloy-primitives 0.8.14",
  "alloy-sol-types",
  "cfg-if",
  "convert_case",
@@ -1778,7 +1818,7 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fec9700e00e9dfa862aad80e6b27e02e9fb0c6745f3f97f616368936faefad5f"
 dependencies = [
- "alloy-primitives",
+ "alloy-primitives 0.8.14",
  "alloy-sol-types",
  "cfg-if",
  "derivative",

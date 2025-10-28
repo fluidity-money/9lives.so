@@ -44,20 +44,7 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         value: U256,
     ) -> R<(U256, U256)> {
-        let outcome_a = self.outcome_list.get(0).unwrap();
-        let outcome_b = self.outcome_list.get(1).unwrap();
         let shares = self.internal_calc_dppm_mint(outcome_id, value)?;
-        {
-            let x = self.dppm_outcome_invested.get(outcome_id);
-            self.dppm_outcome_invested
-                .setter(outcome_id)
-                .set(x.checked_add(value).ok_or(Error::CheckedAddOverflow)?);
-        }
-        let outcome_other = if outcome_a == outcome_id {
-            outcome_b
-        } else {
-            outcome_a
-        };
         let t_start = self.time_start.get();
         let t_end = self.time_ending.get() - self.time_start.get();
         let t_now = U64::from(block_timestamp());

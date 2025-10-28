@@ -175,7 +175,7 @@ impl StorageTrading {
         _value: U256,
     ) -> R<(U256, U256)> {
         #[cfg(feature = "trading-backend-dppm")]
-        return self.internal_dppm_simulate_mint(outcome_id, _value);
+        return self.internal_dppm_simulate_mint(_outcome_id, _value);
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!()
     }
@@ -225,7 +225,8 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn dppm_simulate_earnings(&self, invested: U256, outcome: FixedBytes<8>) -> R<U256> {
         let (dppm_shares, ninetails_shares) = self.dppm_simulate_mint(outcome, invested)?;
-        dppm_simulate_payoff(dppm_shares, ninetails_shares, outcome)
+        let (dppm_fusdc, ninetails_fusdc) = self.dppm_simulate_payoff(dppm_shares, ninetails_shares, outcome)?;
+        Ok(dppm_fusdc + ninetails_fusdc)
     }
 
     pub fn dppm_clawback(&mut self) -> R<U256> {
