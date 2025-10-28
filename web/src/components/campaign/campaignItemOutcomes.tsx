@@ -51,7 +51,9 @@ export default function CampaignItemOutcomes({
             title={isDppm ? "Up" : outcomes[0].name}
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/campaign/${campaignId}`);
+              router.push(
+                `/campaign/${campaignId}?outcomeId=${isDppm ? outcomes[1].identifier : outcomes[0].identifier}`,
+              );
             }}
             className={"flex-1 truncate"}
           />
@@ -62,7 +64,7 @@ export default function CampaignItemOutcomes({
             onClick={(e) => {
               e.stopPropagation();
               router.push(
-                `/campaign/${campaignId}?outcomeId=${outcomes[1].identifier}`,
+                `/campaign/${campaignId}?outcomeId=${isDppm ? outcomes[0].identifier : outcomes[1].identifier}`,
               );
             }}
             className={"flex-1 truncate"}
