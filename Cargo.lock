@@ -372,20 +372,21 @@ dependencies = [
 
 [[package]]
 name = "bobcat-cd"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dc01affc26c118c45d74cdc91f823f5f59d625ba3af4bdcad6830a85ef1b0ad"
+checksum = "67f326509cf25fd00c7460d2af4977d5930343a9443ffb881399900e2f40b845"
 dependencies = [
  "array-concat",
  "bobcat-maths",
  "bobcat-storage",
+ "const-hex",
 ]
 
 [[package]]
 name = "bobcat-interfaces"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62643cda586060f716db9dd0630d1b66f37d144251eb82da0fea82f9b29f969b"
+checksum = "1f71c315b5239d2943c9d3417a8c96d7c2bd290649a2f8bba2db7f7bd36bdb50"
 dependencies = [
  "array-concat",
  "bobcat-cd",
@@ -396,9 +397,9 @@ dependencies = [
 
 [[package]]
 name = "bobcat-maths"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "000b544db0b040541cb7a2f7e674ff4cf61a9a151ea0cc716b91cc9aae490516"
+checksum = "6682e781f188cf5d5985d8ce3b803abb14506ea141907605cc658b9fc5aaabef"
 dependencies = [
  "cfg-if",
  "mutants",
@@ -407,9 +408,9 @@ dependencies = [
 
 [[package]]
 name = "bobcat-proxy"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "904df74d7b35932321c88311eb10f1bad1d320e7d565abca6e1cf04b9aa49a0b"
+checksum = "6cbb0b8616f36b1c45846a5bceecdbbc556c9b74d0a86460e59205e6d441bb75"
 dependencies = [
  "array-concat",
  "bobcat-interfaces",
@@ -419,9 +420,9 @@ dependencies = [
 
 [[package]]
 name = "bobcat-storage"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ccef8d6044cabd5c0a0cba7efdeb5d8463da1a49880c208cf5bf2c9e7defff3b"
+checksum = "582ebcef0a3dc00a64f0bcea693090d4a6fe7a869aeffc9b02ea29edbdcf94d3"
 dependencies = [
  "array-concat",
  "bobcat-maths",
@@ -1070,7 +1071,6 @@ dependencies = [
  "arbitrary",
  "array-concat",
  "arrayvec",
- "bobcat-maths",
  "bobcat-proxy",
  "const-hex",
  "getrandom 0.2.16",

@@ -2,9 +2,9 @@
 # 9lives
 
 9lives is the most customisable and advanced prediction market in the web3 ecosystem, with
-an orderbook and AMM feature. We can support teams interested in releasing prediction
-markets themselves using 9lives, including hosting the graph for you. If you're interested
-in this, contact us at [this
+a liquidity free bootstrapping model titled the DPPM, and an AMM feature. We can support
+teams interested in releasing prediction markets themselves using 9lives, including
+hosting the graph for you. If you're interested in this, contact us at [this
 link](https://docs.google.com/forms/d/e/1FAIpQLSfYfgLuQ0GU8K5vGj-kU0PciqHHQCCD60T7NHtLLmewkNvldg/viewform?usp=dialog)!
 
 ---
@@ -106,10 +106,10 @@ The error table lives in ERRORS.md.
 | Factory 2 implementation      | `0x7ec69f0785dbb944c57fc98e89e244710d00600b` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPPM mint impl        | `0x8c6f1ac8cfffa4207127dc985d510e5aaa76f0c2` |
-| Trading DPPM extras impl      | `0x8c0150fd1cfeb49b7b89b8f45893ce5df2002dd0` |
-| Trading DPPM price impl       | `0xfd11d4fcae3b18937589cde65a160a61ea87e1c1` |
-| Trading DPPM quotes impl      | `0x029992ae712ce8195591d9b68c54ab36e0e69bd1` |
+| Trading DPPM mint impl        | `0xce0116757b611b56dac50487716dbf64e716b75c` |
+| Trading DPPM extras impl      | `0x4ac5b20a542dc76d95c9ea11b07699d902545530` |
+| Trading DPPM price impl       | `0xc571cb273a30b347de48efda7e8ad4dfae757d78` |
+| Trading DPPM quotes impl      | `0x09e98990a0b6b3e91d43f86b8f4a7aca65503f31` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
 | Trading AMM price impl        | `0xb393ea32f302a9cc798f8296f5328172096553d2` |
