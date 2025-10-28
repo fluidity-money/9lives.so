@@ -37,7 +37,7 @@ export default function ChartPriceProvider({
       {
         query: subPricesForDuration,
         variables: {
-          symbol: symbol.toUpperCase(),
+          symbol: _symbol.toUpperCase(),
           starting: new Date().toISOString(),
           ending: new Date(ending).toISOString(),
         },
@@ -72,7 +72,7 @@ export default function ChartPriceProvider({
         error: (error) => {
           console.error(
             "WebSocket error for chart token",
-            symbol,
+            _symbol,
             starting,
             ending,
             error,
@@ -81,7 +81,7 @@ export default function ChartPriceProvider({
         complete: () => {
           console.log(
             "WebSocket chart subscription closed.",
-            symbol,
+            _symbol,
             starting,
             ending,
           );
@@ -91,7 +91,7 @@ export default function ChartPriceProvider({
     return () => {
       unsubPrices();
     };
-  }, [queryClient, symbol, starting, ending]);
+  }, [queryClient, _symbol, starting, ending]);
 
   return children;
 }

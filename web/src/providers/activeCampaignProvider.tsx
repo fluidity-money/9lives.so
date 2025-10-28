@@ -82,7 +82,7 @@ export default function ActiveCampaignProvider({
     return () => {
       unsubPrices();
     };
-  }, [queryClient, symbol]);
+  }, [queryClient, symbol, previousData.starting]);
 
   return (
     <>
@@ -94,13 +94,12 @@ export default function ActiveCampaignProvider({
           className="flex flex-col items-center space-y-4"
           showClose={false}
         >
-          <span className="font-">New campaign is live!</span>
+          <span className="font-chicago">New campaign is live!</span>
           <div className="font-chicago">
             <CountdownTimer endTime={liveCampaign.ending} />
           </div>
           <Link
             href={`/simple/campaign/${liveCampaign.priceMetadata.baseAsset}?cid=${liveCampaign.identifier}`}
-            className="underlinve font-chicago text-xs"
           >
             <Button intent={"cta"}>Be the winner of the hour!</Button>
           </Link>

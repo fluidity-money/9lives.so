@@ -184,7 +184,7 @@ export default function SimpleBuyDialog({
           </div>
         </div>
 
-        <div className="max-auto flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <span className="font-chicago text-xs">From</span>
           <ChainSelectorDropdown
             variant="small"
