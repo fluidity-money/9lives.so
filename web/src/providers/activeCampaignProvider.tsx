@@ -16,7 +16,16 @@ export const wsClient = createClient({
 
 const query = `
 subscription($symbol: String!) {
-  ninelives_campaigns_1(order_by: {created_at: desc}, where: {priceMetadata: {_eq: $symbol} }, limit: 1) {
+  ninelives_campaigns_1(
+      where: {
+        content:{ 
+          _contains: {
+            priceMetadata: {baseAsset: $symbol}
+          }
+        }
+      }, 
+      order_by: {created_at: desc}, 
+      limit: 1) {
     id
     created_at
     content
@@ -34,7 +43,6 @@ export default function ActiveCampaignProvider({
   children: Readonly<React.ReactNode>;
 }) {
   const queryClient = useQueryClient();
-  const _symbol = symbol.toLowerCase();
   const [liveCampaign, setLiveCampaign] = useState<SimpleCampaignDetail>();
   useEffect(() => {
     const unsubPrices = wsClient.subscribe<{
