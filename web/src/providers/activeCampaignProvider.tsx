@@ -65,6 +65,8 @@ export default function ActiveCampaignProvider({
             });
             if (nextData.starting > previousData.starting) {
               setLiveCampaign(nextData);
+            } else {
+              setLiveCampaign(undefined);
             }
           }
         },
