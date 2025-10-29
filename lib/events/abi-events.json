@@ -252,6 +252,25 @@
 	},
 	{
 		"type": "event",
+		"name": "DppmClawback",
+		"inputs": [
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "fusdcClawedback",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
 		"name": "Frozen",
 		"inputs": [
 			{
@@ -553,6 +572,111 @@
 				"type": "uint8",
 				"indexed": false,
 				"internalType": "uint8"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "NinetailsBoostedSharesReceived",
+		"inputs": [
+			{
+				"name": "spender",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "amountReceived",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "outcome",
+				"type": "bytes8",
+				"indexed": false,
+				"internalType": "bytes8"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "NinetailsCumulativeWinnerPayoff",
+		"inputs": [
+			{
+				"name": "spender",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "sharesSpent",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "fusdcReceived",
+				"type": "uint256",
+				"indexed": false,
+				"internalType": "uint256"
+			},
+			{
+				"name": "outcome",
+				"type": "bytes8",
+				"indexed": false,
+				"internalType": "bytes8"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "NinetailsLoserPayoff",
+		"inputs": [
+			{
+				"name": "spender",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "sharesSpent",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "fusdcReceived",
+				"type": "uint256",
+				"indexed": false,
+				"internalType": "uint256"
+			},
+			{
+				"name": "outcome",
+				"type": "bytes8",
+				"indexed": false,
+				"internalType": "bytes8"
 			}
 		],
 		"anonymous": false
