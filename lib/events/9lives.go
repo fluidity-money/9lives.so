@@ -468,7 +468,7 @@ func UnpackNinetailsLoserPayoff(topic1, topic2, topic3 ethCommon.Hash, b []byte)
 func UnpackDppmClawback(topic1, topic2 ethCommon.Hash) (*events.EventDppmClawback, error) {
 	return &events.EventDppmClawback{
 		Recipient:       hashToAddr(topic1),
-		FusdcClawedback: hashToNumber(topic2),
+		FusdcClawback: hashToNumber(topic2),
 	}, nil
 }
 
