@@ -473,3 +473,43 @@ func TestPunkDomainsDefaultDomainChanged(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, wasRun)
 }
+
+func TestBoostedSharesReceived(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0xa3843ebe8cf25e8f8a412dee91cc53606d51391e",
+		"blockHash": "0x66524bf8b274fe259fad65cd112880a23ada14281cf52a38411b9c5e7f59749d",
+		"blockNumber": "0x232f1b",
+		"data": "0x531cc94edaed0b05000000000000000000000000000000000000000000000000",
+		"logIndex": "0x5",
+		"removed": false,
+		"topics": [
+			"0x0cab209f3f5a08a6f79c48b8b3eea4815e5fd18d08bdaa4c26c0f00a65f6beb1",
+			"0x000000000000000000000000e990f05e2264f56435fd7589fa2f70a879b0ce9f",
+			"0x0000000000000000000000006221a9c005f6e47eb398fd867784cacfdcfff4e7",
+			"0x000000000000000000000000000000000000000000000000000000035e22e6cc"
+		],
+		"transactionHash": "0x5784d6f08b628336ec454c8f72a86f52288bf5c58be2938232570b2b85f67e1f",
+		"transactionIndex": "0x1"
+	}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	handleLogCallback(
+		testIngestorArgs(factoryAddr),
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return addr == "0xa3843ebe8cf25e8f8a412dee91cc53606d51391e", nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "ninelives_events_ninetails_boosted_shares_received", table, "table not equal")
+			_, ok := a.(*events.EventBoostedSharesReceived)
+			assert.Truef(t, ok, "BoostedSharesReceived type coercion not true")
+			wasRun = true
+			return nil
+		})
+	assert.True(t, wasRun)
+}

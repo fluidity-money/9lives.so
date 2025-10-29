@@ -404,7 +404,7 @@ func UnpackAmmDetails(topic1 ethCommon.Hash, d []byte) (*events.EventAmmDetails,
 	}, nil
 }
 
-func UnpackNinetailsBoostedSharesReceived(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNinetailsBoostedSharesReceived, error) {
+func UnpackNinetailsBoostedSharesReceived(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventBoostedSharesReceived, error) {
 	a, err := abi.Unpack("NinetailsBoostedSharesReceived", b)
 	if err != nil {
 		return nil, err
@@ -413,7 +413,7 @@ func UnpackNinetailsBoostedSharesReceived(topic1, topic2, topic3 ethCommon.Hash,
 	if !ok {
 		return nil, fmt.Errorf("bad outcome: %T", a[0])
 	}
-	return &events.EventNinetailsBoostedSharesReceived{
+	return &events.EventBoostedSharesReceived{
 		Spender:        hashToAddr(topic1),
 		Recipient:      hashToAddr(topic2),
 		AmountReceived: hashToNumber(topic3),
@@ -421,7 +421,7 @@ func UnpackNinetailsBoostedSharesReceived(topic1, topic2, topic3 ethCommon.Hash,
 	}, nil
 }
 
-func UnpackNinetailsCumulativeWinnerPayoff(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNinetailsCumulativeWinnerPayoff, error) {
+func UnpackNinetailsCumulativeWinnerPayoff(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventCumulativeWinnerPayoff, error) {
 	a, err := abi.Unpack("NinetailsCumulativeWinnerPayoff", b)
 	if err != nil {
 		return nil, err
@@ -434,7 +434,7 @@ func UnpackNinetailsCumulativeWinnerPayoff(topic1, topic2, topic3 ethCommon.Hash
 	if !ok {
 		return nil, fmt.Errorf("bad outcome: %T", a[1])
 	}
-	return &events.EventNinetailsCumulativeWinnerPayoff{
+	return &events.EventCumulativeWinnerPayoff{
 		Spender:       hashToAddr(topic1),
 		Recipient:     hashToAddr(topic2),
 		SharesSpent:   hashToNumber(topic3),
@@ -443,7 +443,7 @@ func UnpackNinetailsCumulativeWinnerPayoff(topic1, topic2, topic3 ethCommon.Hash
 	}, nil
 }
 
-func UnpackNinetailsLoserPayoff(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNinetailsLoserPayoff, error) {
+func UnpackNinetailsLoserPayoff(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventLoserPayoff, error) {
 	a, err := abi.Unpack("NinetailsLoserPayoff", b)
 	if err != nil {
 		return nil, err
@@ -456,7 +456,7 @@ func UnpackNinetailsLoserPayoff(topic1, topic2, topic3 ethCommon.Hash, b []byte)
 	if !ok {
 		return nil, fmt.Errorf("bad outcome: %T", a[1])
 	}
-	return &events.EventNinetailsLoserPayoff{
+	return &events.EventLoserPayoff{
 		Spender:       hashToAddr(topic1),
 		Recipient:     hashToAddr(topic2),
 		SharesSpent:   hashToNumber(topic3),

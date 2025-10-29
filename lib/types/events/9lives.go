@@ -265,7 +265,7 @@ type (
 		Shares  ShareDetails `json:"shares"`
 	}
 
-	EventNinetailsBoostedSharesReceived struct {
+	EventBoostedSharesReceived struct {
 		Event
 
 		Spender        Address `json:"spender"`
@@ -274,7 +274,7 @@ type (
 		Outcome        Bytes   `json:"outcome"`
 	}
 
-	EventNinetailsCumulativeWinnerPayoff struct {
+	EventCumulativeWinnerPayoff struct {
 		Event
 
 		Spender       Address `json:"spender"`
@@ -284,7 +284,7 @@ type (
 		Outcome       Bytes   `json:"outcome"`
 	}
 
-	EventNinetailsLoserPayoff struct {
+	EventLoserPayoff struct {
 		Event
 
 		Spender       Address `json:"spender"`
