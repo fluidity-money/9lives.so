@@ -298,7 +298,7 @@ type (
 		Event
 
 		Recipient       Address `json:"recipient"`
-		FusdcClawedback Number  `json:"fusdc_clawedback"`
+		FusdcClawedback Number  `json:"fusdc_clawback"`
 	}
 )
 

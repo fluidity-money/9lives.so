@@ -513,3 +513,42 @@ func TestBoostedSharesReceived(t *testing.T) {
 		})
 	assert.True(t, wasRun)
 }
+
+func TestDppmClawback(t *testing.T) {
+	s := strings.NewReader(`{
+		"address": "0xbfb767efaec39d1738ebc214e1189bd0a91b60cb",
+		"blockHash": "0x7a007a1c580460f0abd11fff41edb5f9ce5e5bf912eab5f5d85b3459a5a2aeca",
+		"blockNumber": "0x232f5f",
+		"data": "0x",
+		"logIndex": "0x4d",
+		"removed": false,
+		"topics": [
+			"0x53c28b0c0acb8d48a6e9ee844ff1ee8f31dd3d30312dbac30acde9acd95de4f6",
+			"0x000000000000000000000000a2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab",
+			"0x00000000000000000000000000000000000000000000000000000000001e8480"
+		],
+		"transactionHash": "0x43b445f020e0aa6889aaea4585e077e7cfec4449e5653da063ee681f3374a57f",
+		"transactionIndex": "0x1"
+	}`)
+	var l ethTypes.Log
+	assert.Nilf(t, json.NewDecoder(s).Decode(&l), "failed to decode log")
+	wasRun := false
+	factoryAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
+	handleLogCallback(
+		testIngestorArgs(factoryAddr),
+		l,
+		func(blockHash, txHash, addr string) error {
+			return nil // Unused for this test.
+		},
+		func(addr string) (bool, error) {
+			return addr == "0xbfb767efaec39d1738ebc214e1189bd0a91b60cb", nil
+		},
+		func(table string, a any) error {
+			assert.Equalf(t, "ninelives_events_dppm_clawback", table, "table not equal")
+			_, ok := a.(*events.EventDppmClawback)
+			assert.Truef(t, ok, "BoostedSharesReceived type coercion not true")
+			wasRun = true
+			return nil
+		})
+	assert.True(t, wasRun)
+}
