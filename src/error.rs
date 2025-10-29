@@ -579,7 +579,10 @@ pub enum Error {
     MintAmountTooLow,
 
     /// Bad muldiv arguments.
-    BadMulDiv
+    BadMulDiv,
+
+    /// The market has to be concluded for a clawback to happen!
+    MarketNotOverForClawback
 }
 
 #[cfg(any(

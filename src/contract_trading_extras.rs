@@ -244,8 +244,12 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dppm")]
         {
             assert_or!(
-                self.dppm_clawback_impossible.get(),
+                !self.dppm_clawback_impossible.get(),
                 Error::ClawbackAlreadyHappened
+            );
+            assert_or!(
+                U64::from(block_timestamp()) > self.time_ending.get(),
+                Error::MarketNotOverForClawback
             );
             self.dppm_clawback_impossible.set(true);
             let amt = fusdc_call::balance_of(contract_address())?;
@@ -254,7 +258,8 @@ impl StorageTrading {
                 recipient: CLAWBACK_RECIPIENT_ADDR,
                 fusdcClawedback: amt,
             });
-            Ok(amt)
+            let shutdown = self.internal_shutdown()?;
+            Ok(amt + shutdown)
         }
     }
 }
