@@ -163,7 +163,8 @@ interface INineLivesTrading {
     function dppmSimulatePayoff(
         uint256 shares,
         uint256 boostedShares,
-        bytes8 outcome
+        bytes8 outcome,
+        uint256 fusdc
     ) external returns (
         uint256 dppmFusdc,
         uint256 ninetailsFusdc

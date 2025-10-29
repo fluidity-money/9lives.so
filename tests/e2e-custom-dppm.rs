@@ -157,6 +157,7 @@ proptest! {
                 set_msg_sender(sender);
                 referrer_fee +=  maths::calc_fee(fusdc_amt, U256::from(fee_referrer)).unwrap();
                 creator_fee += maths::calc_fee(fusdc_amt, U256::from(fee_creator)).unwrap();
+                c.dppm_simulate_earnings(fusdc_amt, outcome).unwrap();
                 let s = should_spend_fusdc_sender!(fusdc_amt, {
                     match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
                         outcome,
