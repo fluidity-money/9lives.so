@@ -90,12 +90,11 @@ fn test_rooti() {
     assert_eq!(U256::from(2), rooti(U256::from(4), 2).unwrap());
 }
 
-/// Muldiv using the Chinese Remainder Theorem
 pub fn mul_div(a: U256, b: U256, denom_and_rem: U256) -> Result<(U256, bool), Error> {
     let a = U::from(a.to_be_bytes::<32>());
     let b = U::from(b.to_be_bytes::<32>());
     let denom_and_rem = U::from(denom_and_rem.to_be_bytes::<32>());
-    a.mul_div(&b, &denom_and_rem)
+    a.ruint_mul_div(&b, denom_and_rem)
         .ok_or(Error::BadMulDiv)
         .map(|(x, b)| (U256::from_be_slice(&x.0), b))
 }
@@ -104,7 +103,7 @@ pub fn mul_div_round_up(a: U256, b: U256, denominator: U256) -> Result<U256, Err
     let a = U::from(a.to_be_bytes::<32>());
     let b = U::from(b.to_be_bytes::<32>());
     let denominator = U::from(denominator.to_be_bytes::<32>());
-    a.mul_div_round_up(&b, &denominator)
+    a.ruint_mul_div_round_up(&b, denominator)
         .ok_or(Error::BadMulDiv)
         .map(|x| U256::from_be_slice(&x.0))
 }

@@ -59,10 +59,14 @@ impl StorageTrading {
 
     #[allow(non_snake_case)]
     pub fn fees_62_D_A_A_154(&self) -> R<(U256, U256, U256, U256)> {
+        #[cfg(feature = "trading-backend-amm")]
+        let fee_lp = self.fee_lp.get();
+        #[cfg(not(feature = "trading-backend-amm"))]
+        let fee_lp = U256::ZERO;
         Ok((
             self.fee_creator.get(),
             self.fee_minter.get(),
-            self.fee_lp.get(),
+            fee_lp,
             self.fee_referrer.get(),
         ))
     }
