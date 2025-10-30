@@ -23,8 +23,8 @@ macro_rules! div {
 }
 
 #[allow(non_snake_case)]
-pub fn dppm_price(M1: U256, M2: U256) -> Result<U256, Error> {
-    Ok(div!(M1, add!(M1, M2)))
+pub fn dppm_price(x: U256, M1: U256, M2: U256) -> Result<U256, Error> {
+    Ok(div!(x * FEE_SCALING, add!(M1, M2)))
 }
 
 #[allow(non_snake_case)]

@@ -11,6 +11,10 @@ cargo test --features testing,trading-backend-dppm $@
 
 cargo test --features testing,trading-backend-amm $@
 
+cargo clippy --no-deps --features testing,trading-backend-dppm
+
+cargo clippy --no-deps --features testing,trading-backend-amm
+
 go test ./...
 
 if ! [ -z "$SPN_TEST_NO_JS" ]; then

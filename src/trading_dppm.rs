@@ -175,7 +175,7 @@ impl StorageTrading {
             .get(outcome_id)
             .is_zero()
         {
-            return Ok(U256::ZERO)
+            return Ok(U256::ZERO);
         }
         let shares = self
             .ninetails_user_boosted_shares
@@ -337,18 +337,12 @@ impl StorageTrading {
     }
 
     pub fn internal_dppm_price(&self, id: FixedBytes<8>) -> R<U256> {
-        if self.dppm_outcome_invested.get(id).is_zero() {
-            return Ok(U256::ZERO);
-        }
         maths::dppm_price(
             self.dppm_outcome_invested.get(id),
-            self.dppm_global_invested
-                .get()
-                .checked_sub(self.dppm_outcome_invested.get(id))
-                .ok_or(Error::CheckedSubOverflow(
-                    self.dppm_global_invested.get(),
-                    self.dppm_outcome_invested.get(id),
-                ))?,
+            self.dppm_outcome_invested
+                .get(self.outcome_list.get(0).unwrap()),
+            self.dppm_outcome_invested
+                .get(self.outcome_list.get(1).unwrap()),
         )
     }
 }
