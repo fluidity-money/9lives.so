@@ -126,6 +126,7 @@ export default function SimpleBody({
         boxContainerClass="md:max-w-screen max-w-[400px]"
       >
         <SimpleBuyDialog
+          closeDialog={() => setIsBuyDialogOpen(false)}
           data={data}
           outcomeIdx={outcomeIdx}
           setOutcomeIdx={setOutcomeIdx}

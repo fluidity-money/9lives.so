@@ -28,10 +28,12 @@ export default function SimpleBuyDialog({
   data,
   outcomeIdx,
   setOutcomeIdx,
+  closeDialog,
 }: {
   data: SimpleCampaignDetail;
   outcomeIdx: number;
   setOutcomeIdx: React.Dispatch<number>;
+  closeDialog: () => void;
 }) {
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const [isMinting, setIsMinting] = useState(false);
@@ -159,6 +161,7 @@ export default function SimpleBuyDialog({
         let action = enabledPaymaster ? buyWithPaymaster : buy;
         await action(Number(supply), profile?.settings?.refererr ?? "");
       }
+      closeDialog();
     } finally {
       setIsMinting(false);
     }
