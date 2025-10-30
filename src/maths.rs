@@ -2,7 +2,7 @@ use stylus_sdk::alloy_primitives::{U256, U64};
 
 use bobcat_maths::U;
 
-use crate::{error::Error, fees::FEE_SCALING};
+use crate::{error::Error, fees::FEE_SCALING, immutables::FUSDC_DECIMALS_EXP};
 
 macro_rules! add {
     ($x:expr, $y:expr) => {
@@ -24,7 +24,7 @@ macro_rules! div {
 
 #[allow(non_snake_case)]
 pub fn dppm_price(x: U256, M1: U256, M2: U256) -> Result<U256, Error> {
-    Ok(div!(x * FEE_SCALING, add!(M1, M2)))
+    Ok(div!(x * FUSDC_DECIMALS_EXP, add!(M1, M2)))
 }
 
 #[allow(non_snake_case)]
