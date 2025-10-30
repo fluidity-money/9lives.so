@@ -10,6 +10,7 @@ import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
 import { useState } from "react";
 import ActiveCampaignProvider from "@/providers/activeCampaignProvider";
+import useSharePrices from "@/hooks/useSharePrices";
 
 export default function SimpleBody({
   data,
@@ -27,6 +28,10 @@ export default function SimpleBody({
       initialData: initialAssetPrices,
     },
   );
+  const { data: sharePrices } = useSharePrices({
+    tradingAddr: data.poolAddress as `0x${string}`,
+    outcomeIds: data.outcomes.map((o) => o.identifier as `0x${string}`),
+  });
   const isEnded = Date.now() > data.ending;
   const [outcomeIdx, setOutcomeIdx] = useState(0);
 
@@ -59,19 +64,6 @@ export default function SimpleBody({
         assetPrices={assetPrices}
         assetsLoaded={assetsLoaded}
       />
-      {data.investmentAmounts.length > 1 ? (
-        <div className="flex flex-row items-center gap-1">
-          <span className="font-chicago text-sm">
-            %{+(0.2 * 100).toFixed(0)}
-          </span>
-          <div className="h-2 flex-1 bg-9red">
-            <div className="h-2 bg-9green" style={{ width: `${0.2 * 100}%` }} />
-          </div>
-          <span className="font-chicago text-sm">
-            %{+(0.8 * 100).toFixed(0)}
-          </span>
-        </div>
-      ) : null}
       <div className="sticky inset-x-0 bottom-0 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
         {isEnded ? (
           <p
@@ -111,6 +103,22 @@ export default function SimpleBody({
           </>
         )}
       </div>
+      {sharePrices && sharePrices.length === 2 ? (
+        <div className="flex flex-row items-center gap-1">
+          <span className="font-chicago text-sm">
+            %{(Number(sharePrices[1].price) * 100).toFixed(0)}
+          </span>
+          <div className="h-2 flex-1 bg-9red">
+            <div
+              className="h-2 bg-9green"
+              style={{ width: `${Number(sharePrices[1].price) * 100}%` }}
+            />
+          </div>
+          <span className="font-chicago text-sm">
+            %{(Number(sharePrices[0].price) * 100).toFixed(0)}
+          </span>
+        </div>
+      ) : null}
       <Modal
         isOpen={isBuyDialogOpen}
         setIsOpen={setIsBuyDialogOpen}
