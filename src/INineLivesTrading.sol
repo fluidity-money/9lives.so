@@ -175,5 +175,13 @@ interface INineLivesTrading {
         bytes8 outcome
     ) external returns (uint256 returnFusdc);
 
+    function dppmSimulatePayoffForAddress(
+        address spender,
+        bytes8 outcome
+    ) external returns (
+        uint256 dppmFusdc,
+        uint256 ninetailsFusdc
+    );
+
     function dppmClawback() external returns (uint256);
 }

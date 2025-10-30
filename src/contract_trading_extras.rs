@@ -4,7 +4,7 @@ use crate::{
     error::*,
     events,
     immutables::*,
-    proxy,
+    proxy, share_call,
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
@@ -238,6 +238,31 @@ impl StorageTrading {
         }
     }
 
+    pub fn dppm_simulate_payoff_for_address(
+        &self,
+        spender: Address,
+        outcome_id: FixedBytes<8>,
+    ) -> R<(U256, U256)> {
+        #[cfg(not(feature = "trading-backend-dppm"))]
+        unimplemented!();
+        #[cfg(feature = "trading-backend-dppm")]
+        {
+            let share_amt = share_call::balance_of(
+                proxy::get_share_addr(
+                    self.factory_addr.get(),
+                    contract_address(),
+                    self.share_impl.get(),
+                    outcome_id,
+                ),
+                spender,
+            )?;
+            let user_boosted_shares = self
+                .ninetails_user_boosted_shares
+                .getter(spender)
+                .get(outcome_id);
+            self.dppm_simulate_payoff(share_amt, user_boosted_shares, outcome_id, U256::ZERO)
+        }
+    }
     pub fn dppm_clawback(&mut self) -> R<U256> {
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!();
