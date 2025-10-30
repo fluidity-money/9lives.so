@@ -6,6 +6,7 @@ import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
 import CustomToaster from "@/components/customToaster";
 import CookieBanner from "@/components/cookieBanner";
+import Providers from "@/providers";
 
 const chicago = localFont({
   src: [
@@ -72,7 +73,7 @@ export default async function RootLayout({
       ])}
     >
       <body className="flex min-h-screen flex-col bg-9layer">
-        {children}
+        <Providers>{children}</Providers>
         <CookieBanner />
         <CustomToaster />
       </body>

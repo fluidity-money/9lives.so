@@ -1,6 +1,5 @@
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import Providers from "@/providers";
 
 export default function SimpleLayout({
   children,
@@ -8,12 +7,12 @@ export default function SimpleLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Providers>
+    <>
       <Header simple />
       <main className="mx-auto flex max-w-[600px] flex-1 gap-2">
         <div className="flex-1 p-4">{children}</div>
       </main>
       <Footer simple />
-    </Providers>
+    </>
   );
 }

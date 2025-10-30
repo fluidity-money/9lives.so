@@ -1,22 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import appConfig from "@/config";
-import { BuyAndSellResponse, CreationResponse, PricePoint } from "@/types";
+import { PricePoint } from "@/types";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
-import {
-  formatActionFromBuysAndSells,
-  formatActionFromCreation,
-} from "@/utils/format/formatActions";
 
 export default function ReactQueryProvider({
   children,
-  initialData,
 }: {
   children: React.ReactNode;
-  initialData?: {
-    degenBuysAndSells: BuyAndSellResponse;
-    degenCreations: CreationResponse;
-  };
 }) {
   const [queryClient] = useState(() => {
     // eslint-disable-next-line @tanstack/query/stable-query-client
@@ -28,23 +19,6 @@ export default function ReactQueryProvider({
         return await res.json();
       },
     });
-
-    if (initialData) {
-      const buyAndSellActions =
-        initialData.degenBuysAndSells.ninelives_buys_and_sells_1.map((e) =>
-          formatActionFromBuysAndSells(e),
-        );
-      const creationActions =
-        initialData.degenCreations.ninelives_campaigns_1.map((c) =>
-          formatActionFromCreation(c),
-        );
-      client.setQueryDefaults(["actions"], {
-        initialData: [...creationActions, ...buyAndSellActions].sort(
-          (a, b) =>
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-        ),
-      });
-    }
 
     client.setQueryDefaults<PricePoint[]>(["assetPrices"], {
       queryFn: async ({ queryKey }) => {

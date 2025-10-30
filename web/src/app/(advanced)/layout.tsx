@@ -4,12 +4,12 @@ import Changelog from "@/components/changelog";
 import DegenModeWrapper from "@/components/degenMode/degenModeWrapper";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import Providers from "@/providers";
 import {
   getCachedBuysAndSells,
   getCachedCreations,
 } from "@/serverData/getActions";
 import { BuyAndSellResponse, CreationResponse } from "@/types";
+import AdvancedModeProvider from "@/providers/advancedModeProvider";
 
 export default async function AdvancedLayout({
   children,
@@ -21,12 +21,10 @@ export default async function AdvancedLayout({
     getCachedBuysAndSells() as Promise<BuyAndSellResponse>,
   ]);
   return (
-    <Providers
-      initialData={{
-        degenCreations,
-        degenBuysAndSells,
-      }}
-    >
+    <>
+      <AdvancedModeProvider
+        initialData={{ degenCreations, degenBuysAndSells }}
+      />
       <Header />
       <main className="flex flex-1 gap-2">
         <div className="flex-1 p-4">{children}</div>
@@ -36,6 +34,6 @@ export default async function AdvancedLayout({
       <Changelog />
       <EmailSuggester />
       <DegenModeFloatingButton />
-    </Providers>
+    </>
   );
 }

@@ -2,7 +2,6 @@
 import { ThirdwebProvider } from "thirdweb/react";
 import ReactQueryProvider from "./reactQuery";
 import ContextInjector from "./contextInjector";
-import { BuyAndSellResponse, Campaign, CreationResponse } from "@/types";
 import PostHogProvider from "./postHog";
 import WebSocketProvider from "./websocket";
 import ReferralHandler from "./referralHandler";
@@ -11,19 +10,10 @@ import LiFiProvider from "./lifi";
 import FarcasterProvider from "./farcaster";
 import RelayProvider from "./relay";
 
-export default function Providers({
-  children,
-  initialData,
-}: {
-  children: React.ReactNode;
-  initialData?: {
-    degenBuysAndSells: BuyAndSellResponse;
-    degenCreations: CreationResponse;
-  };
-}) {
+export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThirdwebProvider>
-      <ReactQueryProvider initialData={initialData}>
+      <ReactQueryProvider>
         <ContextInjector />
         <WebSocketProvider />
         <FarcasterProvider />
