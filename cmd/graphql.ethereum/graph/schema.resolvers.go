@@ -1872,6 +1872,28 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string) (*t
 	return &campaign, nil
 }
 
+// TimebasedCampaigns is the resolver for the timebasedCampaigns field.
+func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []string) ([]*types.Campaign, error) {
+	var campaigns []*types.Campaign
+	jsonCategories, err := json.Marshal(categories)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal categories: %w", err)
+	}
+	err = r.DB.Raw(`
+	SELECT DISTINCT ON (content->'priceMetadata'->>'baseAsset')
+    id,
+    content,
+    created_at
+	FROM ninelives_campaigns_1
+	WHERE content->'categories' @> ?::jsonb
+	ORDER BY content->'priceMetadata'->>'baseAsset', content->'priceMetadata'->>'priceTargetForUp' DESC;
+	`, jsonCategories).Scan(&campaigns).Error
+	if err != nil {
+		return nil, fmt.Errorf("Error getting timebased campaigns")
+	}
+	return campaigns, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {
