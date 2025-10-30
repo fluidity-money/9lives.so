@@ -81,7 +81,7 @@ export default function SimpleBody({
         ) : (
           <>
             <Button
-              title="Up"
+              title="UP"
               intent={"yes"}
               size={"xlarge"}
               className={"flex-auto"}
@@ -91,7 +91,7 @@ export default function SimpleBody({
               }}
             />
             <Button
-              title="Down"
+              title="DOWN"
               intent={"no"}
               size={"xlarge"}
               className={"flex-auto"}
