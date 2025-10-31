@@ -229,6 +229,14 @@ export interface Query<
   campaignBySymbol?:
     | Query.campaignBySymbol<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.campaignBySymbol<_$Scalars>>;
+  /**
+   *
+   * Select the `timebasedCampaigns` field on the `Query` object. Its type is `Campaign` (a `OutputObject` kind of type).
+   *
+   */
+  timebasedCampaigns?:
+    | Query.timebasedCampaigns<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.timebasedCampaigns<_$Scalars>>;
 
   /**
    *
@@ -1094,6 +1102,46 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<campaignBySymbol$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type timebasedCampaigns<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = timebasedCampaigns$SelectionSet<_$Scalars>;
+
+  export interface timebasedCampaigns$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$Campaign<_$Scalars> {
+    /**
+     * Arguments for `timebasedCampaigns` field. All arguments are required so you must include this.
+     */
+    $: timebasedCampaigns$Arguments<_$Scalars>;
+  }
+
+  export interface timebasedCampaigns$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    categories: Array<string | undefined | null>;
+    tokens: Array<string | undefined | null>;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `timebasedCampaigns` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type timebasedCampaigns$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<timebasedCampaigns$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -1421,7 +1469,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > extends $Select.Bases.Base {
     /**
-     * Arguments for `explainCampaign` field. Some (9/17) arguments are required so you must include this.
+     * Arguments for `explainCampaign` field. Some (9/18) arguments are required so you must include this.
      */
     $: explainCampaign$Arguments<_$Scalars>;
   }
@@ -1497,6 +1545,11 @@ export namespace Mutation {
      * Is this a DPPM market? This is needed for price prediction market types.
      */
     isDppm: boolean;
+    /**
+     * Explicitly set the categories, potentially requiring the user submit some credentials
+     * to do so.
+     */
+    categories?: Array<string | undefined | null> | undefined | null;
     /**
      * Price metadata field is needed for automated resolution of some kinds of DPPM markets.
      * The admin secret is needed for this.

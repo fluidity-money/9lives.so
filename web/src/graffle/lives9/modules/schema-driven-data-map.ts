@@ -632,6 +632,19 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
+    timebasedCampaigns: {
+      a: {
+        categories: {
+          nt: String,
+          it: [1, [1]],
+        },
+        tokens: {
+          nt: String,
+          it: [1, [1]],
+        },
+      },
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -851,6 +864,10 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: Boolean,
           it: [1],
         },
+        categories: {
+          nt: String,
+          it: [0, [1]],
+        },
         priceMetadata: {
           nt: PriceMetadataInput,
           it: [0],
@@ -1007,6 +1024,7 @@ Query.f[`userWonCampaignsProfits`]!.nt = CampaignProfit;
 Query.f[`campaignComments`]!.nt = Comment;
 Query.f[`campaignPriceEvents`]!.nt = PriceEvent;
 Query.f[`campaignBySymbol`]!.nt = Campaign;
+Query.f[`timebasedCampaigns`]!.nt = Campaign;
 
 //
 //

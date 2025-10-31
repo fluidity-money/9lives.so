@@ -50,6 +50,7 @@ export namespace Schema {
       campaignPriceEvents: Query.campaignPriceEvents;
       campaignWeeklyVolume: Query.campaignWeeklyVolume;
       campaignBySymbol: Query.campaignBySymbol;
+      timebasedCampaigns: Query.timebasedCampaigns;
     };
   }
 
@@ -496,6 +497,29 @@ export namespace Schema {
         };
       };
       inlineType: [0];
+      namedType: $$NamedTypes.$$Campaign;
+    }
+
+    /**
+     * Return unique latest active timebased campaigns for tokens
+     */
+    export interface timebasedCampaigns extends $.OutputField {
+      name: "timebasedCampaigns";
+      arguments: {
+        categories: {
+          kind: "InputField";
+          name: "categories";
+          inlineType: [1, [1]];
+          namedType: $$NamedTypes.$$String;
+        };
+        tokens: {
+          kind: "InputField";
+          name: "tokens";
+          inlineType: [1, [1]];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Campaign;
     }
   }
@@ -974,6 +998,16 @@ export namespace Schema {
           name: "isDppm";
           inlineType: [1];
           namedType: $$NamedTypes.$$Boolean;
+        };
+        /**
+         * Explicitly set the categories, potentially requiring the user submit some credentials
+         * to do so.
+         */
+        categories: {
+          kind: "InputField";
+          name: "categories";
+          inlineType: [0, [1]];
+          namedType: $$NamedTypes.$$String;
         };
         /**
          * Price metadata field is needed for automated resolution of some kinds of DPPM markets.
