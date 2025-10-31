@@ -22,6 +22,7 @@ import useLiquidity from "@/hooks/useLiquidity";
 import { HeaderBox } from "./detailHeaderBox";
 import DetailCurrentPriceBox from "./detailCurrentPriceBox";
 import config from "@/config";
+import formatDppmName from "@/utils/format/formatDppmName";
 
 export default function DetailHeader({
   data,
@@ -60,7 +61,16 @@ export default function DetailHeader({
     Number(userLiquidity) > 0 &&
     Number(data.liquidityVested) > 1e6;
   const displayClaimBtn = !!unclaimedRewards && unclaimedRewards > BigInt(0);
-  const dppmName = `${data.priceMetadata?.baseAsset} above $${data.priceMetadata?.priceTargetForUp} on ${new Date(data.ending).toLocaleString("default", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
+  let name = "";
+  if (data.isDppm && data.priceMetadata) {
+    name = formatDppmName({
+      symbol: data.priceMetadata.baseAsset,
+      price: data.priceMetadata.priceTargetForUp,
+      end: data.ending,
+    });
+  } else {
+    name = data.name;
+  }
 
   useEffect(() => {
     (async function () {
@@ -169,9 +179,7 @@ export default function DetailHeader({
                 className="h-[16px] w-auto"
                 height={16}
               />{" "}
-              <h1 className="font-chicago text-xl md:text-2xl">
-                {data.isDppm ? dppmName : data.name}
-              </h1>
+              <h1 className="font-chicago text-xl md:text-2xl">{name}</h1>
             </div>
           </div>
         </div>

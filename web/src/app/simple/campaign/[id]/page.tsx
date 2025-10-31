@@ -12,6 +12,7 @@ import CountdownTimer from "@/components/countdownTimer";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import { RawCampaignDetail, RawSimpleCampaignDetail } from "@/types";
+import formatDppmName from "@/utils/format/formatDppmName";
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ cid: string }>;
 export const dynamicParams = true;
@@ -58,7 +59,12 @@ export default async function SimpleDetailPage({
     starting: data.starting,
     ending: data.ending,
   });
-  const dppmName = `${data.priceMetadata?.baseAsset} above $${data.priceMetadata?.priceTargetForUp} on ${new Date(data.ending).toLocaleString("default", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
+  const dppmName = formatDppmName({
+    symbol: data.priceMetadata.baseAsset,
+    price: data.priceMetadata.priceTargetForUp,
+    end: data.ending,
+  });
+
   return (
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />
@@ -70,11 +76,14 @@ export default async function SimpleDetailPage({
             <span className="font-geneva uppercase text-[#808080]">
               {new Date(data.starting).toLocaleString("default", {
                 hour: "numeric",
+                timeZone: "UTC",
               })}{" "}
               -{" "}
               {new Date(data.ending).toLocaleString("default", {
                 hour: "numeric",
+                timeZone: "UTC",
               })}
+              {" UTC"}
             </span>
             <CountdownTimer endTime={data.ending} />
           </div>

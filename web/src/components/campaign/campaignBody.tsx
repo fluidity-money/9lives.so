@@ -2,6 +2,7 @@ import CampaignItemHeader from "./campaignItemHeader";
 import CampaignItemOutcomes from "./campaignItemOutcomes";
 import CampaignItemFooter from "./campaignItemFooter";
 import { Campaign, SelectedOutcome } from "@/types";
+import formatDppmName from "@/utils/format/formatDppmName";
 
 export default function CampaignBody({
   data,
@@ -10,11 +11,20 @@ export default function CampaignBody({
   data: Campaign;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
 }) {
-  const dppmName = `${data.priceMetadata?.baseAsset} above $${data.priceMetadata?.priceTargetForUp} on ${new Date(data.ending).toLocaleString("default", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
+  let name = "";
+  if (data.isDppm && data.priceMetadata) {
+    name = formatDppmName({
+      symbol: data.priceMetadata.baseAsset,
+      price: data.priceMetadata?.priceTargetForUp ?? "0",
+      end: data.ending,
+    });
+  } else {
+    name = data.name;
+  }
   return (
     <>
       <CampaignItemHeader
-        name={data.isDppm ? dppmName : data.name}
+        name={name}
         identifier={data.identifier}
         picture={data.picture}
       />
