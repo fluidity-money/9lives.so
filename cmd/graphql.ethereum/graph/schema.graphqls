@@ -109,9 +109,9 @@ type Query {
   campaignBySymbol(symbol: String!): Campaign
 
   """
-  Return unique latest active ones for timebased campaigns
+  Return unique latest active timebased campaigns for tokens
   """
-  timebasedCampaigns(categories:[String!]!): [Campaign]!
+  timebasedCampaigns(categories:[String!]!, tokens:[String!]!): [Campaign]!
 }
 
 type PriceEvent {

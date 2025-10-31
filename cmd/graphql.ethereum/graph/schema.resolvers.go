@@ -32,6 +32,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/types/referrer"
 	"github.com/fluidity-money/9lives.so/lib/webhooks"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -1873,23 +1874,32 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string) (*t
 }
 
 // TimebasedCampaigns is the resolver for the timebasedCampaigns field.
-func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []string) ([]*types.Campaign, error) {
+func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []string, tokens []string) ([]*types.Campaign, error) {
 	var campaigns []*types.Campaign
 	jsonCategories, err := json.Marshal(categories)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal categories: %w", err)
 	}
-	err = r.DB.Raw(`
+	query := `
 	SELECT DISTINCT ON (content->'priceMetadata'->>'baseAsset')
-    id,
-    content,
-    created_at
+		id,
+		content,
+		created_at,
+		updated_at
 	FROM ninelives_campaigns_1
 	WHERE content->'categories' @> ?::jsonb
-	ORDER BY content->'priceMetadata'->>'baseAsset', content->'priceMetadata'->>'priceTargetForUp' DESC;
-	`, jsonCategories).Scan(&campaigns).Error
+	`
+	args := []interface{}{string(jsonCategories)}
+	if len(tokens) > 0 {
+		query += "AND content->'priceMetadata'->>'baseAsset' = ANY(?) "
+		args = append(args, pq.Array(tokens))
+	}
+	query += `
+	ORDER BY content->'priceMetadata'->>'baseAsset', created_at DESC;
+	`
+	err = r.DB.Raw(query, args...).Scan(&campaigns).Error
 	if err != nil {
-		return nil, fmt.Errorf("Error getting timebased campaigns")
+		return nil, fmt.Errorf("error getting timebased campaigns: %w", err)
 	}
 	return campaigns, nil
 }

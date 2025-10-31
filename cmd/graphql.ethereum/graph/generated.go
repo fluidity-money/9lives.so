@@ -223,7 +223,7 @@ type ComplexityRoot struct {
 		ReferrerByCode            func(childComplexity int, code string) int
 		ReferrersForAddress       func(childComplexity int, address string) int
 		SuggestedHeadlines        func(childComplexity int) int
-		TimebasedCampaigns        func(childComplexity int, categories []string) int
+		TimebasedCampaigns        func(childComplexity int, categories []string, tokens []string) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
 		UserClaims                func(childComplexity int, address string, campaignID *string) int
 		UserLPs                   func(childComplexity int, address string) int
@@ -339,7 +339,7 @@ type QueryResolver interface {
 	CampaignPriceEvents(ctx context.Context, poolAddress string) ([]*types.PriceEvent, error)
 	CampaignWeeklyVolume(ctx context.Context, poolAddress string) (int, error)
 	CampaignBySymbol(ctx context.Context, symbol string) (*types.Campaign, error)
-	TimebasedCampaigns(ctx context.Context, categories []string) ([]*types.Campaign, error)
+	TimebasedCampaigns(ctx context.Context, categories []string, tokens []string) ([]*types.Campaign, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -1251,7 +1251,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.TimebasedCampaigns(childComplexity, args["categories"].([]string)), true
+		return e.complexity.Query.TimebasedCampaigns(childComplexity, args["categories"].([]string), args["tokens"].([]string)), true
 
 	case "Query.userActivity":
 		if e.complexity.Query.UserActivity == nil {
@@ -2478,6 +2478,15 @@ func (ec *executionContext) field_Query_timebasedCampaigns_args(ctx context.Cont
 		}
 	}
 	args["categories"] = arg0
+	var arg1 []string
+	if tmp, ok := rawArgs["tokens"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokens"))
+		arg1, err = ec.unmarshalNString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tokens"] = arg1
 	return args, nil
 }
 
@@ -8753,7 +8762,7 @@ func (ec *executionContext) _Query_timebasedCampaigns(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().TimebasedCampaigns(rctx, fc.Args["categories"].([]string))
+		return ec.resolvers.Query().TimebasedCampaigns(rctx, fc.Args["categories"].([]string), fc.Args["tokens"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
