@@ -11,6 +11,9 @@ import SimpleBuyDialog from "../simpleBuyDialog";
 import { useState } from "react";
 import ActiveCampaignProvider from "@/providers/activeCampaignProvider";
 import useSharePrices from "@/hooks/useSharePrices";
+import usePositions from "@/hooks/usePositions";
+import { useActiveAccount } from "thirdweb/react";
+import SimplePositionRow from "./simplePositionRow";
 
 export default function SimpleBody({
   data,
@@ -22,6 +25,7 @@ export default function SimpleBody({
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const symbol = data.priceMetadata.baseAsset.toLowerCase();
   const basePrice = Number(data.priceMetadata.priceTargetForUp);
+  const account = useActiveAccount();
   const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
     {
       queryKey: ["assetPrices", symbol, data.starting, data.ending],
@@ -34,7 +38,12 @@ export default function SimpleBody({
   });
   const isEnded = Date.now() > data.ending;
   const [outcomeIdx, setOutcomeIdx] = useState(0);
-
+  const { data: positions } = usePositions({
+    tradingAddr: data.poolAddress,
+    outcomes: data.outcomes,
+    account,
+    isDpm: false,
+  });
   return (
     <ActiveCampaignProvider previousData={data} symbol={symbol}>
       <div className="flex flex-col gap-2 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] px-2 py-1 text-center text-xs shadow-9liqCard md:px-4 md:py-3">
@@ -117,6 +126,21 @@ export default function SimpleBody({
           <span className="font-chicago text-sm">
             %{(Number(sharePrices[0].price) * 100).toFixed(0)}
           </span>
+        </div>
+      ) : null}
+      {positions && positions.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          {positions.map((p) => (
+            <SimplePositionRow
+              isPriceAbove={
+                (assetPrices?.[assetPrices?.length - 1]?.price ?? 0) > basePrice
+              }
+              key={p.id}
+              position={p}
+              account={account}
+              tradingAddr={data.poolAddress}
+            />
+          ))}
         </div>
       ) : null}
       <Modal
