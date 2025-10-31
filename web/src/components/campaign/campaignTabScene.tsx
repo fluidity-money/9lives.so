@@ -8,6 +8,7 @@ import config from "@/config";
 import { useNavStore } from "@/stores/navStore";
 import { Campaign } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
+import TimebasedCampaignList from "./timebasedCampaignList";
 export default function CampaignTabScene({
   initialData,
 }: {
@@ -49,11 +50,15 @@ export default function CampaignTabScene({
       <TabPanels>
         {config.categories.map((cat) => (
           <TabPanel key={"tab_panel_" + cat}>
-            <CampaignList
-              orderBy={orderBy}
-              setOrderBy={setOrderBy}
-              category={cat === config.categories[0] ? undefined : cat}
-            />
+            {cat === "Hourly" ? (
+              <TimebasedCampaignList category={cat} />
+            ) : (
+              <CampaignList
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+                category={cat === config.categories[0] ? undefined : cat}
+              />
+            )}
           </TabPanel>
         ))}
         <TabPanel>

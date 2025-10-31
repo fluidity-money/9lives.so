@@ -640,3 +640,43 @@ query {
     .send() as Promise<{
     oracles_ninelives_prices_1: RawPricePoint[];
   }> | null;
+
+export const requestTimebasedCampaigns = (
+  categories: string[],
+  tokens: string[],
+) =>
+  graph9Lives.query.timebasedCampaigns({
+    $: { categories, tokens },
+    name: true,
+    identifier: true,
+    description: true,
+    picture: true,
+    oracleDescription: true,
+    oracleUrls: true,
+    settlement: true,
+    poolAddress: true,
+    isDppm: true,
+    priceMetadata: {
+      baseAsset: true,
+      priceTargetForUp: true,
+    },
+    creator: {
+      address: true,
+    },
+    shares: {
+      identifier: true,
+      shares: true,
+    },
+    outcomes: {
+      identifier: true,
+      name: true,
+      picture: true,
+      share: {
+        address: true,
+      },
+    },
+    ending: true,
+    starting: true,
+    winner: true,
+    totalVolume: true,
+  });
