@@ -257,40 +257,6 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "dppmSimulateMint",
-    inputs: [
-      {
-        name: "outcome",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
-      {
-        name: "value",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "recipient",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "dppmShares",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "ninetailsShares",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     name: "dppmSimulatePayoff",
     inputs: [
       {
@@ -302,6 +268,40 @@ const tradingAbi = [
         name: "boostedShares",
         type: "uint256",
         internalType: "uint256",
+      },
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+      {
+        name: "fusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "dppmFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "ninetailsFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "dppmSimulatePayoffForAddress",
+    inputs: [
+      {
+        name: "spender",
+        type: "address",
+        internalType: "address",
       },
       {
         name: "outcome",
