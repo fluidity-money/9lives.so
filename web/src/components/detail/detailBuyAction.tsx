@@ -72,18 +72,28 @@ export default function DetailBuyAction({
       .number()
       .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
   });
-  const formSchemaWithRelay = z.object({
-    supply: z.coerce.number().gt(0, { message: "Invalid amount to spend" }),
-    toChain: z.number().min(0),
-    toToken: z.string(),
-    usdValue: z.coerce
-      .number()
-      .gte(2, { message: "Investment need to be higher than 2$" }),
-    fromChain: z
-      .number({ message: "You need to select a chain to pay from" })
-      .min(0),
-    fromToken: z.string({ message: "You need to select a token to pay with" }),
-  });
+  const formSchemaWithRelay = z
+    .object({
+      supply: z.coerce.number().gt(0, { message: "Invalid amount to spend" }),
+      toChain: z.number().min(0),
+      toToken: z.string(),
+      usdValue: z.coerce.number().gt(0, "Usd value need to higher than 0"),
+      fromChain: z
+        .number({ message: "You need to select a chain to pay from" })
+        .min(0),
+      fromToken: z.string({
+        message: "You need to select a token to pay with",
+      }),
+    })
+    .superRefine((data, ctx) => {
+      if (data.fromChain !== config.destinationChain.id) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Investment must be at least 2$",
+          path: ["usdValue"],
+        });
+      }
+    });
   const chanceAmm = Number(price) * 100;
   const dpmChance = useDpmChances({
     investmentAmounts: data.investmentAmounts,
