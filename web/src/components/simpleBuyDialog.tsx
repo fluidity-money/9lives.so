@@ -63,16 +63,28 @@ export default function SimpleBuyDialog({
     tradingAddr: data.poolAddress,
     campaignId: data.identifier,
   });
-  const formSchema = z.object({
-    supply: z.string(),
-    toChain: z.number().min(0),
-    toToken: z.string(),
-    usdValue: z.coerce.number().gte(2, { message: "usd value > 2$" }),
-    fromChain: z
-      .number({ message: "You need to select a chain to pay from" })
-      .min(0),
-    fromToken: z.string({ message: "You need to select a token to pay with" }),
-  });
+  const formSchema = z
+    .object({
+      supply: z.string(),
+      toChain: z.number().min(0),
+      toToken: z.string(),
+      usdValue: z.coerce.number().gt(0, "usd value > 0$"),
+      fromChain: z
+        .number({ message: "You need to select a chain to pay from" })
+        .min(0),
+      fromToken: z.string({
+        message: "You need to select a token to pay with",
+      }),
+    })
+    .superRefine((data, ctx) => {
+      if (data.fromChain !== config.destinationChain.id) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "usd value > 2$",
+          path: ["usdValue"],
+        });
+      }
+    });
   type FormData = z.infer<typeof formSchema>;
   const {
     watch,
