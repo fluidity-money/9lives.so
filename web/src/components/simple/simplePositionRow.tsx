@@ -25,16 +25,19 @@ export default function SimplePositionRow({
     account,
     outcomeId: position.id,
   });
+  const isWinning = position.name.includes("ABOVE")
+    ? isPriceAbove
+    : !isPriceAbove;
   return (
     <div
       className={combineClass(
-        isPriceAbove ? "bg-9green" : "bg-9red",
+        isWinning ? "bg-9green" : "bg-9red",
         "flex justify-between gap-4 p-5 text-xs shadow-9orderSummary",
       )}
     >
       <span className="font-chicago uppercase text-9black">
         {position.name.includes("ABOVE") ? "UP" : "DOWN"}:{" "}
-        {isPriceAbove ? "Winning" : "Losing"}
+        {isWinning ? "Winning" : "Losing"}
       </span>
       <div className="flex flex-col gap-1 font-chicago text-xs">
         <span>Shares: {position.balance}</span>
