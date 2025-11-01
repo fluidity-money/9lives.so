@@ -33,6 +33,7 @@ export default function SimplePositionRow({
       )}
     >
       <span className="font-chicago uppercase text-9black">
+        {position.name.includes("ABOVE") ? "UP" : "DOWN"}:{" "}
         {isPriceAbove ? "Winning" : "Losing"}
       </span>
       <div className="flex flex-col gap-1 font-chicago text-xs">

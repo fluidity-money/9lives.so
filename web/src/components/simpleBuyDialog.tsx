@@ -191,16 +191,16 @@ export default function SimpleBuyDialog({
         <div className="flex items-center justify-between">
           <div className="flex flex-1 flex-row space-x-1">
             <Button
-              intent={outcomeIdx === 0 ? "yes" : "default"}
+              intent={outcomeIdx === 1 ? "yes" : "default"}
               title="UP ↑"
               className={"flex-1"}
-              onClick={() => setOutcomeIdx(0)}
+              onClick={() => setOutcomeIdx(1)}
             />
             <Button
-              intent={outcomeIdx === 1 ? "no" : "default"}
+              intent={outcomeIdx === 0 ? "no" : "default"}
               title="DOWN ↓"
               className={"flex-1"}
-              onClick={() => setOutcomeIdx(1)}
+              onClick={() => setOutcomeIdx(0)}
             />
           </div>
         </div>
