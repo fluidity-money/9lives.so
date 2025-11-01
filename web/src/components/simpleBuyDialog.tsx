@@ -311,7 +311,8 @@ export default function SimpleBuyDialog({
           <Button
             title="."
             onClick={() =>
-              !supply.includes(".") && setValue("supply", supply + ".")
+              !supply.includes(".") &&
+              setValue("supply", supply ? supply + "." : "0.")
             }
           />
           <Button
