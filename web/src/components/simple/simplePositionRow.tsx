@@ -29,14 +29,16 @@ export default function SimplePositionRow({
     <div
       className={combineClass(
         isPriceAbove ? "bg-9green" : "bg-9red",
-        "flex justify-between",
+        "flex justify-between p-4",
       )}
     >
-      <div>{isPriceAbove ? "Winning" : "Losing"}</div>
+      <span className="font-chicago uppercase text-9black">
+        {isPriceAbove ? "Winning" : "Losing"}
+      </span>
       <div className="flex flex-col gap-1 font-chicago text-xs">
         <span>Shares: {position.balance}</span>
-        <span>To Win: {formatFusdc(toWin, 2)}</span>
-        <span>Bonus: {formatFusdc(bonus, 2)}</span>
+        <span>To Win: ${formatFusdc(toWin, 2)}</span>
+        <span>Bonus: ${formatFusdc(bonus, 2)}</span>
       </div>
     </div>
   );

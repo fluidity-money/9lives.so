@@ -17,7 +17,7 @@ export default function useDppmShareEstimation({
   account?: Account;
   outcomeId: `0x${string}`;
 }) {
-  const [res, setRes] = useState<[bigint, bigint]>();
+  const [res, setRes] = useState<[bigint, bigint]>([BigInt(0), BigInt(0)]);
 
   useEffect(() => {
     if (account) {
