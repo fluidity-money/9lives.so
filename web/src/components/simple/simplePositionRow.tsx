@@ -29,7 +29,7 @@ export default function SimplePositionRow({
     <div
       className={combineClass(
         isPriceAbove ? "bg-9green" : "bg-9red",
-        "flex justify-between p-4",
+        "flex justify-between gap-4 p-5 text-xs shadow-9orderSummary",
       )}
     >
       <span className="font-chicago uppercase text-9black">
