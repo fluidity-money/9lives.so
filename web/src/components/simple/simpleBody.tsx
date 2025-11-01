@@ -115,16 +115,16 @@ export default function SimpleBody({
       {sharePrices && sharePrices.length === 2 ? (
         <div className="flex flex-row items-center gap-1">
           <span className="font-chicago text-sm">
-            %{(Number(sharePrices[1].price) * 100).toFixed(0)}
+            %{(Number(sharePrices[0].price) * 100).toFixed(0)}
           </span>
           <div className="h-2 flex-1 bg-9red">
             <div
               className="h-2 bg-9green"
-              style={{ width: `${Number(sharePrices[1].price) * 100}%` }}
+              style={{ width: `${Number(sharePrices[0].price) * 100}%` }}
             />
           </div>
           <span className="font-chicago text-sm">
-            %{(Number(sharePrices[0].price) * 100).toFixed(0)}
+            %{(Number(sharePrices[1].price) * 100).toFixed(0)}
           </span>
         </div>
       ) : null}
