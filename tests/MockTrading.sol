@@ -90,9 +90,9 @@ contract MockTrading is INineLivesTrading {
     function quoteC0E17FC7(
         bytes8 /* outcome */,
         uint256 value
-    ) external returns (uint256, uint256) {
+    ) external returns (uint256, uint256, uint256) {
         ++counter_;
-        return (value, 5);
+        return (value, 5, 0);
     }
 
     function estimateBurnC04425D3(

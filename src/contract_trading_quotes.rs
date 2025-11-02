@@ -5,7 +5,7 @@ use crate::{
     fusdc_call,
     immutables::DAO_OP_ADDR,
     maths,
-    utils::{contract_address, msg_sender},
+    utils::{block_timestamp, contract_address, msg_sender},
 };
 
 pub use crate::storage_trading::*;
@@ -17,18 +17,29 @@ use alloc::vec::Vec;
 impl StorageTrading {
     // Quote the amount of shares purchased, and the fees taken.
     #[allow(non_snake_case)]
-    pub fn quote_C_0_E_17_F_C_7(&self, outcome_id: FixedBytes<8>, value: U256) -> R<(U256, U256)> {
+    pub fn quote_C_0_E_17_F_C_7(
+        &self,
+        outcome_id: FixedBytes<8>,
+        value: U256,
+    ) -> R<(U256, U256, U256)> {
         if !self.when_decided.get().is_zero() {
-            return Ok((U256::ZERO, U256::ZERO));
+            return Ok((U256::ZERO, U256::ZERO, U256::ZERO));
         }
         let (fee, _) = self.calculate_fees(value, true)?;
         let value = value
             .checked_sub(fee)
             .ok_or(Error::CheckedSubOverflow(value, fee))?;
         #[cfg(feature = "trading-backend-dppm")]
-        return Ok((self.internal_dppm_quote(outcome_id, value)?, fee));
+        return {
+            let (dppm_shares, boosted_shares) = self.internal_dppm_quote(outcome_id, value)?;
+            Ok((dppm_shares, fee, boosted_shares))
+        };
         #[cfg(not(feature = "trading-backend-dppm"))]
-        return Ok((self.internal_amm_quote_mint(outcome_id, value)?, fee));
+        return Ok((
+            self.internal_amm_quote_mint(outcome_id, value)?,
+            fee,
+            U256::ZERO,
+        ));
     }
 
     /// Quote the amount of shares that would be received for burning the
@@ -86,7 +97,7 @@ impl StorageTrading {
 impl StorageTrading {
     #[allow(unused)]
     #[mutants::skip]
-    fn internal_dppm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<U256> {
+    fn internal_dppm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<(U256, U256)> {
         assert_or!(
             self.dppm_out_of.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
@@ -99,11 +110,19 @@ impl StorageTrading {
             }
             .unwrap(),
         );
-        maths::dppm_shares(
+        let t_start = self.time_start.get();
+        let t_end = self.time_ending.get() - self.time_start.get();
+        let t_now = U64::from(block_timestamp());
+        // current time - start time for the market
+        let t_buy = t_now
+            .checked_sub(t_start)
+            .ok_or(Error::CheckedSubOverflow64(t_now, t_start))?;
+        let dppm_shares = maths::dppm_shares(
             self.dppm_outcome_invested.get(outcome_id),
             self.dppm_global_invested.get() - self.dppm_outcome_invested.get(outcome_id),
             value,
             out_of_other,
-        )
+        )?;
+        Ok((dppm_shares, maths::ninetails_shares(dppm_shares, t_buy, t_end)?))
     }
 }

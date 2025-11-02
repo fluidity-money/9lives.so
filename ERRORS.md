@@ -4,149 +4,208 @@
 This table is a helpful reference for the types of errors the contracts might produce. To
 generate these, run `./print-error-table.sh`.
 
-| Error name                    | Error hex                                                                                                                                                                                      |
-|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AlreadyConstructed            | 0x990900                                                                                                                                                                                       |
-| MustContainOutcomes           | 0x990901                                                                                                                                                                                       |
-| OddsMustBeSet                 | 0x990902                                                                                                                                                                                       |
-| U256TooLarge                  | 0x990903                                                                                                                                                                                       |
-| TooSmallNumber                | 0x990904                                                                                                                                                                                       |
-| TooBigNumber                  | 0x990905                                                                                                                                                                                       |
-| NegNumber                     | 0x990906                                                                                                                                                                                       |
-| LongtailError                 | 0x9900                                                                                                                                                                                         |
-| ShareError                    | 0x9902                                                                                                                                                                                         |
-| ERC20ErrorTransfer            | 0x99010000000000000000000000000000000000000000                                                                                                                                                 |
-| TradingErrorCtor              | 0x9903                                                                                                                                                                                         |
-| ERC20UnableToUnpack           | 0x99090b                                                                                                                                                                                       |
-| ERC20ReturnedFalse            | 0x99090c                                                                                                                                                                                       |
-| NotOracle                     | 0x99090d                                                                                                                                                                                       |
-| DoneVoting                    | 0x99090e                                                                                                                                                                                       |
-| NotTradingContract            | 0x99090f                                                                                                                                                                                       |
-| NotWinner                     | 0x990910                                                                                                                                                                                       |
-| NegU256                       | 0x990911                                                                                                                                                                                       |
-| CheckedPowOverflow            | 0x990912                                                                                                                                                                                       |
-| CheckedMulOverflow            | 0x990913                                                                                                                                                                                       |
-| CheckedAddOverflow            | 0x990914                                                                                                                                                                                       |
-| CheckedSubOverflow            | 0x990915                                                                                                                                                                                       |
-| CheckedDivOverflow            | 0x990916                                                                                                                                                                                       |
-| TwoOutcomesOnly               | 0x990917                                                                                                                                                                                       |
-| Infinity                      | 0x990918                                                                                                                                                                                       |
-| NegativeFixedToUintConv       | 0x990919                                                                                                                                                                                       |
-| UnusualAmountCreated          | 0x99091a                                                                                                                                                                                       |
-| SqrtOpNone                    | 0x99091b                                                                                                                                                                                       |
-| ERC20ErrorTransferFrom        | 0x99040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 |
-| ERC20ErrorPermit              | 0x99050000000000000000000000000000000000000000                                                                                                                                                 |
-| ERC20ErrorBalanceOf           | 0x99060000000000000000000000000000000000000000                                                                                                                                                 |
-| ZeroShares                    | 0x99091f                                                                                                                                                                                       |
-| CamelotError                  | 0x990920                                                                                                                                                                                       |
-| BadSeedAmount                 | 0x990921                                                                                                                                                                                       |
-| LockedARBError                | 0x99070000000000000000000000000000000000000000                                                                                                                                                 |
-| LockedARBUnableToUnpack       | 0x990923                                                                                                                                                                                       |
-| AlreadyRegistered             | 0x990924                                                                                                                                                                                       |
-| NotFactoryContract            | 0x990925                                                                                                                                                                                       |
-| NotInfraMarket                | 0x990926                                                                                                                                                                                       |
-| InfraMarketHasNotStarted      | 0x990927                                                                                                                                                                                       |
-| InfraMarketTooMuchVested      | 0x990928                                                                                                                                                                                       |
-| InfraMarketHasExpired         | 0x990929                                                                                                                                                                                       |
-| LockupError                   | 0x990a0000000000000000000000000000000000000000                                                                                                                                                 |
-| NotInsideSweepingPeriod       | 0x99092b                                                                                                                                                                                       |
-| IncorrectSweepInvocation      | 0x99092c                                                                                                                                                                                       |
-| UserAlreadyTargeted           | 0x99092d                                                                                                                                                                                       |
-| InfraMarketWindowClosed       | 0x99092e                                                                                                                                                                                       |
-| IsShutdown                    | 0x99092f                                                                                                                                                                                       |
-| FactoryCallError              | 0x9907                                                                                                                                                                                         |
-| FactoryCallUnableToUnpack     | 0x990931                                                                                                                                                                                       |
-| CallerIsNotFactory            | 0x990932                                                                                                                                                                                       |
-| NotEnabled                    | 0x990933                                                                                                                                                                                       |
-| LockupUnableToUnpack          | 0x990934                                                                                                                                                                                       |
-| BadVictim                     | 0x990935                                                                                                                                                                                       |
-| VictimCannotClaim             | 0x990936                                                                                                                                                                                       |
-| NoVestedPower                 | 0x990937                                                                                                                                                                                       |
-| ZeroAmount                    | 0x990938                                                                                                                                                                                       |
-| InfraMarketCallError          | 0x9908                                                                                                                                                                                         |
-| NinelivesLockedArbCreateError | 0x99093a                                                                                                                                                                                       |
-| NonexistentOutcome            | 0x99093b                                                                                                                                                                                       |
-| DeployError                   | 0x99093c                                                                                                                                                                                       |
-| CalledTimeUnset               | 0x99093d                                                                                                                                                                                       |
-| WhingedTimeUnset              | 0x99093e                                                                                                                                                                                       |
-| NotInsideCallingPeriod        | 0x99093f                                                                                                                                                                                       |
-| CampaignAlreadyCalled         | 0x990940                                                                                                                                                                                       |
-| PredictingNotStarted          | 0x990941                                                                                                                                                                                       |
-| InCallingPeriod               | 0x990942                                                                                                                                                                                       |
-| SomeoneWhinged                | 0x990943                                                                                                                                                                                       |
-| WinnerAlreadyDeclared         | 0x990944                                                                                                                                                                                       |
-| NotInWhingingPeriod           | 0x990945                                                                                                                                                                                       |
-| PreferredOutcomeIsZero        | 0x990946                                                                                                                                                                                       |
-| AlreadyWhinged                | 0x990947                                                                                                                                                                                       |
-| OutcomeDuplicated             | 0x990948                                                                                                                                                                                       |
-| NotPastDeadline               | 0x990949                                                                                                                                                                                       |
-| ZeroDesc                      | 0x99094a                                                                                                                                                                                       |
-| ZeroTradingAddr               | 0x99094b                                                                                                                                                                                       |
-| NotRegistered                 | 0x99094c                                                                                                                                                                                       |
-| NotOperator                   | 0x99094d                                                                                                                                                                                       |
-| TradingEmpty                  | 0x99094e                                                                                                                                                                                       |
-| TradingUnableToUnpack         | 0x99090000000000000000000000000000000000000000                                                                                                                                                 |
-| BeautyContestBadOutcomes      | 0x990950                                                                                                                                                                                       |
-| BelowThreeHourBuyin           | 0x990951                                                                                                                                                                                       |
-| NoDAOMoney                    | 0x990952                                                                                                                                                                                       |
-| ZeroCallDeadline              | 0x990953                                                                                                                                                                                       |
-| InconclusiveAnswerToCall      | 0x990954                                                                                                                                                                                       |
-| PastCallingDeadline           | 0x990955                                                                                                                                                                                       |
-| CannotEscape                  | 0x990956                                                                                                                                                                                       |
-| NotAfterWhinging              | 0x990957                                                                                                                                                                                       |
-| NotInCommitReveal             | 0x99095800000000000000000000000000000000                                                                                                                                                       |
-| CommitNotTheSame              | 0x990959                                                                                                                                                                                       |
-| AlreadyRevealed               | 0x99095a                                                                                                                                                                                       |
-| NotAllowedZeroCommit          | 0x99095b                                                                                                                                                                                       |
-| ZeroBal                       | 0x99095c                                                                                                                                                                                       |
-| StakedArbUnusual              | 0x99095d                                                                                                                                                                                       |
-| TooEarlyToWithdraw            | 0x99095e                                                                                                                                                                                       |
-| VictimLowBal                  | 0x99095f                                                                                                                                                                                       |
-| CampaignWinnerSet             | 0x990960                                                                                                                                                                                       |
-| OutcomesEmpty                 | 0x990961                                                                                                                                                                                       |
-| InvalidEpoch                  | 0x990962                                                                                                                                                                                       |
-| PotAlreadyClaimed             | 0x990963                                                                                                                                                                                       |
-| CampaignZeroCaller            | 0x990964                                                                                                                                                                                       |
-| WinnerUnset                   | 0x990965                                                                                                                                                                                       |
-| BadWinner                     | 0x990966                                                                                                                                                                                       |
-| CantWhingeCalled              | 0x990967                                                                                                                                                                                       |
-| NotReadyToDeclare             | 0x990968                                                                                                                                                                                       |
-| AlreadyCommitted              | 0x990969                                                                                                                                                                                       |
-| DPMOnly                       | 0x99096a                                                                                                                                                                                       |
-| BadTradingCtor                | 0x99096b                                                                                                                                                                                       |
-| TradingAddrNonExistent        | 0x99096c                                                                                                                                                                                       |
-| ERC20Approve                  | 0x99096d                                                                                                                                                                                       |
-| TestingUnreachable            | 0x99096e                                                                                                                                                                                       |
-| OutcomeIsZero                 | 0x99096f                                                                                                                                                                                       |
-| NegativeAmountWhenDPPM        | 0x990970                                                                                                                                                                                       |
-| AMMOnly                       | 0x990971                                                                                                                                                                                       |
-| CheckedNegOverflow            | 0x990972                                                                                                                                                                                       |
-| CheckedConvOverflow           | 0x990973                                                                                                                                                                                       |
-| ExcessiveFee                  | 0x990974                                                                                                                                                                                       |
-| NotEnoughLiquidity            | 0x990975                                                                                                                                                                                       |
-| NotDecided                    | 0x990976                                                                                                                                                                                       |
-| BadDenominator                | 0x990977                                                                                                                                                                                       |
-| MulDivIsU256Max               | 0x990978                                                                                                                                                                                       |
-| NotEnoughSharesBurned         | 0x990979                                                                                                                                                                                       |
-| NoFeesToClaim                 | 0x99097a                                                                                                                                                                                       |
-| PowOverflow                   | 0x99097b                                                                                                                                                                                       |
-| CheckedSubOverflowD           | 0x99097c                                                                                                                                                                                       |
-| CannotRemoveAllLiquidity      | 0x99097d                                                                                                                                                                                       |
-| CouldntEstimateSharesBurn     | 0x99097e                                                                                                                                                                                       |
-| IncorrectDAOClaiming          | 0x99097f                                                                                                                                                                                       |
-| ReturnedFalse                 | 0x990980                                                                                                                                                                                       |
-| NotEnoughLiquidityReturned    | 0x990981                                                                                                                                                                                       |
-| AlreadyDecided                | 0x990982                                                                                                                                                                                       |
-| EndingInPast                  | 0x990983                                                                                                                                                                                       |
-| TooMuchLiquidityTaken         | 0x990984                                                                                                                                                                                       |
-| CheckedSubOverflow64          | 0x990985                                                                                                                                                                                       |
-| TradingErrorDecide            | 0x990b                                                                                                                                                                                         |
-| TradingErrorGlobalShares      | 0x990c                                                                                                                                                                                         |
-| TradingErrorDetails           | 0x990d                                                                                                                                                                                         |
-| TradingErrorEscape            | 0x990e                                                                                                                                                                                         |
-| TradingErrorTimeEnding        | 0x990f                                                                                                                                                                                         |
-| TradingErrorOutcomeList       | 0x9910                                                                                                                                                                                         |
-| TradingErrorIsDppm            | 0x9911                                                                                                                                                                                         |
-| TradingPrice                  | 0x9913                                                                                                                                                                                         |
-| TradingErrorAddLiq            | 0x9912                                                                                                                                                                                         |
-| TradingErrorPrice             | 0x99098f                                                                                                                                                                                       |
+| Error name                       | Error hex                                                                                                                                                                                      |
+|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AlreadyConstructed               | 0x990900                                                                                                                                                                                       |
+| MustContainOutcomes              | 0x990901                                                                                                                                                                                       |
+| OddsMustBeSet                    | 0x990902                                                                                                                                                                                       |
+| U256TooLarge                     | 0x990903                                                                                                                                                                                       |
+| TooSmallNumber                   | 0x990904                                                                                                                                                                                       |
+| TooBigNumber                     | 0x990905                                                                                                                                                                                       |
+| NegNumber                        | 0x990906                                                                                                                                                                                       |
+| LongtailError                    | 0x9900                                                                                                                                                                                         |
+| ShareError                       | 0x9902                                                                                                                                                                                         |
+| ERC20ErrorTransfer               | 0x99010000000000000000000000000000000000000000                                                                                                                                                 |
+| TradingErrorCtor                 | 0x9903                                                                                                                                                                                         |
+| ERC20UnableToUnpack              | 0x99090b                                                                                                                                                                                       |
+| ERC20ReturnedFalse               | 0x99090c                                                                                                                                                                                       |
+| NotOracle                        | 0x99090d                                                                                                                                                                                       |
+| DoneVoting                       | 0x99090e                                                                                                                                                                                       |
+| NotTradingContract               | 0x99090f                                                                                                                                                                                       |
+| NotWinner                        | 0x990910                                                                                                                                                                                       |
+| NegU256                          | 0x990911                                                                                                                                                                                       |
+| CheckedPowOverflow               | 0x990912                                                                                                                                                                                       |
+| CheckedMulOverflow               | 0x990913                                                                                                                                                                                       |
+| CheckedAddOverflow               | 0x990914                                                                                                                                                                                       |
+| CheckedSubOverflow               | 0x990915                                                                                                                                                                                       |
+| CheckedDivOverflow               | 0x990916                                                                                                                                                                                       |
+| TwoOutcomesOnly                  | 0x990917                                                                                                                                                                                       |
+| Infinity                         | 0x990918                                                                                                                                                                                       |
+| NegativeFixedToUintConv          | 0x990919                                                                                                                                                                                       |
+| UnusualAmountCreated             | 0x99091a                                                                                                                                                                                       |
+| SqrtOpNone                       | 0x99091b                                                                                                                                                                                       |
+| ERC20ErrorTransferFrom           | 0x99040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 |
+| ERC20ErrorPermit                 | 0x99050000000000000000000000000000000000000000                                                                                                                                                 |
+| ERC20ErrorBalanceOf              | 0x99060000000000000000000000000000000000000000                                                                                                                                                 |
+| ZeroShares                       | 0x99091f                                                                                                                                                                                       |
+| CamelotError                     | 0x990920                                                                                                                                                                                       |
+| BadSeedAmount                    | 0x990921                                                                                                                                                                                       |
+| LockedARBError                   | 0x99070000000000000000000000000000000000000000                                                                                                                                                 |
+| LockedARBUnableToUnpack          | 0x990923                                                                                                                                                                                       |
+| AlreadyRegistered                | 0x990924                                                                                                                                                                                       |
+| NotFactoryContract               | 0x990925                                                                                                                                                                                       |
+| NotInfraMarket                   | 0x990926                                                                                                                                                                                       |
+| InfraMarketHasNotStarted         | 0x990927                                                                                                                                                                                       |
+| InfraMarketTooMuchVested         | 0x990928                                                                                                                                                                                       |
+| InfraMarketHasExpired            | 0x990929                                                                                                                                                                                       |
+| LockupError                      | 0x990a0000000000000000000000000000000000000000                                                                                                                                                 |
+| NotInsideSweepingPeriod          | 0x99092b                                                                                                                                                                                       |
+| IncorrectSweepInvocation         | 0x99092c                                                                                                                                                                                       |
+| UserAlreadyTargeted              | 0x99092d                                                                                                                                                                                       |
+| InfraMarketWindowClosed          | 0x99092e                                                                                                                                                                                       |
+| IsShutdown                       | 0x99092f                                                                                                                                                                                       |
+| FactoryCallError                 | 0x9907                                                                                                                                                                                         |
+| FactoryCallUnableToUnpack        | 0x990931                                                                                                                                                                                       |
+| CallerIsNotFactory               | 0x990932                                                                                                                                                                                       |
+| NotEnabled                       | 0x990933                                                                                                                                                                                       |
+| LockupUnableToUnpack             | 0x990934                                                                                                                                                                                       |
+| BadVictim                        | 0x990935                                                                                                                                                                                       |
+| VictimCannotClaim                | 0x990936                                                                                                                                                                                       |
+| NoVestedPower                    | 0x990937                                                                                                                                                                                       |
+| ZeroAmount                       | 0x990938                                                                                                                                                                                       |
+| InfraMarketCallError             | 0x9908                                                                                                                                                                                         |
+| NinelivesLockedArbCreateError    | 0x99093a                                                                                                                                                                                       |
+| NonexistentOutcome               | 0x99093b                                                                                                                                                                                       |
+| DeployError                      | 0x99093c                                                                                                                                                                                       |
+| CalledTimeUnset                  | 0x99093d                                                                                                                                                                                       |
+| WhingedTimeUnset                 | 0x99093e                                                                                                                                                                                       |
+| NotInsideCallingPeriod           | 0x99093f                                                                                                                                                                                       |
+| CampaignAlreadyCalled            | 0x990940                                                                                                                                                                                       |
+| PredictingNotStarted             | 0x990941                                                                                                                                                                                       |
+| InCallingPeriod                  | 0x990942                                                                                                                                                                                       |
+| SomeoneWhinged                   | 0x990943                                                                                                                                                                                       |
+| WinnerAlreadyDeclared            | 0x990944                                                                                                                                                                                       |
+| NotInWhingingPeriod              | 0x990945                                                                                                                                                                                       |
+| PreferredOutcomeIsZero           | 0x990946                                                                                                                                                                                       |
+| AlreadyWhinged                   | 0x990947                                                                                                                                                                                       |
+| OutcomeDuplicated                | 0x990948                                                                                                                                                                                       |
+| NotPastDeadline                  | 0x990949                                                                                                                                                                                       |
+| ZeroDesc                         | 0x99094a                                                                                                                                                                                       |
+| ZeroTradingAddr                  | 0x99094b                                                                                                                                                                                       |
+| NotRegistered                    | 0x99094c                                                                                                                                                                                       |
+| NotOperator                      | 0x99094d                                                                                                                                                                                       |
+| TradingEmpty                     | 0x99094e                                                                                                                                                                                       |
+| TradingUnableToUnpack            | 0x99090000000000000000000000000000000000000000                                                                                                                                                 |
+| BeautyContestBadOutcomes         | 0x990950                                                                                                                                                                                       |
+| BelowThreeHourBuyin              | 0x990951                                                                                                                                                                                       |
+| NoDAOMoney                       | 0x990952                                                                                                                                                                                       |
+| ZeroCallDeadline                 | 0x990953                                                                                                                                                                                       |
+| InconclusiveAnswerToCall         | 0x990954                                                                                                                                                                                       |
+| PastCallingDeadline              | 0x990955                                                                                                                                                                                       |
+| CannotEscape                     | 0x990956                                                                                                                                                                                       |
+| NotAfterWhinging                 | 0x990957                                                                                                                                                                                       |
+| NotInCommitReveal                | 0x99095800000000000000000000000000000000                                                                                                                                                       |
+| CommitNotTheSame                 | 0x990959                                                                                                                                                                                       |
+| AlreadyRevealed                  | 0x99095a                                                                                                                                                                                       |
+| NotAllowedZeroCommit             | 0x99095b                                                                                                                                                                                       |
+| ZeroBal                          | 0x99095c                                                                                                                                                                                       |
+| StakedArbUnusual                 | 0x99095d                                                                                                                                                                                       |
+| TooEarlyToWithdraw               | 0x99095e                                                                                                                                                                                       |
+| VictimLowBal                     | 0x99095f                                                                                                                                                                                       |
+| CampaignWinnerSet                | 0x990960                                                                                                                                                                                       |
+| OutcomesEmpty                    | 0x990961                                                                                                                                                                                       |
+| InvalidEpoch                     | 0x990962                                                                                                                                                                                       |
+| PotAlreadyClaimed                | 0x990963                                                                                                                                                                                       |
+| CampaignZeroCaller               | 0x990964                                                                                                                                                                                       |
+| WinnerUnset                      | 0x990965                                                                                                                                                                                       |
+| BadWinner                        | 0x990966                                                                                                                                                                                       |
+| CantWhingeCalled                 | 0x990967                                                                                                                                                                                       |
+| NotReadyToDeclare                | 0x990968                                                                                                                                                                                       |
+| AlreadyCommitted                 | 0x990969                                                                                                                                                                                       |
+| DPMOnly                          | 0x99096a                                                                                                                                                                                       |
+| BadTradingCtor                   | 0x99096b                                                                                                                                                                                       |
+| TradingAddrNonExistent           | 0x99096c                                                                                                                                                                                       |
+| ERC20Approve                     | 0x99096d                                                                                                                                                                                       |
+| TestingUnreachable               | 0x99096e                                                                                                                                                                                       |
+| OutcomeIsZero                    | 0x99096f                                                                                                                                                                                       |
+| NegativeAmountWhenDPPM           | 0x990970                                                                                                                                                                                       |
+| AMMOnly                          | 0x990971                                                                                                                                                                                       |
+| CheckedNegOverflow               | 0x990972                                                                                                                                                                                       |
+| CheckedConvOverflow              | 0x990973                                                                                                                                                                                       |
+| ExcessiveFee                     | 0x990974                                                                                                                                                                                       |
+| NotEnoughLiquidity               | 0x990975                                                                                                                                                                                       |
+| NotDecided                       | 0x990976                                                                                                                                                                                       |
+| BadMuldiv                        | 0x990977                                                                                                                                                                                       |
+| MulDivIsU256Max                  | 0x990978                                                                                                                                                                                       |
+| NotEnoughSharesBurned            | 0x990979                                                                                                                                                                                       |
+| NoFeesToClaim                    | 0x99097a                                                                                                                                                                                       |
+| BadRooti                         | 0x99097b                                                                                                                                                                                       |
+| CheckedSubOverflowD              | 0x99097c                                                                                                                                                                                       |
+| CannotRemoveAllLiquidity         | 0x99097d                                                                                                                                                                                       |
+| CouldntEstimateSharesBurn        | 0x99097e                                                                                                                                                                                       |
+| IncorrectDAOClaiming             | 0x99097f                                                                                                                                                                                       |
+| ReturnedFalse                    | 0x990980                                                                                                                                                                                       |
+| NotEnoughLiquidityReturned       | 0x990981                                                                                                                                                                                       |
+| AlreadyDecided                   | 0x990982                                                                                                                                                                                       |
+| EndingInPast                     | 0x990983                                                                                                                                                                                       |
+| TooMuchLiquidityTaken            | 0x990984                                                                                                                                                                                       |
+| CheckedSubOverflow64             | 0x990985                                                                                                                                                                                       |
+| TradingErrorDecide               | 0x990b                                                                                                                                                                                         |
+| TradingErrorGlobalShares         | 0x990c                                                                                                                                                                                         |
+| TradingErrorDetails              | 0x990d                                                                                                                                                                                         |
+| TradingErrorEscape               | 0x990e                                                                                                                                                                                         |
+| TradingErrorTimeEnding           | 0x990f                                                                                                                                                                                         |
+| TradingErrorOutcomeList          | 0x9910                                                                                                                                                                                         |
+| TradingErrorIsDppm               | 0x9911                                                                                                                                                                                         |
+| TradingPrice                     | 0x9913                                                                                                                                                                                         |
+| TradingErrorAddLiq               | 0x9912                                                                                                                                                                                         |
+| TradingErrorPrice                | 0x99098f                                                                                                                                                                                       |
+| ZeroSharesMustBeProvidedForLoser | 0x990990                                                                                                                                                                                       |
+| ClawbackAlreadyHappened          | 0x990991                                                                                                                                                                                       |
+| MintAmountTooLow                 | 0x990992                                                                                                                                                                                       |
+| BadMulDiv                        | 0x990993                                                                                                                                                                                       |
+| MarketNotOverForClawback         | 0x990994                                                                                                                                                                                       |
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.03s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+done

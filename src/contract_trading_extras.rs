@@ -234,7 +234,8 @@ impl StorageTrading {
                 recipient: CLAWBACK_RECIPIENT_ADDR,
                 fusdcClawedback: amt,
             });
-            let shutdown = self.internal_shutdown()?;
+            // We can ignore if this failed, since this might not be necessary.
+            let shutdown = self.internal_shutdown().unwrap_or(U256::ZERO);
             Ok(amt + shutdown)
         }
     }

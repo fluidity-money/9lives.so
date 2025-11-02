@@ -62,7 +62,11 @@ interface INineLivesTrading {
     function quoteC0E17FC7(
         bytes8 outcome,
         uint256 fusdcValue
-    ) external returns (uint256 purchased, uint256 fees);
+    ) external returns (
+        uint256 purchased,
+        uint256 fees,
+        uint256 boostedShares
+    );
 
     function estimateBurnE9B09A17(
         bytes8 outcome,
