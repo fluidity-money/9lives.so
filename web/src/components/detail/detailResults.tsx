@@ -14,6 +14,7 @@ import NoOutcomeImg from "#/images/no-outcome.svg";
 import formatFusdc from "@/utils/format/formatUsdc";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
+import formatDppmName from "@/utils/format/formatDppmName";
 
 interface DetailResultsProps {
   data: CampaignDetail;
@@ -134,8 +135,8 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
                 height={40}
                 alt={winner.name}
                 src={
-                  data.isYesNo
-                    ? winner.name === "Yes"
+                  data.isYesNo || data.isDppm
+                    ? winner.name === "Yes" || winner.name.includes("above")
                       ? YesOutcomeImg
                       : NoOutcomeImg
                     : winner.picture
@@ -147,7 +148,11 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
 
           <div className="flex flex-col gap-1">
             <h3 className="font-chicago text-base font-normal text-9black">
-              {winner.name}
+              {data.isDppm
+                ? winner.name.includes("above")
+                  ? "Up"
+                  : "Down"
+                : winner.name}
             </h3>
             <div className="flex items-center gap-1 font-geneva text-[10px]">
               <span className="uppercase">Chance</span>
