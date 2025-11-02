@@ -15,6 +15,7 @@ import usePositions from "@/hooks/usePositions";
 import { useActiveAccount } from "thirdweb/react";
 import SimplePositionRow from "./simplePositionRow";
 import SimpleClaimButton from "./simpleClaimButton";
+import RetroCard from "../cardRetro";
 
 export default function SimpleBody({
   data,
@@ -71,13 +72,17 @@ export default function SimpleBody({
       />
       <div className="relative">
         {winnerOutcome ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 font-chicago">
-            <span className="mb-6 text-center">
-              Winner: <br></br>
-              {winnerOutcome.name.includes("ABOVE")
-                ? "Price Went Up"
-                : "Price Went Down"}
-            </span>
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-9layer/60 font-chicago">
+            <div className="mb-32">
+              <RetroCard position="middle" showClose={false} title="Winner">
+                {" "}
+                <span className="text-center">
+                  {winnerOutcome.name.includes("ABOVE")
+                    ? "Price Went Up"
+                    : "Price Went Down"}
+                </span>
+              </RetroCard>
+            </div>
           </div>
         ) : null}
         <AssetPriceChart
