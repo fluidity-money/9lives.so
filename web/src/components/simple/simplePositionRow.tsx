@@ -41,8 +41,12 @@ export default function SimplePositionRow({
       </span>
       <div className="flex flex-col gap-1 font-chicago text-xs">
         <span>Shares: {position.balance}</span>
-        <span>To Win: ${formatFusdc(toWin, 2)}</span>
-        <span>Bonus: ${formatFusdc(bonus, 2)}</span>
+        <span>
+          {isWinning ? "To Win" : "To Lose"}: ${formatFusdc(toWin, 2)}
+        </span>
+        <span>
+          {isWinning ? "Bonus" : "Refund"}: ${formatFusdc(bonus, 2)}
+        </span>
       </div>
     </div>
   );
