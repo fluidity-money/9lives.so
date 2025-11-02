@@ -26,7 +26,6 @@ import useReturnValue from "@/hooks/useReturnValue";
 import useDpmChances from "@/hooks/useDpmChances";
 import formatFusdc from "@/utils/format/formatUsdc";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
-import useBuyWithZaps from "@/hooks/useBuyWithZaps";
 import USDCImg from "#/images/usdc.svg";
 import useTokens from "@/hooks/useTokens";
 import useProfile from "@/hooks/useProfile";
@@ -36,6 +35,7 @@ import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import ChainSelector from "../chainSelector";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
+import useDppmShareEstimation from "@/hooks/useDppmShareEstimation";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -177,6 +177,11 @@ export default function DetailBuyAction({
     usdValue,
     tradingAddr: data.poolAddress,
   });
+  const [_, boostedShares] = useDppmShareEstimation({
+    tradingAddr: data.poolAddress,
+    account,
+    outcomeId: selectedOutcome.id as `0x${string}`,
+  });
   const winEstimation = data.isDpm
     ? estimatedWinForDpm.toFixed(2)
     : data.isDppm
@@ -190,6 +195,11 @@ export default function DetailBuyAction({
     {
       title: "Shares To Get",
       value: data.isDpm ? (usdValue / Number(price)).toFixed(2) : sharesToGet,
+    },
+    {
+      title: "Boost To Get",
+      value: boostedShares,
+      show: data.isDppm,
     },
   ];
   const winSummary = [
@@ -465,15 +475,17 @@ export default function DetailBuyAction({
           >
             <span className="font-chicago uppercase">Order Summary</span>
             <ul className="flex flex-col gap-1 text-gray-500">
-              {orderSummary.map((item) => (
-                <li
-                  className="flex items-center justify-between"
-                  key={item.title}
-                >
-                  <strong>{item.title}</strong>
-                  <span>{item.value}</span>
-                </li>
-              ))}
+              {orderSummary
+                .filter((i) => !(i.show === false))
+                .map((item) => (
+                  <li
+                    className="flex items-center justify-between"
+                    key={item.title}
+                  >
+                    <strong>{item.title}</strong>
+                    <span>{item.value}</span>
+                  </li>
+                ))}
             </ul>
           </div>
           {Number(supply) ? (
