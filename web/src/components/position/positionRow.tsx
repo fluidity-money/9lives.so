@@ -16,6 +16,7 @@ import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
+import formatDppmName from "@/utils/format/formatDppmName";
 // import SellButton from "../sellButton";
 export default function PositionRow({
   data,
@@ -30,10 +31,7 @@ export default function PositionRow({
     name: string;
     balance: string;
     balanceRaw: bigint;
-    campaignName: string;
-    campaignId: `0x${string}`;
     outcomePic?: string;
-    winner: string | null;
   };
   detailPage?: boolean;
   price?: string;
@@ -74,10 +72,16 @@ export default function PositionRow({
   const percentageChange = Math.abs(
     (PnL / +formatFusdc(historicalValue, 6)) * 100,
   ).toFixed(2);
-  const isWinner = data.winner && data.winner === data.id;
+  const isWinner = campaignContent.winner && campaignContent.winner === data.id;
   const [reward, setReward] = useState<number>();
   useEffect(() => {
-    if (price && data.id && data.balance && data.campaignId && !isWinner) {
+    if (
+      price &&
+      data.id &&
+      data.balance &&
+      campaignContent.identifier &&
+      !isWinner
+    ) {
       addPosition({
         outcomeId: data.id,
         value: Number(price) * Number(data.balance),
@@ -90,7 +94,7 @@ export default function PositionRow({
     data.balance,
     PnL,
     addPosition,
-    data.campaignId,
+    campaignContent.identifier,
     isWinner,
   ]);
   useEffect(() => {
@@ -98,7 +102,7 @@ export default function PositionRow({
       price &&
       data.id &&
       data.balance &&
-      data.campaignId &&
+      campaignContent.identifier &&
       isWinner &&
       historicalValue
     ) {
@@ -122,7 +126,7 @@ export default function PositionRow({
         } catch (error) {
           console.error(error);
         }
-      })(data.campaignId);
+      })(campaignContent.identifier);
     }
   }, [
     price,
@@ -130,7 +134,7 @@ export default function PositionRow({
     data.id,
     data.balance,
     addPosition,
-    data.campaignId,
+    campaignContent.identifier,
     isWinner,
     historicalValue,
   ]);
@@ -142,6 +146,16 @@ export default function PositionRow({
     } finally {
       setIsClaiming(false);
     }
+  }
+  let name = "";
+  if (campaignContent.isDppm && campaignContent.priceMetadata) {
+    name = formatDppmName({
+      symbol: campaignContent.priceMetadata.baseAsset,
+      price: campaignContent.priceMetadata.priceTargetForUp,
+      end: campaignContent.ending * 1000,
+    });
+  } else {
+    name = campaignContent.name;
   }
   return (
     <>
@@ -164,7 +178,7 @@ export default function PositionRow({
                         : NoOutcomeImg
                       : data.outcomePic
                   }
-                  alt={data.name + "_" + data.campaignName}
+                  alt={data.name + "_" + campaignContent.name}
                   width={40}
                   height={40}
                   className="size-10 self-start border border-9black bg-9layer"
@@ -178,11 +192,11 @@ export default function PositionRow({
                         e.stopPropagation();
                       }}
                       className="underline"
-                      href={`/campaign/${data.campaignId}`}
+                      href={`/campaign/${campaignContent.identifier}`}
                     >
-                      {data.campaignName}
+                      {name}
                     </Link>{" "}
-                    {data.winner && (
+                    {campaignContent.winner && (
                       <span className="bg-9yellow p-0.5 font-geneva text-[10px] uppercase tracking-wide">
                         Concluded
                       </span>
@@ -192,11 +206,12 @@ export default function PositionRow({
                         Winner
                       </span>
                     )}
-                    {data.winner && data.winner !== data.id && (
-                      <span className="ml-1 bg-9red p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
-                        Lost
-                      </span>
-                    )}
+                    {campaignContent.winner &&
+                      campaignContent.winner !== data.id && (
+                        <span className="ml-1 bg-9red p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
+                          Lost
+                        </span>
+                      )}
                   </p>
                 ) : null}
                 <p
@@ -341,7 +356,10 @@ export default function PositionRow({
         {campaignContent.isDpm ? null : (
           <td>
             <span className="font-chicago text-xs">
-              ${data.winner && data.winner !== data.id ? 0 : data.balance}
+              $
+              {campaignContent.winner && campaignContent.winner !== data.id
+                ? 0
+                : data.balance}
             </span>
           </td>
         )}

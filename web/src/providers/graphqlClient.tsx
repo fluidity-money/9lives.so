@@ -210,6 +210,13 @@ export const requestUserParticipated = (address: string) =>
     outcomeIds: true,
     content: {
       isDpm: true,
+      isDppm: true,
+      identifier: true,
+      ending: true,
+      priceMetadata: {
+        baseAsset: true,
+        priceTargetForUp: true,
+      },
       name: true,
       picture: true,
       poolAddress: true,

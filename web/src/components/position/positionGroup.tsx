@@ -9,7 +9,6 @@ import Placeholder from "../tablePlaceholder";
 import { Outcome, ParticipatedCampaign } from "@/types";
 
 export default function PositionsGroup({
-  campaignId,
   content,
   outcomeIds,
   detailPage,
@@ -73,12 +72,7 @@ export default function PositionsGroup({
       <PositionRow
         key={idx}
         campaignContent={content}
-        data={{
-          ...item,
-          campaignName: content.name,
-          campaignId: campaignId as `0x${string}`,
-          winner: content.winner,
-        }}
+        data={item}
         price={sharePrices?.find((o) => o.id === item.id)?.price}
         history={positionsHistory?.filter((p) => p.id === item.id)}
         detailPage={detailPage}
