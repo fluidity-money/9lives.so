@@ -420,14 +420,21 @@ export default function PositionRow({
                   <span
                     className={combineClass(
                       "p-0.5",
-                      data.name === "Yes"
+                      data.name === "Yes" ||
+                        (campaignContent.isDppm && data.name.includes("above"))
                         ? "bg-9green"
-                        : data.name === "No"
+                        : data.name === "No" ||
+                            (campaignContent.isDppm &&
+                              data.name.includes("below"))
                           ? "bg-9red"
                           : "bg-9gray",
                     )}
                   >
-                    {data.name}
+                    {campaignContent.isDppm
+                      ? data.name.includes("above")
+                        ? "UP"
+                        : "DOWN"
+                      : data.name}
                   </span>
                 </span>
               </td>
