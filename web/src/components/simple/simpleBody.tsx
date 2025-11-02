@@ -2,7 +2,7 @@
 
 import AssetPriceChart from "../assetPriceChart";
 import { useQuery } from "@tanstack/react-query";
-import { PricePoint, SimpleCampaignDetail } from "@/types";
+import { Outcome, PricePoint, SimpleCampaignDetail } from "@/types";
 import SimpleSubHeader from "./simpleSubHeader";
 import Button from "../themed/button";
 import Link from "next/link";
@@ -14,6 +14,7 @@ import useSharePrices from "@/hooks/useSharePrices";
 import usePositions from "@/hooks/usePositions";
 import { useActiveAccount } from "thirdweb/react";
 import SimplePositionRow from "./simplePositionRow";
+import SimpleClaimButton from "./simpleClaimButton";
 
 export default function SimpleBody({
   data,
@@ -44,6 +45,11 @@ export default function SimpleBody({
     account,
     isDpm: false,
   });
+  const winnerOutcome = data.outcomes.find(
+    (o) => o.identifier === data?.winner,
+  ) as Outcome;
+  const winnerPosition = positions?.find((p) => p.id === data?.winner);
+  const isWinner = winnerOutcome && winnerPosition;
   return (
     <ActiveCampaignProvider previousData={data} symbol={symbol}>
       <div className="flex flex-col gap-2 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] px-2 py-1 text-center text-xs shadow-9liqCard md:px-4 md:py-3">
@@ -74,7 +80,14 @@ export default function SimpleBody({
         assetsLoaded={assetsLoaded}
       />
       <div className="sticky inset-x-0 bottom-0 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
-        {isEnded ? (
+        {isWinner ? (
+          <SimpleClaimButton
+            outcomes={data.outcomes}
+            userPosition={winnerPosition}
+            winner={winnerOutcome}
+            tradingAddr={data.poolAddress}
+          />
+        ) : isEnded ? (
           <p
             className="mx-auto text-center font-chicago text-xs md:pointer-events-none"
             onClick={() => {
