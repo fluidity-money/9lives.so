@@ -69,17 +69,29 @@ export default function SimpleBody({
         basePrice={basePrice}
         latestPrice={assetPrices?.[assetPrices?.length - 1]?.price ?? 0}
       />
-      <AssetPriceChart
-        simple
-        basePrice={basePrice}
-        id={data.identifier}
-        symbol={symbol}
-        starting={data.starting}
-        ending={data.ending}
-        assetPrices={assetPrices}
-        assetsLoaded={assetsLoaded}
-      />
-      <div className="sticky inset-x-0 bottom-0 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
+      <div className="relative">
+        {winnerOutcome ? (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 font-chicago">
+            <span className="mb-6 text-center">
+              Winner: <br></br>
+              {winnerOutcome.name.includes("ABOVE")
+                ? "Price Went Up"
+                : "Price Went Down"}
+            </span>
+          </div>
+        ) : null}
+        <AssetPriceChart
+          simple
+          basePrice={basePrice}
+          id={data.identifier}
+          symbol={symbol}
+          starting={data.starting}
+          ending={data.ending}
+          assetPrices={assetPrices}
+          assetsLoaded={assetsLoaded}
+        />
+      </div>
+      <div className="sticky inset-x-0 bottom-0 z-20 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
         {isWinner ? (
           <SimpleClaimButton
             outcomes={data.outcomes}
@@ -125,7 +137,7 @@ export default function SimpleBody({
           </>
         )}
       </div>
-      {sharePrices && sharePrices.length === 2 ? (
+      {!isEnded && sharePrices && sharePrices.length === 2 ? (
         <div className="flex flex-row items-center gap-1">
           <span className="font-chicago text-sm">
             %{(Number(sharePrices[1].price) * 100).toFixed(0)}
