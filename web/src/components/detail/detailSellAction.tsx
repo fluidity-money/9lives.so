@@ -30,13 +30,11 @@ import useEstimateBurn from "@/hooks/useEstimateBurn";
 import formatFusdc from "@/utils/format/formatUsdc";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useSellWithPaymaster from "@/hooks/useSellWithPaymaster";
-import usePositionHistory from "@/hooks/usePositionsHistory";
 
 export default function DetailSellAction({
   shouldStopAction,
   data,
   selectedOutcome,
-  isDpm,
   price,
   minimized,
   setMinimized,
@@ -46,7 +44,6 @@ export default function DetailSellAction({
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
   price: string;
-  isDpm: boolean | null;
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
@@ -96,7 +93,7 @@ export default function DetailSellAction({
     tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
     account,
-    isDpm,
+    isDpm: data.isDpm,
   });
   const { data: estimation } = useEstimateBurn({
     outcomeId: selectedOutcome.id as `0x${string}`,
