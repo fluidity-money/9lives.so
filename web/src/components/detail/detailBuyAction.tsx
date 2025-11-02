@@ -35,13 +35,13 @@ import { useUserStore } from "@/stores/userStore";
 import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import ChainSelector from "../chainSelector";
+import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 
 export default function DetailBuyAction({
   shouldStopAction,
   data,
   selectedOutcome,
   price,
-  isDpm,
   minimized,
   setMinimized,
 }: {
@@ -50,7 +50,6 @@ export default function DetailBuyAction({
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
   price: string;
-  isDpm: boolean | null;
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {
@@ -100,7 +99,7 @@ export default function DetailBuyAction({
     totalVolume: data.totalVolume,
     outcomeIds: [selectedOutcome.id as `0x${string}`],
   })?.[0]?.chance;
-  const chance = isDpm ? dpmChance : chanceAmm;
+  const chance = data.isDpm ? dpmChance : chanceAmm;
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   type FormData = z.infer<typeof formSchemaWithRelay>;
   const {
@@ -173,15 +172,24 @@ export default function DetailBuyAction({
     fusdc: usdValue,
     share: supply / Number(price),
   });
-  const winEstimation = isDpm ? estimatedWinForDpm.toFixed(2) : sharesToGet;
+  const estimatedWinForDppm = useDppmWinEstimation({
+    outcomeId: selectedOutcome.id as `0x${string}`,
+    usdValue,
+    tradingAddr: data.poolAddress,
+  });
+  const winEstimation = data.isDpm
+    ? estimatedWinForDpm.toFixed(2)
+    : data.isDppm
+      ? estimatedWinForDppm
+      : sharesToGet;
   const orderSummary = [
     {
       title: "AVG Price",
-      value: `$${isDpm ? price : (isNaN(usdValue / +sharesToGet) ? 0 : usdValue / +sharesToGet).toFixed(2)}`,
+      value: `$${data.isDpm ? price : (isNaN(usdValue / +sharesToGet) ? 0 : usdValue / +sharesToGet).toFixed(2)}`,
     },
     {
       title: "Shares To Get",
-      value: isDpm ? (usdValue / Number(price)).toFixed(2) : sharesToGet,
+      value: data.isDpm ? (usdValue / Number(price)).toFixed(2) : sharesToGet,
     },
   ];
   const winSummary = [
