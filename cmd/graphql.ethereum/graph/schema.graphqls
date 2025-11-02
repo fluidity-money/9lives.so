@@ -188,7 +188,7 @@ type Position {
 
   outcomeIds: [String!]!
 
-  content: Campaign
+  content: Campaign!
 }
 
 """

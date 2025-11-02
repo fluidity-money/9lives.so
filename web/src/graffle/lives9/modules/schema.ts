@@ -1736,7 +1736,7 @@ export namespace Schema {
     export interface content extends $.OutputField {
       name: "content";
       arguments: {};
-      inlineType: [0];
+      inlineType: [1];
       namedType: $$NamedTypes.$$Campaign;
     }
   }

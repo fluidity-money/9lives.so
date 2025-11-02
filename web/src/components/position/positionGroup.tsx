@@ -1,24 +1,22 @@
 "use client";
 
-import { PositionsProps } from "@/types";
 import { useActiveAccount } from "thirdweb/react";
 import usePositions from "@/hooks/usePositions";
 import useSharePrices from "@/hooks/useSharePrices";
 import PositionRow from "./positionRow";
 import usePositionHistory from "@/hooks/usePositionsHistory";
 import Placeholder from "../tablePlaceholder";
+import { Outcome, ParticipatedCampaign } from "@/types";
 
 export default function PositionsGroup({
-  tradingAddr,
-  outcomes,
-  campaignName,
   campaignId,
-  winner,
+  content,
+  outcomeIds,
   detailPage,
-  isDpm,
   colSpan,
   hideSmallBalances,
-}: PositionsProps & {
+}: ParticipatedCampaign & {
+  content: NonNullable<ParticipatedCampaign["content"]>;
   detailPage?: boolean;
   colSpan: number;
   hideSmallBalances: boolean;
@@ -30,15 +28,14 @@ export default function PositionsGroup({
     error,
     data: positions,
   } = usePositions({
-    tradingAddr,
-    outcomes,
+    tradingAddr: content.poolAddress as `0x${string}`,
+    outcomes: content.outcomes as Outcome[],
     account,
-    isDpm,
+    isDpm: content?.isDpm,
   });
-  const outcomeIds = outcomes.map((o) => o.identifier);
   const { data: sharePrices } = useSharePrices({
-    tradingAddr,
-    outcomeIds,
+    tradingAddr: content.poolAddress as `0x${string}`,
+    outcomeIds: outcomeIds as `0x${string}`[],
   });
   const { data: positionsHistory } = usePositionHistory(
     account?.address,
@@ -75,12 +72,15 @@ export default function PositionsGroup({
     .map((item, idx) => (
       <PositionRow
         key={idx}
-        isDpm={isDpm}
-        data={{ ...item, campaignName, campaignId, winner }}
+        campaignContent={content}
+        data={{
+          ...item,
+          campaignName: content.name,
+          campaignId: campaignId as `0x${string}`,
+          winner: content.winner,
+        }}
         price={sharePrices?.find((o) => o.id === item.id)?.price}
         history={positionsHistory?.filter((p) => p.id === item.id)}
-        tradingAddr={tradingAddr}
-        outcomes={outcomes}
         detailPage={detailPage}
       />
     ));

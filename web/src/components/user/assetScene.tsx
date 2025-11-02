@@ -3,20 +3,20 @@ import TabButton from "../tabButton";
 import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment } from "react";
 import ShadowCard from "../cardShadow";
-import { PositionsProps } from "@/types";
+import { ParticipatedCampaign } from "@/types";
 import ActivityTable from "../activity/activityTable";
 import UserCampaignsList from "../campaign/userCampaignsList";
 import ClaimedRewardsTable from "../claimedRewards/claimedRewardsTable";
 import UserLpedCampaignsList from "../campaign/lpedCampaigns";
 interface AssetSceneProps {
-  positionGrops: PositionsProps[];
+  positionGroups?: ParticipatedCampaign[];
   areGroupsLoading?: boolean;
   campaignId?: string;
   detailPage?: boolean;
   isDetailDpm: boolean | null;
 }
 export default function AssetScene({
-  positionGrops,
+  positionGroups,
   areGroupsLoading,
   campaignId,
   isDetailDpm,
@@ -48,12 +48,14 @@ export default function AssetScene({
       <TabPanels className={"md:min-w-[480px]"}>
         <TabPanel>
           <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
-            <PositionTable
-              isDetailDpm={isDetailDpm}
-              detailPage={detailPage}
-              positionGroups={positionGrops}
-              areGroupsLoading={areGroupsLoading}
-            />
+            {positionGroups ? (
+              <PositionTable
+                isDetailDpm={isDetailDpm}
+                detailPage={detailPage}
+                positionGroups={positionGroups}
+                areGroupsLoading={areGroupsLoading}
+              />
+            ) : null}
           </ShadowCard>
         </TabPanel>
         <TabPanel>

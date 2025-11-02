@@ -129,13 +129,11 @@ export default function DetailWrapper({
         )}
         <AssetScene
           isDetailDpm={data.isDpm}
-          positionGrops={[
+          positionGroups={[
             {
-              tradingAddr: data.poolAddress,
-              outcomes: data.outcomes,
               campaignId: data.identifier,
-              campaignName: data.name,
-              isDpm: data.isDpm,
+              outcomeIds: data.outcomes.map((o) => o.identifier),
+              content: { ...data },
             },
           ]}
           campaignId={data.identifier}

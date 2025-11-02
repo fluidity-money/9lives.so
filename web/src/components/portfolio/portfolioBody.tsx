@@ -3,7 +3,6 @@
 import useParticipatedCampaigns from "@/hooks/useParticipatedCampaigns";
 import { useActiveAccount } from "thirdweb/react";
 import AssetScene from "../user/assetScene";
-import { PositionsProps } from "@/types";
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import { useEffect } from "react";
 
@@ -15,21 +14,10 @@ export default function PortfolioBody() {
   useEffect(() => {
     if (!account) reset();
   }, [account, reset]);
-  const positionGrops =
-    participatedCampaigns?.map(
-      (pc) =>
-        ({
-          campaignName: pc?.content?.name,
-          campaignId: pc?.campaignId,
-          tradingAddr: pc?.content?.poolAddress,
-          winner: pc?.content?.winner,
-          outcomes: pc?.content?.outcomes,
-          isDpm: pc?.content?.isDpm,
-        }) as PositionsProps,
-    ) ?? [];
+
   return (
     <AssetScene
-      positionGrops={positionGrops}
+      positionGroups={participatedCampaigns}
       areGroupsLoading={areGroupsLoading}
       isDetailDpm={null}
     />

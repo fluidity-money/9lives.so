@@ -1,4 +1,4 @@
-import { PositionsProps } from "@/types";
+import { ParticipatedCampaign } from "@/types";
 import PositionsGroup from "./positionGroup";
 import Placeholder from "../tablePlaceholder";
 const bodyStyles = "min-h-24 bg-9gray";
@@ -10,7 +10,7 @@ export default function PositionBody({
   colSpan,
   hideSmallBalances,
 }: {
-  positionGroups: PositionsProps[];
+  positionGroups?: ParticipatedCampaign[];
   areGroupsLoading?: boolean;
   detailPage?: boolean;
   colSpan: number;
@@ -26,22 +26,19 @@ export default function PositionBody({
           subtitle="Start Growing Your Portfolio."
           colSpan={colSpan}
         />
-      ) : (
+      ) : positionGroups ? (
         positionGroups.map((group) => (
           <PositionsGroup
             colSpan={colSpan}
+            content={group.content}
+            outcomeIds={group.outcomeIds}
             hideSmallBalances={hideSmallBalances}
-            isDpm={group.isDpm}
             detailPage={detailPage}
-            key={group.tradingAddr}
-            tradingAddr={group.tradingAddr}
-            outcomes={group.outcomes}
-            campaignName={group.campaignName}
+            key={group.content.poolAddress}
             campaignId={group.campaignId}
-            winner={group.winner}
           />
         ))
-      )}
+      ) : null}
     </tbody>
   );
 }

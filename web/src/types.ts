@@ -9,10 +9,10 @@ import {
   requestPriceChanges,
   requestSimpleMarket,
   requestAssetPrices,
+  requestUserParticipated,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
-import formatFusdc from "./utils/format/formatUsdc";
 import { Account } from "thirdweb/wallets";
 export type RawCampaign = Awaited<
   ReturnType<typeof requestCampaignList>
@@ -159,14 +159,9 @@ export type CreationResponse = {
   }[];
 };
 
-export type PositionsProps = {
-  campaignName: string;
-  campaignId: `0x${string}`;
-  tradingAddr: `0x${string}`;
-  outcomes: Outcome[];
-  winner?: string;
-  isDpm: boolean | null;
-};
+export type ParticipatedCampaign = NonNullable<
+  Awaited<ReturnType<typeof requestUserParticipated>>[number]
+>;
 
 export type Activity = NonNullable<
   Awaited<ReturnType<typeof requestUserActivities>>[number]

@@ -9,7 +9,7 @@ import Button from "../themed/button";
 import DownCaret from "#/icons/down-caret.svg";
 import useClaim from "@/hooks/useClaim";
 import { useActiveAccount } from "thirdweb/react";
-import { Outcome } from "@/types";
+import { Outcome, ParticipatedCampaign } from "@/types";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { requestCampaignById } from "@/providers/graphqlClient";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
@@ -21,10 +21,8 @@ export default function PositionRow({
   data,
   price,
   history,
-  tradingAddr,
-  outcomes,
   detailPage,
-  isDpm,
+  campaignContent,
 }: {
   data: {
     id: `0x${string}`;
@@ -35,9 +33,8 @@ export default function PositionRow({
     campaignName: string;
     campaignId: `0x${string}`;
     outcomePic?: string;
-    winner?: string;
+    winner: string | null;
   };
-  isDpm: boolean | null;
   detailPage?: boolean;
   price?: string;
   history?: {
@@ -47,16 +44,15 @@ export default function PositionRow({
     txHash: string;
     type: "buy" | "sell";
   }[];
-  outcomes: Outcome[];
-  tradingAddr: `0x${string}`;
+  campaignContent: ParticipatedCampaign["content"];
 }) {
   const account = useActiveAccount();
   const { claim } = useClaim({
     shareAddr: data.shareAddress,
     outcomeId: data.id,
-    tradingAddr,
-    outcomes,
-    isDpm,
+    tradingAddr: campaignContent.poolAddress as `0x${string}`,
+    outcomes: campaignContent.outcomes as Outcome[],
+    isDpm: campaignContent.isDpm,
   });
   const { connect } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
@@ -69,7 +65,7 @@ export default function PositionRow({
   const { data: estimationOfBurn } = useEstimateBurn({
     outcomeId: data.id as `0x${string}`,
     share: data.balanceRaw,
-    tradingAddr,
+    tradingAddr: campaignContent.poolAddress as `0x${string}`,
     account,
   });
   const PnL = Number(
@@ -116,7 +112,7 @@ export default function PositionRow({
           const avgPrice = campaign.totalVolume / totalSharesOfWinner;
           const rewardDpm = data.balance ? +data.balance * avgPrice : 0;
           const rewardAmm = data.balance ? +data.balance : 0;
-          const reward = isDpm ? rewardDpm : rewardAmm;
+          const reward = campaignContent.isDpm ? rewardDpm : rewardAmm;
           setReward(reward);
           addPosition({
             outcomeId: data.id,
@@ -130,7 +126,7 @@ export default function PositionRow({
     }
   }, [
     price,
-    isDpm,
+    campaignContent.isDpm,
     data.id,
     data.balance,
     addPosition,
@@ -342,7 +338,7 @@ export default function PositionRow({
             </div>
           ) : null}
         </td>
-        {isDpm ? null : (
+        {campaignContent.isDpm ? null : (
           <td>
             <span className="font-chicago text-xs">
               ${data.winner && data.winner !== data.id ? 0 : data.balance}
@@ -427,7 +423,7 @@ export default function PositionRow({
                   </span>
                 </div>
               </td>
-              {isDpm ? null : <td></td>}
+              {campaignContent.isDpm ? null : <td></td>}
             </tr>
           );
         })}

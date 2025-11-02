@@ -1,7 +1,7 @@
-import { PositionsProps } from "@/types";
 import PositionsBody from "./positionBody";
 import { useState } from "react";
 import Button from "../themed/button";
+import { ParticipatedCampaign } from "@/types";
 
 export default function PositionTable({
   positionGroups,
@@ -9,7 +9,7 @@ export default function PositionTable({
   detailPage,
   isDetailDpm,
 }: {
-  positionGroups: PositionsProps[];
+  positionGroups?: ParticipatedCampaign[];
   areGroupsLoading?: boolean;
   detailPage?: boolean;
   isDetailDpm: boolean | null;
