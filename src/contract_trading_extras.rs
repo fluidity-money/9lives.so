@@ -166,65 +166,6 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn dppm_simulate_payoff(
-        &self,
-        _shares: U256,
-        _boosted_shares: U256,
-        _outcome_id: FixedBytes<8>,
-        _extra_fusdc: U256,
-    ) -> R<(U256, U256)> {
-        #[cfg(feature = "trading-backend-dppm")]
-        {
-            let outcome_1 = self.outcome_list.get(0).unwrap();
-            let outcome_2 = self.outcome_list.get(1).unwrap();
-            let outcome_boosted_shares = self
-                .ninetails_outcome_boosted_shares
-                .get(_outcome_id)
-                .checked_add(_boosted_shares)
-                .ok_or(Error::CheckedAddOverflow)?;
-            let all_boosted_shares = self
-                .ninetails_global_boosted_shares
-                .get()
-                .checked_add(_boosted_shares)
-                .ok_or(Error::CheckedAddOverflow)?;
-            let M1 = {
-                let x = self.dppm_outcome_invested.get(outcome_1);
-                if _outcome_id == outcome_1 {
-                    x.checked_add(_extra_fusdc)
-                        .ok_or(Error::CheckedAddOverflow)?
-                } else {
-                    x
-                }
-            };
-            let M2 = {
-                let x = self.dppm_outcome_invested.get(outcome_2);
-                if _outcome_id == outcome_2 {
-                    x.checked_add(_extra_fusdc)
-                        .ok_or(Error::CheckedAddOverflow)?
-                } else {
-                    x
-                }
-            };
-            let winning_dppm_shares = self
-                .dppm_shares_outcome
-                .get(_outcome_id)
-                .checked_add(_shares)
-                .ok_or(Error::CheckedAddOverflow)?;
-            return self.internal_dppm_simulate_payoff(
-                _shares,
-                _boosted_shares,
-                outcome_boosted_shares,
-                all_boosted_shares,
-                M1,
-                M2,
-                winning_dppm_shares,
-            );
-        }
-        #[cfg(not(feature = "trading-backend-dppm"))]
-        unimplemented!()
-    }
-
-    #[allow(non_snake_case)]
     pub fn dppm_simulate_earnings(&self, _invested: U256, _outcome: FixedBytes<8>) -> R<U256> {
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!();
@@ -232,8 +173,12 @@ impl StorageTrading {
         {
             let (dppm_shares, ninetails_shares) =
                 self.internal_dppm_simulate_mint(_outcome, _invested)?;
-            let (dppm_fusdc, ninetails_fusdc) =
-                self.dppm_simulate_payoff(dppm_shares, ninetails_shares, _outcome, _invested)?;
+            let (dppm_fusdc, ninetails_fusdc) = self.internal_dppm_simulate_payoff_state(
+                dppm_shares,
+                ninetails_shares,
+                _outcome,
+                _invested,
+            )?;
             Ok(dppm_fusdc + ninetails_fusdc)
         }
     }
@@ -260,9 +205,15 @@ impl StorageTrading {
                 .ninetails_user_boosted_shares
                 .getter(spender)
                 .get(outcome_id);
-            self.dppm_simulate_payoff(share_amt, user_boosted_shares, outcome_id, U256::ZERO)
+            self.internal_dppm_simulate_payoff_state(
+                share_amt,
+                user_boosted_shares,
+                outcome_id,
+                U256::ZERO,
+            )
         }
     }
+
     pub fn dppm_clawback(&mut self) -> R<U256> {
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!();

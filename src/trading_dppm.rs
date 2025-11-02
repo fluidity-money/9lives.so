@@ -319,6 +319,60 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
+    pub fn internal_dppm_simulate_payoff_state(
+        &self,
+        _shares: U256,
+        _boosted_shares: U256,
+        _outcome_id: FixedBytes<8>,
+        _extra_fusdc: U256,
+    ) -> R<(U256, U256)> {
+        let outcome_1 = self.outcome_list.get(0).unwrap();
+        let outcome_2 = self.outcome_list.get(1).unwrap();
+        let outcome_boosted_shares = self
+            .ninetails_outcome_boosted_shares
+            .get(_outcome_id)
+            .checked_add(_boosted_shares)
+            .ok_or(Error::CheckedAddOverflow)?;
+        let all_boosted_shares = self
+            .ninetails_global_boosted_shares
+            .get()
+            .checked_add(_boosted_shares)
+            .ok_or(Error::CheckedAddOverflow)?;
+        let M1 = {
+            let x = self.dppm_outcome_invested.get(outcome_1);
+            if _outcome_id == outcome_1 {
+                x.checked_add(_extra_fusdc)
+                    .ok_or(Error::CheckedAddOverflow)?
+            } else {
+                x
+            }
+        };
+        let M2 = {
+            let x = self.dppm_outcome_invested.get(outcome_2);
+            if _outcome_id == outcome_2 {
+                x.checked_add(_extra_fusdc)
+                    .ok_or(Error::CheckedAddOverflow)?
+            } else {
+                x
+            }
+        };
+        let winning_dppm_shares = self
+            .dppm_shares_outcome
+            .get(_outcome_id)
+            .checked_add(_shares)
+            .ok_or(Error::CheckedAddOverflow)?;
+        self.internal_dppm_simulate_payoff(
+            _shares,
+            _boosted_shares,
+            outcome_boosted_shares,
+            all_boosted_shares,
+            M1,
+            M2,
+            winning_dppm_shares,
+        )
+    }
+
+    #[allow(non_snake_case)]
     pub fn internal_dppm_simulate_loser_payoff(
         &self,
         user_boosted_shares: U256,

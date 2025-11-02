@@ -85,7 +85,7 @@ a clean artifacts directory):
 
 You could clear the recorded environment variables the same way with a test harness:
 
-	rm $(find target -name environment.lst)
+	find target -name environment.lst -delete
 
 You could use this to test the code by making a debug build, which includes more
 information about reverts, then simulate your calldata against it using
@@ -107,7 +107,7 @@ The error table lives in ERRORS.md.
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
 | Trading DPPM mint impl        | `0xce0116757b611b56dac50487716dbf64e716b75c` |
-| Trading DPPM extras impl      | `0xc25ed8c1c1d3ab260bf64ad6b8f4216e216d039f` |
+| Trading DPPM extras impl      | `0xdf48dd37e03f1b8e09944713a24f1bbb36666d1f` |
 | Trading DPPM price impl       | `0xd94212be7ea63ec863f814434afa31a08a334f0d` |
 | Trading DPPM quotes impl      | `0x09e98990a0b6b3e91d43f86b8f4a7aca65503f31` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
