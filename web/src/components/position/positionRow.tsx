@@ -217,14 +217,21 @@ export default function PositionRow({
                 <p
                   className={combineClass(
                     "self-start px-1 py-0.5 font-geneva text-xs uppercase tracking-wide text-9black",
-                    data.name === "Yes"
+                    data.name === "Yes" ||
+                      (campaignContent.isDppm && data.name.includes("above"))
                       ? "bg-9green"
-                      : data.name === "No"
+                      : data.name === "No" ||
+                          (campaignContent.isDppm &&
+                            data.name.includes("below"))
                         ? "bg-9red"
                         : "bg-9layer",
                   )}
                 >
-                  {data.name}
+                  {campaignContent.isDppm
+                    ? data.name.includes("above")
+                      ? "UP"
+                      : "DOWN"
+                    : data.name}
                 </p>
                 <div className="flex items-center gap-1">
                   {!detailPage ? (
@@ -265,14 +272,20 @@ export default function PositionRow({
               <span
                 className={combineClass(
                   "p-0.5",
-                  data.name === "Yes"
+                  data.name === "Yes" ||
+                    (campaignContent.isDppm && data.name.includes("above"))
                     ? "bg-9green"
-                    : data.name === "No"
+                    : data.name === "No" ||
+                        (campaignContent.isDppm && data.name.includes("below"))
                       ? "bg-9red"
                       : "bg-9gray",
                 )}
               >
-                {data.name}
+                {campaignContent.isDppm
+                  ? data.name.includes("above")
+                    ? "UP"
+                    : "DOWN"
+                  : data.name}
               </span>
             </span>
             {history && history.length > 0 && Number(data.balance) ? (
