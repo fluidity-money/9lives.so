@@ -66,7 +66,7 @@ impl StorageTrading {
         };
     }
 
-    pub fn dppm_lawback_B_F_C_64995(&mut self) -> R<U256> {
+    pub fn dppm_clawback_B_F_C_64995(&mut self) -> R<U256> {
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!();
         #[cfg(feature = "trading-backend-dppm")]

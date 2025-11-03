@@ -150,6 +150,8 @@ proptest! {
         let mut contract_bal = U256::from(2e6 as u32);
         let mut referrer_fee = U256::ZERO;
         let mut creator_fee = U256::ZERO;
+        let o_1 = c.outcome_list.get(0).unwrap();
+        let o_2 = c.outcome_list.get(1).unwrap();
         let actions =
             actions.into_iter().map(|DppmAction { outcome, fusdc_amt, time_since, sender }| {
                 contract_bal += fusdc_amt;
@@ -158,8 +160,13 @@ proptest! {
                 referrer_fee +=  maths::calc_fee(fusdc_amt, U256::from(fee_referrer)).unwrap();
                 creator_fee += maths::calc_fee(fusdc_amt, U256::from(fee_creator)).unwrap();
                 c.dppm_simulate_earnings(fusdc_amt, outcome).unwrap();
-                c.dppm_simulate_payoff_for_address(sender, o_0).unwrap();
-                c.dppm_simulate_payoff_for_address(sender, o_1).unwrap();
+                let M1 = c.dppm_outcome_invested.get(o_1);
+                let M2 = c.dppm_outcome_invested.get(o_2);
+                let max_fusdc = M1 + M2 + fusdc_amt;
+                let e_1 = c.dppm_simulate_payoff_for_address(sender, o_1).unwrap();
+                let e_2 = c.dppm_simulate_payoff_for_address(sender, o_2).unwrap();
+                assert!(max_fusdc >= e_1.0 + e_1.1);
+                assert!(max_fusdc >= e_2.0 + e_2.1);
                 let s = should_spend_fusdc_sender!(fusdc_amt, {
                     match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
                         outcome,
