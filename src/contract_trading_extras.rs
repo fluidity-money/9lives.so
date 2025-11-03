@@ -166,20 +166,25 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn dppm_simulate_earnings(&self, _invested: U256, _outcome: FixedBytes<8>) -> R<U256> {
+    pub fn dppm_simulate_earnings(
+        &self,
+        _invested: U256,
+        _outcome: FixedBytes<8>,
+    ) -> R<(U256, U256)> {
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!();
         #[cfg(feature = "trading-backend-dppm")]
         {
             let (dppm_shares, ninetails_shares) =
                 self.internal_dppm_simulate_mint(_outcome, _invested)?;
-            let (dppm_fusdc, ninetails_fusdc) = self.internal_dppm_simulate_payoff_state(
-                dppm_shares,
-                ninetails_shares,
-                _outcome,
-                _invested,
-            )?;
-            Ok(dppm_fusdc + ninetails_fusdc)
+            let (dppm_fusdc, ninetails_winner_fusdc, ninetails_loser_fusdc) = self
+                .internal_dppm_simulate_payoff_state(
+                    dppm_shares,
+                    ninetails_shares,
+                    _outcome,
+                    _invested,
+                )?;
+            Ok((dppm_fusdc + ninetails_winner_fusdc, ninetails_loser_fusdc))
         }
     }
 
@@ -187,7 +192,7 @@ impl StorageTrading {
         &self,
         spender: Address,
         outcome_id: FixedBytes<8>,
-    ) -> R<(U256, U256)> {
+    ) -> R<(U256, U256, U256)> {
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!();
         #[cfg(feature = "trading-backend-dppm")]

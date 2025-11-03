@@ -71,11 +71,11 @@ pub fn ninetails_payoff_winners(
     user_boosted_shares: U256,
     outcome_boosted_shares: U256,
     global_boosted_shares: U256,
-) -> Result<U256, Error> {
+) -> Result<(U256, U256), Error> {
     let boost = mul_div(leftovers, U256::from(7e6 as u32), U256::from(10e6 as u32))?.0;
     let winnings = mul_div(user_boosted_shares, boost, outcome_boosted_shares)?.0;
     let refund = ninetails_payoff_losers(leftovers, user_boosted_shares, global_boosted_shares)?;
-    Ok(add!(winnings, refund))
+    Ok((add!(winnings, refund), refund))
 }
 
 pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {

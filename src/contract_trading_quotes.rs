@@ -99,7 +99,7 @@ impl StorageTrading {
     #[mutants::skip]
     fn internal_dppm_quote(&self, outcome_id: FixedBytes<8>, value: U256) -> R<(U256, U256)> {
         assert_or!(
-            self.dppm_out_of.get(outcome_id) > U256::ZERO,
+            self.dppm_outcome_invested.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
         let out_of_other = self.dppm_out_of.get(

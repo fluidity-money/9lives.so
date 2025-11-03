@@ -107,9 +107,9 @@ The error table lives in ERRORS.md.
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
 | Trading DPPM mint impl        | `0xce0116757b611b56dac50487716dbf64e716b75c` |
-| Trading DPPM extras impl      | `0x709acbd292f28d90ff5de0ace6e1a78b8fbfa2c0` |
+| Trading DPPM extras impl      | `0xdc2d927f59c0ef8cbb6c2837554be109fa39c083` |
 | Trading DPPM price impl       | `0xd94212be7ea63ec863f814434afa31a08a334f0d` |
-| Trading DPPM quotes impl      | `0x09e98990a0b6b3e91d43f86b8f4a7aca65503f31` |
+| Trading DPPM quotes impl      | `0x6dd6f9e95a0fc4c051940bbbf9c2f2416ad6f461` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
 | Trading AMM price impl        | `0xb393ea32f302a9cc798f8296f5328172096553d2` |

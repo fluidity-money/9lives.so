@@ -227,7 +227,7 @@ impl StorageTrading {
         let M1 = self.dppm_outcome_invested.get(outcome_1);
         let M2 = self.dppm_outcome_invested.get(outcome_2);
         let winning_dppm_shares = self.dppm_shares_outcome.get(outcome_id);
-        let (dppm_fusdc, ninetails_fusdc) = self.internal_dppm_simulate_payoff(
+        let (dppm_fusdc, ninetails_fusdc, _) = self.internal_dppm_simulate_payoff(
             amt,
             user_boosted_shares,
             outcome_boosted_shares,
@@ -293,6 +293,9 @@ impl StorageTrading {
         Ok(shares)
     }
 
+    /// Estimate the payoff for the simulated amount, returning the fUSDC the
+    /// user would win, the amount the user would win if they won, and what
+    /// they would win if they lost.
     #[allow(non_snake_case)]
     pub fn internal_dppm_simulate_payoff(
         &self,
@@ -303,19 +306,19 @@ impl StorageTrading {
         M1: U256,
         M2: U256,
         global_dppm_shares_outcome: U256,
-    ) -> R<(U256, U256)> {
+    ) -> R<(U256, U256, U256)> {
         let M = M1.checked_add(M2).ok_or(Error::CheckedAddOverflow)?;
         let leftovers = M
             .checked_sub(global_dppm_shares_outcome)
             .ok_or(Error::CheckedSubOverflow(M, global_dppm_shares_outcome))?;
         let dppm_fusdc = maths::dppm_payoff(share_bal)?;
-        let ninetails_fusdc = maths::ninetails_payoff_winners(
+        let (ninetails_winner_fusdc, ninetails_loser_fusdc) = maths::ninetails_payoff_winners(
             leftovers,
             user_boosted_shares,
             outcome_boosted_shares,
             all_boosted_shares,
         )?;
-        Ok((dppm_fusdc, ninetails_fusdc))
+        Ok((dppm_fusdc, ninetails_winner_fusdc, ninetails_loser_fusdc))
     }
 
     #[allow(non_snake_case)]
@@ -325,7 +328,7 @@ impl StorageTrading {
         _boosted_shares: U256,
         _outcome_id: FixedBytes<8>,
         _extra_fusdc: U256,
-    ) -> R<(U256, U256)> {
+    ) -> R<(U256, U256, U256)> {
         let outcome_1 = self.outcome_list.get(0).unwrap();
         let outcome_2 = self.outcome_list.get(1).unwrap();
         let outcome_boosted_shares = self
