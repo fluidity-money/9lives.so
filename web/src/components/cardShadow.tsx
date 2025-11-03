@@ -12,7 +12,7 @@ export default function ShadowCard({
     <div
       className={combineClass(
         className,
-        "rounded-[3px] border border-9black bg-9layer shadow-9card",
+        "rounded-[3px] border border-9black bg-9layer shadow-9card transition-colors dark:border-9gray dark:bg-9darkPanel dark:shadow-none",
       )}
     >
       {children}

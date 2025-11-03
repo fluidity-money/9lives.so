@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: ["class"],
   content: [
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -30,6 +31,8 @@ const config: Config = {
         "9black": "#0C0C0C",
         "9gray": "#EEEEEE",
         "9layer": "#F5F5F5",
+        "9darkLayer": "#1A1A1A",
+        "9darkPanel": "#222222",
       },
       boxShadow: {
         "9btnPrimaryIdle":

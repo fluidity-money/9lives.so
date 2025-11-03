@@ -28,7 +28,7 @@ export default function NavigationMenu({
           key={item.page}
           href={item.page}
           className={combineClass(
-            "font-chicago text-neutral-800 hover:underline",
+            "font-chicago text-neutral-800 transition-colors hover:underline dark:text-9gray",
             item.disabled && "pointer-events-none opacity-30",
           )}
         >

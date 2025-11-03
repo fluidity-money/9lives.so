@@ -38,7 +38,7 @@ export default function Modal({
       >
         <div
           className={
-            "fixed inset-0 z-30 w-screen overflow-y-auto bg-9blueLight/70 backdrop-blur"
+            "fixed inset-0 z-30 w-screen overflow-y-auto bg-9blueLight/70 backdrop-blur transition-colors dark:bg-black/70"
           }
         >
           <div className="flex min-h-full items-center justify-center">

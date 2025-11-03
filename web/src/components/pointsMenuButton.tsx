@@ -7,7 +7,7 @@ export default function PointMenuButton() {
   return (
     <Menu>
       <MenuButton className="group flex items-center">
-        <span className="font-chicago text-neutral-800 group-hover:underline">
+        <span className="font-chicago text-neutral-800 transition-colors group-hover:underline dark:text-9gray">
           Points
         </span>
         <Image
