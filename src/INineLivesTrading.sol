@@ -167,7 +167,11 @@ interface INineLivesTrading {
     function dppmSimulateEarnings(
         uint256 invested,
         bytes8 outcome
-    ) external returns (uint256 winnerFusdc, uint256 loserFusdc);
+    ) external returns (
+        uint256 dppmFusdc,
+        uint256 ninetailsWinnerFusdc,
+        uint256 ninetailsLoserFusdc
+    );
 
     function dppmSimulatePayoffForAddress(
         address spender,
