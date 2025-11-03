@@ -233,6 +233,30 @@ const tradingAbi = [
   },
   {
     type: "function",
+    name: "dppmPayoffForAll58633B6E",
+    inputs: [
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "outcome0Fusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "outcome1Fusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "dppmSimulateEarnings",
     inputs: [
       {
@@ -298,6 +322,69 @@ const tradingAbi = [
       },
     ],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "dppmSimulatePayoffForAddressAll",
+    inputs: [
+      {
+        name: "spender",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "outcome",
+        type: "bytes8",
+        internalType: "bytes8",
+      },
+    ],
+    outputs: [
+      {
+        name: "outcome1",
+        type: "tuple",
+        internalType: "struct INineLivesTrading.SimulatedPayoff1",
+        components: [
+          {
+            name: "dppmFusdc",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "ninetailsWinnerFusdc",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "ninetailsLoserFusd",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
+      },
+      {
+        name: "outcome2",
+        type: "tuple",
+        internalType: "struct INineLivesTrading.SimulatedPayoff2",
+        components: [
+          {
+            name: "dppmFusdc",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "ninetailsWinnerFusdc",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "ninetailsLoserFusd",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
