@@ -498,9 +498,7 @@ export default function DetailBuyAction({
                 <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
                   $
                   {Number(
-                    data.isDppm
-                      ? winEstimation + boost
-                      : winEstimation,
+                    data.isDppm ? winEstimation + boost : winEstimation,
                   ).toFixed(2)}
                 </span>
               </div>
