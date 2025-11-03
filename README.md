@@ -106,7 +106,7 @@ The error table lives in ERRORS.md.
 | Factory 2 implementation      | `0x7ec69f0785dbb944c57fc98e89e244710d00600b` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPPM mint impl        | `0xce0116757b611b56dac50487716dbf64e716b75c` |
+| Trading DPPM mint impl        | `0x53e699cc63c9710f416a2d62e1ef14b08f44b8b1` |
 | Trading DPPM extras impl      | `0x574455bf1a61b4df84718e83d49559914f63f038` |
 | Trading DPPM price impl       | `0xd94212be7ea63ec863f814434afa31a08a334f0d` |
 | Trading DPPM quotes impl      | `0x7232bfb62498504d5a5e89af7746921e5a766fa9` |

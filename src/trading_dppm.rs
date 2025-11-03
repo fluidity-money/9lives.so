@@ -70,6 +70,9 @@ impl StorageTrading {
             self.dppm_outcome_invested.get(outcome_id) > U256::ZERO,
             Error::NonexistentOutcome
         );
+        if value.is_zero() {
+            return Ok(U256::ZERO)
+        }
         self.dppm_clawback_impossible.set(true);
         let outcome_a = self.outcome_list.get(0).unwrap();
         let outcome_b = self.outcome_list.get(1).unwrap();
