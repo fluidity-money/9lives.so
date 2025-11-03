@@ -1,11 +1,17 @@
-use stylus_sdk::alloy_primitives::{aliases::*, *};
+use stylus_sdk::{evm, alloy_primitives::{aliases::*, *}};
 
 use crate::error::*;
 
 #[cfg(feature = "contract-trading-price")]
 use alloc::vec::Vec;
 
-pub use crate::{immutables, immutables::DAO_EARN_ADDR, storage_trading::*, utils::msg_sender};
+pub use crate::{
+    fusdc_call, immutables,
+    immutables::{CLAWBACK_RECIPIENT_ADDR, DAO_EARN_ADDR},
+    storage_trading::*,
+    events,
+    utils::{block_timestamp, contract_address, msg_sender},
+};
 
 #[cfg(not(feature = "trading-backend-dppm"))]
 use crate::fusdc_call;
@@ -58,6 +64,32 @@ impl StorageTrading {
             assert_or!(shares <= _max_liquidity, Error::TooMuchLiquidityTaken);
             Ok(shares)
         };
+    }
+
+    pub fn dppm_clawback(&mut self) -> R<U256> {
+        #[cfg(not(feature = "trading-backend-dppm"))]
+        unimplemented!();
+        #[cfg(feature = "trading-backend-dppm")]
+        {
+            assert_or!(
+                !self.dppm_clawback_impossible.get(),
+                Error::ClawbackAlreadyHappened
+            );
+            assert_or!(
+                U64::from(block_timestamp()) > self.time_ending.get(),
+                Error::MarketNotOverForClawback
+            );
+            self.dppm_clawback_impossible.set(true);
+            let amt = fusdc_call::balance_of(contract_address())?;
+            fusdc_call::transfer(CLAWBACK_RECIPIENT_ADDR, amt)?;
+            evm::log(events::DppmClawback {
+                recipient: CLAWBACK_RECIPIENT_ADDR,
+                fusdcClawedback: amt,
+            });
+            // We can ignore if this failed, since this might not be necessary.
+            let shutdown = self.internal_shutdown().unwrap_or(U256::ZERO);
+            Ok(amt + shutdown)
+        }
     }
 
     #[allow(clippy::too_many_arguments)]

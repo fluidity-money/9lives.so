@@ -8,9 +8,6 @@ use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
-#[cfg(feature = "trading-backend-dppm")]
-use crate::fusdc_call;
-
 use alloc::{borrow::ToOwned, string::String, vec::Vec};
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
@@ -182,7 +179,7 @@ impl StorageTrading {
                 ninetails_shares,
                 _outcome,
                 _invested,
-                dppm_shares
+                dppm_shares,
             )
         }
     }
@@ -214,35 +211,22 @@ impl StorageTrading {
                 user_boosted_shares,
                 outcome_id,
                 U256::ZERO,
-                U256::ZERO
+                U256::ZERO,
             )
         }
     }
 
-    pub fn dppm_clawback(&mut self) -> R<U256> {
-        #[cfg(not(feature = "trading-backend-dppm"))]
-        unimplemented!();
+    pub fn dppm_simulate_payoff_for_address_all(
+        &self,
+        spender: Address,
+    ) -> R<((U256, U256, U256), (U256, U256, U256))> {
         #[cfg(feature = "trading-backend-dppm")]
-        {
-            assert_or!(
-                !self.dppm_clawback_impossible.get(),
-                Error::ClawbackAlreadyHappened
-            );
-            assert_or!(
-                U64::from(block_timestamp()) > self.time_ending.get(),
-                Error::MarketNotOverForClawback
-            );
-            self.dppm_clawback_impossible.set(true);
-            let amt = fusdc_call::balance_of(contract_address())?;
-            fusdc_call::transfer(CLAWBACK_RECIPIENT_ADDR, amt)?;
-            evm::log(events::DppmClawback {
-                recipient: CLAWBACK_RECIPIENT_ADDR,
-                fusdcClawedback: amt,
-            });
-            // We can ignore if this failed, since this might not be necessary.
-            let shutdown = self.internal_shutdown().unwrap_or(U256::ZERO);
-            Ok(amt + shutdown)
-        }
+        return Ok((
+            self.dppm_simulate_payoff_for_address(spender, self.outcome_list.get(0).unwrap())?,
+            self.dppm_simulate_payoff_for_address(spender, self.outcome_list.get(1).unwrap())?,
+        ));
+        #[cfg(not(feature = "trading-backend-dppm"))]
+        unimplemented!()
     }
 }
 
