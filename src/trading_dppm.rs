@@ -220,6 +220,9 @@ impl StorageTrading {
         } else {
             amt
         };
+        if amt.is_zero() {
+            return Ok(U256::ZERO)
+        }
         share_call::burn(share_addr, msg_sender(), amt)?;
         let user_boosted_shares = self
             .ninetails_user_boosted_shares
@@ -276,7 +279,6 @@ impl StorageTrading {
         if self.winner.get() == outcome_id {
             self.internal_dppm_payoff_winner(outcome_id, amt, recipient)
         } else {
-            assert_or!(amt.is_zero(), Error::ZeroSharesMustBeProvidedForLoser);
             self.internal_dppm_payoff_loser(outcome_id, recipient)
         }
     }
