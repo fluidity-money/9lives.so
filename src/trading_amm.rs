@@ -525,7 +525,13 @@ impl StorageTrading {
             self.share_impl.get(),
             outcome_id,
         );
+        // If the user gave us a U256::MAX, we claim everything they have.
         assert_or!(share_amt > U256::ZERO, Error::ZeroShares);
+        let share_amt = if share_amt == U256::MAX {
+            share_call::balance_of(share_addr, msg_sender())?
+        } else {
+            share_amt
+        };
         share_call::burn(share_addr, msg_sender(), share_amt)?;
         fusdc_call::transfer(recipient, share_amt)?;
         evm::log(events::PayoffActivated {

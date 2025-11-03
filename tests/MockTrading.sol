@@ -218,6 +218,13 @@ contract MockTrading is INineLivesTrading {
         return "";
     }
 
+    function dppmPayoffForAll58633B6E(address recipient) external returns (
+        uint256 outcome0Fusdc,
+        uint256 outcome1Fusdc
+    ) {
+        return (0, 0);
+    }
+
     function fees62DAA154() external view returns (Fees memory f) {
     }
 

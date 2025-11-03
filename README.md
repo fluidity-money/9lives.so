@@ -109,7 +109,7 @@ The error table lives in ERRORS.md.
 | Trading DPPM mint impl        | `0xce0116757b611b56dac50487716dbf64e716b75c` |
 | Trading DPPM extras impl      | `0x574455bf1a61b4df84718e83d49559914f63f038` |
 | Trading DPPM price impl       | `0xd94212be7ea63ec863f814434afa31a08a334f0d` |
-| Trading DPPM quotes impl      | `0x6dd6f9e95a0fc4c051940bbbf9c2f2416ad6f461` |
+| Trading DPPM quotes impl      | `0x7232bfb62498504d5a5e89af7746921e5a766fa9` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
 | Trading AMM price impl        | `0xb393ea32f302a9cc798f8296f5328172096553d2` |

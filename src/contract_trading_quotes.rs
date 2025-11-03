@@ -68,6 +68,16 @@ impl StorageTrading {
         return self.internal_amm_payoff(outcome_id, amt, recipient);
     }
 
+    pub fn dppm_payoff_for_all_58633_B_6_E(&mut self, recipient: Address) -> R<(U256, U256)> {
+        #[cfg(feature = "trading-backend-dppm")]
+        return Ok((
+            self.internal_dppm_payoff(self.outcome_list.get(0).unwrap(), U256::MAX, recipient)?,
+            self.internal_dppm_payoff(self.outcome_list.get(1).unwrap(), U256::MAX, recipient)?,
+        ));
+        #[cfg(not(feature = "trading-backend-dppm"))]
+        unimplemented!()
+    }
+
     #[allow(non_snake_case)]
     pub fn fees_62_D_A_A_154(&self) -> R<(U256, U256, U256, U256)> {
         #[cfg(feature = "trading-backend-amm")]
@@ -123,6 +133,9 @@ impl StorageTrading {
             value,
             out_of_other,
         )?;
-        Ok((dppm_shares, maths::ninetails_shares(dppm_shares, t_buy, t_end)?))
+        Ok((
+            dppm_shares,
+            maths::ninetails_shares(dppm_shares, t_buy, t_end)?,
+        ))
     }
 }

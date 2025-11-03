@@ -157,6 +157,11 @@ interface INineLivesTrading {
 
     function version() external pure returns (string memory);
 
+    function dppmPayoffForAll58633B6E(address recipient) external returns (
+        uint256 outcome0Fusdc,
+        uint256 outcome1Fusdc
+    );
+
     /// @notice fees currently set in the market. Scaled by FEE_SCALING.
     function fees62DAA154() external view returns (Fees memory);
 

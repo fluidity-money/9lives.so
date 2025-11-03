@@ -213,8 +213,13 @@ impl StorageTrading {
             outcome_id,
         );
         // Start to burn their share of the supply to convert to a payoff amount.
-        // Take the max of what they asked.
+        // If the user gave us U256::MAX, we'll sell everything they have:
         assert_or!(amt > U256::ZERO, Error::ZeroShares);
+        let amt = if amt == U256::MAX {
+            share_call::balance_of(share_addr, msg_sender())?
+        } else {
+            amt
+        };
         share_call::burn(share_addr, msg_sender(), amt)?;
         let user_boosted_shares = self
             .ninetails_user_boosted_shares
