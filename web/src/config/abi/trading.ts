@@ -248,46 +248,17 @@ const tradingAbi = [
     ],
     outputs: [
       {
-        name: "returnFusdc",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "dppmSimulatePayoff",
-    inputs: [
-      {
-        name: "shares",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "boostedShares",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "outcome",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
-      {
-        name: "fusdc",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
         name: "dppmFusdc",
         type: "uint256",
         internalType: "uint256",
       },
       {
-        name: "ninetailsFusdc",
+        name: "ninetailsWinnerFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "ninetailsLoserFusdc",
         type: "uint256",
         internalType: "uint256",
       },
@@ -316,7 +287,12 @@ const tradingAbi = [
         internalType: "uint256",
       },
       {
-        name: "ninetailsFusdc",
+        name: "ninetailsWinnerFusdc",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "ninetailsLoserFusdc",
         type: "uint256",
         internalType: "uint256",
       },
@@ -572,6 +548,11 @@ const tradingAbi = [
       },
       {
         name: "fees",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "boostedShares",
         type: "uint256",
         internalType: "uint256",
       },
