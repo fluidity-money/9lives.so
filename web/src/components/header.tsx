@@ -19,7 +19,7 @@ export default function Header({ simple = false }: { simple?: boolean }) {
     <header
       className={combineClass(
         "flex items-center justify-between self-stretch border-b-2 border-b-black bg-9blueLight text-xs transition-colors duration-300",
-        "dark:bg-9black dark:border-b-9gray dark:text-9gray",
+        "dark:border-b-9gray dark:bg-9black dark:text-9gray",
       )}
     >
       <Link
