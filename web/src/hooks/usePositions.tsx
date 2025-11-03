@@ -76,9 +76,7 @@ async function fetchPositions({
       return {
         id: b.id,
         shareAddress: outcome?.share.address ?? "0x",
-        name: isDppm
-          ? formatDppmOutcomeName(outcome?.name ?? b.name)
-          : (outcome?.name ?? b.name),
+        name: outcome?.name ?? b.name,
         balance: formatFusdc(Number(b.amount), 2),
         balanceRaw: BigInt(b.amount),
       };
