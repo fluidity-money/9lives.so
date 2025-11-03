@@ -33,7 +33,10 @@ export default function SimplePositionRow({
       )}
     >
       <span className="font-chicago uppercase text-9black">
-        {position.name}: {isWinning ? "Winning" : "Losing"}
+        My Position: {position.name}
+        <br />
+        <br />
+        Status: Currently {isWinning ? "Winning" : "Losing"}
       </span>
       <div className="flex flex-col gap-1 font-chicago text-xs">
         <span>Shares To Get: {position.balance}</span>
