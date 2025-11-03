@@ -88,7 +88,7 @@ const useBuy = ({
             const approveTx = prepareContractCall({
               contract: config.contracts.fusdc,
               method: "approve",
-              params: [config.contracts.buyHelper2.address, amount],
+              params: [config.contracts.buyHelper2.address, MaxUint256],
             });
             await sendTransaction({
               transaction: approveTx,
