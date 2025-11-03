@@ -253,7 +253,11 @@ export default function SimpleBuyDialog({
           </div>
         </div>
 
-        <div className={combineClass(shares ? "visible" : "invisible")}>
+        <div
+          className={combineClass(
+            shares && usdValue > 0 ? "visible" : "invisible",
+          )}
+        >
           <div className="mx-4 flex items-center justify-between">
             <div className="text-center">
               <div className="font-geneva text-sm font-medium uppercase text-gray-500">
