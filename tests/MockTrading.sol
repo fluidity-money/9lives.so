@@ -240,6 +240,13 @@ contract MockTrading is INineLivesTrading {
         return (0, 0, 0);
     }
 
+    function dppmSimulatePayoffForAddressAll(address spender, bytes8 outcome) external view returns (
+         SimulatedPayoff1 memory outcome1,
+         SimulatedPayoff2 memory outcome2
+    ) {
+
+    }
+
     function dppmClawback() external returns (uint256) {
         return 0;
     }
