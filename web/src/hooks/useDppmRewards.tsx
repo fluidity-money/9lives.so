@@ -1,5 +1,6 @@
 import { Account } from "thirdweb/wallets";
 import useDppmShareEstimationAll from "./useDppmShareEstimationAll";
+import { PayoffResponse } from "@/types";
 
 export default function useDppmRewards({
   tradingAddr,
@@ -15,11 +16,13 @@ export default function useDppmRewards({
     account,
     enabled,
   });
-  const result = [
-    outcome0[0] + outcome1[0],
-    outcome0[1] + outcome1[1],
-    outcome0[2] + outcome1[2],
-  ];
-  const totalRewards = result.reduce((acc, v) => acc + v);
+  const result: PayoffResponse = {
+    dppmFusdc: outcome0.dppmFusdc + outcome1.dppmFusdc,
+    ninetailsLoserFusd:
+      outcome0.ninetailsLoserFusd + outcome1.ninetailsLoserFusd,
+    ninetailsWinnerFusdc:
+      outcome0.ninetailsWinnerFusdc + outcome1.ninetailsWinnerFusdc,
+  };
+  const totalRewards = Object.values(result).reduce((acc, v) => acc + v);
   return { hasAnyRewards: totalRewards > BigInt(0), totalRewards, result };
 }

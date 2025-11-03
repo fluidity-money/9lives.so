@@ -1,5 +1,6 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
+import { PayoffResponse } from "@/types";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useEffect, useState } from "react";
 import {
@@ -8,7 +9,6 @@ import {
   simulateTransaction,
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
-
 export default function useDppmShareEstimationAll({
   tradingAddr,
   account,
@@ -18,11 +18,9 @@ export default function useDppmShareEstimationAll({
   account?: Account;
   enabled?: boolean;
 }) {
-  const [res, setRes] = useState<
-    [[number, number, number], [number, number, number]]
-  >([
-    [0, 0, 0],
-    [0, 0, 0],
+  const [res, setRes] = useState<PayoffResponse[]>([
+    { dppmFusdc: 0, ninetailsLoserFusd: 0, ninetailsWinnerFusdc: 0 },
+    { dppmFusdc: 0, ninetailsLoserFusd: 0, ninetailsWinnerFusdc: 0 },
   ]);
 
   useEffect(() => {
@@ -44,9 +42,13 @@ export default function useDppmShareEstimationAll({
           account,
         });
         setRes(
-          res.map((i: bigint[]) =>
-            i.map((i: bigint) => Number(formatFusdc(i, 2))),
-          ),
+          res.map((i: PayoffResponse) => ({
+            dppmFusdc: Number(formatFusdc(i.dppmFusdc, 2)),
+            ninetailsLoserFusd: Number(formatFusdc(i.ninetailsLoserFusd, 2)),
+            ninetailsWinnerFusdc: Number(
+              formatFusdc(i.ninetailsWinnerFusdc, 2),
+            ),
+          })),
         );
       })();
     }

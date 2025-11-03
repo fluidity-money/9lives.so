@@ -10,10 +10,8 @@ import { Account } from "thirdweb/wallets";
 
 export default function useDppmClaimAll({
   tradingAddr,
-  account,
 }: {
   tradingAddr: `0x${string}`;
-  account?: Account;
 }) {
   const tradingContract = getContract({
     abi: tradingAbi,

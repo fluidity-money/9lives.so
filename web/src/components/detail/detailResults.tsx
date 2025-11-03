@@ -15,6 +15,7 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
 import useDppmRewards from "@/hooks/useDppmRewards";
+import useDppmClaimAll from "@/hooks/useDppmClaimAll";
 
 interface DetailResultsProps {
   data: CampaignDetail;
@@ -53,6 +54,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
     outcomes: data.outcomes,
     isDpm: data.isDpm,
   });
+  const { claimAll } = useDppmClaimAll({ tradingAddr: data.poolAddress });
   const { totalRewards: userRewardDppm, result: dppmResult } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
@@ -73,15 +75,15 @@ export default function DetailResults({ data }: DetailResultsProps) {
     ? [
         {
           title: "Reward",
-          value: dppmResult[0],
+          value: dppmResult.dppmFusdc,
         },
         {
           title: "Time Boost",
-          value: dppmResult[1],
+          value: dppmResult.ninetailsWinnerFusdc,
         },
         {
           title: "Refund",
-          value: dppmResult[2],
+          value: dppmResult.ninetailsLoserFusd,
         },
       ]
     : [
@@ -102,15 +104,20 @@ export default function DetailResults({ data }: DetailResultsProps) {
           value: `$${avgPrice.toFixed(2)}`,
         },
       ];
-  const noClaim =
-    account &&
-    ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
-      !accountShares);
+  const noClaim = data.isDppm
+    ? !(userRewardDppm > 0)
+    : account &&
+      ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
+        !accountShares);
   async function handleClaim() {
     if (!account) return connect();
     try {
       setIsClaiming(true);
-      await claim(account, accountSharesRaw);
+      if (data.isDppm) {
+        await claimAll(account);
+      } else {
+        await claim(account, accountSharesRaw);
+      }
     } finally {
       setIsClaiming(false);
     }
