@@ -182,6 +182,7 @@ impl StorageTrading {
                 ninetails_shares,
                 _outcome,
                 _invested,
+                dppm_shares
             )
         }
     }
@@ -195,7 +196,7 @@ impl StorageTrading {
         unimplemented!();
         #[cfg(feature = "trading-backend-dppm")]
         {
-            let share_amt = share_call::balance_of(
+            let user_share_amt = share_call::balance_of(
                 proxy::get_share_addr(
                     self.factory_addr.get(),
                     contract_address(),
@@ -209,10 +210,11 @@ impl StorageTrading {
                 .getter(spender)
                 .get(outcome_id);
             self.internal_dppm_simulate_payoff_state(
-                share_amt,
+                user_share_amt,
                 user_boosted_shares,
                 outcome_id,
                 U256::ZERO,
+                U256::ZERO
             )
         }
     }

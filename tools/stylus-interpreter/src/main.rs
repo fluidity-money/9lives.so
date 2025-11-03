@@ -142,6 +142,9 @@ async fn main() -> Result<(), Error> {
     static STORAGE_WRITTEN: OnceLock<Mutex<HashMap<Word, Word>>> = OnceLock::new();
     STORAGE_WRITTEN.set(Mutex::new(HashMap::new())).unwrap();
 
+    static TRANSIENT_WRITTEN: OnceLock<Mutex<HashMap<Word, Word>>> = OnceLock::new();
+    TRANSIENT_WRITTEN.set(Mutex::new(HashMap::new())).unwrap();
+
     static LAST_CALL_CALLDATA: OnceLock<Mutex<Option<Bytes>>> = OnceLock::new();
     LAST_CALL_CALLDATA.set(Mutex::new(None)).unwrap();
 
@@ -424,7 +427,14 @@ async fn main() -> Result<(), Error> {
         "vm_hooks",
         "create2",
         |mut caller: Caller<_>,
-         (code_ptr, code_len, endowment, _salt, contract_ptr, revert_data_len): (i32, i32, i32, i32, i32, i32)| {
+         (code_ptr, code_len, endowment, _salt, contract_ptr, revert_data_len): (
+            i32,
+            i32,
+            i32,
+            i32,
+            i32,
+            i32,
+        )| {
             // We have the same implementation as the create1 here, but without any work involving the salt.
             Box::new(async move {
                 let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
@@ -610,7 +620,6 @@ async fn main() -> Result<(), Error> {
                 let v = if let Some(v) = storage_written.get(&word) {
                     *v
                 } else {
-                    dbg!("LOOKING UP PROVIDER INFO");
                     let v = PROVIDER
                         .get()
                         .unwrap()
@@ -638,6 +647,61 @@ async fn main() -> Result<(), Error> {
                         const_hex::encode(v)
                     );
                 }
+            })
+        },
+    )?;
+    linker.func_wrap_async(
+        "vm_hooks",
+        "transient_load_bytes32",
+        move |mut caller: Caller<_>,
+              (ptr, dst): (i32, i32)|
+              -> Box<dyn Future<Output = ()> + Send> {
+            Box::new(async move {
+                let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+                let mut b = [0u8; 32];
+                unsafe {
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(ptr as isize),
+                        b.as_mut_ptr(),
+                        32,
+                    );
+                }
+                let transient_written = TRANSIENT_WRITTEN.get().unwrap().lock().await;
+                let v = transient_written.get(&b).unwrap_or(&[0u8; 32]);
+                unsafe {
+                    std::ptr::copy(
+                        v.as_ptr(),
+                        mem.data_ptr(&mut caller).offset(dst as isize),
+                        32,
+                    )
+                }
+            })
+        },
+    )?;
+    linker.func_wrap_async(
+        "vm_hooks",
+        "transient_store_bytes32",
+        move |mut caller: Caller<_>,
+              (key, val): (i32, i32)|
+              -> Box<dyn Future<Output = ()> + Send> {
+            Box::new(async move {
+                let mem = caller.get_export("memory").unwrap().into_memory().unwrap();
+                let mut k = [0u8; 32];
+                let mut v = [0u8; 32];
+                unsafe {
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(key as isize),
+                        k.as_mut_ptr(),
+                        32,
+                    );
+                    std::ptr::copy(
+                        mem.data_ptr(&mut caller).offset(val as isize),
+                        v.as_mut_ptr(),
+                        32,
+                    );
+                }
+                let mut transient_written = TRANSIENT_WRITTEN.get().unwrap().lock().await;
+                transient_written.insert(k, v);
             })
         },
     )?;

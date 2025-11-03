@@ -72,6 +72,9 @@ pub fn ninetails_payoff_winners(
     outcome_boosted_shares: U256,
     global_boosted_shares: U256,
 ) -> Result<(U256, U256), Error> {
+    if user_boosted_shares.is_zero() {
+        return Ok((U256::ZERO, U256::ZERO))
+    }
     let boost = mul_div(leftovers, U256::from(7e6 as u32), U256::from(10e6 as u32))?.0;
     let winnings = mul_div(user_boosted_shares, boost, outcome_boosted_shares)?.0;
     let refund = ninetails_payoff_losers(leftovers, user_boosted_shares, global_boosted_shares)?;

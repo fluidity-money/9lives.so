@@ -14,7 +14,7 @@ use lib9lives::{
     interactions_clear_after, maths, proxy, should_spend, should_spend_fusdc_contract,
     should_spend_fusdc_sender,
     testing_addrs::*,
-    utils::{block_timestamp, msg_sender, strat_tiny_u256, strat_uniq_outcomes},
+    utils::{block_timestamp, msg_sender, strat_small_u256, strat_uniq_outcomes},
     StorageTrading,
 };
 
@@ -106,7 +106,7 @@ struct DppmAction {
 
 fn strat_dppm_action(o_0: FixedBytes<8>, o_1: FixedBytes<8>) -> impl Strategy<Value = DppmAction> {
     (
-        strat_tiny_u256(),
+        strat_small_u256(),
         any::<bool>(),
         1..100_000u64,
         any::<Address>(),
@@ -158,6 +158,8 @@ proptest! {
                 referrer_fee +=  maths::calc_fee(fusdc_amt, U256::from(fee_referrer)).unwrap();
                 creator_fee += maths::calc_fee(fusdc_amt, U256::from(fee_creator)).unwrap();
                 c.dppm_simulate_earnings(fusdc_amt, outcome).unwrap();
+                c.dppm_simulate_payoff_for_address(sender, o_0).unwrap();
+                c.dppm_simulate_payoff_for_address(sender, o_1).unwrap();
                 let s = should_spend_fusdc_sender!(fusdc_amt, {
                     match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
                         outcome,
