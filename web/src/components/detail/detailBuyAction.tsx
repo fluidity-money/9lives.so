@@ -175,6 +175,7 @@ export default function DetailBuyAction({
     outcomeId: selectedOutcome.id as `0x${string}`,
     usdValue,
     tradingAddr: data.poolAddress,
+    enabled: data.isDppm,
   });
   const winEstimation = data.isDpm
     ? estimatedWinForDpm

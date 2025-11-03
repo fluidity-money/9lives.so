@@ -14,10 +14,12 @@ export default function useDppmWinEstimation({
   outcomeId,
   usdValue,
   tradingAddr,
+  enabled = true,
 }: {
   outcomeId: `0x${string}`;
   usdValue: number;
   tradingAddr: `0x${string}`;
+  enabled?: boolean;
 }) {
   const [res, setRes] = useState<[number, number, number]>([0, 0, 0]); // [shares,boost,refund]
   const tradingContract = getContract({
@@ -35,7 +37,7 @@ export default function useDppmWinEstimation({
   const account = useActiveAccount();
   useEffect(() => {
     (async () => {
-      if (account) {
+      if (account && enabled) {
         const res = await simulateTransaction({
           transaction: estimateTx,
           account,
