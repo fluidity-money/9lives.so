@@ -94,6 +94,7 @@ export default function DetailSellAction({
     outcomes: data.outcomes,
     account,
     isDpm: data.isDpm,
+    isDppm: data.isDppm,
   });
   const { data: estimation } = useEstimateBurn({
     outcomeId: selectedOutcome.id as `0x${string}`,

@@ -112,7 +112,7 @@ export default function DetailWrapper({
       </div>
       <div className="flex flex-1 flex-col gap-8">
         {isConcluded ? (
-          <DetailResults data={data} isDpm={data.isDpm} />
+          <DetailResults data={data} />
         ) : (
           <DetailCall2Action
             isDppm={data.isDppm}

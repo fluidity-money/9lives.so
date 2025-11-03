@@ -12,7 +12,6 @@ import CountdownTimer from "@/components/countdownTimer";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import { RawCampaignDetail, RawSimpleCampaignDetail } from "@/types";
-import formatDppmName from "@/utils/format/formatDppmName";
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ cid: string }>;
 export const dynamicParams = true;
@@ -59,19 +58,14 @@ export default async function SimpleDetailPage({
     starting: data.starting,
     ending: data.ending,
   });
-  const dppmName = formatDppmName({
-    symbol: data.priceMetadata.baseAsset,
-    price: data.priceMetadata.priceTargetForUp,
-    end: data.ending,
-  });
 
   return (
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />
       <div className="flex items-center gap-2">
-        <Image src={BTC} width={60} height={60} alt={dppmName} />
+        <Image src={BTC} width={60} height={60} alt={data.name} />
         <div className="flex flex-col gap-1">
-          <h1 className="font-chicago text-xl md:text-2xl">{dppmName}</h1>
+          <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
           <div className="flex items-center gap-1 text-xs">
             <span className="font-geneva uppercase text-[#808080]">
               {new Date(data.starting).toLocaleString("default", {

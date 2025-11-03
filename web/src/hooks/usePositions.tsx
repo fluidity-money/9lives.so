@@ -1,5 +1,6 @@
 import config from "@/config";
 import { Outcome } from "@/types";
+import { formatDppmOutcomeName } from "@/utils/format/formatDppmName";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
 import { prepareContractCall, simulateTransaction } from "thirdweb";
@@ -10,11 +11,13 @@ async function fetchPositions({
   outcomes,
   account,
   isDpm,
+  isDppm,
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   account?: Account;
   isDpm: boolean | null;
+  isDppm: boolean | null;
 }) {
   if (!account) return [];
   const dpmTx = prepareContractCall({
@@ -66,17 +69,20 @@ async function fetchPositions({
     })) as typeof balances;
     balances = res;
   }
-
   const mintedPositions = balances
     .filter((b) => Number(b.amount) > 0)
-    .map((b) => ({
-      id: b.id,
-      shareAddress:
-        outcomes.find((o) => o.identifier === b.id)?.share.address ?? "0x",
-      name: outcomes.find((o) => o.identifier === b.id)?.name ?? b.name,
-      balance: formatFusdc(Number(b.amount), 2),
-      balanceRaw: BigInt(b.amount),
-    }));
+    .map((b) => {
+      const outcome = outcomes.find((o) => o.identifier === b.id);
+      return {
+        id: b.id,
+        shareAddress: outcome?.share.address ?? "0x",
+        name: isDppm
+          ? formatDppmOutcomeName(outcome?.name ?? b.name)
+          : (outcome?.name ?? b.name),
+        balance: formatFusdc(Number(b.amount), 2),
+        balanceRaw: BigInt(b.amount),
+      };
+    });
 
   return mintedPositions;
 }
@@ -86,11 +92,13 @@ export default function usePositions({
   outcomes,
   account,
   isDpm,
+  isDppm,
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   account?: Account;
   isDpm: boolean | null;
+  isDppm: boolean | null;
 }) {
   return useQuery<
     {
@@ -101,7 +109,8 @@ export default function usePositions({
       balanceRaw: bigint;
     }[]
   >({
-    queryKey: ["positions", tradingAddr, outcomes, account, isDpm],
-    queryFn: () => fetchPositions({ tradingAddr, outcomes, account, isDpm }),
+    queryKey: ["positions", tradingAddr, outcomes, account, isDpm, isDppm],
+    queryFn: () =>
+      fetchPositions({ tradingAddr, outcomes, account, isDpm, isDppm }),
   });
 }

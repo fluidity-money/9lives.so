@@ -16,7 +16,6 @@ import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
-import formatDppmName from "@/utils/format/formatDppmName";
 // import SellButton from "../sellButton";
 export default function PositionRow({
   data,
@@ -147,16 +146,7 @@ export default function PositionRow({
       setIsClaiming(false);
     }
   }
-  let name = "";
-  if (campaignContent.isDppm && campaignContent.priceMetadata) {
-    name = formatDppmName({
-      symbol: campaignContent.priceMetadata.baseAsset,
-      price: campaignContent.priceMetadata.priceTargetForUp,
-      end: campaignContent.ending * 1000,
-    });
-  } else {
-    name = campaignContent.name;
-  }
+
   return (
     <>
       <tr>
@@ -194,7 +184,7 @@ export default function PositionRow({
                       className="underline"
                       href={`/campaign/${campaignContent.identifier}`}
                     >
-                      {name}
+                      {campaignContent.name}
                     </Link>{" "}
                     {campaignContent.winner && (
                       <span className="bg-9yellow p-0.5 font-geneva text-[10px] uppercase tracking-wide">
@@ -217,21 +207,14 @@ export default function PositionRow({
                 <p
                   className={combineClass(
                     "self-start px-1 py-0.5 font-geneva text-xs uppercase tracking-wide text-9black",
-                    data.name === "Yes" ||
-                      (campaignContent.isDppm && data.name.includes("above"))
+                    data.name === "Yes" || data.name === "Up"
                       ? "bg-9green"
-                      : data.name === "No" ||
-                          (campaignContent.isDppm &&
-                            data.name.includes("below"))
+                      : data.name === "No" || data.name === "Down"
                         ? "bg-9red"
                         : "bg-9layer",
                   )}
                 >
-                  {campaignContent.isDppm
-                    ? data.name.includes("above")
-                      ? "UP"
-                      : "DOWN"
-                    : data.name}
+                  {data.name}
                 </p>
                 <div className="flex items-center gap-1">
                   {!detailPage ? (
@@ -272,20 +255,14 @@ export default function PositionRow({
               <span
                 className={combineClass(
                   "p-0.5",
-                  data.name === "Yes" ||
-                    (campaignContent.isDppm && data.name.includes("above"))
+                  data.name === "Yes" || data.name === "Up"
                     ? "bg-9green"
-                    : data.name === "No" ||
-                        (campaignContent.isDppm && data.name.includes("below"))
+                    : data.name === "No" || data.name === "Down"
                       ? "bg-9red"
                       : "bg-9gray",
                 )}
               >
-                {campaignContent.isDppm
-                  ? data.name.includes("above")
-                    ? "UP"
-                    : "DOWN"
-                  : data.name}
+                {data.name}
               </span>
             </span>
             {history && history.length > 0 && Number(data.balance) ? (
@@ -420,21 +397,14 @@ export default function PositionRow({
                   <span
                     className={combineClass(
                       "p-0.5",
-                      data.name === "Yes" ||
-                        (campaignContent.isDppm && data.name.includes("above"))
+                      data.name === "Yes" || data.name === "Up"
                         ? "bg-9green"
-                        : data.name === "No" ||
-                            (campaignContent.isDppm &&
-                              data.name.includes("below"))
+                        : data.name === "No" || data.name === "Down"
                           ? "bg-9red"
                           : "bg-9gray",
                     )}
                   >
-                    {campaignContent.isDppm
-                      ? data.name.includes("above")
-                        ? "UP"
-                        : "DOWN"
-                      : data.name}
+                    {data.name}
                   </span>
                 </span>
               </td>

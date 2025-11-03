@@ -45,6 +45,7 @@ export default function SimpleBody({
     outcomes: data.outcomes,
     account,
     isDpm: false,
+    isDppm: true,
   });
   const winnerOutcome = data.outcomes.find(
     (o) => o.identifier === data?.winner,

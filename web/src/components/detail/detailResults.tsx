@@ -14,13 +14,11 @@ import NoOutcomeImg from "#/images/no-outcome.svg";
 import formatFusdc from "@/utils/format/formatUsdc";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
-import formatDppmName from "@/utils/format/formatDppmName";
 
 interface DetailResultsProps {
   data: CampaignDetail;
-  isDpm: boolean | null;
 }
-export default function DetailResults({ data, isDpm }: DetailResultsProps) {
+export default function DetailResults({ data }: DetailResultsProps) {
   const account = useActiveAccount();
   const { connect, isConnecting } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
@@ -29,7 +27,8 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
     tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
     account,
-    isDpm,
+    isDpm: data.isDpm,
+    isDppm: data.isDppm,
   });
   const winner = data.outcomes.find(
     (item) => item.identifier === data.winner,
@@ -51,7 +50,7 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
     tradingAddr: data.poolAddress,
     outcomeId: winner.identifier,
     outcomes: data.outcomes,
-    isDpm,
+    isDpm: data.isDpm,
   });
   const totalVolumeOfWinner =
     data.investmentAmounts.find((ia) => ia?.id === data.winner)?.usdc ?? 0;
@@ -59,7 +58,7 @@ export default function DetailResults({ data, isDpm }: DetailResultsProps) {
   const avgPrice = data.totalVolume / totalSharesOfWinner;
   const userRewardDpm = accountShares ? +accountShares * avgPrice : 0;
   const userRewardAmm = accountShares ? +accountShares : 0;
-  const reward = isDpm ? userRewardDpm : userRewardAmm;
+  const reward = data.isDpm ? userRewardDpm : userRewardAmm;
   const rewardBreakdown = [
     {
       title: "Your Shares",
