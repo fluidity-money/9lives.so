@@ -79,20 +79,18 @@ export default function DetailOutcomeRow({
                 alt={data.name}
                 src={
                   isYesNo || isDppm
-                    ? data.name === "Yes" || data.name.includes("above")
+                    ? data.name === "Yes" || data.name === "Up"
                       ? YesOutcomeImg
                       : NoOutcomeImg
                     : data.picture
                 }
                 className={combineClass(
-                  !isYesNo || (!isDppm && "border border-9black"),
+                  !(isYesNo || isDppm) && "border border-9black",
                 )}
               />
             ) : null}
           </div>
-          <h2 className="text-sm font-normal tracking-wide">
-            {isDppm ? (data.name.includes("above") ? "Up" : "Down") : data.name}
-          </h2>
+          <h2 className="text-sm font-normal tracking-wide">{data.name}</h2>
         </div>
       </td>
       <td

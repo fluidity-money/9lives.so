@@ -35,7 +35,6 @@ import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import ChainSelector from "../chainSelector";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
-import useDppmShareEstimation from "@/hooks/useDppmShareEstimation";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -172,21 +171,16 @@ export default function DetailBuyAction({
     fusdc: usdValue,
     share: supply / Number(price),
   });
-  const estimatedWinForDppm = useDppmWinEstimation({
+  const [shares, boost, refund] = useDppmWinEstimation({
     outcomeId: selectedOutcome.id as `0x${string}`,
     usdValue,
     tradingAddr: data.poolAddress,
   });
-  const [_, boostedShares] = useDppmShareEstimation({
-    tradingAddr: data.poolAddress,
-    account,
-    outcomeId: selectedOutcome.id as `0x${string}`,
-  });
   const winEstimation = data.isDpm
-    ? estimatedWinForDpm.toFixed(2)
+    ? estimatedWinForDpm
     : data.isDppm
-      ? estimatedWinForDppm
-      : sharesToGet;
+      ? shares
+      : Number(sharesToGet);
   const orderSummary = [
     {
       title: "AVG Price",
@@ -194,11 +188,18 @@ export default function DetailBuyAction({
     },
     {
       title: "Shares To Get",
-      value: data.isDpm ? (usdValue / Number(price)).toFixed(2) : sharesToGet,
+      value: data.isDpm
+        ? (usdValue / Number(price)).toFixed(2)
+        : `$${sharesToGet}`,
     },
     {
       title: "Boost To Get",
-      value: boostedShares,
+      value: `$${boost}`,
+      show: data.isDppm,
+    },
+    {
+      title: "Refund To Get",
+      value: `$${refund}`,
       show: data.isDppm,
     },
   ];
@@ -322,8 +323,8 @@ export default function DetailBuyAction({
           (!outcome.picture && (data.isYesNo || data.isDppm)) ? (
             <div
               className={combineClass(
-                !data.isYesNo ||
-                  (!data.isDppm && "size-10 overflow-hidden rounded-full"),
+                !(data.isYesNo || data.isDppm) &&
+                  "size-10 overflow-hidden rounded-full",
               )}
             >
               <Image
@@ -332,7 +333,7 @@ export default function DetailBuyAction({
                 alt={outcome.name}
                 src={
                   data.isYesNo || data.isDppm
-                    ? outcome.name === "Yes" || outcome.name.includes("above")
+                    ? outcome.name === "Yes" || outcome.name === "Up"
                       ? YesOutcomeImg
                       : NoOutcomeImg
                     : outcome.picture
@@ -348,11 +349,7 @@ export default function DetailBuyAction({
                 "font-chicago font-normal text-9black md:text-lg",
               )}
             >
-              {data.isDppm
-                ? outcome.name.includes("above")
-                  ? "Up"
-                  : "Down"
-                : outcome.name}
+              {outcome.name}
             </h3>
             <div
               className={combineClass(
@@ -498,7 +495,12 @@ export default function DetailBuyAction({
               <div className="flex items-center justify-between">
                 <span className="font-chicago uppercase">To Win 💵</span>
                 <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
-                  ${Number(winEstimation).toFixed(2)}
+                  $
+                  {Number(
+                    data.isDppm
+                      ? winEstimation + boost + refund
+                      : winEstimation,
+                  ).toFixed(2)}
                 </span>
               </div>
               <ul className="flex flex-col gap-1 text-gray-500">
