@@ -499,7 +499,7 @@ export default function DetailBuyAction({
                   $
                   {Number(
                     data.isDppm
-                      ? winEstimation + boost + refund
+                      ? winEstimation + boost
                       : winEstimation,
                   ).toFixed(2)}
                 </span>

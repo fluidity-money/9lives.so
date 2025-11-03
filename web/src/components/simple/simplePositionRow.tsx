@@ -41,7 +41,7 @@ export default function SimplePositionRow({
       <div className="flex flex-col gap-1 text-end font-chicago text-xs">
         <span>Shares To Get: {position.balance}</span>
         <span>
-          {isWinning ? "To Win" : "To Lose"}: ${shares + boost + refund}
+          {isWinning ? "To Win" : "To Lose"}: ${shares + boost}
         </span>
         <span>
           {isWinning ? "Bonus" : "Refund"}: ${refund}
