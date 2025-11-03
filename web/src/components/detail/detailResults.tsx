@@ -128,14 +128,19 @@ export default function DetailResults({ data }: DetailResultsProps) {
               className="absolute inset-x-0 -top-2 mx-auto h-auto"
               src={CrownImg}
             />
-            <div className="size-10 overflow-hidden rounded-full">
+            <div
+              className={combineClass(
+                !(data.isYesNo || data.isDppm) &&
+                  "size-10 overflow-hidden rounded-full",
+              )}
+            >
               <Image
                 width={40}
                 height={40}
                 alt={winner.name}
                 src={
                   data.isYesNo || data.isDppm
-                    ? winner.name === "Yes" || winner.name.includes("above")
+                    ? winner.name === "Yes" || winner.name === "Up"
                       ? YesOutcomeImg
                       : NoOutcomeImg
                     : winner.picture
@@ -147,11 +152,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
 
           <div className="flex flex-col gap-1">
             <h3 className="font-chicago text-base font-normal text-9black">
-              {data.isDppm
-                ? winner.name.includes("above")
-                  ? "Up"
-                  : "Down"
-                : winner.name}
+              {winner.name}
             </h3>
             <div className="flex items-center gap-1 font-geneva text-[10px]">
               <span className="uppercase">Chance</span>
