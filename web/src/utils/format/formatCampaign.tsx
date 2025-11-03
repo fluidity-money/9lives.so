@@ -1,3 +1,4 @@
+import { ParticipatedCampaign, RawParticipatedCampaign } from "../../types";
 import {
   Campaign,
   CampaignDetail,
@@ -70,5 +71,30 @@ export function formatOutcome(ro: RawOutcome): Outcome {
     name: ro.name,
     picture: ro.picture ?? null,
     share: { address: ro.share.address as `0x${string}` },
+  };
+}
+
+export function formatParticipatedContent(
+  ro: NonNullable<RawParticipatedCampaign>["content"],
+) {
+  if (!ro) throw new Error("Campaign content is null");
+  return {
+    ...ro,
+    ending: ro.ending * 1000,
+    priceMetadata: ro.priceMetadata,
+    poolAddress: ro.poolAddress as `0x${string}`,
+    identifier: ro.identifier as `0x${string}`,
+    outcomes: ro.outcomes.map((o) => formatOutcome(o)),
+  };
+}
+
+export function formatParticipatedCampaign(
+  ro: RawParticipatedCampaign,
+): ParticipatedCampaign {
+  if (!ro) throw new Error("Campaign data is null");
+  return {
+    campaignId: ro.campaignId as `0x${string}`,
+    outcomeIds: ro.outcomeIds.map((o) => `0x${o}` as `0x${string}`), // add hex prefix
+    content: formatParticipatedContent(ro.content),
   };
 }

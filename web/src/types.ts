@@ -14,6 +14,7 @@ import {
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
 import { Account } from "thirdweb/wallets";
+import { formatParticipatedContent } from "./utils/format/formatCampaign";
 export type RawCampaign = Awaited<
   ReturnType<typeof requestCampaignList>
 >[number];
@@ -159,9 +160,14 @@ export type CreationResponse = {
   }[];
 };
 
-export type ParticipatedCampaign = NonNullable<
-  Awaited<ReturnType<typeof requestUserParticipated>>[number]
->;
+export type RawParticipatedCampaign = Awaited<
+  ReturnType<typeof requestUserParticipated>
+>[number];
+export type ParticipatedCampaign = RawParticipatedCampaign & {
+  campaignId: `0x${string}`;
+  outcomeIds: `0x${string}`[];
+  content: ReturnType<typeof formatParticipatedContent>;
+};
 
 export type Activity = NonNullable<
   Awaited<ReturnType<typeof requestUserActivities>>[number]
