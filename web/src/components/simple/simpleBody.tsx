@@ -25,6 +25,7 @@ export default function SimpleBody({
   initialAssetPrices?: PricePoint[];
 }) {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  const [isEnded, setIsEnded] = useState(Date.now() > data.ending);
   const symbol = data.priceMetadata.baseAsset.toLowerCase();
   const basePrice = Number(data.priceMetadata.priceTargetForUp);
   const account = useActiveAccount();
@@ -38,7 +39,6 @@ export default function SimpleBody({
     tradingAddr: data.poolAddress as `0x${string}`,
     outcomeIds: data.outcomes.map((o) => o.identifier as `0x${string}`),
   });
-  const isEnded = Date.now() > data.ending;
   const [outcomeIdx, setOutcomeIdx] = useState(1);
   const { data: positions } = usePositions({
     tradingAddr: data.poolAddress,
@@ -53,7 +53,11 @@ export default function SimpleBody({
   const winnerPosition = positions?.find((p) => p.id === data?.winner);
   const isWinner = winnerOutcome && winnerPosition;
   return (
-    <ActiveCampaignProvider previousData={data} symbol={symbol}>
+    <ActiveCampaignProvider
+      previousData={data}
+      symbol={symbol}
+      setIsEnded={setIsEnded}
+    >
       <div className="flex flex-col gap-2 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] px-2 py-1 text-center text-xs shadow-9liqCard md:px-4 md:py-3">
         <h4 className="font-chicago">
           Simple Mode: Get started predicting the future with hourly markets
@@ -78,7 +82,7 @@ export default function SimpleBody({
               <RetroCard position="middle" showClose={false} title="Winner">
                 {" "}
                 <span className="text-center">
-                  {winnerOutcome.name.includes("ABOVE")
+                  {winnerOutcome.name === "Up"
                     ? "Price Went Up"
                     : "Price Went Down"}
                 </span>

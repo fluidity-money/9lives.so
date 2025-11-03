@@ -38,10 +38,12 @@ export default function ActiveCampaignProvider({
   previousData,
   symbol,
   children,
+  setIsEnded,
 }: {
   previousData: SimpleCampaignDetail;
   symbol: string;
   children: Readonly<React.ReactNode>;
+  setIsEnded: React.Dispatch<boolean>;
 }) {
   const queryClient = useQueryClient();
   const [liveCampaign, setLiveCampaign] = useState<SimpleCampaignDetail>();
@@ -65,6 +67,7 @@ export default function ActiveCampaignProvider({
             });
             if (nextData.starting > previousData.starting) {
               setLiveCampaign(nextData);
+              setIsEnded(true);
             } else {
               setLiveCampaign(undefined);
             }
