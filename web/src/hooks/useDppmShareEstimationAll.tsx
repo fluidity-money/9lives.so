@@ -9,18 +9,21 @@ import {
 } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 
-export default function useDppmShareEstimation({
+export default function useDppmShareEstimationAll({
   tradingAddr,
   account,
-  outcomeId,
   enabled = true,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
-  outcomeId: `0x${string}`;
   enabled?: boolean;
 }) {
-  const [res, setRes] = useState<[number, number, number]>([0, 0, 0]);
+  const [res, setRes] = useState<
+    [[number, number, number], [number, number, number]]
+  >([
+    [0, 0, 0],
+    [0, 0, 0],
+  ]);
 
   useEffect(() => {
     if (account && enabled) {
@@ -32,15 +35,19 @@ export default function useDppmShareEstimation({
       });
       const estimateTx = prepareContractCall({
         contract: tradingContract,
-        method: "dppmSimulatePayoffForAddress",
-        params: [account?.address, outcomeId],
+        method: "dppmSimulatePayoffForAddressAll",
+        params: [account?.address],
       });
       (async () => {
         const res = await simulateTransaction({
           transaction: estimateTx,
           account,
         });
-        setRes(res.map((i: bigint) => Number(formatFusdc(i, 2))));
+        setRes(
+          res.map((i: bigint[]) =>
+            i.map((i: bigint) => Number(formatFusdc(i, 2))),
+          ),
+        );
       })();
     }
   }, [account]);

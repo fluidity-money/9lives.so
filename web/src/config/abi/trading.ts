@@ -332,11 +332,6 @@ const tradingAbi = [
         type: "address",
         internalType: "address",
       },
-      {
-        name: "outcome",
-        type: "bytes8",
-        internalType: "bytes8",
-      },
     ],
     outputs: [
       {

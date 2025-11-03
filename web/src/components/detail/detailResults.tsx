@@ -14,6 +14,7 @@ import NoOutcomeImg from "#/images/no-outcome.svg";
 import formatFusdc from "@/utils/format/formatUsdc";
 import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
+import useDppmRewards from "@/hooks/useDppmRewards";
 
 interface DetailResultsProps {
   data: CampaignDetail;
@@ -52,31 +53,55 @@ export default function DetailResults({ data }: DetailResultsProps) {
     outcomes: data.outcomes,
     isDpm: data.isDpm,
   });
+  const { totalRewards: userRewardDppm, result: dppmResult } = useDppmRewards({
+    tradingAddr: data.poolAddress,
+    account,
+    enabled: data.isDppm,
+  });
   const totalVolumeOfWinner =
     data.investmentAmounts.find((ia) => ia?.id === data.winner)?.usdc ?? 0;
   const winnerChance = (totalVolumeOfWinner / data.totalVolume) * 100;
   const avgPrice = data.totalVolume / totalSharesOfWinner;
   const userRewardDpm = accountShares ? +accountShares * avgPrice : 0;
   const userRewardAmm = accountShares ? +accountShares : 0;
-  const reward = data.isDpm ? userRewardDpm : userRewardAmm;
-  const rewardBreakdown = [
-    {
-      title: "Your Shares",
-      value: `${accountShares ?? 0}`,
-    },
-    {
-      title: "Total Investment",
-      value: `$${formatFusdc(data.totalVolume, 2)}`,
-    },
-    {
-      title: "Total Shares of The Winner",
-      value: formatFusdc(totalSharesOfWinner, 2),
-    },
-    {
-      title: "Avg. Price/Share",
-      value: `$${avgPrice.toFixed(2)}`,
-    },
-  ];
+  const reward = data.isDpm
+    ? userRewardDpm
+    : data.isDppm
+      ? userRewardDppm
+      : userRewardAmm;
+  const rewardBreakdown = data.isDppm
+    ? [
+        {
+          title: "Reward",
+          value: dppmResult[0],
+        },
+        {
+          title: "Time Boost",
+          value: dppmResult[1],
+        },
+        {
+          title: "Refund",
+          value: dppmResult[2],
+        },
+      ]
+    : [
+        {
+          title: "Your Shares",
+          value: `${accountShares ?? 0}`,
+        },
+        {
+          title: "Total Investment",
+          value: `$${formatFusdc(data.totalVolume, 2)}`,
+        },
+        {
+          title: "Total Shares of The Winner",
+          value: formatFusdc(totalSharesOfWinner, 2),
+        },
+        {
+          title: "Avg. Price/Share",
+          value: `$${avgPrice.toFixed(2)}`,
+        },
+      ];
   const noClaim =
     account &&
     ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
