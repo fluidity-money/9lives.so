@@ -23,7 +23,7 @@ export function formatCampaign(ro: RawCampaign): Campaign {
     name: ro.isDppm
       ? formatDppmTitle({
           symbol: ro.priceMetadata?.baseAsset,
-          end: ro.ending,
+          end: ro.ending * 1000,
           price: ro.priceMetadata?.priceTargetForUp,
         })
       : ro.name,
@@ -66,7 +66,7 @@ export function formatSimpleCampaignDetail(
     name: formatDppmTitle({
       symbol: ro.priceMetadata?.baseAsset,
       price: ro.priceMetadata.priceTargetForUp,
-      end: ro.ending,
+      end: ro.ending * 1000,
     }),
     ending: ro.ending * 1000,
     starting: ro.starting * 1000,
@@ -99,7 +99,7 @@ export function formatParticipatedContent(
       ? formatDppmTitle({
           symbol: ro.priceMetadata?.baseAsset,
           price: ro.priceMetadata?.priceTargetForUp,
-          end: ro.ending,
+          end: ro.ending * 1000,
         })
       : ro.name,
     ending: ro.ending * 1000,
