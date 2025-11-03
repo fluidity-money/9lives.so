@@ -1,6 +1,5 @@
 import useDppmShareEstimation from "@/hooks/useDppmShareEstimation";
 import { combineClass } from "@/utils/combineClass";
-import formatFusdc from "@/utils/format/formatUsdc";
 import { Account } from "thirdweb/wallets";
 
 export default function SimplePositionRow({
@@ -20,7 +19,7 @@ export default function SimplePositionRow({
   tradingAddr: `0x${string}`;
   account?: Account;
 }) {
-  const [toWin, bonus] = useDppmShareEstimation({
+  const [shares, boost, refund] = useDppmShareEstimation({
     tradingAddr,
     account,
     outcomeId: position.id,
@@ -30,19 +29,19 @@ export default function SimplePositionRow({
     <div
       className={combineClass(
         isWinning ? "bg-9green" : "bg-9red",
-        "flex justify-between gap-4 p-5 text-xs shadow-9orderSummary",
+        "flex justify-between gap-4 p-5 text-end text-xs shadow-9orderSummary",
       )}
     >
       <span className="font-chicago uppercase text-9black">
         {position.name}: {isWinning ? "Winning" : "Losing"}
       </span>
       <div className="flex flex-col gap-1 font-chicago text-xs">
-        <span>Shares: {position.balance}</span>
+        <span>Shares To Get: {position.balance}</span>
         <span>
-          {isWinning ? "To Win" : "To Lose"}: ${formatFusdc(toWin, 2)}
+          {isWinning ? "To Win" : "To Lose"}: ${shares + boost + refund}
         </span>
         <span>
-          {isWinning ? "Bonus" : "Refund"}: ${formatFusdc(bonus, 2)}
+          {isWinning ? "Bonus" : "Refund"}: ${refund}
         </span>
       </div>
     </div>

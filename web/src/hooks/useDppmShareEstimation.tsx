@@ -1,5 +1,6 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
+import formatFusdc from "@/utils/format/formatUsdc";
 import { useEffect, useState } from "react";
 import {
   getContract,
@@ -17,7 +18,7 @@ export default function useDppmShareEstimation({
   account?: Account;
   outcomeId: `0x${string}`;
 }) {
-  const [res, setRes] = useState<[bigint, bigint]>([BigInt(0), BigInt(0)]);
+  const [res, setRes] = useState<[number, number, number]>([0, 0, 0]);
 
   useEffect(() => {
     if (account) {
@@ -37,10 +38,10 @@ export default function useDppmShareEstimation({
           transaction: estimateTx,
           account,
         });
-        setRes(res);
+        setRes(res.map((i: bigint) => Number(formatFusdc(i, 2))));
       })();
     }
   }, [account]);
 
-  return res as [bigint, bigint];
+  return res;
 }
