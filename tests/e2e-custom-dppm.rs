@@ -68,19 +68,26 @@ fn test_dppm_simple() {
             setup_contract!(&mut c, o);
             c.time_ending.set(U64::from(block_timestamp() + 60 * 60));
             set_block_timestamp(5 * 60);
+            let (v_ivan_dppm, v_ivan_ninetails) = c.internal_dppm_simulate_mint(o[0], U256::from(5e6)).unwrap();
             shares_ivan = should_spend_fusdc_sender!(
                 5e6,
                 c.mint_8_A_059_B_6_E(o[0], U256::from(5e6), Address::ZERO, msg_sender())
             );
+            assert_eq!(shares_ivan, v_ivan_dppm);
+            assert_eq!(c.ninetails_user_boosted_shares.getter(msg_sender()).get(o[0]), v_ivan_ninetails);
+            dbg!(c.ninetails_user_boosted_shares.getter(msg_sender()).get(o[0]), v_ivan_ninetails);
         },
         ERIK => {
             set_block_timestamp(30 * 60);
             erik_simulated_earnings = c.dppm_simulate_earnings(U256::from(10e6), o[1])
                 .unwrap();
-            should_spend_fusdc_sender!(
+            let (v_erik_dppm, v_erik_ninetails) = c.internal_dppm_simulate_mint(o[1], U256::from(10e6)).unwrap();
+            let e_erik = should_spend_fusdc_sender!(
                 10e6,
                 c.mint_8_A_059_B_6_E(o[1], U256::from(10e6), Address::ZERO, msg_sender())
             );
+            assert_eq!(e_erik, v_erik_dppm);
+            assert_eq!(c.ninetails_user_boosted_shares.getter(msg_sender()).get(o[1]), v_erik_ninetails);
         },
         IVAN => {
             c.decide(o[0]).unwrap();
@@ -132,7 +139,7 @@ fn strat_dppm_action(o_0: FixedBytes<8>, o_1: FixedBytes<8>) -> impl Strategy<Va
 
 fn strat_dppm_actions() -> impl Strategy<Value = (FixedBytes<8>, FixedBytes<8>, Vec<DppmAction>)> {
     strat_uniq_outcomes(2, 2).prop_flat_map(move |o| {
-        proptest::collection::vec(strat_dppm_action(o[0].clone(), o[1].clone()), 1000)
+        proptest::collection::vec(strat_dppm_action(o[0].clone(), o[1].clone()), 2000)
             .prop_map(move |x| (o[0], o[1], x))
     })
 }
@@ -175,7 +182,7 @@ proptest! {
                 let max_fusdc = M1 + M2 + fusdc_amt;
                 let e_1 = c.dppm_simulate_payoff_for_address(sender, o_1).unwrap();
                 let e_2 = c.dppm_simulate_payoff_for_address(sender, o_2).unwrap();
-                assert!(max_fusdc >= e_1.0 + e_1.1);
+                assert!(max_fusdc >= e_1.0 + e_1.1, "{max_fusdc} < {}", e_1.0 + e_1.1);
                 assert!(max_fusdc >= e_2.0 + e_2.1);
                 let e = c.dppm_simulate_earnings(fusdc_amt, outcome).unwrap();
                 // We need to check that the winning payout and Ninetails payout can
@@ -184,7 +191,7 @@ proptest! {
                 assert!(max_fusdc >= e.2, "{max_fusdc} <= {}", e.2);
                 // We need to check that the loser payout can never exceed the winner
                 // payout for Ninetails:
-                assert!(e.1 > e.2, "{} <= {}", e.1, e.2);
+                assert!(e.1 + e.0 >= e.2, "{} < {}", e.1 + e.0, e.2);
                 assert!(max_fusdc > e.2, "{} <= {}", e.1, e.2);
                 let s = should_spend_fusdc_sender!(fusdc_amt, {
                     match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(

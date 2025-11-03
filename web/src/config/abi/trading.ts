@@ -257,7 +257,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "dppmSimulateEarnings",
+    name: "dppmSimulateEarningsB866B112",
     inputs: [
       {
         name: "invested",

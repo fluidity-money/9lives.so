@@ -7,9 +7,9 @@ export \
 
 make solidity
 
-cargo test --features testing,trading-backend-dppm $@
+cargo nextest run --features testing,trading-backend-dppm $@
 
-cargo test --features testing,trading-backend-amm $@
+cargo nextest run --features testing,trading-backend-amm $@
 
 cargo clippy --no-deps --features testing,trading-backend-dppm
 

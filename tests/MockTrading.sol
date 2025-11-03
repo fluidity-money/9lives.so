@@ -232,7 +232,7 @@ contract MockTrading is INineLivesTrading {
         return uint256(keccak256(abi.encodePacked(spender)));
     }
 
-    function dppmSimulateEarnings(uint256, bytes8) external view returns (uint256, uint256, uint256) {
+    function dppmSimulateEarningsB866B112(uint256, bytes8) external view returns (uint256, uint256, uint256) {
         return (0, 0, 0);
     }
 

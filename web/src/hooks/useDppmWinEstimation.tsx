@@ -31,7 +31,7 @@ export default function useDppmWinEstimation({
   const decimals = config.contracts.decimals.fusdc;
   const estimateTx = prepareContractCall({
     contract: tradingContract,
-    method: "dppmSimulateEarnings",
+    method: "dppmSimulateEarningsB866B112",
     params: [parseUnits(usdValue.toFixed(decimals), decimals), outcomeId],
   });
   const account = useActiveAccount();
