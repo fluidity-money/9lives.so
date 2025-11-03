@@ -121,7 +121,7 @@ fn strat_dppm_action(o_0: FixedBytes<8>, o_1: FixedBytes<8>) -> impl Strategy<Va
 
 fn strat_dppm_actions() -> impl Strategy<Value = (FixedBytes<8>, FixedBytes<8>, Vec<DppmAction>)> {
     strat_uniq_outcomes(2, 2).prop_flat_map(move |o| {
-        proptest::collection::vec(strat_dppm_action(o[0].clone(), o[1].clone()), 200)
+        proptest::collection::vec(strat_dppm_action(o[0].clone(), o[1].clone()), 5000)
             .prop_map(move |x| (o[0], o[1], x))
     })
 }
@@ -159,7 +159,6 @@ proptest! {
                 set_msg_sender(sender);
                 referrer_fee +=  maths::calc_fee(fusdc_amt, U256::from(fee_referrer)).unwrap();
                 creator_fee += maths::calc_fee(fusdc_amt, U256::from(fee_creator)).unwrap();
-                c.dppm_simulate_earnings(fusdc_amt, outcome).unwrap();
                 let M1 = c.dppm_outcome_invested.get(o_1);
                 let M2 = c.dppm_outcome_invested.get(o_2);
                 let max_fusdc = M1 + M2 + fusdc_amt;
@@ -167,6 +166,15 @@ proptest! {
                 let e_2 = c.dppm_simulate_payoff_for_address(sender, o_2).unwrap();
                 assert!(max_fusdc >= e_1.0 + e_1.1);
                 assert!(max_fusdc >= e_2.0 + e_2.1);
+                let e = c.dppm_simulate_earnings(fusdc_amt, outcome).unwrap();
+                // We need to check that the winning payout and Ninetails payout can
+                // never exceed the pool balance:
+                assert!(max_fusdc >= e.0 + e.1, "{max_fusdc} <= {} + {}", e.0, e.1);
+                assert!(max_fusdc >= e.0 + e.2, "{max_fusdc} <= {}", e.0 + e.2);
+                // We need to check that the loser payout can never exceed the winner
+                // payout for Ninetails:
+                assert!(e.1 > e.2, "{} <= {}", e.1, e.2);
+                assert!(max_fusdc > e.2, "{} <= {}", e.1, e.2);
                 let s = should_spend_fusdc_sender!(fusdc_amt, {
                     match (fusdc_amt.is_zero(), c.mint_8_A_059_B_6_E(
                         outcome,

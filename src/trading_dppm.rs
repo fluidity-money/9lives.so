@@ -299,7 +299,7 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn internal_dppm_simulate_payoff(
         &self,
-        share_bal: U256,
+        user_share_bal: U256,
         user_boosted_shares: U256,
         outcome_boosted_shares: U256,
         all_boosted_shares: U256,
@@ -311,7 +311,7 @@ impl StorageTrading {
         let leftovers = M
             .checked_sub(global_dppm_shares_outcome)
             .ok_or(Error::CheckedSubOverflow(M, global_dppm_shares_outcome))?;
-        let dppm_fusdc = maths::dppm_payoff(share_bal)?;
+        let dppm_fusdc = maths::dppm_payoff(user_share_bal)?;
         let (ninetails_winner_fusdc, ninetails_loser_fusdc) = maths::ninetails_payoff_winners(
             leftovers,
             user_boosted_shares,
