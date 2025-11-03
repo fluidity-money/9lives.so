@@ -68,6 +68,7 @@ impl StorageTrading {
         return self.internal_amm_payoff(outcome_id, amt, recipient);
     }
 
+    #[allow(non_snake_case)]
     pub fn dppm_payoff_for_all_58633_B_6_E(&mut self, recipient: Address) -> R<(U256, U256)> {
         #[cfg(feature = "trading-backend-dppm")]
         return Ok((

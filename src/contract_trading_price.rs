@@ -13,9 +13,6 @@ pub use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
-#[cfg(not(feature = "trading-backend-dppm"))]
-use crate::fusdc_call;
-
 #[cfg_attr(feature = "contract-trading-price", stylus_sdk::prelude::public)]
 impl StorageTrading {
     #[allow(clippy::too_many_arguments)]
@@ -66,6 +63,7 @@ impl StorageTrading {
         };
     }
 
+    #[allow(non_snake_case)]
     pub fn dppm_clawback_B_F_C_64995(&mut self) -> R<U256> {
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!();

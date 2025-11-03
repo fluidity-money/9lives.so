@@ -174,13 +174,27 @@ impl StorageTrading {
         {
             let (dppm_shares, ninetails_shares) =
                 self.internal_dppm_simulate_mint(_outcome, _invested)?;
-            self.internal_dppm_simulate_payoff_state(
+            let (fusdc_dppm, fusdc_winning_ninetails) = self.internal_dppm_simulate_payoff_state(
                 dppm_shares,
                 ninetails_shares,
                 _outcome,
                 _invested,
                 dppm_shares,
-            )
+                ninetails_shares,
+            )?;
+            let o_1 = self.outcome_list.get(0).unwrap();
+            let winning_outcome_shares = self.dppm_shares_outcome.get(if o_1 == _outcome {
+                self.outcome_list.get(1).unwrap()
+            } else {
+                o_1
+            });
+            let fusdc_losing_ninetails = self.internal_dppm_simulate_loser_payoff(
+                ninetails_shares,
+                winning_outcome_shares,
+                _invested,
+                ninetails_shares,
+            )?;
+            Ok((fusdc_dppm, fusdc_winning_ninetails, fusdc_losing_ninetails))
         }
     }
 
@@ -206,13 +220,27 @@ impl StorageTrading {
                 .ninetails_user_boosted_shares
                 .getter(spender)
                 .get(outcome_id);
-            self.internal_dppm_simulate_payoff_state(
+            let (fusdc_dppm, fusdc_winning_ninetails) = self.internal_dppm_simulate_payoff_state(
                 user_share_amt,
                 user_boosted_shares,
                 outcome_id,
                 U256::ZERO,
                 U256::ZERO,
-            )
+                U256::ZERO,
+            )?;
+            let o_1 = self.outcome_list.get(0).unwrap();
+            let winning_outcome_shares = self.dppm_shares_outcome.get(if o_1 == outcome_id {
+                self.outcome_list.get(1).unwrap()
+            } else {
+                o_1
+            });
+            let fusdc_losing_ninetails = self.internal_dppm_simulate_loser_payoff(
+                user_boosted_shares,
+                winning_outcome_shares,
+                U256::ZERO,
+                U256::ZERO
+            )?;
+            Ok((fusdc_dppm, fusdc_winning_ninetails, fusdc_losing_ninetails))
         }
     }
 

@@ -63,6 +63,26 @@ pub fn ninetails_payoff_losers(
     Ok(mul_div(user_boosted_shares, refund, global_boosted_shares)?.0)
 }
 
+pub fn ninetails_calculate_leftovers_winner(
+    M1: U256,
+    M2: U256,
+    global_dppm_shares_outcome: U256,
+) -> Result<U256, Error> {
+    let M = M1.checked_add(M2).ok_or(Error::CheckedAddOverflow)?;
+    M.checked_sub(global_dppm_shares_outcome)
+        .ok_or(Error::CheckedSubOverflow(M, global_dppm_shares_outcome))
+}
+
+pub fn ninetails_calculate_leftovers_loser(
+    M1: U256,
+    M2: U256,
+    global_dppm_shares_outcome: U256,
+) -> Result<U256, Error> {
+    let M = M1.checked_add(M2).ok_or(Error::CheckedAddOverflow)?;
+    M.checked_sub(global_dppm_shares_outcome)
+        .ok_or(Error::CheckedSubOverflow(M, global_dppm_shares_outcome))
+}
+
 /// Ninetails payoff function that winners can call as a part of the
 /// payoff path.
 #[allow(non_snake_case)]
@@ -71,14 +91,14 @@ pub fn ninetails_payoff_winners(
     user_boosted_shares: U256,
     outcome_boosted_shares: U256,
     global_boosted_shares: U256,
-) -> Result<(U256, U256), Error> {
+) -> Result<U256, Error> {
     if user_boosted_shares.is_zero() {
-        return Ok((U256::ZERO, U256::ZERO))
+        return Ok(U256::ZERO);
     }
     let boost = mul_div(leftovers, U256::from(7e6 as u32), U256::from(10e6 as u32))?.0;
     let winnings = mul_div(user_boosted_shares, boost, outcome_boosted_shares)?.0;
     let refund = ninetails_payoff_losers(leftovers, user_boosted_shares, global_boosted_shares)?;
-    Ok((add!(winnings, refund), refund))
+    Ok(add!(winnings, refund))
 }
 
 pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {

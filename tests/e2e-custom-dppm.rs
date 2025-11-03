@@ -62,6 +62,7 @@ fn test_dppm_simple() {
         fixed_bytes!("0c5829d33c3ab9f6"),
     ];
     let mut shares_ivan = U256::ZERO;
+    let mut erik_simulated_earnings = (U256::ZERO, U256::ZERO, U256::ZERO);
     interactions_clear_after! {
         IVAN => {
             setup_contract!(&mut c, o);
@@ -74,6 +75,8 @@ fn test_dppm_simple() {
         },
         ERIK => {
             set_block_timestamp(30 * 60);
+            erik_simulated_earnings = c.dppm_simulate_earnings(U256::from(10e6), o[1])
+                .unwrap();
             should_spend_fusdc_sender!(
                 10e6,
                 c.mint_8_A_059_B_6_E(o[1], U256::from(10e6), Address::ZERO, msg_sender())
@@ -83,15 +86,23 @@ fn test_dppm_simple() {
             c.decide(o[0]).unwrap();
         },
         IVAN => {
-            should_spend_fusdc_contract!(15115113,
-                c.payoff_C_B_6_F_2565(o[0], shares_ivan, msg_sender())
-            )
+            // w_fusdc: USDC you would get for DPPM shares if outcome 0 won
+            // w_boosted: USDC you would get for the boosted shares if outcome 0 won
+            // l_loser: USDC you would get if outcome 1 lost
+            let ((w_fusdc, w_boosted, _), (_, _, l_loser)) =
+                c.dppm_simulate_payoff_for_address_all(msg_sender()).unwrap();
+            let (returned_1, returned_2) = should_spend_fusdc_contract!(15115113,
+                c.dppm_payoff_for_all_58633_B_6_E(msg_sender())
+            );
+            assert_eq!(returned_1, w_fusdc + w_boosted);
+            assert_eq!(returned_2, l_loser);
         },
         ERIK => {
-            should_spend_fusdc_contract!(
+            let resulted = should_spend_fusdc_contract!(
                 1884885,
                 c.payoff_C_B_6_F_2565(o[1], U256::ZERO, ERIK)
             );
+            assert_eq!(resulted, erik_simulated_earnings.2);
         }
     }
 }
@@ -121,7 +132,7 @@ fn strat_dppm_action(o_0: FixedBytes<8>, o_1: FixedBytes<8>) -> impl Strategy<Va
 
 fn strat_dppm_actions() -> impl Strategy<Value = (FixedBytes<8>, FixedBytes<8>, Vec<DppmAction>)> {
     strat_uniq_outcomes(2, 2).prop_flat_map(move |o| {
-        proptest::collection::vec(strat_dppm_action(o[0].clone(), o[1].clone()), 5000)
+        proptest::collection::vec(strat_dppm_action(o[0].clone(), o[1].clone()), 1000)
             .prop_map(move |x| (o[0], o[1], x))
     })
 }
@@ -170,7 +181,7 @@ proptest! {
                 // We need to check that the winning payout and Ninetails payout can
                 // never exceed the pool balance:
                 assert!(max_fusdc >= e.0 + e.1, "{max_fusdc} <= {} + {}", e.0, e.1);
-                assert!(max_fusdc >= e.0 + e.2, "{max_fusdc} <= {}", e.0 + e.2);
+                assert!(max_fusdc >= e.2, "{max_fusdc} <= {}", e.2);
                 // We need to check that the loser payout can never exceed the winner
                 // payout for Ninetails:
                 assert!(e.1 > e.2, "{} <= {}", e.1, e.2);

@@ -107,7 +107,7 @@ macro_rules! test_should_buy_check_shares {
     ) => {{
         let buy_amt = U256::from($buy_amt);
         let user_share_amt = U256::from($user_share_amt);
-        let (estimated_shares, fees_taken) = $c.quote_C_0_E_17_F_C_7($outcome, buy_amt).unwrap();
+        let (estimated_shares, fees_taken, _) = $c.quote_C_0_E_17_F_C_7($outcome, buy_amt).unwrap();
         host_erc20_call::test_reset_bal(FUSDC_ADDR, CONTRACT);
         assert_eq!(
             user_share_amt, estimated_shares,

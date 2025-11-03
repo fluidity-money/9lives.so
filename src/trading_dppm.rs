@@ -169,20 +169,20 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         recipient: Address,
     ) -> R<U256> {
-        if self
-            .ninetails_user_boosted_shares
-            .getter(msg_sender())
-            .get(outcome_id)
-            .is_zero()
-        {
-            return Ok(U256::ZERO);
-        }
         let shares = self
             .ninetails_user_boosted_shares
             .getter(msg_sender())
             .get(outcome_id);
+        if shares.is_zero() {
+            return Ok(U256::ZERO);
+        }
         let winning_outcome_shares = self.dppm_shares_outcome.get(self.winner.get());
-        let fusdc = self.internal_dppm_simulate_loser_payoff(shares, winning_outcome_shares)?;
+        let fusdc = self.internal_dppm_simulate_loser_payoff(
+            shares,
+            winning_outcome_shares,
+            U256::ZERO,
+            U256::ZERO,
+        )?;
         self.ninetails_user_boosted_shares
             .setter(msg_sender())
             .setter(outcome_id)
@@ -215,6 +215,11 @@ impl StorageTrading {
         // Start to burn their share of the supply to convert to a payoff amount.
         // Take the max of what they asked.
         assert_or!(amt > U256::ZERO, Error::ZeroShares);
+        let amt = if amt == U256::MAX {
+            share_call::balance_of(share_addr, msg_sender())?
+        } else {
+            amt
+        };
         share_call::burn(share_addr, msg_sender(), amt)?;
         let user_boosted_shares = self
             .ninetails_user_boosted_shares
@@ -227,7 +232,7 @@ impl StorageTrading {
         let M1 = self.dppm_outcome_invested.get(outcome_1);
         let M2 = self.dppm_outcome_invested.get(outcome_2);
         let winning_dppm_shares = self.dppm_shares_outcome.get(outcome_id);
-        let (dppm_fusdc, ninetails_fusdc, _) = self.internal_dppm_simulate_payoff(
+        let (dppm_fusdc, ninetails_fusdc) = self.internal_dppm_simulate_payoff(
             amt,
             user_boosted_shares,
             outcome_boosted_shares,
@@ -271,7 +276,6 @@ impl StorageTrading {
         if self.winner.get() == outcome_id {
             self.internal_dppm_payoff_winner(outcome_id, amt, recipient)
         } else {
-            assert_or!(amt.is_zero(), Error::ZeroSharesMustBeProvidedForLoser);
             self.internal_dppm_payoff_loser(outcome_id, recipient)
         }
     }
@@ -294,8 +298,7 @@ impl StorageTrading {
     }
 
     /// Estimate the payoff for the simulated amount, returning the fUSDC the
-    /// user would win, the amount the user would win if they won, and what
-    /// they would win if they lost.
+    /// user would win, the refund amount of fUSDC the user would win if they won.
     #[allow(non_snake_case)]
     pub fn internal_dppm_simulate_payoff(
         &self,
@@ -306,19 +309,19 @@ impl StorageTrading {
         M1: U256,
         M2: U256,
         global_dppm_shares_outcome: U256,
-    ) -> R<(U256, U256, U256)> {
+    ) -> R<(U256, U256)> {
         let M = M1.checked_add(M2).ok_or(Error::CheckedAddOverflow)?;
         let leftovers = M
             .checked_sub(global_dppm_shares_outcome)
             .ok_or(Error::CheckedSubOverflow(M, global_dppm_shares_outcome))?;
         let dppm_fusdc = maths::dppm_payoff(user_share_bal)?;
-        let (ninetails_winner_fusdc, ninetails_loser_fusdc) = maths::ninetails_payoff_winners(
+        let ninetails_winner_fusdc = maths::ninetails_payoff_winners(
             leftovers,
             user_boosted_shares,
             outcome_boosted_shares,
             all_boosted_shares,
         )?;
-        Ok((dppm_fusdc, ninetails_winner_fusdc, ninetails_loser_fusdc))
+        Ok((dppm_fusdc, ninetails_winner_fusdc))
     }
 
     #[allow(non_snake_case)]
@@ -328,19 +331,20 @@ impl StorageTrading {
         user_boosted_shares: U256,
         outcome_id: FixedBytes<8>,
         extra_fusdc: U256,
-        extra_winning_shares: U256,
-    ) -> R<(U256, U256, U256)> {
+        extra_dppm_shares: U256,
+        extra_ninetails_shares: U256,
+    ) -> R<(U256, U256)> {
         let outcome_1 = self.outcome_list.get(0).unwrap();
         let outcome_2 = self.outcome_list.get(1).unwrap();
         let outcome_boosted_shares = self
             .ninetails_outcome_boosted_shares
             .get(outcome_id)
-            .checked_add(user_boosted_shares)
+            .checked_add(extra_ninetails_shares)
             .ok_or(Error::CheckedAddOverflow)?;
         let all_boosted_shares = self
             .ninetails_global_boosted_shares
             .get()
-            .checked_add(user_boosted_shares)
+            .checked_add(extra_ninetails_shares)
             .ok_or(Error::CheckedAddOverflow)?;
         let M1 = {
             let x = self.dppm_outcome_invested.get(outcome_1);
@@ -363,7 +367,7 @@ impl StorageTrading {
         let winning_dppm_shares = self
             .dppm_shares_outcome
             .get(outcome_id)
-            .checked_add(extra_winning_shares)
+            .checked_add(extra_dppm_shares)
             .ok_or(Error::CheckedAddOverflow)?;
         self.internal_dppm_simulate_payoff(
             user_shares,
@@ -381,13 +385,25 @@ impl StorageTrading {
         &self,
         user_boosted_shares: U256,
         winning_outcome_dppm_shares: U256,
+        extra_invested: U256,
+        extra_boosted_shares: U256,
     ) -> R<U256> {
-        let all_boosted_shares = self.ninetails_global_boosted_shares.get();
+        if user_boosted_shares.is_zero() {
+            return Ok(U256::ZERO)
+        }
+        let all_boosted_shares = self
+            .ninetails_global_boosted_shares
+            .get()
+            .checked_add(extra_boosted_shares)
+            .ok_or(Error::CheckedAddOverflow)?;
         let outcome_1 = self.outcome_list.get(0).unwrap();
         let outcome_2 = self.outcome_list.get(1).unwrap();
         let M1 = self.dppm_outcome_invested.get(outcome_1);
         let M2 = self.dppm_outcome_invested.get(outcome_2);
-        let M = M1.checked_add(M2).ok_or(Error::CheckedAddOverflow)?;
+        let M = M1
+            .checked_add(M2)
+            .and_then(|x| extra_invested.checked_add(x))
+            .ok_or(Error::CheckedAddOverflow)?;
         let leftovers = M
             .checked_sub(winning_outcome_dppm_shares)
             .ok_or(Error::CheckedSubOverflow(M, winning_outcome_dppm_shares))?;
