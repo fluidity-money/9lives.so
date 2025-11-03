@@ -29,7 +29,7 @@ export default function SimplePositionRow({
     <div
       className={combineClass(
         isWinning ? "bg-9green" : "bg-9red",
-        "flex justify-between gap-4 p-5 text-end text-xs shadow-9orderSummary",
+        "flex justify-between gap-4 p-5 text-xs shadow-9orderSummary",
       )}
     >
       <span className="font-chicago uppercase text-9black">
@@ -38,7 +38,7 @@ export default function SimplePositionRow({
         <br />
         Status: Currently {isWinning ? "Winning" : "Losing"}
       </span>
-      <div className="flex flex-col gap-1 font-chicago text-xs">
+      <div className="flex flex-col gap-1 text-end font-chicago text-xs">
         <span>Shares To Get: {position.balance}</span>
         <span>
           {isWinning ? "To Win" : "To Lose"}: ${shares + boost + refund}
