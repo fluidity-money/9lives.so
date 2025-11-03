@@ -191,16 +191,16 @@ export default function DetailBuyAction({
       title: "Shares To Get",
       value: data.isDpm
         ? (usdValue / Number(price)).toFixed(2)
-        : `$${sharesToGet}`,
+        : `$${usdValue > 0 ? sharesToGet : 0}`,
     },
     {
       title: "Boost To Get",
-      value: `$${boost}`,
+      value: `$${usdValue > 0 ? boost : 0}`,
       show: data.isDppm,
     },
     {
       title: "Refund To Get",
-      value: `$${refund}`,
+      value: `$${usdValue > 0 ? refund : 0}`,
       show: data.isDppm,
     },
   ];
