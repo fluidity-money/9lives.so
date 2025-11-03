@@ -133,7 +133,7 @@ export default function SimpleBuyDialog({
     setValue("supply", maxBalance);
     if (Number(maxBalance) > 0) clearErrors();
   };
-  const estimation = useDppmWinEstimation({
+  const [shares, boost, refund] = useDppmWinEstimation({
     tradingAddr: data.poolAddress,
     usdValue,
     outcomeId: selectedOutcome.identifier,
@@ -253,17 +253,24 @@ export default function SimpleBuyDialog({
           </div>
         </div>
 
-        <div
-          className={combineClass(
-            estimation ? "visible" : "invisible",
-            "text-center",
-          )}
-        >
-          <div className="font-geneva text-sm font-medium uppercase text-gray-500">
-            If you&apos;re right
-          </div>
-          <div className="text-3xl font-semibold text-green-500">
-            ${estimation}
+        <div className={combineClass(shares ? "visible" : "invisible")}>
+          <div className="mx-4 flex items-center justify-between">
+            <div className="text-center">
+              <div className="font-geneva text-sm font-medium uppercase text-gray-500">
+                If you&apos;re right
+              </div>
+              <div className="text-3xl font-semibold text-green-500">
+                ${+(shares + boost + refund).toFixed(2)}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="font-geneva text-sm font-medium uppercase text-gray-500">
+                If you&apos;re wrong
+              </div>
+              <div className="text-3xl font-semibold text-green-500">
+                ${+refund.toFixed(2)}
+              </div>
+            </div>
           </div>
         </div>
 

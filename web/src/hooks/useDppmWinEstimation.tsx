@@ -19,7 +19,7 @@ export default function useDppmWinEstimation({
   usdValue: number;
   tradingAddr: `0x${string}`;
 }) {
-  const [estimation, setEstimation] = useState<string>();
+  const [res, setRes] = useState<[number, number, number]>([0, 0, 0]); // [shares,boost,refund]
   const tradingContract = getContract({
     abi: tradingAbi,
     address: tradingAddr,
@@ -40,9 +40,9 @@ export default function useDppmWinEstimation({
           transaction: estimateTx,
           account,
         });
-        setEstimation(formatFusdc(res, 2));
+        setRes(res.map((i: bigint) => Number(formatFusdc(i, 2))));
       }
     })();
   }, [account, estimateTx]);
-  return estimation;
+  return res;
 }
