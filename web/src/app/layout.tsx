@@ -6,6 +6,7 @@ import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
 import CustomToaster from "@/components/customToaster";
 import CookieBanner from "@/components/cookieBanner";
+import ThemeScript from "@/components/theme/themeScript";
 import Providers from "@/providers";
 
 const chicago = localFont({
@@ -71,8 +72,10 @@ export default async function RootLayout({
         arial.className,
         arial.variable,
       ])}
+      suppressHydrationWarning
     >
-      <body className="flex min-h-screen flex-col bg-9layer">
+      <body className="flex min-h-screen flex-col bg-9layer text-9black transition-colors duration-300 dark:bg-9black dark:text-9gray">
+        <ThemeScript />
         <Providers>{children}</Providers>
         <CookieBanner />
         <CustomToaster />
