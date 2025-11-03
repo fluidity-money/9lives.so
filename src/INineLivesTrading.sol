@@ -199,7 +199,7 @@ interface INineLivesTrading {
         uint256 ninetailsLoserFusd;
     }
 
-    function dppmSimulatePayoffForAddressAll(address spender, bytes8 outcome) external view returns (
+    function dppmSimulatePayoffForAddressAll(address spender) external view returns (
          SimulatedPayoff1 memory outcome1,
          SimulatedPayoff2 memory outcome2
     );
