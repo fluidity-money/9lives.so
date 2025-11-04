@@ -15,11 +15,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { track } from "@/utils/analytics";
 import posthog from "posthog-js";
 import { useUserStore } from "@/stores/userStore";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function EmailSuggester() {
   const [isOpen, setIsOpen] = useState(false);
   const account = useActiveAccount();
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
+  const enableNewsletterSubscription = useFeatureFlag(
+    "enable newsletter subscription",
+  );
   const {
     data: profile,
     isSuccess: isProfileLoaded,
@@ -65,6 +69,7 @@ export default function EmailSuggester() {
       setIsOpen(true);
     }
   }, [account?.address, profile, isProfileLoaded, isInMiniApp]);
+  if (!enableNewsletterSubscription) return null;
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen} title="Never Miss an Update!">
       <div className="flex flex-col items-center gap-4">
