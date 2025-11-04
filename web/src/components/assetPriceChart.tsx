@@ -166,14 +166,14 @@ export default function AssetPriceChart({
 
   return (
     <ChartPriceProvider starting={starting} ending={ending} symbol={symbol}>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={320}>
         <LineChart
           data={[
             { id: 1, timestamp: starting, price: basePrice },
             ...assetPrices,
           ]}
           margin={{
-            top: simple ? 40 : 32,
+            top: 40,
             right: simple ? -60 : 4,
             bottom: simple ? -10 : 0,
             left: 0,
