@@ -41,6 +41,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
   const accountShares = positionData?.find(
     (p) => p.id === data.winner,
   )?.balance;
+  const isWinner = accountShares && +accountShares > 0;
   const totalSharesOfWinner =
     data.investmentAmounts.find((i) => i?.id === data.winner)?.share ?? 0;
   // const totalShares = data.investmentAmounts.reduce(
@@ -55,7 +56,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
     isDpm: data.isDpm,
   });
   const { claimAll } = useDppmClaimAll({ tradingAddr: data.poolAddress });
-  const { totalRewards: userRewardDppm, result: dppmResult } = useDppmRewards({
+  const { result: dppmResult } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
     enabled: data.isDppm,
@@ -64,8 +65,11 @@ export default function DetailResults({ data }: DetailResultsProps) {
     data.investmentAmounts.find((ia) => ia?.id === data.winner)?.usdc ?? 0;
   const winnerChance = (totalVolumeOfWinner / data.totalVolume) * 100;
   const avgPrice = data.totalVolume / totalSharesOfWinner;
-  const userRewardDpm = accountShares ? +accountShares * avgPrice : 0;
-  const userRewardAmm = accountShares ? +accountShares : 0;
+  const userRewardDpm = isWinner ? +accountShares * avgPrice : 0;
+  const userRewardAmm = isWinner ? +accountShares : 0;
+  const userRewardDppm = isWinner
+    ? dppmResult.dppmFusdc + dppmResult.ninetailsWinnerFusdc
+    : dppmResult.ninetailsLoserFusd;
   const reward = data.isDpm
     ? userRewardDpm
     : data.isDppm
@@ -75,15 +79,15 @@ export default function DetailResults({ data }: DetailResultsProps) {
     ? [
         {
           title: "Reward",
-          value: dppmResult.dppmFusdc,
+          value: `$${isWinner ? dppmResult.dppmFusdc : 0}`,
         },
         {
           title: "Time Boost",
-          value: dppmResult.ninetailsWinnerFusdc,
+          value: `$${isWinner ? dppmResult.ninetailsWinnerFusdc : 0}`,
         },
         {
           title: "Refund",
-          value: dppmResult.ninetailsLoserFusd,
+          value: `$${isWinner ? 0 : dppmResult.ninetailsLoserFusd}`,
         },
       ]
     : [
@@ -189,7 +193,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
             <div className="flex items-center gap-1 font-geneva text-[10px]">
               <span className="uppercase">Chance</span>
               <span className="bg-9green px-1 py-0.5">
-                {winnerChance ? Math.round(winnerChance) : "?"}%
+                {winnerChance ? Math.round(winnerChance) : "100"}%
               </span>
             </div>
           </div>
