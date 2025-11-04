@@ -3,11 +3,13 @@ import { combineClass } from "@/utils/combineClass";
 import { Account } from "thirdweb/wallets";
 
 export default function SimplePositionRow({
+  isConcluded,
   position,
   tradingAddr,
   account,
   isPriceAbove,
 }: {
+  isConcluded: boolean;
   position: {
     id: `0x${string}`;
     shareAddress: `0x${string}`;
@@ -36,15 +38,20 @@ export default function SimplePositionRow({
         My Position: {position.name}
         <br />
         <br />
-        Status: Currently {isWinning ? "Winning" : "Losing"}
+        Status:{" "}
+        {isConcluded
+          ? isWinning
+            ? "Won"
+            : "Lost"
+          : `Currently ${isWinning ? " Winning" : "Losing"}`}
       </span>
       <div className="flex flex-col gap-1 text-end font-chicago text-xs">
-        <span>Shares To Get: {position.balance}</span>
         <span>
-          {isWinning ? "To Win" : "To Lose"}: ${shares + boost}
+          {isWinning ? "To Win" : "To Lose"}: $
+          {isWinning ? shares + boost : shares}
         </span>
         <span>
-          {isWinning ? "Bonus" : "Refund"}: ${refund}
+          {isWinning ? "Bonus" : "Refund"}: ${isWinning ? boost : refund}
         </span>
       </div>
     </div>

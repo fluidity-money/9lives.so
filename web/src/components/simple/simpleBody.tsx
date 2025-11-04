@@ -51,11 +51,12 @@ export default function SimpleBody({
   const winnerOutcome = data.outcomes.find(
     (o) => o.identifier === data?.winner,
   ) as Outcome;
-  const { totalRewards } = useDppmRewards({
+  const { totalRewards, result: rewards } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
     enabled: true,
   });
+  const isWinner = !!positions?.find((p) => p.id === winnerOutcome.identifier);
   return (
     <ActiveCampaignProvider
       previousData={data}
@@ -108,7 +109,11 @@ export default function SimpleBody({
       <div className="sticky inset-x-0 bottom-0 z-20 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
         {totalRewards > 0 ? (
           <SimpleClaimButton
-            totalRewards={totalRewards}
+            totalRewards={
+              isWinner
+                ? rewards.dppmFusdc + rewards.ninetailsWinnerFusdc
+                : rewards.ninetailsLoserFusd
+            }
             tradingAddr={data.poolAddress}
           />
         ) : isEnded ? (
@@ -169,6 +174,7 @@ export default function SimpleBody({
         <div className="flex flex-col gap-2">
           {positions.map((p) => (
             <SimplePositionRow
+              isConcluded={!!winnerOutcome}
               isPriceAbove={
                 (assetPrices?.[assetPrices?.length - 1]?.price ?? 0) > basePrice
               }
