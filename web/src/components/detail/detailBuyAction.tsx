@@ -84,7 +84,7 @@ export default function DetailBuyAction({
       }),
     })
     .superRefine((data, ctx) => {
-      if (data.fromChain !== config.destinationChain.id) {
+      if (data.fromChain !== config.destinationChain.id && 2 > data.usdValue) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Investment must be at least 2$",

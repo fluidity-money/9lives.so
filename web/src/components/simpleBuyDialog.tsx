@@ -77,7 +77,7 @@ export default function SimpleBuyDialog({
       }),
     })
     .superRefine((data, ctx) => {
-      if (data.fromChain !== config.destinationChain.id) {
+      if (data.fromChain !== config.destinationChain.id && 2 > data.usdValue) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "usd value > 2$",
