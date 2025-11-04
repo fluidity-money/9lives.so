@@ -16,6 +16,7 @@ import { useActiveAccount } from "thirdweb/react";
 import SimplePositionRow from "./simplePositionRow";
 import SimpleClaimButton from "./simpleClaimButton";
 import RetroCard from "../cardRetro";
+import useDppmRewards from "@/hooks/useDppmRewards";
 
 export default function SimpleBody({
   data,
@@ -50,8 +51,11 @@ export default function SimpleBody({
   const winnerOutcome = data.outcomes.find(
     (o) => o.identifier === data?.winner,
   ) as Outcome;
-  const winnerPosition = positions?.find((p) => p.id === data?.winner);
-  const isWinner = winnerOutcome && winnerPosition;
+  const { totalRewards } = useDppmRewards({
+    tradingAddr: data.poolAddress,
+    account,
+    enabled: true,
+  });
   return (
     <ActiveCampaignProvider
       previousData={data}
@@ -102,11 +106,9 @@ export default function SimpleBody({
         />
       </div>
       <div className="sticky inset-x-0 bottom-0 z-20 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
-        {isWinner ? (
+        {totalRewards > 0 ? (
           <SimpleClaimButton
-            outcomes={data.outcomes}
-            userPosition={winnerPosition}
-            winner={winnerOutcome}
+            totalRewards={totalRewards}
             tradingAddr={data.poolAddress}
           />
         ) : isEnded ? (
