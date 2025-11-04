@@ -1,4 +1,3 @@
-import { Outcome } from "@/types";
 import { useState } from "react";
 import Button from "../themed/button";
 import useConnectWallet from "@/hooks/useConnectWallet";
