@@ -342,12 +342,14 @@ export default function PositionRow({
                   ${reward.toFixed(2)}
                 </span>
               </div>
-              <Button
-                title={isClaiming ? "Claiming..." : "Claim Reward"}
-                intent={"yes"}
-                onClick={handleClaim}
-                disabled={isClaiming}
-              />
+              {detailPage ? null : (
+                <Button
+                  title={isClaiming ? "Claiming..." : "Claim Reward"}
+                  intent={"yes"}
+                  onClick={handleClaim}
+                  disabled={isClaiming}
+                />
+              )}
             </div>
           ) : historicalValue ? (
             <div className="flex flex-col gap-1">
