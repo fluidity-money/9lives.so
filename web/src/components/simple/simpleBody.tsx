@@ -56,7 +56,7 @@ export default function SimpleBody({
     account,
     enabled: true,
   });
-  const isWinner = !!positions?.find((p) => p.id === winnerOutcome.identifier);
+  const isWinner = !!positions?.find((p) => p.id === winnerOutcome?.identifier);
   return (
     <ActiveCampaignProvider
       previousData={data}
@@ -107,28 +107,32 @@ export default function SimpleBody({
         />
       </div>
       <div className="sticky inset-x-0 bottom-0 z-20 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
-        {totalRewards > 0 ? (
-          <SimpleClaimButton
-            totalRewards={
-              isWinner
-                ? rewards.dppmFusdc + rewards.ninetailsWinnerFusdc
-                : rewards.ninetailsLoserFusd
-            }
-            tradingAddr={data.poolAddress}
-          />
-        ) : isEnded ? (
-          <p
-            className="mx-auto text-center font-chicago text-xs md:pointer-events-none"
-            onClick={() => {
-              window.scrollTo({
-                top: document.body.scrollHeight - 400,
-                behavior: "smooth",
-              });
-            }}
-          >
-            This campaign is ended
-            <span className="md:hidden">, scroll down to live campaign ↓</span>
-          </p>
+        {isEnded ? (
+          totalRewards > 0 ? (
+            <SimpleClaimButton
+              totalRewards={
+                isWinner
+                  ? rewards.dppmFusdc + rewards.ninetailsWinnerFusdc
+                  : rewards.ninetailsLoserFusd
+              }
+              tradingAddr={data.poolAddress}
+            />
+          ) : (
+            <p
+              className="mx-auto text-center font-chicago text-xs md:pointer-events-none"
+              onClick={() => {
+                window.scrollTo({
+                  top: document.body.scrollHeight - 400,
+                  behavior: "smooth",
+                });
+              }}
+            >
+              This campaign is ended
+              <span className="md:hidden">
+                , scroll down to live campaign ↓
+              </span>
+            </p>
+          )
         ) : (
           <>
             <Button
