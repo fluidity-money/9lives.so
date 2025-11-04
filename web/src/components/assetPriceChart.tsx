@@ -166,7 +166,7 @@ export default function AssetPriceChart({
 
   return (
     <ChartPriceProvider starting={starting} ending={ending} symbol={symbol}>
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={simple ? 300 : 320}>
         <LineChart
           data={[
             { id: 1, timestamp: starting, price: basePrice },
