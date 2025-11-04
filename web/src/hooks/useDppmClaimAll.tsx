@@ -1,11 +1,7 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import toast from "react-hot-toast";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-} from "thirdweb";
+import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 
 export default function useDppmClaimAll({
@@ -29,10 +25,11 @@ export default function useDppmClaimAll({
             method: "dppmPayoffForAll58633B6E",
             params: [account?.address],
           });
-          const res = await simulateTransaction({
+          const response = await sendTransaction({
             transaction: estimateTx,
             account,
           });
+          res(response.transactionHash);
         } catch (e) {
           rej(e);
         }
