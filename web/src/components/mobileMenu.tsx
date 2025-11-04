@@ -9,6 +9,7 @@ import DegenModeMobileWrapper from "./degenMode/degenModeMobileWrapper";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import ReferralButton from "./referral/referralButton";
+import SimpleModeButton from "./simple/simpleModeButton";
 
 export default function MobileMenu({ simple = false }: { simple?: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -18,7 +19,7 @@ export default function MobileMenu({ simple = false }: { simple?: boolean }) {
   }, [pathname]);
   return (
     <div
-      className="flex size-10 items-center justify-center border-l-2 border-l-black md:hidden"
+      className="flex size-10 items-center justify-center border-x-2 border-x-black md:hidden"
       onClick={() => setIsMobileMenuOpen(true)}
     >
       <Image src={MenuIcon} alt="menu" />
@@ -37,7 +38,19 @@ export default function MobileMenu({ simple = false }: { simple?: boolean }) {
               Create Campaign
             </Link>
             <ReferralButton hideOnMobile={false} />
-            <DegenModeMobileWrapper />
+            {simple ? (
+              <Link
+                href={"/"}
+                className="flex h-10 items-center font-chicago text-xs underline"
+              >
+                <span className="font-chicago text-xs underline">
+                  Advanced Mode 🚀
+                </span>
+              </Link>
+            ) : (
+              <DegenModeMobileWrapper />
+            )}
+            {simple ? null : <SimpleModeButton />}
             <DisclaimerButton />
           </div>
         </div>
