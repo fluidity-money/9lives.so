@@ -16,6 +16,8 @@ import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
+import useDppmRewards from "@/hooks/useDppmRewards";
+import useDppmClaimAll from "@/hooks/useDppmClaimAll";
 // import SellButton from "../sellButton";
 export default function PositionRow({
   data,
@@ -51,6 +53,9 @@ export default function PositionRow({
     outcomes: campaignContent.outcomes as Outcome[],
     isDpm: campaignContent.isDpm,
   });
+  const { claimAll } = useDppmClaimAll({
+    tradingAddr: campaignContent.poolAddress,
+  });
   const { connect } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -71,7 +76,14 @@ export default function PositionRow({
   const percentageChange = Math.abs(
     (PnL / +formatFusdc(historicalValue, 6)) * 100,
   ).toFixed(2);
-  const isWinner = campaignContent.winner && campaignContent.winner === data.id;
+  const { totalRewards, result: dppmRewards } = useDppmRewards({
+    tradingAddr: campaignContent.poolAddress,
+    account,
+    enabled: campaignContent.isDppm,
+  });
+  const isWinner = campaignContent.isDppm
+    ? totalRewards > 0
+    : campaignContent.winner && campaignContent.winner === data.id;
   const [reward, setReward] = useState<number>();
   useEffect(() => {
     if (
@@ -115,7 +127,15 @@ export default function PositionRow({
           const avgPrice = campaign.totalVolume / totalSharesOfWinner;
           const rewardDpm = data.balance ? +data.balance * avgPrice : 0;
           const rewardAmm = data.balance ? +data.balance : 0;
-          const reward = campaignContent.isDpm ? rewardDpm : rewardAmm;
+          const rewardDppm =
+            campaignContent.winner === data.id
+              ? dppmRewards.dppmFusdc + dppmRewards.ninetailsWinnerFusdc
+              : dppmRewards.ninetailsLoserFusd;
+          const reward = campaignContent.isDpm
+            ? rewardDpm
+            : campaignContent.isDppm
+              ? rewardDppm
+              : rewardAmm;
           setReward(reward);
           addPosition({
             outcomeId: data.id,
@@ -141,7 +161,11 @@ export default function PositionRow({
     if (!account) return connect();
     try {
       setIsClaiming(true);
-      await claim(account, data.balanceRaw);
+      if (campaignContent.isDppm) {
+        await claimAll(account);
+      } else {
+        await claim(account, data.balanceRaw);
+      }
     } finally {
       setIsClaiming(false);
     }
@@ -348,8 +372,12 @@ export default function PositionRow({
             <span className="font-chicago text-xs">
               $
               {campaignContent.winner && campaignContent.winner !== data.id
-                ? 0
-                : data.balance}
+                ? campaignContent.isDppm
+                  ? dppmRewards.ninetailsLoserFusd
+                  : 0
+                : campaignContent.isDppm
+                  ? dppmRewards.dppmFusdc + dppmRewards.ninetailsWinnerFusdc
+                  : data.balance}
             </span>
           </td>
         )}
