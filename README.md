@@ -102,14 +102,14 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address              |
 |-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x58b4a0947bfa1022cd853e4058d8d217aca4bcc7` |
-| Factory 2 implementation      | `0x7ec69f0785dbb944c57fc98e89e244710d00600b` |
+| Factory 1 implementation      | `0xfe47a19e045821362f27d709a899abfdadd310ce` |
+| Factory 2 implementation      | `0xf5697d90d9f893b4266b7f2a4620b4ce455e592c` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
 | Trading DPPM mint impl        | `0x53e699cc63c9710f416a2d62e1ef14b08f44b8b1` |
 | Trading DPPM extras impl      | `0x09d9406fa1b8c1bffb10f58f6948e73939bd8d71` |
-| Trading DPPM price impl       | `0xd94212be7ea63ec863f814434afa31a08a334f0d` |
-| Trading DPPM quotes impl      | `0x9a742c05f2004b539b938f8a29bbbfb1354cbe72` |
+| Trading DPPM price impl       | `0x6a2cd538a00025acab52de67b1e8e471682eeeb2` |
+| Trading DPPM quotes impl      | `0x8fa2925bc725c61d6a8e5772a1aa1c87141ef4e9` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
 | Trading AMM price impl        | `0xb393ea32f302a9cc798f8296f5328172096553d2` |
@@ -135,6 +135,7 @@ The error table lives in ERRORS.md.
 | Paymaster proxy               | `0xE990f05e2264f56435Fd7589FA2F70A879B0cE9f` |
 | Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |
 | Price resolver oracle         | `0xa2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab` |
+| Trading beacon                | `0xfA433744C5C496c7caD243c61A17167DD39AE8ee` |
 
 ### Superposition testnet
 

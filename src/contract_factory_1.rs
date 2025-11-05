@@ -10,13 +10,8 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-    error::*,
-    events,
-    fees::*,
-    fusdc_call,
-    immutables::*,
-    infra_market_call, proxy, share_call, trading_call,
-    utils::{block_timestamp, contract_address},
+    error::*, events, fees::*, fusdc_call, immutables::*, infra_market_call, proxy, share_call,
+    trading_call, utils::block_timestamp,
 };
 
 pub use crate::storage_factory::*;
@@ -57,12 +52,11 @@ impl StorageFactory {
         };
 
         // Deploy the contract, and emit a log that it was created.
-        let trading_addr = c!((if backend_is_dppm {
-            proxy::deploy_trading(contract_address(), true, trading_id)
-        } else {
-            proxy::deploy_trading(contract_address(), false, trading_id)
-        })
-        .map_err(Error::DeployError));
+        let trading_addr =
+            c!(
+                proxy::deploy_trading(TRADING_BEACON_ADDR, backend_is_dppm, trading_id)
+                    .map_err(Error::DeployError)
+            );
 
         self.trading_owners.setter(trading_addr).set(fee_recipient);
         self.trading_backends

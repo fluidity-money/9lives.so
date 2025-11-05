@@ -51,6 +51,14 @@ env_addr!(CLAIMANT_HELPER, "SPN_CLAIMANT_HELPER_ADDR", CLAIMANT);
 // Claimant helper, but only to support selling.
 env_addr!(PAYMASTER_ADDR, "SPN_PAYMASTER_ADDR", PAYMASTER);
 
+// Address of the trading beacon, which the trading contract will invoke
+// during its proxy, and the factory will call to answer the legacy methods.
+env_addr!(
+    TRADING_BEACON_ADDR,
+    "SPN_TRADING_BEACON_ADDR",
+    TRADING_BEACON
+);
+
 // The recipient of clawback funds when a market wasn't used. DPPM only.
 env_addr!(
     CLAWBACK_RECIPIENT_ADDR,

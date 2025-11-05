@@ -28,6 +28,7 @@ defaults! {
     CLAIMANT,
     PAYMASTER,
     CLAWBACK_RECIPIENT,
+    TRADING_BEACON,
 
     IVAN,
     ERIK,

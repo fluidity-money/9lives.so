@@ -35,15 +35,15 @@ pub fn deploy_proxy(impl_addr: Address) -> Result<Address, Vec<u8>> {
 // Deploy a new Trading contract using CREATE2 and the seed given.
 // Returns the address.
 pub fn deploy_trading(
-    factory_addr: Address,
-    is_dpm: bool,
+    beacon_addr: Address,
+    is_dppm: bool,
     seed: FixedBytes<32>,
 ) -> Result<Address, Vec<u8>> {
     let d = RawDeploy::new().salt(seed);
-    let c = if is_dpm {
-        trading_dppm_proxy(factory_addr)
+    let c = if is_dppm {
+        trading_dppm_proxy(beacon_addr)
     } else {
-        trading_amm_proxy(factory_addr)
+        trading_amm_proxy(beacon_addr)
     };
     unsafe { d.deploy(&c, U256::ZERO) }
 }
