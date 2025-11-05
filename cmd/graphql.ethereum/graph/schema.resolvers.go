@@ -1391,11 +1391,21 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 	var positions []*types.Position
 	address = strings.ToLower(address)
 	err := r.DB.Raw(`
-	SELECT nc.id as campaign_id, json_agg(DISTINCT nbs.outcome_id) AS outcome_ids, nc."content"
-	FROM ninelives_buys_and_sells_1 as nbs
-	join ninelives_campaigns_1 nc on nc.id = nbs.campaign_id
-	WHERE nbs.recipient = ? and nbs.campaign_id is not null
-	GROUP BY nbs.campaign_id, nc.id;
+	SELECT 
+    nc.id AS campaign_id,
+    json_agg(DISTINCT nbs.outcome_id) AS outcome_ids,
+    MAX(nbs.created_by) AS created_by,
+    nc."content"
+	FROM ninelives_buys_and_sells_1 AS nbs
+	JOIN ninelives_campaigns_1 AS nc 
+    ON nc.id = nbs.campaign_id
+	WHERE 
+    nbs.recipient = ?
+    AND nbs.campaign_id IS NOT NULL
+	GROUP BY 
+    nc.id
+	ORDER BY 
+    created_by DESC;
 	`, address).Scan(&positions).Error
 	if err != nil {
 		slog.Error("Error getting positions from database",
