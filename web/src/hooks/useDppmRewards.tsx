@@ -11,7 +11,9 @@ export default function useDppmRewards({
   account?: Account;
   enabled?: boolean;
 }) {
-  const [outcome0, outcome1] = useDppmShareEstimationAll({
+  const {
+    data: [outcome0, outcome1],
+  } = useDppmShareEstimationAll({
     tradingAddr,
     account,
     enabled,
