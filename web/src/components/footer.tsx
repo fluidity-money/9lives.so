@@ -66,7 +66,7 @@ export default function Footer({ simple = false }: { simple?: boolean }) {
         {menu.map((item) => (
           <MenuItem item={item} key={item.title} />
         ))}
-        {simple ? null : <DisclaimerButton isInFooter />}
+        {/* {simple ? null : <DisclaimerButton isInFooter />} */}
       </nav>
       <nav className="flex flex-col items-center justify-end gap-4 text-xs md:flex-row">
         <div

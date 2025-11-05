@@ -4,11 +4,10 @@ import Link from "next/link";
 import HeaderLogo from "./headerLogo";
 import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
 import DisclaimerButton from "./disclaimerButton";
-import DegenModeButton from "./degenMode/degenModeButton";
 import ReferralButton from "./referral/referralButton";
 import MobileMenu from "./mobileMenu";
 import SimpleModeButton from "./simple/simpleModeButton";
-import AdvancedModeButton from "./advanced/advancedModeButton";
+import ModeSwitchButton from "./modeSwitchButton";
 
 export default function Header({ simple = false }: { simple?: boolean }) {
   return (
@@ -21,7 +20,7 @@ export default function Header({ simple = false }: { simple?: boolean }) {
         <HeaderLogo />
       </Link>
       <div className="hidden md:flex">
-        {simple ? <DisclaimerButton /> : <SimpleModeButton />}
+        <DisclaimerButton />
       </div>
       <div className="hidden h-10 flex-1 border-x-2 border-x-black md:flex">
         <NavigationMenu simple={simple} />
@@ -30,7 +29,7 @@ export default function Header({ simple = false }: { simple?: boolean }) {
       <div className="relative flex items-center">
         <MobileMenu simple={simple} />
         <ConnectButton />
-        {simple ? <AdvancedModeButton /> : <DegenModeButton />}
+        <ModeSwitchButton />
         <ReferralButton />
       </div>
     </header>

@@ -38,7 +38,7 @@ export default function MobileMenu({ simple = false }: { simple?: boolean }) {
               Create Campaign
             </Link>
             <ReferralButton hideOnMobile={false} />
-            {simple ? (
+            {/* {simple ? (
               <Link
                 href={"/"}
                 className="flex h-10 items-center font-chicago text-xs underline"
@@ -50,7 +50,7 @@ export default function MobileMenu({ simple = false }: { simple?: boolean }) {
             ) : (
               <DegenModeMobileWrapper />
             )}
-            {simple ? null : <SimpleModeButton />}
+            {simple ? null : <SimpleModeButton />} */}
             <DisclaimerButton />
           </div>
         </div>
