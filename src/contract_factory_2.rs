@@ -12,6 +12,10 @@ use alloc::vec::Vec;
 
 pub use crate::storage_factory::*;
 
+use array_concat::concat_arrays;
+
+use stylus_sdk::call::RawCall;
+
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {
     #[allow(clippy::too_many_arguments)]
@@ -19,28 +23,12 @@ impl StorageFactory {
     pub fn ctor(
         &mut self,
         share_impl: Address,
-        trading_dppm_extras_impl: Address,
-        trading_dppm_mint_impl: Address,
-        trading_dppm_quotes_impl: Address,
-        trading_dppm_price_impl: Address,
-        trading_amm_extras_impl: Address,
-        trading_amm_mint_impl: Address,
-        trading_amm_quotes_impl: Address,
-        trading_amm_price_impl: Address,
         oracle_addr: Address,
         operator_addr: Address,
     ) -> R<()> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);
         self.share_impl.set(share_impl);
-        self.trading_dppm_extras_impl.set(trading_dppm_extras_impl);
-        self.trading_dppm_mint_impl.set(trading_dppm_mint_impl);
-        self.trading_dppm_quotes_impl.set(trading_dppm_quotes_impl);
-        self.trading_dppm_price_impl.set(trading_dppm_price_impl);
-        self.trading_amm_extras_impl.set(trading_amm_extras_impl);
-        self.trading_amm_mint_impl.set(trading_amm_mint_impl);
-        self.trading_amm_quotes_impl.set(trading_amm_quotes_impl);
-        self.trading_amm_price_impl.set(trading_amm_price_impl);
         self.infra_market.set(oracle_addr);
         self.version.set(U8::from(1));
         self.operator.set(operator_addr);
@@ -136,107 +124,50 @@ impl StorageFactory {
         Ok(amt)
     }
 
-    #[mutants::skip]
-    pub fn upgrade_dppm_contracts(
-        &mut self,
-        extras: Address,
-        mint: Address,
-        quotes: Address,
-        price: Address,
-    ) -> R<()> {
-        assert_or!(self.operator.get() == msg_sender(), Error::NotOperator);
-        if !extras.is_zero() {
-            self.trading_dppm_extras_impl.set(extras);
-        }
-        if !mint.is_zero() {
-            self.trading_dppm_mint_impl.set(mint);
-        }
-        if !quotes.is_zero() {
-            self.trading_dppm_quotes_impl.set(quotes);
-        }
-        if !price.is_zero() {
-            self.trading_dppm_price_impl.set(price);
-        }
-        Ok(())
-    }
-
-    #[mutants::skip]
-    pub fn upgrade_amm_contracts(
-        &mut self,
-        extras: Address,
-        mint: Address,
-        quotes: Address,
-        price: Address,
-    ) -> R<()> {
-        assert_or!(self.operator.get() == msg_sender(), Error::NotOperator);
-        if !extras.is_zero() {
-            self.trading_amm_extras_impl.set(extras);
-        }
-        if !mint.is_zero() {
-            self.trading_amm_mint_impl.set(mint);
-        }
-        if !quotes.is_zero() {
-            self.trading_amm_quotes_impl.set(quotes);
-        }
-        if !price.is_zero() {
-            self.trading_amm_price_impl.set(price);
-        }
-        Ok(())
-    }
-
-    // The mint address for some proxies to use. Needed for backwards compatibility.
-    pub fn mint_addr(&self, is_dppm: bool) -> Address {
-        if is_dppm {
-            self.trading_dppm_mint_impl.get()
-        } else {
-            self.trading_amm_mint_impl.get()
-        }
-    }
+    // The following methods are deprecated methods from the previous
+    // proxy pattern. These will be removed eventually!
 
     // The quotes address for some proxies to use. Needed for backwards
     // compatibility with deployments before the 15th of October 2025,
     // the time of which we shifted to a new Huff proxy.
     pub fn quotes_addr(&self, is_dppm: bool) -> Address {
-        if is_dppm {
-            self.trading_dppm_quotes_impl.get()
-        } else {
-            self.trading_amm_quotes_impl.get()
-        }
+        let x: [u8; 32 + 4] = concat_arrays!([0x63, 0x61, 0x29, 0xf8], [0u8; 31], [is_dppm as u8]);
+        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &x) }.unwrap();
+        Address::from(&w[32 - 20..].try_into().unwrap())
     }
 
     // The price address for some proxies to use. Needed for backwards compatibility.
     pub fn price_addr(&self, is_dppm: bool) -> Address {
-        if is_dppm {
-            self.trading_dppm_price_impl.get()
-        } else {
-            self.trading_amm_price_impl.get()
-        }
+        let x: [u8; 4 + 32] = concat_arrays!([0x8c, 0x6a, 0x96, 0x38], [0u8; 31], [is_dppm as u8]);
+        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &x) }.unwrap();
+        Address::from(&w[32 - 20..].try_into().unwrap())
+    }
+
+    // The mint address for some proxies to use. Needed for backwards compatibility.
+    pub fn mint_addr(&self, is_dppm: bool) -> Address {
+        let x: [u8; 32 + 4] = concat_arrays!([0x92, 0x08, 0x6b, 0x25], [0u8; 31], [is_dppm as u8]);
+        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &x) }.unwrap();
+        Address::from(&w[32 - 20..].try_into().unwrap())
     }
 
     // The extras address for some proxies to use. Needed for backwards compatibility.
     pub fn extras_addr(&self, is_dppm: bool) -> Address {
-        if is_dppm {
-            self.trading_dppm_extras_impl.get()
-        } else {
-            self.trading_amm_extras_impl.get()
-        }
+        let x: [u8; 4 + 32] = concat_arrays!([0x74, 0x8e, 0x94, 0x30], [0u8; 31], [is_dppm as u8]);
+        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &x) }.unwrap();
+        Address::from(&w[32 - 20..].try_into().unwrap())
     }
 
+    // The AMM implementation address.
     pub fn amm_impl(&self, x: FixedBytes<4>) -> Address {
-        match x[2] {
-            1 => self.trading_amm_mint_impl.get(),
-            2 => self.trading_amm_quotes_impl.get(),
-            3 => self.trading_amm_price_impl.get(),
-            _ => self.trading_amm_extras_impl.get()
-        }
+        let b: [u8; 32 + 4] = concat_arrays!([0x6b, 0x8e, 0x8d, 0x96], *x, [0u8; 32 - 4]);
+        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &b) }.unwrap();
+        Address::from(&w[32 - 20..].try_into().unwrap())
     }
 
+    // The DPPM implementation address.
     pub fn dppm_impl(&self, x: FixedBytes<4>) -> Address {
-        match x[2] {
-            1 => self.trading_dppm_mint_impl.get(),
-            2 => self.trading_dppm_quotes_impl.get(),
-            3 => self.trading_dppm_price_impl.get(),
-            _ => self.trading_dppm_extras_impl.get()
-        }
+        let b: [u8; 32 + 4] = concat_arrays!([0x6f, 0x73, 0xcb, 0xd8], *x, [0u8; 32 - 4]);
+        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &b) }.unwrap();
+        Address::from(&w[32 - 20..].try_into().unwrap())
     }
 }

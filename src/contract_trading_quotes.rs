@@ -3,7 +3,7 @@ use stylus_sdk::alloy_primitives::{aliases::*, *};
 use crate::{
     error::*,
     fusdc_call,
-    immutables::DAO_OP_ADDR,
+    immutables::{CLAIMANT_HELPER, DAO_OP_ADDR},
     maths,
     utils::{block_timestamp, contract_address, msg_sender},
 };
@@ -62,19 +62,39 @@ impl StorageTrading {
         amt: U256,
         recipient: Address,
     ) -> R<U256> {
+        let spender = match msg_sender() {
+            CLAIMANT_HELPER => recipient,
+            s => s,
+        };
         #[cfg(feature = "trading-backend-dppm")]
-        return self.internal_dppm_payoff(outcome_id, amt, recipient);
+        return self.internal_dppm_payoff(spender, outcome_id, amt, recipient);
         #[cfg(not(feature = "trading-backend-dppm"))]
-        return self.internal_amm_payoff(outcome_id, amt, recipient);
+        return self.internal_amm_payoff(spender, outcome_id, amt, recipient);
     }
 
     #[allow(non_snake_case)]
     pub fn dppm_payoff_for_all_58633_B_6_E(&mut self, recipient: Address) -> R<(U256, U256)> {
         #[cfg(feature = "trading-backend-dppm")]
-        return Ok((
-            self.internal_dppm_payoff(self.outcome_list.get(0).unwrap(), U256::MAX, recipient)?,
-            self.internal_dppm_payoff(self.outcome_list.get(1).unwrap(), U256::MAX, recipient)?,
-        ));
+        return {
+            let s = match msg_sender() {
+                CLAIMANT_HELPER => recipient,
+                s => s,
+            };
+            Ok((
+                self.internal_dppm_payoff(
+                    s,
+                    self.outcome_list.get(0).unwrap(),
+                    U256::MAX,
+                    recipient,
+                )?,
+                self.internal_dppm_payoff(
+                    s,
+                    self.outcome_list.get(1).unwrap(),
+                    U256::MAX,
+                    recipient,
+                )?,
+            ))
+        };
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!()
     }
@@ -115,7 +135,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dppm")]
         {
             if _invested.is_zero() {
-                return Ok((U256::ZERO, U256::ZERO, U256::ZERO))
+                return Ok((U256::ZERO, U256::ZERO, U256::ZERO));
             }
             let (dppm_shares, ninetails_shares) =
                 self.internal_dppm_simulate_mint(_outcome, _invested)?;

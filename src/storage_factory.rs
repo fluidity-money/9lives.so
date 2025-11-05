@@ -46,15 +46,15 @@ pub struct StorageFactory {
     /// Implementation of ERC20 for the Shares that we give out
     pub share_impl: StorageAddress,
 
-    pub trading_dppm_extras_impl: StorageAddress,
-    pub trading_dppm_mint_impl: StorageAddress,
-    pub trading_dppm_quotes_impl: StorageAddress,
-    pub trading_dppm_price_impl: StorageAddress,
+    pub __unused_1: StorageAddress,
+    pub __unused_2: StorageAddress,
+    pub __unused_3: StorageAddress,
+    pub __unused_4: StorageAddress,
 
-    pub trading_amm_extras_impl: StorageAddress,
-    pub trading_amm_mint_impl: StorageAddress,
-    pub trading_amm_quotes_impl: StorageAddress,
-    pub trading_amm_price_impl: StorageAddress,
+    pub __unused_5: StorageAddress,
+    pub __unused_6: StorageAddress,
+    pub __unused_7: StorageAddress,
+    pub __unused_8: StorageAddress,
 
     /// Trading contracts mapped to the creators that were created by this Factory.
     pub trading_owners: StorageMap<Address, StorageAddress>,

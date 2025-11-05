@@ -169,12 +169,13 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn internal_dppm_payoff_loser(
         &mut self,
+        spender: Address,
         outcome_id: FixedBytes<8>,
         recipient: Address,
     ) -> R<U256> {
         let shares = self
             .ninetails_user_boosted_shares
-            .getter(msg_sender())
+            .getter(spender)
             .get(outcome_id);
         if shares.is_zero() {
             return Ok(U256::ZERO);
@@ -187,11 +188,11 @@ impl StorageTrading {
             U256::ZERO,
         )?;
         self.ninetails_user_boosted_shares
-            .setter(msg_sender())
+            .setter(spender)
             .setter(outcome_id)
             .set(U256::ZERO);
         evm::log(events::NinetailsLoserPayoff {
-            spender: msg_sender(),
+            spender,
             recipient,
             sharesSpent: shares,
             fusdcReceived: fusdc,
@@ -204,6 +205,7 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn internal_dppm_payoff_winner(
         &mut self,
+        spender: Address,
         outcome_id: FixedBytes<8>,
         amt: U256,
         recipient: Address,
@@ -221,14 +223,14 @@ impl StorageTrading {
             return Ok(U256::ZERO)
         }
         let amt = if amt == U256::MAX {
-            share_call::balance_of(share_addr, msg_sender())?
+            share_call::balance_of(share_addr, spender)?
         } else {
             amt
         };
-        share_call::burn(share_addr, msg_sender(), amt)?;
+        share_call::burn(share_addr, spender, amt)?;
         let user_boosted_shares = self
             .ninetails_user_boosted_shares
-            .get(msg_sender())
+            .get(spender)
             .get(outcome_id);
         let outcome_boosted_shares = self.ninetails_outcome_boosted_shares.get(outcome_id);
         let all_boosted_shares = self.ninetails_global_boosted_shares.get();
@@ -249,19 +251,19 @@ impl StorageTrading {
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
             sharesSpent: amt,
-            spender: msg_sender(),
+            spender,
             recipient,
             fusdcReceived: dppm_fusdc,
         });
         evm::log(events::NinetailsCumulativeWinnerPayoff {
             outcome: outcome_id,
             sharesSpent: user_boosted_shares,
-            spender: msg_sender(),
+            spender,
             recipient,
             fusdcReceived: ninetails_fusdc,
         });
         self.ninetails_user_boosted_shares
-            .setter(msg_sender())
+            .setter(spender)
             .setter(outcome_id)
             .set(U256::ZERO);
         let fusdc = dppm_fusdc
@@ -273,15 +275,16 @@ impl StorageTrading {
 
     pub fn internal_dppm_payoff(
         &mut self,
+        spender: Address,
         outcome_id: FixedBytes<8>,
         amt: U256,
         recipient: Address,
     ) -> R<U256> {
         assert_or!(!self.when_decided.get().is_zero(), Error::NotDecided);
         if self.winner.get() == outcome_id {
-            self.internal_dppm_payoff_winner(outcome_id, amt, recipient)
+            self.internal_dppm_payoff_winner(spender, outcome_id, amt, recipient)
         } else {
-            self.internal_dppm_payoff_loser(outcome_id, recipient)
+            self.internal_dppm_payoff_loser(spender, outcome_id, recipient)
         }
     }
 

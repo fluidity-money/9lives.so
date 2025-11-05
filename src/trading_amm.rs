@@ -514,6 +514,7 @@ impl StorageTrading {
     // Activate the resolution function to trigger a AMM payoff if the market is concluded.
     pub fn internal_amm_payoff(
         &mut self,
+        spender: Address,
         outcome_id: FixedBytes<8>,
         share_amt: U256,
         recipient: Address,
@@ -528,16 +529,16 @@ impl StorageTrading {
         // If the user gave us a U256::MAX, we claim everything they have.
         assert_or!(share_amt > U256::ZERO, Error::ZeroShares);
         let share_amt = if share_amt == U256::MAX {
-            share_call::balance_of(share_addr, msg_sender())?
+            share_call::balance_of(share_addr, spender)?
         } else {
             share_amt
         };
-        share_call::burn(share_addr, msg_sender(), share_amt)?;
+        share_call::burn(share_addr, spender, share_amt)?;
         fusdc_call::transfer(recipient, share_amt)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
             sharesSpent: share_amt,
-            spender: msg_sender(),
+            spender,
             recipient,
             fusdcReceived: share_amt,
         });
