@@ -108,12 +108,12 @@ The error table lives in ERRORS.md.
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
 | Trading DPPM mint impl        | `0x53e699cc63c9710f416a2d62e1ef14b08f44b8b1` |
 | Trading DPPM extras impl      | `0x09d9406fa1b8c1bffb10f58f6948e73939bd8d71` |
-| Trading DPPM price impl       | `0xb84f8c8e844e563fb00244ee15bc936a6a3dbc20` |
-| Trading DPPM quotes impl      | `0xc328052d1c5e6c6ea467741d899667f39fa0674c` |
+| Trading DPPM price impl       | `0x511dd8227cda8e6ec8e72a572d2f7b2630a2151a` |
+| Trading DPPM quotes impl      | `0x2ed653ec41f707010216c02670a5afaea70b0e9a` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
-| Trading AMM price impl        | `0xb393ea32f302a9cc798f8296f5328172096553d2` |
-| Trading AMM quotes impl       | `0x86c9a10e234165feff47f3c113f11f63247f9c0f` |
+| Trading AMM price impl        | `0x3fcae4ee12564f606c2dd34759f32a884f28a516` |
+| Trading AMM quotes impl       | `0x801b8544a3bb8a7729b7810178805fbf0411b82b` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
 | Infrastructure market impl    | `0x863642e21a45e824c4f6347a5757e5dcacae11c1` |
@@ -130,7 +130,7 @@ The error table lives in ERRORS.md.
 | BuyHelper2                    | `0x7aD7eDd9A72512335e2A7A980047Ec2eD233D21c` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
-| Claimant helper               | `0xc10C56432B9481F21AEd806fe872Df19F6653510` |
+| Claimant helper               | `0x1f460E37b3A78Dc366402692BBAbF82697C8763D` |
 | Paymaster implementation      | `0x552BbaEc8D75c010435C810fA890B3E03e9C6445` |
 | Paymaster proxy               | `0xE990f05e2264f56435Fd7589FA2F70A879B0cE9f` |
 | Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |
