@@ -465,7 +465,7 @@ export namespace Query {
   > extends $Select.Bases.Base,
       $NamedTypes.$Position<_$Scalars> {
     /**
-     * Arguments for `userParticipatedCampaigns` field. All arguments are required so you must include this.
+     * Arguments for `userParticipatedCampaigns` field. Some (1/3) arguments are required so you must include this.
      */
     $: userParticipatedCampaigns$Arguments<_$Scalars>;
   }
@@ -475,6 +475,8 @@ export namespace Query {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     address: string;
+    page?: number | undefined | null;
+    pageSize?: number | undefined | null;
   }
 
   // --- expanded ---
