@@ -116,6 +116,7 @@ export default function SimpleBody({
                   : rewards.ninetailsLoserFusd
               }
               tradingAddr={data.poolAddress}
+              outcomes={data.outcomes}
             />
           ) : (
             <p

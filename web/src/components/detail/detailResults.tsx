@@ -55,7 +55,10 @@ export default function DetailResults({ data }: DetailResultsProps) {
     outcomes: data.outcomes,
     isDpm: data.isDpm,
   });
-  const { claimAll } = useDppmClaimAll({ tradingAddr: data.poolAddress });
+  const { claimAll } = useDppmClaimAll({
+    tradingAddr: data.poolAddress,
+    outcomes: data.outcomes,
+  });
   const { result: dppmResult } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
@@ -67,9 +70,10 @@ export default function DetailResults({ data }: DetailResultsProps) {
   const avgPrice = data.totalVolume / totalSharesOfWinner;
   const userRewardDpm = isWinner ? +accountShares * avgPrice : 0;
   const userRewardAmm = isWinner ? +accountShares : 0;
-  const userRewardDppm = isWinner
-    ? dppmResult.dppmFusdc + dppmResult.ninetailsWinnerFusdc
-    : dppmResult.ninetailsLoserFusd;
+  const userRewardDppm =
+    dppmResult.dppmFusdc +
+    dppmResult.ninetailsWinnerFusdc +
+    dppmResult.ninetailsLoserFusd;
   const reward = data.isDpm
     ? userRewardDpm
     : data.isDppm

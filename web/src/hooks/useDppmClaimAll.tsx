@@ -1,14 +1,19 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
+import { Outcome } from "@/types";
+import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
 import { Account } from "thirdweb/wallets";
 
 export default function useDppmClaimAll({
   tradingAddr,
+  outcomes,
 }: {
   tradingAddr: `0x${string}`;
+  outcomes: Outcome[];
 }) {
+  const queryClient = useQueryClient();
   const tradingContract = getContract({
     abi: tradingAbi,
     address: tradingAddr,
@@ -28,6 +33,23 @@ export default function useDppmClaimAll({
           const response = await sendTransaction({
             transaction: estimateTx,
             account,
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "dppmShareEstimationForAll",
+              tradingAddr,
+              account?.address,
+            ],
+          });
+          outcomes.forEach((o) => {
+            queryClient.invalidateQueries({
+              queryKey: [
+                "dppmShareEstimation",
+                tradingAddr,
+                account?.address,
+                o.identifier,
+              ],
+            });
           });
           res(response.transactionHash);
         } catch (e) {

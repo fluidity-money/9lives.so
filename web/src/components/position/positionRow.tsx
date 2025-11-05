@@ -55,6 +55,7 @@ export default function PositionRow({
   });
   const { claimAll } = useDppmClaimAll({
     tradingAddr: campaignContent.poolAddress,
+    outcomes: campaignContent.outcomes,
   });
   const { connect } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);

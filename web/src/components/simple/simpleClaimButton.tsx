@@ -3,18 +3,21 @@ import Button from "../themed/button";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { useActiveAccount } from "thirdweb/react";
 import useDppmClaimAll from "@/hooks/useDppmClaimAll";
+import { Outcome } from "@/types";
 
 export default function SimpleClaimButton({
   tradingAddr,
   totalRewards,
+  outcomes,
 }: {
   tradingAddr: `0x${string}`;
   totalRewards: number;
+  outcomes: Outcome[];
 }) {
   const [isClaiming, setIsClaiming] = useState(false);
   const account = useActiveAccount();
   const { connect, isConnecting } = useConnectWallet();
-  const { claimAll } = useDppmClaimAll({ tradingAddr });
+  const { claimAll } = useDppmClaimAll({ tradingAddr, outcomes });
   async function handleClaim() {
     if (!account) return connect();
     try {
