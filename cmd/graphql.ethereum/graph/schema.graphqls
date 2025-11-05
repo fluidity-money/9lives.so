@@ -29,7 +29,7 @@ type Query {
   Returns user's participated positions as pool address of the campaigns
   and bought and sought outcome ids
   """
-  userParticipatedCampaigns(address: String!): [Position]!
+  userParticipatedCampaigns(address: String!, page: Int, pageSize: Int): [Position]!
 
   """
   Returns total volume of user's all buy and sell actions

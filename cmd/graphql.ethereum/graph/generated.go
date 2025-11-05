@@ -228,7 +228,7 @@ type ComplexityRoot struct {
 		UserClaims                func(childComplexity int, address string, campaignID *string) int
 		UserLPs                   func(childComplexity int, address string) int
 		UserLiquidity             func(childComplexity int, address string, tradingAddr *string) int
-		UserParticipatedCampaigns func(childComplexity int, address string) int
+		UserParticipatedCampaigns func(childComplexity int, address string, page *int, pageSize *int) int
 		UserProfile               func(childComplexity int, address string) int
 		UserTotalVolume           func(childComplexity int, address string) int
 		UserWonCampaignsProfits   func(childComplexity int, address string) int
@@ -322,7 +322,7 @@ type QueryResolver interface {
 	SuggestedHeadlines(ctx context.Context) ([]string, error)
 	Changelog(ctx context.Context) ([]*changelog.Changelog, error)
 	UserActivity(ctx context.Context, address string, campaignID *string, page *int, pageSize *int) ([]*types.Activity, error)
-	UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error)
+	UserParticipatedCampaigns(ctx context.Context, address string, page *int, pageSize *int) ([]*types.Position, error)
 	UserTotalVolume(ctx context.Context, address string) (int, error)
 	PositionsHistory(ctx context.Context, address string, outcomeIds []string) ([]types.Activity, error)
 	UserClaims(ctx context.Context, address string, campaignID *string) ([]*types.Claim, error)
@@ -1311,7 +1311,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.UserParticipatedCampaigns(childComplexity, args["address"].(string)), true
+		return e.complexity.Query.UserParticipatedCampaigns(childComplexity, args["address"].(string), args["page"].(*int), args["pageSize"].(*int)), true
 
 	case "Query.userProfile":
 		if e.complexity.Query.UserProfile == nil {
@@ -2607,6 +2607,24 @@ func (ec *executionContext) field_Query_userParticipatedCampaigns_args(ctx conte
 		}
 	}
 	args["address"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["page"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["page"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["pageSize"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pageSize"] = arg2
 	return args, nil
 }
 
@@ -7637,7 +7655,7 @@ func (ec *executionContext) _Query_userParticipatedCampaigns(ctx context.Context
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().UserParticipatedCampaigns(rctx, fc.Args["address"].(string))
+		return ec.resolvers.Query().UserParticipatedCampaigns(rctx, fc.Args["address"].(string), fc.Args["page"].(*int), fc.Args["pageSize"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

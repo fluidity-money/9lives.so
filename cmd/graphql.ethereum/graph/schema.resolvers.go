@@ -1387,9 +1387,17 @@ func (r *queryResolver) UserActivity(ctx context.Context, address string, campai
 }
 
 // UserParticipatedCampaigns is the resolver for the userParticipatedCampaigns field.
-func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address string) ([]*types.Position, error) {
+func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address string, page *int, pageSize *int) ([]*types.Position, error) {
 	var positions []*types.Position
 	address = strings.ToLower(address)
+	pageNum := 0
+	if page != nil {
+		pageNum = *page
+	}
+	pageSizeNum := 10
+	if pageSize != nil {
+		pageSizeNum = *pageSize
+	}
 	err := r.DB.Raw(`
 	SELECT 
     nc.id AS campaign_id,
@@ -1406,7 +1414,8 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
     nc.id
 	ORDER BY 
     created_by DESC;
-	`, address).Scan(&positions).Error
+	OFFSET ? LIMIT ?
+	`, address, pageNum*pageSizeNum, pageSizeNum).Scan(&positions).Error
 	if err != nil {
 		slog.Error("Error getting positions from database",
 			"error", err,
