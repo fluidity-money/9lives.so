@@ -1,24 +1,39 @@
-import { ParticipatedCampaign } from "@/types";
+import { CampaignDetail, ParticipatedCampaign } from "@/types";
 import PositionsGroup from "./positionGroup";
 import Placeholder from "../tablePlaceholder";
+import Button from "../themed/button";
+import useParticipatedCampaigns from "@/hooks/useParticipatedCampaigns";
 const bodyStyles = "min-h-24 bg-9gray";
 
 export default function PositionBody({
-  positionGroups,
-  areGroupsLoading,
-  detailPage,
   colSpan,
   hideSmallBalances,
+  campaignDetail,
 }: {
-  positionGroups?: ParticipatedCampaign[];
-  areGroupsLoading?: boolean;
-  detailPage?: boolean;
   colSpan: number;
   hideSmallBalances: boolean;
+  campaignDetail?: CampaignDetail;
 }) {
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useParticipatedCampaigns({
+    campaignDetail,
+  });
+  const positionGroups = data?.pages.flatMap((i) => i);
   return (
     <tbody className={bodyStyles}>
-      {areGroupsLoading ? (
+      {isError ? (
+        <Placeholder
+          title="Error"
+          subtitle={error?.message ?? "Unknown Error"}
+        />
+      ) : isLoading ? (
         <Placeholder title="Loading.." colSpan={colSpan} />
       ) : positionGroups?.length === 0 ? (
         <Placeholder
@@ -33,12 +48,30 @@ export default function PositionBody({
             content={group.content}
             outcomeIds={group.outcomeIds}
             hideSmallBalances={hideSmallBalances}
-            detailPage={detailPage}
+            detailPage={!!campaignDetail}
             key={group.content.poolAddress}
             campaignId={group.campaignId}
           />
         ))
       ) : null}
+      <tr>
+        <td colSpan={6}>
+          <div className="flex items-center justify-center">
+            {hasNextPage ? (
+              <Button
+                intent={"cta"}
+                disabled={isFetchingNextPage}
+                title={isFetchingNextPage ? "Loading" : "Show More"}
+                onClick={() => fetchNextPage()}
+              />
+            ) : (
+              <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+                End of results
+              </span>
+            )}
+          </div>
+        </td>
+      </tr>
     </tbody>
   );
 }

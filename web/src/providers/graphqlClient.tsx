@@ -203,9 +203,13 @@ export const requestCampaignById = (id: string) =>
     },
   });
 
-export const requestUserParticipated = (address: string) =>
+export const requestUserParticipated = (
+  address: string,
+  page: number = 0,
+  pageSize: number,
+) =>
   graph9Lives.query.userParticipatedCampaigns({
-    $: { address },
+    $: { address, page, pageSize },
     campaignId: true,
     outcomeIds: true,
     content: {

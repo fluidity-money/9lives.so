@@ -127,18 +127,7 @@ export default function DetailWrapper({
             }
           />
         )}
-        <AssetScene
-          isDetailDpm={data.isDpm}
-          positionGroups={[
-            {
-              campaignId: data.identifier,
-              outcomeIds: data.outcomes.map((o) => o.identifier),
-              content: { ...data },
-            },
-          ]}
-          campaignId={data.identifier}
-          detailPage={true}
-        />
+        <AssetScene campaignDetail={data} />
       </div>
     </section>
   );

@@ -3,25 +3,15 @@ import TabButton from "../tabButton";
 import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment } from "react";
 import ShadowCard from "../cardShadow";
-import { ParticipatedCampaign } from "@/types";
 import ActivityTable from "../activity/activityTable";
 import UserCampaignsList from "../campaign/userCampaignsList";
 import ClaimedRewardsTable from "../claimedRewards/claimedRewardsTable";
 import UserLpedCampaignsList from "../campaign/lpedCampaigns";
+import { CampaignDetail } from "@/types";
 interface AssetSceneProps {
-  positionGroups?: ParticipatedCampaign[];
-  areGroupsLoading?: boolean;
-  campaignId?: string;
-  detailPage?: boolean;
-  isDetailDpm: boolean | null;
+  campaignDetail?: CampaignDetail;
 }
-export default function AssetScene({
-  positionGroups,
-  areGroupsLoading,
-  campaignId,
-  isDetailDpm,
-  detailPage = false,
-}: AssetSceneProps) {
+export default function AssetScene({ campaignDetail }: AssetSceneProps) {
   return (
     <TabGroup className={"mb-10 flex-1"}>
       <TabList className="flex items-center overflow-y-auto">
@@ -31,7 +21,7 @@ export default function AssetScene({
         <Tab as={Fragment}>
           {(props) => <TabButton title="My Activities" {...props} />}
         </Tab>
-        {detailPage ? null : (
+        {campaignDetail ? null : (
           <Tab as={Fragment}>
             {(props) => <TabButton title="My Campaigns" {...props} />}
           </Tab>
@@ -39,7 +29,7 @@ export default function AssetScene({
         <Tab as={Fragment}>
           {(props) => <TabButton title="Claimed Rewards" {...props} />}
         </Tab>
-        {detailPage ? null : (
+        {campaignDetail ? null : (
           <Tab as={Fragment}>
             {(props) => <TabButton title="My LP Campaigns" {...props} />}
           </Tab>
@@ -48,22 +38,15 @@ export default function AssetScene({
       <TabPanels className={"md:min-w-[480px]"}>
         <TabPanel>
           <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
-            {positionGroups ? (
-              <PositionTable
-                isDetailDpm={isDetailDpm}
-                detailPage={detailPage}
-                positionGroups={positionGroups}
-                areGroupsLoading={areGroupsLoading}
-              />
-            ) : null}
+            <PositionTable campaignDetail={campaignDetail} />
           </ShadowCard>
         </TabPanel>
         <TabPanel>
           <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
-            <ActivityTable campaignId={campaignId} />
+            <ActivityTable campaignId={campaignDetail?.identifier} />
           </ShadowCard>
         </TabPanel>
-        {detailPage ? null : (
+        {campaignDetail ? null : (
           <TabPanel>
             <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
               <UserCampaignsList />
@@ -72,11 +55,11 @@ export default function AssetScene({
         )}
         <TabPanel>
           <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
-            <ClaimedRewardsTable campaignId={campaignId} />
+            <ClaimedRewardsTable campaignId={campaignDetail?.identifier} />
           </ShadowCard>
         </TabPanel>
       </TabPanels>
-      {detailPage ? null : (
+      {campaignDetail ? null : (
         <TabPanel>
           <ShadowCard className="overflow-x-scroll rounded-tl-none p-3 md:overflow-x-auto md:p-5">
             <UserLpedCampaignsList />

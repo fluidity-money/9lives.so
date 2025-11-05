@@ -1,24 +1,18 @@
 import PositionsBody from "./positionBody";
 import { useState } from "react";
 import Button from "../themed/button";
-import { ParticipatedCampaign } from "@/types";
+import { CampaignDetail } from "@/types";
 
 export default function PositionTable({
-  positionGroups,
-  areGroupsLoading,
-  detailPage,
-  isDetailDpm,
+  campaignDetail,
 }: {
-  positionGroups?: ParticipatedCampaign[];
-  areGroupsLoading?: boolean;
-  detailPage?: boolean;
-  isDetailDpm: boolean | null;
+  campaignDetail?: CampaignDetail;
 }) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
   const headers = ["Position", "Current", "Qty", "Value", "PnL"];
   const headersWithWin = [...headers, "To Win"];
-  const tableHeaders = isDetailDpm ? headers : headersWithWin;
+  const tableHeaders = campaignDetail?.isDpm ? headers : headersWithWin;
   const [hideSmallBalances, setHideSmallBalances] = useState<boolean>(true);
   return (
     <>
@@ -44,9 +38,7 @@ export default function PositionTable({
         <PositionsBody
           hideSmallBalances={hideSmallBalances}
           colSpan={tableHeaders.length}
-          detailPage={detailPage}
-          positionGroups={positionGroups}
-          areGroupsLoading={areGroupsLoading}
+          campaignDetail={campaignDetail}
         />
       </table>
     </>

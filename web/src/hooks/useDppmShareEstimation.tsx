@@ -24,7 +24,7 @@ export default function useDppmShareEstimation({
   return useQuery<[number, number, number]>({
     queryKey: ["dppmShareEstimation", tradingAddr, account?.address, outcomeId],
     queryFn: async () => {
-      if (!account?.address) return;
+      if (!account?.address) return null;
       const tradingContract = getContract({
         abi: tradingAbi,
         address: tradingAddr,
