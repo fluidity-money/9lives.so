@@ -1413,8 +1413,8 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 	GROUP BY 
     nc.id
 	ORDER BY 
-    created_by DESC;
-	OFFSET ? LIMIT ?
+    created_by DESC
+	OFFSET ? LIMIT ?;
 	`, address, pageNum*pageSizeNum, pageSizeNum).Scan(&positions).Error
 	if err != nil {
 		slog.Error("Error getting positions from database",
