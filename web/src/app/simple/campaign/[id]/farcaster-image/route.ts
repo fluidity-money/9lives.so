@@ -1,4 +1,5 @@
-import detailImageGenerator from "@/components/detailImageGenerator";
+import React from "react";
+import { ImageResponse } from "next/og";
 
 const size = {
   width: 1200,
@@ -7,5 +8,16 @@ const size = {
 type Params = Promise<{ id: string }>;
 export async function GET(_: Request, { params }: { params: Params }) {
   const { id } = await params;
-  return await detailImageGenerator(id, size);
+  return new ImageResponse(
+    React.createElement("img", {
+      src: `https://9lives.so/dppm-og-image.png`,
+      alt: "9lives.so",
+      width: size.width,
+      height: size.height,
+    }),
+    {
+      width: size.width,
+      height: size.height,
+    },
+  );
 }
