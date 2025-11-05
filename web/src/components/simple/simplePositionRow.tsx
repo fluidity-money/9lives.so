@@ -21,7 +21,9 @@ export default function SimplePositionRow({
   tradingAddr: `0x${string}`;
   account?: Account;
 }) {
-  const [shares, boost, refund] = useDppmShareEstimation({
+  const {
+    data: [shares, boost, refund],
+  } = useDppmShareEstimation({
     tradingAddr,
     account,
     outcomeId: position.id,

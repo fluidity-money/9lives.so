@@ -1,6 +1,7 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import formatFusdc from "@/utils/format/formatUsdc";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   getContract,
@@ -20,10 +21,10 @@ export default function useDppmShareEstimation({
   outcomeId: `0x${string}`;
   enabled?: boolean;
 }) {
-  const [res, setRes] = useState<[number, number, number]>([0, 0, 0]);
-
-  useEffect(() => {
-    if (account && enabled) {
+  return useQuery<[number, number, number]>({
+    queryKey: ["dppmShareEstimation", tradingAddr, account?.address, outcomeId],
+    queryFn: async () => {
+      if (!account?.address) return;
       const tradingContract = getContract({
         abi: tradingAbi,
         address: tradingAddr,
@@ -33,17 +34,14 @@ export default function useDppmShareEstimation({
       const estimateTx = prepareContractCall({
         contract: tradingContract,
         method: "dppmSimulatePayoffForAddress",
-        params: [account?.address, outcomeId],
+        params: [account.address, outcomeId],
       });
-      (async () => {
-        const res = await simulateTransaction({
-          transaction: estimateTx,
-          account,
-        });
-        setRes(res.map((i: bigint) => Number(formatFusdc(i, 2))));
-      })();
-    }
-  }, [account]);
-
-  return res;
+      const res = await simulateTransaction({
+        transaction: estimateTx,
+      });
+      return res.map((i: bigint) => Number(formatFusdc(i, 2)));
+    },
+    initialData: [0, 0, 0],
+    enabled,
+  });
 }
