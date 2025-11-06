@@ -59,7 +59,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
     tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
   });
-  const { result: dppmResult } = useDppmRewards({
+  const { result: dppmResult, totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
     enabled: data.isDppm,
@@ -70,10 +70,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
   const avgPrice = data.totalVolume / totalSharesOfWinner;
   const userRewardDpm = isWinner ? +accountShares * avgPrice : 0;
   const userRewardAmm = isWinner ? +accountShares : 0;
-  const userRewardDppm =
-    dppmResult.dppmFusdc +
-    dppmResult.ninetailsWinnerFusdc +
-    dppmResult.ninetailsLoserFusd;
+  const userRewardDppm = totalRewards;
   const reward = data.isDpm
     ? userRewardDpm
     : data.isDppm
@@ -82,16 +79,16 @@ export default function DetailResults({ data }: DetailResultsProps) {
   const rewardBreakdown = data.isDppm
     ? [
         {
-          title: "Reward",
-          value: `$${isWinner ? dppmResult.dppmFusdc : 0}`,
+          title: "Base Reward",
+          value: `$${dppmResult.dppmFusdc}`,
         },
         {
-          title: "Time Boost",
-          value: `$${isWinner ? dppmResult.ninetailsWinnerFusdc : 0}`,
+          title: "Bonus",
+          value: `$${dppmResult.ninetailsWinnerFusdc}`,
         },
         {
           title: "Refund",
-          value: `$${isWinner ? 0 : dppmResult.ninetailsLoserFusd}`,
+          value: `$${dppmResult.ninetailsLoserFusd}`,
         },
       ]
     : [

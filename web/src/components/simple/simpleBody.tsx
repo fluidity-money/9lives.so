@@ -51,12 +51,11 @@ export default function SimpleBody({
   const winnerOutcome = data.outcomes.find(
     (o) => o.identifier === data?.winner,
   ) as Outcome;
-  const { totalRewards, result: rewards } = useDppmRewards({
+  const { totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
     enabled: true,
   });
-  const isWinner = !!positions?.find((p) => p.id === winnerOutcome?.identifier);
   return (
     <ActiveCampaignProvider
       previousData={data}
@@ -110,11 +109,7 @@ export default function SimpleBody({
         {isEnded ? (
           totalRewards > 0 ? (
             <SimpleClaimButton
-              totalRewards={
-                isWinner
-                  ? rewards.dppmFusdc + rewards.ninetailsWinnerFusdc
-                  : rewards.ninetailsLoserFusd
-              }
+              totalRewards={totalRewards}
               tradingAddr={data.poolAddress}
               outcomes={data.outcomes}
             />

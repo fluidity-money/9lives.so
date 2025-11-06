@@ -128,10 +128,7 @@ export default function PositionRow({
           const avgPrice = campaign.totalVolume / totalSharesOfWinner;
           const rewardDpm = data.balance ? +data.balance * avgPrice : 0;
           const rewardAmm = data.balance ? +data.balance : 0;
-          const rewardDppm =
-            campaignContent.winner === data.id
-              ? dppmRewards.dppmFusdc + dppmRewards.ninetailsWinnerFusdc
-              : dppmRewards.ninetailsLoserFusd;
+          const rewardDppm = totalRewards;
           const reward = campaignContent.isDpm
             ? rewardDpm
             : campaignContent.isDppm
@@ -373,14 +370,7 @@ export default function PositionRow({
         {campaignContent.isDpm ? null : (
           <td>
             <span className="font-chicago text-xs">
-              $
-              {campaignContent.winner && campaignContent.winner !== data.id
-                ? campaignContent.isDppm
-                  ? dppmRewards.ninetailsLoserFusd
-                  : 0
-                : campaignContent.isDppm
-                  ? dppmRewards.dppmFusdc + dppmRewards.ninetailsWinnerFusdc
-                  : data.balance}
+              ${campaignContent.isDppm ? totalRewards.toFixed(2) : data.balance}
             </span>
           </td>
         )}

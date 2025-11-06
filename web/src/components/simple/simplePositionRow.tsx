@@ -48,13 +48,9 @@ export default function SimplePositionRow({
           : `Currently ${isWinning ? " Winning" : "Losing"}`}
       </span>
       <div className="flex flex-col gap-1 text-end font-chicago text-xs">
-        <span>
-          {isWinning ? "To Win" : "To Lose"}: $
-          {isWinning ? shares + boost : shares}
-        </span>
-        <span>
-          {isWinning ? "Bonus" : "Refund"}: ${isWinning ? boost : refund}
-        </span>
+        <span>Base Reward: ${shares}</span>
+        <span>Bonus: ${boost}</span>
+        <span>Refund: ${refund}</span>
       </div>
     </div>
   );
