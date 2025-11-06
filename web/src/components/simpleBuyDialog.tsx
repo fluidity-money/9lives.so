@@ -262,7 +262,7 @@ export default function SimpleBuyDialog({
                 If you&apos;re right
               </div>
               <div className="text-3xl font-semibold text-green-500">
-                ${+(shares + boost + refund).toFixed(2)}
+                ${+(shares + boost).toFixed(2)}
               </div>
             </div>
             <div className="text-center">

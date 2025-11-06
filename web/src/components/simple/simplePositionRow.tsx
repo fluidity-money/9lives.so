@@ -39,7 +39,7 @@ export default function SimplePositionRow({
   const PnL = cost
     ? isWinning
       ? shares + boost - Number(formatFusdc(cost, 2))
-      : -Number(formatFusdc(cost, 2)) + refund
+      : -Number(formatFusdc(cost, 2))
     : 0;
   return (
     <div
