@@ -10,7 +10,7 @@ export async function GET(_: Request, { params }: { params: Params }) {
   const { id } = await params;
   return new ImageResponse(
     React.createElement("img", {
-      src: `https://9lives.so/dppm-og-image.png`,
+      src: "https://9lives.so/images/dppm-og-image.png",
       alt: "9lives.so",
       width: size.width,
       height: size.height,

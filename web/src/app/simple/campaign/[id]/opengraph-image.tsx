@@ -12,7 +12,7 @@ export default async function ImageOG({ params }: { params: Params }) {
   return new ImageResponse(
     (
       <img
-        src={`https://9lives.so/dppm-og-image.png`}
+        src={"https://9lives.so/images/dppm-og-image.png"}
         alt="9lives.so"
         width={size.width}
         height={size.height}
