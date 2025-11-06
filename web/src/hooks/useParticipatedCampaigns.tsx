@@ -16,7 +16,11 @@ export default function useParticipatedCampaigns({
   const account = useActiveAccount();
 
   return useInfiniteQuery({
-    queryKey: ["participatedCampaigns", account?.address],
+    queryKey: [
+      "participatedCampaigns",
+      account?.address,
+      campaignDetail?.identifier,
+    ],
     queryFn: async ({ pageParam }) => {
       if (!account?.address) return [];
       const res = await requestUserParticipated(
@@ -27,7 +31,7 @@ export default function useParticipatedCampaigns({
       return res.map((i) => formatParticipatedCampaign(i));
     },
     initialPageParam: 0,
-    enabled: !!campaignDetail,
+    enabled: !campaignDetail,
     initialData: campaignDetail
       ? {
           pages: [
