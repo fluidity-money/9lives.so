@@ -39,6 +39,15 @@ export default function useDppmClaimAll({
               "dppmShareEstimationForAll",
               tradingAddr,
               account?.address,
+              true,
+            ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "dppmShareEstimationForAll",
+              tradingAddr,
+              account?.address,
+              false,
             ],
           });
           outcomes.forEach((o) => {

@@ -18,10 +18,15 @@ export default function useDppmShareEstimationAll({
   tradingAddr: `0x${string}`;
   account?: Account;
   enabled: boolean;
-  isPriceAbove?: boolean;
+  isPriceAbove: boolean;
 }) {
   return useQuery({
-    queryKey: ["dppmShareEstimationForAll", tradingAddr, account?.address],
+    queryKey: [
+      "dppmShareEstimationForAll",
+      tradingAddr,
+      account?.address,
+      isPriceAbove,
+    ],
     queryFn: async () => {
       if (!account?.address)
         return [
