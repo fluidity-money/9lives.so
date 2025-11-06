@@ -5,11 +5,11 @@ import { PayoffResponse } from "@/types";
 export default function useDppmRewards({
   tradingAddr,
   account,
-  enabled = true,
+  enabled,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
-  enabled?: boolean;
+  enabled: boolean;
 }) {
   const {
     data: [outcome0, outcome1],

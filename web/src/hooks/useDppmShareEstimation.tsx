@@ -24,7 +24,8 @@ export default function useDppmShareEstimation({
   return useQuery<[number, number, number]>({
     queryKey: ["dppmShareEstimation", tradingAddr, account?.address, outcomeId],
     queryFn: async () => {
-      if (!account?.address) return null;
+      if (!account?.address) return [0, 0, 0];
+
       const tradingContract = getContract({
         abi: tradingAbi,
         address: tradingAddr,
@@ -36,6 +37,7 @@ export default function useDppmShareEstimation({
         method: "dppmSimulatePayoffForAddress",
         params: [account.address, outcomeId],
       });
+
       const res = await simulateTransaction({
         transaction: estimateTx,
       });

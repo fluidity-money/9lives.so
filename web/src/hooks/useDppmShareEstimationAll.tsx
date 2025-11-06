@@ -3,7 +3,6 @@ import tradingAbi from "@/config/abi/trading";
 import { PayoffResponse } from "@/types";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import {
   getContract,
   prepareContractCall,
@@ -13,16 +12,20 @@ import { Account } from "thirdweb/wallets";
 export default function useDppmShareEstimationAll({
   tradingAddr,
   account,
-  enabled = true,
+  enabled,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
-  enabled?: boolean;
+  enabled: boolean;
 }) {
-  return useQuery({
+  return useQuery<PayoffResponse[]>({
     queryKey: ["dppmShareEstimationForAll", tradingAddr, account?.address],
     queryFn: async () => {
-      if (!account?.address) return null;
+      if (!account?.address)
+        return [
+          { dppmFusdc: 0, ninetailsLoserFusd: 0, ninetailsWinnerFusdc: 0 },
+          { dppmFusdc: 0, ninetailsLoserFusd: 0, ninetailsWinnerFusdc: 0 },
+        ];
 
       const tradingContract = getContract({
         abi: tradingAbi,
