@@ -60,6 +60,9 @@ export default function useDppmClaimAll({
               ],
             });
           });
+          queryClient.invalidateQueries({
+            queryKey: ["positions", tradingAddr, outcomes, account, false],
+          });
           res(response.transactionHash);
         } catch (e) {
           rej(e);
