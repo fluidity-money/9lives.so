@@ -8,7 +8,7 @@ export function formatDppmTitle({
   end: number;
 }) {
   if (!symbol || !price) throw new Error("Price metadata is null");
-  return `${symbol} above $${price} on ${new Date(end).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", hourCycle: "h24", minute: "2-digit", timeZone: "UTC" })} UTC`;
+  return `${symbol.toUpperCase()} above $${price} on ${new Date(end).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", hourCycle: "h24", minute: "2-digit", timeZone: "UTC" })} UTC`;
 }
 
 export function formatDppmOutcomeName(name: string) {

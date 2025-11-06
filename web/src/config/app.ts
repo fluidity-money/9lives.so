@@ -1,5 +1,7 @@
 import z from "zod";
 import { farcasterChains } from "./chains";
+import BTC from "#/images/tokens/btc.webp";
+import PAXG from "#/images/tokens/paxg.svg";
 enum InfraMarketState {
   Callable,
   Closable,
@@ -58,7 +60,7 @@ const infraMarketStateFees: Record<InfraMarketState, bigint> = {
   [InfraMarketState.Closed]: BigInt(0),
   [InfraMarketState.Loading]: BigInt(0),
 } as const;
-export const categories = [
+const categories = [
   "All",
   "Hourly",
   "Crypto",
@@ -66,7 +68,11 @@ export const categories = [
   "Sports",
   "Politics",
 ];
-export const simpleMarkets = ["btc"];
+const simpleMarkets = ["btc", "paxg"] as const;
+const simpleMarketLogos: Record<(typeof simpleMarkets)[number], any> = {
+  btc: BTC,
+  paxg: PAXG,
+};
 const appSchema = z.object({
   /**
    * Generated metadata of the web app and wagmi will use this object
@@ -82,7 +88,8 @@ const appSchema = z.object({
     colors: z.record(z.string(), z.string()),
     fees: z.record(z.string(), z.bigint()),
   }),
-  simpleMarkets: z.array(z.enum(["btc"])),
+  simpleMarkets: z.array(z.enum(simpleMarkets)),
+  simpleMarketLogos: z.record(z.string(), z.any()),
   categories: z.array(
     z.enum(["All", "Hourly", "Crypto", "Opinion Poll", "Sports", "Politics"]),
   ),
@@ -130,6 +137,7 @@ const appVars = appSchema.safeParse({
     fees: infraMarketStateFees,
   },
   simpleMarkets,
+  simpleMarketLogos,
   categories,
   frame,
   weekDuration: 60 * 60 * 24 * 7 * 1000,

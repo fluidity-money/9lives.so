@@ -5,7 +5,6 @@ import {
 } from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import BTC from "#/images/tokens/btc.webp";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import CountdownTimer from "@/components/countdownTimer";
@@ -63,7 +62,12 @@ export default async function SimpleDetailPage({
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />
       <div className="flex items-center gap-2">
-        <Image src={BTC} width={60} height={60} alt={data.name} />
+        <Image
+          src={config.simpleMarketLogos[data.priceMetadata.baseAsset]}
+          width={60}
+          height={60}
+          alt={data.name}
+        />
         <div className="flex flex-col gap-1">
           <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
           <div className="flex items-center gap-1 text-xs">

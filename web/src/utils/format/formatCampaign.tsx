@@ -10,6 +10,18 @@ import {
   SimpleCampaignDetail,
 } from "@/types";
 import { formatDppmTitle, formatDppmOutcomeName } from "./formatDppmName";
+import config from "@/config";
+
+function formatPriceMetadata(
+  ro: { priceTargetForUp: string; baseAsset: string } | null,
+) {
+  if (!ro) return null;
+  return {
+    priceTargetForUp: ro.priceTargetForUp,
+    baseAsset:
+      ro.baseAsset.toLowerCase() as (typeof config.simpleMarkets)[number],
+  };
+}
 
 export function formatCampaign(ro: RawCampaign): Campaign {
   return {
@@ -29,7 +41,7 @@ export function formatCampaign(ro: RawCampaign): Campaign {
       : ro.name,
     description: ro.description,
     isDppm: ro.isDppm,
-    priceMetadata: ro.priceMetadata,
+    priceMetadata: formatPriceMetadata(ro.priceMetadata),
     winner: ro.winner ?? null,
     picture: ro.picture ?? null,
     oracleDescription: ro.oracleDescription ?? null,
@@ -52,7 +64,6 @@ export function formatCampaignDetail(ro: RawCampaignDetail): CampaignDetail {
     investmentAmounts: ro.investmentAmounts.filter(Boolean),
     isDpm: ro.isDpm ?? null,
     isDppm: ro.isDppm,
-    priceMetadata: ro.priceMetadata ?? null,
   };
 }
 
@@ -70,7 +81,7 @@ export function formatSimpleCampaignDetail(
     }),
     ending: ro.ending * 1000,
     starting: ro.starting * 1000,
-    priceMetadata: ro.priceMetadata,
+    priceMetadata: formatPriceMetadata(ro.priceMetadata)!,
     poolAddress: ro.poolAddress as `0x${string}`,
     identifier: ro.identifier as `0x${string}`,
     outcomes: ro.outcomes.map((o) => formatOutcome(o, true)),
@@ -103,7 +114,7 @@ export function formatParticipatedContent(
         })
       : ro.name,
     ending: ro.ending * 1000,
-    priceMetadata: ro.priceMetadata,
+    priceMetadata: formatPriceMetadata(ro.priceMetadata),
     poolAddress: ro.poolAddress as `0x${string}`,
     identifier: ro.identifier as `0x${string}`,
     outcomes: ro.outcomes.map((o) => formatOutcome(o, ro.isDppm)),

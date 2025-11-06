@@ -44,9 +44,10 @@ export type SimpleCampaignDetail = NonNullable<RawSimpleCampaignDetail> & {
   outcomes: Outcome[];
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
-  priceMetadata: NonNullable<
-    NonNullable<RawSimpleCampaignDetail>["priceMetadata"]
-  >;
+  priceMetadata: {
+    baseAsset: (typeof config.simpleMarkets)[number];
+    priceTargetForUp: string;
+  };
 };
 export type CampaignDetail = Omit<
   NonNullable<RawCampaignDetail>,
