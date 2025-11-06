@@ -109,7 +109,7 @@ export default function SimpleBody({
       </div>
       <div className="sticky inset-x-0 bottom-0 z-20 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
         {isEnded ? (
-          totalRewards > 0 ? (
+          !!winnerOutcome && totalRewards > 0 ? (
             <SimpleClaimButton
               totalRewards={totalRewards}
               tradingAddr={data.poolAddress}
