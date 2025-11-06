@@ -62,7 +62,9 @@ export default function DetailResults({ data }: DetailResultsProps) {
   const { result: dppmResult, totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
-    enabled: data.isDppm,
+    priceMetadata: data.priceMetadata,
+    starting: data.starting,
+    ending: data.ending,
   });
   const totalVolumeOfWinner =
     data.investmentAmounts.find((ia) => ia?.id === data.winner)?.usdc ?? 0;

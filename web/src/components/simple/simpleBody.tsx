@@ -54,7 +54,9 @@ export default function SimpleBody({
   const { totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
-    enabled: true,
+    priceMetadata: data.priceMetadata,
+    starting: data.starting,
+    ending: data.ending,
   });
   return (
     <ActiveCampaignProvider

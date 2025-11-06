@@ -18,6 +18,7 @@ import UsdIcon from "#/icons/usd.svg";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
 import useDppmRewards from "@/hooks/useDppmRewards";
 import useDppmClaimAll from "@/hooks/useDppmClaimAll";
+import useFinalPrice from "@/hooks/useFinalPrice";
 // import SellButton from "../sellButton";
 export default function PositionRow({
   data,
@@ -77,10 +78,13 @@ export default function PositionRow({
   const percentageChange = Math.abs(
     (PnL / +formatFusdc(historicalValue, 6)) * 100,
   ).toFixed(2);
-  const { totalRewards, result: dppmRewards } = useDppmRewards({
+
+  const { totalRewards } = useDppmRewards({
     tradingAddr: campaignContent.poolAddress,
     account,
-    enabled: campaignContent.isDppm,
+    priceMetadata: campaignContent.priceMetadata,
+    starting: campaignContent.starting,
+    ending: campaignContent.ending,
   });
   const isWinner = campaignContent.isDppm
     ? totalRewards > 0

@@ -13,18 +13,28 @@ export default function useDppmShareEstimationAll({
   tradingAddr,
   account,
   enabled,
+  isPriceAbove,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
   enabled: boolean;
+  isPriceAbove?: boolean;
 }) {
-  return useQuery<PayoffResponse[]>({
+  return useQuery({
     queryKey: ["dppmShareEstimationForAll", tradingAddr, account?.address],
     queryFn: async () => {
       if (!account?.address)
         return [
-          { dppmFusdc: 0, ninetailsLoserFusd: 0, ninetailsWinnerFusdc: 0 },
-          { dppmFusdc: 0, ninetailsLoserFusd: 0, ninetailsWinnerFusdc: 0 },
+          {
+            dppmFusdc: BigInt(0),
+            ninetailsLoserFusd: BigInt(0),
+            ninetailsWinnerFusdc: BigInt(0),
+          },
+          {
+            dppmFusdc: BigInt(0),
+            ninetailsLoserFusd: BigInt(0),
+            ninetailsWinnerFusdc: BigInt(0),
+          },
         ];
 
       const tradingContract = getContract({
@@ -40,19 +50,58 @@ export default function useDppmShareEstimationAll({
         params: [account.address],
       });
 
-      const res = await simulateTransaction({
+      return await simulateTransaction({
         transaction: estimateTx,
       });
-
-      return res.map((i: PayoffResponse) => ({
-        dppmFusdc: Number(formatFusdc(i.dppmFusdc, 2)),
-        ninetailsLoserFusd: Number(formatFusdc(i.ninetailsLoserFusd, 2)),
-        ninetailsWinnerFusdc: Number(formatFusdc(i.ninetailsWinnerFusdc, 2)),
-      }));
+    },
+    select: (data) => {
+      if (isPriceAbove) {
+        return [
+          {
+            dppmFusdc: 0,
+            ninetailsWinnerFusdc: 0,
+            ninetailsLoserFusd: Number(
+              formatFusdc(data[0].ninetailsLoserFusd, 2),
+            ),
+          }, // Down outcome = Looser
+          {
+            dppmFusdc: Number(formatFusdc(data[1].dppmFusdc, 2)),
+            ninetailsWinnerFusdc: Number(
+              formatFusdc(data[1].ninetailsWinnerFusdc, 2),
+            ),
+            ninetailsLoserFusd: 0,
+          }, //Up outcome = Winner
+        ];
+      } else {
+        return [
+          {
+            dppmFusdc: Number(formatFusdc(data[0].dppmFusdc, 2)),
+            ninetailsWinnerFusdc: Number(
+              formatFusdc(data[0].ninetailsWinnerFusdc, 2),
+            ),
+            ninetailsLoserFusd: 0,
+          }, //Down outcome = Winner
+          {
+            dppmFusdc: 0,
+            ninetailsWinnerFusdc: 0,
+            ninetailsLoserFusd: Number(
+              formatFusdc(data[1].ninetailsLoserFusd, 2),
+            ),
+          }, // Up outcome = Looser
+        ];
+      }
     },
     initialData: [
-      { dppmFusdc: 0, ninetailsLoserFusd: 0, ninetailsWinnerFusdc: 0 },
-      { dppmFusdc: 0, ninetailsLoserFusd: 0, ninetailsWinnerFusdc: 0 },
+      {
+        dppmFusdc: BigInt(0),
+        ninetailsLoserFusd: BigInt(0),
+        ninetailsWinnerFusdc: BigInt(0),
+      },
+      {
+        dppmFusdc: BigInt(0),
+        ninetailsLoserFusd: BigInt(0),
+        ninetailsWinnerFusdc: BigInt(0),
+      },
     ],
     enabled,
   });

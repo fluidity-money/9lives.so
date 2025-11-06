@@ -216,6 +216,7 @@ export const requestUserParticipated = (
       isDpm: true,
       isDppm: true,
       identifier: true,
+      starting: true,
       ending: true,
       priceMetadata: {
         baseAsset: true,
@@ -641,6 +642,27 @@ export const requestAssetPrices = (
       `
 query {
   oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
+    id
+    amount
+    created_by
+  }
+}
+`,
+    )
+    .send() as Promise<{
+    oracles_ninelives_prices_1: RawPricePoint[];
+  }> | null;
+
+export const requestFinalPrice = (
+  symbol: string,
+  starting: string,
+  ending: string,
+) =>
+  graph9LivesSubs
+    .gql(
+      `
+query {
+  oracles_ninelives_prices_1(order_by: {created_by: desc}, limit:1, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
     id
     amount
     created_by

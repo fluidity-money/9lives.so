@@ -242,6 +242,11 @@ export type RawPricePoint = {
 export type PricePoint = { id: number; price: number; timestamp: number };
 export type RawAssetPrices = Awaited<ReturnType<typeof requestAssetPrices>>;
 export type PayoffResponse = {
+  dppmFusdc: bigint;
+  ninetailsLoserFusd: bigint;
+  ninetailsWinnerFusdc: bigint;
+};
+export type Payoff = {
   dppmFusdc: number;
   ninetailsLoserFusd: number;
   ninetailsWinnerFusdc: number;

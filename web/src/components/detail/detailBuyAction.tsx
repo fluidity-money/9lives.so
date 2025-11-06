@@ -171,7 +171,9 @@ export default function DetailBuyAction({
     fusdc: usdValue,
     share: supply / Number(price),
   });
-  const [shares, boost, refund] = useDppmWinEstimation({
+  const {
+    data: [shares, boost, refund],
+  } = useDppmWinEstimation({
     outcomeId: selectedOutcome.id as `0x${string}`,
     usdValue,
     tradingAddr: data.poolAddress,

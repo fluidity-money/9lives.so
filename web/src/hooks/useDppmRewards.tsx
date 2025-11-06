@@ -1,24 +1,39 @@
 import { Account } from "thirdweb/wallets";
 import useDppmShareEstimationAll from "./useDppmShareEstimationAll";
-import { PayoffResponse } from "@/types";
+import { CampaignDetail, Payoff } from "@/types";
+import useFinalPrice from "./useFinalPrice";
 
 export default function useDppmRewards({
   tradingAddr,
   account,
-  enabled,
+  priceMetadata,
+  starting,
+  ending,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
-  enabled: boolean;
+  priceMetadata: CampaignDetail["priceMetadata"];
+  starting: number;
+  ending: number;
 }) {
+  const { data: finalPricePoint } = useFinalPrice({
+    symbol: priceMetadata?.baseAsset,
+    starting,
+    ending,
+  });
+  const isPriceAbove =
+    !!finalPricePoint &&
+    !!priceMetadata &&
+    +priceMetadata.priceTargetForUp > finalPricePoint.price;
   const {
     data: [outcome0, outcome1],
   } = useDppmShareEstimationAll({
     tradingAddr,
     account,
-    enabled,
+    enabled: !!priceMetadata,
+    isPriceAbove,
   });
-  const result: PayoffResponse = {
+  const result: Payoff = {
     dppmFusdc: outcome0.dppmFusdc + outcome1.dppmFusdc,
     ninetailsLoserFusd:
       outcome0.ninetailsLoserFusd + outcome1.ninetailsLoserFusd,
