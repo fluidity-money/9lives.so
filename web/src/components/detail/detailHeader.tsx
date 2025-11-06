@@ -108,7 +108,7 @@ export default function DetailHeader({
   const subHeaderMap = [
     {
       title: data.isDpm ? "TVL" : "Total Vol.",
-      value: `$${formatFusdc(data.totalVolume, 2)}`,
+      value: `$${formatFusdc((data.isDppm ? 2e6 : 0) + data.totalVolume, 2)}`,
       show: true,
     },
     {
