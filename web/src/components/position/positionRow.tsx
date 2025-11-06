@@ -86,9 +86,10 @@ export default function PositionRow({
     starting: campaignContent.starting,
     ending: campaignContent.ending,
   });
-  const isWinner = campaignContent.isDppm
-    ? totalRewards > 0
-    : campaignContent.winner && campaignContent.winner === data.id;
+  const isWinner =
+    !!campaignContent.winner && campaignContent.isDppm
+      ? totalRewards > 0
+      : campaignContent.winner === data.id;
   const [reward, setReward] = useState<number>();
   useEffect(() => {
     if (
