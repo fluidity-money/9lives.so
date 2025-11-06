@@ -14,17 +14,17 @@ export default function useDppmShareEstimation({
   tradingAddr,
   account,
   outcomeId,
-  enabled = true,
+  isWinning,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
   outcomeId: `0x${string}`;
-  enabled?: boolean;
+  isWinning: boolean;
 }) {
-  return useQuery<[number, number, number]>({
+  return useQuery({
     queryKey: ["dppmShareEstimation", tradingAddr, account?.address, outcomeId],
     queryFn: async () => {
-      if (!account?.address) return [0, 0, 0];
+      if (!account?.address) return [BigInt(0), BigInt(0), BigInt(0)];
 
       const tradingContract = getContract({
         abi: tradingAbi,
@@ -37,13 +37,17 @@ export default function useDppmShareEstimation({
         method: "dppmSimulatePayoffForAddress",
         params: [account.address, outcomeId],
       });
-
-      const res = await simulateTransaction({
+      return await simulateTransaction({
         transaction: estimateTx,
       });
-      return res.map((i: bigint) => Number(formatFusdc(i, 2)));
     },
-    initialData: [0, 0, 0],
-    enabled,
+    select: (data) => {
+      if (isWinning) {
+        return data.map((i: bigint) => Number(formatFusdc(i, 2)));
+      } else {
+        return [0, 0, Number(formatFusdc(data[2], 2))];
+      }
+    },
+    initialData: [BigInt(0), BigInt(0), BigInt(0)],
   });
 }
