@@ -54,24 +54,26 @@ export default function PositionBody({
           />
         ))
       ) : null}
-      <tr>
-        <td colSpan={6}>
-          <div className="flex items-center justify-center">
-            {hasNextPage ? (
-              <Button
-                intent={"cta"}
-                disabled={isFetchingNextPage}
-                title={isFetchingNextPage ? "Loading" : "Show More"}
-                onClick={() => fetchNextPage()}
-              />
-            ) : (
-              <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
-                End of results
-              </span>
-            )}
-          </div>
-        </td>
-      </tr>
+      {campaignDetail ? null : (
+        <tr>
+          <td colSpan={6}>
+            <div className="flex items-center justify-center">
+              {hasNextPage ? (
+                <Button
+                  intent={"cta"}
+                  disabled={isFetchingNextPage}
+                  title={isFetchingNextPage ? "Loading" : "Show More"}
+                  onClick={() => fetchNextPage()}
+                />
+              ) : (
+                <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+                  End of results
+                </span>
+              )}
+            </div>
+          </td>
+        </tr>
+      )}
     </tbody>
   );
 }
