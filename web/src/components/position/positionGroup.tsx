@@ -31,7 +31,6 @@ export default function PositionsGroup({
     outcomes: content.outcomes as Outcome[],
     account,
     isDpm: content?.isDpm,
-    isDppm: content?.isDppm,
   });
   const { data: sharePrices } = useSharePrices({
     tradingAddr: content.poolAddress as `0x${string}`,

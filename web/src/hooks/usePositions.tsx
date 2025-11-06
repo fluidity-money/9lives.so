@@ -1,6 +1,5 @@
 import config from "@/config";
 import { Outcome } from "@/types";
-import { formatDppmOutcomeName } from "@/utils/format/formatDppmName";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
 import { prepareContractCall, simulateTransaction } from "thirdweb";
@@ -11,13 +10,11 @@ async function fetchPositions({
   outcomes,
   account,
   isDpm,
-  isDppm,
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   account?: Account;
   isDpm: boolean | null;
-  isDppm: boolean | null;
 }) {
   if (!account) return [];
   const dpmTx = prepareContractCall({
@@ -90,13 +87,11 @@ export default function usePositions({
   outcomes,
   account,
   isDpm,
-  isDppm,
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   account?: Account;
   isDpm: boolean | null;
-  isDppm: boolean | null;
 }) {
   return useQuery<
     {
@@ -107,8 +102,7 @@ export default function usePositions({
       balanceRaw: bigint;
     }[]
   >({
-    queryKey: ["positions", tradingAddr, outcomes, account, isDpm, isDppm],
-    queryFn: () =>
-      fetchPositions({ tradingAddr, outcomes, account, isDpm, isDppm }),
+    queryKey: ["positions", tradingAddr, outcomes, account, isDpm],
+    queryFn: () => fetchPositions({ tradingAddr, outcomes, account, isDpm }),
   });
 }

@@ -30,7 +30,6 @@ export default function DetailResults({ data }: DetailResultsProps) {
     outcomes: data.outcomes,
     account,
     isDpm: data.isDpm,
-    isDppm: data.isDppm,
   });
   const winner = data.outcomes.find(
     (item) => item.identifier === data.winner,
