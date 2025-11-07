@@ -29,22 +29,6 @@ export default function DetailWrapper({
   initialAssetPrices?: PricePoint[];
 }) {
   const outcomeId = useSearchParams()?.get("outcomeId");
-  const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcome>({
-    id:
-      initialData.outcomes.find((o) => o.identifier === outcomeId)
-        ?.identifier ?? initialData.outcomes[0].identifier,
-    state: "buy",
-  });
-  const outcomeIds = initialData.outcomes.map(
-    (o) => o.identifier as `0x${string}`,
-  );
-  const isEnded = initialData.ending < Date.now();
-  const notStarted = initialData.starting > Date.now();
-  const isConcluded = Boolean(initialData.winner);
-  const { data: sharePrices } = useSharePrices({
-    tradingAddr: initialData.poolAddress as `0x${string}`,
-    outcomeIds,
-  });
   const { data } = useQuery({
     queryKey: ["campaign", initialData.identifier],
     queryFn: async () => {
@@ -54,6 +38,20 @@ export default function DetailWrapper({
     },
     initialData,
   });
+  const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcome>({
+    id:
+      data.outcomes.find((o) => o.identifier === outcomeId)?.identifier ??
+      data.outcomes[0].identifier,
+    state: "buy",
+  });
+  const outcomeIds = data.outcomes.map((o) => o.identifier as `0x${string}`);
+  const { data: sharePrices } = useSharePrices({
+    tradingAddr: data.poolAddress as `0x${string}`,
+    outcomeIds,
+  });
+  const isEnded = data.ending < Date.now();
+  const notStarted = data.starting > Date.now();
+  const isConcluded = Boolean(data.winner);
   const symbol = data.priceMetadata?.baseAsset?.toLowerCase();
   const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
     {
