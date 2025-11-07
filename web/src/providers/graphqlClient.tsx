@@ -218,6 +218,7 @@ export const requestUserParticipated = (
       identifier: true,
       starting: true,
       ending: true,
+      totalVolume: true,
       priceMetadata: {
         baseAsset: true,
         priceTargetForUp: true,

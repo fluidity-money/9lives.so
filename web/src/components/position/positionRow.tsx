@@ -89,76 +89,36 @@ export default function PositionRow({
     !!campaignContent.winner && campaignContent.isDppm
       ? totalRewards > 0
       : campaignContent.winner === data.id;
-  const [reward, setReward] = useState<number>();
+  // const totalSharesOfWinner = campaign.investmentAmounts.find((i) => i?.id === data.id)?.share;
+  // totalSharesOfWinner should get from investmentAmounts (expensive), and needs to be implemented if dpm markets activated
+  // const avgPrice = campaignContent.totalVolume / totalSharesOfWinner;
+  // const rewardDpm = data.balance ? +data.balance * avgPrice : 0;
+  const rewardDpm = 0;
+  const rewardAmm = data.balance ? +data.balance : 0;
+  const rewardDppm = totalRewards;
+  const reward = campaignContent.isDpm
+    ? rewardDpm
+    : campaignContent.isDppm
+      ? rewardDppm
+      : rewardAmm;
   useEffect(() => {
-    if (
-      price &&
-      data.id &&
-      data.balance &&
-      campaignContent.identifier &&
-      !isWinner
-    ) {
+    if (price && !isWinner) {
       addPosition({
         outcomeId: data.id,
         value: Number(price) * Number(data.balance),
         PnL,
       });
     }
-  }, [
-    price,
-    data.id,
-    data.balance,
-    PnL,
-    addPosition,
-    campaignContent.identifier,
-    isWinner,
-  ]);
+  }, [price, data.id, data.balance, PnL, addPosition, isWinner]);
   useEffect(() => {
-    if (
-      price &&
-      data.id &&
-      data.balance &&
-      campaignContent.identifier &&
-      isWinner &&
-      historicalValue
-    ) {
-      (async function (campaignId: string) {
-        try {
-          const campaign = await requestCampaignById(campaignId);
-          if (!campaign) return;
-          const totalSharesOfWinner =
-            campaign.investmentAmounts.find((i) => i?.id === data.id)?.share ??
-            0;
-          const avgPrice = campaign.totalVolume / totalSharesOfWinner;
-          const rewardDpm = data.balance ? +data.balance * avgPrice : 0;
-          const rewardAmm = data.balance ? +data.balance : 0;
-          const rewardDppm = totalRewards;
-          const reward = campaignContent.isDpm
-            ? rewardDpm
-            : campaignContent.isDppm
-              ? rewardDppm
-              : rewardAmm;
-          setReward(reward);
-          addPosition({
-            outcomeId: data.id,
-            value: reward,
-            PnL: reward - +formatFusdc(historicalValue, 2),
-          });
-        } catch (error) {
-          console.error(error);
-        }
-      })(campaignContent.identifier);
+    if (reward && isWinner && historicalValue) {
+      addPosition({
+        outcomeId: data.id,
+        value: reward,
+        PnL: reward - +formatFusdc(historicalValue, 2),
+      });
     }
-  }, [
-    price,
-    campaignContent.isDpm,
-    data.id,
-    data.balance,
-    addPosition,
-    campaignContent.identifier,
-    isWinner,
-    historicalValue,
-  ]);
+  }, [reward, data.id, addPosition, isWinner, historicalValue]);
   async function handleClaim() {
     if (!account) return connect();
     try {
