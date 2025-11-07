@@ -2,7 +2,6 @@ import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import {
   getContract,
   prepareContractCall,
@@ -43,7 +42,11 @@ export default function useDppmShareEstimation({
     },
     select: (data) => {
       if (isWinning) {
-        return data.map((i: bigint) => Number(formatFusdc(i, 2)));
+        return [
+          Number(formatFusdc(data[0], 2)),
+          Number(formatFusdc(data[1], 2)),
+          0,
+        ];
       } else {
         return [0, 0, Number(formatFusdc(data[2], 2))];
       }

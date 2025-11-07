@@ -9,12 +9,14 @@ export default function useDppmRewards({
   priceMetadata,
   starting,
   ending,
+  outcome,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
   priceMetadata: CampaignDetail["priceMetadata"];
   starting: number;
   ending: number;
+  outcome?: string;
 }) {
   const { data: finalPricePoint } = useFinalPrice({
     symbol: priceMetadata?.baseAsset,
@@ -33,13 +35,18 @@ export default function useDppmRewards({
     enabled: !!priceMetadata,
     isPriceAbove,
   });
-  const result: Payoff = {
-    dppmFusdc: outcome0.dppmFusdc + outcome1.dppmFusdc,
-    ninetailsLoserFusd:
-      outcome0.ninetailsLoserFusd + outcome1.ninetailsLoserFusd,
-    ninetailsWinnerFusdc:
-      outcome0.ninetailsWinnerFusdc + outcome1.ninetailsWinnerFusdc,
-  };
+  let result: Payoff | null = null;
+  if (outcome) {
+    result = outcome === "Up" ? outcome0 : outcome1;
+  } else {
+    result = {
+      dppmFusdc: outcome0.dppmFusdc + outcome1.dppmFusdc,
+      ninetailsLoserFusd:
+        outcome0.ninetailsLoserFusd + outcome1.ninetailsLoserFusd,
+      ninetailsWinnerFusdc:
+        outcome0.ninetailsWinnerFusdc + outcome1.ninetailsWinnerFusdc,
+    };
+  }
   const totalRewards = Object.values(result).reduce((acc, v) => acc + v);
   return { hasAnyRewards: totalRewards > BigInt(0), totalRewards, result };
 }

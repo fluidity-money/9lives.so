@@ -18,8 +18,6 @@ import UsdIcon from "#/icons/usd.svg";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
 import useDppmRewards from "@/hooks/useDppmRewards";
 import useDppmClaimAll from "@/hooks/useDppmClaimAll";
-import useFinalPrice from "@/hooks/useFinalPrice";
-// import SellButton from "../sellButton";
 export default function PositionRow({
   data,
   price,
@@ -85,6 +83,7 @@ export default function PositionRow({
     priceMetadata: campaignContent.priceMetadata,
     starting: campaignContent.starting,
     ending: campaignContent.ending,
+    outcome: campaignContent.isDppm ? data.name : undefined,
   });
   const isWinner =
     !!campaignContent.winner && campaignContent.isDppm
