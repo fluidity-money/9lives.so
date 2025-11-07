@@ -16,8 +16,8 @@ type SearchParams = Promise<{ cid: string }>;
 export const dynamicParams = true;
 export const revalidate = 60;
 export async function generateStaticParams() {
-  return config.simpleMarkets.map((id) => ({
-    id,
+  return Object.values(config.simpleMarkets).map((m) => ({
+    id: m.slug,
   }));
 }
 export async function generateMetadata({ params }: { params: Params }) {
@@ -63,7 +63,7 @@ export default async function SimpleDetailPage({
       <SimpleNavMenu />
       <div className="flex items-center gap-2">
         <Image
-          src={config.simpleMarketLogos[data.priceMetadata.baseAsset]}
+          src={config.simpleMarkets[data.priceMetadata.baseAsset].logo}
           width={60}
           height={60}
           alt={data.name}

@@ -18,8 +18,7 @@ function formatPriceMetadata(
   if (!ro) return null;
   return {
     priceTargetForUp: ro.priceTargetForUp,
-    baseAsset:
-      ro.baseAsset.toLowerCase() as (typeof config.simpleMarkets)[number],
+    baseAsset: ro.baseAsset.toLowerCase() as keyof typeof config.simpleMarkets,
   };
 }
 
@@ -34,7 +33,7 @@ export function formatCampaign(ro: RawCampaign): Campaign {
     outcomes: ro.outcomes?.map((o) => formatOutcome(o, ro.isDppm)),
     name: ro.isDppm
       ? formatDppmTitle({
-          symbol: ro.priceMetadata?.baseAsset,
+          symbol: formatPriceMetadata(ro.priceMetadata)?.baseAsset,
           end: ro.ending * 1000,
           price: ro.priceMetadata?.priceTargetForUp,
         })
@@ -75,7 +74,7 @@ export function formatSimpleCampaignDetail(
   return {
     ...ro,
     name: formatDppmTitle({
-      symbol: ro.priceMetadata?.baseAsset,
+      symbol: formatPriceMetadata(ro.priceMetadata)?.baseAsset,
       price: ro.priceMetadata.priceTargetForUp,
       end: ro.ending * 1000,
     }),
@@ -108,7 +107,7 @@ export function formatParticipatedContent(
     ...ro,
     name: ro.isDppm
       ? formatDppmTitle({
-          symbol: ro.priceMetadata?.baseAsset,
+          symbol: formatPriceMetadata(ro.priceMetadata)?.baseAsset,
           price: ro.priceMetadata?.priceTargetForUp,
           end: ro.ending * 1000,
         })

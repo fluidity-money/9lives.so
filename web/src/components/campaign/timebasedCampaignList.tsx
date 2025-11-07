@@ -12,7 +12,9 @@ export default function TimebasedCampaignList({
 }: {
   category: string;
 }) {
-  const tokens = config.simpleMarkets.map((c) => c.toUpperCase());
+  const tokens = Object.values(config.simpleMarkets).map((c) =>
+    c.slug.toUpperCase(),
+  );
   const {
     data: campaigns,
     isLoading,

@@ -8,11 +8,11 @@ export default function SimpleNavMenu() {
   const { id } = useParams<Params>();
   return (
     <div className="flex items-center border-b border-b-9black">
-      {config.simpleMarkets.map((m) => (
-        <Link key={m} href={`/simple/campaign/${m}`}>
+      {Object.values(config.simpleMarkets).map((m) => (
+        <Link key={m.slug} href={`/simple/campaign/${m.slug}`}>
           <TabButton
-            title={m.toUpperCase()}
-            selected={id.toLowerCase() === m}
+            title={m.tabTitle}
+            selected={id.toLowerCase() === m.slug}
           />
         </Link>
       ))}
