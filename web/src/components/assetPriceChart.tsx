@@ -81,6 +81,10 @@ export default function AssetPriceChart({
         });
     }
   };
+  const pointsData =
+    assetPrices[0].timestamp !== starting
+      ? [{ id: 1, timestamp: starting, price: basePrice }, ...assetPrices]
+      : assetPrices;
 
   if (!simple) {
     let divider;
@@ -168,10 +172,7 @@ export default function AssetPriceChart({
     <ChartPriceProvider starting={starting} ending={ending} symbol={symbol}>
       <ResponsiveContainer width="100%" height={simple ? 300 : 320}>
         <LineChart
-          data={[
-            { id: 1, timestamp: starting, price: basePrice },
-            ...assetPrices,
-          ]}
+          data={pointsData}
           margin={{
             top: 40,
             right: simple ? -60 : 4,
