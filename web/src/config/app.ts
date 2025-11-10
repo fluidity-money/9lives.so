@@ -2,6 +2,7 @@ import z from "zod";
 import { farcasterChains } from "./chains";
 import BTC from "#/images/tokens/btc.webp";
 import PAXG from "#/images/tokens/paxg.svg";
+import NVIDIA from "#/images/tokens/nvidia.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -81,6 +82,12 @@ const simpleMarkets = {
     logo: PAXG,
     title: "Gold (PAXG)",
     tabTitle: "GOLD",
+  },
+  nvidia: {
+    slug: "nvidia",
+    logo: NVIDIA,
+    title: "NVIDIA",
+    tabTitle: "NVIDIA",
   },
 } as const;
 
