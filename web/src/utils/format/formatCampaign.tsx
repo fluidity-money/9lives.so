@@ -1,4 +1,9 @@
-import { ParticipatedCampaign, RawParticipatedCampaign } from "../../types";
+import {
+  ClaimedCampaign,
+  ParticipatedCampaign,
+  RawClaimedCampaign,
+  RawParticipatedCampaign,
+} from "../../types";
 import {
   Campaign,
   CampaignDetail,
@@ -128,5 +133,29 @@ export function formatParticipatedCampaign(
     campaignId: ro.campaignId as `0x${string}`,
     outcomeIds: ro.outcomeIds.map((o) => `0x${o}` as `0x${string}`), // add hex prefix
     content: formatParticipatedContent(ro.content),
+  };
+}
+
+export function formatClaimedCampaign(ro: RawClaimedCampaign): ClaimedCampaign {
+  if (!ro) throw new Error("Campaign data is null");
+  if (!ro.content) throw new Error("Campaign content data is null");
+  return {
+    ...ro,
+    content: {
+      ...ro.content,
+      name: ro.content.isDppm
+        ? formatDppmTitle({
+            symbol:
+              ro.content.priceMetadata!.baseAsset.toLowerCase() as keyof typeof config.simpleMarkets,
+            price: ro.content.priceMetadata?.priceTargetForUp,
+            end: ro.content.ending * 1000,
+          })
+        : ro.content.name,
+      outcomes: ro.content.outcomes.map((o) => ({
+        identifier: o.identifier as `0x${string}`,
+        name: ro.content.isDppm ? formatDppmOutcomeName(o.name) : o.name,
+        picture: o.picture ?? null,
+      })),
+    },
   };
 }

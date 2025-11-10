@@ -174,10 +174,6 @@ export type Activity = NonNullable<
   Awaited<ReturnType<typeof requestUserActivities>>[number]
 >;
 
-export type ClaimedRewards = NonNullable<
-  Awaited<ReturnType<typeof requestUserClaims>>[number]
->;
-
 export type Token = {
   chainId: number;
   address: string;
@@ -252,3 +248,11 @@ export type Payoff = {
   ninetailsLoserFusd: number;
   ninetailsWinnerFusdc: number;
 };
+
+export type RawClaimedCampaign = Awaited<
+  ReturnType<typeof requestUserClaims>
+>[number];
+
+export type ClaimedCampaign = NonNullable<
+  Awaited<ReturnType<typeof requestUserClaims>>[number]
+>;

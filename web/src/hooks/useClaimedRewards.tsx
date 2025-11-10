@@ -1,4 +1,5 @@
 import { requestUserClaims } from "@/providers/graphqlClient";
+import { formatClaimedCampaign } from "@/utils/format/formatCampaign";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useClaimedRewards(
@@ -10,6 +11,9 @@ export default function useClaimedRewards(
     queryFn: async () => {
       if (!address) return [];
       return await requestUserClaims(address, campaignId);
+    },
+    select: (data) => {
+      return data.map((i) => formatClaimedCampaign(i));
     },
   });
 }

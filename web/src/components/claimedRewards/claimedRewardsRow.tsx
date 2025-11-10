@@ -1,15 +1,14 @@
 import Link from "next/link";
-import config from "@/config";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import formatFusdc from "@/utils/format/formatUsdc";
-import { ClaimedRewards } from "@/types";
 import { calcTimePassed } from "@/utils/calcTimeDiff";
+import { ClaimedCampaign } from "@/types";
 
-export default function PositionRow({
+export default function ClaimedCampaignRow({
   data,
 }: {
-  data: (ClaimedRewards & { PnL?: number }) | null;
+  data: (ClaimedCampaign & { PnL?: number }) | null;
 }) {
   if (!data) return null;
   const winnerOutcome = data.content.outcomes.find(

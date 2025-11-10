@@ -290,6 +290,13 @@ export const requestUserClaims = (address: string, campaignId?: string) =>
     createdAt: true,
     content: {
       identifier: true,
+      isDppm: true,
+      priceMetadata: {
+        baseAsset: true,
+        priceTargetForUp: true,
+      },
+      starting: true,
+      ending: true,
       name: true,
       picture: true,
       outcomes: {

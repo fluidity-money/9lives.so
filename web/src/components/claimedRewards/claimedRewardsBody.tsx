@@ -5,7 +5,7 @@ import ClaimedRewardsRow from "./claimedRewardsRow";
 import useClaimedRewards from "@/hooks/useClaimedRewards";
 import Placeholder from "../tablePlaceholder";
 import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
-import { ClaimedRewards } from "@/types";
+import { ClaimedCampaign } from "@/types";
 const bodyStyles = "min-h-24 bg-9gray";
 
 export default function ClaimedRewardsBody({
@@ -24,7 +24,7 @@ export default function ClaimedRewardsBody({
   const enrichedCampaigns = claimedRewards?.map((i) => ({
     ...i,
     PnL: PnLs?.find((pi) => pi?.winner === i?.winner?.slice(2))?.profit,
-  })) as ClaimedRewards[];
+  })) as (ClaimedCampaign & { PnL?: number })[] | undefined;
 
   if (isLoading)
     return (
@@ -51,7 +51,10 @@ export default function ClaimedRewardsBody({
   return (
     <tbody className={bodyStyles}>
       {enrichedCampaigns?.map((item) => (
-        <ClaimedRewardsRow key={item?.winner} data={item} />
+        <ClaimedRewardsRow
+          key={`${item?.winner}${item.createdAt}`}
+          data={item}
+        />
       ))}
     </tbody>
   );
