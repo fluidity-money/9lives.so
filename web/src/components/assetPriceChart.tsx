@@ -174,7 +174,7 @@ export default function AssetPriceChart({
         <LineChart
           data={pointsData}
           margin={{
-            top: 40,
+            top: 42,
             right: simple ? -60 : 4,
             bottom: simple ? -10 : 0,
             left: 0,
