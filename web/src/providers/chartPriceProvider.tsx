@@ -12,7 +12,7 @@ export const wsClient = createClient({
 
 const subPricesForDuration = `
 subscription($symbol: String!, $starting: timestamp!, $ending: timestamp!) {
-  oracles_ninelives_prices_1(order_by: {created_by: desc}, where: {created_by: {_gte: $starting, _lte: $ending}, base: {_eq: $symbol}}, limit: 2) {
+  oracles_ninelives_prices_2(order_by: {created_by: desc}, where: {created_by: {_gte: $starting, _lte: $ending}, base: {_eq: $symbol}}, limit: 2) {
     id
     amount
     created_by
@@ -44,7 +44,7 @@ export default function ChartPriceProvider({
       },
       {
         next: async ({ data }) => {
-          const nextData = data?.oracles_ninelives_prices_1;
+          const nextData = data?.oracles_ninelives_prices_2;
           if (nextData && nextData.length > 0) {
             queryClient.setQueryData<PricePoint[]>(
               ["assetPrices", _symbol, starting, ending],

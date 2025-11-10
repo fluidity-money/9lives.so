@@ -649,7 +649,7 @@ export const requestAssetPrices = (
     .gql(
       `
 query {
-  oracles_ninelives_prices_1(order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
+  oracles_ninelives_prices_2(order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
     id
     amount
     created_by
@@ -658,7 +658,7 @@ query {
 `,
     )
     .send() as Promise<{
-    oracles_ninelives_prices_1: RawPricePoint[];
+    oracles_ninelives_prices_2: RawPricePoint[];
   }> | null;
 
 export const requestFinalPrice = (
@@ -670,7 +670,7 @@ export const requestFinalPrice = (
     .gql(
       `
 query {
-  oracles_ninelives_prices_1(order_by: {created_by: desc}, limit:1, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
+  oracles_ninelives_prices_2(order_by: {created_by: desc}, limit:1, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
     id
     amount
     created_by
@@ -679,7 +679,7 @@ query {
 `,
     )
     .send() as Promise<{
-    oracles_ninelives_prices_1: RawPricePoint[];
+    oracles_ninelives_prices_2: RawPricePoint[];
   }> | null;
 
 export const requestTimebasedCampaigns = (
