@@ -26,7 +26,7 @@ export default function useDppmRewards({
   const isPriceAbove =
     !!finalPricePoint &&
     !!priceMetadata &&
-    +priceMetadata.priceTargetForUp > finalPricePoint.price;
+    finalPricePoint.price > +priceMetadata.priceTargetForUp;
   const {
     data: [outcome0, outcome1],
   } = useDppmShareEstimationAll({
