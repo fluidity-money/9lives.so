@@ -32,6 +32,7 @@ export default function CampaignList({
     data,
     isLoading,
     isError,
+    error,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -97,7 +98,7 @@ export default function CampaignList({
         </div>
       </div>
       {isError ? (
-        <ErrorIndicator />
+        <ErrorIndicator msg={error?.message} />
       ) : isLoading ? (
         <LoadingIndicator />
       ) : campaigns?.length === 0 ? (
