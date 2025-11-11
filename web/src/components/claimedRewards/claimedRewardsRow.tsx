@@ -37,8 +37,11 @@ export default function ClaimedCampaignRow({
               target="_blank"
               href={`https://explorer.superposition.so/tx/${data.txHash}`}
             >
-              <span className="un font-geneva text-[10px] uppercase">
-                {data.txHash}
+              <span className="font-geneva text-xs uppercase text-[#808080]">
+                Tx Hash:
+              </span>{" "}
+              <span className="font-geneva text-xs uppercase underline">
+                {data.txHash.slice(0, 4)}...{data.txHash.slice(-4)}
               </span>
             </Link>
           </div>
