@@ -341,6 +341,14 @@ func (r *claimResolver) CreatedAt(ctx context.Context, obj *types.Claim) (int, e
 	return int(obj.CreatedAt.Unix()), nil
 }
 
+// TxHash is the resolver for the txHash field.
+func (r *claimResolver) TxHash(ctx context.Context, obj *types.Claim) (string, error) {
+	if obj == nil {
+		return "", fmt.Errorf("claim is nil")
+	}
+	return obj.TransactionHash, nil
+}
+
 // CreatedAt is the resolver for the createdAt field.
 func (r *commentResolver) CreatedAt(ctx context.Context, obj *types.Comment) (int, error) {
 	if obj == nil {
