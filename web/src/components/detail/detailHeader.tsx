@@ -228,6 +228,7 @@ export default function DetailHeader({
                     month: "short",
                     day: "2-digit",
                     hour: data.isDppm ? "numeric" : undefined,
+                    hourCycle: data.isDppm ? "h24" : undefined,
                     minute: data.isDppm ? "2-digit" : undefined,
                   })}
                 </span>
