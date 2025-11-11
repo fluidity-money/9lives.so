@@ -63,36 +63,36 @@ export default function useDppmShareEstimationAll({
       if (isPriceAbove) {
         return [
           {
-            dppmFusdc: 0,
-            ninetailsWinnerFusdc: 0,
-            ninetailsLoserFusd: Number(
-              formatFusdc(data[0].ninetailsLoserFusd, 2),
-            ),
-          }, // Down outcome = Looser
-          {
-            dppmFusdc: Number(formatFusdc(data[1].dppmFusdc, 2)),
-            ninetailsWinnerFusdc: Number(
-              formatFusdc(data[1].ninetailsWinnerFusdc, 2),
-            ),
-            ninetailsLoserFusd: 0,
-          }, //Up outcome = Winner
-        ];
-      } else {
-        return [
-          {
             dppmFusdc: Number(formatFusdc(data[0].dppmFusdc, 2)),
             ninetailsWinnerFusdc: Number(
               formatFusdc(data[0].ninetailsWinnerFusdc, 2),
             ),
             ninetailsLoserFusd: 0,
-          }, //Down outcome = Winner
+          }, //Up outcome = Winner
           {
             dppmFusdc: 0,
             ninetailsWinnerFusdc: 0,
             ninetailsLoserFusd: Number(
               formatFusdc(data[1].ninetailsLoserFusd, 2),
             ),
+          }, // Down outcome = Looser
+        ];
+      } else {
+        return [
+          {
+            dppmFusdc: 0,
+            ninetailsWinnerFusdc: 0,
+            ninetailsLoserFusd: Number(
+              formatFusdc(data[0].ninetailsLoserFusd, 2),
+            ),
           }, // Up outcome = Looser
+          {
+            dppmFusdc: Number(formatFusdc(data[1].dppmFusdc, 2)),
+            ninetailsWinnerFusdc: Number(
+              formatFusdc(data[1].ninetailsWinnerFusdc, 2),
+            ),
+            ninetailsLoserFusd: 0,
+          }, //Down outcome = Winner
         ];
       }
     },
