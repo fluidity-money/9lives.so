@@ -187,21 +187,16 @@ interface INineLivesTrading {
         uint256 ninetailsLoserFusdc
     );
 
-    struct SimulatedPayoff1 {
-        uint256 dppmFusdc;
-        uint256 ninetailsWinnerFusdc;
-        uint256 ninetailsLoserFusd;
-    }
-
-    struct SimulatedPayoff2 {
+    struct SimulatedPayoff {
+        bytes8 identifier;
         uint256 dppmFusdc;
         uint256 ninetailsWinnerFusdc;
         uint256 ninetailsLoserFusd;
     }
 
     function dppmSimulatePayoffForAddressAll(address spender) external view returns (
-         SimulatedPayoff1 memory outcome1,
-         SimulatedPayoff2 memory outcome2
+         SimulatedPayoff memory outcome1,
+         SimulatedPayoff memory outcome2
     );
 
     function dppmClawbackBFC64995() external returns (uint256);

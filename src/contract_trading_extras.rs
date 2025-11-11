@@ -202,7 +202,7 @@ impl StorageTrading {
                 user_boosted_shares,
                 winning_outcome_shares,
                 U256::ZERO,
-                U256::ZERO
+                U256::ZERO,
             )?;
             Ok((fusdc_dppm, fusdc_winning_ninetails, fusdc_losing_ninetails))
         }
@@ -211,12 +211,18 @@ impl StorageTrading {
     pub fn dppm_simulate_payoff_for_address_all(
         &self,
         spender: Address,
-    ) -> R<((U256, U256, U256), (U256, U256, U256))> {
+    ) -> R<(
+        (FixedBytes<8>, U256, U256, U256),
+        (FixedBytes<8>, U256, U256, U256),
+    )> {
         #[cfg(feature = "trading-backend-dppm")]
-        return Ok((
-            self.dppm_simulate_payoff_for_address(spender, self.outcome_list.get(0).unwrap())?,
-            self.dppm_simulate_payoff_for_address(spender, self.outcome_list.get(1).unwrap())?,
-        ));
+        return {
+            let o_a = self.outcome_list.get(0).unwrap();
+            let o_b = self.outcome_list.get(1).unwrap();
+            let (o_a_1, o_a_2, o_a_3) = self.dppm_simulate_payoff_for_address(spender, o_a)?;
+            let (o_b_1, o_b_2, o_b_3) = self.dppm_simulate_payoff_for_address(spender, o_b)?;
+            return Ok((o_a, o_a_1, o_a_2, o_a_3), (o_b, o_b_1, o_b_2, o_b_3))
+        };
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!()
     }
