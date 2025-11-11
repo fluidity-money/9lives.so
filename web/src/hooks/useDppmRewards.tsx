@@ -37,7 +37,7 @@ export default function useDppmRewards({
   });
   let result: Payoff | null = null;
   if (outcome) {
-    result = outcome === "Up" ? outcome0 : outcome1;
+    result = outcome === "Up" ? outcome1 : outcome0;
   } else {
     result = {
       dppmFusdc: outcome0.dppmFusdc + outcome1.dppmFusdc,
