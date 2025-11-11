@@ -221,7 +221,7 @@ impl StorageTrading {
             let o_b = self.outcome_list.get(1).unwrap();
             let (o_a_1, o_a_2, o_a_3) = self.dppm_simulate_payoff_for_address(spender, o_a)?;
             let (o_b_1, o_b_2, o_b_3) = self.dppm_simulate_payoff_for_address(spender, o_b)?;
-            return Ok((o_a, o_a_1, o_a_2, o_a_3), (o_b, o_b_1, o_b_2, o_b_3))
+            Ok(((o_a, o_a_1, o_a_2, o_a_3), (o_b, o_b_1, o_b_2, o_b_3)))
         };
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!()
