@@ -237,6 +237,50 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Has this address bought 5 simple mode dppm campaigns?
+   */
+  hasBought5SimgleModeCampaigns: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.hasBought5SimgleModeCampaigns<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { hasBought5SimgleModeCampaigns: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "hasBought5SimgleModeCampaigns"
+        >
+    >
+  >;
+  /**
+   * Has this address bought a amm campaign?
+   */
+  hasBoughtAmm: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.hasBoughtAmm<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { hasBoughtAmm: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "hasBoughtAmm"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {

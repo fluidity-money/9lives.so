@@ -286,6 +286,22 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: TokenHolding, <-- Assigned later to avoid potential circular dependency.
     },
+    hasBought5SimgleModeCampaigns: {
+      a: {
+        addr: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
+    hasBoughtAmm: {
+      a: {
+        addr: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 

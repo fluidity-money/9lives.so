@@ -28,14 +28,19 @@ export default function ClaimedCampaignRow({
             />
           ) : null}
           <div className="flex flex-col gap-1 p-1">
-            <Link href={`/campaign/${data.content.identifier}`} target="_blank">
+            <Link href={`/campaign/${data.content.identifier}`}>
               <p className="font-chicago text-xs font-bold underline">
                 {data.content.name}
               </p>
             </Link>
-            <span className="font-geneva text-[10px] uppercase text-[#808080]">
-              {data.content.identifier}
-            </span>
+            <Link
+              target="_blank"
+              href={`https://explorer.superposition.so/tx/${data.txHash}`}
+            >
+              <span className="un font-geneva text-[10px] uppercase">
+                {data.txHash}
+              </span>
+            </Link>
           </div>
         </div>
       </td>

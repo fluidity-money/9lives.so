@@ -287,6 +287,7 @@ export const requestUserClaims = (address: string, campaignId?: string) =>
     fusdcReceived: true,
     sharesSpent: true,
     winner: true,
+    txHash: true,
     createdAt: true,
     content: {
       identifier: true,

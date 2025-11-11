@@ -245,6 +245,8 @@ type (
 		Winner string `json:"winner"`
 
 		CreatedAt time.Time `json:"createdAt"`
+
+		TxHash string `json:"transactionHash"`
 	}
 
 	PriceEvent struct {

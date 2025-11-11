@@ -1653,6 +1653,7 @@ export namespace Schema {
       winner: Claim.winner;
       content: Claim.content;
       createdAt: Claim.createdAt;
+      txHash: Claim.txHash;
     };
   }
 
@@ -1700,6 +1701,13 @@ export namespace Schema {
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface txHash extends $.OutputField {
+      name: "txHash";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
   }
 

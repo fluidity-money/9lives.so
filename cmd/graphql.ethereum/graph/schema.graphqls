@@ -178,6 +178,8 @@ type Claim {
   content: Campaign!
 
   createdAt: Int!
+
+  txHash: String!
 }
 
 """

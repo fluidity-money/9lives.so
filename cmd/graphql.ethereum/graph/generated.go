@@ -127,6 +127,7 @@ type ComplexityRoot struct {
 		CreatedAt     func(childComplexity int) int
 		FusdcReceived func(childComplexity int) int
 		SharesSpent   func(childComplexity int) int
+		TxHash        func(childComplexity int) int
 		Winner        func(childComplexity int) int
 	}
 
@@ -741,6 +742,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Claim.SharesSpent(childComplexity), true
+
+	case "Claim.txHash":
+		if e.complexity.Claim.TxHash == nil {
+			break
+		}
+
+		return e.complexity.Claim.TxHash(childComplexity), true
 
 	case "Claim.winner":
 		if e.complexity.Claim.Winner == nil {
@@ -5182,6 +5190,50 @@ func (ec *executionContext) fieldContext_Claim_createdAt(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Claim_txHash(ctx context.Context, field graphql.CollectedField, obj *types.Claim) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Claim_txHash(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TxHash, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Claim_txHash(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Claim",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Comment_id(ctx context.Context, field graphql.CollectedField, obj *types.Comment) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Comment_id(ctx, field)
 	if err != nil {
@@ -7895,6 +7947,8 @@ func (ec *executionContext) fieldContext_Query_userClaims(ctx context.Context, f
 				return ec.fieldContext_Claim_content(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Claim_createdAt(ctx, field)
+			case "txHash":
+				return ec.fieldContext_Claim_txHash(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Claim", field.Name)
 		},
@@ -12480,6 +12534,11 @@ func (ec *executionContext) _Claim(ctx context.Context, sel ast.SelectionSet, ob
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "txHash":
+			out.Values[i] = ec._Claim_txHash(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

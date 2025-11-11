@@ -123,6 +123,24 @@ export interface Query<
   getTokenLeaderboard?:
     | Query.getTokenLeaderboard<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.getTokenLeaderboard<_$Scalars>>;
+  /**
+   *
+   * Select the `hasBought5SimgleModeCampaigns` field on the `Query` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  hasBought5SimgleModeCampaigns?:
+    | Query.hasBought5SimgleModeCampaigns<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<
+        Query.hasBought5SimgleModeCampaigns<_$Scalars>
+      >;
+  /**
+   *
+   * Select the `hasBoughtAmm` field on the `Query` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
+   *
+   */
+  hasBoughtAmm?:
+    | Query.hasBoughtAmm<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.hasBoughtAmm<_$Scalars>>;
 
   /**
    *
@@ -508,6 +526,84 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getTokenLeaderboard$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type hasBought5SimgleModeCampaigns<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = hasBought5SimgleModeCampaigns$SelectionSet<_$Scalars>;
+
+  export interface hasBought5SimgleModeCampaigns$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `hasBought5SimgleModeCampaigns` field. All arguments are required so you must include this.
+     */
+    $: hasBought5SimgleModeCampaigns$Arguments<_$Scalars>;
+  }
+
+  export interface hasBought5SimgleModeCampaigns$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    addr: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `hasBought5SimgleModeCampaigns` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type hasBought5SimgleModeCampaigns$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    hasBought5SimgleModeCampaigns$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type hasBoughtAmm<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = hasBoughtAmm$SelectionSet<_$Scalars>;
+
+  export interface hasBoughtAmm$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {
+    /**
+     * Arguments for `hasBoughtAmm` field. All arguments are required so you must include this.
+     */
+    $: hasBoughtAmm$Arguments<_$Scalars>;
+  }
+
+  export interface hasBoughtAmm$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    addr: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `hasBoughtAmm` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type hasBoughtAmm$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<hasBoughtAmm$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

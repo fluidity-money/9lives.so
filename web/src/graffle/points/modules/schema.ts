@@ -37,6 +37,8 @@ export namespace Schema {
       getAddressByDiscord: Query.getAddressByDiscord;
       getDiscordName: Query.getDiscordName;
       getTokenLeaderboard: Query.getTokenLeaderboard;
+      hasBought5SimgleModeCampaigns: Query.hasBought5SimgleModeCampaigns;
+      hasBoughtAmm: Query.hasBoughtAmm;
     };
   }
 
@@ -220,6 +222,40 @@ export namespace Schema {
       };
       inlineType: [0, [1]];
       namedType: $$NamedTypes.$$TokenHolding;
+    }
+
+    /**
+     * Has this address bought 5 simple mode dppm campaigns?
+     */
+    export interface hasBought5SimgleModeCampaigns extends $.OutputField {
+      name: "hasBought5SimgleModeCampaigns";
+      arguments: {
+        addr: {
+          kind: "InputField";
+          name: "addr";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Has this address bought a amm campaign?
+     */
+    export interface hasBoughtAmm extends $.OutputField {
+      name: "hasBoughtAmm";
+      arguments: {
+        addr: {
+          kind: "InputField";
+          name: "addr";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Boolean;
     }
   }
 

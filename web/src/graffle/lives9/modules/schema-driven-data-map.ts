@@ -200,6 +200,7 @@ const Claim: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
     createdAt: {},
+    txHash: {},
   },
 };
 
