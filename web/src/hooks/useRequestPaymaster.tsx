@@ -35,7 +35,9 @@ export default function useRequestPaymaster() {
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     if (
       Number(params.amountToSpend) > 0 &&
-      (params.opType === "MINT" || params.opType === "ADD_LIQUIDITY")
+      (params.opType === "MINT" ||
+        params.opType === "ADD_LIQUIDITY" ||
+        params.opType === "WITHDRAW_USDC")
     ) {
       const allowanceTx = prepareContractCall({
         contract: config.contracts.fusdc,
