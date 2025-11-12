@@ -30,7 +30,7 @@ export default function useDppmRewards({
     !!priceMetadata &&
     finalPricePoint.price > +priceMetadata.priceTargetForUp;
   const {
-    data: [{ identifier: id0, ...outcome0 }, { identifier: id1, ...outcome1 }],
+    data: [{ identifier: downId, ...down }, { identifier: upId, ...up }],
   } = useDppmShareEstimationAll({
     tradingAddr,
     account,
@@ -40,14 +40,12 @@ export default function useDppmRewards({
   });
   let results: Payoff | null = null;
   if (singleOutcomeId) {
-    results = singleOutcomeId === id0 ? outcome0 : outcome1;
+    results = singleOutcomeId === downId ? down : up;
   } else {
     results = {
-      dppmFusdc: outcome0.dppmFusdc + outcome1.dppmFusdc,
-      ninetailsLoserFusd:
-        outcome0.ninetailsLoserFusd + outcome1.ninetailsLoserFusd,
-      ninetailsWinnerFusdc:
-        outcome0.ninetailsWinnerFusdc + outcome1.ninetailsWinnerFusdc,
+      dppmFusdc: down.dppmFusdc + up.dppmFusdc,
+      ninetailsLoserFusd: down.ninetailsLoserFusd + up.ninetailsLoserFusd,
+      ninetailsWinnerFusdc: down.ninetailsWinnerFusdc + up.ninetailsWinnerFusdc,
     };
   }
   const totalRewards = Object.values(results).reduce((acc, v) => acc + v);
