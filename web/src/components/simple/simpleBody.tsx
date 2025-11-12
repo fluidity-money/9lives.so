@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Outcome, PricePoint, SimpleCampaignDetail } from "@/types";
 import SimpleSubHeader from "./simpleSubHeader";
 import Button from "../themed/button";
-import Link from "next/link";
 import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
 import { useState } from "react";
@@ -20,6 +19,7 @@ import useDppmRewards from "@/hooks/useDppmRewards";
 import isMarketOpen, { calcNextMarketOpen } from "@/utils/isMarketOpen";
 import config from "@/config";
 import CountdownTimer from "../countdownTimer";
+import { useRouter } from "next/navigation";
 
 function NotActiveMask({
   title,
@@ -93,6 +93,11 @@ export default function SimpleBody({
     ending: data.ending,
     outcomes: data.outcomes,
   });
+  const router = useRouter();
+  async function switchToAdvanced() {
+    await window.cookieStore.set("advanced-mode", "true");
+    router.push("/");
+  }
 
   return (
     <ActiveCampaignProvider
@@ -106,9 +111,9 @@ export default function SimpleBody({
         </h4>
         <h5>
           Once you&apos;re ready, create your own markets and trade using{" "}
-          <Link href="/" className="underline">
+          <span className="cursor-pointer underline" onClick={switchToAdvanced}>
             advanced mode
-          </Link>
+          </span>
           .
         </h5>
       </div>
