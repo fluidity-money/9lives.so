@@ -56,6 +56,7 @@ export default function SimpleBody({
     priceMetadata: data.priceMetadata,
     starting: data.starting,
     ending: data.ending,
+    outcomes: data.outcomes,
   });
   return (
     <ActiveCampaignProvider

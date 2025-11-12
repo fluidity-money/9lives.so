@@ -83,7 +83,8 @@ export default function PositionRow({
     priceMetadata: campaignContent.priceMetadata,
     starting: campaignContent.starting,
     ending: campaignContent.ending,
-    outcome: campaignContent.isDppm ? data.name : undefined,
+    outcomes: campaignContent.outcomes,
+    singleOutcomeId: campaignContent.isDppm ? data.id : undefined,
   });
   const isWinner =
     !!campaignContent.winner && campaignContent.isDppm

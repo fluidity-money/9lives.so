@@ -1,6 +1,6 @@
 import { Account } from "thirdweb/wallets";
 import useDppmShareEstimationAll from "./useDppmShareEstimationAll";
-import { CampaignDetail, Payoff } from "@/types";
+import { CampaignDetail, Outcome, Payoff } from "@/types";
 import useFinalPrice from "./useFinalPrice";
 
 export default function useDppmRewards({
@@ -9,14 +9,16 @@ export default function useDppmRewards({
   priceMetadata,
   starting,
   ending,
-  outcome,
+  outcomes,
+  singleOutcomeId,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
   priceMetadata: CampaignDetail["priceMetadata"];
   starting: number;
   ending: number;
-  outcome?: string;
+  outcomes: Outcome[];
+  singleOutcomeId?: string;
 }) {
   const { data: finalPricePoint } = useFinalPrice({
     symbol: priceMetadata?.baseAsset,
@@ -28,18 +30,19 @@ export default function useDppmRewards({
     !!priceMetadata &&
     finalPricePoint.price > +priceMetadata.priceTargetForUp;
   const {
-    data: [outcome0, outcome1],
+    data: [{ identifier: id0, ...outcome0 }, { identifier: id1, ...outcome1 }],
   } = useDppmShareEstimationAll({
     tradingAddr,
     account,
     enabled: !!priceMetadata,
     isPriceAbove,
+    outcomes,
   });
-  let result: Payoff | null = null;
-  if (outcome) {
-    result = outcome === "Up" ? outcome1 : outcome0;
+  let results: Payoff | null = null;
+  if (singleOutcomeId) {
+    results = singleOutcomeId === id0 ? outcome0 : outcome1;
   } else {
-    result = {
+    results = {
       dppmFusdc: outcome0.dppmFusdc + outcome1.dppmFusdc,
       ninetailsLoserFusd:
         outcome0.ninetailsLoserFusd + outcome1.ninetailsLoserFusd,
@@ -47,6 +50,6 @@ export default function useDppmRewards({
         outcome0.ninetailsWinnerFusdc + outcome1.ninetailsWinnerFusdc,
     };
   }
-  const totalRewards = Object.values(result).reduce((acc, v) => acc + v);
-  return { hasAnyRewards: totalRewards > BigInt(0), totalRewards, result };
+  const totalRewards = Object.values(results).reduce((acc, v) => acc + v);
+  return { hasAnyRewards: totalRewards > BigInt(0), totalRewards, results };
 }

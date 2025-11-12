@@ -1,5 +1,6 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
+import { Outcome } from "@/types";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -13,11 +14,13 @@ export default function useDppmShareEstimationAll({
   account,
   enabled,
   isPriceAbove,
+  outcomes,
 }: {
   tradingAddr: `0x${string}`;
   account?: Account;
   enabled: boolean;
   isPriceAbove: boolean;
+  outcomes: Outcome[];
 }) {
   return useQuery({
     queryKey: [
@@ -28,18 +31,12 @@ export default function useDppmShareEstimationAll({
     ],
     queryFn: async () => {
       if (!account?.address)
-        return [
-          {
-            dppmFusdc: BigInt(0),
-            ninetailsLoserFusd: BigInt(0),
-            ninetailsWinnerFusdc: BigInt(0),
-          },
-          {
-            dppmFusdc: BigInt(0),
-            ninetailsLoserFusd: BigInt(0),
-            ninetailsWinnerFusdc: BigInt(0),
-          },
-        ];
+        return outcomes.map((o) => ({
+          identifier: o.identifier,
+          dppmFusdc: BigInt(0),
+          ninetailsLoserFusd: BigInt(0),
+          ninetailsWinnerFusdc: BigInt(0),
+        }));
 
       const tradingContract = getContract({
         abi: tradingAbi,
@@ -54,24 +51,34 @@ export default function useDppmShareEstimationAll({
         params: [account.address],
       });
 
-      return await simulateTransaction({
+      return (await simulateTransaction({
         transaction: estimateTx,
-      });
+      })) as {
+        identifier: string;
+        dppmFusdc: bigint;
+        ninetailsLoserFusd: bigint;
+        ninetailsWinnerFusdc: bigint;
+      }[];
     },
     select: (data) => {
+      const down = data.find((i) => i.identifier === outcomes[0].identifier);
+      const up = data.find((i) => i.identifier === outcomes[1].identifier);
+
+      if (!down || !up) throw new Error("Outcomes doesnt match");
+
       if (isPriceAbove) {
         return [
           {
+            identifier: down.identifier,
             dppmFusdc: 0,
             ninetailsWinnerFusdc: 0,
-            ninetailsLoserFusd: Number(
-              formatFusdc(data[0].ninetailsLoserFusd, 2),
-            ),
+            ninetailsLoserFusd: Number(formatFusdc(down.ninetailsLoserFusd, 2)),
           }, // Down outcome = Looser
           {
-            dppmFusdc: Number(formatFusdc(data[1].dppmFusdc, 2)),
+            identifier: up.identifier,
+            dppmFusdc: Number(formatFusdc(up.dppmFusdc, 2)),
             ninetailsWinnerFusdc: Number(
-              formatFusdc(data[1].ninetailsWinnerFusdc, 2),
+              formatFusdc(up.ninetailsWinnerFusdc, 2),
             ),
             ninetailsLoserFusd: 0,
           }, //Up outcome = Winner
@@ -79,34 +86,28 @@ export default function useDppmShareEstimationAll({
       } else {
         return [
           {
-            dppmFusdc: Number(formatFusdc(data[0].dppmFusdc, 2)),
+            identifier: down.identifier,
+            dppmFusdc: Number(formatFusdc(down.dppmFusdc, 2)),
             ninetailsWinnerFusdc: Number(
-              formatFusdc(data[0].ninetailsWinnerFusdc, 2),
+              formatFusdc(down.ninetailsWinnerFusdc, 2),
             ),
             ninetailsLoserFusd: 0,
           }, //Down outcome = Winner
           {
+            identifier: up.identifier,
             dppmFusdc: 0,
             ninetailsWinnerFusdc: 0,
-            ninetailsLoserFusd: Number(
-              formatFusdc(data[1].ninetailsLoserFusd, 2),
-            ),
+            ninetailsLoserFusd: Number(formatFusdc(up.ninetailsLoserFusd, 2)),
           }, // Up outcome = Looser
         ];
       }
     },
-    initialData: [
-      {
-        dppmFusdc: BigInt(0),
-        ninetailsLoserFusd: BigInt(0),
-        ninetailsWinnerFusdc: BigInt(0),
-      },
-      {
-        dppmFusdc: BigInt(0),
-        ninetailsLoserFusd: BigInt(0),
-        ninetailsWinnerFusdc: BigInt(0),
-      },
-    ],
+    initialData: outcomes.map((o) => ({
+      identifier: o.identifier,
+      dppmFusdc: BigInt(0),
+      ninetailsLoserFusd: BigInt(0),
+      ninetailsWinnerFusdc: BigInt(0),
+    })),
     enabled,
   });
 }

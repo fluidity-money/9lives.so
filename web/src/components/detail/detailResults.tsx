@@ -58,12 +58,13 @@ export default function DetailResults({ data }: DetailResultsProps) {
     tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
   });
-  const { result: dppmResult, totalRewards } = useDppmRewards({
+  const { results: dppmResults, totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,
     account,
     priceMetadata: data.priceMetadata,
     starting: data.starting,
     ending: data.ending,
+    outcomes: data.outcomes,
   });
   const totalVolumeOfWinner =
     data.investmentAmounts.find((ia) => ia?.id === data.winner)?.usdc ?? 0;
@@ -81,15 +82,15 @@ export default function DetailResults({ data }: DetailResultsProps) {
     ? [
         {
           title: "Base Reward",
-          value: `$${dppmResult.dppmFusdc}`,
+          value: `$${dppmResults.dppmFusdc}`,
         },
         {
           title: "Bonus",
-          value: `$${dppmResult.ninetailsWinnerFusdc}`,
+          value: `$${dppmResults.ninetailsWinnerFusdc}`,
         },
         {
           title: "Refund",
-          value: `$${dppmResult.ninetailsLoserFusd}`,
+          value: `$${dppmResults.ninetailsLoserFusd}`,
         },
       ]
     : [
