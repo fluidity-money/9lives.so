@@ -220,7 +220,7 @@ const tradingAbi = [
   },
   {
     type: "function",
-    name: "dppmClawback",
+    name: "dppmClawbackBFC64995",
     inputs: [],
     outputs: [
       {
@@ -337,8 +337,13 @@ const tradingAbi = [
       {
         name: "outcome1",
         type: "tuple",
-        internalType: "struct INineLivesTrading.SimulatedPayoff1",
+        internalType: "struct INineLivesTrading.SimulatedPayoff",
         components: [
+          {
+            name: "identifier",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
           {
             name: "dppmFusdc",
             type: "uint256",
@@ -359,8 +364,13 @@ const tradingAbi = [
       {
         name: "outcome2",
         type: "tuple",
-        internalType: "struct INineLivesTrading.SimulatedPayoff2",
+        internalType: "struct INineLivesTrading.SimulatedPayoff",
         components: [
+          {
+            name: "identifier",
+            type: "bytes8",
+            internalType: "bytes8",
+          },
           {
             name: "dppmFusdc",
             type: "uint256",
