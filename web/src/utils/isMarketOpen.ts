@@ -1,37 +1,38 @@
 import config from "@/config";
 
-export default function isMarketOpen({
-  openDays,
-  openHours,
-  tz,
-}: {
+type Market = {
   openDays: number[];
-  openHours: string[];
+  openHours: string[]; // ["HH:MM","HH:MM"]
   tz: string;
-}) {
-  const now = new Date();
+};
 
-  const formatter = new Intl.DateTimeFormat("en-US", {
+function marketNowParts(tz: string, date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: tz,
     hour12: false,
     weekday: "short",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-  });
+  }).formatToParts(date);
+  return {
+    hour: Number(parts.find((p) => p.type === "hour")!.value),
+    minute: Number(parts.find((p) => p.type === "minute")!.value),
+    weekdayStr: parts.find((p) => p.type === "weekday")!.value,
+    year: Number(parts.find((p) => p.type === "year")!.value),
+    month: Number(parts.find((p) => p.type === "month")!.value),
+    day: Number(parts.find((p) => p.type === "day")!.value),
+  };
+}
 
-  const parts = formatter.formatToParts(now);
-  const hourPart = parts.find((p) => p.type === "hour");
-  const minutePart = parts.find((p) => p.type === "minute");
-  const weekdayPart = parts.find((p) => p.type === "weekday");
+export default function isMarketOpen(market: Market) {
+  const { openDays, openHours, tz } = market;
+  if (!openDays || openDays.length === 0 || !openHours || openHours.length < 2)
+    return true; // treat as always open
 
-  if (!hourPart || !minutePart || !weekdayPart) {
-    return false;
-  }
-
-  const hour = Number(hourPart.value);
-  const minute = Number(minutePart.value);
-
-  const dayStr = weekdayPart.value;
+  const { hour, minute, weekdayStr } = marketNowParts(tz);
   const dayMap: Record<string, number> = {
     Sun: 0,
     Mon: 1,
@@ -41,106 +42,63 @@ export default function isMarketOpen({
     Fri: 5,
     Sat: 6,
   };
-  const weekday = dayMap[dayStr];
-  if (weekday === undefined) {
-    return false;
-  }
-
-  if (!openDays.includes(weekday)) return false;
+  const weekday = dayMap[weekdayStr];
+  if (weekday === undefined || !openDays.includes(weekday)) return false;
 
   const [openH, openM] = openHours[0].split(":").map(Number);
   const [closeH, closeM] = openHours[1].split(":").map(Number);
 
-  const currentMinutes = hour * 60 + minute;
-  const openMinutes = openH * 60 + openM;
-  const closeMinutes = closeH * 60 + closeM;
+  const nowMin = hour * 60 + minute;
+  const openMin = openH * 60 + openM;
+  const closeMin = closeH * 60 + closeM;
 
-  return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
+  if (openMin <= closeMin) {
+    return nowMin >= openMin && nowMin < closeMin;
+  } else {
+    return nowMin >= openMin || nowMin < closeMin;
+  }
 }
 
-function getNextOpenDate(
-  market: typeof config.simpleMarkets.btc,
-  openH: number,
-  openM: number,
-  offsetDays: number,
+function epochForMarketLocal(
+  tz: string,
+  y: number,
+  m: number,
+  d: number,
+  h: number,
+  mi: number,
 ) {
-  const now = new Date();
-
-  const baseDateParts = new Intl.DateTimeFormat("en-US", {
-    timeZone: market.tz,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(now);
-
-  const year = Number(baseDateParts.find((p) => p.type === "year")!.value);
-  const month = Number(baseDateParts.find((p) => p.type === "month")!.value);
-  const day = Number(baseDateParts.find((p) => p.type === "day")!.value);
-
-  const targetDate = new Date(
-    Date.UTC(year, month - 1, day + offsetDays, openH, openM, 0, 0),
-  );
-
-  const targetDateInMarketParts = new Intl.DateTimeFormat("en-US", {
-    timeZone: market.tz,
-    hour12: false,
+  const target = new Date(Date.UTC(y, m - 1, d, h, mi, 0, 0));
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-  }).formatToParts(targetDate);
-
-  const tYear = Number(
-    targetDateInMarketParts.find((p) => p.type === "year")!.value,
-  );
-  const tMonth = Number(
-    targetDateInMarketParts.find((p) => p.type === "month")!.value,
-  );
-  const tDay = Number(
-    targetDateInMarketParts.find((p) => p.type === "day")!.value,
-  );
-  const tHour = Number(
-    targetDateInMarketParts.find((p) => p.type === "hour")!.value,
-  );
-  const tMinute = Number(
-    targetDateInMarketParts.find((p) => p.type === "minute")!.value,
-  );
-  const tSecond = Number(
-    targetDateInMarketParts.find((p) => p.type === "second")!.value,
-  );
-
-  const localDate = new Date(
-    Date.UTC(tYear, tMonth - 1, tDay, tHour, tMinute, tSecond),
-  );
-  const offsetMs = localDate.getTime() - targetDate.getTime();
-
-  return targetDate.getTime() - offsetMs;
+  }).formatToParts(target);
+  const ty = Number(parts.find((p) => p.type === "year")!.value);
+  const tm = Number(parts.find((p) => p.type === "month")!.value);
+  const td = Number(parts.find((p) => p.type === "day")!.value);
+  const th = Number(parts.find((p) => p.type === "hour")!.value);
+  const tmi = Number(parts.find((p) => p.type === "minute")!.value);
+  const ts = Number(parts.find((p) => p.type === "second")!.value);
+  const local = new Date(Date.UTC(ty, tm - 1, td, th, tmi, ts));
+  return target.getTime() - (local.getTime() - target.getTime());
 }
 
 export function calcNextMarketOpen(
   marketKey: keyof typeof config.simpleMarkets,
 ): number {
-  const market = config.simpleMarkets[marketKey];
+  const market = config.simpleMarkets[marketKey] as Market;
+  if (!market || !market.openDays || market.openDays.length === 0)
+    return Date.now();
+
   const now = new Date();
-
-  if (market.openDays.length === 0) {
-    return now.getTime();
-  }
-
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: market.tz,
-    hour12: false,
-    weekday: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  const parts = formatter.formatToParts(now);
-  const hour = +parts.find((p) => p.type === "hour")!.value;
-  const minute = +parts.find((p) => p.type === "minute")!.value;
-  const dayStr = parts.find((p) => p.type === "weekday")!.value;
+  const { hour, minute, weekdayStr, year, month, day } = marketNowParts(
+    market.tz,
+    now,
+  );
 
   const dayMap: Record<string, number> = {
     Sun: 0,
@@ -151,24 +109,45 @@ export function calcNextMarketOpen(
     Fri: 5,
     Sat: 6,
   };
-  const weekday = dayMap[dayStr];
-  if (weekday === undefined) {
-    return Date.now();
-  }
+  const weekday = dayMap[weekdayStr];
+  if (weekday === undefined) return Date.now();
 
   const [openH, openM] = market.openHours[0].split(":").map(Number);
+  const [closeH, closeM] = market.openHours[1].split(":").map(Number);
 
-  const currentMinutes = hour * 60 + minute;
-  const openMinutes = openH * 60 + openM;
+  const nowMin = hour * 60 + minute;
+  const openMin = openH * 60 + openM;
+  const closeMin = closeH * 60 + closeM;
 
-  if (market.openDays.includes(weekday) && currentMinutes < openMinutes) {
-    return getNextOpenDate(market, openH, openM, 0);
+  // If market is open now, return now
+  const isOpenNow =
+    market.openDays.includes(weekday) &&
+    (openMin <= closeMin
+      ? nowMin >= openMin && nowMin < closeMin
+      : nowMin >= openMin || nowMin < closeMin);
+  if (isOpenNow) return now.getTime();
+
+  // If today is open and we're before opening (non-cross-midnight), return today's open epoch
+  if (
+    market.openDays.includes(weekday) &&
+    openMin <= closeMin &&
+    nowMin < openMin
+  ) {
+    return epochForMarketLocal(market.tz, year, month, day, openH, openM);
   }
 
+  // Otherwise find next open day
   for (let offset = 1; offset <= 7; offset++) {
     const nextDay = (weekday + offset) % 7;
     if (market.openDays.includes(nextDay)) {
-      return getNextOpenDate(market, openH, openM, offset);
+      return epochForMarketLocal(
+        market.tz,
+        year,
+        month,
+        day + offset,
+        openH,
+        openM,
+      );
     }
   }
 
