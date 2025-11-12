@@ -17,6 +17,38 @@ import SimplePositionRow from "./simplePositionRow";
 import SimpleClaimButton from "./simpleClaimButton";
 import RetroCard from "../cardRetro";
 import useDppmRewards from "@/hooks/useDppmRewards";
+import isMarketOpen from "@/utils/isMarketOpen";
+import config from "@/config";
+import CountdownTimer from "../countdownTimer";
+
+function NotActiveMask({
+  title,
+  desc,
+  comp,
+}: {
+  title: string;
+  desc?: string;
+  comp?: React.ReactNode;
+}) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-9layer/60 font-chicago">
+      <div className="mb-36 min-w-[232px]">
+        <RetroCard position="middle" showClose={false} title={title}>
+          {desc ? <span className="text-center">{desc}</span> : null}
+          {comp}
+        </RetroCard>
+      </div>
+    </div>
+  );
+}
+function WillOpenTimer({ openTime }: { openTime: number }) {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <span>Market Opens in:</span>
+      <CountdownTimer endTime={openTime} />
+    </div>
+  );
+}
 
 export default function SimpleBody({
   data,
@@ -25,6 +57,9 @@ export default function SimpleBody({
   data: SimpleCampaignDetail;
   initialAssetPrices?: PricePoint[];
 }) {
+  const isOpen = isMarketOpen(
+    config.simpleMarkets[data.priceMetadata.baseAsset],
+  );
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [isEnded, setIsEnded] = useState(Date.now() > data.ending);
   const symbol = data.priceMetadata.baseAsset.toLowerCase();
@@ -58,6 +93,7 @@ export default function SimpleBody({
     ending: data.ending,
     outcomes: data.outcomes,
   });
+
   return (
     <ActiveCampaignProvider
       previousData={data}
@@ -82,19 +118,18 @@ export default function SimpleBody({
         latestPrice={assetPrices?.[assetPrices?.length - 1]?.price ?? 0}
       />
       <div className="relative">
-        {winnerOutcome ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-9layer/60 font-chicago">
-            <div className="mb-32">
-              <RetroCard position="middle" showClose={false} title="Winner">
-                {" "}
-                <span className="text-center">
-                  {winnerOutcome.name === "Up"
-                    ? "Price Went Up"
-                    : "Price Went Down"}
-                </span>
-              </RetroCard>
-            </div>
-          </div>
+        {isOpen === false ? (
+          <NotActiveMask
+            title="Market Currently Closed"
+            comp={<WillOpenTimer openTime={Date.now() + 1000 * 60 * 60} />}
+          />
+        ) : winnerOutcome ? (
+          <NotActiveMask
+            title="Winner"
+            desc={
+              winnerOutcome.name === "Up" ? "Price Went Up" : "Price Went Down"
+            }
+          />
         ) : null}
         <AssetPriceChart
           simple
@@ -115,22 +150,7 @@ export default function SimpleBody({
               tradingAddr={data.poolAddress}
               outcomes={data.outcomes}
             />
-          ) : (
-            <p
-              className="mx-auto text-center font-chicago text-xs md:pointer-events-none"
-              onClick={() => {
-                window.scrollTo({
-                  top: document.body.scrollHeight - 400,
-                  behavior: "smooth",
-                });
-              }}
-            >
-              This campaign is ended
-              <span className="md:hidden">
-                , scroll down to live campaign ↓
-              </span>
-            </p>
-          )
+          ) : null
         ) : (
           <>
             <Button

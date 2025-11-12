@@ -76,18 +76,27 @@ const simpleMarkets = {
     logo: BTC,
     title: "BTC",
     tabTitle: "BTC",
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
   },
   paxg: {
     slug: "paxg",
     logo: PAXG,
     title: "Gold (PAXG)",
     tabTitle: "GOLD",
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
   },
   nvidia: {
     slug: "nvidia",
     logo: NVIDIA,
     title: "NVIDIA",
     tabTitle: "NVIDIA",
+    openDays: [1, 2, 3, 4, 5],
+    openHours: ["09:30", "16:00"],
+    tz: "America/New_York",
   },
 } as const;
 
@@ -96,6 +105,9 @@ const simpleMarketSchema = z.object({
   logo: z.custom<StaticImageData>(),
   title: z.string(),
   tabTitle: z.string(),
+  openDays: z.array(z.number()),
+  openHours: z.array(z.string()),
+  tz: z.string(),
 });
 
 const simpleMarketSchemas = (
