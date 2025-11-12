@@ -17,7 +17,7 @@ import SimplePositionRow from "./simplePositionRow";
 import SimpleClaimButton from "./simpleClaimButton";
 import RetroCard from "../cardRetro";
 import useDppmRewards from "@/hooks/useDppmRewards";
-import isMarketOpen from "@/utils/isMarketOpen";
+import isMarketOpen, { calcNextMarketOpen } from "@/utils/isMarketOpen";
 import config from "@/config";
 import CountdownTimer from "../countdownTimer";
 
@@ -41,11 +41,11 @@ function NotActiveMask({
     </div>
   );
 }
-function WillOpenTimer({ openTime }: { openTime: number }) {
+function WillOpenTimer({ slug }: { slug: keyof typeof config.simpleMarkets }) {
   return (
     <div className="flex flex-col items-center gap-1">
       <span>Market Opens in:</span>
-      <CountdownTimer endTime={openTime} />
+      <CountdownTimer endTime={calcNextMarketOpen(slug)} />
     </div>
   );
 }
@@ -121,7 +121,7 @@ export default function SimpleBody({
         {isOpen === false ? (
           <NotActiveMask
             title="Market Currently Closed"
-            comp={<WillOpenTimer openTime={Date.now() + 1000 * 60 * 60} />}
+            comp={<WillOpenTimer slug={data.priceMetadata.baseAsset} />}
           />
         ) : winnerOutcome ? (
           <NotActiveMask
