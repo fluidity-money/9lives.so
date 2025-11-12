@@ -34,7 +34,7 @@ function NotActiveMask({
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-9layer/60 font-chicago">
       <div className="mb-36 min-w-[232px]">
         <RetroCard position="middle" showClose={false} title={title}>
-          {desc ? <span className="text-center">{desc}</span> : null}
+          {desc ? <span className="block text-center">{desc}</span> : null}
           {comp}
         </RetroCard>
       </div>
