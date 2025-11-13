@@ -22,7 +22,7 @@ export default function Header({ simple = false }: { simple?: boolean }) {
       <div className="hidden md:flex">
         <DisclaimerButton />
       </div>
-      <div className="hidden h-10 flex-1 border-l-2 border-l-black md:flex">
+      <div className="hidden h-10 flex-1 border-x-2 border-x-black md:flex">
         <NavigationMenu simple={simple} />
       </div>
       <CreateCampaingButton />

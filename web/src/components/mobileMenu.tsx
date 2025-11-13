@@ -19,7 +19,7 @@ export default function MobileMenu({ simple = false }: { simple?: boolean }) {
   }, [pathname]);
   return (
     <div
-      className="flex size-10 items-center justify-center border-x-2 border-x-black md:hidden"
+      className="flex size-10 items-center justify-center border-l-2 border-l-black md:hidden"
       onClick={() => setIsMobileMenuOpen(true)}
     >
       <Image src={MenuIcon} alt="menu" />
