@@ -23,6 +23,7 @@ import { SimpleCampaignDetail } from "@/types";
 import ChainSelectorDropdown from "./chainSelectorDD";
 import { Chain } from "thirdweb";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
+import useFinalPrice from "@/hooks/useFinalPrice";
 
 export default function SimpleBuyDialog({
   data,
@@ -146,6 +147,11 @@ export default function SimpleBuyDialog({
       setValue("usdValue", usdValue);
     }
   }, [usdValue, setValue]);
+  const { data: currentPrice } = useFinalPrice({
+    symbol: data.priceMetadata?.baseAsset,
+    starting: data.starting,
+    ending: data.ending,
+  });
   async function handleBuy({
     supply,
     fromChain,
@@ -167,10 +173,31 @@ export default function SimpleBuyDialog({
           data.outcomes,
           profile?.settings?.refererr ?? "",
           fromDecimals,
+          {
+            baseAsset: data.priceMetadata.baseAsset,
+            priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+            priceOnBuy: currentPrice?.price,
+            minuteOnBuy: Number(
+              new Date().toLocaleString("en-US", {
+                timeZone: "UTC",
+                minute: "numeric",
+              }),
+            ),
+          },
         );
       } else {
         let action = enabledPaymaster ? buyWithPaymaster : buy;
-        await action(Number(supply), profile?.settings?.refererr ?? "");
+        await action(Number(supply), profile?.settings?.refererr ?? "", {
+          baseAsset: data.priceMetadata.baseAsset,
+          priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+          priceOnBuy: currentPrice?.price,
+          minuteOnBuy: Number(
+            new Date().toLocaleString("en-US", {
+              timeZone: "UTC",
+              minute: "numeric",
+            }),
+          ),
+        });
       }
       closeDialog();
     } finally {

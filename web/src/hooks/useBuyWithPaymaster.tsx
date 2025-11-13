@@ -3,7 +3,12 @@ import { prepareContractCall, simulateTransaction } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { CampaignDetail, MintedPosition, SimpleCampaignDetail } from "@/types";
+import {
+  CampaignDetail,
+  DppmMetadata,
+  MintedPosition,
+  SimpleCampaignDetail,
+} from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
 import { useActiveAccount } from "thirdweb/react";
@@ -161,7 +166,11 @@ const useBuyWithPaymaster = ({
       // });
     },
   });
-  const buy = async (fusdc: number, referrer: string) =>
+  const buy = async (
+    fusdc: number,
+    referrer: string,
+    dppmMetadata?: DppmMetadata,
+  ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -207,6 +216,7 @@ const useBuyWithPaymaster = ({
               shareAddr,
               type: "buyWithPaymaster",
               tradingAddr: data.poolAddress,
+              ...(dppmMetadata ?? {}),
             });
             res(result.ticketId);
           } else {

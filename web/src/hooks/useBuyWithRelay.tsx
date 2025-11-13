@@ -4,7 +4,12 @@ import { toUnits } from "thirdweb/utils";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { CampaignDetail, Outcome, SimpleCampaignDetail } from "@/types";
+import {
+  CampaignDetail,
+  DppmMetadata,
+  Outcome,
+  SimpleCampaignDetail,
+} from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { getClient, adaptViemWallet } from "@reservoir0x/relay-sdk";
 import { viemAdapter } from "thirdweb/adapters/viem";
@@ -41,6 +46,7 @@ const useBuyWithRelay = ({
     outcomes: Outcome[],
     referrer: string,
     fromDecimals?: number,
+    dppmMetadata?: DppmMetadata,
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
@@ -180,6 +186,7 @@ const useBuyWithRelay = ({
             tradingAddr: data.poolAddress,
             status: "success",
             type: "buyWithRelay",
+            ...(dppmMetadata ?? {}),
           });
 
           if (requestId) {
@@ -239,6 +246,7 @@ const useBuyWithRelay = ({
               tradingAddr: data.poolAddress,
               status: "failure",
               type: "buyWithRelay",
+              ...(dppmMetadata ?? {}),
               error: e,
             });
           }

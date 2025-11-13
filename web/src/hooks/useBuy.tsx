@@ -7,7 +7,7 @@ import {
 import { toUnits } from "thirdweb/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { CampaignDetail, SimpleCampaignDetail } from "@/types";
+import { CampaignDetail, DppmMetadata, SimpleCampaignDetail } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { useActiveAccount } from "thirdweb/react";
 import { MaxUint256 } from "ethers";
@@ -25,7 +25,11 @@ const useBuy = ({
 }) => {
   const queryClient = useQueryClient();
   const account = useActiveAccount();
-  const buy = async (fusdc: number, referrer: string) =>
+  const buy = async (
+    fusdc: number,
+    referrer: string,
+    dppmMetadata?: DppmMetadata,
+  ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -127,6 +131,7 @@ const useBuy = ({
             outcomeId,
             shareAddr,
             tradingAddr: data.poolAddress,
+            ...(dppmMetadata ?? {}),
           });
           res(null);
         } catch (e) {

@@ -57,6 +57,10 @@ export type CampaignDetail = Omit<
   poolAddress: `0x${string}`;
   isYesNo: boolean;
   outcomes: Outcome[];
+  priceMetadata?: {
+    baseAsset: keyof typeof config.simpleMarkets;
+    priceTargetForUp: string;
+  };
 };
 export type Outcome = {
   name: string;
@@ -256,3 +260,10 @@ export type RawClaimedCampaign = Awaited<
 export type ClaimedCampaign = NonNullable<
   Awaited<ReturnType<typeof requestUserClaims>>[number]
 >;
+
+export type DppmMetadata = {
+  baseAsset: SimpleCampaignDetail["priceMetadata"]["baseAsset"];
+  priceTargetForUp: number;
+  priceOnBuy?: number;
+  minuteOnBuy: number;
+};

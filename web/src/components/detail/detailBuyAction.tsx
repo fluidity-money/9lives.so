@@ -35,6 +35,7 @@ import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import ChainSelector from "../chainSelector";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
+import useFinalPrice from "../../hooks/useFinalPrice";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -60,6 +61,11 @@ export default function DetailBuyAction({
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
   const { data: profile } = useProfile();
+  const { data: currentPrice } = useFinalPrice({
+    symbol: data.priceMetadata?.baseAsset,
+    starting: data.starting,
+    ending: data.ending,
+  });
   const outcome = selectedOutcome
     ? data.outcomes.find((o) => o.identifier === selectedOutcome.id)!
     : data.outcomes[0];
@@ -241,10 +247,39 @@ export default function DetailBuyAction({
           data.outcomes,
           profile?.settings?.refererr ?? "",
           fromDecimals,
+          data.isDppm
+            ? {
+                baseAsset: data.priceMetadata.baseAsset,
+                priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+                priceOnBuy: currentPrice?.price,
+                minuteOnBuy: Number(
+                  new Date().toLocaleString("en-US", {
+                    timeZone: "UTC",
+                    minute: "numeric",
+                  }),
+                ),
+              }
+            : undefined,
         );
       } else {
         let action = enabledPaymaster ? buyWithPaymaster : buy;
-        await action(supply, profile?.settings?.refererr ?? "");
+        await action(
+          supply,
+          profile?.settings?.refererr ?? "",
+          data.isDppm
+            ? {
+                baseAsset: data.priceMetadata.baseAsset,
+                priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+                priceOnBuy: currentPrice?.price,
+                minuteOnBuy: Number(
+                  new Date().toLocaleString("en-US", {
+                    timeZone: "UTC",
+                    minute: "numeric",
+                  }),
+                ),
+              }
+            : undefined,
+        );
       }
     } finally {
       setIsMinting(false);
