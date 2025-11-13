@@ -7,24 +7,20 @@ import {
 import { toUnits } from "thirdweb/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Outcome } from "@/types";
+import { CampaignDetail, SimpleCampaignDetail } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { useActiveAccount } from "thirdweb/react";
 import { MaxUint256 } from "ethers";
 
 const useBuy = ({
   shareAddr,
-  tradingAddr,
-  campaignId,
   outcomeId,
-  outcomes,
+  data,
   openFundModal,
 }: {
   shareAddr: `0x${string}`;
-  tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
-  outcomes: Outcome[];
-  campaignId: `0x${string}`;
+  data: CampaignDetail | SimpleCampaignDetail;
   openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();
@@ -62,7 +58,7 @@ const useBuy = ({
               contract: config.contracts.buyHelper2,
               method: "mint",
               params: [
-                tradingAddr,
+                data.poolAddress,
                 config.contracts.fusdc.address,
                 outcomeId,
                 minSharesOut,
@@ -104,18 +100,24 @@ const useBuy = ({
             transaction: mintWith9LivesTx(simulatedShares),
             account,
           });
-          const outcomeIds = outcomes.map((o) => o.identifier);
+          const outcomeIds = data.outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
-            queryKey: ["positions", tradingAddr, outcomes, account],
+            queryKey: ["positions", data.poolAddress, data.outcomes, account],
           });
           queryClient.invalidateQueries({
-            queryKey: ["sharePrices", tradingAddr, outcomeIds],
+            queryKey: ["sharePrices", data.poolAddress, outcomeIds],
           });
           queryClient.invalidateQueries({
-            queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
+            queryKey: [
+              "returnValue",
+              shareAddr,
+              data.poolAddress,
+              outcomeId,
+              fusdc,
+            ],
           });
           queryClient.invalidateQueries({
-            queryKey: ["campaign", campaignId],
+            queryKey: ["campaign", data.identifier],
           });
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", outcomeIds],
@@ -124,7 +126,7 @@ const useBuy = ({
             amount: fusdc,
             outcomeId,
             shareAddr,
-            tradingAddr,
+            tradingAddr: data.poolAddress,
           });
           res(null);
         } catch (e) {

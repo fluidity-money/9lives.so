@@ -134,10 +134,8 @@ export default function DetailBuyAction({
         t.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   )?.balance;
   const { buy } = useBuy({
-    tradingAddr: data.poolAddress,
+    data,
     shareAddr: outcome.share.address,
-    campaignId: data.identifier,
-    outcomes: data.outcomes,
     outcomeId: outcome.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
@@ -148,9 +146,8 @@ export default function DetailBuyAction({
     openFundModal: () => setFundModalOpen(true),
   });
   const { buyWithRelay } = useBuyWithRelay({
-    tradingAddr: data.poolAddress,
+    data,
     shareAddr: outcome.share.address,
-    campaignId: data.identifier,
     outcomeId: outcome.identifier,
   });
   const usdValue = tokens

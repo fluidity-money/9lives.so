@@ -44,11 +44,9 @@ export default function SimpleBuyDialog({
   const { data: profile } = useProfile();
   const account = useActiveAccount();
   const { buy } = useBuy({
+    data,
     shareAddr: selectedOutcome.share.address,
     outcomeId: selectedOutcome.identifier,
-    outcomes: data.outcomes,
-    tradingAddr: data.poolAddress,
-    campaignId: data.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
   const { buy: buyWithPaymaster } = useBuyWithPaymaster({
@@ -58,10 +56,9 @@ export default function SimpleBuyDialog({
     openFundModal: () => setFundModalOpen(true),
   });
   const { buyWithRelay } = useBuyWithRelay({
+    data,
     shareAddr: selectedOutcome.share.address,
     outcomeId: selectedOutcome.identifier,
-    tradingAddr: data.poolAddress,
-    campaignId: data.identifier,
   });
   const formSchema = z
     .object({

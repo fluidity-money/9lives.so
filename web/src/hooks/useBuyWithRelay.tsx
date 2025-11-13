@@ -1,10 +1,10 @@
 import config from "@/config";
-import { encode, prepareContractCall, simulateTransaction } from "thirdweb";
+import { encode, prepareContractCall } from "thirdweb";
 import { toUnits } from "thirdweb/utils";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Outcome } from "@/types";
+import { CampaignDetail, Outcome, SimpleCampaignDetail } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { getClient, adaptViemWallet } from "@reservoir0x/relay-sdk";
 import { viemAdapter } from "thirdweb/adapters/viem";
@@ -19,14 +19,12 @@ import { MaxUint256 } from "ethers";
 type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 const useBuyWithRelay = ({
   shareAddr,
-  tradingAddr,
-  campaignId,
   outcomeId,
+  data,
 }: {
   shareAddr: `0x${string}`;
-  tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
-  campaignId: `0x${string}`;
+  data: CampaignDetail | SimpleCampaignDetail;
 }) => {
   const queryClient = useQueryClient();
   const wallet = useActiveWallet();
@@ -85,7 +83,7 @@ const useBuyWithRelay = ({
               contract: config.contracts.buyHelper2,
               method: "mint",
               params: [
-                tradingAddr,
+                data.poolAddress,
                 toToken,
                 outcomeId,
                 minSharesOut,
@@ -179,7 +177,7 @@ const useBuyWithRelay = ({
             usdValue,
             operationStart,
             operationEnd: performance.now(),
-            tradingAddr,
+            tradingAddr: data.poolAddress,
             status: "success",
             type: "buyWithRelay",
           });
@@ -201,22 +199,22 @@ const useBuyWithRelay = ({
 
           const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
-            queryKey: ["positions", tradingAddr, outcomes, account],
+            queryKey: ["positions", data.poolAddress, outcomes, account],
           });
           queryClient.invalidateQueries({
-            queryKey: ["sharePrices", tradingAddr, outcomeIds],
+            queryKey: ["sharePrices", data.poolAddress, outcomeIds],
           });
           queryClient.invalidateQueries({
             queryKey: [
               "returnValue",
               shareAddr,
-              tradingAddr,
+              data.poolAddress,
               outcomeId,
               usdValue,
             ],
           });
           queryClient.invalidateQueries({
-            queryKey: ["campaign", campaignId],
+            queryKey: ["campaign", data.identifier],
           });
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", outcomeIds],
@@ -238,7 +236,7 @@ const useBuyWithRelay = ({
               usdValue,
               operationStart,
               operationEnd: performance.now(),
-              tradingAddr,
+              tradingAddr: data.poolAddress,
               status: "failure",
               type: "buyWithRelay",
               error: e,
