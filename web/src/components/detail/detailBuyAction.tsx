@@ -247,7 +247,7 @@ export default function DetailBuyAction({
           data.outcomes,
           profile?.settings?.refererr ?? "",
           fromDecimals,
-          data.isDppm
+          data.isDppm && data.priceMetadata
             ? {
                 baseAsset: data.priceMetadata.baseAsset,
                 priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
@@ -266,7 +266,7 @@ export default function DetailBuyAction({
         await action(
           supply,
           profile?.settings?.refererr ?? "",
-          data.isDppm
+          data.isDppm && data.priceMetadata
             ? {
                 baseAsset: data.priceMetadata.baseAsset,
                 priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),

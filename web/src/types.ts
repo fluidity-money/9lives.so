@@ -33,12 +33,16 @@ export interface CampaignFilters {
 }
 export type Campaign = Omit<
   RawCampaign,
-  "outcomes" | "identifier" | "poolAddress"
+  "outcomes" | "identifier" | "poolAddress" | "priceMetadata"
 > & {
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
   isYesNo: boolean;
   outcomes: Outcome[];
+  priceMetadata: {
+    baseAsset: keyof typeof config.simpleMarkets;
+    priceTargetForUp: string;
+  } | null;
 };
 export type SimpleCampaignDetail = NonNullable<RawSimpleCampaignDetail> & {
   outcomes: Outcome[];
@@ -51,16 +55,16 @@ export type SimpleCampaignDetail = NonNullable<RawSimpleCampaignDetail> & {
 };
 export type CampaignDetail = Omit<
   NonNullable<RawCampaignDetail>,
-  "outcomes" | "identifier" | "poolAddress"
+  "outcomes" | "identifier" | "poolAddress" | "priceMetadata"
 > & {
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
   isYesNo: boolean;
   outcomes: Outcome[];
-  priceMetadata?: {
+  priceMetadata: {
     baseAsset: keyof typeof config.simpleMarkets;
     priceTargetForUp: string;
-  };
+  } | null;
 };
 export type Outcome = {
   name: string;
