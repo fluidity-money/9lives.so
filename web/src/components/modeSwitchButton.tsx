@@ -2,6 +2,7 @@
 import { combineClass } from "@/utils/combineClass";
 import { Switch } from "@headlessui/react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { useRef, useCallback } from "react";
 
@@ -22,6 +23,10 @@ function useDebouncedCallback(
 export default function ModeSwitchButton() {
   const [enabled, setEnabled] = useState<boolean>();
   const router = useRouter();
+
+  useEffect(() => {
+    posthog.register({ isAdvancedMode: enabled ?? false });
+  }, [enabled]);
 
   useEffect(() => {
     (async function () {
