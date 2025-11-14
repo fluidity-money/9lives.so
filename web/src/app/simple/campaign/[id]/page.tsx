@@ -1,20 +1,14 @@
 import config from "@/config";
-import {
-  requestCampaignById,
-  requestSimpleMarket,
-} from "@/providers/graphqlClient";
+import { requestSimpleMarket } from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
-import CountdownTimer from "@/components/countdownTimer";
-import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
-import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
-import { RawCampaignDetail, RawSimpleCampaignDetail } from "@/types";
+import { Suspense } from "react";
+import SimpleHeader from "@/components/simple/simpleHeader";
+
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ cid: string }>;
-export const dynamicParams = true;
-export const revalidate = 60;
 export async function generateStaticParams() {
   return Object.values(config.simpleMarkets).map((m) => ({
     id: m.slug,
@@ -35,6 +29,9 @@ export async function generateMetadata({ params }: { params: Params }) {
     },
   };
 }
+function isSimpleMarketKey(k: string): k is keyof typeof config.simpleMarkets {
+  return k in config.simpleMarkets;
+}
 export default async function SimpleDetailPage({
   params,
   searchParams,
@@ -44,50 +41,70 @@ export default async function SimpleDetailPage({
 }) {
   const { id } = await params;
   const { cid } = await searchParams;
-  let res: RawSimpleCampaignDetail | RawCampaignDetail;
-  if (cid) {
-    res = await requestCampaignById(cid);
-  } else {
-    res = await requestSimpleMarket(id);
-  }
-  if (!res || !res.priceMetadata) notFound();
-  const data = formatSimpleCampaignDetail(res);
-  const initialAssetPrices = await getAndFormatAssetPrices({
-    symbol: data.priceMetadata.baseAsset,
-    starting: data.starting,
-    ending: data.ending,
-  });
+
+  if (!isSimpleMarketKey(id)) notFound();
 
   return (
     <div className="flex flex-col gap-4">
       <SimpleNavMenu />
       <div className="flex items-center gap-2">
         <Image
-          src={config.simpleMarkets[data.priceMetadata.baseAsset].logo}
+          src={config.simpleMarkets[id].logo}
           width={60}
           height={60}
-          alt={data.name}
+          alt={id}
         />
-        <div className="flex flex-col gap-1">
-          <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
-          <div className="flex items-center gap-1 text-xs">
-            <span className="font-geneva uppercase text-[#808080]">
-              {new Date(data.starting).toLocaleString("default", {
-                hour: "numeric",
-                timeZone: "UTC",
-              })}{" "}
-              -{" "}
-              {new Date(data.ending).toLocaleString("default", {
-                hour: "numeric",
-                timeZone: "UTC",
-              })}
-              {" UTC"}
-            </span>
-            <CountdownTimer endTime={data.ending} />
-          </div>
-        </div>
+        <Suspense
+          fallback={
+            <div>
+              <h1 className="font-chicago text-xl md:text-2xl">
+                {config.simpleMarkets[id].title} above $...... on{" "}
+                {new Date().toLocaleString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  hourCycle: "h23",
+                  minute: "2-digit",
+                  timeZone: "UTC",
+                })}{" "}
+                UTC
+              </h1>
+              <span className="font-geneva text-xs uppercase text-[#808080]">
+                {new Date().toLocaleString("default", {
+                  hour: "numeric",
+                  timeZone: "UTC",
+                })}{" "}
+                -{" "}
+                {new Date(Date.now() + 1000 * 60 * 60).toLocaleString(
+                  "default",
+                  {
+                    hour: "numeric",
+                    timeZone: "UTC",
+                  },
+                )}
+                {" UTC"}
+              </span>
+            </div>
+          }
+        >
+          <SimpleHeader id={id} cid={cid} />
+        </Suspense>
       </div>
-      <SimpleBody data={data} initialAssetPrices={initialAssetPrices} />
+      <Suspense
+        fallback={
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="skeleton h-[66px] flex-1" />
+              <div className="skeleton h-[66px] flex-1" />
+            </div>
+            <div className="skeleton h-[300px] w-[568px]" />
+            <div className="skeleton h-[58px] w-full" />
+            <div className="skeleton h-5 w-full" />
+          </div>
+        }
+      >
+        <SimpleBody id={id} cid={cid} />
+      </Suspense>
     </div>
   );
 }

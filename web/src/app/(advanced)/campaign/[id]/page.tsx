@@ -6,7 +6,6 @@ import {
   requestPriceChanges,
 } from "@/providers/graphqlClient";
 import { getCampaignsForSSG } from "@/serverData/getCampaigns";
-import { PricePoint } from "@/types";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -40,22 +39,10 @@ export default async function DetailPage({ params }: { params: Params }) {
   if (!response) notFound();
   const campaign = formatCampaignDetail(response);
   const priceEvents = await requestPriceChanges(response.poolAddress);
-  let initialAssetPrices: PricePoint[] = [];
-  if (campaign.isDppm && campaign.priceMetadata) {
-    initialAssetPrices = await getAndFormatAssetPrices({
-      symbol: campaign.priceMetadata.baseAsset,
-      starting: campaign.starting,
-      ending: campaign.ending,
-    });
-  }
 
   return (
     <Suspense>
-      <DetailWrapper
-        initialData={campaign}
-        priceEvents={priceEvents}
-        initialAssetPrices={initialAssetPrices}
-      />
+      <DetailWrapper initialData={campaign} priceEvents={priceEvents} />
     </Suspense>
   );
 }

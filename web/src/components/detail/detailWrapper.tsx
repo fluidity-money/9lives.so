@@ -22,11 +22,9 @@ import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 export default function DetailWrapper({
   initialData,
   priceEvents,
-  initialAssetPrices,
 }: {
   initialData: CampaignDetail;
   priceEvents: PriceEvent[];
-  initialAssetPrices?: PricePoint[];
 }) {
   const outcomeId = useSearchParams()?.get("outcomeId");
   const { data } = useQuery({
@@ -52,14 +50,6 @@ export default function DetailWrapper({
   const isEnded = data.ending < Date.now();
   const notStarted = data.starting > Date.now();
   const isConcluded = Boolean(data.winner);
-  const symbol = data.priceMetadata?.baseAsset?.toLowerCase();
-  const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
-    {
-      queryKey: ["assetPrices", symbol, data.starting, data.ending],
-      initialData: initialAssetPrices,
-      enabled: !!data.isDppm,
-    },
-  );
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   return (
     <section
@@ -74,7 +64,6 @@ export default function DetailWrapper({
           notStarted={notStarted}
           isEnded={isEnded}
           isConcluded={isConcluded}
-          initialAssetPrices={initialAssetPrices}
         />
         {data.isDppm && data.priceMetadata ? (
           <AssetPriceChart
@@ -83,8 +72,6 @@ export default function DetailWrapper({
             ending={data.ending}
             basePrice={Number(data.priceMetadata.priceTargetForUp)}
             symbol={data.priceMetadata.baseAsset}
-            assetsLoaded={assetsLoaded}
-            assetPrices={assetPrices}
           />
         ) : (
           <PriceChart

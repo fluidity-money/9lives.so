@@ -1,5 +1,7 @@
+"use client";
 import ChartPriceProvider from "@/providers/chartPriceProvider";
 import { PricePoint } from "@/types";
+import { useQuery } from "@tanstack/react-query";
 import {
   LineChart,
   ResponsiveContainer,
@@ -16,9 +18,8 @@ export default function AssetPriceChart({
   basePrice,
   starting,
   ending,
-  assetPrices,
-  assetsLoaded,
   simple = false,
+  initialData,
 }: {
   id: string;
   symbol: string;
@@ -26,9 +27,15 @@ export default function AssetPriceChart({
   starting: number;
   ending: number;
   simple?: boolean;
-  assetsLoaded: boolean;
-  assetPrices?: PricePoint[];
+  initialData?: PricePoint[];
 }) {
+  const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
+    {
+      queryKey: ["assetPrices", symbol, starting, ending],
+      initialData,
+    },
+  );
+
   if (!assetsLoaded || !assetPrices || assetPrices.length < 2) {
     return null;
   }

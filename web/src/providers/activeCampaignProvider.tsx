@@ -36,17 +36,14 @@ subscription($symbol: String!) {
 `;
 export default function ActiveCampaignProvider({
   previousData,
-  symbol,
   children,
-  setIsEnded,
 }: {
   previousData: SimpleCampaignDetail;
-  symbol: string;
   children: Readonly<React.ReactNode>;
-  setIsEnded: React.Dispatch<boolean>;
 }) {
   const queryClient = useQueryClient();
   const [liveCampaign, setLiveCampaign] = useState<SimpleCampaignDetail>();
+  const symbol = previousData.priceMetadata.baseAsset;
   useEffect(() => {
     const unsubPrices = wsClient.subscribe<{
       ninelives_campaigns_1: { content: SimpleCampaignDetail; id: string }[];
@@ -67,7 +64,6 @@ export default function ActiveCampaignProvider({
             });
             if (nextData.starting > previousData.starting) {
               setLiveCampaign(nextData);
-              setIsEnded(true);
             } else {
               setLiveCampaign(undefined);
             }

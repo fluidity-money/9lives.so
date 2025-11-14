@@ -28,13 +28,11 @@ export default function DetailHeader({
   isEnded,
   isConcluded,
   notStarted,
-  initialAssetPrices,
 }: {
   data: CampaignDetail;
   isEnded: boolean;
   isConcluded: boolean;
   notStarted: boolean;
-  initialAssetPrices?: PricePoint[];
 }) {
   const account = useActiveAccount();
   const left = data.ending - Date.now();
@@ -254,7 +252,6 @@ export default function DetailHeader({
               value={`$${data.priceMetadata?.priceTargetForUp}`}
             />
             <DetailCurrentPriceBox
-              initialData={initialAssetPrices}
               isEnded={isEnded}
               starting={data.starting}
               ending={data.ending}
