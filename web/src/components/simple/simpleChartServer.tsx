@@ -3,7 +3,7 @@ import SimpleChart from "./simpleChart";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 
 export const dynamicParams = true;
-export const revalidate = 60;
+export const revalidate = 300;
 export default async function SimpleChartServer({
   data,
   simple,

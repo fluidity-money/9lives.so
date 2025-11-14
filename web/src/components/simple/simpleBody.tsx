@@ -27,9 +27,15 @@ export default async function SimpleBody({
 }) {
   let res: RawSimpleCampaignDetail | RawCampaignDetail;
   if (cid) {
-    res = await requestCampaignById(cid);
+    res = await requestCampaignById(cid, {
+      next: { revalidate: 0 },
+      cache: "no-store",
+    });
   } else {
-    res = await requestSimpleMarket(id);
+    res = await requestSimpleMarket(id, {
+      next: { revalidate: 0 },
+      cache: "no-store",
+    });
   }
   if (!res || !res.priceMetadata) notFound();
   const data = formatSimpleCampaignDetail(res);

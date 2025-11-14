@@ -159,49 +159,59 @@ export const requestCreations = (limit?: number) =>
     )
     .send();
 
-export const requestCampaignById = (id: string) =>
-  graph9Lives.query.campaignById({
-    $: { id },
-    name: true,
-    identifier: true,
-    description: true,
-    picture: true,
-    oracleDescription: true,
-    oracleUrls: true,
-    settlement: true,
-    poolAddress: true,
-    isDpm: true,
-    creator: {
-      address: true,
-    },
-    shares: {
-      identifier: true,
-      shares: true,
-    },
-    outcomes: {
-      identifier: true,
+export const requestCampaignById = (id: string, init?: RequestInit) =>
+  graph9Lives
+    .anyware(({ exchange }) =>
+      exchange({
+        using: {
+          fetch: async (r) => {
+            return fetch(r, init);
+          },
+        },
+      }),
+    )
+    .query.campaignById({
+      $: { id },
       name: true,
+      identifier: true,
+      description: true,
       picture: true,
-      share: {
+      oracleDescription: true,
+      oracleUrls: true,
+      settlement: true,
+      poolAddress: true,
+      isDpm: true,
+      creator: {
         address: true,
       },
-    },
-    liquidityVested: true,
-    ending: true,
-    starting: true,
-    winner: true,
-    totalVolume: true,
-    investmentAmounts: {
-      id: true,
-      share: true,
-      usdc: true,
-    },
-    isDppm: true,
-    priceMetadata: {
-      baseAsset: true,
-      priceTargetForUp: true,
-    },
-  });
+      shares: {
+        identifier: true,
+        shares: true,
+      },
+      outcomes: {
+        identifier: true,
+        name: true,
+        picture: true,
+        share: {
+          address: true,
+        },
+      },
+      liquidityVested: true,
+      ending: true,
+      starting: true,
+      winner: true,
+      totalVolume: true,
+      investmentAmounts: {
+        id: true,
+        share: true,
+        usdc: true,
+      },
+      isDppm: true,
+      priceMetadata: {
+        baseAsset: true,
+        priceTargetForUp: true,
+      },
+    });
 
 export const requestUserParticipated = (
   address: string,
@@ -617,29 +627,39 @@ export const requestPriceChanges = (poolAddress: string) =>
 export const requestWeeklyVolume = (poolAddress: string) =>
   graph9Lives.query.campaignWeeklyVolume({ $: { poolAddress } });
 
-export const requestSimpleMarket = (symbol: string) =>
-  graph9Lives.query.campaignBySymbol({
-    $: { symbol: symbol.toUpperCase() },
-    identifier: true,
-    starting: true,
-    ending: true,
-    poolAddress: true,
-    outcomes: {
+export const requestSimpleMarket = (symbol: string, init?: RequestInit) =>
+  graph9Lives
+    .anyware(({ exchange }) =>
+      exchange({
+        using: {
+          fetch: async (r) => {
+            return fetch(r, init);
+          },
+        },
+      }),
+    )
+    .query.campaignBySymbol({
+      $: { symbol: symbol.toUpperCase() },
       identifier: true,
+      starting: true,
+      ending: true,
+      poolAddress: true,
+      outcomes: {
+        identifier: true,
+        name: true,
+        picture: true,
+        share: { address: true },
+      },
+      totalVolume: true,
+      creator: { address: true },
+      winner: true,
+      investmentAmounts: { usdc: true, share: true, id: true },
+      priceMetadata: {
+        baseAsset: true,
+        priceTargetForUp: true,
+      },
       name: true,
-      picture: true,
-      share: { address: true },
-    },
-    totalVolume: true,
-    creator: { address: true },
-    winner: true,
-    investmentAmounts: { usdc: true, share: true, id: true },
-    priceMetadata: {
-      baseAsset: true,
-      priceTargetForUp: true,
-    },
-    name: true,
-  });
+    });
 
 export const requestAssetPrices = (
   symbol: string,

@@ -9,6 +9,9 @@ import SimpleHeader from "@/components/simple/simpleHeader";
 
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ cid: string }>;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateStaticParams() {
   return Object.values(config.simpleMarkets).map((m) => ({
     id: m.slug,

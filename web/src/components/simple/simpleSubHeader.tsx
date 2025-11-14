@@ -4,7 +4,7 @@ import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import DetailCurrentPriceBox from "../detail/detailCurrentPriceBox";
 
 export const dynamicParams = true;
-export const revalidate = 60;
+export const revalidate = 300;
 
 export default async function SimpleSubHeader({
   data,
