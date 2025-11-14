@@ -1,7 +1,7 @@
-import { requestFinalPrice } from "@/providers/graphqlClient";
 import { HeaderBox } from "../detail/detailHeaderBox";
 import { SimpleCampaignDetail } from "@/types";
-import { formatAssetPrices } from "@/utils/format/formatAssetPrice";
+import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
+import DetailCurrentPriceBox from "../detail/detailCurrentPriceBox";
 
 export const dynamicParams = true;
 export const revalidate = 60;
@@ -12,31 +12,25 @@ export default async function SimpleSubHeader({
   data: SimpleCampaignDetail;
 }) {
   const isEnded = Date.now() > data.ending;
-  const response = await requestFinalPrice(
-    data.priceMetadata.baseAsset,
-    new Date(data.starting).toISOString(),
-    new Date(data.ending).toISOString(),
-  );
-  const latestPrice = formatAssetPrices(response)[0];
-  const subHeaderMap = [
-    {
-      title: "Base Price",
-      value: `$${data.priceMetadata.priceTargetForUp}`,
-      show: true,
-    },
-    {
-      title: isEnded ? "Final Price" : "Current Price",
-      value: `$${latestPrice.price}`,
-      show: true,
-    },
-  ];
+  const pointsData = await getAndFormatAssetPrices({
+    symbol: data.priceMetadata!.baseAsset,
+    starting: data.starting,
+    ending: data.ending,
+  });
+
   return (
     <div className="flex flex-wrap items-center gap-2.5">
-      {subHeaderMap
-        .filter((i) => i.show)
-        .map((i) => (
-          <HeaderBox key={i.title} title={i.title} value={i.value} />
-        ))}
+      <HeaderBox
+        title="Base Price"
+        value={`$${data.priceMetadata.priceTargetForUp}`}
+      />
+      <DetailCurrentPriceBox
+        isEnded={isEnded}
+        symbol={data.priceMetadata.baseAsset}
+        ending={data.ending}
+        starting={data.starting}
+        initialData={pointsData}
+      />
     </div>
   );
 }
