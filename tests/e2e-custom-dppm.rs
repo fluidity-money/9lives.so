@@ -75,11 +75,10 @@ fn test_dppm_simple() {
             );
             assert_eq!(shares_ivan, v_ivan_dppm);
             assert_eq!(c.ninetails_user_boosted_shares.getter(msg_sender()).get(o[0]), v_ivan_ninetails);
-            dbg!(c.ninetails_user_boosted_shares.getter(msg_sender()).get(o[0]), v_ivan_ninetails);
         },
         ERIK => {
             set_block_timestamp(30 * 60);
-            erik_simulated_earnings = c.dppm_simulate_earnings(U256::from(10e6), o[1])
+            erik_simulated_earnings = c.dppm_simulate_earnings_B_866_B_112(U256::from(10e6), o[1])
                 .unwrap();
             let (v_erik_dppm, v_erik_ninetails) = c.internal_dppm_simulate_mint(o[1], U256::from(10e6)).unwrap();
             let e_erik = should_spend_fusdc_sender!(
@@ -96,9 +95,9 @@ fn test_dppm_simple() {
             // w_fusdc: USDC you would get for DPPM shares if outcome 0 won
             // w_boosted: USDC you would get for the boosted shares if outcome 0 won
             // l_loser: USDC you would get if outcome 1 lost
-            let ((w_fusdc, w_boosted, _), (_, _, l_loser)) =
+            let ((_, w_fusdc, w_boosted, _), (_, _, _, l_loser)) =
                 c.dppm_simulate_payoff_for_address_all(msg_sender()).unwrap();
-            let (returned_1, returned_2) = should_spend_fusdc_contract!(15115113,
+            let (returned_1, returned_2) = should_spend_fusdc_contract!(15091831 ,
                 c.dppm_payoff_for_all_58633_B_6_E(msg_sender())
             );
             assert_eq!(returned_1, w_fusdc + w_boosted);
@@ -106,7 +105,7 @@ fn test_dppm_simple() {
         },
         ERIK => {
             let resulted = should_spend_fusdc_contract!(
-                1884885,
+                1908167,
                 c.payoff_C_B_6_F_2565(o[1], U256::ZERO, ERIK)
             );
             assert_eq!(resulted, erik_simulated_earnings.2);
@@ -184,7 +183,7 @@ proptest! {
                 let e_2 = c.dppm_simulate_payoff_for_address(sender, o_2).unwrap();
                 assert!(max_fusdc >= e_1.0 + e_1.1, "{max_fusdc} < {}", e_1.0 + e_1.1);
                 assert!(max_fusdc >= e_2.0 + e_2.1);
-                let e = c.dppm_simulate_earnings(fusdc_amt, outcome).unwrap();
+                let e = c.dppm_simulate_earnings_B_866_B_112(fusdc_amt, outcome).unwrap();
                 // We need to check that the winning payout and Ninetails payout can
                 // never exceed the pool balance:
                 assert!(max_fusdc >= e.0 + e.1, "{max_fusdc} <= {} + {}", e.0, e.1);

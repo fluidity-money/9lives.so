@@ -29,11 +29,11 @@ pub fn dppm_price(x: U256, M1: U256, M2: U256) -> Result<U256, Error> {
 
 #[allow(non_snake_case)]
 pub fn dppm_shares(M_A: U256, M_B: U256, m: U256, out_of_b: U256) -> Result<U256, Error> {
-    // cost + (self.M1 + cost) / (self.M1 + self.M2 + cost) * (self.M2 - self.outofM2)
-    // m + ((M_A + m) * (M_B - out_of_b) / ((M_A + M_B) + m))
+    // cost + cost / (self.M1 + self.M2 + cost) * (self.M2 - self.outofM2)
+    // m + (m * (M_B - out_of_b) / ((M_A + M_B) + m))
     Ok(add!(
         m,
-        mul_div(add!(M_A, m), sub!(M_B, out_of_b), add!(add!(M_A, M_B), m))?.0
+        mul_div(m, sub!(M_B, out_of_b), add!(add!(M_A, M_B), m))?.0
     ))
 }
 
