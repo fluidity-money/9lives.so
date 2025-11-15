@@ -202,7 +202,7 @@ proptest! {
                         ..
                     })] = *a
                     {
-                        let (q, _) = c.quote_C_0_E_17_F_C_7(m_out, m_u).unwrap();
+                        let (q, _, _) = c.quote_C_0_E_17_F_C_7(m_out, m_u).unwrap();
                         let shares = should_spend!(
                             c.share_addr(m_out).unwrap(),
                             { ZERO_FOR_MINT_ADDR => q },

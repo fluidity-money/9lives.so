@@ -106,10 +106,10 @@ The error table lives in ERRORS.md.
 | Factory 2 implementation      | `0x40ad64826b745f30d3cac75c60b5dc725b719cd0` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPPM mint impl        | `0x53e699cc63c9710f416a2d62e1ef14b08f44b8b1` |
-| Trading DPPM extras impl      | `0x25eebc3921e2db895fdc94b40c016043e434d6f2` |
-| Trading DPPM price impl       | `0x511dd8227cda8e6ec8e72a572d2f7b2630a2151a` |
-| Trading DPPM quotes impl      | `0x2ed653ec41f707010216c02670a5afaea70b0e9a` |
+| Trading DPPM mint impl        | `0xed8eab59d39e34f50cc25b97eadb7b8618fb6579` |
+| Trading DPPM extras impl      | `0xaa3a821172a53c556f80e768cb3e215ea8366612` |
+| Trading DPPM price impl       | `0x2a54e3774e604a22c23c7e516c4dd8c2b54d3ee9` |
+| Trading DPPM quotes impl      | `0x832c7fd7c816285b631bd83f37c4698975cd2200` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
 | Trading AMM price impl        | `0x3fcae4ee12564f606c2dd34759f32a884f28a516` |
