@@ -2,7 +2,7 @@ import { HeaderBox } from "../detail/detailHeaderBox";
 import { PricePoint, SimpleCampaignDetail } from "@/types";
 import DetailCurrentPriceBox from "../detail/detailCurrentPriceBox";
 
-export default async function SimpleSubHeader({
+export default function SimpleSubHeader({
   campaignData,
   pointsData,
 }: {
