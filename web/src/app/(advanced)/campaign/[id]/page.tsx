@@ -9,6 +9,7 @@ import { getCampaignsForSSG } from "@/serverData/getCampaigns";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { PricePoint } from "@/types";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
 export const revalidate = 300;
@@ -39,17 +40,21 @@ export default async function DetailPage({ params }: { params: Params }) {
   if (!response) notFound();
   const campaign = formatCampaignDetail(response);
   const priceEvents = await requestPriceChanges(response.poolAddress);
-  const pointsData = await getAndFormatAssetPrices({
-    symbol: campaign.priceMetadata!.baseAsset,
-    starting: campaign.starting,
-    ending: campaign.ending,
-  });
+  let pricePoints: PricePoint[] = [];
+  if (campaign.priceMetadata) {
+    pricePoints = await getAndFormatAssetPrices({
+      symbol: campaign.priceMetadata.baseAsset,
+      starting: campaign.starting,
+      ending: campaign.ending,
+    });
+  }
+
   return (
     <Suspense>
       <DetailWrapper
         initialData={campaign}
         priceEvents={priceEvents}
-        pricePoints={pointsData}
+        pricePoints={pricePoints}
       />
     </Suspense>
   );
