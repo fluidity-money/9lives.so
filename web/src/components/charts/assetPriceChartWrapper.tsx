@@ -24,7 +24,7 @@ export default function PriceChartWrapper({
   );
 
   return (
-    <ActiveCampaignProvider previousData={campaignData}>
+    <ActiveCampaignProvider simple={simple} previousData={campaignData}>
       <div className="relative">
         <AssetPriceChartMask campaignData={campaignData} />
         <AssetPriceChart

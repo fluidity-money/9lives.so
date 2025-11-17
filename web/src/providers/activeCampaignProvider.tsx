@@ -33,48 +33,56 @@ subscription($symbol: String!) {
 export default function ActiveCampaignProvider({
   previousData,
   children,
+  simple,
 }: {
   previousData: SimpleCampaignDetail;
   children: Readonly<React.ReactNode>;
+  simple: boolean;
 }) {
   const queryClient = useQueryClient();
   const symbol = previousData.priceMetadata.baseAsset;
   useEffect(() => {
-    const unsubPrices = wsClient.subscribe<{
-      ninelives_campaigns_1: { content: SimpleCampaignDetail; id: string }[];
-    }>(
-      {
-        query,
-        variables: {
-          symbol: symbol.toUpperCase(),
+    if (simple) {
+      const unsubPrices = wsClient.subscribe<{
+        ninelives_campaigns_1: { content: SimpleCampaignDetail; id: string }[];
+      }>(
+        {
+          query,
+          variables: {
+            symbol: symbol.toUpperCase(),
+          },
         },
-      },
-      {
-        next: async ({ data }) => {
-          const _data = data?.ninelives_campaigns_1[0].content;
-          if (_data) {
-            const nextData = formatSimpleCampaignDetail({
-              ..._data,
-              identifier: data?.ninelives_campaigns_1[0].id,
-            });
-            queryClient.setQueryData(["simpleCampaign", symbol], nextData);
-          }
+        {
+          next: async ({ data }) => {
+            const _data = data?.ninelives_campaigns_1[0].content;
+            if (_data) {
+              const nextData = formatSimpleCampaignDetail({
+                ..._data,
+                identifier: data?.ninelives_campaigns_1[0].id,
+              });
+              queryClient.setQueryData(["simpleCampaign", symbol], nextData);
+            }
+          },
+          error: (error) => {
+            console.error(
+              "WebSocket error for campaign activity",
+              symbol,
+              error,
+            );
+          },
+          complete: () => {
+            console.log(
+              "WebSocket campaign activity subscription closed.",
+              symbol,
+            );
+          },
         },
-        error: (error) => {
-          console.error("WebSocket error for campaign activity", symbol, error);
-        },
-        complete: () => {
-          console.log(
-            "WebSocket campaign activity subscription closed.",
-            symbol,
-          );
-        },
-      },
-    );
-    return () => {
-      unsubPrices();
-    };
-  }, [queryClient, symbol, previousData.starting]);
+      );
+      return () => {
+        unsubPrices();
+      };
+    }
+  }, [queryClient, symbol, previousData.starting, simple]);
 
   return children;
 }
