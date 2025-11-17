@@ -16,7 +16,7 @@ export default function SimpleBody({
   pointsData: PricePoint[];
 }) {
   const { data } = useQuery<SimpleCampaignDetail>({
-    queryKey: ["simpleCampaign", campaignData.identifier],
+    queryKey: ["simpleCampaign", campaignData.priceMetadata.baseAsset],
     initialData: campaignData,
   });
   return (

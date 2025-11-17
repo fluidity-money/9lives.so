@@ -10,7 +10,7 @@ export default function SimpleHeader({
   initialData: SimpleCampaignDetail;
 }) {
   const { data } = useQuery<SimpleCampaignDetail>({
-    queryKey: ["simpleCampaign", initialData.identifier],
+    queryKey: ["simpleCampaign", initialData.priceMetadata.baseAsset],
     initialData,
   });
 

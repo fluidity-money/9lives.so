@@ -42,7 +42,6 @@ export default function ActiveCampaignProvider({
   children: Readonly<React.ReactNode>;
 }) {
   const queryClient = useQueryClient();
-  const [liveCampaign, setLiveCampaign] = useState<SimpleCampaignDetail>();
   const symbol = previousData.priceMetadata.baseAsset;
   useEffect(() => {
     const unsubPrices = wsClient.subscribe<{
@@ -63,9 +62,7 @@ export default function ActiveCampaignProvider({
               identifier: data?.ninelives_campaigns_1[0].id,
             });
             if (nextData.starting > previousData.starting) {
-              setLiveCampaign(nextData);
-            } else {
-              setLiveCampaign(undefined);
+              queryClient.setQueryData(["simpleCampaign", symbol], nextData);
             }
           }
         },
@@ -85,27 +82,5 @@ export default function ActiveCampaignProvider({
     };
   }, [queryClient, symbol, previousData.starting]);
 
-  return (
-    <>
-      {children}
-      {liveCampaign ? (
-        <RetroCard
-          title="🔴 Live Campaign 🔴"
-          position="middle"
-          className="flex flex-col items-center space-y-4"
-          showClose={false}
-        >
-          <span className="font-chicago">New campaign is live!</span>
-          <div className="font-chicago">
-            <CountdownTimer endTime={liveCampaign.ending} />
-          </div>
-          <Link
-            href={`/simple/campaign/${liveCampaign.priceMetadata.baseAsset.toLowerCase()}?cid=${liveCampaign.identifier}`}
-          >
-            <Button intent={"cta"}>Be the winner of the hour!</Button>
-          </Link>
-        </RetroCard>
-      ) : null}
-    </>
-  );
+  return children;
 }
