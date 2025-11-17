@@ -1,4 +1,4 @@
-import detailImageGenerator from "@/components/detailImageGenerator";
+import Image from "next/image";
 import { ImageResponse } from "next/og";
 
 export const size = {
@@ -8,10 +8,9 @@ export const size = {
 export const contentType = "image/png";
 type Params = Promise<{ id: string }>;
 export default async function ImageOG({ params }: { params: Params }) {
-  const { id } = await params;
   return new ImageResponse(
     (
-      <img
+      <Image
         src={"https://9lives.so/images/dppm-og-image.png"}
         alt="9lives.so"
         width={size.width}

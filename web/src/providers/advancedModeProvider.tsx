@@ -34,6 +34,6 @@ export default function AdvancedModeProvider({
         ),
       });
     }
-  }, [initialData]);
+  }, [initialData, client]);
   return null;
 }
