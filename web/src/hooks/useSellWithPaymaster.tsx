@@ -145,7 +145,7 @@ const useSellWithPaymaster = ({
       //     queryKey: ["campaign", campaignId],
       //   });
       //   queryClient.invalidateQueries({
-      //     queryKey: ["positionHistory", outcomeIds],
+      //     queryKey: ["positionHistory", account.address, outcomeIds],
       //   });
     },
   });

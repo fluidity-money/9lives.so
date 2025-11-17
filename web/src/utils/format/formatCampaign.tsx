@@ -78,6 +78,8 @@ export function formatSimpleCampaignDetail(
   if (ro.priceMetadata === null) throw new Error("Price metadata is null");
   return {
     ...ro,
+    isDpm: false,
+    isDppm: true,
     name: formatDppmTitle({
       symbol: formatPriceMetadata(ro.priceMetadata)?.baseAsset,
       price: ro.priceMetadata.priceTargetForUp,

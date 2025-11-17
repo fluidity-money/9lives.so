@@ -80,7 +80,7 @@ const useClaim = ({
             queryKey: ["positions", tradingAddr, outcomes, account],
           });
           queryClient.invalidateQueries({
-            queryKey: ["positionHistory", outcomeIds],
+            queryKey: ["positionHistory", account.address, outcomeIds],
           });
           track(EVENTS.CLAIM_REWARD, {
             amount: accountShare,

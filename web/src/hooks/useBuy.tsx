@@ -106,7 +106,13 @@ const useBuy = ({
           });
           const outcomeIds = data.outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
-            queryKey: ["positions", data.poolAddress, data.outcomes, account],
+            queryKey: [
+              "positions",
+              data.poolAddress,
+              data.outcomes,
+              account,
+              data.isDpm,
+            ],
           });
           queryClient.invalidateQueries({
             queryKey: ["sharePrices", data.poolAddress, outcomeIds],
@@ -120,11 +126,17 @@ const useBuy = ({
               fusdc,
             ],
           });
+          if (data.priceMetadata) {
+            queryClient.invalidateQueries({
+              queryKey: ["simpleCampaign", data.priceMetadata.baseAsset],
+            });
+          } else {
+            queryClient.invalidateQueries({
+              queryKey: ["campaign", data.identifier],
+            });
+          }
           queryClient.invalidateQueries({
-            queryKey: ["campaign", data.identifier],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["positionHistory", outcomeIds],
+            queryKey: ["positionHistory", account.address, outcomeIds],
           });
           track(EVENTS.MINT, {
             amount: fusdc,

@@ -206,7 +206,13 @@ const useBuyWithRelay = ({
 
           const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
-            queryKey: ["positions", data.poolAddress, outcomes, account],
+            queryKey: [
+              "positions",
+              data.poolAddress,
+              data.outcomes,
+              account,
+              data.isDpm,
+            ],
           });
           queryClient.invalidateQueries({
             queryKey: ["sharePrices", data.poolAddress, outcomeIds],
@@ -220,11 +226,17 @@ const useBuyWithRelay = ({
               usdValue,
             ],
           });
+          if (data.priceMetadata) {
+            queryClient.invalidateQueries({
+              queryKey: ["simpleCampaign", data.priceMetadata.baseAsset],
+            });
+          } else {
+            queryClient.invalidateQueries({
+              queryKey: ["campaign", data.identifier],
+            });
+          }
           queryClient.invalidateQueries({
-            queryKey: ["campaign", data.identifier],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["positionHistory", outcomeIds],
+            queryKey: ["positionHistory", account.address, outcomeIds],
           });
         } catch (e) {
           if (

@@ -18,7 +18,13 @@ const handleTicketAttempts: Record<
       toast.error(`Failed to buy outcome ${selectedOutcome.name}`);
     }
     qc.invalidateQueries({
-      queryKey: ["positions", t.data.poolAddress, t.data.outcomes, t.account],
+      queryKey: [
+        "positions",
+        t.data.poolAddress,
+        t.data.outcomes,
+        t.account,
+        t.data.isDpm,
+      ],
     });
     qc.invalidateQueries({
       queryKey: ["sharePrices", t.data.poolAddress, outcomeIds],
@@ -32,11 +38,17 @@ const handleTicketAttempts: Record<
         t.amount,
       ],
     });
+    if (t.data.priceMetadata) {
+      qc.invalidateQueries({
+        queryKey: ["simpleCampaign", t.data.priceMetadata.baseAsset],
+      });
+    } else {
+      qc.invalidateQueries({
+        queryKey: ["campaign", t.data.identifier],
+      });
+    }
     qc.invalidateQueries({
-      queryKey: ["campaign", t.data.identifier],
-    });
-    qc.invalidateQueries({
-      queryKey: ["positionHistory", outcomeIds],
+      queryKey: ["positionHistory", t.account.address, outcomeIds],
     });
     qc.invalidateQueries({
       queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
@@ -53,7 +65,13 @@ const handleTicketAttempts: Record<
       toast.error(`Failed to sell shares ${selectedOutcome.name}`);
     }
     qc.invalidateQueries({
-      queryKey: ["positions", t.data.poolAddress, t.data.outcomes, t.account],
+      queryKey: [
+        "positions",
+        t.data.poolAddress,
+        t.data.outcomes,
+        t.account,
+        t.data.isDpm,
+      ],
     });
     qc.invalidateQueries({
       queryKey: ["sharePrices", t.data.poolAddress, outcomeIds],
@@ -71,7 +89,7 @@ const handleTicketAttempts: Record<
       queryKey: ["campaign", t.data.identifier],
     });
     qc.invalidateQueries({
-      queryKey: ["positionHistory", outcomeIds],
+      queryKey: ["positionHistory", t.account.address, outcomeIds],
     });
     qc.invalidateQueries({
       queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],

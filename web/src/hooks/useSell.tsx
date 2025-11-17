@@ -99,7 +99,7 @@ const useSell = ({
             queryKey: ["campaign", campaignId],
           });
           queryClient.invalidateQueries({
-            queryKey: ["positionHistory", outcomeIds],
+            queryKey: ["positionHistory", account.address, outcomeIds],
           });
           track(EVENTS.BURN, {
             amount: fusdc,
