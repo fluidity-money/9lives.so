@@ -1,8 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import appConfig from "@/config";
-import { PricePoint } from "@/types";
+import { PricePoint, SimpleCampaignDetail } from "@/types";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
+import { requestSimpleMarket } from "./graphqlClient";
+import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 
 export default function ReactQueryProvider({
   children,
@@ -29,6 +31,14 @@ export default function ReactQueryProvider({
           number,
         ];
         return await getAndFormatAssetPrices({ symbol, starting, ending });
+      },
+    });
+
+    client.setQueryDefaults<SimpleCampaignDetail>(["simpleCampaign"], {
+      queryFn: async ({ queryKey }) => {
+        const [, tokenSymbol] = queryKey as [string, string];
+        const data = await requestSimpleMarket(tokenSymbol);
+        return formatSimpleCampaignDetail(data);
       },
     });
 

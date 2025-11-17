@@ -6,11 +6,12 @@ import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import { Suspense } from "react";
 import SimpleHeader from "@/components/simple/simpleHeader";
+import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
+import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 
 type Params = Promise<{ id: string }>;
-type SearchParams = Promise<{ cid: string }>;
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const dynamicParams = true;
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   return Object.values(config.simpleMarkets).map((m) => ({
@@ -35,15 +36,19 @@ export async function generateMetadata({ params }: { params: Params }) {
 function isSimpleMarketKey(k: string): k is keyof typeof config.simpleMarkets {
   return k in config.simpleMarkets;
 }
-export default async function SimpleDetailPage({
-  params,
-  searchParams,
-}: {
-  params: Params;
-  searchParams: SearchParams;
-}) {
+export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { id } = await params;
-  const { cid } = await searchParams;
+
+  const data = await requestSimpleMarket(id);
+  if (!data) notFound();
+
+  const campaignData = formatSimpleCampaignDetail(data);
+
+  const pointsData = await getAndFormatAssetPrices({
+    symbol: campaignData.priceMetadata!.baseAsset,
+    starting: campaignData.starting,
+    ending: campaignData.ending,
+  });
 
   if (!isSimpleMarketKey(id)) notFound();
 
@@ -90,24 +95,10 @@ export default async function SimpleDetailPage({
             </div>
           }
         >
-          <SimpleHeader id={id} cid={cid} />
+          <SimpleHeader initialData={campaignData} />
         </Suspense>
       </div>
-      <Suspense
-        fallback={
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className="skeleton h-[66px] flex-1" />
-              <div className="skeleton h-[66px] flex-1" />
-            </div>
-            <div className="skeleton h-[300px] w-[568px]" />
-            <div className="skeleton h-[58px] w-full" />
-            <div className="skeleton h-5 w-full" />
-          </div>
-        }
-      >
-        <SimpleBody id={id} cid={cid} />
-      </Suspense>
+      <SimpleBody pointsData={pointsData} campaignData={campaignData} />
     </div>
   );
 }

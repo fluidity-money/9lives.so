@@ -4,11 +4,12 @@ import useSharePrices from "@/hooks/useSharePrices";
 import { SimpleCampaignDetail } from "@/types";
 
 export default function SimpleChance({ data }: { data: SimpleCampaignDetail }) {
-  const isEnded = Date.now() > data.ending;
-  const { data: sharePrices } = useSharePrices({
+  const { data: sharePrices, isLoading } = useSharePrices({
     tradingAddr: data.poolAddress as `0x${string}`,
     outcomeIds: data.outcomes.map((o) => o.identifier as `0x${string}`),
   });
+
+  if (isLoading) return <div className="skeleton h-5 w-full" />;
 
   return (
     <div className="flex flex-row items-center gap-1">

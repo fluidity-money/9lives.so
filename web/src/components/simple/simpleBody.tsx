@@ -1,65 +1,31 @@
-import { RawCampaignDetail, RawSimpleCampaignDetail } from "@/types";
+"use client";
+import { PricePoint, SimpleCampaignDetail } from "@/types";
 import SimpleSubHeader from "./simpleSubHeader";
-import SimpleChartServer from "./simpleChartServer";
 import SimpleButtons from "./simpleButtons";
 import SimpleChance from "./simpleChance";
 import SimplePositions from "./simplePositions";
 import SimpleModeAlert from "./simpleModeAlert";
-import config from "@/config";
-import {
-  requestCampaignById,
-  requestSimpleMarket,
-} from "@/providers/graphqlClient";
-import { notFound } from "next/navigation";
-import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
-import { Suspense } from "react";
+import { useQuery } from "@tanstack/react-query";
+import PriceChartWrapper from "../charts/priceChartWrapper";
 
-export const dynamicParams = true;
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
-
-export default async function SimpleBody({
-  id,
-  cid,
+export default function SimpleBody({
+  campaignData,
+  pointsData,
 }: {
-  id: keyof typeof config.simpleMarkets;
-  cid: string;
+  campaignData: SimpleCampaignDetail;
+  pointsData: PricePoint[];
 }) {
-  let res: RawSimpleCampaignDetail | RawCampaignDetail;
-  if (cid) {
-    res = await requestCampaignById(cid, {
-      next: { revalidate: 0 },
-      cache: "no-store",
-    });
-  } else {
-    res = await requestSimpleMarket(id, {
-      next: { revalidate: 0 },
-      cache: "no-store",
-    });
-  }
-  if (!res || !res.priceMetadata) notFound();
-  const data = formatSimpleCampaignDetail(res);
-
+  const { data } = useQuery<SimpleCampaignDetail>({
+    queryKey: ["simpleCampaign", campaignData.identifier],
+    initialData: campaignData,
+  });
   return (
     <>
       <SimpleModeAlert />
-      <Suspense
-        fallback={
-          <div className="flex items-center gap-2.5">
-            <div className="skeleton h-[66px] flex-1" />
-            <div className="skeleton h-[66px] flex-1" />
-          </div>
-        }
-      >
-        <SimpleSubHeader data={data} />
-      </Suspense>
-      <Suspense fallback={<div className="skeleton h-[300px] w-[568px]"></div>}>
-        <SimpleChartServer simple data={data} />
-      </Suspense>
+      <SimpleSubHeader campaignData={data} pointsData={pointsData} />
+      <PriceChartWrapper simple campaignData={data} pointsData={pointsData} />
       <SimpleButtons data={data} />
-      <Suspense fallback={<div className="skeleton h-5 w-full" />}>
-        <SimpleChance data={data} />
-      </Suspense>
+      <SimpleChance data={data} />
       <SimplePositions data={data} />
     </>
   );

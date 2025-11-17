@@ -1,34 +1,27 @@
 import { HeaderBox } from "../detail/detailHeaderBox";
-import { SimpleCampaignDetail } from "@/types";
-import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
+import { PricePoint, SimpleCampaignDetail } from "@/types";
 import DetailCurrentPriceBox from "../detail/detailCurrentPriceBox";
 
-export const dynamicParams = true;
-export const revalidate = 300;
-
 export default async function SimpleSubHeader({
-  data,
+  campaignData,
+  pointsData,
 }: {
-  data: SimpleCampaignDetail;
+  campaignData: SimpleCampaignDetail;
+  pointsData: PricePoint[];
 }) {
-  const isEnded = Date.now() > data.ending;
-  const pointsData = await getAndFormatAssetPrices({
-    symbol: data.priceMetadata!.baseAsset,
-    starting: data.starting,
-    ending: data.ending,
-  });
+  const isEnded = Date.now() > campaignData.ending;
 
   return (
     <div className="flex flex-wrap items-center gap-2.5">
       <HeaderBox
         title="Base Price"
-        value={`$${data.priceMetadata.priceTargetForUp}`}
+        value={`$${campaignData.priceMetadata.priceTargetForUp}`}
       />
       <DetailCurrentPriceBox
         isEnded={isEnded}
-        symbol={data.priceMetadata.baseAsset}
-        ending={data.ending}
-        starting={data.starting}
+        symbol={campaignData.priceMetadata.baseAsset}
+        ending={campaignData.ending}
+        starting={campaignData.starting}
         initialData={pointsData}
       />
     </div>

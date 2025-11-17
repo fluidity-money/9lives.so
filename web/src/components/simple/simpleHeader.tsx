@@ -1,37 +1,18 @@
-import {
-  requestCampaignById,
-  requestSimpleMarket,
-} from "@/providers/graphqlClient";
-import { RawCampaignDetail, RawSimpleCampaignDetail } from "@/types";
-import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
-import { notFound } from "next/navigation";
+"use client";
+
+import { SimpleCampaignDetail } from "@/types";
 import CountdownTimer from "../countdownTimer";
+import { useQuery } from "@tanstack/react-query";
 
-export const dynamicParams = true;
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
-
-export default async function SimpleHeader({
-  cid,
-  id,
+export default function SimpleHeader({
+  initialData,
 }: {
-  cid?: string;
-  id: string;
+  initialData: SimpleCampaignDetail;
 }) {
-  let res: RawSimpleCampaignDetail | RawCampaignDetail;
-  if (cid) {
-    res = await requestCampaignById(cid, {
-      next: { revalidate: 0 },
-      cache: "no-store",
-    });
-  } else {
-    res = await requestSimpleMarket(id, {
-      next: { revalidate: 0 },
-      cache: "no-store",
-    });
-  }
-  if (!res || !res.priceMetadata) notFound();
-  const data = formatSimpleCampaignDetail(res);
+  const { data } = useQuery<SimpleCampaignDetail>({
+    queryKey: ["simpleCampaign", initialData.identifier],
+    initialData,
+  });
 
   return (
     <div className="flex flex-col gap-1">

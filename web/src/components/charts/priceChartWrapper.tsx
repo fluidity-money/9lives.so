@@ -1,5 +1,5 @@
 import ActiveCampaignProvider from "@/providers/activeCampaignProvider";
-import AssetPriceChart from "../assetPriceChart";
+import AssetPriceChart from "./assetPriceChart";
 import {
   CampaignDetail,
   Outcome,
@@ -10,6 +10,7 @@ import RetroCard from "../cardRetro";
 import isMarketOpen, { calcNextMarketOpen } from "@/utils/isMarketOpen";
 import config from "@/config";
 import CountdownTimer from "../countdownTimer";
+import { useQuery } from "@tanstack/react-query";
 function NotActiveMask({
   title,
   desc,
@@ -38,7 +39,7 @@ function WillOpenTimer({ slug }: { slug: keyof typeof config.simpleMarkets }) {
     </div>
   );
 }
-export default function SimpleChart({
+export default function PriceChartWrapper({
   campaignData,
   pointsData,
   simple,
@@ -53,6 +54,15 @@ export default function SimpleChart({
   const winnerOutcome = campaignData.outcomes.find(
     (o) => o.identifier === campaignData?.winner,
   ) as Outcome;
+  const symbol = campaignData.priceMetadata.baseAsset;
+  const starting = campaignData.starting;
+  const ending = campaignData.ending;
+  const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
+    {
+      queryKey: ["assetPrices", symbol, starting, ending],
+      initialData: pointsData,
+    },
+  );
 
   return (
     <ActiveCampaignProvider previousData={campaignData}>
@@ -72,12 +82,13 @@ export default function SimpleChart({
         ) : null}
         <AssetPriceChart
           simple={simple}
-          initialData={pointsData}
+          starting={starting}
+          ending={ending}
+          symbol={symbol}
+          assetPrices={assetPrices}
+          assetsLoaded={assetsLoaded}
           basePrice={+campaignData.priceMetadata.priceTargetForUp}
           id={campaignData.identifier}
-          symbol={campaignData.priceMetadata.baseAsset}
-          starting={campaignData.starting}
-          ending={campaignData.ending}
         />
       </div>
     </ActiveCampaignProvider>

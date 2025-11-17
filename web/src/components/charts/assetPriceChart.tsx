@@ -19,7 +19,8 @@ export default function AssetPriceChart({
   starting,
   ending,
   simple = false,
-  initialData,
+  assetPrices,
+  assetsLoaded,
 }: {
   id: string;
   symbol: string;
@@ -27,15 +28,9 @@ export default function AssetPriceChart({
   starting: number;
   ending: number;
   simple?: boolean;
-  initialData?: PricePoint[];
+  assetPrices?: PricePoint[];
+  assetsLoaded: boolean;
 }) {
-  const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
-    {
-      queryKey: ["assetPrices", symbol, starting, ending],
-      initialData,
-    },
-  );
-
   if (!assetsLoaded || !assetPrices || assetPrices.length < 2) {
     return null;
   }

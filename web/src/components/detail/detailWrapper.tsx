@@ -1,5 +1,10 @@
 "use client";
-import { CampaignDetail, PriceEvent, PricePoint } from "@/types";
+import {
+  CampaignDetail,
+  PriceEvent,
+  PricePoint,
+  SimpleCampaignDetail,
+} from "@/types";
 import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
@@ -15,15 +20,17 @@ import { requestCampaignById } from "@/providers/graphqlClient";
 import { useDegenStore } from "@/stores/degenStore";
 import { combineClass } from "@/utils/combineClass";
 import DetailComments from "./detailComments";
-import PriceChart from "../priceChart";
-import AssetPriceChart from "../assetPriceChart";
+import PriceChart from "../charts/priceChart";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
+import PriceChartWrapper from "../charts/priceChartWrapper";
 
 export default function DetailWrapper({
   initialData,
   priceEvents,
+  pricePoints,
 }: {
   initialData: CampaignDetail;
+  pricePoints: PricePoint[];
   priceEvents: PriceEvent[];
 }) {
   const outcomeId = useSearchParams()?.get("outcomeId");
@@ -66,12 +73,10 @@ export default function DetailWrapper({
           isConcluded={isConcluded}
         />
         {data.isDppm && data.priceMetadata ? (
-          <AssetPriceChart
-            id={data.identifier}
-            starting={data.starting}
-            ending={data.ending}
-            basePrice={Number(data.priceMetadata.priceTargetForUp)}
-            symbol={data.priceMetadata.baseAsset}
+          <PriceChartWrapper
+            campaignData={data as SimpleCampaignDetail}
+            pointsData={pricePoints}
+            simple={false}
           />
         ) : (
           <PriceChart
