@@ -22,7 +22,7 @@ import { combineClass } from "@/utils/combineClass";
 import DetailComments from "./detailComments";
 import PriceChart from "../charts/priceChart";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
-import PriceChartWrapper from "../charts/priceChartWrapper";
+import PriceChartWrapper from "../charts/assetPriceChartWrapper";
 
 export default function DetailWrapper({
   initialData,

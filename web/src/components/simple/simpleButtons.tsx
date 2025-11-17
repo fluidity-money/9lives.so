@@ -7,6 +7,7 @@ import SimpleClaimButton from "./simpleClaimButton";
 import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
 import { useState } from "react";
+import useCountdown from "@/hooks/useCountdown";
 
 export default function SimpleButtons({
   data,
@@ -15,7 +16,8 @@ export default function SimpleButtons({
 }) {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);
-  const isEnded = Date.now() > data.ending;
+  const timeleft = useCountdown(data.ending, "seconds");
+  const isEnded = 0 > Number(timeleft);
   const account = useActiveAccount();
   const { totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,

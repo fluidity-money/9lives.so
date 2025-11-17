@@ -1,13 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
 import { SimpleCampaignDetail } from "@/types";
-import RetroCard from "@/components/cardRetro";
-import Link from "next/link";
-import Button from "@/components/themed/button";
-import CountdownTimer from "@/components/countdownTimer";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 
 export const wsClient = createClient({
@@ -61,9 +57,7 @@ export default function ActiveCampaignProvider({
               ..._data,
               identifier: data?.ninelives_campaigns_1[0].id,
             });
-            if (nextData.starting > previousData.starting) {
-              queryClient.setQueryData(["simpleCampaign", symbol], nextData);
-            }
+            queryClient.setQueryData(["simpleCampaign", symbol], nextData);
           }
         },
         error: (error) => {

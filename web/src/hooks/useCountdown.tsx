@@ -2,7 +2,7 @@ import { calcSecondsLeft, calcTimeLeft } from "@/utils/calcTimeDiff";
 import { useEffect, useState } from "react";
 export default function useCountdown(
   endTime: number,
-  format: "full" | "short" = "full",
+  format: keyof ReturnType<typeof calcTimeLeft> = "full",
 ) {
   const [timeLeft, setTimeLeft] = useState(calcTimeLeft(endTime)[format]);
   useEffect(() => {

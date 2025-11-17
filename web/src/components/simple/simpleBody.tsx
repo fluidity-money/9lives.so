@@ -6,7 +6,7 @@ import SimpleChance from "./simpleChance";
 import SimplePositions from "./simplePositions";
 import SimpleModeAlert from "./simpleModeAlert";
 import { useQuery } from "@tanstack/react-query";
-import PriceChartWrapper from "../charts/priceChartWrapper";
+import PriceChartWrapper from "../charts/assetPriceChartWrapper";
 
 export default function SimpleBody({
   campaignData,
