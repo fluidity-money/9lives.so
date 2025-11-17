@@ -77,7 +77,7 @@ const useClaim = ({
           const outcomeIds = outcomes.map((outcome) => outcome.identifier);
           removePosition(outcomeId);
           queryClient.invalidateQueries({
-            queryKey: ["positions", tradingAddr, outcomes, account],
+            queryKey: ["positions", tradingAddr, outcomes, account, isDpm],
           });
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", account.address, outcomeIds],

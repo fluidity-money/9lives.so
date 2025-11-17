@@ -63,6 +63,13 @@ export default function useDppmClaimAll({
           queryClient.invalidateQueries({
             queryKey: ["positions", tradingAddr, outcomes, account, false],
           });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "positionHistory",
+              account.address,
+              outcomes.map((o) => o.identifier),
+            ],
+          });
           res(response.transactionHash);
         } catch (e) {
           rej(e);
