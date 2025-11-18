@@ -43,8 +43,8 @@ export default function AssetPriceChartMask({
   const winnerOutcome = campaignData.outcomes.find(
     (o) => o.identifier === campaignData?.winner,
   ) as Outcome;
-  const timeleft = useCountdown(campaignData.ending, "seconds");
-  const isEnded = 0 > Number(timeleft);
+  const timeleft = useCountdown(campaignData.ending, "differenceInMs");
+  const isEnded = 0 >= Number(timeleft);
 
   if (isOpen === false)
     return (

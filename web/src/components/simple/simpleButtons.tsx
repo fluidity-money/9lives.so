@@ -16,8 +16,8 @@ export default function SimpleButtons({
 }) {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);
-  const timeleft = useCountdown(data.ending, "seconds");
-  const isEnded = 0 > Number(timeleft);
+  const timeleft = useCountdown(data.ending, "differenceInMs");
+  const isEnded = 0 >= Number(timeleft);
   const account = useActiveAccount();
   const { totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,

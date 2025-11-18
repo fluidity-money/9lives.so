@@ -53,6 +53,7 @@ export function calcTimeLeft(endTime: number) {
     hours,
     minutes,
     seconds,
+    differenceInMs,
   };
 }
 // endTime in calcTimePassed is a milisecond timestamp
