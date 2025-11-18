@@ -28,8 +28,10 @@ export default function DetailHeader({
   isEnded,
   isConcluded,
   notStarted,
+  pointsData,
 }: {
   data: CampaignDetail;
+  pointsData: PricePoint[];
   isEnded: boolean;
   isConcluded: boolean;
   notStarted: boolean;
@@ -245,17 +247,18 @@ export default function DetailHeader({
         )}
       </div>
       <div className="flex flex-wrap items-center gap-2.5">
-        {data.isDppm ? (
+        {data.isDppm && data.priceMetadata ? (
           <>
             <HeaderBox
               title={"Base Price"}
               value={`$${data.priceMetadata?.priceTargetForUp}`}
             />
             <DetailCurrentPriceBox
+              initialData={pointsData}
               isEnded={isEnded}
               starting={data.starting}
               ending={data.ending}
-              symbol={data.priceMetadata!.baseAsset}
+              symbol={data.priceMetadata.baseAsset}
             />
           </>
         ) : null}

@@ -67,6 +67,7 @@ export default function DetailWrapper({
     >
       <div className="flex flex-[2] flex-col gap-8">
         <DetailHeader
+          pointsData={pricePoints}
           data={data}
           notStarted={notStarted}
           isEnded={isEnded}
