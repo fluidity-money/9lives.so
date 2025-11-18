@@ -76,7 +76,7 @@ export default function AssetPriceChartMask({
     );
 
   if (isEnded)
-    return <NotActiveMask title="Ended" desc={"Winner is resolving"} />;
+    return <NotActiveMask title="Ended" desc={"Determining winner..."} />;
 
   return null;
 }
