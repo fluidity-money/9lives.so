@@ -13,3 +13,4 @@ tests/.hypothesis
 tests/__pycache__
 insert-env.*
 .DS_Store
+foundry.lock

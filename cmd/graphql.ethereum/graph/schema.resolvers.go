@@ -614,6 +614,10 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 						{"Originating chain id", p.OriginatingChainId},
 						{"Error", err},
 						{"Error calldata", cd},
+						{"Permit amount", permitAmt},
+						{"Permit R", permitR},
+						{"Permit S", permitS},
+						{"Permit V", permitV},
 					},
 				),
 			)
@@ -1407,20 +1411,20 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 		pageSizeNum = *pageSize
 	}
 	err := r.DB.Raw(`
-	SELECT 
+	SELECT
     nc.id AS campaign_id,
     json_agg(DISTINCT nbs.outcome_id) AS outcome_ids,
     MAX(nbs.created_by) AS created_by,
     nc."content"
 	FROM ninelives_buys_and_sells_1 AS nbs
-	JOIN ninelives_campaigns_1 AS nc 
+	JOIN ninelives_campaigns_1 AS nc
     ON nc.id = nbs.campaign_id
-	WHERE 
+	WHERE
     nbs.recipient = ?
     AND nbs.campaign_id IS NOT NULL
-	GROUP BY 
+	GROUP BY
     nc.id
-	ORDER BY 
+	ORDER BY
     created_by DESC
 	OFFSET ? LIMIT ?;
 	`, address, pageNum*pageSizeNum, pageSizeNum).Scan(&positions).Error
