@@ -4,6 +4,7 @@ import { Outcome, SimpleCampaignDetail } from "@/types";
 import isMarketOpen, { calcNextMarketOpen } from "@/utils/isMarketOpen";
 import CountdownTimer from "../countdownTimer";
 import RetroCard from "../cardRetro";
+import LoadingIndicator from "../loadingIndicator";
 function NotActiveMask({
   title,
   desc,
@@ -34,8 +35,10 @@ function WillOpenTimer({ slug }: { slug: keyof typeof config.simpleMarkets }) {
 }
 export default function AssetPriceChartMask({
   campaignData,
+  simple,
 }: {
   campaignData: SimpleCampaignDetail;
+  simple: boolean;
 }) {
   const isOpen = isMarketOpen(
     config.simpleMarkets[campaignData.priceMetadata.baseAsset],
@@ -59,6 +62,16 @@ export default function AssetPriceChartMask({
       <NotActiveMask
         title="Winner"
         desc={winnerOutcome.name === "Up" ? "Price Went Up" : "Price Went Down"}
+        comp={
+          simple && (
+            <div className="mt-1 flex flex-col items-center text-xs">
+              <span className="font-geneva text-sm">
+                Setting up the next campaign
+              </span>
+              <LoadingIndicator />
+            </div>
+          )
+        }
       />
     );
 
