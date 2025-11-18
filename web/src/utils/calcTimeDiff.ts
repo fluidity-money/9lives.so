@@ -18,6 +18,7 @@ export function calcTimeLeft(endTime: number) {
       hours: 0,
       minutes: 0,
       seconds: 0,
+      differenceInMs: 0,
     };
   } else {
     return {
@@ -27,6 +28,7 @@ export function calcTimeLeft(endTime: number) {
       hours: 0,
       minutes: 0,
       seconds: 0,
+      differenceInMs: 0,
     };
   }
   const differenceInMs = new Date(endTimeInMs).getTime() - Date.now();
@@ -38,6 +40,7 @@ export function calcTimeLeft(endTime: number) {
       hours: 0,
       minutes: 0,
       seconds: 0,
+      differenceInMs: 0,
     };
   }
   const days = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
