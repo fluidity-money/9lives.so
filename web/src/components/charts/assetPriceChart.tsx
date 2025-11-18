@@ -83,11 +83,13 @@ export default function AssetPriceChart({
         });
     }
   };
-  const pointsData =
-    assetPrices[0].timestamp !== starting
-      ? [{ id: 1, timestamp: starting, price: basePrice }, ...assetPrices]
-      : assetPrices;
-
+  const pointsData = [
+    { id: 1, timestamp: starting, price: basePrice },
+    ...assetPrices,
+  ];
+  const uniquePoints = Array.from(
+    new Map(pointsData.map((p) => [p.timestamp, p])).values(),
+  );
   if (!simple) {
     let divider;
     switch (true) {
@@ -174,7 +176,7 @@ export default function AssetPriceChart({
     <ChartPriceProvider starting={starting} ending={ending} symbol={symbol}>
       <ResponsiveContainer width="100%" height={simple ? 300 : 320}>
         <LineChart
-          data={pointsData}
+          data={uniquePoints}
           margin={{
             top: 42,
             right: simple ? -60 : 4,
