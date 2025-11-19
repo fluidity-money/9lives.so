@@ -40,17 +40,10 @@ function About() {
   return (
     <Section>
       <Title text="What is 9lives?" />
-      <Parag text="9lives is the most advanced prediction market developed by the Superposition team. Inspired by decentralized finance, 9lives combines a constant product market maker with parimutuel markets and a continuous double auction, providing deep liquidity and a risk-free environment for market participants." />
-      <Parag text="Built using Arbitrum Stylus, 9lives is the most cost-efficient, and the most advanced platform for trading. With 9lives, traders can easily make predictions, trade their positions, and maximise capital efficiency while benefiting from the safest and most affordable prediction market on Web3." />
+      <Parag text="9lives is the most cost-efficient and advanced prediction market platform. With 9lives, traders can easily make predictions, trade their positions, and maximise capital efficiency in web3." />
       <Title text="Disclaimer" />
       <List
         items={[
-          "Use at Your Own Risk: This contract is unaudited. Please be aware of the risks involved.",
-          "About the Constant Product Maker Maker (CPMM) Model: The CPMM is a type of Automated Market Maker model popularised in decentralised finance.",
-          "About the Dynamic Pari-Mutuel Market (DPM) Model: The Dynamic Pari-Mutuel Market (DPM) model is a novel approach adopted by Superposition for prediction markets. Its pricing dynamics differ from conventional models, offering unique opportunities for trading strategies but also introducing new risks. Wager payoffs are based on both the trade price and the final market payoff per share at close. Unlike some models, the initial price paid for a winning wager is not refunded. This can mean that, under volatile market conditions, even a wager on the correct outcome could lose money. If a trader buys in at a high price that later drops significantly, they may lose funds regardless of the outcome. While we believe such situations to be rare, please proceed with caution. For further details on the DPM model, refer to the original paper below.",
-          "Infrastructure Markets: Infrastructure Markets are a new natural language oracle powered by ARB and Staked ARB that determines truth after a deadline through the process of voting and staking. To learn more, read Introduction to Infra Markets in the navigation bar past this screen.",
-          "Opinion Polls: Opinion Polls are self resolving markets that are suitable for competitive voting. Markets are settled by the proportion of shares in the different outcomes.",
-          "AI Resolver: SARP AI is the first AI-powered resolver for prediction markets using current news feeds. To learn more, read Introduction to SARP AI below.",
           "By accessing this web application, you agree that you are not a citizen of a country where gambling is prohibited. You agree that you have read and agree to the Terms and Conditions.",
         ]}
       />
@@ -58,10 +51,6 @@ function About() {
       <Anchor
         href="https://x.com/Superpositionso/status/1949808095686758533"
         text="9lives Guide for Liquidity Providers"
-      />
-      <Anchor
-        href="https://dl.acm.org/doi/10.1145/988772.988799"
-        text="A dynamic pari-mutuel market for hedging, wagering, and information aggregation"
       />
     </Section>
   );
@@ -81,20 +70,6 @@ function Achievments() {
     </Section>
   );
 }
-function Superposition() {
-  return (
-    <Section>
-      <Title text="What is Superposition?" />
-      <Parag text="Superposition is the blockchain that pays you to use it. " />
-      <Anchor text="www.superposition.so" href="https://superposition.so" />
-      <Parag text="It is a DeFi native Layer-3 that focuses on novel incentives and order-flow for growth and value capture. Superpositions includes a native AMM and on-chain orderbook with faster execution speeds through Stylus, providing shared and permissionless liquidity for all apps onchain. " />
-      <Parag text="When tokens are bridged to Superposition, they turn into Super Assets, assets that pay yield when you both hold and use them." />
-      <Parag text="Superposition also natively supports Utility Mining, allowing developers and protocols to progressively decentralise, align incentives with their users, and earn revenue through user adoption and interaction." />
-      <Title text="Defi & Beyond" />
-      <Parag text="Superposition is re-imagining the way users interact with, engage, and explore the crypto space. By rewarding users for their exploration and incentivising builders and developers to create unique experiences, Superposition keeps users engaged and retains them. Our platform is at the forefront of DeFi innovation, building tools that reward blockspace usage and leverage cutting-edge DeFi technology." />
-    </Section>
-  );
-}
 export default function Disclaimer() {
   return (
     <TabGroup>
@@ -108,9 +83,6 @@ export default function Disclaimer() {
         </Tab>
         <Tab as={Fragment}>
           {(props) => <TabButton title="Achievements" {...props} />}
-        </Tab>
-        <Tab as={Fragment}>
-          {(props) => <TabButton title="Superposition" {...props} />}
         </Tab>
       </TabList>
       <TabPanels>
