@@ -12,7 +12,7 @@ import { Suspense } from "react";
 import { PricePoint } from "@/types";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
-export const revalidate = 300;
+export const revalidate = 60;
 export async function generateStaticParams() {
   const campaigns = await getCampaignsForSSG();
   return campaigns.map((campaign) => ({
