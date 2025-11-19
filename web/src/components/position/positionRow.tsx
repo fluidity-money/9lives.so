@@ -316,19 +316,27 @@ export default function PositionRow({
             </div>
           ) : historicalValue ? (
             <div className="flex flex-col gap-1">
-              <span
-                className={combineClass(
-                  "self-start p-0.5 font-chicago text-xs",
-                  PnL >= 0 ? "bg-9green" : "bg-9red",
-                )}
-              >
-                {PnL >= 0 ? "+" : "-"} ${Math.abs(PnL).toFixed(2)}
-              </span>
-              <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
-                {PnL >= 0 ? "+" : "-"}
-                {percentageChange}
-                {"%"}
-              </span>
+              {campaignContent.isDppm && !campaignContent.winner ? (
+                <span className="self-start bg-9yellow p-0.5 font-chicago text-xs">
+                  TBD
+                </span>
+              ) : (
+                <span
+                  className={combineClass(
+                    "self-start p-0.5 font-chicago text-xs",
+                    PnL >= 0 ? "bg-9green" : "bg-9red",
+                  )}
+                >
+                  {PnL >= 0 ? "+" : "-"} ${Math.abs(PnL).toFixed(2)}
+                </span>
+              )}
+              {campaignContent.isDppm && !campaignContent.winner ? null : (
+                <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                  {PnL >= 0 ? "+" : "-"}
+                  {percentageChange}
+                  {"%"}
+                </span>
+              )}
             </div>
           ) : null}
         </td>
