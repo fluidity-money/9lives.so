@@ -92,9 +92,6 @@ export default function Disclaimer() {
         <TabPanel>
           <Achievments />
         </TabPanel>
-        <TabPanel>
-          <Superposition />
-        </TabPanel>
       </TabPanels>
     </TabGroup>
   );
