@@ -267,9 +267,10 @@ export default function PositionRow({
               <span className="font-chicago text-xs">${reward.toFixed(2)}</span>
             ) : (
               <span className="font-chicago text-xs">
-                {price
-                  ? "$" + (Number(data.balance) * Number(price)).toFixed(2)
-                  : "?"}
+                $
+                {campaignContent.isDppm
+                  ? totalRewards
+                  : formatFusdc(estimationOfBurn ?? BigInt(0), 2)}
               </span>
             )}
             <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
