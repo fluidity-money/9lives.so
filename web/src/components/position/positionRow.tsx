@@ -70,13 +70,6 @@ export default function PositionRow({
     tradingAddr: campaignContent.poolAddress as `0x${string}`,
     account,
   });
-  const PnL = Number(
-    formatFusdc((estimationOfBurn ?? BigInt(0)) - BigInt(historicalValue)),
-  );
-  const percentageChange = Math.abs(
-    (PnL / +formatFusdc(historicalValue, 6)) * 100,
-  ).toFixed(2);
-
   const { totalRewards } = useDppmRewards({
     tradingAddr: campaignContent.poolAddress,
     account,
@@ -86,6 +79,15 @@ export default function PositionRow({
     outcomes: campaignContent.outcomes,
     singleOutcomeId: campaignContent.isDppm ? data.id : undefined,
   });
+  const PnL = campaignContent.isDppm
+    ? totalRewards - Number(formatFusdc(historicalValue, 6))
+    : Number(
+        formatFusdc((estimationOfBurn ?? BigInt(0)) - BigInt(historicalValue)),
+      );
+  const percentageChange = Math.abs(
+    (PnL / +formatFusdc(historicalValue, 6)) * 100,
+  ).toFixed(2);
+
   const isWinner =
     !!campaignContent.winner && campaignContent.isDppm
       ? totalRewards > 0
@@ -314,7 +316,7 @@ export default function PositionRow({
                 />
               )}
             </div>
-          ) : historicalValue ? (
+          ) : (
             <div className="flex flex-col gap-1">
               {campaignContent.isDppm && !campaignContent.winner ? (
                 <span className="self-start bg-9yellow p-0.5 font-chicago text-xs">
@@ -338,7 +340,7 @@ export default function PositionRow({
                 </span>
               )}
             </div>
-          ) : null}
+          )}
         </td>
         {campaignContent.isDpm ? null : (
           <td>
