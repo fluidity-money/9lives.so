@@ -53,10 +53,10 @@ export default function AssetPriceChart({
     Math.abs(basePrice - maxPrice),
   );
   const digits = minPrice.toString().length;
-  const margin = 1 / Math.pow(10, digits - 2);
+  const margin = 1 / Math.pow(10, digits - 1);
   const minY = simple
     ? basePrice - simpleDiff
-    : Math.floor(minPrice - minPrice * ((simple ? 1 : 6) * margin));
+    : Math.floor(minPrice - minPrice * margin);
   const maxY = simple
     ? basePrice + simpleDiff
     : Math.floor(maxPrice + maxPrice * margin);
