@@ -22,7 +22,7 @@
 	"enable relay add liquidity": true,
 	"enable simple mode": true,
 	"enable campaign create": true,
-	"enable paymaster dppm buy": false,
+	"enable paymaster dppm buy": true,
 	"dppm markets must be made by admin": true,
 	"category overrides should be made by admin": true,
 	"enable newsletter subscription": false
