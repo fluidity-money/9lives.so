@@ -1,5 +1,6 @@
 import config from "@/config";
 import { EVENTS, track } from "@/utils/analytics";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 import {
@@ -10,6 +11,7 @@ import {
 import { Account } from "thirdweb/wallets";
 
 export default function useClaimAllFees() {
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const claim = useCallback(
     async (
       poolAddresses: string[],
@@ -31,6 +33,7 @@ export default function useClaimAllFees() {
       return toast.promise<string[] | undefined>(
         new Promise(async (res, rej) => {
           try {
+            await checkAndSwitchChain();
             await sendTransaction({
               transaction: claimTx,
               account,

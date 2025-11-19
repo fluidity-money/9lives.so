@@ -17,6 +17,7 @@ import clientEnv from "../config/clientEnv";
 import { generateCampaignId, generateOutcomeId } from "@/utils/generateId";
 import helperAbi from "@/config/abi/helperFactory";
 import { EVENTS, track } from "@/utils/analytics";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type Create =
   // | "createWithInfraMarket"
@@ -37,6 +38,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
   const minOracleCreatePrice = BigInt(4e6);
   const minDefaultCreatePrice = BigInt(3e6);
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const create = async (
     { seedLiquidity, ...input }: CampaignInput,
     account: Account,
@@ -109,6 +111,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
               transaction: allowanceHelperTx,
               account,
             })) as bigint;
+            await checkAndSwitchChain();
             if (allowanceOfHelper < seedLiquidityBigInt) {
               const approveHelperTx = prepareContractCall({
                 contract: config.contracts.fusdc,

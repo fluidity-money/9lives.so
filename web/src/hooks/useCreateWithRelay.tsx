@@ -150,6 +150,14 @@ const useCreateWithRelay = ({
                 clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
               ],
             });
+            let targetChain = chain;
+
+            if (input.fromChain !== chain.id) {
+              targetChain = Object.values(config.chains).find(
+                (c) => c.id === input.fromChain,
+              )!;
+              await switchChain(targetChain);
+            }
             const allowanceOfHelper = (await simulateTransaction({
               transaction: allowanceHelperTx,
               account,
@@ -216,15 +224,6 @@ const useCreateWithRelay = ({
             const relayClient = getClient();
 
             const quote = await relayClient.actions.getQuote(options);
-
-            let targetChain = chain;
-
-            if (input.fromChain !== chain.id) {
-              targetChain = Object.values(config.chains).find(
-                (c) => c.id === input.fromChain,
-              )!;
-              await switchChain(targetChain);
-            }
 
             const walletClient = viemAdapter.wallet.toViem({
               client: config.thirdweb.client,

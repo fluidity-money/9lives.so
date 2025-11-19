@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import ERC20Abi from "@/config/abi/erc20";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 const useSell = ({
   shareAddr,
   tradingAddr,
@@ -26,6 +27,7 @@ const useSell = ({
   outcomes: Outcome[];
 }) => {
   const queryClient = useQueryClient();
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const sell = async (account: Account, share: number, fusdc: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
@@ -57,6 +59,7 @@ const useSell = ({
             transaction: allowanceTx,
             account,
           });
+          await checkAndSwitchChain();
           if (shareAmount > allowance) {
             const approveTx = prepareContractCall({
               contract: shareContract,

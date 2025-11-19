@@ -1,5 +1,6 @@
 import config from "@/config";
 import ERC20Abi from "@/config/abi/erc20";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 import {
   getContract,
   prepareContractCall,
@@ -15,6 +16,7 @@ interface AllowanceCheckProps {
   checkBalance?: boolean;
 }
 export function useAllowanceCheck() {
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const check = async ({
     contractAddress,
     spenderAddress,
@@ -70,6 +72,7 @@ export function useAllowanceCheck() {
       method: "approve",
       params: [spenderAddress, amount],
     });
+    await checkAndSwitchChain();
     await sendTransaction({
       transaction: approveTx,
       account,

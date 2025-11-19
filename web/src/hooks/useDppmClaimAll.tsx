@@ -1,6 +1,7 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
@@ -13,6 +14,7 @@ export default function useDppmClaimAll({
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
 }) {
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
   const tradingContract = getContract({
     abi: tradingAbi,
@@ -30,6 +32,7 @@ export default function useDppmClaimAll({
             method: "dppmPayoffForAll58633B6E",
             params: [account?.address],
           });
+          await checkAndSwitchChain();
           const response = await sendTransaction({
             transaction: estimateTx,
             account,

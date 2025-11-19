@@ -1,4 +1,5 @@
 import config from "@/config";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { prepareContractCall, sendTransaction } from "thirdweb";
@@ -7,6 +8,7 @@ import { Account } from "thirdweb/wallets";
 export default function useSarpSignaller(tradingAddr: `0x${string}`) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const request = async (account: Account) =>
     toast.promise(
       new Promise(async (res, rej) => {
@@ -17,6 +19,7 @@ export default function useSarpSignaller(tradingAddr: `0x${string}`) {
             method: "request",
             params: [tradingAddr, account?.address],
           });
+          await checkAndSwitchChain();
           await sendTransaction({ transaction: requestTx, account });
           res(null);
           setIsSuccess(true);

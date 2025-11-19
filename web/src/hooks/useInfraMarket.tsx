@@ -11,12 +11,14 @@ import config from "@/config";
 import { generateCommit } from "@/utils/generateCommit";
 import { randomValue4Uint8 } from "@/utils/generateId";
 import { storeCommitment } from "@/providers/graphqlClient";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 interface InfraMarketProps {
   tradingAddr: `0x${string}`;
   infraState?: InfraMarketState;
   outcomes: Outcome[];
 }
 export default function useInfraMarket(props: InfraMarketProps) {
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const statusTx = prepareContractCall({
     contract: appConfig.contracts.infra,
     method: "status",
@@ -221,6 +223,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
         transaction: allowanceTx,
         account,
       })) as bigint;
+      await checkAndSwitchChain();
       if (amount > allowance) {
         const approveTx = prepareContractCall({
           contract: config.contracts.fusdc,

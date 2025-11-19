@@ -11,6 +11,7 @@ import { CampaignDetail, DppmMetadata, SimpleCampaignDetail } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { useActiveAccount } from "thirdweb/react";
 import { MaxUint256 } from "ethers";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 
 const useBuy = ({
   shareAddr,
@@ -23,6 +24,7 @@ const useBuy = ({
   data: CampaignDetail | SimpleCampaignDetail;
   openFundModal: () => void;
 }) => {
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
   const account = useActiveAccount();
   const buy = async (
@@ -84,6 +86,7 @@ const useBuy = ({
             transaction: allowanceTx,
             account,
           })) as bigint;
+          await checkAndSwitchChain();
           if (amount > allowance) {
             const approveTx = prepareContractCall({
               contract: config.contracts.fusdc,

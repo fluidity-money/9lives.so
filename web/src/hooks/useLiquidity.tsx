@@ -22,6 +22,7 @@ import {
 import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
 import { viemAdapter } from "thirdweb/adapters/viem";
 import RelayTxToaster from "@/components/relayTxToaster";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 
 interface AddInput {
   amount: number;
@@ -40,6 +41,7 @@ export default function useLiquidity({
   tradingAddr: `0x${string}`;
   campaignId: `0x${string}`;
 }) {
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
   const tradingContract = getContract({
     abi: tradingAbi,
@@ -89,6 +91,7 @@ export default function useLiquidity({
             transaction: addLiquidityTx(),
             account,
           });
+          await checkAndSwitchChain();
           await sendTransaction({
             transaction: addLiquidityTx(simulatedShare),
             account,
@@ -177,14 +180,6 @@ export default function useLiquidity({
               ],
             });
           };
-          // const simulatedShare = await simulateTransaction({
-          //   transaction: addLiquidityTx(),
-          //   account,
-          // });
-          // await sendTransaction({
-          //   transaction: addLiquidityTx(simulatedShare),
-          //   account,
-          // });
           const calldata = await encode(addLiquidityTx());
 
           const options = {
@@ -307,6 +302,7 @@ export default function useLiquidity({
             method: "removeLiquidity3C857A15",
             params: [amount, account.address],
           });
+          await checkAndSwitchChain();
           await sendTransaction({
             transaction: removeLiquidityTx,
             account,
@@ -350,6 +346,7 @@ export default function useLiquidity({
           ) {
             throw new Error("You don't have anything to claim.");
           }
+          await checkAndSwitchChain();
           await sendTransaction({
             transaction: claimLiquidityTx,
             account,

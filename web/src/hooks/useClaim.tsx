@@ -2,8 +2,6 @@ import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import tradingDpmAbi from "@/config/abi/tradingDpm";
 import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
-import { toUnits } from "thirdweb/utils";
-import { MaxUint256 } from "ethers";
 import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -12,6 +10,7 @@ import { track, EVENTS } from "@/utils/analytics";
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import { useAllowanceCheck } from "./useAllowanceCheck";
 import { setContext } from "@sentry/nextjs";
+import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 
 const useClaim = ({
   shareAddr,
@@ -26,6 +25,7 @@ const useClaim = ({
   outcomes: Outcome[];
   isDpm: boolean | null;
 }) => {
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);
   const { checkAndAprove } = useAllowanceCheck();
@@ -57,6 +57,7 @@ const useClaim = ({
             method: "payoff91FA8C2E",
             params: [outcomeId, accountShare, account.address],
           });
+          await checkAndSwitchChain();
           await checkAndAprove({
             contractAddress: shareAddr,
             spenderAddress: tradingAddr,
