@@ -120,7 +120,7 @@ export default function DetailHeader({
     {
       title: "Creator Fees",
       value: `$${formatFusdc(unclaimedFees, 2)}`,
-      show: !(data.isDpm || data.isDppm) || displayCreatorFees,
+      show: !(data.isDpm || data.isDppm) && displayCreatorFees,
       rightComp: <ClaimFeesButton addresses={[data.poolAddress]} />,
       shrink: true,
     },
