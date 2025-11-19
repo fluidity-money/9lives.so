@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
-import { SimpleCampaignDetail } from "@/types";
+import { CampaignDetail, SimpleCampaignDetail } from "@/types";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 
 export const wsClient = createClient({
@@ -61,12 +61,15 @@ export default function ActiveCampaignProvider({
             });
             if (simple) {
               queryClient.setQueryData(["simpleCampaign", symbol], nextData);
-            } else if (previousData.identifier === nextData.identifier) {
+            } else if (
+              previousData.identifier === nextData.identifier &&
+              nextData.winner
+            ) {
               // only update to read resolved winner in real time
-              queryClient.setQueryData(
-                ["campaign", previousData.identifier],
-                nextData,
-              );
+              queryClient.setQueryData(["campaign", previousData.identifier], {
+                ...previousData,
+                winner: nextData.winner,
+              } as CampaignDetail);
             }
           }
         },
