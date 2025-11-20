@@ -51,6 +51,7 @@ export namespace Schema {
       campaignWeeklyVolume: Query.campaignWeeklyVolume;
       campaignBySymbol: Query.campaignBySymbol;
       timebasedCampaigns: Query.timebasedCampaigns;
+      unclaimedCampaigns: Query.unclaimedCampaigns;
     };
   }
 
@@ -533,6 +534,23 @@ export namespace Schema {
       };
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Campaign;
+    }
+
+    /**
+     * Returns the campaigns havent been claimed yet by the user
+     */
+    export interface unclaimedCampaigns extends $.OutputField {
+      name: "unclaimedCampaigns";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$UnclaimedCampaign;
     }
   }
 
@@ -1309,6 +1327,45 @@ export namespace Schema {
   //
   //
   //
+
+  //                                         UnclaimedCampaign
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface UnclaimedCampaign extends $.OutputObject {
+    name: "UnclaimedCampaign";
+    fields: {
+      __typename: UnclaimedCampaign.__typename;
+      totalSpent: UnclaimedCampaign.totalSpent;
+      campaign: UnclaimedCampaign.campaign;
+    };
+  }
+
+  export namespace UnclaimedCampaign {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "UnclaimedCampaign";
+      };
+    }
+
+    export interface totalSpent extends $.OutputField {
+      name: "totalSpent";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface campaign extends $.OutputField {
+      name: "campaign";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Campaign;
+    }
+  }
 
   //                                             PriceEvent
   // --------------------------------------------------------------------------------------------------
@@ -3060,6 +3117,7 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$UnclaimedCampaign = UnclaimedCampaign;
     export type $$PriceEvent = PriceEvent;
     export type $$CommentInvestment = CommentInvestment;
     export type $$Comment = Comment;
@@ -3127,6 +3185,7 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    UnclaimedCampaign: Schema.UnclaimedCampaign;
     PriceEvent: Schema.PriceEvent;
     CommentInvestment: Schema.CommentInvestment;
     Comment: Schema.Comment;
@@ -3149,6 +3208,7 @@ export interface Schema<
     PriceMetadata: Schema.PriceMetadata;
   };
   objects: {
+    UnclaimedCampaign: Schema.UnclaimedCampaign;
     PriceEvent: Schema.PriceEvent;
     CommentInvestment: Schema.CommentInvestment;
     Comment: Schema.Comment;

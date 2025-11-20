@@ -57,6 +57,13 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
+  export type UnclaimedCampaign<
+    $SelectionSet extends $$SelectionSets.UnclaimedCampaign,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["UnclaimedCampaign"]
+  >;
   export type PriceEvent<$SelectionSet extends $$SelectionSets.PriceEvent> =
     InferResult.OutputObjectLike<
       $SelectionSet,

@@ -539,6 +539,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Returns the campaigns havent been claimed yet by the user
+   */
+  unclaimedCampaigns: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.unclaimedCampaigns<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { unclaimedCampaigns: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "unclaimedCampaigns"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
