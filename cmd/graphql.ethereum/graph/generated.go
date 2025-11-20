@@ -225,7 +225,7 @@ type ComplexityRoot struct {
 		ReferrersForAddress       func(childComplexity int, address string) int
 		SuggestedHeadlines        func(childComplexity int) int
 		TimebasedCampaigns        func(childComplexity int, categories []string, tokens []string) int
-		UnclaimedCampaigns        func(childComplexity int, address string) int
+		UnclaimedCampaigns        func(childComplexity int, address string, token *string) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
 		UserClaims                func(childComplexity int, address string, campaignID *string) int
 		UserLPs                   func(childComplexity int, address string) int
@@ -348,7 +348,7 @@ type QueryResolver interface {
 	CampaignWeeklyVolume(ctx context.Context, poolAddress string) (int, error)
 	CampaignBySymbol(ctx context.Context, symbol string) (*types.Campaign, error)
 	TimebasedCampaigns(ctx context.Context, categories []string, tokens []string) ([]*types.Campaign, error)
-	UnclaimedCampaigns(ctx context.Context, address string) ([]*types.UnclaimedCampaign, error)
+	UnclaimedCampaigns(ctx context.Context, address string, token *string) ([]*types.UnclaimedCampaign, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -1279,7 +1279,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.UnclaimedCampaigns(childComplexity, args["address"].(string)), true
+		return e.complexity.Query.UnclaimedCampaigns(childComplexity, args["address"].(string), args["token"].(*string)), true
 
 	case "Query.userActivity":
 		if e.complexity.Query.UserActivity == nil {
@@ -2544,6 +2544,15 @@ func (ec *executionContext) field_Query_unclaimedCampaigns_args(ctx context.Cont
 		}
 	}
 	args["address"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -8995,7 +9004,7 @@ func (ec *executionContext) _Query_unclaimedCampaigns(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().UnclaimedCampaigns(rctx, fc.Args["address"].(string))
+		return ec.resolvers.Query().UnclaimedCampaigns(rctx, fc.Args["address"].(string), fc.Args["token"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

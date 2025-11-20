@@ -116,7 +116,7 @@ type Query {
   """
   Returns the campaigns havent been claimed yet by the user
   """
-  unclaimedCampaigns(address:String!): [UnclaimedCampaign]!
+  unclaimedCampaigns(address:String!,token:String): [UnclaimedCampaign]!
 }
 
 type UnclaimedCampaign {

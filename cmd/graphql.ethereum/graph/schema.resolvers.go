@@ -1936,10 +1936,11 @@ func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []str
 }
 
 // UnclaimedCampaigns is the resolver for the unclaimedCampaigns field.
-func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string) ([]*types.UnclaimedCampaign, error) {
+func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string, token *string) ([]*types.UnclaimedCampaign, error) {
 	address = strings.ToLower(address)
 	var campaigns []*types.UnclaimedCampaign
-	err := r.DB.Raw(`
+	args := []any{address, address}
+	query := `
 	select 
 	bs_sum.campaign_id as id,
 	py.created_at,
@@ -1959,8 +1960,13 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string) 
     on py.pool_address  = bs_sum.emitter_addr
 	where 
     py.spender = ?
-    and py.was_spent = false;
-	`, address, address).Scan(&campaigns).Error
+    and py.was_spent = false
+	`
+	if token != nil {
+		query += ` and bs_sum.campaign_content->'priceMetadata'->>'baseAsset' = ?`
+		args = append(args, strings.ToUpper(*token))
+	}
+	err := r.DB.Raw(query, args...).Scan(&campaigns).Error
 	if err != nil {
 		return nil, fmt.Errorf("error getting unclaimed campaigns: %w", err)
 	}
