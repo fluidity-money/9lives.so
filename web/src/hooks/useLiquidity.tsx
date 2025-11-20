@@ -60,7 +60,7 @@ export default function useLiquidity({
           const amount = toUnits(fusdc, config.contracts.decimals.shares);
           await checkAndAprove({
             contractAddress: config.contracts.fusdc.address,
-            spenderAddress: tradingAddr,
+            spenderAddress: config.contracts.buyHelper2.address,
             account,
             amount,
           });
@@ -87,7 +87,7 @@ export default function useLiquidity({
               ],
             });
           };
-          const simulatedShare = await simulateTransaction({
+          const { liq: simulatedShare } = await simulateTransaction({
             transaction: addLiquidityTx(),
             account,
           });
