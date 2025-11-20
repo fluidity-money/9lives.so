@@ -14,6 +14,7 @@ export const EVENTS = {
   CLAIM_ALL_FEES: "claim_all_fees",
   EMAIL_SUB: "email_sub",
   WITHDRAW_USDC: "withdraw_usdc",
+  ZOOM_CHART: "zoom_chart",
 } as const;
 
 export const track = (

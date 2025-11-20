@@ -24,6 +24,7 @@ import PriceChart from "../charts/priceChart";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";
 import Button from "../themed/button";
+import { EVENTS, track } from "@/utils/analytics";
 
 export default function DetailWrapper({
   initialData,
@@ -60,7 +61,20 @@ export default function DetailWrapper({
   const isConcluded = Boolean(data.winner);
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   const [simpleChart, setSimpleChart] = useState(false);
-
+  const handleZoomBtnClick = () => {
+    setSimpleChart(!simpleChart);
+    track(EVENTS.ZOOM_CHART, {
+      direction: simpleChart ? "in" : "out",
+      asset: initialData.priceMetadata?.baseAsset,
+      targetPrice: initialData.priceMetadata?.priceTargetForUp,
+      moment: Number(
+        new Date().toLocaleString("en-US", {
+          timeZone: "UTC",
+          minute: "numeric",
+        }),
+      ),
+    });
+  };
   return (
     <section
       className={combineClass(
@@ -79,7 +93,7 @@ export default function DetailWrapper({
         {data.isDppm && data.priceMetadata ? (
           <div>
             <Button
-              onClick={() => setSimpleChart(!simpleChart)}
+              onClick={handleZoomBtnClick}
               title={simpleChart ? "Zoom In" : "Zoom Out"}
               size={"small"}
             />
