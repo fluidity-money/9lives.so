@@ -1960,7 +1960,7 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string) 
 	where 
     py.spender = ?
     and py.was_spent = false;
-	`, address, address).Scan(campaigns).Error
+	`, address, address).Scan(&campaigns).Error
 	if err != nil {
 		return nil, fmt.Errorf("error getting unclaimed campaigns: %w", err)
 	}
