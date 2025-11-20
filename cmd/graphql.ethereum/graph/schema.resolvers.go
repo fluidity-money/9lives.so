@@ -1935,6 +1935,38 @@ func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []str
 	return campaigns, nil
 }
 
+// UnclaimedCampaigns is the resolver for the unclaimedCampaigns field.
+func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string) ([]*types.UnclaimedCampaign, error) {
+	address = strings.ToLower(address)
+	var campaigns []*types.UnclaimedCampaign
+	err := r.DB.Raw(`
+	select 
+	bs_sum.campaign_id as id,
+	py.created_at,
+	bs_sum.campaign_content as content,
+    bs_sum.total_spent
+	from ninelives_payoff_unused_1 py
+	join (
+    select 
+        emitter_addr,
+        campaign_id,
+        sum(from_amount) as total_spent,
+        campaign_content 
+    from ninelives_buys_and_sells_1
+    where recipient = ?
+    group by emitter_addr,campaign_id, campaign_content
+	) bs_sum 
+    on py.pool_address  = bs_sum.emitter_addr
+	where 
+    py.spender = ?
+    and py.was_spent = false;
+	`, address, address).Scan(campaigns).Error
+	if err != nil {
+		return nil, fmt.Errorf("error getting unclaimed campaigns: %w", err)
+	}
+	return campaigns, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {

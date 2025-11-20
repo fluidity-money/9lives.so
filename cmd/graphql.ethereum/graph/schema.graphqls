@@ -112,6 +112,16 @@ type Query {
   Return unique latest active timebased campaigns for tokens
   """
   timebasedCampaigns(categories:[String!]!, tokens:[String!]!): [Campaign]!
+
+  """
+  Returns the campaigns havent been claimed yet by the user
+  """
+  unclaimedCampaigns(address:String!): [UnclaimedCampaign]!
+}
+
+type UnclaimedCampaign {
+  totalSpent: Int!
+  campaign: Campaign!
 }
 
 type PriceEvent {

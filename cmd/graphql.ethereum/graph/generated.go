@@ -225,6 +225,7 @@ type ComplexityRoot struct {
 		ReferrersForAddress       func(childComplexity int, address string) int
 		SuggestedHeadlines        func(childComplexity int) int
 		TimebasedCampaigns        func(childComplexity int, categories []string, tokens []string) int
+		UnclaimedCampaigns        func(childComplexity int, address string) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
 		UserClaims                func(childComplexity int, address string, campaignID *string) int
 		UserLPs                   func(childComplexity int, address string) int
@@ -242,6 +243,11 @@ type ComplexityRoot struct {
 
 	Share struct {
 		Address func(childComplexity int) int
+	}
+
+	UnclaimedCampaign struct {
+		Campaign   func(childComplexity int) int
+		TotalSpent func(childComplexity int) int
 	}
 
 	Wallet struct {
@@ -342,6 +348,7 @@ type QueryResolver interface {
 	CampaignWeeklyVolume(ctx context.Context, poolAddress string) (int, error)
 	CampaignBySymbol(ctx context.Context, symbol string) (*types.Campaign, error)
 	TimebasedCampaigns(ctx context.Context, categories []string, tokens []string) ([]*types.Campaign, error)
+	UnclaimedCampaigns(ctx context.Context, address string) ([]*types.UnclaimedCampaign, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -1262,6 +1269,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.TimebasedCampaigns(childComplexity, args["categories"].([]string), args["tokens"].([]string)), true
 
+	case "Query.unclaimedCampaigns":
+		if e.complexity.Query.UnclaimedCampaigns == nil {
+			break
+		}
+
+		args, err := ec.field_Query_unclaimedCampaigns_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.UnclaimedCampaigns(childComplexity, args["address"].(string)), true
+
 	case "Query.userActivity":
 		if e.complexity.Query.UserActivity == nil {
 			break
@@ -1378,6 +1397,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Share.Address(childComplexity), true
+
+	case "UnclaimedCampaign.campaign":
+		if e.complexity.UnclaimedCampaign.Campaign == nil {
+			break
+		}
+
+		return e.complexity.UnclaimedCampaign.Campaign(childComplexity), true
+
+	case "UnclaimedCampaign.totalSpent":
+		if e.complexity.UnclaimedCampaign.TotalSpent == nil {
+			break
+		}
+
+		return e.complexity.UnclaimedCampaign.TotalSpent(childComplexity), true
 
 	case "Wallet.address":
 		if e.complexity.Wallet.Address == nil {
@@ -2496,6 +2529,21 @@ func (ec *executionContext) field_Query_timebasedCampaigns_args(ctx context.Cont
 		}
 	}
 	args["tokens"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_unclaimedCampaigns_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["address"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["address"] = arg0
 	return args, nil
 }
 
@@ -8933,6 +8981,67 @@ func (ec *executionContext) fieldContext_Query_timebasedCampaigns(ctx context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_unclaimedCampaigns(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_unclaimedCampaigns(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UnclaimedCampaigns(rctx, fc.Args["address"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*types.UnclaimedCampaign)
+	fc.Result = res
+	return ec.marshalNUnclaimedCampaign2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐUnclaimedCampaign(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_unclaimedCampaigns(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "totalSpent":
+				return ec.fieldContext_UnclaimedCampaign_totalSpent(ctx, field)
+			case "campaign":
+				return ec.fieldContext_UnclaimedCampaign_campaign(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UnclaimedCampaign", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_unclaimedCampaigns_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -9183,6 +9292,148 @@ func (ec *executionContext) fieldContext_Share_address(_ context.Context, field 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UnclaimedCampaign_totalSpent(ctx context.Context, field graphql.CollectedField, obj *types.UnclaimedCampaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UnclaimedCampaign_totalSpent(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalSpent, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UnclaimedCampaign_totalSpent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UnclaimedCampaign",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UnclaimedCampaign_campaign(ctx context.Context, field graphql.CollectedField, obj *types.UnclaimedCampaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UnclaimedCampaign_campaign(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Campaign, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(types.Campaign)
+	fc.Result = res
+	return ec.marshalNCampaign2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐCampaign(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UnclaimedCampaign_campaign(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UnclaimedCampaign",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_Campaign_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Campaign_description(ctx, field)
+			case "picture":
+				return ec.fieldContext_Campaign_picture(ctx, field)
+			case "creator":
+				return ec.fieldContext_Campaign_creator(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Campaign_createdAt(ctx, field)
+			case "settlement":
+				return ec.fieldContext_Campaign_settlement(ctx, field)
+			case "oracleDescription":
+				return ec.fieldContext_Campaign_oracleDescription(ctx, field)
+			case "oracleUrls":
+				return ec.fieldContext_Campaign_oracleUrls(ctx, field)
+			case "identifier":
+				return ec.fieldContext_Campaign_identifier(ctx, field)
+			case "poolAddress":
+				return ec.fieldContext_Campaign_poolAddress(ctx, field)
+			case "outcomes":
+				return ec.fieldContext_Campaign_outcomes(ctx, field)
+			case "starting":
+				return ec.fieldContext_Campaign_starting(ctx, field)
+			case "ending":
+				return ec.fieldContext_Campaign_ending(ctx, field)
+			case "x":
+				return ec.fieldContext_Campaign_x(ctx, field)
+			case "telegram":
+				return ec.fieldContext_Campaign_telegram(ctx, field)
+			case "web":
+				return ec.fieldContext_Campaign_web(ctx, field)
+			case "winner":
+				return ec.fieldContext_Campaign_winner(ctx, field)
+			case "totalVolume":
+				return ec.fieldContext_Campaign_totalVolume(ctx, field)
+			case "liquidityVested":
+				return ec.fieldContext_Campaign_liquidityVested(ctx, field)
+			case "investmentAmounts":
+				return ec.fieldContext_Campaign_investmentAmounts(ctx, field)
+			case "banners":
+				return ec.fieldContext_Campaign_banners(ctx, field)
+			case "categories":
+				return ec.fieldContext_Campaign_categories(ctx, field)
+			case "isDpm":
+				return ec.fieldContext_Campaign_isDpm(ctx, field)
+			case "isDppm":
+				return ec.fieldContext_Campaign_isDppm(ctx, field)
+			case "shares":
+				return ec.fieldContext_Campaign_shares(ctx, field)
+			case "priceMetadata":
+				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
 	}
 	return fc, nil
@@ -13904,6 +14155,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "unclaimedCampaigns":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_unclaimedCampaigns(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -14017,6 +14290,50 @@ func (ec *executionContext) _Share(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = graphql.MarshalString("Share")
 		case "address":
 			out.Values[i] = ec._Share_address(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var unclaimedCampaignImplementors = []string{"UnclaimedCampaign"}
+
+func (ec *executionContext) _UnclaimedCampaign(ctx context.Context, sel ast.SelectionSet, obj *types.UnclaimedCampaign) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, unclaimedCampaignImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UnclaimedCampaign")
+		case "totalSpent":
+			out.Values[i] = ec._UnclaimedCampaign_totalSpent(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "campaign":
+			out.Values[i] = ec._UnclaimedCampaign_campaign(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -15260,6 +15577,44 @@ func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel
 	return ret
 }
 
+func (ec *executionContext) marshalNUnclaimedCampaign2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐUnclaimedCampaign(ctx context.Context, sel ast.SelectionSet, v []*types.UnclaimedCampaign) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOUnclaimedCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐUnclaimedCampaign(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
 func (ec *executionContext) marshalNWallet2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐWallet(ctx context.Context, sel ast.SelectionSet, v types.Wallet) graphql.Marshaler {
 	return ec._Wallet(ctx, sel, &v)
 }
@@ -15780,6 +16135,13 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	}
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOUnclaimedCampaign2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐUnclaimedCampaign(ctx context.Context, sel ast.SelectionSet, v *types.UnclaimedCampaign) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UnclaimedCampaign(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

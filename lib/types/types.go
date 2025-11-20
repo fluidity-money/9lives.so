@@ -43,6 +43,11 @@ type (
 		Investments   CommentInvestments `json:"investments"`
 	}
 
+	UnclaimedCampaign struct {
+		TotalSpent int `json:"totalSpent"`
+		Campaign
+	}
+
 	LP struct {
 		Liquidity string `json:"liquidity"`
 		Campaign
