@@ -23,6 +23,7 @@ import DetailComments from "./detailComments";
 import PriceChart from "../charts/priceChart";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";
+import Button from "../themed/button";
 
 export default function DetailWrapper({
   initialData,
@@ -58,6 +59,8 @@ export default function DetailWrapper({
   const notStarted = data.starting > Date.now();
   const isConcluded = Boolean(data.winner);
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
+  const [simpleChart, setSimpleChart] = useState(false);
+
   return (
     <section
       className={combineClass(
@@ -74,11 +77,18 @@ export default function DetailWrapper({
           isConcluded={isConcluded}
         />
         {data.isDppm && data.priceMetadata ? (
-          <PriceChartWrapper
-            campaignData={data as SimpleCampaignDetail}
-            pointsData={pricePoints}
-            simple={false}
-          />
+          <div>
+            <Button
+              onClick={() => setSimpleChart(!simpleChart)}
+              title={simpleChart ? "Zoom In" : "Zoom Out"}
+              size={"small"}
+            />
+            <PriceChartWrapper
+              campaignData={data as SimpleCampaignDetail}
+              pointsData={pricePoints}
+              simple={simpleChart}
+            />
+          </div>
         ) : (
           <PriceChart
             poolAddress={data.poolAddress}
