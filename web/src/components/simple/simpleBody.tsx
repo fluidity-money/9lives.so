@@ -7,6 +7,10 @@ import SimplePositions from "./simplePositions";
 import SimpleModeAlert from "./simpleModeAlert";
 import { useQuery } from "@tanstack/react-query";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";
+import SimpleClaimAllButton from "./simpleClaimAllButton";
+import { useState } from "react";
+import Modal from "../themed/modal";
+import SimpleBuyDialog from "../simpleBuyDialog";
 
 export default function SimpleBody({
   campaignData,
@@ -19,14 +23,36 @@ export default function SimpleBody({
     queryKey: ["simpleCampaign", campaignData.priceMetadata.baseAsset],
     initialData: campaignData,
   });
+  const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  const [outcomeIdx, setOutcomeIdx] = useState(1);
   return (
     <>
       <SimpleModeAlert />
       <SimpleSubHeader campaignData={data} pointsData={pointsData} />
       <PriceChartWrapper simple campaignData={data} pointsData={pointsData} />
-      <SimpleButtons data={data} />
+      <div className="sticky inset-x-0 bottom-0 z-20 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
+        <SimpleClaimAllButton token={data.priceMetadata.baseAsset} />
+        <SimpleButtons
+          data={data}
+          setIsBuyDialogOpen={setIsBuyDialogOpen}
+          setOutcomeIdx={setOutcomeIdx}
+        />
+      </div>
       <SimpleChance data={data} />
       <SimplePositions data={data} />
+      <Modal
+        isOpen={isBuyDialogOpen}
+        setIsOpen={setIsBuyDialogOpen}
+        title="Predict Price"
+        boxContainerClass="md:max-w-screen max-w-[400px]"
+      >
+        <SimpleBuyDialog
+          closeDialog={() => setIsBuyDialogOpen(false)}
+          data={data}
+          outcomeIdx={outcomeIdx}
+          setOutcomeIdx={setOutcomeIdx}
+        />
+      </Modal>
     </>
   );
 }
