@@ -8,6 +8,7 @@ import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
 import { useState } from "react";
 import useCountdown from "@/hooks/useCountdown";
+import SimpleClaimAllButton from "./simpleClaimAllButton";
 
 export default function SimpleButtons({
   data,
@@ -33,6 +34,7 @@ export default function SimpleButtons({
   return (
     <>
       <div className="sticky inset-x-0 bottom-0 z-20 flex items-center gap-2 bg-9layer pb-2 md:static md:bg-transparent md:p-0">
+        <SimpleClaimAllButton token={data.priceMetadata.baseAsset} />
         {isEnded ? (
           !!winnerOutcome && totalRewards > 0 ? (
             <SimpleClaimButton

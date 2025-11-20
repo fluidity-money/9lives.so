@@ -2,7 +2,10 @@ import { requestUnclaimedCampaigns } from "@/providers/graphqlClient";
 import { formatUnclaimedCampaign } from "@/utils/format/formatCampaign";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useUnclaimedCampaigns(address: string, token?: string) {
+export default function useUnclaimedCampaigns(
+  address?: string,
+  token?: string,
+) {
   return useQuery({
     queryKey: ["unclaimedCampaigns", address, token],
     queryFn: async () => {
