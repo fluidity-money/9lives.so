@@ -10,6 +10,7 @@ import {
   requestSimpleMarket,
   requestAssetPrices,
   requestUserParticipated,
+  requestUnclaimedCampaigns,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -273,3 +274,17 @@ export type DppmMetadata = {
   priceOnBuy?: number;
   minuteOnBuy: number;
 };
+
+export type RawUnclaimedCampaign = Awaited<
+  ReturnType<typeof requestUnclaimedCampaigns>
+>[number];
+
+export type UnclaimedCampaign = Omit<
+  SimpleCampaignDetail,
+  | "isDpm"
+  | "investmentAmounts"
+  | "isDppm"
+  | "winner"
+  | "totalVolume"
+  | "creator"
+> & { totalSpent: number };

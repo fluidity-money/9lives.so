@@ -3,6 +3,8 @@ import {
   ParticipatedCampaign,
   RawClaimedCampaign,
   RawParticipatedCampaign,
+  RawUnclaimedCampaign,
+  UnclaimedCampaign,
 } from "../../types";
 import {
   Campaign,
@@ -16,6 +18,7 @@ import {
 } from "@/types";
 import { formatDppmTitle, formatDppmOutcomeName } from "./formatDppmName";
 import config from "@/config";
+import formatFusdc from "./formatUsdc";
 
 function formatPriceMetadata(
   ro: { priceTargetForUp: string; baseAsset: string } | null,
@@ -102,7 +105,9 @@ export function formatOutcome(ro: RawOutcome, isDppm?: boolean): Outcome {
     share: { address: ro.share.address as `0x${string}` },
   };
 }
-
+function isSimpleMarketKey(k: string): k is keyof typeof config.simpleMarkets {
+  return k in config.simpleMarkets;
+}
 export function formatParticipatedContent(
   ro: NonNullable<RawParticipatedCampaign>["content"],
 ) {
@@ -159,5 +164,28 @@ export function formatClaimedCampaign(ro: RawClaimedCampaign): ClaimedCampaign {
         picture: o.picture ?? null,
       })),
     },
+  };
+}
+
+export function formatUnclaimedCampaign(
+  ro: RawUnclaimedCampaign,
+): UnclaimedCampaign {
+  if (!ro) throw new Error("Campaign is null");
+  if (!ro.campaign.priceMetadata)
+    throw new Error("Campaign priceMetadata is null");
+  if (!isSimpleMarketKey(ro.campaign.priceMetadata.baseAsset))
+    throw new Error("Not listed token");
+  return {
+    ...ro.campaign,
+    poolAddress: ro.campaign.poolAddress as `0x${string}`,
+    identifier: ro.campaign.identifier as `0x${string}`,
+    outcomes: ro.campaign.outcomes.map((o) => formatOutcome(o)),
+    totalSpent: +formatFusdc(ro.totalSpent, 2),
+    priceMetadata: formatPriceMetadata(ro.campaign.priceMetadata)!,
+    name: formatDppmTitle({
+      symbol: ro.campaign.priceMetadata.baseAsset,
+      price: ro.campaign.priceMetadata?.priceTargetForUp,
+      end: ro.campaign.ending,
+    }),
   };
 }

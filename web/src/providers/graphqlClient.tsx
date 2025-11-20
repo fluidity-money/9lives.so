@@ -754,6 +754,7 @@ export const requestUnclaimedCampaigns = (address: string, token?: string) =>
         priceTargetForUp: true,
       },
       starting: true,
+      poolAddress: true,
       ending: true,
       outcomes: {
         name: true,
