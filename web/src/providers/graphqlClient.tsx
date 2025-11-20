@@ -742,3 +742,26 @@ export const requestTimebasedCampaigns = (
     winner: true,
     totalVolume: true,
   });
+
+export const requestUnclaimedCampaigns = (address: string, token?: string) =>
+  graph9Lives.query.unclaimedCampaigns({
+    $: { address, token },
+    totalSpent: true,
+    campaign: {
+      identifier: true,
+      priceMetadata: {
+        baseAsset: true,
+        priceTargetForUp: true,
+      },
+      starting: true,
+      ending: true,
+      outcomes: {
+        name: true,
+        picture: true,
+        identifier: true,
+        share: {
+          address: true,
+        },
+      },
+    },
+  });

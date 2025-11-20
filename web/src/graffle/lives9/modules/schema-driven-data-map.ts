@@ -669,6 +669,10 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
+        token: {
+          nt: String,
+          it: [0],
+        },
       },
       // nt: UnclaimedCampaign, <-- Assigned later to avoid potential circular dependency.
     },

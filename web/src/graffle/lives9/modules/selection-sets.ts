@@ -1166,7 +1166,7 @@ export namespace Query {
   > extends $Select.Bases.Base,
       $NamedTypes.$UnclaimedCampaign<_$Scalars> {
     /**
-     * Arguments for `unclaimedCampaigns` field. All arguments are required so you must include this.
+     * Arguments for `unclaimedCampaigns` field. Some (1/2) arguments are required so you must include this.
      */
     $: unclaimedCampaigns$Arguments<_$Scalars>;
   }
@@ -1176,6 +1176,7 @@ export namespace Query {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     address: string;
+    token?: string | undefined | null;
   }
 
   // --- expanded ---

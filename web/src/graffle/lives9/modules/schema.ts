@@ -548,6 +548,12 @@ export namespace Schema {
           inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
+        token: {
+          kind: "InputField";
+          name: "token";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$String;
+        };
       };
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$UnclaimedCampaign;
