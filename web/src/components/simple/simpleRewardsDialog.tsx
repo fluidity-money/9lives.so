@@ -8,6 +8,8 @@ import { combineClass } from "@/utils/combineClass";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import RightCaretIcon from "#/icons/right-caret.svg";
+import useClaimAllPools from "@/hooks/useClaimAllPolls";
+import useConnectWallet from "@/hooks/useConnectWallet";
 
 function SimpleRewardItem({
   data,
@@ -68,16 +70,28 @@ function SimpleRewardItem({
 
 export default function SimpleRewardsDialog({
   data,
+  token,
 }: {
   data: UnclaimedCampaign[];
+  token: string;
 }) {
   const account = useActiveAccount();
+  const { connect } = useConnectWallet();
+  const { mutate: claimAllPools, isPending: claiming } = useClaimAllPools(
+    data,
+    token,
+  );
   const [rewards, setRewards] = useState<{ id: string; reward: number }[]>([]);
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
   const totalRewards = +(
     rewards.reduce((acc, v) => acc + (v?.reward ?? 0), 0) || 0
   ).toFixed(2);
+
+  const handleClick = () => {
+    if (!account) return connect();
+    claimAllPools({ addresses: data.map((i) => i.poolAddress), account });
+  };
   return (
     <div className="flex flex-col space-y-3">
       <p className="text-center text-4xl">💰💰💰</p>
@@ -107,7 +121,13 @@ export default function SimpleRewardsDialog({
           ))}
         </tbody>
       </table>
-      {/* <Button intent={"cta"} size={"xlarge"} title="Claim All Now" /> */}
+      <Button
+        intent={"cta"}
+        size={"xlarge"}
+        title={claiming ? "Claiming" : "Claim All Now"}
+        disabled={claiming}
+        onClick={handleClick}
+      />
       <Link
         href={"/portfolio"}
         className="mx-auto flex items-center font-chicago text-xs underline"

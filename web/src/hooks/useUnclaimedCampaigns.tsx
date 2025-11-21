@@ -3,14 +3,14 @@ import { formatUnclaimedCampaign } from "@/utils/format/formatCampaign";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useUnclaimedCampaigns(
-  address?: string,
+  walletAddress?: string,
   token?: string,
 ) {
   return useQuery({
-    queryKey: ["unclaimedCampaigns", address, token],
+    queryKey: ["unclaimedCampaigns", walletAddress, token],
     queryFn: async () => {
-      if (!address) return [];
-      return await requestUnclaimedCampaigns(address, token);
+      if (!walletAddress) return [];
+      return await requestUnclaimedCampaigns(walletAddress, token);
     },
     select: (data) => data.map((c) => formatUnclaimedCampaign(c)),
   });
