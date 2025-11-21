@@ -185,7 +185,7 @@ export default function DetailBuyAction({
   const winEstimation = data.isDpm
     ? estimatedWinForDpm
     : data.isDppm
-      ? shares
+      ? shares + boost
       : Number(sharesToGet);
   const orderSummary = [
     {
@@ -530,10 +530,7 @@ export default function DetailBuyAction({
               <div className="flex items-center justify-between">
                 <span className="font-chicago uppercase">To Win 💵</span>
                 <span className="bg-9green px-1 py-0.5 font-chicago text-lg">
-                  $
-                  {Number(
-                    data.isDppm ? winEstimation + boost : winEstimation,
-                  ).toFixed(2)}
+                  ${Number(winEstimation).toFixed(2)}
                 </span>
               </div>
               <ul className="flex flex-col gap-1 text-gray-500">
