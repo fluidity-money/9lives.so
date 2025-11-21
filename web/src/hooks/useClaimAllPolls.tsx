@@ -15,6 +15,7 @@ import { UnclaimedCampaign } from "@/types";
 export default function useClaimAllPools(
   data: UnclaimedCampaign[],
   token: string,
+  closeModal: () => void,
 ) {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
@@ -45,13 +46,15 @@ export default function useClaimAllPools(
       toast.error(`Claim error: ${e.message}`, { id: addresses.join("") });
     },
     onSuccess: (d, { account, addresses }) => {
+      closeModal();
       toast.success(
-        `Claimed successfuly. Tx hash ${d.transactionHash.slice(0, 4)}...${d.transactionHash.slice(-4)}`,
+        `Claimed successfuly. ${d.transactionHash.slice(0, 4)}...${d.transactionHash.slice(-4)}`,
         { id: addresses.join("") },
       );
-      queryClient.invalidateQueries({
-        queryKey: ["unclaimedCampaigns", account.address, token],
-      });
+      queryClient.setQueryData(
+        ["unclaimedCampaigns", account.address, token],
+        [],
+      );
       data.forEach((i) => {
         queryClient.invalidateQueries({
           queryKey: ["positions", i.poolAddress, i.outcomes, account, false],

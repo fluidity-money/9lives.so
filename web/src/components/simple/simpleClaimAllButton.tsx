@@ -25,7 +25,11 @@ export default function SimpleClaimAllButton({ token }: { token: string }) {
           setIsOpen={setIsModalOpen}
           title="Claim Your Rewards"
         >
-          <SimpleRewardsDialog data={data} token={token} />
+          <SimpleRewardsDialog
+            data={data}
+            token={token}
+            closeModal={() => setIsModalOpen(false)}
+          />
         </Modal>
       </>
     );

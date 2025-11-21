@@ -71,15 +71,18 @@ function SimpleRewardItem({
 export default function SimpleRewardsDialog({
   data,
   token,
+  closeModal,
 }: {
   data: UnclaimedCampaign[];
   token: string;
+  closeModal: () => void;
 }) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const { mutate: claimAllPools, isPending: claiming } = useClaimAllPools(
     data,
     token,
+    closeModal,
   );
   const [rewards, setRewards] = useState<{ id: string; reward: number }[]>([]);
   const tableHeaderClasses =
@@ -99,7 +102,8 @@ export default function SimpleRewardsDialog({
         Claim ${totalRewards} Rewards
       </h3>
       <p className="text-center text-xs">
-        You have accumulative of ${totalRewards} rewards unclaimed.
+        You have accumulative of ${totalRewards} {token.toUpperCase()} rewards
+        unclaimed.
       </p>
       <table className="w-full table-auto border-separate border-spacing-y-1">
         <thead>
