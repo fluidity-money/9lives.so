@@ -16,10 +16,10 @@
 # At each step, environment variables will be printed which can be set
 # to restart from the point after which they were printed.
 
-fee_creator=0
-fee_lp=0
-fee_minter=0
-fee_referrer=0
+fee_creator=3
+fee_lp=3
+fee_minter=3
+fee_referrer=3
 backend_is_dppm=true
 
 if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=`{date +%s}
