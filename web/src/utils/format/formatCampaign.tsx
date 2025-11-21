@@ -182,10 +182,12 @@ export function formatUnclaimedCampaign(
     outcomes: ro.campaign.outcomes.map((o) => formatOutcome(o)),
     totalSpent: +formatFusdc(ro.totalSpent, 2),
     priceMetadata,
+    ending: ro.campaign.ending * 1000,
+    starting: ro.campaign.starting * 1000,
     name: formatDppmTitle({
       symbol: priceMetadata.baseAsset,
       price: priceMetadata.priceTargetForUp,
-      end: ro.campaign.ending,
+      end: ro.campaign.ending * 1000,
     }),
   };
 }
