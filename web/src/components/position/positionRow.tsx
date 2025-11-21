@@ -269,7 +269,7 @@ export default function PositionRow({
               <span className="font-chicago text-xs">
                 $
                 {campaignContent.isDppm
-                  ? totalRewards
+                  ? +totalRewards.toFixed(2)
                   : formatFusdc(estimationOfBurn ?? BigInt(0), 2)}
               </span>
             )}
