@@ -173,18 +173,18 @@ export function formatUnclaimedCampaign(
   if (!ro) throw new Error("Campaign is null");
   if (!ro.campaign.priceMetadata)
     throw new Error("Campaign priceMetadata is null");
-  if (!isSimpleMarketKey(ro.campaign.priceMetadata.baseAsset))
-    throw new Error("Not listed token");
+  const priceMetadata = formatPriceMetadata(ro.campaign.priceMetadata)!;
+
   return {
     ...ro.campaign,
     poolAddress: ro.campaign.poolAddress as `0x${string}`,
     identifier: ro.campaign.identifier as `0x${string}`,
     outcomes: ro.campaign.outcomes.map((o) => formatOutcome(o)),
     totalSpent: +formatFusdc(ro.totalSpent, 2),
-    priceMetadata: formatPriceMetadata(ro.campaign.priceMetadata)!,
+    priceMetadata,
     name: formatDppmTitle({
-      symbol: ro.campaign.priceMetadata.baseAsset,
-      price: ro.campaign.priceMetadata?.priceTargetForUp,
+      symbol: priceMetadata.baseAsset,
+      price: priceMetadata.priceTargetForUp,
       end: ro.campaign.ending,
     }),
   };
