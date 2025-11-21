@@ -58,7 +58,7 @@ export default function ModeSwitchButton() {
         "relative flex h-10 cursor-pointer items-center gap-1 border-l-2 border-l-9black px-4 focus:outline-none",
       )}
     >
-      <span className="hidden font-chicago text-xs underline md:inline">
+      <span className="hidden font-chicago text-xs underline lg:inline">
         Advanced Mode
       </span>
       <Switch
