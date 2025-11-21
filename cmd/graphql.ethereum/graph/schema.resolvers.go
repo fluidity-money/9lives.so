@@ -618,6 +618,10 @@ func (r *mutationResolver) RequestPaymaster(ctx context.Context, ticket *int, ty
 						{"Permit R", permitR},
 						{"Permit S", permitS},
 						{"Permit V", permitV},
+						{"Deadline", deadline},
+						{"Maximum fee", p.MaximumFee},
+						{"Referrer", p.Referrer},
+						{"Outgoing chain eid", p.OutgoingChainEid},
 					},
 				),
 			)
@@ -1941,24 +1945,24 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string, 
 	var campaigns []*types.UnclaimedCampaign
 	args := []any{address, address}
 	query := `
-	select 
+	select
 	bs_sum.campaign_id as id,
 	py.created_at,
 	bs_sum.campaign_content as content,
     bs_sum.total_spent
 	from ninelives_payoff_unused_1 py
 	join (
-    select 
+    select
         emitter_addr,
         campaign_id,
         sum(from_amount) as total_spent,
-        campaign_content 
+        campaign_content
     from ninelives_buys_and_sells_1
     where recipient = ?
     group by emitter_addr,campaign_id, campaign_content
-	) bs_sum 
+	) bs_sum
     on py.pool_address  = bs_sum.emitter_addr
-	where 
+	where
     py.spender = ?
     and py.was_spent = false
 	and bs_sum.campaign_content->>'ending')::numeric < EXTRACT(EPOCH FROM NOW())
