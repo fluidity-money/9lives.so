@@ -131,7 +131,13 @@ L:
 			Data: callCd,
 		}, nil)
 		if err != nil {
-			setup.Exitf("call result, address: %v, calldata: %x: %v", paymasterAddr, callCd, err)
+			if inError == 3 {
+				err = f.On(features.FeaturePaymasterEmergencyWipe, func() error {
+					return db.Raw("SELECT ninelives_emergency_wipe_1()").Error
+				})
+				setup.Exitf("call result, address: %v, calldata: %x: %v", paymasterAddr, callCd, err)
+			}
+			inError++
 		}
 		if len(callRes) == 0 {
 			setup.Exitf("error calling, sender: %v: %x", fromAddr, callCd)
