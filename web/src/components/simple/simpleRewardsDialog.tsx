@@ -35,7 +35,11 @@ function SimpleRewardItem({
     if (totalRewards) {
       setRewards((prev) => {
         if (prev.find((i) => i.id === data.identifier)) {
-          return prev;
+          return prev.map((i) =>
+            i.id === data.identifier
+              ? { id: data.identifier, reward: totalRewards }
+              : i,
+          );
         } else {
           return [...prev, { id: data.identifier, reward: totalRewards }];
         }
