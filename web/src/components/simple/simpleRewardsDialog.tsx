@@ -107,7 +107,7 @@ export default function SimpleRewardsDialog({
           ))}
         </tbody>
       </table>
-      <Button intent={"cta"} size={"xlarge"} title="Claim All Now" />
+      {/* <Button intent={"cta"} size={"xlarge"} title="Claim All Now" /> */}
       <Link
         href={"/portfolio"}
         className="mx-auto flex items-center font-chicago text-xs underline"
