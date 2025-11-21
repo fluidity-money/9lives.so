@@ -16,7 +16,6 @@ export default function useClaimAllPools(
   data: UnclaimedCampaign[],
   token: string,
 ) {
-  const toastId = crypto.randomUUID();
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
   return useMutation<
@@ -39,16 +38,16 @@ export default function useClaimAllPools(
       await checkAndSwitchChain();
       return await sendTransaction({ transaction: claimAllPoolsTx, account });
     },
-    onMutate() {
-      toast.loading("Claiming all rewards...", { id: toastId });
+    onMutate({ addresses }) {
+      toast.loading("Claiming all rewards...", { id: addresses.join("") });
     },
-    onError: (e) => {
-      toast.error(`Claim error: ${e.message}`, { id: toastId });
+    onError: (e, { addresses }) => {
+      toast.error(`Claim error: ${e.message}`, { id: addresses.join("") });
     },
-    onSuccess: (d, { account }) => {
+    onSuccess: (d, { account, addresses }) => {
       toast.success(
         `Claimed successfuly. Tx hash ${d.transactionHash.slice(0, 4)}...${d.transactionHash.slice(-4)}`,
-        { id: toastId },
+        { id: addresses.join("") },
       );
       queryClient.invalidateQueries({
         queryKey: ["unclaimedCampaigns", account.address, token],
