@@ -25,5 +25,6 @@
 	"enable paymaster dppm buy": true,
 	"dppm markets must be made by admin": true,
 	"category overrides should be made by admin": true,
-	"enable newsletter subscription": false
+	"enable newsletter subscription": false,
+	"paymaster should wipe emergency on repeated errors": true
 }

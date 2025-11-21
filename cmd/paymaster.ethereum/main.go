@@ -81,6 +81,9 @@ func main() {
 	}
 	f := features.Get()
 	transactOpts := ethAbiBind.NewKeyedTransactor(privateKey, chainId)
+	// The number of times an error happened. If 3, then we wipe the service
+	// clean using the makeshift emergency function.
+	inError := 0
 L:
 	for {
 		ctx, cancelCtx := context.WithTimeout(
@@ -140,7 +143,17 @@ L:
 		}
 		callResResults, ok := callResI[0].([]bool)
 		if !ok {
-			setup.Exitf("call results: %T", callResI[0])
+			// We need to indicate that an error happened here, then retry. If we
+			// fail 3 times, then we need to wipe the slate clean in an emergency
+			// context.
+			slog.Error("Error calling", "results", callResI[0])
+			if inError == 3 {
+				err = f.On(features.FeaturePaymasterEmergencyWipe, func() error {
+					return db.Raw("SELECT ninelives_emergency_wipe_1()").Error
+				})
+				setup.Exitf("call results: %T, wipe: %v", callResI[0], err)
+			}
+			inError++
 		}
 		// Start to swap and then track the bad instances here.
 		var badIds, goodIds []int

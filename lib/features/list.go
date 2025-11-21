@@ -50,4 +50,8 @@ const (
 
 	// FeatureCategoryOverridesShouldBeMadeByAdmin are the only users that can override categories.
 	FeatureCategoryOverridesShouldBeMadeByAdmin = "category overrides should be made by admin"
+
+	// FeaturePaymasterEmergencyWipe should wipe the paymaster poll table of
+	// troublesome requests in a worst case scenario.
+	FeaturePaymasterEmergencyWipe = "paymaster should wipe emergency on repeated errors"
 )
