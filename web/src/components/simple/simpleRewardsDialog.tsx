@@ -71,8 +71,9 @@ export default function SimpleRewardsDialog({
   const [rewards, setRewards] = useState<{ id: string; reward: number }[]>([]);
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
-  const totalRewards =
-    rewards.reduce((acc, v) => acc + (v?.reward ?? 0), 0) || 0;
+  const totalRewards = +(
+    rewards.reduce((acc, v) => acc + (v?.reward ?? 0), 0) || 0
+  ).toFixed(2);
   return (
     <div className="flex flex-col space-y-3">
       <p className="text-center text-4xl">💰💰💰</p>
