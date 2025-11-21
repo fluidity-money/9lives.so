@@ -16,6 +16,7 @@ export default function SimpleClaimAllButton({ token }: { token?: string }) {
         <Button
           size={"xlarge"}
           intent={"cta"}
+          className={"flex-1"}
           onClick={() => setIsModalOpen(true)}
           title={`🔔 ${data.length} Rewards Unclaimed`}
         />
