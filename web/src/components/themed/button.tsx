@@ -13,6 +13,7 @@ const button = cva(
         yes: "bg-9green",
         no: "bg-9red",
         cta: "bg-9blueLight",
+        reward: "bg-9yellowLight",
         default: null,
       },
       cat: {

@@ -26,6 +26,7 @@ const config: Config = {
         "9blueLight": "#DDEAEF",
         "9blueDark": "#52AACC",
         "9yellow": "#FFD699",
+        "9yellowLight": "#FFFD9B",
         "9purple": "#D0ABFF",
         "9black": "#0C0C0C",
         "9gray": "#EEEEEE",

@@ -122,7 +122,7 @@ export default function SimpleRewardsDialog({
         </tbody>
       </table>
       <Button
-        intent={"cta"}
+        intent={"reward"}
         size={"xlarge"}
         title={claiming ? "Claiming" : "Claim All Now"}
         disabled={claiming}
