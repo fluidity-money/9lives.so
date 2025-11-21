@@ -51,7 +51,7 @@ function SimpleRewardItem({
     <tr>
       <td className={bodyClasses}>{data.name}</td>
       <td className={bodyClasses}>${data.totalSpent}</td>
-      <td className={bodyClasses}>${totalRewards}</td>
+      <td className={bodyClasses}>${+totalRewards.toFixed(2)}</td>
       <td className={bodyClasses}>
         <span
           className={combineClass(
