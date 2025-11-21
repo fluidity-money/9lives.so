@@ -138,6 +138,7 @@ L:
 				setup.Exitf("call result, address: %v, calldata: %x: %v", paymasterAddr, callCd, err)
 			}
 			inError++
+			continue
 		}
 		if len(callRes) == 0 {
 			setup.Exitf("error calling, sender: %v: %x", fromAddr, callCd)
@@ -160,6 +161,7 @@ L:
 				setup.Exitf("call results: %T, wipe: %v", callResI[0], err)
 			}
 			inError++
+			continue
 		}
 		// Start to swap and then track the bad instances here.
 		var badIds, goodIds []int
