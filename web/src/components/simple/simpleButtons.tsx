@@ -41,7 +41,7 @@ export default function SimpleButtons({
           />
         ) : null
       ) : (
-        <>
+        <div className="flex flex-auto items-center gap-2">
           <Button
             title="UP"
             intent={"yes"}
@@ -62,7 +62,7 @@ export default function SimpleButtons({
               setIsBuyDialogOpen(true);
             }}
           />
-        </>
+        </div>
       )}
     </>
   );

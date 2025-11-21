@@ -14,7 +14,7 @@ export default function SimpleClaimAllButton({ token }: { token?: string }) {
     return (
       <>
         <Button
-          size={"large"}
+          size={"xlarge"}
           intent={"cta"}
           onClick={() => setIsModalOpen(true)}
           title={`🔔 ${data.length} Rewards Unclaimed`}
