@@ -105,7 +105,7 @@ documentation=''
 
 documentation_h=0x`{echo -n $documentation | shasum -a256 | cut -f1 -d' '}
 
-if(~ $SPN_TRADING_ADDR '') {
+while(~ $SPN_TRADING_ADDR '') {
 	SPN_TRADING_ADDR=`{
 		call_and_send \
 			$SPN_FACTORY_ADDR \
@@ -122,6 +122,7 @@ if(~ $SPN_TRADING_ADDR '') {
 			$fee_referrer \
 			true
 	}
+	sleep 1
 }
 
 echo 'SPN_TRADING_ADDR='$SPN_TRADING_ADDR >[1=2]
