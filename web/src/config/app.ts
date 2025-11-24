@@ -3,6 +3,7 @@ import { farcasterChains } from "./chains";
 import BTC from "#/images/tokens/btc.webp";
 import PAXG from "#/images/tokens/paxg.svg";
 import NVIDIA from "#/images/tokens/nvidia.svg";
+import MONAD from "#/images/tokens/mon.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -76,6 +77,15 @@ const simpleMarkets = {
     logo: PAXG,
     title: "Gold (PAXG)",
     tabTitle: "GOLD",
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
+  },
+  mon: {
+    slug: "mon",
+    logo: MONAD,
+    title: "MONAD",
+    tabTitle: "MONAD",
     openDays: [0, 1, 2, 3, 4, 5, 6],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
