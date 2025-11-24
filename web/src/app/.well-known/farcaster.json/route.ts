@@ -31,7 +31,7 @@ export async function GET() {
       ogTitle: "9lives",
       ogDescription: "",
       ogImageUrl: "https://9lives.so/images/dppm-og-image.png",
-      noindex: true,
+      noindex: false,
     },
     baseBuilder: {
       ownerAddress: "0x60143A0b1DA42FfEc63ADDB9D05A43485275Ede1",
