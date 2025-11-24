@@ -1554,7 +1554,7 @@ func (r *queryResolver) UserLiquidity(ctx context.Context, address string, tradi
 			), 0)
 			-
 			COALESCE((
-				SELECT SUM(liquidity_amt)
+				SELECT SUM(fusdc_amt)
 				FROM ninelives_events_liquidity_removed
 				WHERE recipient = ? %s
 			), 0)
