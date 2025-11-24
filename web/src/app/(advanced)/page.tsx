@@ -8,7 +8,7 @@ export default async function AdvancedModeHomepage() {
   const cookieStore = await cookies();
   const mode = cookieStore.get("advanced-mode")?.value;
   if (!mode || mode === "false") {
-    return redirect("/simple/campaign/btc");
+    return redirect("/simple/campaign/paxg");
   }
 
   return (

@@ -9,7 +9,7 @@ export default function NavigationMenu({
   const menu = [
     {
       title: "Markets",
-      page: simple ? "/simple/campaign/btc" : "/",
+      page: simple ? "/simple/campaign/paxg" : "/",
     },
     // {
     //   title: "Leaderboard",
