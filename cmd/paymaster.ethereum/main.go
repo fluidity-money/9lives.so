@@ -156,8 +156,8 @@ L:
 			// context.
 			slog.Error("Error calling", "results", callResI[0])
 			if inError == 3 {
-				slog.Info("Wiping the table")
 				err = f.On(features.FeaturePaymasterEmergencyWipe, func() error {
+					slog.Info("Wiping the table")
 					return db.Raw("SELECT ninelives_emergency_wipe_1()").Error
 				})
 				setup.Exitf("call results: %T, wipe: %v", callResI[0], err)
