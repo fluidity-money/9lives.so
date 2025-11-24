@@ -86,11 +86,11 @@ const apechain = defineChain({
   icon: APE,
 });
 const farcasterList = {
+  base: { ...base, icon: BASE },
   superposition: { ...superposition, icon: SPN },
   arbitrum: { ...arbitrum, icon: ARB },
   ethereum: { ...ethereum, icon: ETH },
   optimism: { ...optimism, icon: OP },
-  base: { ...base, icon: BASE },
   polygon: { ...polygon, icon: POL },
   bsc: { ...bsc, icon: BSC },
   avalanche: { ...avalanche, icon: AVAX },

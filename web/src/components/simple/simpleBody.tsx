@@ -11,6 +11,7 @@ import SimpleClaimAllButton from "./simpleClaimAllButton";
 import { useState } from "react";
 import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 export default function SimpleBody({
   campaignData,
@@ -25,9 +26,10 @@ export default function SimpleBody({
   });
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);
+  const enabledSimpleModeAlert = useFeatureFlag("enable simple mode alert");
   return (
     <>
-      <SimpleModeAlert />
+      {enabledSimpleModeAlert ? <SimpleModeAlert /> : <></>}
       <SimpleSubHeader campaignData={data} pointsData={pointsData} />
       <PriceChartWrapper simple campaignData={data} pointsData={pointsData} />
       <div className="sticky inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-9layer pb-2 md:static md:flex-row md:bg-transparent md:p-0">

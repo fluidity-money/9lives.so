@@ -17,11 +17,12 @@ export async function GET() {
       splashImageUrl: "https://9lives.so/images/splash-farcaster.png",
       splashBackgroundColor: "#000000",
       subtitle: "Be the winner of the hour, every hour.",
-      description: "9lives is the most advanced permissionless prediction market. Predict anything!",
+      description:
+        "9lives is the most advanced permissionless prediction market. Predict anything!",
       screenshotUrls: [
         "https://ex.co/s1.png",
         "https://ex.co/s2.png",
-        "https://ex.co/s3.png"
+        "https://ex.co/s3.png",
       ],
       primaryCategory: "finance",
       tags: ["predict", "prediction", "prediction-market", "defi"],
@@ -30,7 +31,7 @@ export async function GET() {
       ogTitle: "9lives",
       ogDescription: "",
       ogImageUrl: "https://9lives.so/images/dppm-og-image.png",
-      noindex: true
+      noindex: true,
     },
     baseBuilder: {
       ownerAddress: "0x60143A0b1DA42FfEc63ADDB9D05A43485275Ede1",
