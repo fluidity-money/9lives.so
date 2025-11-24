@@ -27,7 +27,7 @@ const menu = [
     page: "https://static.9lives.so/privacy.pdf",
   },
   {
-    title: "TODO board",
+    title: "Issues board",
     page: "https://issues.superposition.so",
   },
   {
@@ -37,14 +37,6 @@ const menu = [
   {
     title: "Docs",
     page: "https://docs.9lives.so",
-  },
-  {
-    title: "ARB Oracle",
-    page: "https://arbinframarkets.xyz",
-  },
-  {
-    title: "Bridge to Superposition",
-    page: "https://bridge.superposition.so",
   },
 ];
 
