@@ -131,7 +131,9 @@ is_fake='false'
 
 if(! ~ $SPN_DRYRUN '') is_fake=true
 
+if(~ $SPN_CATEGORIES '') SPN_CATEGORIES='[\"Hourly\", \"Price Prediction\"]'
+
 curl https://graph.9lives.so \
 	-H 'Content-Type: application/json' \
 	-H 'X-Admin-Secret: '$SPN_ADMIN_SECRET \
-	-sd '{"query":"mutation { explainCampaign( type: PUT, name: \"'$"outcome_1_desc'\", description: \"\", seed: 100, outcomes: [ { name: \"'$"outcome_0_desc'\", seed: '$SPN_OUTCOME_0_SEED', picture: \"\" }, { name: \"'$"outcome_1_desc'\", seed: '$SPN_OUTCOME_1_SEED', picture: \"\" } ], ending: '$SPN_DEADLINE', creator: \"'$SPN_SENDER_ADDR'\", isFake: '$is_fake', starting: '$SPN_STARTED_BY', isDppm: true, priceMetadata: { baseAsset: \"'$SPN_BASE_ASSET'\", quoteAsset: \"'$SPN_QUOTE_ASSET'\", priceTargetForUp: \"'$SPN_END_QUOTE_PRICE'\"}, categories: [\"Hourly\", \"Price Prediction\"])}"}'
+	-sd '{"query":"mutation { explainCampaign( type: PUT, name: \"'$"outcome_1_desc'\", description: \"\", seed: 100, outcomes: [ { name: \"'$"outcome_0_desc'\", seed: '$SPN_OUTCOME_0_SEED', picture: \"\" }, { name: \"'$"outcome_1_desc'\", seed: '$SPN_OUTCOME_1_SEED', picture: \"\" } ], ending: '$SPN_DEADLINE', creator: \"'$SPN_SENDER_ADDR'\", isFake: '$is_fake', starting: '$SPN_STARTED_BY', isDppm: true, priceMetadata: { baseAsset: \"'$SPN_BASE_ASSET'\", quoteAsset: \"'$SPN_QUOTE_ASSET'\", priceTargetForUp: \"'$SPN_END_QUOTE_PRICE'\"}, categories: '$"SPN_CATEGORIES')}"}'
