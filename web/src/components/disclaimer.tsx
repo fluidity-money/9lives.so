@@ -40,7 +40,7 @@ function About() {
   return (
     <Section>
       <Title text="What is 9lives?" />
-      <Parag text="9lives is the most cost-efficient and advanced prediction market platform. With 9lives, traders can easily make predictions, trade their positions, and maximise capital efficiency in web3." />
+      <Parag text="9lives is the most advanced permissionless prediction market. Predict anything!" />
       <Title text="Disclaimer" />
       <List
         items={[

@@ -22,7 +22,7 @@ const metadata = {
   metadataBase: new URL("https://9lives.so"),
   keywords: [
     "prediction market",
-    "bet",
+    "predict",
     "onchain",
     "superposition",
     "blockchain",
@@ -155,13 +155,7 @@ const appSchema = z.object({
 const requiredChains = Object.values(farcasterChains).map(
   (chain) => `eip155:${chain.id}`,
 );
-const farcasterTags = [
-  "bet",
-  "predict",
-  "prediction",
-  "prediction-market",
-  "defi",
-];
+const farcasterTags = ["predict", "prediction", "prediction-market", "defi"];
 const frame = {
   version: "1",
   name: metadata.title,
