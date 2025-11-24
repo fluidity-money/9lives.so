@@ -134,7 +134,7 @@ L:
 			if inError == 3 {
 				err = f.On(features.FeaturePaymasterEmergencyWipe, func() error {
 					slog.Info("Wiping the table")
-					return db.Raw("SELECT ninelives_emergency_wipe_1()").Error
+					return db.Exec("SELECT ninelives_emergency_wipe_1()").Error
 				})
 				setup.Exitf("call result, address: %v, calldata: %x: %v", paymasterAddr, callCd, err)
 			}
@@ -158,7 +158,7 @@ L:
 			if inError == 3 {
 				err = f.On(features.FeaturePaymasterEmergencyWipe, func() error {
 					slog.Info("Wiping the table")
-					return db.Raw("SELECT ninelives_emergency_wipe_1()").Error
+					return db.Exec("SELECT ninelives_emergency_wipe_1()").Error
 				})
 				setup.Exitf("call results: %T, wipe: %v", callResI[0], err)
 			}
