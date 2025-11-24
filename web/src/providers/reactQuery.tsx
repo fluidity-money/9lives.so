@@ -5,6 +5,7 @@ import { PricePoint, SimpleCampaignDetail } from "@/types";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import { requestSimpleMarket } from "./graphqlClient";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
+import config from "@/config";
 
 export default function ReactQueryProvider({
   children,
@@ -26,7 +27,7 @@ export default function ReactQueryProvider({
       queryFn: async ({ queryKey }) => {
         const [, symbol, starting, ending] = queryKey as [
           string,
-          string,
+          keyof typeof config.simpleMarkets,
           number,
           number,
         ];

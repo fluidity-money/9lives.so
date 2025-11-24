@@ -1,7 +1,7 @@
 "use client";
+import config from "@/config";
 import ChartPriceProvider from "@/providers/chartPriceProvider";
 import { PricePoint } from "@/types";
-import { useQuery } from "@tanstack/react-query";
 import {
   LineChart,
   ResponsiveContainer,
@@ -23,7 +23,7 @@ export default function AssetPriceChart({
   assetsLoaded,
 }: {
   id: string;
-  symbol: string;
+  symbol: keyof typeof config.simpleMarkets;
   basePrice: number;
   starting: number;
   ending: number;
@@ -151,9 +151,9 @@ export default function AssetPriceChart({
   const PriceInd = ({ cx, cy }: { cx: number; cy: number }) => (
     <g transform="translate(0,-32)">
       <rect
-        x={cx - 40}
+        x={cx - 45}
         y={cy - 10}
-        width={80}
+        width={90}
         height={20}
         fill={priceIsAbove ? "#5dd341" : "#f96565"}
         rx={4}
@@ -167,7 +167,8 @@ export default function AssetPriceChart({
         fill={"#fff"}
         fontFamily="var(--font-chicago)"
       >
-        {priceIsAbove ? "▲" : "▼"} ${latestPrice}
+        {priceIsAbove ? "▲" : "▼"} $
+        {latestPrice.toFixed(config.simpleMarkets[symbol].decimals)}
       </text>
     </g>
   );
