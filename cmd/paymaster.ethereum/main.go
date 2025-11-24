@@ -221,7 +221,16 @@ L:
 		gas = uint64(float64(gas) * 1.25)
 		tx, err := bc.Transact(transactOpts, "multicall", operations[:goodLen])
 		if err != nil {
-			setup.Exitf("transact failure: %v", err)
+			slog.Error("Error calling", "results", callResI[0])
+			if inError == 3 {
+				err = f.On(features.FeaturePaymasterEmergencyWipe, func() error {
+					slog.Info("Wiping the table")
+					return db.Exec("SELECT ninelives_emergency_wipe_1()").Error
+				})
+				setup.Exitf("transact failure: %v", err)
+			}
+			inError++
+			continue
 		}
 		for {
 			select {
