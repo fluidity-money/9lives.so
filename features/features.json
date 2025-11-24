@@ -10,11 +10,11 @@
 	"ai for asking if a campaign makes sense": false,
 	"enable relay buy": true,
 	"enable paymaster sell": false,
-	"paymaster should check sig": true,
-	"paymaster should check trading addr": true,
-	"paymaster should report failure": true,
-	"paymaster should simulate submission": true,
-	"enable paymaster withdraw": true,
+	"paymaster should check sig": false,
+	"paymaster should check trading addr": false,
+	"paymaster should report failure": false,
+	"paymaster should simulate submission": false,
+	"enable paymaster withdraw": false,
 	"enable paymaster add liquidity": false,
 	"enable paymaster remove liquidity": false,
 	"display odds on campaign items": true,
@@ -26,5 +26,5 @@
 	"dppm markets must be made by admin": true,
 	"category overrides should be made by admin": true,
 	"enable newsletter subscription": false,
-	"paymaster should wipe emergency on repeated errors": true
+	"paymaster should wipe emergency on repeated errors": false
 }
