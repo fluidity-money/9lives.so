@@ -11,7 +11,6 @@ import useClaim from "@/hooks/useClaim";
 import { useActiveAccount } from "thirdweb/react";
 import { Outcome, ParticipatedCampaign } from "@/types";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { requestCampaignById } from "@/providers/graphqlClient";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
@@ -70,7 +69,7 @@ export default function PositionRow({
     tradingAddr: campaignContent.poolAddress as `0x${string}`,
     account,
   });
-  const { totalRewards } = useDppmRewards({
+  const { totalRewards, results: dppmRewards } = useDppmRewards({
     tradingAddr: campaignContent.poolAddress,
     account,
     priceMetadata: campaignContent.priceMetadata,
@@ -345,9 +344,30 @@ export default function PositionRow({
         </td>
         {campaignContent.isDpm ? null : (
           <td>
-            <span className="font-chicago text-xs">
-              ${campaignContent.isDppm ? totalRewards.toFixed(2) : data.balance}
-            </span>
+            {campaignContent.isDppm ? (
+              !detailPage ? (
+                <p className="flex flex-col items-start gap-0.5 text-wrap font-chicago text-xs">
+                  <span>
+                    <span className="font-geneva text-[#808080]">Reward:</span>{" "}
+                    ${dppmRewards.dppmFusdc}
+                  </span>
+                  <span>
+                    <span className="font-geneva text-[#808080]">Bonus:</span> $
+                    {dppmRewards.ninetailsWinnerFusdc}
+                  </span>
+                  <span>
+                    <span className="font-geneva text-[#808080]">Refund:</span>{" "}
+                    ${dppmRewards.ninetailsLoserFusd}
+                  </span>
+                </p>
+              ) : (
+                <span className="font-chicago text-xs">
+                  ${totalRewards.toFixed(2)}
+                </span>
+              )
+            ) : (
+              <span className="font-chicago text-xs">${data.balance}</span>
+            )}
           </td>
         )}
       </tr>
