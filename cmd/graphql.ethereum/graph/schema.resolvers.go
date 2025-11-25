@@ -1880,14 +1880,15 @@ func (r *queryResolver) CampaignWeeklyVolume(ctx context.Context, poolAddress st
 // CampaignBySymbol is the resolver for the campaignBySymbol field.
 func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string, category string) (*types.Campaign, error) {
 	var campaign types.Campaign
+	categoryJSON, _ := json.Marshal(category)
 	err := r.DB.Raw(`
 	SELECT *
 	FROM ninelives_campaigns_1
 	WHERE content->'priceMetadata'->>'baseAsset' = ?
-	AND content->'categories' ?? ?
+	AND content->'categories' @> ?
 	AND EXTRACT(EPOCH FROM NOW()) BETWEEN (content->>'starting')::numeric AND (content->>'ending')::numeric
 	LIMIT 1
-	`, symbol, category).Scan(&campaign).Error
+	`, symbol, string(categoryJSON)).Scan(&campaign).Error
 	if err != nil {
 		return nil, fmt.Errorf("Error getting the live campaign by symbol")
 	}
@@ -1896,11 +1897,11 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string, cat
 			SELECT *
 			FROM ninelives_campaigns_1
 			WHERE content->'priceMetadata'->>'baseAsset' = ?
-			AND content->'categories' ?? ?
+			AND content->'categories' @> ?
 			AND (content->>'starting')::numeric <= EXTRACT(EPOCH FROM NOW())
 			ORDER BY created_at DESC
 			LIMIT 1
-		`, symbol, category).Scan(&campaign).Error
+		`, symbol, string(categoryJSON)).Scan(&campaign).Error
 
 		if err != nil {
 			return nil, fmt.Errorf("error getting latest campaign by symbol: %w", err)
