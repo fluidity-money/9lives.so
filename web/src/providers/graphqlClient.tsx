@@ -627,7 +627,11 @@ export const requestPriceChanges = (poolAddress: string) =>
 export const requestWeeklyVolume = (poolAddress: string) =>
   graph9Lives.query.campaignWeeklyVolume({ $: { poolAddress } });
 
-export const requestSimpleMarket = (symbol: string, init?: RequestInit) =>
+export const requestSimpleMarket = (
+  symbol: string,
+  period: string = "hourly",
+  init?: RequestInit,
+) =>
   graph9Lives
     .anyware(({ exchange }) =>
       exchange({
@@ -639,7 +643,10 @@ export const requestSimpleMarket = (symbol: string, init?: RequestInit) =>
       }),
     )
     .query.campaignBySymbol({
-      $: { symbol: symbol.toUpperCase() },
+      $: {
+        symbol: symbol.toUpperCase(),
+        category: period[0].toUpperCase() + period.slice(1),
+      },
       identifier: true,
       starting: true,
       ending: true,
