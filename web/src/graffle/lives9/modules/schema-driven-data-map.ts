@@ -647,6 +647,10 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
+        category: {
+          nt: String,
+          it: [1],
+        },
       },
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },

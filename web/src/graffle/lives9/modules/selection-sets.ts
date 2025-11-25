@@ -1097,6 +1097,7 @@ export namespace Query {
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     symbol: string;
+    category: string;
   }
 
   // --- expanded ---

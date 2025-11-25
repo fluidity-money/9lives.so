@@ -508,6 +508,12 @@ export namespace Schema {
           inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
+        category: {
+          kind: "InputField";
+          name: "category";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
       };
       inlineType: [0];
       namedType: $$NamedTypes.$$Campaign;
