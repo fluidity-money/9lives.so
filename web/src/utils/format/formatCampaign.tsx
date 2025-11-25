@@ -24,9 +24,13 @@ function formatPriceMetadata(
   ro: { priceTargetForUp: string; baseAsset: string } | null,
 ) {
   if (!ro) return null;
+  const symbol =
+    ro.baseAsset.toLowerCase() as keyof typeof config.simpleMarkets;
   return {
-    priceTargetForUp: ro.priceTargetForUp,
-    baseAsset: ro.baseAsset.toLowerCase() as keyof typeof config.simpleMarkets,
+    priceTargetForUp: Number(ro.priceTargetForUp).toFixed(
+      config.simpleMarkets[symbol].decimals,
+    ),
+    baseAsset: symbol,
   };
 }
 

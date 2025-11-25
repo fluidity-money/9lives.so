@@ -1,5 +1,6 @@
 import config from "@/config";
 import { requestFinalPrice } from "@/providers/graphqlClient";
+import { PricePoint, RawPricePoint } from "@/types";
 import { formatAssetPrices } from "@/utils/format/formatAssetPrice";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,7 +23,7 @@ export default function useFinalPrice({
         new Date(ending).toISOString(),
       );
     },
-    select: (data) => (symbol ? formatAssetPrices(data, symbol)[0] : data),
+    select: (data) => formatAssetPrices(data, symbol!)[0],
     enabled: !!symbol,
   });
 }
