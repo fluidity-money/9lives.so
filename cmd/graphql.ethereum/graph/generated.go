@@ -211,7 +211,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		CampaignByID              func(childComplexity int, id string) int
-		CampaignBySymbol          func(childComplexity int, symbol string) int
+		CampaignBySymbol          func(childComplexity int, symbol string, category string) int
 		CampaignComments          func(childComplexity int, campaignID string, onlyHolders *bool, page *int, pageSize *int) int
 		CampaignPriceEvents       func(childComplexity int, poolAddress string) int
 		CampaignWeeklyVolume      func(childComplexity int, poolAddress string) int
@@ -346,7 +346,7 @@ type QueryResolver interface {
 	CampaignComments(ctx context.Context, campaignID string, onlyHolders *bool, page *int, pageSize *int) ([]*types.Comment, error)
 	CampaignPriceEvents(ctx context.Context, poolAddress string) ([]*types.PriceEvent, error)
 	CampaignWeeklyVolume(ctx context.Context, poolAddress string) (int, error)
-	CampaignBySymbol(ctx context.Context, symbol string) (*types.Campaign, error)
+	CampaignBySymbol(ctx context.Context, symbol string, category string) (*types.Campaign, error)
 	TimebasedCampaigns(ctx context.Context, categories []string, tokens []string) ([]*types.Campaign, error)
 	UnclaimedCampaigns(ctx context.Context, address string, token *string) ([]*types.UnclaimedCampaign, error)
 }
@@ -1126,7 +1126,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.CampaignBySymbol(childComplexity, args["symbol"].(string)), true
+		return e.complexity.Query.CampaignBySymbol(childComplexity, args["symbol"].(string), args["category"].(string)), true
 
 	case "Query.campaignComments":
 		if e.complexity.Query.CampaignComments == nil {
@@ -2289,6 +2289,15 @@ func (ec *executionContext) field_Query_campaignBySymbol_args(ctx context.Contex
 		}
 	}
 	args["symbol"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["category"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["category"] = arg1
 	return args, nil
 }
 
@@ -8789,7 +8798,7 @@ func (ec *executionContext) _Query_campaignBySymbol(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CampaignBySymbol(rctx, fc.Args["symbol"].(string))
+		return ec.resolvers.Query().CampaignBySymbol(rctx, fc.Args["symbol"].(string), fc.Args["category"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

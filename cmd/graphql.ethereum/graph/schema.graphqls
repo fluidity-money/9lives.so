@@ -106,7 +106,7 @@ type Query {
   """
   Get the live campaign by token symbol for price prediction
   """
-  campaignBySymbol(symbol: String!): Campaign
+  campaignBySymbol(symbol: String!, category: String!): Campaign
 
   """
   Return unique latest active timebased campaigns for tokens
