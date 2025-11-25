@@ -213,6 +213,9 @@ export default function SimpleBuyDialog({
 
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between bg-9layer font-chicago">
+      <p className="text-center font-chicago text-xs">
+        Bridge from any chain, instantly.
+      </p>
       <div className="w-full space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-1 flex-row space-x-1">

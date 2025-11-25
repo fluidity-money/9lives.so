@@ -96,8 +96,8 @@ const farcasterList = {
   avalanche: { ...avalanche, icon: AVAX },
 } as const;
 const chainList = {
-  superposition: { ...superposition, icon: SPN },
   arbitrum: { ...arbitrum, icon: ARB },
+  superposition: { ...superposition, icon: SPN },
   ethereum: { ...ethereum, icon: ETH },
   optimism: { ...optimism, icon: OP },
   base: { ...base, icon: BASE },
