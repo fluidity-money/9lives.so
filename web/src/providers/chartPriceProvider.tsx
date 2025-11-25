@@ -27,17 +27,16 @@ export default function ChartPriceProvider({
 }: {
   starting: number;
   ending: number;
-  symbol: string;
+  symbol: keyof typeof config.simpleMarkets;
   children: Readonly<React.ReactNode>;
 }) {
   const queryClient = useQueryClient();
-  const _symbol = symbol.toLowerCase();
   useEffect(() => {
     const unsubPrices = wsClient.subscribe<RawAssetPrices>(
       {
         query: subPricesForDuration,
         variables: {
-          symbol: _symbol.toUpperCase(),
+          symbol: symbol.toUpperCase(),
           starting: new Date().toISOString(),
           ending: new Date(ending).toISOString(),
         },
@@ -47,7 +46,7 @@ export default function ChartPriceProvider({
           const nextData = data?.oracles_ninelives_prices_2;
           if (nextData && nextData.length > 0) {
             queryClient.setQueryData<PricePoint[]>(
-              ["assetPrices", _symbol, starting, ending],
+              ["assetPrices", symbol, starting, ending],
               (previousData) => {
                 const onlyNewItems = nextData
                   .filter(
@@ -55,7 +54,9 @@ export default function ChartPriceProvider({
                   )
                   .map((i) => ({
                     id: i.id,
-                    price: i.amount,
+                    price: Number(
+                      i.amount.toFixed(config.simpleMarkets[symbol].decimals),
+                    ),
                     timestamp:
                       new Date(i.created_by).getTime() -
                       new Date().getTimezoneOffset() * 60 * 1000,
@@ -72,7 +73,7 @@ export default function ChartPriceProvider({
         error: (error) => {
           console.error(
             "WebSocket error for chart token",
-            _symbol,
+            symbol,
             starting,
             ending,
             error,
@@ -81,7 +82,7 @@ export default function ChartPriceProvider({
         complete: () => {
           console.log(
             "WebSocket chart subscription closed.",
-            _symbol,
+            symbol,
             starting,
             ending,
           );
@@ -91,7 +92,7 @@ export default function ChartPriceProvider({
     return () => {
       unsubPrices();
     };
-  }, [queryClient, _symbol, starting, ending]);
+  }, [queryClient, symbol, starting, ending]);
 
   return children;
 }
