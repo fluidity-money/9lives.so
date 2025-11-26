@@ -287,6 +287,7 @@ export type UnclaimedCampaign = Omit<
   | "winner"
   | "totalVolume"
   | "creator"
+  | "categories"
 > & { totalSpent: number };
 
 export type SimpleMarketKey = keyof typeof config.simpleMarkets;

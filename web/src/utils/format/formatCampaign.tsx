@@ -71,6 +71,7 @@ export function formatCampaignDetail(ro: RawCampaignDetail): CampaignDetail {
 
   return {
     ...formatCampaign(ro),
+    categories: ro.categories,
     liquidityVested: ro.liquidityVested,
     investmentAmounts: ro.investmentAmounts.filter(Boolean),
     isDpm: ro.isDpm ?? null,
