@@ -31,9 +31,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Params }) {
   const { symbol, period } = await params;
   const response = await requestSimpleMarket(symbol, period);
+  const data = formatSimpleCampaignDetail(response);
   return {
-    title: response?.name ?? "Predict on 9lives.so",
-    description: response?.name ?? `Predict token prices in ${period} markets`,
+    title: data.name ?? "Predict asset prices on 9lives.so",
+    description: `Predict ${symbol.toUpperCase()} prices in ${period} markets.`,
     other: {
       "fc:miniapp": JSON.stringify({
         version: config.frame.version,
