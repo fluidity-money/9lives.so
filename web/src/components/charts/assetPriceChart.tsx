@@ -60,7 +60,7 @@ export default function AssetPriceChart({
   const maxY = simple
     ? basePrice + simpleDiff
     : Math.floor(maxPrice + maxPrice * margin);
-
+  const isDailyMarket = DAY >= timeDiff && timeDiff > HOUR;
   const formatFn = (ts: number) => {
     const date = new Date(ts);
     switch (true) {
@@ -74,8 +74,12 @@ export default function AssetPriceChart({
           day: "numeric",
           month: "short",
         });
-      case DAY >= timeDiff && timeDiff > HOUR:
-        return date.toLocaleString("default", { hour: "numeric" });
+      case isDailyMarket:
+        return date.toLocaleString("default", {
+          hour: simple ? undefined : "numeric",
+          day: simple ? "numeric" : undefined,
+          month: simple ? "short" : undefined,
+        });
       default:
         return date.toLocaleString("default", {
           hour: "numeric",
@@ -228,8 +232,10 @@ export default function AssetPriceChart({
               strokeDasharray="3 2"
               label={{
                 value: new Date(starting).toLocaleString("default", {
-                  hour: "numeric",
-                  minute: "2-digit",
+                  day: isDailyMarket ? "numeric" : undefined,
+                  month: isDailyMarket ? "short" : undefined,
+                  hour: isDailyMarket ? undefined : "numeric",
+                  minute: isDailyMarket ? undefined : "2-digit",
                 }),
                 fontFamily: "var(--font-chicago)",
                 fontSize: 12,
