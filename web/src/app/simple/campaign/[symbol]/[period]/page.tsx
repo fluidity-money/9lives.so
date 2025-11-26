@@ -17,10 +17,10 @@ export const revalidate = 60;
 export async function generateStaticParams() {
   return Object.values(config.simpleMarkets).reduce(
     (acc, v) => {
-      for (let period in v.periods) {
+      for (let period of v.periods) {
         acc.push({
           symbol: v.slug,
-          period: period,
+          period,
         });
       }
       return acc;
