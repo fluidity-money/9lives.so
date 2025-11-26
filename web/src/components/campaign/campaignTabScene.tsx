@@ -50,7 +50,7 @@ export default function CampaignTabScene({
       <TabPanels>
         {config.categories.map((cat) => (
           <TabPanel key={"tab_panel_" + cat}>
-            {cat === "Hourly" ? (
+            {cat === "Hourly" || cat === "Daily" ? (
               <TimebasedCampaignList category={cat} />
             ) : (
               <CampaignList
