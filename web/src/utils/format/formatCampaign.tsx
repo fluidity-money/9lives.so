@@ -4,6 +4,7 @@ import {
   RawClaimedCampaign,
   RawParticipatedCampaign,
   RawUnclaimedCampaign,
+  SimpleMarketKey,
   UnclaimedCampaign,
 } from "../../types";
 import {
@@ -24,8 +25,7 @@ function formatPriceMetadata(
   ro: { priceTargetForUp: string; baseAsset: string } | null,
 ) {
   if (!ro) return null;
-  const symbol =
-    ro.baseAsset.toLowerCase() as keyof typeof config.simpleMarkets;
+  const symbol = ro.baseAsset.toLowerCase() as SimpleMarketKey;
   return {
     priceTargetForUp: Number(ro.priceTargetForUp).toFixed(
       config.simpleMarkets[symbol].decimals,
@@ -109,7 +109,7 @@ export function formatOutcome(ro: RawOutcome, isDppm?: boolean): Outcome {
     share: { address: ro.share.address as `0x${string}` },
   };
 }
-function isSimpleMarketKey(k: string): k is keyof typeof config.simpleMarkets {
+function isSimpleMarketKey(k: string): k is SimpleMarketKey {
   return k in config.simpleMarkets;
 }
 export function formatParticipatedContent(
@@ -157,7 +157,7 @@ export function formatClaimedCampaign(ro: RawClaimedCampaign): ClaimedCampaign {
       name: ro.content.isDppm
         ? formatDppmTitle({
             symbol:
-              ro.content.priceMetadata!.baseAsset.toLowerCase() as keyof typeof config.simpleMarkets,
+              ro.content.priceMetadata!.baseAsset.toLowerCase() as SimpleMarketKey,
             price: ro.content.priceMetadata?.priceTargetForUp,
             end: ro.content.ending * 1000,
           })

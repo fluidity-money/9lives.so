@@ -41,7 +41,7 @@ export type Campaign = Omit<
   isYesNo: boolean;
   outcomes: Outcome[];
   priceMetadata: {
-    baseAsset: keyof typeof config.simpleMarkets;
+    baseAsset: SimpleMarketKey;
     priceTargetForUp: string;
   } | null;
 };
@@ -52,7 +52,7 @@ export type SimpleCampaignDetail = NonNullable<RawSimpleCampaignDetail> & {
   isDpm: false;
   isDppm: true;
   priceMetadata: {
-    baseAsset: keyof typeof config.simpleMarkets;
+    baseAsset: SimpleMarketKey;
     priceTargetForUp: string;
   };
 };
@@ -65,7 +65,7 @@ export type CampaignDetail = Omit<
   isYesNo: boolean;
   outcomes: Outcome[];
   priceMetadata: {
-    baseAsset: keyof typeof config.simpleMarkets;
+    baseAsset: SimpleMarketKey;
     priceTargetForUp: string;
   } | null;
 };
@@ -288,3 +288,7 @@ export type UnclaimedCampaign = Omit<
   | "totalVolume"
   | "creator"
 > & { totalSpent: number };
+
+export type SimpleMarketKey = keyof typeof config.simpleMarkets;
+export type SimpleMarketPeriod =
+  (typeof config.simpleMarkets)[keyof typeof config.simpleMarkets]["periods"][number];

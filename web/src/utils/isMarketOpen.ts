@@ -1,4 +1,5 @@
 import config from "@/config";
+import { SimpleMarketKey } from "@/types";
 
 type Market = {
   openDays: number[];
@@ -87,9 +88,7 @@ function epochForMarketLocal(
   return target.getTime() - (local.getTime() - target.getTime());
 }
 
-export function calcNextMarketOpen(
-  marketKey: keyof typeof config.simpleMarkets,
-): number {
+export function calcNextMarketOpen(marketKey: SimpleMarketKey): number {
   const market = config.simpleMarkets[marketKey] as Market;
   if (!market || !market.openDays || market.openDays.length === 0)
     return Date.now();

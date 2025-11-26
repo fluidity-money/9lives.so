@@ -3,14 +3,16 @@
 import { SimpleCampaignDetail } from "@/types";
 import CountdownTimer from "../countdownTimer";
 import { useQuery } from "@tanstack/react-query";
+import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 
 export default function SimpleHeader({
   initialData,
 }: {
   initialData: SimpleCampaignDetail;
 }) {
+  const period = getPeriodOfCampaign(initialData);
   const { data } = useQuery<SimpleCampaignDetail>({
-    queryKey: ["simpleCampaign", initialData.priceMetadata.baseAsset],
+    queryKey: ["simpleCampaign", initialData.priceMetadata.baseAsset, period],
     initialData,
   });
 

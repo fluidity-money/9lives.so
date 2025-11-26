@@ -1,7 +1,13 @@
 import config from "@/config";
-import { PaymasterAttempt, PaymasterOp, Ticket } from "@/types";
+import {
+  PaymasterAttempt,
+  PaymasterOp,
+  SimpleCampaignDetail,
+  Ticket,
+} from "@/types";
 import { QueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import getPeriodOfCampaign from "./getPeriodOfCampaign";
 
 const handleTicketAttempts: Record<
   PaymasterOp,
@@ -39,8 +45,9 @@ const handleTicketAttempts: Record<
       ],
     });
     if (t.data.priceMetadata) {
+      const period = getPeriodOfCampaign(t.data as SimpleCampaignDetail);
       qc.invalidateQueries({
-        queryKey: ["simpleCampaign", t.data.priceMetadata.baseAsset],
+        queryKey: ["simpleCampaign", t.data.priceMetadata.baseAsset, period],
       });
     } else {
       qc.invalidateQueries({

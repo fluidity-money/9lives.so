@@ -6,7 +6,7 @@ export const size = {
   height: 630,
 };
 export const contentType = "image/png";
-type Params = Promise<{ id: string }>;
+type Params = Promise<{ symbol: string; period: string }>;
 export default async function ImageOG({ params }: { params: Params }) {
   return new ImageResponse(
     (

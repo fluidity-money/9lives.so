@@ -177,6 +177,7 @@ export const requestCampaignById = (id: string, init?: RequestInit) =>
       description: true,
       picture: true,
       oracleDescription: true,
+      categories: true,
       oracleUrls: true,
       settlement: true,
       poolAddress: true,
@@ -629,7 +630,7 @@ export const requestWeeklyVolume = (poolAddress: string) =>
 
 export const requestSimpleMarket = (
   symbol: string,
-  period: string = "hourly",
+  period: string,
   init?: RequestInit,
 ) =>
   graph9Lives
@@ -645,8 +646,9 @@ export const requestSimpleMarket = (
     .query.campaignBySymbol({
       $: {
         symbol: symbol.toUpperCase(),
-        category: period[0].toUpperCase() + period.slice(1),
+        category: period[0].toUpperCase() + period.slice(1).toLowerCase(),
       },
+      categories: true,
       identifier: true,
       starting: true,
       ending: true,

@@ -12,6 +12,7 @@ import { track, EVENTS } from "@/utils/analytics";
 import { useActiveAccount } from "thirdweb/react";
 import { MaxUint256 } from "ethers";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
+import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 
 const useBuy = ({
   shareAddr,
@@ -130,8 +131,13 @@ const useBuy = ({
             ],
           });
           if (data.priceMetadata) {
+            const period = getPeriodOfCampaign(data as SimpleCampaignDetail);
             queryClient.invalidateQueries({
-              queryKey: ["simpleCampaign", data.priceMetadata.baseAsset],
+              queryKey: [
+                "simpleCampaign",
+                data.priceMetadata.baseAsset,
+                period,
+              ],
             });
           } else {
             queryClient.invalidateQueries({

@@ -1,9 +1,14 @@
 import config from "@/config";
-import { PricePoint, RawAssetPrices, RawPricePoint } from "@/types";
+import {
+  PricePoint,
+  RawAssetPrices,
+  RawPricePoint,
+  SimpleMarketKey,
+} from "@/types";
 
 export function formatAssetPrices(
   ro: RawAssetPrices,
-  token: keyof typeof config.simpleMarkets,
+  token: SimpleMarketKey,
 ): PricePoint[] {
   if (!ro) throw new Error("No Asset Price");
 
@@ -12,7 +17,7 @@ export function formatAssetPrices(
 
 export function formatPricePoint(
   ro: RawPricePoint,
-  token: keyof typeof config.simpleMarkets,
+  token: SimpleMarketKey,
 ): PricePoint {
   return {
     price: Number(ro.amount.toFixed(config.simpleMarkets[token].decimals)),

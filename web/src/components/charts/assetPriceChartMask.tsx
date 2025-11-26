@@ -1,6 +1,6 @@
 import config from "@/config";
 import useCountdown from "@/hooks/useCountdown";
-import { Outcome, SimpleCampaignDetail } from "@/types";
+import { Outcome, SimpleCampaignDetail, SimpleMarketKey } from "@/types";
 import isMarketOpen, { calcNextMarketOpen } from "@/utils/isMarketOpen";
 import CountdownTimer from "../countdownTimer";
 import RetroCard from "../cardRetro";
@@ -25,7 +25,7 @@ function NotActiveMask({
     </div>
   );
 }
-function WillOpenTimer({ slug }: { slug: keyof typeof config.simpleMarkets }) {
+function WillOpenTimer({ slug }: { slug: SimpleMarketKey }) {
   return (
     <div className="flex flex-col items-center gap-1">
       <span>Market Opens in:</span>

@@ -1,7 +1,7 @@
 "use client";
 import config from "@/config";
 import ChartPriceProvider from "@/providers/chartPriceProvider";
-import { PricePoint } from "@/types";
+import { PricePoint, SimpleMarketKey } from "@/types";
 import {
   LineChart,
   ResponsiveContainer,
@@ -23,7 +23,7 @@ export default function AssetPriceChart({
   assetsLoaded,
 }: {
   id: string;
-  symbol: keyof typeof config.simpleMarkets;
+  symbol: SimpleMarketKey;
   basePrice: number;
   starting: number;
   ending: number;

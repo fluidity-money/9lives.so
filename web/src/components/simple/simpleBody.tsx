@@ -12,6 +12,7 @@ import { useState } from "react";
 import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
+import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 
 export default function SimpleBody({
   campaignData,
@@ -20,8 +21,9 @@ export default function SimpleBody({
   campaignData: SimpleCampaignDetail;
   pointsData: PricePoint[];
 }) {
+  const period = getPeriodOfCampaign(campaignData);
   const { data } = useQuery<SimpleCampaignDetail>({
-    queryKey: ["simpleCampaign", campaignData.priceMetadata.baseAsset],
+    queryKey: ["simpleCampaign", campaignData.priceMetadata.baseAsset, period],
     initialData: campaignData,
   });
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);

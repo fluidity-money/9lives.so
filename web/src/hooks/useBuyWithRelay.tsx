@@ -20,6 +20,7 @@ import {
 } from "thirdweb/react";
 import RelayTxToaster from "@/components/relayTxToaster";
 import { MaxUint256 } from "ethers";
+import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 
 type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 const useBuyWithRelay = ({
@@ -227,8 +228,13 @@ const useBuyWithRelay = ({
             ],
           });
           if (data.priceMetadata) {
+            const period = getPeriodOfCampaign(data as SimpleCampaignDetail);
             queryClient.invalidateQueries({
-              queryKey: ["simpleCampaign", data.priceMetadata.baseAsset],
+              queryKey: [
+                "simpleCampaign",
+                data.priceMetadata.baseAsset,
+                period,
+              ],
             });
           } else {
             queryClient.invalidateQueries({

@@ -1,5 +1,5 @@
-import config from "@/config";
 import { requestAssetPrices } from "@/providers/graphqlClient";
+import { SimpleMarketKey } from "@/types";
 import { formatAssetPrices } from "@/utils/format/formatAssetPrice";
 
 export default async function getAndFormatAssetPrices({
@@ -7,7 +7,7 @@ export default async function getAndFormatAssetPrices({
   starting,
   ending,
 }: {
-  symbol: keyof typeof config.simpleMarkets;
+  symbol: SimpleMarketKey;
   starting: number;
   ending: number;
 }) {

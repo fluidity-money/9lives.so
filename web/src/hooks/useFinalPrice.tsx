@@ -1,6 +1,5 @@
-import config from "@/config";
 import { requestFinalPrice } from "@/providers/graphqlClient";
-import { PricePoint, RawPricePoint } from "@/types";
+import { SimpleMarketKey } from "@/types";
 import { formatAssetPrices } from "@/utils/format/formatAssetPrice";
 import { useQuery } from "@tanstack/react-query";
 
@@ -9,7 +8,7 @@ export default function useFinalPrice({
   starting,
   ending,
 }: {
-  symbol?: keyof typeof config.simpleMarkets;
+  symbol?: SimpleMarketKey;
   ending: number;
   starting: number;
 }) {

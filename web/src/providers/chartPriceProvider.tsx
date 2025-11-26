@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
-import { PricePoint, RawAssetPrices } from "@/types";
+import { PricePoint, RawAssetPrices, SimpleMarketKey } from "@/types";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -27,7 +27,7 @@ export default function ChartPriceProvider({
 }: {
   starting: number;
   ending: number;
-  symbol: keyof typeof config.simpleMarkets;
+  symbol: SimpleMarketKey;
   children: Readonly<React.ReactNode>;
 }) {
   const queryClient = useQueryClient();

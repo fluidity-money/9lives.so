@@ -8,38 +8,51 @@ import { Suspense } from "react";
 import SimpleHeader from "@/components/simple/simpleHeader";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
+import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 
-type Params = Promise<{ id: string }>;
+type Params = Promise<{ symbol: string; period: string }>;
 export const dynamicParams = true;
 export const revalidate = 60;
 
 export async function generateStaticParams() {
-  return Object.values(config.simpleMarkets).map((m) => ({
-    id: m.slug,
-  }));
+  return Object.values(config.simpleMarkets).reduce(
+    (acc, v) => {
+      for (let period in v.periods) {
+        acc.push({
+          symbol: v.slug,
+          period: period,
+        });
+      }
+      return acc;
+    },
+    [] as { symbol: string; period: string }[],
+  );
 }
 export async function generateMetadata({ params }: { params: Params }) {
-  const { id } = await params;
-  const response = await requestSimpleMarket(id);
+  const { symbol, period } = await params;
+  const response = await requestSimpleMarket(symbol, period);
   return {
     title: response?.name ?? "Predict on 9lives.so",
-    description: response?.name ?? "Predict token prices in hourly markets",
+    description: response?.name ?? `Predict token prices in ${period} markets`,
     other: {
       "fc:miniapp": JSON.stringify({
         version: config.frame.version,
-        imageUrl: `${config.metadata.metadataBase.origin}/simple/campaign/${id}/farcaster-image`,
+        imageUrl: `${config.metadata.metadataBase.origin}/simple/campaign/${symbol}/${period}/farcaster-image`,
         button: config.frame.button,
       }),
     },
   };
 }
-function isSimpleMarketKey(k: string): k is keyof typeof config.simpleMarkets {
-  return k in config.simpleMarkets;
+function isSimpleMarketKey(k: string): k is SimpleMarketKey {
+  return k.toLowerCase() in config.simpleMarkets;
+}
+function isSimpleMarketPeriod(p: string): p is SimpleMarketPeriod {
+  return p.toLowerCase() === "hourly" || p.toLowerCase() === "daily";
 }
 export default async function SimpleDetailPage({ params }: { params: Params }) {
-  const { id } = await params;
+  const { symbol, period } = await params;
 
-  const data = await requestSimpleMarket(id);
+  const data = await requestSimpleMarket(symbol, period);
   if (!data) notFound();
 
   const campaignData = formatSimpleCampaignDetail(data);
@@ -50,23 +63,24 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
     ending: campaignData.ending,
   });
 
-  if (!isSimpleMarketKey(id)) notFound();
+  if (!isSimpleMarketKey(symbol)) notFound();
+  if (!isSimpleMarketPeriod(period)) notFound();
 
   return (
     <div className="flex flex-col gap-4">
-      <SimpleNavMenu />
+      <SimpleNavMenu symbol={symbol} period={period} />
       <div className="flex items-center gap-2">
         <Image
-          src={config.simpleMarkets[id].logo}
+          src={config.simpleMarkets[symbol].logo}
           width={60}
           height={60}
-          alt={id}
+          alt={symbol}
         />
         <Suspense
           fallback={
             <div>
               <h1 className="font-chicago text-xl md:text-2xl">
-                {config.simpleMarkets[id].title} above $...... on{" "}
+                {config.simpleMarkets[symbol].title} above $...... on{" "}
                 {new Date().toLocaleString("en-US", {
                   month: "short",
                   day: "numeric",

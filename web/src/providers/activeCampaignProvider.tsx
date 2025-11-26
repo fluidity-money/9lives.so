@@ -3,8 +3,13 @@ import React, { useEffect } from "react";
 import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
-import { CampaignDetail, SimpleCampaignDetail } from "@/types";
+import {
+  CampaignDetail,
+  SimpleCampaignDetail,
+  SimpleMarketPeriod,
+} from "@/types";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
+import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -12,12 +17,13 @@ export const wsClient = createClient({
 });
 
 const query = `
-subscription($symbol: String!) {
+subscription($symbol: String!,$period: String!) {
   ninelives_campaigns_1(
       where: {
         content:{ 
           _contains: {
             priceMetadata: {baseAsset: $symbol}
+            categories: [$period]
           }
         }
       }, 
@@ -41,6 +47,7 @@ export default function ActiveCampaignProvider({
 }) {
   const queryClient = useQueryClient();
   const symbol = previousData.priceMetadata.baseAsset;
+  const period = getPeriodOfCampaign(previousData);
   useEffect(() => {
     const unsubPrices = wsClient.subscribe<{
       ninelives_campaigns_1: { content: SimpleCampaignDetail; id: string }[];
@@ -49,6 +56,7 @@ export default function ActiveCampaignProvider({
         query,
         variables: {
           symbol: symbol.toUpperCase(),
+          period,
         },
       },
       {
@@ -60,7 +68,10 @@ export default function ActiveCampaignProvider({
               identifier: data?.ninelives_campaigns_1[0].id,
             });
             if (simple) {
-              queryClient.setQueryData(["simpleCampaign", symbol], nextData);
+              queryClient.setQueryData(
+                ["simpleCampaign", symbol, period],
+                nextData,
+              );
             } else if (
               previousData.identifier === nextData.identifier &&
               nextData.winner

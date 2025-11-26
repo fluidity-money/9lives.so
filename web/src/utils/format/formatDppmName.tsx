@@ -1,11 +1,12 @@
 import config from "@/config";
+import { SimpleMarketKey } from "@/types";
 
 export function formatDppmTitle({
   symbol,
   price,
   end,
 }: {
-  symbol?: keyof typeof config.simpleMarkets;
+  symbol?: SimpleMarketKey;
   price?: string;
   end: number;
 }) {
