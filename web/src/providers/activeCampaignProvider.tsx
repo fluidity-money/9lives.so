@@ -98,7 +98,7 @@ export default function ActiveCampaignProvider({
     return () => {
       unsubPrices();
     };
-  }, [queryClient, symbol, previousData.starting, simple]);
+  }, [queryClient, symbol, previousData, simple, period]);
 
   return children;
 }

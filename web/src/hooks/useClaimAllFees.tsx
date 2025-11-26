@@ -53,7 +53,7 @@ export default function useClaimAllFees() {
         },
       );
     },
-    [],
+    [checkAndSwitchChain],
   );
   const checkClaimFees = useCallback(
     async (poolAddress: string, account: Account) => {

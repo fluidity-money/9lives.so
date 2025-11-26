@@ -47,7 +47,7 @@ function SimpleRewardItem({
         }
       });
     }
-  }, [totalRewards]);
+  }, [totalRewards, data.identifier, setRewards]);
 
   return (
     <tr>
