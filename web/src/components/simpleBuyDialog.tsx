@@ -24,6 +24,7 @@ import ChainSelectorDropdown from "./chainSelectorDD";
 import { Chain } from "thirdweb";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
+import useBalance from "@/hooks/useBalance";
 
 export default function SimpleBuyDialog({
   data,
@@ -213,9 +214,6 @@ export default function SimpleBuyDialog({
 
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between bg-9layer font-chicago">
-      <p className="text-center font-chicago text-xs">
-        Bridge from any chain, instantly.
-      </p>
       <div className="w-full space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-1 flex-row space-x-1">
@@ -233,38 +231,45 @@ export default function SimpleBuyDialog({
             />
           </div>
         </div>
-
-        <div className="flex items-center justify-center gap-2">
-          <span className="font-chicago text-xs">From</span>
-          <ChainSelectorDropdown
-            variant="small"
-            handleNetworkChange={handleNetworkChange}
-            selectedChainId={fromChain}
-            isInMiniApp={isInMiniApp}
-          />
-          <span className="font-chicago text-xs">With</span>
-          <AssetSelector
-            tokens={tokens}
-            variant="small"
-            tokensWithBalances={tokensWithBalances}
-            isSuccess={isTokensSuccess}
-            fromToken={fromToken}
-            fromChain={fromChain}
-            setValue={handleTokenChange}
-          />
+        <div className="flex flex-col gap-2">
+          <p className="text-center font-arial text-xs text-[#808080]">
+            Bridge from any chain, instantly.
+          </p>
+          <div className="flex items-center justify-center gap-2">
+            <span className="font-chicago text-xs">From</span>
+            <ChainSelectorDropdown
+              variant="small"
+              handleNetworkChange={handleNetworkChange}
+              selectedChainId={fromChain}
+              isInMiniApp={isInMiniApp}
+            />
+            <span className="font-chicago text-xs">With</span>
+            <AssetSelector
+              tokens={tokens}
+              variant="small"
+              tokensWithBalances={tokensWithBalances}
+              isSuccess={isTokensSuccess}
+              fromToken={fromToken}
+              fromChain={fromChain}
+              setValue={handleTokenChange}
+            />
+          </div>
         </div>
 
         <div className="flex-1 space-y-1 text-center">
           <div className="font-geneva text-sm uppercase text-gray-500">
             Amount
           </div>
-          <span
+          <p
             className={combineClass(
               "w-full flex-1 border-0 bg-9layer text-center text-4xl font-bold",
             )}
           >
             {`${supply || "0"} ${selectedTokenSymbol ?? "$"}`}
-          </span>
+          </p>
+          {selectedTokenBalance ? (
+            <p className="font-arial text-xs text-[#808080]">{`(You have ${formatUnits(BigInt(selectedTokenBalance), fromDecimals)} ${selectedTokenSymbol ?? "$"})`}</p>
+          ) : null}
           <div className="flex items-center justify-center gap-1">
             <div
               className={combineClass(
