@@ -11,6 +11,7 @@ import LeftborderGreen from "#/images/left-border-green.svg";
 import LeftborderRed from "#/images/left-border-red.svg";
 import { forwardRef, HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { combineClass } from "@/utils/combineClass";
 const buttonTitle = cva(
   "h-full border-t border-t-black px-2 py-1 font-chicago",
   {
@@ -84,6 +85,7 @@ interface TabButtonProps
   focus?: boolean;
   autofocus?: boolean;
   selected: boolean;
+  isLive?: boolean;
 }
 const leftBorderUnselectedMap: Record<
   NonNullable<VariantProps<typeof buttonTitle>["intent"]>,
@@ -131,6 +133,16 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
       >
         {title}
       </span>
+      {props.isLive ? (
+        <div
+          className={combineClass(
+            selected ? "bg-9layer" : "bg-[#ccc]",
+            "flex h-[25px] flex-1 items-center justify-center border-t border-t-9black",
+          )}
+        >
+          <div className="size-3 animate-pulse rounded-full bg-red-500" />
+        </div>
+      ) : null}
       <Image
         src={
           selected

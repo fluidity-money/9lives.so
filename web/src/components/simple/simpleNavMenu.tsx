@@ -4,6 +4,29 @@ import TabButton from "../tabButton";
 import Link from "next/link";
 import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 import { combineClass } from "@/utils/combineClass";
+import isMarketOpen from "../../utils/isMarketOpen";
+
+function SimpleTabMenuButton({
+  market,
+  period,
+  symbol,
+}: {
+  market: (typeof config.simpleMarkets)[keyof typeof config.simpleMarkets];
+  period: SimpleMarketPeriod;
+  symbol: SimpleMarketKey;
+}) {
+  const isOpen = isMarketOpen(market);
+  return (
+    <Link href={`/simple/campaign/${market.slug}/${period}`}>
+      <TabButton
+        isLive={isOpen}
+        title={market.tabTitle}
+        selected={symbol === market.slug}
+      />
+    </Link>
+  );
+}
+
 export default function SimpleNavMenu({
   symbol,
   period,
@@ -46,9 +69,12 @@ export default function SimpleNavMenu({
             m.periods.includes(period.toLowerCase() as SimpleMarketPeriod),
           )
           .map((m) => (
-            <Link key={m.slug} href={`/simple/campaign/${m.slug}/${period}`}>
-              <TabButton title={m.tabTitle} selected={symbol === m.slug} />
-            </Link>
+            <SimpleTabMenuButton
+              key={m.slug}
+              market={m}
+              symbol={symbol}
+              period={period}
+            />
           ))}
       </div>
     </div>
