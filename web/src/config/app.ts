@@ -115,6 +115,7 @@ const simpleMarkets = {
     periods: ["hourly"],
     openDays: [1, 2, 3, 4, 5],
     openHours: ["09:30", "16:00"],
+    closeDays: ["27-11-2025"],
     tz: "America/New_York",
   },
 } as const;
@@ -127,6 +128,7 @@ const simpleMarketSchema = z.object({
   tabTitle: z.string(),
   periods: z.array(z.union([z.literal("hourly"), z.literal("daily")])),
   openDays: z.array(z.number()),
+  closeDays: z.optional(z.array(z.string())),
   openHours: z.array(z.string()),
   tz: z.string(),
 });

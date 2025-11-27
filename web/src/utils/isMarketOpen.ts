@@ -4,6 +4,7 @@ import { SimpleMarketKey } from "@/types";
 type Market = {
   openDays: number[];
   openHours: string[]; // ["HH:MM","HH:MM"]
+  closeDays?: string[]; // ["DD-MM-YYYY"]
   tz: string;
 };
 
@@ -29,7 +30,10 @@ function marketNowParts(tz: string, date = new Date()) {
 }
 
 export default function isMarketOpen(market: Market) {
-  const { openDays, openHours, tz } = market;
+  const { openDays, closeDays, openHours, tz } = market;
+  const { day, month, year } = marketNowParts(tz);
+  const todayStr = `${String(day).padStart(2, "0")}-${String(month).padStart(2, "0")}-${year}`;
+  if (closeDays && closeDays.includes(todayStr)) return false;
   if (!openDays || openDays.length === 0 || !openHours || openHours.length < 2)
     return true; // treat as always open
 
@@ -90,6 +94,7 @@ function epochForMarketLocal(
 
 export function calcNextMarketOpen(marketKey: SimpleMarketKey): number {
   const market = config.simpleMarkets[marketKey] as Market;
+  const { closeDays } = market;
   if (!market || !market.openDays || market.openDays.length === 0)
     return Date.now();
 
@@ -108,6 +113,31 @@ export function calcNextMarketOpen(marketKey: SimpleMarketKey): number {
     Fri: 5,
     Sat: 6,
   };
+  const todayStr = `${String(day).padStart(2, "0")}-${String(month).padStart(2, "0")}-${year}`;
+  if (closeDays && closeDays.includes(todayStr)) {
+    // Find next non-closed, open day
+    for (let offset = 1; offset <= 7; offset++) {
+      const nextDate = new Date(now.getTime() + offset * 24 * 60 * 60 * 1000);
+      const nextParts = marketNowParts(market.tz, nextDate);
+      const nextStr = `${String(nextParts.day).padStart(2, "0")}-${String(nextParts.month).padStart(2, "0")}-${nextParts.year}`;
+      const nextWeekday = dayMap[nextParts.weekdayStr];
+      if (
+        market.openDays.includes(nextWeekday) &&
+        !(closeDays && closeDays.includes(nextStr))
+      ) {
+        const [openH, openM] = market.openHours[0].split(":").map(Number);
+        return epochForMarketLocal(
+          market.tz,
+          nextParts.year,
+          nextParts.month,
+          nextParts.day,
+          openH,
+          openM,
+        );
+      }
+    }
+    return Date.now();
+  }
   const weekday = dayMap[weekdayStr];
   if (weekday === undefined) return Date.now();
 
