@@ -24,7 +24,7 @@ import ChainSelectorDropdown from "./chainSelectorDD";
 import { Chain } from "thirdweb";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
-import useBalance from "@/hooks/useBalance";
+import Input from "./themed/input";
 
 export default function SimpleBuyDialog({
   data,
@@ -88,6 +88,7 @@ export default function SimpleBuyDialog({
   const {
     watch,
     handleSubmit,
+    register,
     setValue,
     clearErrors,
     formState: { errors },
@@ -262,11 +263,33 @@ export default function SimpleBuyDialog({
           </div>
           <p
             className={combineClass(
-              "w-full flex-1 border-0 bg-9layer text-center text-4xl font-bold",
+              "w-full flex-1 border-0 bg-9layer text-center text-4xl font-bold md:hidden",
             )}
           >
             {`${supply || "0"} ${selectedTokenSymbol ?? "$"}`}
           </p>
+          <div className="hidden items-center md:flex">
+            <Input
+              {...register("supply")}
+              type="number"
+              min={0}
+              max={Number.MAX_SAFE_INTEGER}
+              value={supply}
+              placeholder="0"
+              step="any"
+              className={combineClass(
+                "w-full flex-1 text-center text-4xl font-bold",
+                (errors.supply || errors.usdValue) && "border-2 border-red-500",
+              )}
+            />
+            <p
+              className={combineClass(
+                "w-full flex-1 border-0 bg-9layer text-center text-4xl font-bold",
+              )}
+            >
+              {selectedTokenSymbol ?? "$"}
+            </p>
+          </div>
           {selectedTokenBalance ? (
             <p className="font-arial text-xs text-[#808080]">{`(You have ${formatUnits(BigInt(selectedTokenBalance), fromDecimals)} ${selectedTokenSymbol ?? "$"})`}</p>
           ) : null}
