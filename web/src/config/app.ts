@@ -80,7 +80,7 @@ const simpleMarkets = {
     title: "BTC",
     tabTitle: "BTC",
     decimals: 2,
-    periods: ["hourly"],
+    periods: ["hourly", "daily"],
     openDays: [0, 1, 2, 3, 4, 5, 6],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
