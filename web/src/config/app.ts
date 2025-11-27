@@ -4,6 +4,7 @@ import BTC from "#/images/tokens/btc.webp";
 import PAXG from "#/images/tokens/paxg.svg";
 import NVIDIA from "#/images/tokens/nvidia.svg";
 import MONAD from "#/images/tokens/mon.svg";
+import GOOGLE from "#/images/tokens/google.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
