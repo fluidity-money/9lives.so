@@ -73,6 +73,17 @@ const categories = [
   "Politics",
 ];
 const simpleMarkets = {
+  btc: {
+    slug: "btc",
+    logo: BTC,
+    title: "BTC",
+    tabTitle: "BTC",
+    decimals: 2,
+    periods: ["hourly", "daily"],
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
+  },
   paxg: {
     slug: "paxg",
     logo: PAXG,
@@ -92,17 +103,6 @@ const simpleMarkets = {
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 6,
     periods: ["hourly"],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
-  },
-  btc: {
-    slug: "btc",
-    logo: BTC,
-    title: "BTC",
-    tabTitle: "BTC",
-    decimals: 2,
-    periods: ["hourly", "daily"],
-    openDays: [0, 1, 2, 3, 4, 5, 6],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
   },
