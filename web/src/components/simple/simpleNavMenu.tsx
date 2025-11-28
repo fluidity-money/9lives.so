@@ -3,8 +3,8 @@ import config from "@/config";
 import TabButton from "../tabButton";
 import Link from "next/link";
 import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
-import { combineClass } from "@/utils/combineClass";
 import isMarketOpen from "../../utils/isMarketOpen";
+import TabRadioButton from "../tabRadioButton";
 
 function SimpleTabMenuButton({
   market,
@@ -43,24 +43,21 @@ export default function SimpleNavMenu({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex min-h-[36px] gap-1 self-start bg-[#ccc] p-2">
+      <div className="flex w-full gap-2">
         <Link
           href={`/simple/campaign/${hourlyMarkets[0]}/hourly`}
-          className={combineClass(
-            "px-2 py-1",
-            period === "hourly" && "border border-9black bg-white",
-          )}
+          className="flex flex-1"
         >
-          ⏱️ Hourly
+          <TabRadioButton
+            selected={period === "hourly"}
+            title="Hourly Markets"
+          />
         </Link>
         <Link
           href={`/simple/campaign/${dailyMarkets[0]}/daily`}
-          className={combineClass(
-            "px-2 py-1",
-            period === "daily" && "border border-9black bg-white",
-          )}
+          className="flex flex-1"
         >
-          📆 Daily
+          <TabRadioButton selected={period === "daily"} title="Daily Markets" />
         </Link>
       </div>
       <div className="flex items-center border-b border-b-9black">

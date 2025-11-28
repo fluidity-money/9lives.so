@@ -5,10 +5,10 @@ import RadioSelectedImg from "#/images/radio-selected.svg";
 import RadioUnselectedimg from "#/images/radio-unselected.svg";
 interface TabButtonProps extends HTMLAttributes<HTMLButtonElement> {
   title: string;
-  active: boolean;
-  hover: boolean;
-  focus: boolean;
-  autofocus: boolean;
+  active?: boolean;
+  hover?: boolean;
+  focus?: boolean;
+  autofocus?: boolean;
   selected: boolean;
 }
 export default forwardRef<HTMLButtonElement, TabButtonProps>(
