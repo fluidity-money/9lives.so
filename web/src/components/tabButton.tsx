@@ -140,7 +140,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
             "flex h-[25px] flex-1 items-center justify-center border-t border-t-9black",
           )}
         >
-          <div className="size-3 animate-pulse rounded-full bg-red-500" />
+          <div className="size-2 animate-pulse rounded-full bg-green-500" />
         </div>
       ) : null}
       <Image
