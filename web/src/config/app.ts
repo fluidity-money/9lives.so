@@ -5,6 +5,7 @@ import PAXG from "#/images/tokens/paxg.svg";
 import NVIDIA from "#/images/tokens/nvidia.svg";
 import MONAD from "#/images/tokens/mon.svg";
 import GOOGLE from "#/images/tokens/google.svg";
+import QQQ from "#/images/tokens/qqq.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -142,6 +143,18 @@ const simpleMarkets = {
     openDays: [1, 2, 3, 4, 5],
     openHours: ["09:30", "16:00"],
     closeDays: stockMarketCloseDaysUS,
+    tz: "America/New_York",
+  },
+  qqq: {
+    slug: "qqq",
+    logo: QQQ,
+    title: "QQQ",
+    tabTitle: "QQQ",
+    decimals: 2,
+    periods: ["hourly"],
+    openDays: [1, 2, 3, 4, 5],
+    openHours: ["09:30", "16:00"],
+    closeDays: ["27-11-2025"],
     tz: "America/New_York",
   },
 } as const;
