@@ -24,7 +24,6 @@ import ChainSelectorDropdown from "./chainSelectorDD";
 import { Chain } from "thirdweb";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
-import Input from "./themed/input";
 
 export default function SimpleBuyDialog({
   data,
@@ -271,7 +270,7 @@ export default function SimpleBuyDialog({
             {`${supply || "0"} ${selectedTokenSymbol ?? "$"}`}
           </p>
           <div className="hidden items-center md:flex">
-            <Input
+            <input
               {...register("supply")}
               type="number"
               min={0}
@@ -280,13 +279,13 @@ export default function SimpleBuyDialog({
               placeholder="0"
               step="any"
               className={combineClass(
-                "w-full flex-1 text-center text-4xl font-bold",
+                "w-full flex-1 bg-9layer text-center text-right text-4xl font-bold",
                 (errors.supply || errors.usdValue) && "border-2 border-red-500",
               )}
-            />
+            ></input>
             <p
               className={combineClass(
-                "w-full flex-1 border-0 bg-9layer text-center text-4xl font-bold",
+                "w-full flex-1 border-0 bg-9layer text-left text-center text-4xl font-bold",
               )}
             >
               {selectedTokenSymbol ?? "$"}
