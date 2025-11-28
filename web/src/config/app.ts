@@ -87,6 +87,8 @@ const stockMarketCloseDaysUS = [
   "26-11-2026",
   "25-12-2026",
 ];
+const stockMarketOpenHoursUS = ["09:30", "16:00"];
+const stockMarketOpenDaysUS = [1, 2, 3, 4, 5];
 const simpleMarkets = {
   btc: {
     slug: "btc",
@@ -128,8 +130,8 @@ const simpleMarkets = {
     tabTitle: "NVIDIA",
     decimals: 2,
     periods: ["hourly"],
-    openDays: [1, 2, 3, 4, 5],
-    openHours: ["09:30", "16:00"],
+    openDays: stockMarketOpenDaysUS,
+    openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
   },
@@ -140,8 +142,8 @@ const simpleMarkets = {
     tabTitle: "GOOGLE",
     decimals: 2,
     periods: ["hourly"],
-    openDays: [1, 2, 3, 4, 5],
-    openHours: ["09:30", "16:00"],
+    openDays: stockMarketOpenDaysUS,
+    openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
   },
@@ -152,9 +154,9 @@ const simpleMarkets = {
     tabTitle: "QQQ",
     decimals: 2,
     periods: ["daily"],
-    openDays: [1, 2, 3, 4, 5],
-    openHours: ["09:30", "16:00"],
-    closeDays: ["27-11-2025"],
+    openDays: stockMarketOpenDaysUS,
+    openHours: stockMarketOpenHoursUS,
+    closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
   },
 } as const;
