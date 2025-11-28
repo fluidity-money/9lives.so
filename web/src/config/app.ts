@@ -141,7 +141,7 @@ const simpleMarkets = {
     periods: ["daily"],
     openDays: [1, 2, 3, 4, 5],
     openHours: ["09:30", "16:00"],
-    closeDays: ["27-11-2025"],
+    closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
   },
 } as const;
