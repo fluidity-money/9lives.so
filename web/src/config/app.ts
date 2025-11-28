@@ -73,6 +73,19 @@ const categories = [
   "Sports",
   "Politics",
 ];
+const stockMarketCloseDaysUS = [
+  "25-12-2025",
+  "01-01-2026",
+  "19-01-2026",
+  "16-02-2026",
+  "03-04-2026",
+  "25-05-2026",
+  "19-06-2026",
+  "03-07-2026",
+  "07-09-2026",
+  "26-11-2026",
+  "25-12-2026",
+];
 const simpleMarkets = {
   btc: {
     slug: "btc",
@@ -116,7 +129,7 @@ const simpleMarkets = {
     periods: ["hourly"],
     openDays: [1, 2, 3, 4, 5],
     openHours: ["09:30", "16:00"],
-    closeDays: ["27-11-2025"],
+    closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
   },
   goog: {
