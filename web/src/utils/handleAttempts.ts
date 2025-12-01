@@ -8,6 +8,7 @@ import {
 import { QueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import getPeriodOfCampaign from "./getPeriodOfCampaign";
+import { EVENTS, track } from "./analytics";
 
 const handleTicketAttempts: Record<
   PaymasterOp,
@@ -20,9 +21,20 @@ const handleTicketAttempts: Record<
       (o) => o.identifier === t.outcomeId,
     )!;
     const outcomeIds = t.data.outcomes.map((o) => o.identifier);
+    let status = "success";
     if (!a.success) {
+      status = "failed";
       toast.error(`Failed to buy outcome ${selectedOutcome.name}`);
     }
+    track(EVENTS.MINT, {
+      amount: t.amount,
+      outcomeId: t.outcomeId,
+      shareAddr: selectedOutcome.share.address,
+      type: "buyWithPaymaster",
+      tradingAddr: t.data.poolAddress,
+      status,
+      ...(t.dppmMetadata ?? {}),
+    });
     qc.invalidateQueries({
       queryKey: [
         "positions",

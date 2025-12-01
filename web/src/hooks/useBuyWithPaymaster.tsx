@@ -209,14 +209,7 @@ const useBuyWithPaymaster = ({
               opType: "MINT",
               outcomeId,
               account,
-            });
-            track(EVENTS.MINT, {
-              amount: result.amount,
-              outcomeId,
-              shareAddr,
-              type: "buyWithPaymaster",
-              tradingAddr: data.poolAddress,
-              ...(dppmMetadata ?? {}),
+              dppmMetadata,
             });
             res(result.ticketId);
           } else {
