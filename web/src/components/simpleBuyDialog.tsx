@@ -279,13 +279,13 @@ export default function SimpleBuyDialog({
               placeholder="0"
               step="any"
               className={combineClass(
-                "w-full flex-1 bg-9layer text-center text-right text-4xl font-bold",
+                "w-full flex-1 bg-9layer text-right text-4xl font-bold",
                 (errors.supply || errors.usdValue) && "border-2 border-red-500",
               )}
             ></input>
             <p
               className={combineClass(
-                "w-full flex-1 border-0 bg-9layer text-left text-center text-4xl font-bold",
+                "w-full flex-1 border-0 bg-9layer text-left text-4xl font-bold",
               )}
             >
               {selectedTokenSymbol ?? "$"}
