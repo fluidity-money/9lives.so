@@ -150,7 +150,7 @@ const simpleMarkets = {
   qqq: {
     slug: "qqq",
     logo: QQQ,
-    title: "QQQ",
+    title: "Nasdaq (QQQ)",
     tabTitle: "QQQ",
     decimals: 2,
     periods: ["daily"],
