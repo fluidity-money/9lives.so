@@ -1,7 +1,13 @@
 import config from "@/config";
 import { Token } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-
+import { ZeroAddress } from "ethers";
+const allowedSymbols = ["usdc", "usdt", "usdc.e", "usdt0"];
+const isAllowedSymbol = (t: Token) =>
+  allowedSymbols.reduce((acc, v) => {
+    if (t.symbol.toLowerCase() === v) return true;
+    return acc;
+  }, false);
 export default function useTokens(fromChain: number) {
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -28,7 +34,9 @@ export default function useTokens(fromChain: number) {
             config.NEXT_PUBLIC_FUSDC_ADDR.toLowerCase(),
         );
       }
-      return items;
+      return items.filter(
+        (t) => isAllowedSymbol(t) || t.address === ZeroAddress,
+      );
     },
     placeholderData: (previousData) => previousData,
   });
