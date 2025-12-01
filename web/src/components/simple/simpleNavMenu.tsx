@@ -17,7 +17,7 @@ function SimpleTabMenuButton({
 }) {
   const isOpen = isMarketOpen(market);
   return (
-    <Link href={`/simple/campaign/${market.slug}/${period}`}>
+    <Link href={`/simple/campaign/${market.slug}/${period}`} className="flex">
       <TabButton
         isLive={isOpen}
         title={market.tabTitle}
@@ -60,7 +60,7 @@ export default function SimpleNavMenu({
           <TabRadioButton selected={period === "daily"} title="Daily Markets" />
         </Link>
       </div>
-      <div className="flex items-center border-b border-b-9black">
+      <div className="flex items-center overflow-x-auto border-b border-b-9black">
         {Object.values(config.simpleMarkets)
           .filter((m) =>
             m.periods.includes(period.toLowerCase() as SimpleMarketPeriod),

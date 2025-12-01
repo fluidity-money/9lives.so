@@ -106,7 +106,7 @@ const rightBorderUnselectedMap: Record<
   sell: RightborderRed,
 };
 export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
-  { active, selected, hover, focus, autofocus, title, ...props },
+  { active, selected, hover, focus, autofocus, title, isLive, ...props },
   ref,
 ) {
   return (
@@ -133,7 +133,7 @@ export default forwardRef<HTMLButtonElement, TabButtonProps>(function TabButton(
       >
         {title}
       </span>
-      {props.isLive ? (
+      {isLive ? (
         <div
           className={combineClass(
             selected ? "bg-9layer" : "bg-[#ccc]",
