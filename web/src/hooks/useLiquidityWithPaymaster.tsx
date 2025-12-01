@@ -211,11 +211,6 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
               opType: "ADD_LIQUIDITY",
               account,
             });
-            track(EVENTS.ADD_LIQUIDITY, {
-              amount: result.amount,
-              type: "addLiquidityWithPaymaster",
-              tradingAddr: data.poolAddress,
-            });
             res(result.ticketId);
           } else {
             rej("Something went wrong!");
@@ -257,11 +252,6 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
               data,
               opType: "REMOVE_LIQUIDITY",
               account,
-            });
-            track(EVENTS.REMOVE_LIQUIDITY, {
-              amount: result.amount,
-              type: "removeLiquidityWithPaymaster",
-              tradingAddr: data.poolAddress,
             });
             res(result.ticketId);
           } else {

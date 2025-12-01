@@ -102,11 +102,7 @@ const useWithdraw = () => {
               amount: result.amount,
               opType: "WITHDRAW_USDC",
               account,
-            });
-            track(EVENTS.WITHDRAW_USDC, {
-              amount: result.amount,
               chainId,
-              chainEid: chainIdToEid[chainId],
             });
             res(result.ticketId);
           } else {

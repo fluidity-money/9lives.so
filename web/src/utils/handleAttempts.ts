@@ -9,6 +9,7 @@ import { QueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import getPeriodOfCampaign from "./getPeriodOfCampaign";
 import { EVENTS, track } from "./analytics";
+import { chainIdToEid } from "@/config/chains";
 
 const handleTicketAttempts: Record<
   PaymasterOp,
@@ -80,9 +81,19 @@ const handleTicketAttempts: Record<
       (o) => o.identifier === t.outcomeId,
     )!;
     const outcomeIds = t.data.outcomes.map((o) => o.identifier);
+    let status = "success";
     if (!a.success) {
+      status = "failed";
       toast.error(`Failed to sell shares ${selectedOutcome.name}`);
     }
+    track(EVENTS.BURN, {
+      amount: t.amount,
+      type: "sellWithPaymaster",
+      outcomeId: t.outcomeId,
+      shareAddr: selectedOutcome.share.address,
+      tradingAddr: t.data.poolAddress,
+      status,
+    });
     qc.invalidateQueries({
       queryKey: [
         "positions",
@@ -115,9 +126,17 @@ const handleTicketAttempts: Record<
     });
   },
   ADD_LIQUIDITY: (t, a, qc) => {
+    let status = "success";
     if (!a.success) {
+      status = "failed";
       toast.error(`Failed to add liquidity to ${t.data?.name}`);
     }
+    track(EVENTS.ADD_LIQUIDITY, {
+      amount: t.amount,
+      type: "addLiquidityWithPaymaster",
+      tradingAddr: t.data?.poolAddress,
+      status,
+    });
     qc.invalidateQueries({
       queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
@@ -126,9 +145,17 @@ const handleTicketAttempts: Record<
     });
   },
   REMOVE_LIQUIDITY: (t, a, qc) => {
+    let status = "success";
     if (!a.success) {
+      status = "failed";
       toast.error(`Failed to remove liquidity to ${t.data?.name}`);
     }
+    track(EVENTS.REMOVE_LIQUIDITY, {
+      amount: t.amount,
+      type: "removeLiquidityWithPaymaster",
+      tradingAddr: t.data?.poolAddress,
+      status,
+    });
     qc.invalidateQueries({
       queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
@@ -137,9 +164,17 @@ const handleTicketAttempts: Record<
     });
   },
   WITHDRAW_USDC: (t, a, qc) => {
+    let status = "success";
     if (!a.success) {
+      status = "failed";
       toast.error(`Failed to withdraw usdc`);
     }
+    track(EVENTS.WITHDRAW_USDC, {
+      amount: t.amount,
+      chainId: t.chainId,
+      chainEid: t.chainId ? chainIdToEid[t.chainId] : null,
+      status,
+    });
     qc.invalidateQueries({
       queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });

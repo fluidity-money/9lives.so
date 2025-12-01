@@ -232,6 +232,8 @@ export type Ticket = {
   outcomeId?: string;
   data?: CampaignDetail | SimpleCampaignDetail;
   opType: PaymasterOp;
+  dppmMetadata?: DppmMetadata;
+  chainId?: number;
 };
 
 export type Comment = NonNullable<

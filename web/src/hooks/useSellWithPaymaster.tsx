@@ -194,13 +194,6 @@ const useSellWithPaymaster = ({
               outcomeId,
               account,
             });
-            track(EVENTS.BURN, {
-              amount,
-              type: "sellWithPaymaster",
-              outcomeId,
-              shareAddr,
-              tradingAddr,
-            });
             res(result.ticketId);
           } else {
             rej("Something went wrong!");
