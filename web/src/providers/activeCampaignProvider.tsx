@@ -67,20 +67,25 @@ export default function ActiveCampaignProvider({
               ..._data,
               identifier: data?.ninelives_campaigns_1[0].id,
             });
-            if (simple) {
-              queryClient.setQueryData(
-                ["simpleCampaign", symbol, period],
-                nextData,
-              );
-            } else if (
-              previousData.identifier === nextData.identifier &&
-              nextData.winner
-            ) {
-              // only update to read resolved winner in real time
-              queryClient.setQueryData(["campaign", previousData.identifier], {
-                ...previousData,
-                winner: nextData.winner,
-              } as CampaignDetail);
+            if (Date.now() >= nextData.starting) {
+              if (simple) {
+                queryClient.setQueryData(
+                  ["simpleCampaign", symbol, period],
+                  nextData,
+                );
+              } else if (
+                previousData.identifier === nextData.identifier &&
+                nextData.winner
+              ) {
+                // only update to read resolved winner in real time
+                queryClient.setQueryData(
+                  ["campaign", previousData.identifier],
+                  {
+                    ...previousData,
+                    winner: nextData.winner,
+                  } as CampaignDetail,
+                );
+              }
             }
           }
         },
