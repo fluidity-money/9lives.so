@@ -3,6 +3,8 @@ import { SimpleCampaignDetail } from "@/types";
 import Button from "../themed/button";
 import React from "react";
 import useCountdown from "@/hooks/useCountdown";
+import isMarketOpen from "@/utils/isMarketOpen";
+import config from "@/config";
 
 export default function SimpleButtons({
   data,
@@ -15,8 +17,10 @@ export default function SimpleButtons({
 }) {
   const timeleft = useCountdown(data.ending, "differenceInMs");
   const isEnded = 0 >= Number(timeleft);
-
-  if (isEnded) return null;
+  const isOpen = isMarketOpen(
+    config.simpleMarkets[data.priceMetadata.baseAsset],
+  );
+  if (isEnded || !isOpen) return null;
 
   return (
     <div className="flex flex-auto items-center gap-2">
