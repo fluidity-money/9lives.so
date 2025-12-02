@@ -49,7 +49,7 @@ export default function SimpleNavMenu({
           className="flex flex-1"
         >
           <TabRadioButton
-            selected={period === "hourly"}
+            selected={period.toLowerCase() === "hourly"}
             title="Hourly Markets"
           />
         </Link>
@@ -57,7 +57,10 @@ export default function SimpleNavMenu({
           href={`/simple/campaign/${dailyMarkets[0]}/daily`}
           className="flex flex-1"
         >
-          <TabRadioButton selected={period === "daily"} title="Daily Markets" />
+          <TabRadioButton
+            selected={period.toLowerCase() === "daily"}
+            title="Daily Markets"
+          />
         </Link>
       </div>
       <div className="flex items-center overflow-x-auto border-b border-b-9black">
