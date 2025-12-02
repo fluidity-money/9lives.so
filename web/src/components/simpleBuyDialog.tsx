@@ -139,7 +139,7 @@ export default function SimpleBuyDialog({
     const maxAmt = selectedTokenBalance
       ? Number(formatUnits(selectedTokenBalance, fromDecimals))
       : 0;
-    return Math.max(maxAmt, amt + Number(supply));
+    return Math.min(maxAmt, amt + Number(supply));
   };
   const {
     data: [shares, boost, refund],
@@ -401,7 +401,12 @@ export default function SimpleBuyDialog({
               setValue("supply", maxBalOrAdd(thirdMintAmt).toString())
             }
           />
-          <Button title="MAX" className={"flex-auto"} onClick={setToMaxShare} />
+          <Button
+            disabled={!account}
+            title="MAX"
+            className={"flex-auto"}
+            onClick={setToMaxShare}
+          />
         </div>
 
         <div className="grid grid-cols-3 gap-3 text-center text-lg font-medium">
