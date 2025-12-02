@@ -135,12 +135,6 @@ export default function SimpleBuyDialog({
     setValue("supply", maxBalance);
     if (Number(maxBalance) > 0) clearErrors();
   };
-  const maxBalOrAdd = (amt: number) => {
-    const maxAmt = selectedTokenBalance
-      ? Number(formatUnits(selectedTokenBalance, fromDecimals))
-      : 0;
-    return Math.min(maxAmt, amt + Number(supply));
-  };
   const {
     data: [shares, boost, refund],
   } = useDppmWinEstimation({
@@ -384,21 +378,21 @@ export default function SimpleBuyDialog({
             title={firstMintTitle}
             className={"flex-auto"}
             onClick={() =>
-              setValue("supply", maxBalOrAdd(firstMintAmt).toString())
+              setValue("supply", (firstMintAmt + Number(supply)).toString())
             }
           />
           <Button
             title={secondMintTitle}
             className={"flex-auto"}
             onClick={() =>
-              setValue("supply", maxBalOrAdd(secondMintAmt).toString())
+              setValue("supply", (secondMintAmt + Number(supply)).toString())
             }
           />
           <Button
             title={thirdMintTitle}
             className={"flex-auto"}
             onClick={() =>
-              setValue("supply", maxBalOrAdd(thirdMintAmt).toString())
+              setValue("supply", (thirdMintAmt + Number(supply)).toString())
             }
           />
           <Button
