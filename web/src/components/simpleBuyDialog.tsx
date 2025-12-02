@@ -236,7 +236,7 @@ export default function SimpleBuyDialog({
         setFeatureIncreasedMintAmt(1);
         break;
     }
-  }, []);
+  }, [experimentHigherMints]);
   const handleReturn = useCallback(
     (num: number) => {
       const b = num * featureIncreasedMintAmt;
@@ -251,7 +251,7 @@ export default function SimpleBuyDialog({
         return selectedTokenBalance;
       return sum.toString();
     },
-    [selectedTokenBalance],
+    [selectedTokenBalance, supply],
   );
   const plainAdd = (amt: number) => (amt + Number(supply)).toString();
   const quickAdd = (amt: number) =>
