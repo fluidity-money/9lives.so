@@ -2,7 +2,7 @@ import config from "@/config";
 import { Token } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { ZeroAddress } from "ethers";
-const allowedSymbols = ["usdc", "usdt", "usdc.e", "usdt0"];
+const allowedSymbols = ["usdc", "usdt", "usdc.e", "usdt0", "arb", "op"];
 const isAllowedSymbol = (t: Token) =>
   allowedSymbols.reduce((acc, v) => {
     if (t.symbol.toLowerCase() === v) return true;
