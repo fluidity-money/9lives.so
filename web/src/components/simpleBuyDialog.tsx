@@ -135,11 +135,11 @@ export default function SimpleBuyDialog({
     setValue("supply", maxBalance);
     if (Number(maxBalance) > 0) clearErrors();
   };
-  const maxBalOrAdd = async (amt: Number) => {
-    const maxAmt = Number(
-      formatUnits(BigInt(selectedTokenBalance), fromDecimals),
-    );
-    return max(maxAmt, amt + Number(supply));
+  const maxBalOrAdd = (amt: number) => {
+    const maxAmt = selectedTokenBalance
+      ? Number(formatUnits(selectedTokenBalance, fromDecimals))
+      : 0;
+    return Math.max(maxAmt, amt + Number(supply));
   };
   const {
     data: [shares, boost, refund],
@@ -220,34 +220,34 @@ export default function SimpleBuyDialog({
     // await switchChain(chain);
     setValue("fromChain", chain.id);
   };
-
-  const featureIncreasedMintAmt = (() => {
+  const [featureIncreasedMintAmt, setFeatureIncreasedMintAmt] = useState(1);
+  useEffect(() => {
     switch (
       posthog.getFeatureFlag("increase-amount-by-suggesting-higher-mints")
     ) {
       case "test-5":
-        return 5;
+        setFeatureIncreasedMintAmt(5);
+        break;
       case "test-10":
-        return 10;
+        setFeatureIncreasedMintAmt(10);
+        break;
       default:
-        return 1;
+        setFeatureIncreasedMintAmt(1);
+        break;
     }
-  })();
+  }, []);
+  const handleReturn = useCallback(
+    (num: number) => {
+      const b = num * featureIncreasedMintAmt;
+      return ["+" + b, b] as const;
+    },
+    [featureIncreasedMintAmt],
+  );
+  const [firstMintTitle, firstMintAmt] = handleReturn(1);
 
-  const [firstMintTitle, firstMintAmt] = (() => {
-    const b = 1 * featureIncreasedMintAmt;
-    return ["+" + b, b];
-  })();
+  const [secondMintTitle, secondMintAmt] = handleReturn(10);
 
-  const [secondMintTitle, secondMintAmt] = (() => {
-    const b = 10 * featureIncreasedMintAmt;
-    return ["+" + b, b];
-  })();
-
-  const [thirdMintTitle, thirdMintAmt] = (() => {
-    const b = 100 * featureIncreasedMintAmt;
-    return ["+" + b, b];
-  })();
+  const [thirdMintTitle, thirdMintAmt] = handleReturn(100);
 
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between bg-9layer font-chicago">
@@ -384,30 +384,21 @@ export default function SimpleBuyDialog({
             title={firstMintTitle}
             className={"flex-auto"}
             onClick={() =>
-              setValue(
-                "supply",
-                maxBalOrAdd(Number(supply) + firstMintAmt).toString(),
-              )
+              setValue("supply", maxBalOrAdd(firstMintAmt).toString())
             }
           />
           <Button
             title={secondMintTitle}
             className={"flex-auto"}
             onClick={() =>
-              setValue(
-                "supply",
-                maxBalOrAdd(Number(supply) + secondMintAmt).toString(),
-              )
+              setValue("supply", maxBalOrAdd(secondMintAmt).toString())
             }
           />
           <Button
             title={thirdMintTitle}
             className={"flex-auto"}
             onClick={() =>
-              setValue(
-                "supply",
-                maxBalOrAdd(Number(supply) + thirdMintAmt).toString(),
-              )
+              setValue("supply", maxBalOrAdd(thirdMintAmt).toString())
             }
           />
           <Button title="MAX" className={"flex-auto"} onClick={setToMaxShare} />
