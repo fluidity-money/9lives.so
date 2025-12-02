@@ -26,7 +26,7 @@ jobs:
       NEXT_PUBLIC_SARP_SIGNALLER_ADDR: "0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455"
       NEXT_PUBLIC_MEOW_DOMAINS_ADDR: "0x4087fb91A1fBdef05761C02714335D232a2Bf3a1"
       NEXT_PUBLIC_POSTHOG_KEY: "phc_wFN8nVjgKYNURCUsE7MEFUdAjgKE6aDC01AAEXLUGyt"
-      NEXT_PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com"
+      NEXT_PUBLIC_POSTHOG_HOST: "http://events.9lives.so/"
       NEXT_PUBLIC_WS_URL: "wss://superposition-main.hasura.app/v1/graphql"
       NEXT_PUBLIC_CHAIN: "mainnet"
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
