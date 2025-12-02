@@ -237,6 +237,16 @@ export default function SimpleBuyDialog({
         break;
     }
   }, [experimentHigherMints]);
+  useEffect(() => {
+    if (
+      experimentMaxBalance === "test" &&
+      selectedTokenBalance &&
+      Number(selectedTokenBalance) > 0
+    ) {
+      setValue("supply", selectedTokenBalance);
+    }
+  }, [setValue, experimentMaxBalance, selectedTokenBalance]);
+
   const handleReturn = useCallback(
     (num: number) => {
       const b = num * featureIncreasedMintAmt;
