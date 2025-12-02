@@ -129,6 +129,15 @@ export default function SimpleBuyDialog({
       (fromToken === ZeroAddress &&
         t.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   )?.symbol;
+  const experimentHigherMints = posthog.getFeatureFlag(
+    "increase-amount-by-suggesting-higher-mints",
+  );
+  const experimentMaxBalance = posthog.getFeatureFlag(
+    "first-balance-is-the-max-amount",
+  );
+  const experimentLimitQuickAddBtn = posthog.getFeatureFlag(
+    "limit-quick-add-amount-button-for-max-balance",
+  );
   const setToMaxShare = async () => {
     if (!selectedTokenBalance) return;
     const maxBalance = formatUnits(selectedTokenBalance, fromDecimals);
@@ -216,9 +225,7 @@ export default function SimpleBuyDialog({
   };
   const [featureIncreasedMintAmt, setFeatureIncreasedMintAmt] = useState(1);
   useEffect(() => {
-    switch (
-      posthog.getFeatureFlag("increase-amount-by-suggesting-higher-mints")
-    ) {
+    switch (experimentHigherMints) {
       case "test-5":
         setFeatureIncreasedMintAmt(5);
         break;
@@ -237,6 +244,18 @@ export default function SimpleBuyDialog({
     },
     [featureIncreasedMintAmt],
   );
+  const maxBalOrAdd = useCallback(
+    (amt: number) => {
+      const sum = amt + Number(supply);
+      if (selectedTokenBalance && sum > Number(selectedTokenBalance))
+        return selectedTokenBalance;
+      return sum.toString();
+    },
+    [selectedTokenBalance],
+  );
+  const plainAdd = (amt: number) => (amt + Number(supply)).toString();
+  const quickAdd = (amt: number) =>
+    experimentLimitQuickAddBtn === "test" ? maxBalOrAdd(amt) : plainAdd(amt);
   const [firstMintTitle, firstMintAmt] = handleReturn(1);
 
   const [secondMintTitle, secondMintAmt] = handleReturn(10);
@@ -377,23 +396,17 @@ export default function SimpleBuyDialog({
           <Button
             title={firstMintTitle}
             className={"flex-auto"}
-            onClick={() =>
-              setValue("supply", (firstMintAmt + Number(supply)).toString())
-            }
+            onClick={() => setValue("supply", quickAdd(firstMintAmt))}
           />
           <Button
             title={secondMintTitle}
             className={"flex-auto"}
-            onClick={() =>
-              setValue("supply", (secondMintAmt + Number(supply)).toString())
-            }
+            onClick={() => setValue("supply", quickAdd(secondMintAmt))}
           />
           <Button
             title={thirdMintTitle}
             className={"flex-auto"}
-            onClick={() =>
-              setValue("supply", (thirdMintAmt + Number(supply)).toString())
-            }
+            onClick={() => setValue("supply", quickAdd(thirdMintAmt))}
           />
           <Button
             disabled={!account}
