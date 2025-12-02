@@ -16,6 +16,8 @@ export default function CampaignBody({
         name={data.name}
         identifier={data.identifier}
         picture={data.picture}
+        isDppm={data.isDppm}
+        priceMetadata={data.priceMetadata}
       />
       <div className="flex max-h-[118px] flex-col justify-end gap-2">
         <CampaignItemOutcomes
