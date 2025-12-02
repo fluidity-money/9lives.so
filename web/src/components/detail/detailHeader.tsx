@@ -149,13 +149,17 @@ export default function DetailHeader({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col justify-between gap-4 md:flex-row">
         <div className="flex flex-col items-center gap-4 md:flex-row">
-          {data.picture ? (
+          {data.picture || data.isDppm ? (
             <Image
-              alt="tldr"
+              alt=""
               width={60}
               height={60}
               className="border border-9black"
-              src={data.picture}
+              src={
+                data.priceMetadata
+                  ? config.simpleMarkets[data.priceMetadata.baseAsset].logo
+                  : (data.picture ?? "")
+              }
             />
           ) : null}
           <div className="flex flex-col items-center gap-2 md:items-start">
