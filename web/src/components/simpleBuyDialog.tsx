@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { formatUnits, ZeroAddress } from "ethers";
 import config from "@/config";
 import { useUserStore } from "@/stores/userStore";
+import posthog from "posthog-js";
 import z from "zod";
 import { combineClass } from "@/utils/combineClass";
 import useTokens from "@/hooks/useTokens";
@@ -134,6 +135,12 @@ export default function SimpleBuyDialog({
     setValue("supply", maxBalance);
     if (Number(maxBalance) > 0) clearErrors();
   };
+  const maxBalOrAdd = async (amt: Number) => {
+    const maxAmt = Number(
+      formatUnits(BigInt(selectedTokenBalance), fromDecimals),
+    );
+    return max(maxAmt, amt + Number(supply));
+  };
   const {
     data: [shares, boost, refund],
   } = useDppmWinEstimation({
@@ -213,6 +220,34 @@ export default function SimpleBuyDialog({
     // await switchChain(chain);
     setValue("fromChain", chain.id);
   };
+
+  const featureIncreasedMintAmt = (() => {
+    switch (
+      posthog.getFeatureFlag("increase-amount-by-suggesting-higher-mints")
+    ) {
+      case "test-5":
+        return 5;
+      case "test-10":
+        return 10;
+      default:
+        return 1;
+    }
+  })();
+
+  const [firstMintTitle, firstMintAmt] = (() => {
+    const b = 1 * featureIncreasedMintAmt;
+    return ["+" + b, b];
+  })();
+
+  const [secondMintTitle, secondMintAmt] = (() => {
+    const b = 10 * featureIncreasedMintAmt;
+    return ["+" + b, b];
+  })();
+
+  const [thirdMintTitle, thirdMintAmt] = (() => {
+    const b = 100 * featureIncreasedMintAmt;
+    return ["+" + b, b];
+  })();
 
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between bg-9layer font-chicago">
@@ -346,20 +381,33 @@ export default function SimpleBuyDialog({
 
         <div className="flex text-sm">
           <Button
-            title="+1"
-            className={"flex-auto"}
-            onClick={() => setValue("supply", (Number(supply) + 1).toString())}
-          />
-          <Button
-            title="+10"
-            className={"flex-auto"}
-            onClick={() => setValue("supply", (Number(supply) + 10).toString())}
-          />
-          <Button
-            title="+100"
+            title={firstMintTitle}
             className={"flex-auto"}
             onClick={() =>
-              setValue("supply", (Number(supply) + 100).toString())
+              setValue(
+                "supply",
+                maxBalOrAdd(Number(supply) + firstMintAmt).toString(),
+              )
+            }
+          />
+          <Button
+            title={secondMintTitle}
+            className={"flex-auto"}
+            onClick={() =>
+              setValue(
+                "supply",
+                maxBalOrAdd(Number(supply) + secondMintAmt).toString(),
+              )
+            }
+          />
+          <Button
+            title={thirdMintTitle}
+            className={"flex-auto"}
+            onClick={() =>
+              setValue(
+                "supply",
+                maxBalOrAdd(Number(supply) + thirdMintAmt).toString(),
+              )
             }
           />
           <Button title="MAX" className={"flex-auto"} onClick={setToMaxShare} />
