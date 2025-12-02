@@ -1926,6 +1926,7 @@ func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []str
 		updated_at
 	FROM ninelives_campaigns_1
 	WHERE content->'categories' @> ?::jsonb
+	AND (content->>'starting')::numeric <= EXTRACT(EPOCH FROM NOW())
 	`
 	args := []interface{}{string(jsonCategories)}
 	if len(tokens) > 0 {
