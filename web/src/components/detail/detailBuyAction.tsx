@@ -36,6 +36,7 @@ import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import ChainSelector from "../chainSelector";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "../../hooks/useFinalPrice";
+import isMarketOpen from "@/utils/isMarketOpen";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -66,6 +67,9 @@ export default function DetailBuyAction({
     starting: data.starting,
     ending: data.ending,
   });
+  const isOpen = data.priceMetadata
+    ? isMarketOpen(config.simpleMarkets[data.priceMetadata.baseAsset])
+    : undefined;
   const outcome = selectedOutcome
     ? data.outcomes.find((o) => o.identifier === selectedOutcome.id)!
     : data.outcomes[0];
@@ -557,7 +561,12 @@ export default function DetailBuyAction({
             </div>
           ) : null}
           <Button
-            disabled={isMinting || isConnecting || shouldStopAction}
+            disabled={
+              isMinting ||
+              isConnecting ||
+              shouldStopAction ||
+              (isOpen !== undefined && isOpen === false)
+            }
             title={isMinting ? "Loading.." : ctaTitle}
             className={"uppercase"}
             size={"xlarge"}
