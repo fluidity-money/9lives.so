@@ -1,0 +1,7 @@
+// gas-identity.huff: Consume gas until we've consumed the amount given
+// to us.
+
+#define macro MAIN() = takes(0) returns(0) {
+	CONT: gas 0x04 gt jumpi CONT
+	0x0 0x0 return
+}
