@@ -73,6 +73,7 @@ const useBuyWithRelay = ({
             tradeType,
             txs,
           });
+          console.time("Buy With Relay");
           const relayClient = getClient();
           const toAmountData = await relayClient.actions.getQuote(
             options(fromAmountBigInt.toString(), "EXACT_INPUT"),
@@ -141,12 +142,9 @@ const useBuyWithRelay = ({
           const netCurrencyOutAmount =
             resNetCurrencyInAmount.details?.currencyOut?.amount ?? "0";
 
-          const transaction2 = mintWith9LivesTx(
-            (
-              (BigInt(netCurrencyOutAmount) * BigInt(95)) /
-              BigInt(100)
-            ).toString(),
-          );
+          const amountWithCutdown =
+            (BigInt(netCurrencyOutAmount) * BigInt(99)) / BigInt(100);
+          const transaction2 = mintWith9LivesTx(amountWithCutdown.toString());
 
           const calldata2 = await encode(transaction2);
           const quote = await relayClient.actions.getQuote(
@@ -196,7 +194,7 @@ const useBuyWithRelay = ({
               }
             },
           });
-
+          console.timeEnd("Buy With Relay");
           res(requestId);
           track(EVENTS.MINT, {
             fromChain,
