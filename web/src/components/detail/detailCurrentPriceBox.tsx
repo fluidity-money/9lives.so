@@ -1,6 +1,6 @@
 "use client";
 import { HeaderBox } from "./detailHeaderBox";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { PricePoint } from "@/types";
 
 export default function DetailCurrentPriceBox({
@@ -16,12 +16,18 @@ export default function DetailCurrentPriceBox({
   isEnded: boolean;
   initialData: PricePoint[];
 }) {
-  const { data } = useQuery<PricePoint[]>({
+  const { data } = useInfiniteQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
-    initialData,
+    initialData: { pages: [initialData], pageParams: [0] },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, _, lastPageParam) => {
+      if (lastPage.length < 3600) return undefined;
+      if (typeof lastPageParam !== "number") return undefined;
+      return lastPageParam + 1;
+    },
   });
-
-  const latestPrice = data[data.length - 1]?.price;
+  const assetPrices = data.pages.flatMap((c) => c);
+  const latestPrice = assetPrices[assetPrices.length - 1]?.price;
 
   return (
     <HeaderBox

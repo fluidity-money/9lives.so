@@ -20,7 +20,6 @@ export default function AssetPriceChart({
   ending,
   simple = false,
   assetPrices,
-  assetsLoaded,
 }: {
   id: string;
   symbol: SimpleMarketKey;
@@ -28,13 +27,12 @@ export default function AssetPriceChart({
   starting: number;
   ending: number;
   simple?: boolean;
-  assetPrices?: PricePoint[];
-  assetsLoaded: boolean;
+  assetPrices: PricePoint[];
 }) {
-  if (!assetsLoaded || !assetPrices || assetPrices.length < 2) {
+  if (assetPrices.length < 2) {
     return null;
   }
-  const latestPoint = assetPrices?.[assetPrices.length - 1];
+  const latestPoint = assetPrices[assetPrices.length - 1];
   const latestPrice = latestPoint.price;
   const latestTimestamp = latestPoint.timestamp;
   const priceIsAbove = latestPrice > basePrice;

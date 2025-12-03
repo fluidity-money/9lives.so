@@ -674,12 +674,14 @@ export const requestAssetPrices = (
   symbol: string,
   starting: string,
   ending: string,
+  page: number = 0,
+  pageSize: number = 3600,
 ) =>
   graph9LivesSubs
     .gql(
       `
 query {
-  oracles_ninelives_prices_2(order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
+  oracles_ninelives_prices_2(limit: ${pageSize}, offset: ${page * pageSize}, order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
     id
     amount
     created_by

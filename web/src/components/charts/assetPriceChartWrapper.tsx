@@ -1,8 +1,9 @@
 import ActiveCampaignProvider from "@/providers/activeCampaignProvider";
 import { PricePoint, SimpleCampaignDetail } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import AssetPriceChartMask from "./assetPriceChartMask";
 import AssetPriceChart from "./assetPriceChart";
+import { useEffect } from "react";
 
 export default function PriceChartWrapper({
   campaignData,
@@ -16,12 +17,23 @@ export default function PriceChartWrapper({
   const symbol = campaignData.priceMetadata.baseAsset;
   const starting = campaignData.starting;
   const ending = campaignData.ending;
-  const { data: assetPrices, isSuccess: assetsLoaded } = useQuery<PricePoint[]>(
-    {
-      queryKey: ["assetPrices", symbol, starting, ending],
-      initialData: pointsData,
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<PricePoint[]>({
+    queryKey: ["assetPrices", symbol, starting, ending],
+    initialData: { pages: [pointsData], pageParams: [0] },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, _, lastPageParam) => {
+      if (lastPage.length < 3600) return undefined;
+      if (typeof lastPageParam !== "number") return undefined;
+      return lastPageParam + 1;
     },
-  );
+  });
+  const assetPrices = data.pages.flatMap((c) => c);
+
+  useEffect(() => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage]);
 
   return (
     <ActiveCampaignProvider simple={simple} previousData={campaignData}>
@@ -33,7 +45,6 @@ export default function PriceChartWrapper({
           ending={ending}
           symbol={symbol}
           assetPrices={assetPrices}
-          assetsLoaded={assetsLoaded}
           basePrice={+campaignData.priceMetadata.priceTargetForUp}
           id={campaignData.identifier}
         />
