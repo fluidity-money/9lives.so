@@ -21,6 +21,7 @@ import {
 import RelayTxToaster from "@/components/relayTxToaster";
 import { MaxUint256 } from "ethers";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+import useFeatureFlag from "./useFeatureFlag";
 
 type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 const useBuyWithRelay = ({
@@ -36,6 +37,9 @@ const useBuyWithRelay = ({
   const wallet = useActiveWallet();
   const chain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
+  const enableExactInputBuyWithRelay = useFeatureFlag(
+    "enable exact input style buy with relay",
+  );
   const buyWithRelay = async (
     account: Account,
     fromAmount: number,
@@ -73,7 +77,6 @@ const useBuyWithRelay = ({
             tradeType,
             txs,
           });
-          console.time("Buy With Relay");
           const relayClient = getClient();
           const toAmountData = await relayClient.actions.getQuote(
             options(fromAmountBigInt.toString(), "EXACT_INPUT"),
@@ -116,7 +119,7 @@ const useBuyWithRelay = ({
 
           const calldata = await encode(transaction);
 
-          const quote0 = await relayClient.actions.getQuote(
+          let quote = await relayClient.actions.getQuote(
             options(toAmount, "EXACT_OUTPUT", [
               {
                 to: config.contracts.buyHelper2.address,
@@ -126,36 +129,33 @@ const useBuyWithRelay = ({
             ]),
           );
 
-          const currencyIn = quote0.details?.currencyIn?.amount ?? 0;
+          if (enableExactInputBuyWithRelay) {
+            const currencyIn = quote.details?.currencyIn?.amount ?? 0;
+            const feesInCurrencyIn =
+              BigInt(currencyIn) - BigInt(fromAmountBigInt);
+            const netCurrencyInAmount = fromAmountBigInt - feesInCurrencyIn;
+            if (BigInt(0) >= netCurrencyInAmount)
+              throw new Error("Insufficient balance for paying fees + buy");
 
-          const feesInCurrencyIn =
-            BigInt(currencyIn) - BigInt(fromAmountBigInt);
-
-          const netCurrencyInAmount = fromAmountBigInt - feesInCurrencyIn;
-
-          if (BigInt(0) >= netCurrencyInAmount)
-            throw new Error("Insufficient balance for paying fees + buy");
-
-          const resNetCurrencyInAmount = await relayClient.actions.getQuote(
-            options(netCurrencyInAmount.toString(), "EXACT_INPUT"),
-          );
-          const netCurrencyOutAmount =
-            resNetCurrencyInAmount.details?.currencyOut?.amount ?? "0";
-
-          const amountWithCutdown =
-            (BigInt(netCurrencyOutAmount) * BigInt(99)) / BigInt(100);
-          const transaction2 = mintWith9LivesTx(amountWithCutdown.toString());
-
-          const calldata2 = await encode(transaction2);
-          const quote = await relayClient.actions.getQuote(
-            options(netCurrencyOutAmount, "EXACT_OUTPUT", [
-              {
-                to: config.contracts.buyHelper2.address,
-                value: netCurrencyOutAmount,
-                data: calldata2,
-              },
-            ]),
-          );
+            const resNetCurrencyInAmount = await relayClient.actions.getQuote(
+              options(netCurrencyInAmount.toString(), "EXACT_INPUT"),
+            );
+            const netCurrencyOutAmount =
+              resNetCurrencyInAmount.details?.currencyOut?.amount ?? "0";
+            const amountWithCutdown =
+              (BigInt(netCurrencyOutAmount) * BigInt(99)) / BigInt(100);
+            const transaction2 = mintWith9LivesTx(amountWithCutdown.toString());
+            const calldata2 = await encode(transaction2);
+            quote = await relayClient.actions.getQuote(
+              options(netCurrencyOutAmount, "EXACT_OUTPUT", [
+                {
+                  to: config.contracts.buyHelper2.address,
+                  value: netCurrencyOutAmount,
+                  data: calldata2,
+                },
+              ]),
+            );
+          }
 
           let targetChain = chain;
 
@@ -194,7 +194,6 @@ const useBuyWithRelay = ({
               }
             },
           });
-          console.timeEnd("Buy With Relay");
           res(requestId);
           track(EVENTS.MINT, {
             fromChain,

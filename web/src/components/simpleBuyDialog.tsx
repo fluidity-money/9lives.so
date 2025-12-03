@@ -62,6 +62,9 @@ export default function SimpleBuyDialog({
     shareAddr: selectedOutcome.share.address,
     outcomeId: selectedOutcome.identifier,
   });
+  const enableExactInputBuyWithRelay = useFeatureFlag(
+    "enable exact input style buy with relay",
+  );
   const formSchema = z
     .object({
       supply: z.string(),
@@ -76,7 +79,11 @@ export default function SimpleBuyDialog({
       }),
     })
     .superRefine((data, ctx) => {
-      if (data.fromChain !== config.destinationChain.id && 2 > data.usdValue) {
+      if (
+        !enableExactInputBuyWithRelay &&
+        data.fromChain !== config.destinationChain.id &&
+        2 > data.usdValue
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "usd value > 2$",
