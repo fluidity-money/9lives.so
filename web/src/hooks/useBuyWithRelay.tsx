@@ -57,29 +57,31 @@ const useBuyWithRelay = ({
           if (!wallet) throw new Error("No wallet is detected");
           if (!chain) throw new Error("No chain is detected");
           const fromAmountBigInt = toUnits(fromAmount.toString(), fromDecimals);
-          const toAmountRes = await fetch("https://api.relay.link/quote", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              user: account?.address,
-              originChainId: fromChain,
-              destinationChainId: toChain,
-              originCurrency: fromToken,
-              destinationCurrency: toToken,
-              recipient: account?.address,
-              referrer: "9lives.so",
-              amount: fromAmountBigInt.toString(),
-              tradeType: "EXACT_INPUT" as TradeType,
-            }),
+          const options = (
+            amount: string,
+            tradeType: TradeType,
+            txs?: { to: `0x${string}`; value: string; data: `0x${string}` }[],
+          ) => ({
+            user: account.address,
+            chainId: fromChain,
+            toChainId: toChain,
+            currency: fromToken,
+            toCurrency: toToken,
+            recipient: account.address,
+            referrer: "9lives.so",
+            amount, // Total value of all txs
+            tradeType,
+            txs,
           });
-          if (toAmountRes.status !== 200) {
-            throw new Error("Selected token is not supported.");
-          }
-          const toAmountData = await toAmountRes.json();
-          const toAmount = toAmountData.details.currencyOut.amount;
-          const mintWith9LivesTx = (simulatedShare?: bigint) => {
+          const relayClient = getClient();
+          const toAmountData = await relayClient.actions.getQuote(
+            options(fromAmountBigInt.toString(), "EXACT_INPUT"),
+          );
+          const toAmount = toAmountData.details?.currencyOut?.amount ?? "0";
+          const mintWith9LivesTx = (
+            amount: string,
+            simulatedShare?: bigint,
+          ) => {
             const minSharesOut = simulatedShare
               ? (simulatedShare * BigInt(95)) / BigInt(100)
               : BigInt(0);
@@ -95,7 +97,7 @@ const useBuyWithRelay = ({
                 outcomeId,
                 minSharesOut,
                 maxSharesOut,
-                toAmount,
+                BigInt(amount),
                 referrer,
                 BigInt(0), //rebate
                 BigInt(Math.floor(Date.now() / 1000) + 60 * 30), // deadline
@@ -109,32 +111,56 @@ const useBuyWithRelay = ({
           // sets minimum share to %90 of expected return shares
           // const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
 
-          const transaction = mintWith9LivesTx();
+          const transaction = mintWith9LivesTx(toAmount);
 
           const calldata = await encode(transaction);
 
-          const options = {
-            user: account.address,
-            chainId: fromChain,
-            toChainId: toChain,
-            currency: fromToken,
-            toCurrency: toToken,
-            recipient: account.address,
-            referrer: "9lives.so",
-            amount: toAmount, // Total value of all txs
-            tradeType: "EXACT_OUTPUT" as TradeType,
-            txs: [
+          const quote0 = await relayClient.actions.getQuote(
+            options(toAmount, "EXACT_OUTPUT", [
               {
                 to: config.contracts.buyHelper2.address,
-                value: toAmount, // Must match total amount
+                value: toAmount,
                 data: calldata,
               },
-            ],
-          };
+            ]),
+          );
 
-          const relayClient = getClient();
+          console.log("quote0", quote0);
 
-          const quote = await relayClient.actions.getQuote(options);
+          const currencyIn = quote0.details?.currencyIn?.amount ?? 0;
+
+          const feesInCurrencyIn =
+            BigInt(currencyIn) - BigInt(fromAmountBigInt);
+
+          console.log("feesInCurrencyIn", feesInCurrencyIn);
+
+          const netCurrencyInAmount = fromAmountBigInt - feesInCurrencyIn;
+
+          console.log("netCurrencyInAmount", netCurrencyInAmount);
+
+          if (BigInt(0) >= netCurrencyInAmount)
+            throw new Error("You dont have sufficient balance for fees");
+
+          const res = await relayClient.actions.getQuote(
+            options(netCurrencyInAmount.toString(), "EXACT_INPUT"),
+          );
+          const netCurrencyOutAmount = res.details?.currencyOut?.amount ?? "0";
+          console.log("netCurrencyOutAmount", netCurrencyOutAmount);
+
+          const transaction2 = mintWith9LivesTx(netCurrencyOutAmount);
+
+          const calldata2 = await encode(transaction2);
+          const quote = await relayClient.actions.getQuote(
+            options(netCurrencyOutAmount, "EXACT_OUTPUT", [
+              {
+                to: config.contracts.buyHelper2.address,
+                value: netCurrencyOutAmount,
+                data: calldata2,
+              },
+            ]),
+          );
+
+          console.log("quote", quote);
 
           let targetChain = chain;
 
