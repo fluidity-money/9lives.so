@@ -4,6 +4,7 @@ import { createClient } from "graphql-ws";
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
 import { PricePoint, RawAssetPrices, SimpleMarketKey } from "@/types";
+import { formatPricePoint } from "@/utils/format/formatAssetPrice";
 
 export const wsClient = createClient({
   url: config.NEXT_PUBLIC_WS_URL,
@@ -48,23 +49,15 @@ export default function ChartPriceProvider({
             queryClient.setQueryData<PricePoint[]>(
               ["assetPrices", symbol, starting, ending],
               (previousData) => {
-                const onlyNewItems = nextData
-                  .filter(
-                    (i) => !previousData?.find((pi) => pi.id === i.id)?.id,
-                  )
-                  .map((i) => ({
-                    id: i.id,
-                    price: Number(
-                      i.amount.toFixed(config.simpleMarkets[symbol].decimals),
-                    ),
-                    timestamp:
-                      new Date(i.created_by).getTime() -
-                      new Date().getTimezoneOffset() * 60 * 1000,
-                  }));
                 if (previousData) {
+                  const onlyNewItems = nextData
+                    .filter(
+                      (i) => !previousData.find((pi) => pi.id === i.id)?.id,
+                    )
+                    .map((i) => formatPricePoint(i, symbol));
                   return [...previousData, ...onlyNewItems];
                 } else {
-                  return onlyNewItems;
+                  return nextData.map((i) => formatPricePoint(i, symbol));
                 }
               },
             );
