@@ -243,9 +243,12 @@ export default function SimpleBuyDialog({
       selectedTokenBalance &&
       Number(selectedTokenBalance) > 0
     ) {
-      setValue("supply", selectedTokenBalance);
+      setValue(
+        "supply",
+        formatUnits(BigInt(selectedTokenBalance), fromDecimals),
+      );
     }
-  }, [setValue, experimentMaxBalance, selectedTokenBalance]);
+  }, [setValue, experimentMaxBalance, selectedTokenBalance, fromDecimals]);
 
   const handleReturn = useCallback(
     (num: number) => {
