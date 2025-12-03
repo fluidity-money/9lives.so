@@ -125,29 +125,28 @@ const useBuyWithRelay = ({
             ]),
           );
 
-          console.log("quote0", quote0);
-
           const currencyIn = quote0.details?.currencyIn?.amount ?? 0;
 
           const feesInCurrencyIn =
             BigInt(currencyIn) - BigInt(fromAmountBigInt);
 
-          console.log("feesInCurrencyIn", feesInCurrencyIn);
-
           const netCurrencyInAmount = fromAmountBigInt - feesInCurrencyIn;
 
-          console.log("netCurrencyInAmount", netCurrencyInAmount);
-
           if (BigInt(0) >= netCurrencyInAmount)
-            throw new Error("You dont have sufficient balance for fees");
+            throw new Error("Insufficient balance for paying fees + buy");
 
-          const res = await relayClient.actions.getQuote(
+          const resNetCurrencyInAmount = await relayClient.actions.getQuote(
             options(netCurrencyInAmount.toString(), "EXACT_INPUT"),
           );
-          const netCurrencyOutAmount = res.details?.currencyOut?.amount ?? "0";
-          console.log("netCurrencyOutAmount", netCurrencyOutAmount);
+          const netCurrencyOutAmount =
+            resNetCurrencyInAmount.details?.currencyOut?.amount ?? "0";
 
-          const transaction2 = mintWith9LivesTx(netCurrencyOutAmount);
+          const transaction2 = mintWith9LivesTx(
+            (
+              (BigInt(netCurrencyOutAmount) * BigInt(95)) /
+              BigInt(100)
+            ).toString(),
+          );
 
           const calldata2 = await encode(transaction2);
           const quote = await relayClient.actions.getQuote(
@@ -159,8 +158,6 @@ const useBuyWithRelay = ({
               },
             ]),
           );
-
-          console.log("quote", quote);
 
           let targetChain = chain;
 
@@ -200,7 +197,7 @@ const useBuyWithRelay = ({
             },
           });
 
-          res(null);
+          res(requestId);
           track(EVENTS.MINT, {
             fromChain,
             fromToken,
