@@ -305,6 +305,9 @@ export default function SimpleBuyDialog({
           <p className="text-center font-arial text-xs text-[#808080]">
             Bridge from any chain, instantly.
           </p>
+          <p className="text-center font-arial text-xs text-[#808080]">
+            Transactions on Superposition cost no gas.
+          </p>
           <div className="flex items-center justify-center gap-2">
             <span className="font-chicago text-xs">From</span>
             <ChainSelectorDropdown
