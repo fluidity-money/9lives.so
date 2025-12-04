@@ -778,3 +778,6 @@ export const requestUnclaimedCampaigns = (address: string, token?: string) =>
       },
     },
   });
+
+export const request9LivesPoints = (address: string) =>
+  graphPoints.query.ninelivesPoints({ $: { wallet: address }, amount: true });
