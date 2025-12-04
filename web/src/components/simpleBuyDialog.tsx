@@ -107,7 +107,7 @@ export default function SimpleBuyDialog({
       toToken: ZeroAddress,
       usdValue: 0,
       fromChain: isInMiniApp
-        ? config.chains.arbitrum.id
+        ? config.chains.base.id
         : config.chains.superposition.id,
       fromToken: isInMiniApp
         ? "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // Base USDC
