@@ -76,6 +76,13 @@ export namespace Select {
     $$Schema.Schema,
     $$Schema.Schema["allTypes"]["LeaderboardItem"]
   >;
+  export type NineLivesPoints<
+    $SelectionSet extends $$SelectionSets.NineLivesPoints,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["NineLivesPoints"]
+  >;
   export type Points<$SelectionSet extends $$SelectionSets.Points> =
     InferResult.OutputObjectLike<
       $SelectionSet,

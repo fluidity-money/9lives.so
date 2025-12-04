@@ -29,6 +29,7 @@ export namespace Schema {
     fields: {
       __typename: Query.__typename;
       points: Query.points;
+      ninelivesPoints: Query.ninelivesPoints;
       leaderboard: Query.leaderboard;
       achievements: Query.achievements;
       leaderboards: Query.leaderboards;
@@ -68,6 +69,23 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$Points;
+    }
+
+    /**
+     * Get 9lives points for the address given.
+     */
+    export interface ninelivesPoints extends $.OutputField {
+      name: "ninelivesPoints";
+      arguments: {
+        wallet: {
+          kind: "InputField";
+          name: "wallet";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$NineLivesPoints;
     }
 
     /**
@@ -754,6 +772,51 @@ export namespace Schema {
     }
   }
 
+  //                                          NineLivesPoints
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface NineLivesPoints extends $.OutputObject {
+    name: "NineLivesPoints";
+    fields: {
+      __typename: NineLivesPoints.__typename;
+      wallet: NineLivesPoints.wallet;
+      amount: NineLivesPoints.amount;
+    };
+  }
+
+  export namespace NineLivesPoints {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "NineLivesPoints";
+      };
+    }
+
+    /**
+     * Wallet address of the user whom these points are for.
+     */
+    export interface wallet extends $.OutputField {
+      name: "wallet";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Amount of points that're given to this user so far.
+     */
+    export interface amount extends $.OutputField {
+      name: "amount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+  }
+
   //                                               Points
   // --------------------------------------------------------------------------------------------------
   //
@@ -1041,6 +1104,7 @@ export namespace Schema {
     export type $$Achievement = Achievement;
     export type $$Leaderboard = Leaderboard;
     export type $$LeaderboardItem = LeaderboardItem;
+    export type $$NineLivesPoints = NineLivesPoints;
     export type $$Points = Points;
     export type $$TokenHolding = TokenHolding;
     export type $$Boolean = Boolean;
@@ -1084,6 +1148,7 @@ export interface Schema<
     Achievement: Schema.Achievement;
     Leaderboard: Schema.Leaderboard;
     LeaderboardItem: Schema.LeaderboardItem;
+    NineLivesPoints: Schema.NineLivesPoints;
     Points: Schema.Points;
     TokenHolding: Schema.TokenHolding;
   };
@@ -1091,6 +1156,7 @@ export interface Schema<
     Achievement: Schema.Achievement;
     Leaderboard: Schema.Leaderboard;
     LeaderboardItem: Schema.LeaderboardItem;
+    NineLivesPoints: Schema.NineLivesPoints;
     Points: Schema.Points;
     TokenHolding: Schema.TokenHolding;
   };

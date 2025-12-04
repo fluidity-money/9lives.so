@@ -129,6 +129,13 @@ const LeaderboardItem: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   },
 };
 
+const NineLivesPoints: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    wallet: {},
+    amount: {},
+  },
+};
+
 const Points: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     id: {},
@@ -209,6 +216,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
       // nt: Points, <-- Assigned later to avoid potential circular dependency.
+    },
+    ninelivesPoints: {
+      a: {
+        wallet: {
+          nt: String,
+          it: [1],
+        },
+      },
+      // nt: NineLivesPoints, <-- Assigned later to avoid potential circular dependency.
     },
     leaderboard: {
       a: {
@@ -421,6 +437,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 
 Leaderboard.f[`items`]!.nt = LeaderboardItem;
 Query.f[`points`]!.nt = Points;
+Query.f[`ninelivesPoints`]!.nt = NineLivesPoints;
 Query.f[`leaderboard`]!.nt = Points;
 Query.f[`achievements`]!.nt = Achievement;
 Query.f[`leaderboards`]!.nt = Leaderboard;
@@ -457,6 +474,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Achievement,
     Leaderboard,
     LeaderboardItem,
+    NineLivesPoints,
     Points,
     TokenHolding,
     Query,

@@ -23,6 +23,7 @@ export interface $MethodsSelect {
   Achievement: Achievement;
   Leaderboard: Leaderboard;
   LeaderboardItem: LeaderboardItem;
+  NineLivesPoints: NineLivesPoints;
   Points: Points;
   TokenHolding: TokenHolding;
 }
@@ -88,6 +89,15 @@ export interface LeaderboardItem {
     selectionSet: $$Utilities.Exact<
       $SelectionSet,
       $$SelectionSets.LeaderboardItem
+    >,
+  ): $SelectionSet;
+}
+
+export interface NineLivesPoints {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.NineLivesPoints
     >,
   ): $SelectionSet;
 }

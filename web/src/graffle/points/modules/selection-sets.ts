@@ -61,6 +61,14 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.points<_$Scalars>>;
   /**
    *
+   * Select the `ninelivesPoints` field on the `Query` object. Its type is `NineLivesPoints` (a `OutputObject` kind of type).
+   *
+   */
+  ninelivesPoints?:
+    | Query.ninelivesPoints<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.ninelivesPoints<_$Scalars>>;
+  /**
+   *
    * Select the `leaderboard` field on the `Query` object. Its type is `Points` (a `OutputObject` kind of type).
    *
    */
@@ -211,6 +219,45 @@ export namespace Query {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<points$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type ninelivesPoints<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = ninelivesPoints$SelectionSet<_$Scalars>;
+
+  export interface ninelivesPoints$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base,
+      $NamedTypes.$NineLivesPoints<_$Scalars> {
+    /**
+     * Arguments for `ninelivesPoints` field. All arguments are required so you must include this.
+     */
+    $: ninelivesPoints$Arguments<_$Scalars>;
+  }
+
+  export interface ninelivesPoints$Arguments<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    wallet: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `ninelivesPoints` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type ninelivesPoints$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<ninelivesPoints$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
@@ -1750,6 +1797,123 @@ export namespace LeaderboardItem {
   >;
 }
 
+//                                          NineLivesPoints
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface NineLivesPoints<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `wallet` field on the `NineLivesPoints` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  wallet?:
+    | NineLivesPoints.wallet$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<NineLivesPoints.wallet<_$Scalars>>;
+  /**
+   *
+   * Select the `amount` field on the `NineLivesPoints` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  amount?:
+    | NineLivesPoints.amount$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<NineLivesPoints.amount<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | NineLivesPoints$FragmentInline<_$Scalars>
+    | NineLivesPoints$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface NineLivesPoints$FragmentInline<
+  _$Scalars extends
+    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+> extends NineLivesPoints<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace NineLivesPoints {
+  export type wallet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
+
+  export interface wallet$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `wallet` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type wallet$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type amount<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
+
+  export interface amount$SelectionSet<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `amount` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type amount$Expanded<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
+  >;
+}
+
 //                                               Points
 // --------------------------------------------------------------------------------------------------
 //
@@ -2154,6 +2318,10 @@ export namespace $NamedTypes {
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
   > = LeaderboardItem<_$Scalars>;
+  export type $NineLivesPoints<
+    _$Scalars extends
+      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  > = NineLivesPoints<_$Scalars>;
   export type $Points<
     _$Scalars extends
       $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,

@@ -56,6 +56,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
+   * Get 9lives points for the address given.
+   */
+  ninelivesPoints: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.ninelivesPoints<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { ninelivesPoints: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "ninelivesPoints"
+        >
+    >
+  >;
+  /**
    * Leaderboard for everyone of points, sent in batches of 50. Also lets you request
    * information on the connected wallet's place in the leaderboard. If the user requested
    * their wallet, they're included as the last row if they weren't included in the results list
