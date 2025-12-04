@@ -5,7 +5,7 @@ import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
 import { CampaignDetail, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -327,6 +327,7 @@ export default function DetailBuyAction({
       setValue("usdValue", usdValue);
     }
   }, [usdValue, setValue]);
+  const activeChain = useActiveWalletChain();
   const handleNetworkChange = async (chain: Chain) => {
     // lifi auto switch handle this for now
     // await switchChain(chain);
@@ -336,6 +337,14 @@ export default function DetailBuyAction({
     (addr: string) => setValue("fromToken", addr),
     [setValue],
   );
+  useEffect(() => {
+    if (
+      activeChain &&
+      Object.values(config.chains).find((c) => c.id === activeChain.id)
+    ) {
+      handleNetworkChange(activeChain);
+    }
+  }, [activeChain]);
   return (
     <>
       <ShadowCard

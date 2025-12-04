@@ -12,7 +12,7 @@ import useTokens from "@/hooks/useTokens";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import AssetSelector from "./assetSelector";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useProfile from "@/hooks/useProfile";
 import Modal from "./themed/modal";
@@ -225,11 +225,20 @@ export default function SimpleBuyDialog({
     }
   }
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
+  const activeChain = useActiveWalletChain();
   const handleNetworkChange = async (chain: Chain) => {
     // lifi auto switch handle this for now
     // await switchChain(chain);
     setValue("fromChain", chain.id);
   };
+  useEffect(() => {
+    if (
+      activeChain &&
+      Object.values(config.chains).find((c) => c.id === activeChain.id)
+    ) {
+      handleNetworkChange(activeChain);
+    }
+  }, [activeChain]);
   const [featureIncreasedMintAmt, setFeatureIncreasedMintAmt] = useState(1);
   useEffect(() => {
     switch (experimentHigherMints) {
