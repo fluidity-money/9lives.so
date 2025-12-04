@@ -4,6 +4,7 @@ import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
 import { CampaignFilters, OutcomeInput, RawPricePoint } from "@/types";
 import { MaxUint256 } from "ethers";
+import config from "@/config";
 
 const graph9Lives = Lives9.create().transport({
   url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
@@ -675,7 +676,7 @@ export const requestAssetPrices = (
   starting: string,
   ending: string,
   page: number = 0,
-  pageSize: number = 3600,
+  pageSize: number = config.hasuraMaxQueryItem,
 ) =>
   graph9LivesSubs
     .gql(

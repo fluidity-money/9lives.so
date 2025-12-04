@@ -2,6 +2,7 @@
 import { HeaderBox } from "./detailHeaderBox";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { PricePoint } from "@/types";
+import config from "@/config";
 
 export default function DetailCurrentPriceBox({
   symbol,
@@ -21,7 +22,7 @@ export default function DetailCurrentPriceBox({
     initialData: { pages: [initialData], pageParams: [0] },
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (lastPage.length < 3600) return undefined;
+      if (lastPage.length < config.hasuraMaxQueryItem) return undefined;
       if (typeof lastPageParam !== "number") return undefined;
       return lastPageParam + 1;
     },

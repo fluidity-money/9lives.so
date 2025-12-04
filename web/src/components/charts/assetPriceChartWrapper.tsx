@@ -4,6 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import AssetPriceChartMask from "./assetPriceChartMask";
 import AssetPriceChart from "./assetPriceChart";
 import { useEffect } from "react";
+import config from "@/config";
 
 export default function PriceChartWrapper({
   campaignData,
@@ -22,7 +23,7 @@ export default function PriceChartWrapper({
     initialData: { pages: [pointsData], pageParams: [0] },
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (lastPage.length < 3600) return undefined;
+      if (lastPage.length < config.hasuraMaxQueryItem) return undefined;
       if (typeof lastPageParam !== "number") return undefined;
       return lastPageParam + 1;
     },

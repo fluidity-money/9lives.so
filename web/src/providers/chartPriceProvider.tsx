@@ -13,7 +13,7 @@ export const wsClient = createClient({
 
 const subPricesForDuration = `
 subscription($symbol: String!, $starting: timestamp!, $ending: timestamp!) {
-  oracles_ninelives_prices_2(order_by: {created_by: desc}, where: {created_by: {_gte: $starting, _lte: $ending}, base: {_eq: $symbol}}, limit: 2) {
+  oracles_ninelives_prices_2(order_by: {created_by: desc}, where: {created_by: {_gte: $starting, _lte: $ending}, base: {_eq: $symbol}}, limit: 1) {
     id
     amount
     created_by
@@ -46,21 +46,40 @@ export default function ChartPriceProvider({
         next: async ({ data }) => {
           const nextData = data?.oracles_ninelives_prices_2;
           if (nextData && nextData.length > 0) {
-            queryClient.setQueryData<PricePoint[]>(
-              ["assetPrices", symbol, starting, ending],
-              (previousData) => {
-                if (previousData) {
-                  const onlyNewItems = nextData
-                    .filter(
-                      (i) => !previousData.find((pi) => pi.id === i.id)?.id,
-                    )
-                    .map((i) => formatPricePoint(i, symbol));
-                  return [...previousData, ...onlyNewItems];
+            queryClient.setQueryData<
+              { pages: PricePoint[][]; pageParams: number[] } | undefined
+            >(["assetPrices", symbol, starting, ending], (previousData) => {
+              const newPoint = nextData.map((i) =>
+                formatPricePoint(i, symbol),
+              )[0];
+              if (previousData) {
+                if (
+                  previousData.pages[previousData.pages.length - 1].length ===
+                  config.hasuraMaxQueryItem
+                ) {
+                  return {
+                    pages: [...previousData.pages, [newPoint]],
+                    pageParams: [
+                      ...previousData.pageParams,
+                      previousData.pageParams[
+                        previousData.pageParams.length - 1
+                      ] + 1,
+                    ],
+                  };
                 } else {
-                  return nextData.map((i) => formatPricePoint(i, symbol));
+                  return {
+                    pages: previousData.pages.map((p, idx) => {
+                      if (idx === previousData.pages.length - 1) {
+                        return [...p, newPoint];
+                      } else return p;
+                    }),
+                    pageParams: previousData.pageParams,
+                  };
                 }
-              },
-            );
+              } else {
+                return { pages: [[newPoint]], pageParams: [0] };
+              }
+            });
           }
         },
         error: (error) => {

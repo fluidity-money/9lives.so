@@ -213,6 +213,7 @@ const appSchema = z.object({
   ),
   frame: z.any(),
   weekDuration: z.number(),
+  hasuraMaxQueryItem: z.number(),
 });
 const requiredChains = Object.values(farcasterChains).map(
   (chain) => `eip155:${chain.id}`,
@@ -252,6 +253,7 @@ const appVars = appSchema.safeParse({
   categories,
   frame,
   weekDuration: 60 * 60 * 24 * 7 * 1000,
+  hasuraMaxQueryItem: 3600,
 });
 
 if (!appVars.success) {
