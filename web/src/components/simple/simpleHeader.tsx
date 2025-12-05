@@ -4,6 +4,8 @@ import { SimpleCampaignDetail } from "@/types";
 import CountdownTimer from "../countdownTimer";
 import { useQuery } from "@tanstack/react-query";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+import isMarketOpen from "@/utils/isMarketOpen";
+import config from "@/config";
 
 export default function SimpleHeader({
   initialData,
@@ -16,6 +18,9 @@ export default function SimpleHeader({
     initialData,
   });
   const isDailyMarket = data.ending - data.starting >= 1000 * 60 * 60 * 24;
+  const isOpen = isMarketOpen(
+    config.simpleMarkets[initialData.priceMetadata.baseAsset],
+  );
 
   return (
     <div className="flex flex-col gap-1">
@@ -37,7 +42,11 @@ export default function SimpleHeader({
           })}
           {" UTC"}
         </span>
-        <CountdownTimer endTime={data.ending} />
+        {isOpen ? (
+          <CountdownTimer endTime={data.ending} />
+        ) : (
+          <span className="bg-9red px-0.5 py-px text-9black">Closed</span>
+        )}
       </div>
     </div>
   );
