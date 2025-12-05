@@ -1975,6 +1975,7 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string, 
 		query += ` and bs_sum.campaign_content->'priceMetadata'->>'baseAsset' = ?`
 		args = append(args, strings.ToUpper(*token))
 	}
+	query += ` order by py.created_at desc`
 	err := r.DB.Raw(query, args...).Scan(&campaigns).Error
 	if err != nil {
 		return nil, fmt.Errorf("error getting unclaimed campaigns: %w", err)
