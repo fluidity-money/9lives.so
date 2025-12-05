@@ -35,7 +35,7 @@ export default function SimpleBody({
       <SimpleSubHeader campaignData={data} pointsData={pointsData} />
       <PriceChartWrapper simple campaignData={data} pointsData={pointsData} />
       <div className="sticky inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-9layer pb-2 md:static md:flex-row md:bg-transparent md:p-0">
-        <SimpleClaimAllButton token={data.priceMetadata.baseAsset} />
+        <SimpleClaimAllButton />
         <SimpleButtons
           data={data}
           setIsBuyDialogOpen={setIsBuyDialogOpen}

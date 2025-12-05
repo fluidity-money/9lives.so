@@ -5,7 +5,7 @@ import Modal from "../themed/modal";
 import { useState } from "react";
 import SimpleRewardsDialog from "./simpleRewardsDialog";
 
-export default function SimpleClaimAllButton({ token }: { token: string }) {
+export default function SimpleClaimAllButton({ token }: { token?: string }) {
   const account = useActiveAccount();
   const { data } = useUnclaimedCampaigns(account?.address, token);
   const [isModalOpen, setIsModalOpen] = useState(false);

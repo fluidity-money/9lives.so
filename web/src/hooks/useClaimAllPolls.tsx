@@ -14,8 +14,8 @@ import { UnclaimedCampaign } from "@/types";
 
 export default function useClaimAllPools(
   data: UnclaimedCampaign[],
-  token: string,
   closeModal: () => void,
+  token?: string,
 ) {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
