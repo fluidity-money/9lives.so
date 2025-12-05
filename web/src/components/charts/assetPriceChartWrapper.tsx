@@ -31,10 +31,10 @@ export default function PriceChartWrapper({
   const assetPrices = data.pages.flatMap((c) => c);
 
   useEffect(() => {
-    if (hasNextPage) {
+    if (hasNextPage && assetPrices?.length) {
       fetchNextPage();
     }
-  }, [hasNextPage]);
+  }, [hasNextPage, assetPrices?.length]);
 
   return (
     <ActiveCampaignProvider simple={simple} previousData={campaignData}>
