@@ -345,26 +345,37 @@ export default function PositionRow({
         {campaignContent.isDpm ? null : (
           <td>
             {campaignContent.isDppm ? (
-              !detailPage ? (
-                <p className="flex flex-col items-start gap-0.5 text-wrap font-chicago text-xs">
-                  <span>
-                    <span className="font-geneva text-[#808080]">Reward:</span>{" "}
-                    ${dppmRewards.dppmFusdc}
+              <div>
+                {!detailPage ? (
+                  <p className="flex flex-col items-start gap-0.5 text-wrap font-chicago text-xs">
+                    <span>
+                      <span className="font-geneva text-[#808080]">
+                        Reward:
+                      </span>{" "}
+                      ${dppmRewards.dppmFusdc}
+                    </span>
+                    <span>
+                      <span className="font-geneva text-[#808080]">Bonus:</span>{" "}
+                      ${dppmRewards.ninetailsWinnerFusdc}
+                    </span>
+                    <span>
+                      <span className="font-geneva text-[#808080]">
+                        Refund:
+                      </span>{" "}
+                      ${dppmRewards.ninetailsLoserFusd}
+                    </span>
+                  </p>
+                ) : (
+                  <span className="font-chicago text-xs">
+                    ${totalRewards.toFixed(2)}
                   </span>
-                  <span>
-                    <span className="font-geneva text-[#808080]">Bonus:</span> $
-                    {dppmRewards.ninetailsWinnerFusdc}
+                )}
+                {!campaignContent.winner ? (
+                  <span className="self-start bg-9yellow p-0.5 font-chicago text-xs">
+                    TBD
                   </span>
-                  <span>
-                    <span className="font-geneva text-[#808080]">Refund:</span>{" "}
-                    ${dppmRewards.ninetailsLoserFusd}
-                  </span>
-                </p>
-              ) : (
-                <span className="font-chicago text-xs">
-                  ${totalRewards.toFixed(2)}
-                </span>
-              )
+                ) : null}
+              </div>
             ) : (
               <span className="font-chicago text-xs">${data.balance}</span>
             )}
