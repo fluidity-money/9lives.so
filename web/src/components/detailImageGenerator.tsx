@@ -51,14 +51,12 @@ export default async function detailImageGenerator(
 
   if (!response)
     return new ImageResponse(
-      (
-        <img
-          src={`https://9lives.so/opengraph-image.png`}
-          alt="9lives.so"
-          width={size.width}
-          height={size.height}
-        />
-      ),
+      <img
+        src={`https://9lives.so/opengraph-image.png`}
+        alt="9lives.so"
+        width={size.width}
+        height={size.height}
+      />,
     );
   const data = formatCampaignDetail(response);
 
@@ -189,222 +187,220 @@ export default async function detailImageGenerator(
   const outcomeName = outcomes[0].name;
   const outcomePic = outcomes[0].picture;
   return new ImageResponse(
-    (
+    <div
+      style={{
+        display: "flex",
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        flexDirection: "column",
+        backgroundColor: "#DDEAEF",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          gap: "0.5rem",
+          backgroundColor: "#CCC",
+          padding: "0.25rem 0.5rem",
+        }}
+      >
+        <TitleBorders />
+        <span
+          style={{
+            fontFamily: "chicago, sans-serif",
+            fontSize: "1.5rem",
+            textTransform: "uppercase",
+          }}
+        >
+          Predict Outcome
+        </span>
+        <TitleBorders />
+      </div>
       <div
         style={{
           display: "flex",
           flex: 1,
-          width: "100%",
-          height: "100%",
           flexDirection: "column",
+          gap: "1.25rem",
           backgroundColor: "#DDEAEF",
+          padding: "1.75rem 2.5rem",
         }}
       >
         <div
           style={{
             display: "flex",
-            gap: "0.5rem",
-            backgroundColor: "#CCC",
-            padding: "0.25rem 0.5rem",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <TitleBorders />
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <img
+              src={`${baseUrl}/${LogoPaw.src}`}
+              alt="9lives.so"
+              height={60}
+            />
+            <img
+              src={`${baseUrl}/${LogoText.src}`}
+              alt="9lives.so"
+              height={34}
+            />
+            <img
+              src={`${baseUrl}/${LogoDot.src}`}
+              alt="9lives.so"
+              width={70}
+              height={34}
+            />
+          </div>
           <span
             style={{
               fontFamily: "chicago, sans-serif",
-              fontSize: "1.5rem",
-              textTransform: "uppercase",
+              fontSize: "1.875rem",
             }}
           >
-            Predict Outcome
+            PREDICTION MARKET
           </span>
-          <TitleBorders />
         </div>
         <div
           style={{
             display: "flex",
-            flex: 1,
             flexDirection: "column",
+            flexGrow: 1,
+            justifyContent: "space-between",
             gap: "1.25rem",
-            backgroundColor: "#DDEAEF",
-            padding: "1.75rem 2.5rem",
+            borderRadius: 3,
+            borderWidth: 1,
+            borderStyle: "solid",
+            borderColor: "#0C0C0C",
+            backgroundColor: "#F5F5F5",
+            padding: "2.5rem",
+            boxShadow:
+              "-4px -4px 0px 0px rgba(0, 0, 0, 0.25) inset, 4px 4px 0px 0px rgba(255, 255, 255, 0.90) inset, 2px 2px 0px 0px rgba(12, 12, 12, 0.20)",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <img
-                src={`${baseUrl}/${LogoPaw.src}`}
-                alt="9lives.so"
-                height={60}
-              />
-              <img
-                src={`${baseUrl}/${LogoText.src}`}
-                alt="9lives.so"
-                height={34}
-              />
-              <img
-                src={`${baseUrl}/${LogoDot.src}`}
-                alt="9lives.so"
-                width={70}
-                height={34}
-              />
-            </div>
-            <span
+          <div style={{ display: "flex", gap: "1.75rem", minHeight: 200 }}>
+            {outcomePic || data?.picture ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderWidth: 2,
+                  borderStyle: "solid",
+                  borderColor: "#0C0C0C",
+                }}
+              >
+                <img
+                  src={outcomePic || data?.picture || ""}
+                  width={200}
+                  height={200}
+                  alt=""
+                />
+              </div>
+            ) : null}
+            <div
               style={{
-                fontFamily: "chicago, sans-serif",
-                fontSize: "1.875rem",
+                display: "flex",
+                flex: 1,
+                flexDirection: "column",
+                justifyContent: "space-between",
               }}
             >
-              PREDICTION MARKET
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              flexGrow: 1,
-              justifyContent: "space-between",
-              gap: "1.25rem",
-              borderRadius: 3,
-              borderWidth: 1,
-              borderStyle: "solid",
-              borderColor: "#0C0C0C",
-              backgroundColor: "#F5F5F5",
-              padding: "2.5rem",
-              boxShadow:
-                "-4px -4px 0px 0px rgba(0, 0, 0, 0.25) inset, 4px 4px 0px 0px rgba(255, 255, 255, 0.90) inset, 2px 2px 0px 0px rgba(12, 12, 12, 0.20)",
-            }}
-          >
-            <div style={{ display: "flex", gap: "1.75rem", minHeight: 200 }}>
-              {outcomePic || data?.picture ? (
-                <div
+              <p
+                style={{
+                  fontFamily: "chicago, sans-serif",
+                  fontSize: "2.5rem",
+                }}
+              >
+                {data?.name ?? "Predict on 9lives.so"}
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    borderWidth: 2,
-                    borderStyle: "solid",
-                    borderColor: "#0C0C0C",
+                    backgroundColor: "#FFFD9B",
+                    padding: "0.25rem 0.5rem",
+                    fontFamily: "chicago, sans-serif",
+                    fontSize: "1.75rem",
                   }}
                 >
-                  <img
-                    src={outcomePic || data?.picture || ""}
-                    width={200}
-                    height={200}
-                    alt=""
-                  />
-                </div>
-              ) : null}
+                  {chance.toFixed(0)}% CHANCE
+                </span>
+                <span
+                  style={{
+                    fontFamily: "chicago, sans-serif",
+                    fontSize: "1.75rem",
+                  }}
+                >
+                  END: {new Date(data.ending).toDateString()}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex" }}>
+            {isYesNo ? (
               <div
                 style={{
                   display: "flex",
                   flex: 1,
-                  flexDirection: "column",
-                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "1rem",
                 }}
               >
-                <p
-                  style={{
-                    fontFamily: "chicago, sans-serif",
-                    fontSize: "2.5rem",
-                  }}
-                >
-                  {data?.name ?? "Predict on 9lives.so"}
-                </p>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      backgroundColor: "#FFFD9B",
-                      padding: "0.25rem 0.5rem",
-                      fontFamily: "chicago, sans-serif",
-                      fontSize: "1.75rem",
-                    }}
-                  >
-                    {chance.toFixed(0)}% CHANCE
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "chicago, sans-serif",
-                      fontSize: "1.75rem",
-                    }}
-                  >
-                    END: {new Date(data.ending).toDateString()}
-                  </span>
-                </div>
+                <Button
+                  name={"YES"}
+                  price={formatFusdc(
+                    outcomes.find((o) => o.name === "Yes")?.price ?? 0,
+                    2,
+                  )}
+                />
+                <Button
+                  name={"NO"}
+                  price={formatFusdc(
+                    outcomes.find((o) => o.name === "No")?.price ?? 0,
+                    2,
+                  )}
+                  color="#FFB3B3"
+                />
               </div>
-            </div>
-            <div style={{ display: "flex" }}>
-              {isYesNo ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flex: 1,
-                    alignItems: "center",
-                    gap: "1rem",
-                  }}
-                >
-                  <Button
-                    name={"YES"}
-                    price={formatFusdc(
-                      outcomes.find((o) => o.name === "Yes")?.price ?? 0,
-                      2,
-                    )}
-                  />
-                  <Button
-                    name={"NO"}
-                    price={formatFusdc(
-                      outcomes.find((o) => o.name === "No")?.price ?? 0,
-                      2,
-                    )}
-                    color="#FFB3B3"
-                  />
-                </div>
-              ) : (
-                <Button name={outcomeName} price={price} />
-              )}
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "1rem",
-                fontFamily: "Geneva, sans-serif",
-                textTransform: "uppercase",
-              }}
-            >
-              Predict on 9lives.so
-            </span>
-            <span
-              style={{
-                fontSize: "1rem",
-                fontFamily: "Geneva, sans-serif",
-                textTransform: "uppercase",
-              }}
-            >
-              Predict on 9lives.so
-            </span>
+            ) : (
+              <Button name={outcomeName} price={price} />
+            )}
           </div>
         </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "1rem",
+              fontFamily: "Geneva, sans-serif",
+              textTransform: "uppercase",
+            }}
+          >
+            Predict on 9lives.so
+          </span>
+          <span
+            style={{
+              fontSize: "1rem",
+              fontFamily: "Geneva, sans-serif",
+              textTransform: "uppercase",
+            }}
+          >
+            Predict on 9lives.so
+          </span>
+        </div>
       </div>
-    ),
+    </div>,
     {
       width: size.width,
       height: size.height,

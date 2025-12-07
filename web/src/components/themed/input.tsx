@@ -21,8 +21,7 @@ const input = cva(
 );
 
 export interface InputProps
-  extends Omit<BasicInputProps, "size">,
-    VariantProps<typeof input> {}
+  extends Omit<BasicInputProps, "size">, VariantProps<typeof input> {}
 
 export default forwardRef<HTMLInputElement, InputProps>(function Input(
   { className, intent, ...props },

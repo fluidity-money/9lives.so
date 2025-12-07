@@ -18,8 +18,8 @@ import type * as $$Utilities from "graffle/utilities-for-generated";
 //
 
 export interface $Document<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
 > {
   query?: Record<string, Query<_$Scalars>>;
   mutation?: Record<string, Mutation<_$Scalars>>;
@@ -48,8 +48,8 @@ export interface $Document<
 // ----------------------------------------| Entrypoint Interface |
 
 export interface Query<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
 > {
   /**
    *
@@ -175,24 +175,24 @@ export interface Query<
 }
 
 export interface Query$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends Query<_$Scalars>,
-    $Select.Directive.$Groups.InlineFragment.Fields {}
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends Query<_$Scalars>, $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
 export namespace Query {
   export type points<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = points$SelectionSet<_$Scalars>;
 
   export interface points$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$Points<_$Scalars> {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$Points<_$Scalars> {
     /**
      * Arguments for `points` field. All arguments are required so you must include this.
      */
@@ -200,8 +200,8 @@ export namespace Query {
   }
 
   export interface points$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     wallet: string;
   }
@@ -216,22 +216,22 @@ export namespace Query {
    *
    */
   export type points$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<points$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type ninelivesPoints<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = ninelivesPoints$SelectionSet<_$Scalars>;
 
   export interface ninelivesPoints$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$NineLivesPoints<_$Scalars> {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$NineLivesPoints<_$Scalars> {
     /**
      * Arguments for `ninelivesPoints` field. All arguments are required so you must include this.
      */
@@ -239,8 +239,8 @@ export namespace Query {
   }
 
   export interface ninelivesPoints$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     wallet: string;
   }
@@ -255,22 +255,22 @@ export namespace Query {
    *
    */
   export type ninelivesPoints$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<ninelivesPoints$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type leaderboard<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = leaderboard$SelectionSet<_$Scalars>;
 
   export interface leaderboard$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$Points<_$Scalars> {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$Points<_$Scalars> {
     /**
      * Arguments for `leaderboard` field. No arguments are required so you may omit this.
      */
@@ -278,8 +278,8 @@ export namespace Query {
   }
 
   export interface leaderboard$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     from?: number | undefined | null;
     wallet?: string | undefined | null;
@@ -295,22 +295,22 @@ export namespace Query {
    *
    */
   export type leaderboard$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<leaderboard$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type achievements<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = achievements$SelectionSet<_$Scalars>;
 
   export interface achievements$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$Achievement<_$Scalars> {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$Achievement<_$Scalars> {
     /**
      * Arguments for `achievements` field. No arguments are required so you may omit this.
      */
@@ -318,8 +318,8 @@ export namespace Query {
   }
 
   export interface achievements$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     wallet?: string | undefined | null;
   }
@@ -334,22 +334,22 @@ export namespace Query {
    *
    */
   export type achievements$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<achievements$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type leaderboards<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = leaderboards$SelectionSet<_$Scalars>;
 
   export interface leaderboards$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$Leaderboard<_$Scalars> {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$Leaderboard<_$Scalars> {
     /**
      * Arguments for `leaderboards` field. Some (1/2) arguments are required so you must include this.
      */
@@ -357,8 +357,8 @@ export namespace Query {
   }
 
   export interface leaderboards$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     product: string;
     season?: number | undefined | null;
@@ -374,21 +374,22 @@ export namespace Query {
    *
    */
   export type leaderboards$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<leaderboards$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type productUserCount<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = productUserCount$SelectionSet<_$Scalars>;
 
   export interface productUserCount$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `productUserCount` field. All arguments are required so you must include this.
      */
@@ -396,8 +397,8 @@ export namespace Query {
   }
 
   export interface productUserCount$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     product: string;
   }
@@ -412,23 +413,24 @@ export namespace Query {
    *
    */
   export type productUserCount$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<productUserCount$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type getPointsComponent<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > =
     | $Select.Indicator.NoArgsIndicator
     | getPointsComponent$SelectionSet<_$Scalars>;
 
   export interface getPointsComponent$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `getPointsComponent` field. No arguments are required so you may omit this.
      */
@@ -436,8 +438,8 @@ export namespace Query {
   }
 
   export interface getPointsComponent$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     wallet?: string | undefined | null;
   }
@@ -452,8 +454,8 @@ export namespace Query {
    *
    */
   export type getPointsComponent$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     | $Select.Indicator.NoArgsIndicator
     | getPointsComponent$SelectionSet<_$Scalars>
@@ -462,14 +464,15 @@ export namespace Query {
   // --------------------------------------------------------------------------------------------------
 
   export type getAddressByDiscord<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = getAddressByDiscord$SelectionSet<_$Scalars>;
 
   export interface getAddressByDiscord$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `getAddressByDiscord` field. All arguments are required so you must include this.
      */
@@ -477,8 +480,8 @@ export namespace Query {
   }
 
   export interface getAddressByDiscord$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     addr: string;
   }
@@ -493,21 +496,22 @@ export namespace Query {
    *
    */
   export type getAddressByDiscord$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getAddressByDiscord$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type getDiscordName<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = getDiscordName$SelectionSet<_$Scalars>;
 
   export interface getDiscordName$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `getDiscordName` field. All arguments are required so you must include this.
      */
@@ -515,8 +519,8 @@ export namespace Query {
   }
 
   export interface getDiscordName$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     handle: string;
   }
@@ -531,22 +535,22 @@ export namespace Query {
    *
    */
   export type getDiscordName$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getDiscordName$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type getTokenLeaderboard<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = getTokenLeaderboard$SelectionSet<_$Scalars>;
 
   export interface getTokenLeaderboard$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$TokenHolding<_$Scalars> {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$TokenHolding<_$Scalars> {
     /**
      * Arguments for `getTokenLeaderboard` field. All arguments are required so you must include this.
      */
@@ -554,8 +558,8 @@ export namespace Query {
   }
 
   export interface getTokenLeaderboard$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     token: string;
   }
@@ -570,21 +574,22 @@ export namespace Query {
    *
    */
   export type getTokenLeaderboard$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getTokenLeaderboard$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type hasBought5SimgleModeCampaigns<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = hasBought5SimgleModeCampaigns$SelectionSet<_$Scalars>;
 
   export interface hasBought5SimgleModeCampaigns$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `hasBought5SimgleModeCampaigns` field. All arguments are required so you must include this.
      */
@@ -592,8 +597,8 @@ export namespace Query {
   }
 
   export interface hasBought5SimgleModeCampaigns$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     addr: string;
   }
@@ -608,8 +613,8 @@ export namespace Query {
    *
    */
   export type hasBought5SimgleModeCampaigns$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     hasBought5SimgleModeCampaigns$SelectionSet<_$Scalars>
   >;
@@ -617,14 +622,15 @@ export namespace Query {
   // --------------------------------------------------------------------------------------------------
 
   export type hasBoughtAmm<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = hasBoughtAmm$SelectionSet<_$Scalars>;
 
   export interface hasBoughtAmm$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `hasBoughtAmm` field. All arguments are required so you must include this.
      */
@@ -632,8 +638,8 @@ export namespace Query {
   }
 
   export interface hasBoughtAmm$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     addr: string;
   }
@@ -648,8 +654,8 @@ export namespace Query {
    *
    */
   export type hasBoughtAmm$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<hasBoughtAmm$SelectionSet<_$Scalars>>;
 }
 
@@ -660,8 +666,8 @@ export namespace Query {
 // ----------------------------------------| Entrypoint Interface |
 
 export interface Mutation<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
 > {
   /**
    *
@@ -751,23 +757,26 @@ export interface Mutation<
 }
 
 export interface Mutation$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends Mutation<_$Scalars>,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    Mutation<_$Scalars>,
     $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
 export namespace Mutation {
   export type auth<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = auth$SelectionSet<_$Scalars>;
 
   export interface auth$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `auth` field. All arguments are required so you must include this.
      */
@@ -775,8 +784,8 @@ export namespace Mutation {
   }
 
   export interface auth$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     key: string;
   }
@@ -791,21 +800,22 @@ export namespace Mutation {
    *
    */
   export type auth$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<auth$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type addAchievement<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = addAchievement$SelectionSet<_$Scalars>;
 
   export interface addAchievement$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `addAchievement` field. Some (1/4) arguments are required so you must include this.
      */
@@ -813,8 +823,8 @@ export namespace Mutation {
   }
 
   export interface addAchievement$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     /**
      * Wallet address to associate this achievement with.
@@ -844,21 +854,22 @@ export namespace Mutation {
    *
    */
   export type addAchievement$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<addAchievement$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type registerDiscord<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = registerDiscord$SelectionSet<_$Scalars>;
 
   export interface registerDiscord$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `registerDiscord` field. All arguments are required so you must include this.
      */
@@ -866,8 +877,8 @@ export namespace Mutation {
   }
 
   export interface registerDiscord$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     /**
      * Address owned by the Discord handle given.
@@ -893,21 +904,22 @@ export namespace Mutation {
    *
    */
   export type registerDiscord$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<registerDiscord$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type calculatePoints<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = calculatePoints$SelectionSet<_$Scalars>;
 
   export interface calculatePoints$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `calculatePoints` field. All arguments are required so you must include this.
      */
@@ -915,8 +927,8 @@ export namespace Mutation {
   }
 
   export interface calculatePoints$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     yes: boolean;
   }
@@ -931,21 +943,22 @@ export namespace Mutation {
    *
    */
   export type calculatePoints$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<calculatePoints$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type hideCampaign<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = hideCampaign$SelectionSet<_$Scalars>;
 
   export interface hideCampaign$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `hideCampaign` field. All arguments are required so you must include this.
      */
@@ -953,8 +966,8 @@ export namespace Mutation {
   }
 
   export interface hideCampaign$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     id: string;
   }
@@ -969,21 +982,22 @@ export namespace Mutation {
    *
    */
   export type hideCampaign$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<hideCampaign$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type setCampaignCategories<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = setCampaignCategories$SelectionSet<_$Scalars>;
 
   export interface setCampaignCategories$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `setCampaignCategories` field. All arguments are required so you must include this.
      */
@@ -991,8 +1005,8 @@ export namespace Mutation {
   }
 
   export interface setCampaignCategories$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     id: string;
     categories: Array<string | undefined | null>;
@@ -1008,21 +1022,22 @@ export namespace Mutation {
    *
    */
   export type setCampaignCategories$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<setCampaignCategories$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
   export type requestTokensHackathon<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = requestTokensHackathon$SelectionSet<_$Scalars>;
 
   export interface requestTokensHackathon$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
     /**
      * Arguments for `requestTokensHackathon` field. All arguments are required so you must include this.
      */
@@ -1030,8 +1045,8 @@ export namespace Mutation {
   }
 
   export interface requestTokensHackathon$Arguments<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     /**
      * The Telegram associated with this participant.
@@ -1061,8 +1076,8 @@ export namespace Mutation {
    *
    */
   export type requestTokensHackathon$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<requestTokensHackathon$SelectionSet<_$Scalars>>;
 }
 
@@ -1089,9 +1104,10 @@ export namespace Mutation {
 // ----------------------------------------| Entrypoint Interface |
 
 export interface Achievement<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $Select.Bases.ObjectLike {
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `Achievement` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -1192,23 +1208,26 @@ export interface Achievement<
 }
 
 export interface Achievement$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends Achievement<_$Scalars>,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    Achievement<_$Scalars>,
     $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
 export namespace Achievement {
   export type id<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1220,8 +1239,8 @@ export namespace Achievement {
    *
    */
   export type id$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
@@ -1229,14 +1248,15 @@ export namespace Achievement {
   // --------------------------------------------------------------------------------------------------
 
   export type name<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>;
 
   export interface name$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1248,8 +1268,8 @@ export namespace Achievement {
    *
    */
   export type name$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>
   >;
@@ -1257,14 +1277,15 @@ export namespace Achievement {
   // --------------------------------------------------------------------------------------------------
 
   export type count<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | count$SelectionSet<_$Scalars>;
 
   export interface count$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1276,8 +1297,8 @@ export namespace Achievement {
    *
    */
   export type count$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | count$SelectionSet<_$Scalars>
   >;
@@ -1285,16 +1306,17 @@ export namespace Achievement {
   // --------------------------------------------------------------------------------------------------
 
   export type shouldCountMatter<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > =
     | $Select.Indicator.NoArgsIndicator
     | shouldCountMatter$SelectionSet<_$Scalars>;
 
   export interface shouldCountMatter$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1306,8 +1328,8 @@ export namespace Achievement {
    *
    */
   export type shouldCountMatter$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     | $Select.Indicator.NoArgsIndicator
     | shouldCountMatter$SelectionSet<_$Scalars>
@@ -1316,16 +1338,17 @@ export namespace Achievement {
   // --------------------------------------------------------------------------------------------------
 
   export type isCountFinancial<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > =
     | $Select.Indicator.NoArgsIndicator
     | isCountFinancial$SelectionSet<_$Scalars>;
 
   export interface isCountFinancial$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1337,8 +1360,8 @@ export namespace Achievement {
    *
    */
   export type isCountFinancial$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | isCountFinancial$SelectionSet<_$Scalars>
   >;
@@ -1346,14 +1369,15 @@ export namespace Achievement {
   // --------------------------------------------------------------------------------------------------
 
   export type description<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | description$SelectionSet<_$Scalars>;
 
   export interface description$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1365,8 +1389,8 @@ export namespace Achievement {
    *
    */
   export type description$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | description$SelectionSet<_$Scalars>
   >;
@@ -1374,14 +1398,15 @@ export namespace Achievement {
   // --------------------------------------------------------------------------------------------------
 
   export type product<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | product$SelectionSet<_$Scalars>;
 
   export interface product$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1393,8 +1418,8 @@ export namespace Achievement {
    *
    */
   export type product$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | product$SelectionSet<_$Scalars>
   >;
@@ -1402,14 +1427,15 @@ export namespace Achievement {
   // --------------------------------------------------------------------------------------------------
 
   export type season<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | season$SelectionSet<_$Scalars>;
 
   export interface season$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1421,8 +1447,8 @@ export namespace Achievement {
    *
    */
   export type season$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | season$SelectionSet<_$Scalars>
   >;
@@ -1430,14 +1456,15 @@ export namespace Achievement {
   // --------------------------------------------------------------------------------------------------
 
   export type scoring<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | scoring$SelectionSet<_$Scalars>;
 
   export interface scoring$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1449,8 +1476,8 @@ export namespace Achievement {
    *
    */
   export type scoring$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | scoring$SelectionSet<_$Scalars>
   >;
@@ -1463,9 +1490,10 @@ export namespace Achievement {
 // ----------------------------------------| Entrypoint Interface |
 
 export interface Leaderboard<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $Select.Bases.ObjectLike {
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `Leaderboard` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -1518,23 +1546,26 @@ export interface Leaderboard<
 }
 
 export interface Leaderboard$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends Leaderboard<_$Scalars>,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    Leaderboard<_$Scalars>,
     $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
 export namespace Leaderboard {
   export type id<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1546,8 +1577,8 @@ export namespace Leaderboard {
    *
    */
   export type id$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
@@ -1555,14 +1586,15 @@ export namespace Leaderboard {
   // --------------------------------------------------------------------------------------------------
 
   export type product<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | product$SelectionSet<_$Scalars>;
 
   export interface product$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1574,8 +1606,8 @@ export namespace Leaderboard {
    *
    */
   export type product$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | product$SelectionSet<_$Scalars>
   >;
@@ -1583,15 +1615,15 @@ export namespace Leaderboard {
   // --------------------------------------------------------------------------------------------------
 
   export type items<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = items$SelectionSet<_$Scalars>;
 
   export interface items$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base,
-      $NamedTypes.$LeaderboardItem<_$Scalars> {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$LeaderboardItem<_$Scalars> {}
 
   // --- expanded ---
 
@@ -1603,8 +1635,8 @@ export namespace Leaderboard {
    *
    */
   export type items$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<items$SelectionSet<_$Scalars>>;
 }
 
@@ -1615,9 +1647,10 @@ export namespace Leaderboard {
 // ----------------------------------------| Entrypoint Interface |
 
 export interface LeaderboardItem<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $Select.Bases.ObjectLike {
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `LeaderboardItem` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -1678,23 +1711,26 @@ export interface LeaderboardItem<
 }
 
 export interface LeaderboardItem$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends LeaderboardItem<_$Scalars>,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    LeaderboardItem<_$Scalars>,
     $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
 export namespace LeaderboardItem {
   export type id<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1706,8 +1742,8 @@ export namespace LeaderboardItem {
    *
    */
   export type id$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
@@ -1715,14 +1751,15 @@ export namespace LeaderboardItem {
   // --------------------------------------------------------------------------------------------------
 
   export type wallet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
 
   export interface wallet$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1734,8 +1771,8 @@ export namespace LeaderboardItem {
    *
    */
   export type wallet$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
   >;
@@ -1743,14 +1780,15 @@ export namespace LeaderboardItem {
   // --------------------------------------------------------------------------------------------------
 
   export type ranking<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | ranking$SelectionSet<_$Scalars>;
 
   export interface ranking$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1762,8 +1800,8 @@ export namespace LeaderboardItem {
    *
    */
   export type ranking$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | ranking$SelectionSet<_$Scalars>
   >;
@@ -1771,14 +1809,15 @@ export namespace LeaderboardItem {
   // --------------------------------------------------------------------------------------------------
 
   export type scoring<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | scoring$SelectionSet<_$Scalars>;
 
   export interface scoring$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1790,8 +1829,8 @@ export namespace LeaderboardItem {
    *
    */
   export type scoring$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | scoring$SelectionSet<_$Scalars>
   >;
@@ -1804,9 +1843,10 @@ export namespace LeaderboardItem {
 // ----------------------------------------| Entrypoint Interface |
 
 export interface NineLivesPoints<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $Select.Bases.ObjectLike {
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `wallet` field on the `NineLivesPoints` object. Its type is `String` (a `ScalarStandard` kind of type).
@@ -1851,23 +1891,26 @@ export interface NineLivesPoints<
 }
 
 export interface NineLivesPoints$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends NineLivesPoints<_$Scalars>,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    NineLivesPoints<_$Scalars>,
     $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
 export namespace NineLivesPoints {
   export type wallet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
 
   export interface wallet$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1879,8 +1922,8 @@ export namespace NineLivesPoints {
    *
    */
   export type wallet$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
   >;
@@ -1888,14 +1931,15 @@ export namespace NineLivesPoints {
   // --------------------------------------------------------------------------------------------------
 
   export type amount<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
 
   export interface amount$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -1907,8 +1951,8 @@ export namespace NineLivesPoints {
    *
    */
   export type amount$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
   >;
@@ -1921,9 +1965,10 @@ export namespace NineLivesPoints {
 // ----------------------------------------| Entrypoint Interface |
 
 export interface Points<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $Select.Bases.ObjectLike {
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `Points` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -1990,23 +2035,24 @@ export interface Points<
 }
 
 export interface Points$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends Points<_$Scalars>,
-    $Select.Directive.$Groups.InlineFragment.Fields {}
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends Points<_$Scalars>, $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
 export namespace Points {
   export type id<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2018,8 +2064,8 @@ export namespace Points {
    *
    */
   export type id$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
@@ -2027,14 +2073,15 @@ export namespace Points {
   // --------------------------------------------------------------------------------------------------
 
   export type domainName<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | domainName$SelectionSet<_$Scalars>;
 
   export interface domainName$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2046,8 +2093,8 @@ export namespace Points {
    *
    */
   export type domainName$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | domainName$SelectionSet<_$Scalars>
   >;
@@ -2055,14 +2102,15 @@ export namespace Points {
   // --------------------------------------------------------------------------------------------------
 
   export type placement<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | placement$SelectionSet<_$Scalars>;
 
   export interface placement$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2074,8 +2122,8 @@ export namespace Points {
    *
    */
   export type placement$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | placement$SelectionSet<_$Scalars>
   >;
@@ -2083,14 +2131,15 @@ export namespace Points {
   // --------------------------------------------------------------------------------------------------
 
   export type wallet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
 
   export interface wallet$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2102,8 +2151,8 @@ export namespace Points {
    *
    */
   export type wallet$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
   >;
@@ -2111,14 +2160,15 @@ export namespace Points {
   // --------------------------------------------------------------------------------------------------
 
   export type amount<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
 
   export interface amount$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2130,8 +2180,8 @@ export namespace Points {
    *
    */
   export type amount$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
   >;
@@ -2144,9 +2194,10 @@ export namespace Points {
 // ----------------------------------------| Entrypoint Interface |
 
 export interface TokenHolding<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends $Select.Bases.ObjectLike {
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
   /**
    *
    * Select the `id` field on the `TokenHolding` object. Its type is `ID` (a `ScalarStandard` kind of type).
@@ -2199,23 +2250,26 @@ export interface TokenHolding<
 }
 
 export interface TokenHolding$FragmentInline<
-  _$Scalars extends
-    $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-> extends TokenHolding<_$Scalars>,
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    TokenHolding<_$Scalars>,
     $Select.Directive.$Groups.InlineFragment.Fields {}
 
 // ----------------------------------------| Fields |
 
 export namespace TokenHolding {
   export type id<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
 
   export interface id$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2227,8 +2281,8 @@ export namespace TokenHolding {
    *
    */
   export type id$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
   >;
@@ -2236,14 +2290,15 @@ export namespace TokenHolding {
   // --------------------------------------------------------------------------------------------------
 
   export type wallet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>;
 
   export interface wallet$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2255,8 +2310,8 @@ export namespace TokenHolding {
    *
    */
   export type wallet$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | wallet$SelectionSet<_$Scalars>
   >;
@@ -2264,14 +2319,15 @@ export namespace TokenHolding {
   // --------------------------------------------------------------------------------------------------
 
   export type amount<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
 
   export interface amount$SelectionSet<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
-  > extends $Select.Bases.Base {}
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
@@ -2283,8 +2339,8 @@ export namespace TokenHolding {
    *
    */
   export type amount$Expanded<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
   >;
@@ -2299,35 +2355,35 @@ export namespace TokenHolding {
  */
 export namespace $NamedTypes {
   export type $Query<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = Query<_$Scalars>;
   export type $Mutation<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = Mutation<_$Scalars>;
   export type $Achievement<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = Achievement<_$Scalars>;
   export type $Leaderboard<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = Leaderboard<_$Scalars>;
   export type $LeaderboardItem<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = LeaderboardItem<_$Scalars>;
   export type $NineLivesPoints<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = NineLivesPoints<_$Scalars>;
   export type $Points<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = Points<_$Scalars>;
   export type $TokenHolding<
-    _$Scalars extends
-      $$Utilities.Schema.Scalar.Registry = $$Utilities.Schema.Scalar.Registry.Empty,
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
   > = TokenHolding<_$Scalars>;
 }

@@ -77,8 +77,7 @@ const buttonImg = cva("w-auto", {
   },
 });
 interface TabButtonProps
-  extends HTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonTitle> {
+  extends HTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonTitle> {
   title: string;
   active?: boolean;
   hover?: boolean;

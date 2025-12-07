@@ -45,8 +45,7 @@ const button = cva(
 );
 
 export interface ButtonProps
-  extends BasicButtonProps,
-    VariantProps<typeof button> {}
+  extends BasicButtonProps, VariantProps<typeof button> {}
 
 export default function Button({
   className,

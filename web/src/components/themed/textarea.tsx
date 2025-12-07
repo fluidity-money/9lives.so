@@ -21,8 +21,7 @@ const input = cva(
 );
 
 export interface TextareaProps
-  extends Omit<BaseTextareaProps, "size">,
-    VariantProps<typeof input> {}
+  extends Omit<BaseTextareaProps, "size">, VariantProps<typeof input> {}
 
 export default forwardRef<HTMLInputElement, TextareaProps>(function Input(
   { className, intent, ...props },
