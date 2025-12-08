@@ -349,6 +349,9 @@ const Activity: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     campaignId: {},
     totalVolume: {},
     createdAt: {},
+    campaignContent: {
+      // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -1045,6 +1048,7 @@ LeaderboardWeekly.f[`referrers`]!.nt = LeaderboardPosition;
 LeaderboardWeekly.f[`volume`]!.nt = LeaderboardPosition;
 LeaderboardWeekly.f[`creators`]!.nt = LeaderboardPosition;
 Outcome.f[`share`]!.nt = Share;
+Activity.f[`campaignContent`]!.nt = Campaign;
 Query.f[`campaigns`]!.nt = Campaign;
 Query.f[`campaignById`]!.nt = Campaign;
 Query.f[`changelog`]!.nt = Changelog;

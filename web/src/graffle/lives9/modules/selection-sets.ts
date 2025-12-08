@@ -5921,6 +5921,14 @@ export interface Activity<
   createdAt?:
     | Activity.createdAt$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Activity.createdAt<_$Scalars>>;
+  /**
+   *
+   * Select the `campaignContent` field on the `Activity` object. Its type is `Campaign` (a `OutputObject` kind of type).
+   *
+   */
+  campaignContent?:
+    | Activity.campaignContent$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Activity.campaignContent<_$Scalars>>;
 
   /**
    *
@@ -6391,6 +6399,33 @@ export namespace Activity {
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | createdAt$SelectionSet<_$Scalars>
   >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type campaignContent<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = campaignContent$SelectionSet<_$Scalars>;
+
+  export interface campaignContent$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$Campaign<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `campaignContent` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type campaignContent$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<campaignContent$SelectionSet<_$Scalars>>;
 }
 
 //                                           PriceMetadata

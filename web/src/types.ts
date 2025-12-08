@@ -181,9 +181,11 @@ export type ParticipatedCampaign = RawParticipatedCampaign & {
   content: ReturnType<typeof formatParticipatedContent>;
 };
 
-export type Activity = NonNullable<
-  Awaited<ReturnType<typeof requestUserActivities>>[number]
->;
+export type RawActivity = Awaited<
+  ReturnType<typeof requestUserActivities>
+>[number];
+
+export type Activity = NonNullable<RawActivity>;
 
 export type Token = {
   chainId: number;

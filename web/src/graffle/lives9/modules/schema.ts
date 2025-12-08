@@ -2598,6 +2598,7 @@ export namespace Schema {
       campaignId: Activity.campaignId;
       totalVolume: Activity.totalVolume;
       createdAt: Activity.createdAt;
+      campaignContent: Activity.campaignContent;
     };
   }
 
@@ -2760,6 +2761,13 @@ export namespace Schema {
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface campaignContent extends $.OutputField {
+      name: "campaignContent";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Campaign;
     }
   }
 
