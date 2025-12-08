@@ -11,6 +11,7 @@ export default function UserCampaignsList() {
       orderBy={orderBy}
       setOrderBy={setOrderBy}
       account={account}
+      userList
     />
   );
 }

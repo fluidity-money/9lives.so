@@ -19,11 +19,13 @@ export default function CampaignTable({
   orderBy,
   setOrderBy,
   account,
+  userList = false,
 }: {
   category?: (typeof config.categories)[number];
   orderBy: CampaignFilters["orderBy"];
   setOrderBy: Dispatch<CampaignFilters["orderBy"]>;
   account?: Account;
+  userList?: boolean;
 }) {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
@@ -51,6 +53,7 @@ export default function CampaignTable({
     orderBy,
     searchTerm: searcTermFilter,
     address: account?.address,
+    userList,
   });
   const campaigns = data?.pages.flatMap((c) => c);
   const orderByFilters: Array<[Required<CampaignFilters["orderBy"]>, string]> =

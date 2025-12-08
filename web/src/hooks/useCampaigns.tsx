@@ -8,13 +8,16 @@ export default function useCampaigns({
   orderBy,
   searchTerm,
   address,
+  userList,
 }: Omit<CampaignFilters, "category"> & {
   category?: (typeof config.categories)[number];
+  userList?: boolean;
 }) {
   return useInfiniteQuery<Campaign[]>({
-    queryKey: ["campaigns", category, orderBy, searchTerm, address],
+    queryKey: ["campaigns", category, orderBy, searchTerm, address, userList],
     queryFn: async ({ pageParam }) => {
       if (typeof pageParam !== "number") return [];
+      if (userList && !address) return [];
       const campaigns = (await requestCampaignList({
         orderBy,
         searchTerm,

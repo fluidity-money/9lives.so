@@ -19,7 +19,7 @@ export default function CampaignTabScene({
   useEffect(() => {
     if (initialData) {
       queryClient.setQueryData(
-        ["campaigns", undefined, "trending", "", undefined],
+        ["campaigns", undefined, "trending", "", undefined, false],
         () => ({
           pages: [initialData],
           pageParams: [0],
