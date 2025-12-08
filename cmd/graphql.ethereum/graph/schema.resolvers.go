@@ -1438,9 +1438,12 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 	FROM ninelives_buys_and_sells_1 AS nbs
 	JOIN ninelives_campaigns_1 AS nc
     ON nc.id = nbs.campaign_id
+	LEFT JOIN ninelives_payoff_unused_1 AS py
+	ON py.pool_address = nbs.emitter_addr
 	WHERE
     nbs.recipient = ?
     AND nbs.campaign_id IS NOT NULL
+	AND py.was_spent = false
 	GROUP BY
     nc.id
 	ORDER BY
