@@ -1012,6 +1012,8 @@ type Activity {
   Timestamp of when the activity was created.
   """
   createdAt: Int!
+
+  campaignContent: Campaign!
 }
 
 type PriceMetadata {

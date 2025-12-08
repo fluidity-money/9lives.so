@@ -85,6 +85,21 @@ func (r *activityResolver) CreatedAt(ctx context.Context, obj *types.Activity) (
 	return int(obj.CreatedAt.Unix()), nil
 }
 
+// CampaignContent is the resolver for the campaignContent field.
+func (r *activityResolver) CampaignContent(ctx context.Context, obj *types.Activity) (*types.Campaign, error) {
+	var campaign types.Campaign
+	if obj == nil {
+		return nil, fmt.Errorf("Activity is nil")
+	}
+	campaign = types.Campaign{
+		ID:        obj.CampaignID,
+		Content:   obj.CampaignContent,
+		CreatedAt: time.Unix(int64(obj.CampaignContent.Starting), 0),
+		UpdatedAt: time.Unix(int64(obj.CampaignContent.Starting), 0),
+	}
+	return &campaign, nil
+}
+
 // Name is the resolver for the name field.
 func (r *campaignResolver) Name(ctx context.Context, obj *types.Campaign) (string, error) {
 	if obj == nil {
