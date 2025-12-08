@@ -1503,11 +1503,13 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	var claims []*types.Claim
 	address = strings.ToLower(address)
 	sql := `
-    SELECT nc.id, nepa.shares_spent, nepa.transaction_hash, nepa.fusdc_received, nepa.created_by as created_at,
+    SELECT nc.id, nepa.shares_spent, nepa.transaction_hash, nepa.fusdc_received + nelp.fusdc_received as fusdc_received, nepa.created_by as created_at,
            nc.content, concat('0x', nepa.identifier) as winner
     FROM ninelives_events_payoff_activated nepa
     LEFT JOIN ninelives_campaigns_1 nc
     ON nepa.emitter_addr = nc."content"->>'poolAddress'
+    LEFT JOIN ninelives_events_ninetails_loser_payoff nelp
+	ON nepa.recipient = nelp.recipient and nepa.emitter_addr = nelp.emitter_addr 
     WHERE nepa.recipient = ?
 	`
 	args := []interface{}{address}
