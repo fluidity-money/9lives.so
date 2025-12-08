@@ -50,14 +50,11 @@ export default function AssetPriceChart({
     Math.abs(basePrice - minPrice),
     Math.abs(basePrice - maxPrice),
   );
-  const digits = minPrice.toString().length;
-  const margin = 1 / Math.pow(10, digits - 1);
-  const minY = simple
-    ? basePrice - simpleDiff
-    : Math.floor(minPrice - minPrice * margin);
-  const maxY = simple
-    ? basePrice + simpleDiff
-    : Math.floor(maxPrice + maxPrice * margin);
+  const chartHeight = simple ? 300 : 320;
+  const pricePerPixel = simpleDiff / chartHeight;
+  const marginInPrice = 16 * pricePerPixel;
+  const minY = simple ? basePrice - simpleDiff : minPrice - marginInPrice;
+  const maxY = simple ? basePrice + simpleDiff : maxPrice + marginInPrice;
   const isDailyMarket = DAY >= timeDiff && timeDiff > HOUR;
   const formatFn = (ts: number) => {
     const date = new Date(ts);
@@ -177,7 +174,7 @@ export default function AssetPriceChart({
 
   return (
     <ChartPriceProvider starting={starting} ending={ending} symbol={symbol}>
-      <ResponsiveContainer width="100%" height={simple ? 300 : 320}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
         <LineChart
           data={uniquePoints}
           margin={{
