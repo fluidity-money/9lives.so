@@ -281,6 +281,14 @@ export const requestUserActivities = ({
     toSymbol: true,
     poolAddress: true,
     txHash: true,
+    campaignContent: {
+      isDppm: true,
+      ending: true,
+      priceMetadata: {
+        baseAsset: true,
+        priceTargetForUp: true,
+      },
+    },
   });
 
 export const requestPositionHistory = (address: string, outcomeIds: string[]) =>

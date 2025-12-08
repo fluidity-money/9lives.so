@@ -33,7 +33,7 @@ export default function ActivityBody({ campaignId }: ActivityBodyProps) {
       <tbody className={bodyStyles}>
         <Placeholder
           title="Whoops, error!"
-          subtitle={error.message}
+          subtitle={error instanceof Error ? error.message : "Unknown error"}
           colSpan={6}
         />
       </tbody>

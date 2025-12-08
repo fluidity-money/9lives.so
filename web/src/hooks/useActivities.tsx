@@ -1,5 +1,6 @@
 import { requestUserActivities } from "@/providers/graphqlClient";
-import { Activity } from "@/types";
+import { Activity, RawActivity } from "@/types";
+import formatActivity from "@/utils/format/formatActivity";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 export default function useAcitivies({
@@ -9,19 +10,26 @@ export default function useAcitivies({
   address?: string;
   campaignId?: string;
 }) {
-  return useInfiniteQuery<Activity[]>({
+  return useInfiniteQuery<
+    RawActivity[],
+    unknown,
+    { pages: Activity[][]; pageParams: unknown[] }
+  >({
     queryKey: ["activities", address, campaignId],
     queryFn: async ({ pageParam }) => {
       if (typeof pageParam !== "number") return [];
       if (!address) return [];
-      const response = await requestUserActivities({
+      return await requestUserActivities({
         address,
         campaignId,
         page: pageParam,
         pageSize: 10,
       });
-      return response.filter((a) => !!a);
     },
+    select: (ro) => ({
+      pages: ro.pages.map((p) => p.map((sp) => formatActivity(sp))),
+      pageParams: ro.pageParams,
+    }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) => {
       if (lastPage.length < 10) return undefined;

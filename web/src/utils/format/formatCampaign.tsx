@@ -21,7 +21,7 @@ import { formatDppmTitle, formatDppmOutcomeName } from "./formatDppmName";
 import config from "@/config";
 import formatFusdc from "./formatUsdc";
 
-function formatPriceMetadata(
+export function formatPriceMetadata(
   ro: { priceTargetForUp: string; baseAsset: string } | null,
 ) {
   if (!ro) return null;
