@@ -75,7 +75,13 @@ export default function ClaimedCampaignRow({
             >
               ${formatFusdc(BigInt(data.PnL), 2)}
             </span>
-          ) : null}
+          ) : (
+            <span
+              className={"bg-9red px-1 py-0.5 font-geneva text-xs uppercase"}
+            >
+              Refund
+            </span>
+          )}
         </div>
       </td>
       <td>
