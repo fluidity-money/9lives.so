@@ -21,7 +21,8 @@
     "prepare:husky": "cd .. && husky web/.husky",
     "gen:9lives": "pnpm graffle --project ./src/graffle/lives9.config.ts",
     "gen:points": "pnpm graffle --project ./src/graffle/points.config.ts",
-    "codegen": "pnpm gen:9lives && pnpm gen:points"
+    "gen:accounts": "pnpm graffle --project ./src/graffle/accounts.config.ts",
+    "codegen": "pnpm gen:9lives && pnpm gen:points && pnpm gen:accounts"
   },
   "dependencies": {
     "@farcaster/miniapp-sdk": "^0.1.10",

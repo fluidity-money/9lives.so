@@ -2,6 +2,7 @@ import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
+import { Accounts } from "@/graffle/accounts/__";
 import { CampaignFilters, OutcomeInput, RawPricePoint } from "@/types";
 import { MaxUint256 } from "ethers";
 import config from "@/config";
@@ -14,6 +15,9 @@ const graph9LivesSubs = Graffle.create().transport({
 });
 const graphPoints = Points.create().transport({
   url: appConfig.NEXT_PUBLIC_POINTS_URL,
+});
+const graphAccounts = Accounts.create().transport({
+  url: appConfig.NEXT_PUBLIC_ACCOUNTS_URL,
 });
 export const requestCampaignList = (filterParams: CampaignFilters) =>
   graph9Lives.query.campaigns({
@@ -789,3 +793,25 @@ export const requestUnclaimedCampaigns = (address: string, token?: string) =>
 
 export const request9LivesPoints = (address: string) =>
   graphPoints.query.ninelivesPoints({ $: { wallet: address }, amount: true });
+
+export const createAccount = ({
+  address,
+  r,
+  s,
+  v,
+}: {
+  address: string;
+  r: string;
+  s: string;
+  v: number;
+}) =>
+  graphAccounts.mutation.createAccountExec({
+    $: {
+      createAccount: {
+        eoa_addr: address,
+        sigR: r,
+        sigS: s,
+        sigV: v,
+      },
+    },
+  });
