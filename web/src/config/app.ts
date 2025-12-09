@@ -160,7 +160,34 @@ const simpleMarkets = {
     tz: "America/New_York",
   },
 } as const;
-
+const betaTesterWallets = [
+  "0x77d55ee17071f2081edadcd7173adc876f3a602b",
+  "0x7c095716b3f601b340c7d583b7b1d15a214b55d3",
+  "0x88769789657055e5629b758124f3bc52f218a2c5",
+  "0x65c5059eb8df20095911de6cac883e95ff11a298",
+  "0x98e9e20b151b6dce571cd15dd9a14b1d145b9a72",
+  "0x28ecb498b2f34dd717aee529de358005e88669e5",
+  "0x64285a547a12c462aaae2facb1198b03ff1107d3",
+  "0x1bd48b7f376fec854ae2535fcbca034a2a5ced01",
+  "0x3b76126924c21bafb85c8ccade86b2863b2ad025",
+  "0xdc415ac0683544dd78865ab686ba53e778ec5630",
+  "0x636ab835fd2df941b6ed0915783bbc2628cc9b69",
+  "0xcc4ba677522ac1cfbdad2d19deda214f3ae165cf",
+  "0x54384e813145f49eb687e2f3893a10bf3d28f4e6",
+  "0x2c1259a2c764dcc66241edfbdfd281afcb6d870a",
+  "0xb47f19c895831c219966bcbebc803996e1322a2f",
+  "0x136d289c9c586d7c7fd3a39635a4877796845312",
+  "0x95c5cdd56c86e00ec40f375407ff6a23443ba0f3",
+  "0x8c587db57d05c086177233d3bcb25a7739419c71",
+  "0x6221a9c005f6e47eb398fd867784cacfdcfff4e7",
+  "0xaa94994aa85e4dd68a7c468e8a9f7951cd217cb3",
+  "0xd31fe3b2c23bbf7301deb5888f0627482a7622b6",
+  "0xb0de5be61acec6e932b4151ff7470e7db5ca281d",
+  "0xd89330b021e8991820ce0b73499f2c609fa58840",
+  "0xf52a30397151c77e732fa5defb9347359c52a141",
+  "0x078c44d92ab34a0fe8896631c6ab558b666cc2a3",
+  "0x0559ea2bc93be2664c574d78ec1f49433d0d25a3",
+];
 const simpleMarketSchema = z.object({
   slug: z.string(),
   logo: z.custom<StaticImageData>(),
@@ -214,6 +241,7 @@ const appSchema = z.object({
   frame: z.any(),
   weekDuration: z.number(),
   hasuraMaxQueryItem: z.number(),
+  betaTesterWallets: z.array(z.string()),
 });
 const requiredChains = Object.values(farcasterChains).map(
   (chain) => `eip155:${chain.id}`,
@@ -254,6 +282,7 @@ const appVars = appSchema.safeParse({
   frame,
   weekDuration: 60 * 60 * 24 * 7 * 1000,
   hasuraMaxQueryItem: 3600,
+  betaTesterWallets,
 });
 
 if (!appVars.success) {
