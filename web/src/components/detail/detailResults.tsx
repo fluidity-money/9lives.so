@@ -57,6 +57,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
   const { claimAll } = useDppmClaimAll({
     tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
+    campaignId: data.identifier,
   });
   const { results: dppmResults, totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,

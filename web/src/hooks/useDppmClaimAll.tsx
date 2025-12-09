@@ -10,9 +10,11 @@ import { Account } from "thirdweb/wallets";
 export default function useDppmClaimAll({
   tradingAddr,
   outcomes,
+  campaignId,
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
+  campaignId: `0x${string}`;
 }) {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
@@ -72,6 +74,9 @@ export default function useDppmClaimAll({
               account.address,
               outcomes.map((o) => o.identifier),
             ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["participatedCampaigns", account?.address, campaignId],
           });
           res(response.transactionHash);
         } catch (e) {

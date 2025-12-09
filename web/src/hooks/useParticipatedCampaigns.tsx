@@ -1,9 +1,5 @@
 import { requestUserParticipated } from "@/providers/graphqlClient";
-import {
-  CampaignDetail,
-  ParticipatedCampaign,
-  RawParticipatedCampaign,
-} from "@/types";
+import { CampaignDetail, ParticipatedCampaign } from "@/types";
 import { formatParticipatedCampaign } from "@/utils/format/formatCampaign";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useActiveAccount } from "thirdweb/react";
@@ -23,13 +19,14 @@ export default function useParticipatedCampaigns({
     ],
     queryFn: async ({ pageParam }) => {
       if (!account?.address) return [];
-      const res = await requestUserParticipated(
-        account?.address,
-        pageParam,
-        10,
-      );
-      return res.map((i) => formatParticipatedCampaign(i));
+      return await requestUserParticipated(account?.address, pageParam, 10);
     },
+    select: (data) => ({
+      pages: data.pages.map((page) =>
+        page.map((i) => formatParticipatedCampaign(i)),
+      ),
+      pageParams: data.pageParams,
+    }),
     initialPageParam: 0,
     enabled: !campaignDetail,
     initialData: campaignDetail
