@@ -226,11 +226,14 @@ export default function SimpleBuyDialog({
   }
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
   const activeChain = useActiveWalletChain();
-  const handleNetworkChange = async (chain: Chain) => {
-    // lifi auto switch handle this for now
-    // await switchChain(chain);
-    setValue("fromChain", chain.id);
-  };
+  const handleNetworkChange = useCallback(
+    async (chain: Chain) => {
+      // lifi auto switch handle this for now
+      // await switchChain(chain);
+      setValue("fromChain", chain.id);
+    },
+    [setValue],
+  );
   useEffect(() => {
     if (
       activeChain &&
@@ -238,7 +241,7 @@ export default function SimpleBuyDialog({
     ) {
       handleNetworkChange(activeChain);
     }
-  }, [activeChain]);
+  }, [activeChain, handleNetworkChange]);
   const [featureIncreasedMintAmt, setFeatureIncreasedMintAmt] = useState(1);
   useEffect(() => {
     switch (experimentHigherMints) {

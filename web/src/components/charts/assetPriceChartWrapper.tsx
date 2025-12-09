@@ -34,7 +34,7 @@ export default function PriceChartWrapper({
     if (hasNextPage && assetPrices?.length) {
       fetchNextPage();
     }
-  }, [hasNextPage, assetPrices?.length]);
+  }, [hasNextPage, assetPrices?.length, fetchNextPage]);
 
   return (
     <ActiveCampaignProvider simple={simple} previousData={campaignData}>

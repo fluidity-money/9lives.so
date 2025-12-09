@@ -328,11 +328,14 @@ export default function DetailBuyAction({
     }
   }, [usdValue, setValue]);
   const activeChain = useActiveWalletChain();
-  const handleNetworkChange = async (chain: Chain) => {
-    // lifi auto switch handle this for now
-    // await switchChain(chain);
-    setValue("fromChain", chain.id);
-  };
+  const handleNetworkChange = useCallback(
+    async (chain: Chain) => {
+      // lifi auto switch handle this for now
+      // await switchChain(chain);
+      setValue("fromChain", chain.id);
+    },
+    [setValue],
+  );
   const handleTokenChange = useCallback(
     (addr: string) => setValue("fromToken", addr),
     [setValue],
@@ -344,7 +347,7 @@ export default function DetailBuyAction({
     ) {
       handleNetworkChange(activeChain);
     }
-  }, [activeChain]);
+  }, [activeChain, handleNetworkChange]);
   return (
     <>
       <ShadowCard
