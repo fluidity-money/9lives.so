@@ -11,10 +11,10 @@ export default function NavigationMenu({
       title: "Markets",
       page: simple ? "/simple/campaign/btc/hourly" : "/",
     },
-    // {
-    //   title: "Leaderboard",
-    //   page: "/leaderboard",
-    // },
+    {
+      title: "Leaderboard",
+      page: "/leaderboard",
+    },
     {
       title: "Portfolio",
       page: "/portfolio",

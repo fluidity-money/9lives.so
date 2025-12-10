@@ -65,18 +65,15 @@ export default function PointMenuButton() {
               Learn More
             </Link>
             <div className="flex flex-col gap-1">
-              <Link
-                href="https://superposition.so/mainnet-dapps"
-                target="_blank"
-              >
+              <Link href="/leaderboard">
                 <Button
-                  title="Get More Points"
+                  title="Leaderboard"
                   size={"large"}
                   intent={"cta"}
                   className={"w-full"}
                 />
               </Link>
-              <Button title="Coming Soon" disabled className={"w-full"} />
+              {/* <Button title="Coming Soon" disabled className={"w-full"} /> */}
             </div>
           </RetroCard>
         </MenuItem>
