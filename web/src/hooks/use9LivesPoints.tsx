@@ -1,16 +1,18 @@
 import { request9LivesPoints } from "@/providers/graphqlClient";
 import { useQuery } from "@tanstack/react-query";
-import { useActiveAccount } from "thirdweb/react";
 
-export default function use9LivesPoints() {
-  const account = useActiveAccount();
-
+export default function use9LivesPoints({
+  address,
+  enabled = true,
+}: {
+  enabled?: boolean;
+  address?: string;
+}) {
   return useQuery({
-    queryKey: ["ninelives-points", account?.address],
+    queryKey: ["ninelives-points", address],
     queryFn: async () => {
-      if (!account?.address) return 0;
-      const res = await request9LivesPoints(account.address);
-      return res.amount;
+      return request9LivesPoints(address);
     },
+    enabled,
   });
 }

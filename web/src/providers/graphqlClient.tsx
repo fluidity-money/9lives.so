@@ -791,8 +791,12 @@ export const requestUnclaimedCampaigns = (address: string, token?: string) =>
     },
   });
 
-export const request9LivesPoints = (address: string) =>
-  graphPoints.query.ninelivesPoints({ $: { wallet: address }, amount: true });
+export const request9LivesPoints = (address?: string) =>
+  graphPoints.query.ninelivesPoints({
+    $: { wallet: address },
+    amount: true,
+    wallet: true,
+  });
 
 export const createAccount = ({
   address,

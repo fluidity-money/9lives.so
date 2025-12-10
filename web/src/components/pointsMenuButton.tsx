@@ -8,9 +8,14 @@ import Button from "./themed/button";
 import Link from "next/link";
 import LoadingImage from "#/icons/loading.svg";
 import { combineClass } from "@/utils/combineClass";
+import { useActiveAccount } from "thirdweb/react";
 
 export default function PointMenuButton() {
-  const { data, isLoading } = use9LivesPoints();
+  const account = useActiveAccount();
+  const { data, isLoading } = use9LivesPoints({
+    address: account?.address,
+    enabled: !!account,
+  });
   return (
     <Menu>
       <MenuButton className="group flex items-center">
@@ -49,7 +54,7 @@ export default function PointMenuButton() {
                   width={24}
                 />
               ) : (
-                data
+                (data?.[0]?.amount ?? 0)
               )}
             </span>
             <Link
