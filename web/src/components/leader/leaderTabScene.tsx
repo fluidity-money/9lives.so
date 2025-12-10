@@ -4,20 +4,19 @@ import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment } from "react";
 import LeaderTable from "./leaderTable";
 import { combineClass } from "@/utils/combineClass";
-import useLeaderboard from "@/hooks/useLeaderboard";
-import useLeaderBoardCategories from "@/hooks/useLeaderBoardCategories";
+import use9LivesPoints from "@/hooks/use9LivesPoints";
 
 export default function LeaderTabScene({
   isDegenModeEnabled,
 }: {
   isDegenModeEnabled: boolean;
 }) {
-  const { data: generalData } = useLeaderboard();
-  const { data: categoriesData } = useLeaderBoardCategories();
+  const { data: generalData } = use9LivesPoints({});
+  // const { data: categoriesData } = useLeaderBoardCategories();
   return (
     <TabGroup
       className={combineClass(
-        isDegenModeEnabled ? "xl:absolute" : "md:absolute",
+        // isDegenModeEnabled ? "xl:absolute" : "md:absolute",
         "inset-0",
       )}
     >
@@ -25,7 +24,7 @@ export default function LeaderTabScene({
         <Tab as={Fragment}>
           {(props) => <TabButton title="Global" {...props} />}
         </Tab>
-        <Tab as={Fragment}>
+        {/* <Tab as={Fragment}>
           {(props) => <TabButton title="Referrers" {...props} />}
         </Tab>
         <Tab as={Fragment}>
@@ -33,13 +32,13 @@ export default function LeaderTabScene({
         </Tab>
         <Tab as={Fragment}>
           {(props) => <TabButton title="Volume" {...props} />}
-        </Tab>
+        </Tab> */}
       </TabList>
       <TabPanels>
         <TabPanel>
           <LeaderTable data={generalData} />
         </TabPanel>
-        <TabPanel>
+        {/* <TabPanel>
           <LeaderTable data={categoriesData?.referrers} />
         </TabPanel>
         <TabPanel>
@@ -47,7 +46,7 @@ export default function LeaderTabScene({
         </TabPanel>
         <TabPanel>
           <LeaderTable data={categoriesData?.volume} />
-        </TabPanel>
+        </TabPanel> */}
       </TabPanels>
     </TabGroup>
   );

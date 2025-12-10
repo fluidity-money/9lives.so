@@ -8,10 +8,16 @@ export default function LeaderTable({ data }: { data?: Leader[] }) {
   const titles = [
     "Rank",
     "User",
-    "Score",
+    "Points",
     //, "Profit"
   ];
   const account = useActiveAccount();
+  const accountInTheList = data?.find(
+    (i) => i.wallet.toLowerCase() === account?.address.toLowerCase(),
+  );
+  const accountIndex = data?.findIndex(
+    (i) => i.wallet.toLowerCase() === account?.address.toLowerCase(),
+  );
   return (
     <table className="w-full border-separate border-spacing-0 overflow-auto">
       <thead className="sticky top-0 bg-9layer">
@@ -30,9 +36,22 @@ export default function LeaderTable({ data }: { data?: Leader[] }) {
         </tr>
       </thead>
       <tbody className="w-full">
-        {account?.address ? null : <LeaderRow />}
-        {data?.map((item) => (
-          <LeaderRow key={item.wallet} data={item} />
+        {account?.address ? (
+          accountInTheList ? (
+            <LeaderRow
+              data={{
+                wallet: accountInTheList.wallet,
+                amount: accountInTheList.amount,
+              }}
+              ranking={accountIndex ? accountIndex + 1 : undefined}
+              highlightUser
+            />
+          ) : null
+        ) : (
+          <LeaderRow />
+        )}
+        {data?.map((item, idx) => (
+          <LeaderRow key={item.wallet} data={item} ranking={idx + 1} />
         ))}
       </tbody>
     </table>

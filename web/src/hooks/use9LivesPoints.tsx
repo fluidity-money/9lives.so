@@ -11,7 +11,13 @@ export default function use9LivesPoints({
   return useQuery({
     queryKey: ["ninelives-points", address],
     queryFn: async () => {
-      return request9LivesPoints(address);
+      return await request9LivesPoints(address);
+    },
+    select(data) {
+      return data.map((i) => {
+        if (!i) return { wallet: "0x", amount: 0 };
+        return i;
+      });
     },
     enabled,
   });

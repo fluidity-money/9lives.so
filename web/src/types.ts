@@ -11,6 +11,7 @@ import {
   requestAssetPrices,
   requestUserParticipated,
   requestUnclaimedCampaigns,
+  request9LivesPoints,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -76,9 +77,8 @@ export type Outcome = {
   share: { address: `0x${string}` };
 };
 export type SelectedOutcome = { id: string; state: "buy" | "sell" };
-export type Leader = Awaited<
-  ReturnType<typeof requestLeaderboard>
->[number]["items"][number];
+export type RawLeader = Awaited<ReturnType<typeof request9LivesPoints>>[number];
+export type Leader = NonNullable<RawLeader>;
 export type Achievement = Awaited<
   ReturnType<typeof requestAchievments>
 >[number] & { isOwned: boolean };

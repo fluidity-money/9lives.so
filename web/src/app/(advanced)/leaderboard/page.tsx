@@ -1,10 +1,10 @@
 "use client";
-import AchievementGrid from "@/components/achievement/achievementGrid";
-import AchievementSuggestion from "@/components/achievement/achievementSuggestion";
+// import AchievementGrid from "@/components/achievement/achievementGrid";
+// import AchievementSuggestion from "@/components/achievement/achievementSuggestion";
 import LeaderTabScene from "@/components/leader/leaderTabScene";
 import Button from "@/components/themed/button";
 import { useDegenStore } from "@/stores/degenStore";
-import { combineClass } from "@/utils/combineClass";
+// import { combineClass } from "@/utils/combineClass";
 import { useRef } from "react";
 
 export default function LeaderboardPage() {
@@ -28,7 +28,8 @@ export default function LeaderboardPage() {
           title="Achievments"
         />
       </div>
-      <div
+      <LeaderTabScene isDegenModeEnabled={isDegenModeEnabled} />
+      {/* <div
         className={combineClass(
           "flex flex-col gap-10",
           isDegenModeEnabled ? "xl:flex-row" : "md:flex-row",
@@ -47,11 +48,11 @@ export default function LeaderboardPage() {
         <div className="flex-1">
           <AchievementSuggestion />
         </div>
-      </div>
-      <AchievementGrid
+      </div> */}
+      {/* <AchievementGrid
         ref={achievementsRef}
         isDegenModeEnabled={isDegenModeEnabled}
-      />
+      /> */}
     </div>
   );
 }
