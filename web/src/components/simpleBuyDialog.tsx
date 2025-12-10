@@ -25,6 +25,7 @@ import ChainSelectorDropdown from "./chainSelectorDD";
 import { Chain } from "thirdweb";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
+import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
 
 export default function SimpleBuyDialog({
   data,
@@ -293,6 +294,7 @@ export default function SimpleBuyDialog({
   const [secondMintTitle, secondMintAmt] = handleReturn(10);
 
   const [thirdMintTitle, thirdMintAmt] = handleReturn(100);
+  const points = usePointsForDppmMint(data.starting, data.ending);
 
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between bg-9layer font-chicago">
@@ -414,6 +416,14 @@ export default function SimpleBuyDialog({
             </div>
           </div>
         </div>
+
+        {usdValue ? (
+          <div className="flex items-center">
+            <span className="mx-auto bg-9green px-2 py-1 font-chicago text-sm uppercase">
+              WIN {(usdValue * points).toFixed(2)} 9lives POINTS
+            </span>
+          </div>
+        ) : null}
 
         <Button
           size={"xlarge"}
