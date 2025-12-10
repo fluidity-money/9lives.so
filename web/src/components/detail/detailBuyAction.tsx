@@ -37,6 +37,7 @@ import ChainSelector from "../chainSelector";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "../../hooks/useFinalPrice";
 import isMarketOpen from "@/utils/isMarketOpen";
+import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -193,6 +194,9 @@ export default function DetailBuyAction({
     : data.isDppm
       ? shares + boost
       : Number(sharesToGet);
+  const dppmPoints = usePointsForDppmMint(data.starting, data.ending);
+  const ammPoints = 1;
+  const points = data.isDppm ? dppmPoints : ammPoints;
   const orderSummary = [
     {
       title: "AVG Price",
@@ -213,6 +217,10 @@ export default function DetailBuyAction({
       title: "Refund To Get",
       value: `$${usdValue > 0 ? refund : 0}`,
       show: data.isDppm,
+    },
+    {
+      title: "Points To Win",
+      value: (points * usdValue).toFixed(2),
     },
   ];
   const winSummary = [
