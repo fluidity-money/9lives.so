@@ -80,11 +80,11 @@ export namespace Schema {
         wallet: {
           kind: "InputField";
           name: "wallet";
-          inlineType: [1];
+          inlineType: [0];
           namedType: $$NamedTypes.$$String;
         };
       };
-      inlineType: [1];
+      inlineType: [1, [0]];
       namedType: $$NamedTypes.$$NineLivesPoints;
     }
 

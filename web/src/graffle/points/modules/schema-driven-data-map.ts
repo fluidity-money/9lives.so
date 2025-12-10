@@ -221,7 +221,7 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       a: {
         wallet: {
           nt: String,
-          it: [1],
+          it: [0],
         },
       },
       // nt: NineLivesPoints, <-- Assigned later to avoid potential circular dependency.

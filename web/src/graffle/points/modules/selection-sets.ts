@@ -65,7 +65,7 @@ export interface Query<
    *
    */
   ninelivesPoints?:
-    | Query.ninelivesPoints<_$Scalars>
+    | Query.ninelivesPoints$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.ninelivesPoints<_$Scalars>>;
   /**
    *
@@ -233,16 +233,16 @@ export namespace Query {
   >
     extends $Select.Bases.Base, $NamedTypes.$NineLivesPoints<_$Scalars> {
     /**
-     * Arguments for `ninelivesPoints` field. All arguments are required so you must include this.
+     * Arguments for `ninelivesPoints` field. No arguments are required so you may omit this.
      */
-    $: ninelivesPoints$Arguments<_$Scalars>;
+    $?: ninelivesPoints$Arguments<_$Scalars>;
   }
 
   export interface ninelivesPoints$Arguments<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > {
-    wallet: string;
+    wallet?: string | undefined | null;
   }
 
   // --- expanded ---
