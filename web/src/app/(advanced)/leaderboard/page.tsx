@@ -2,31 +2,31 @@
 // import AchievementGrid from "@/components/achievement/achievementGrid";
 // import AchievementSuggestion from "@/components/achievement/achievementSuggestion";
 import LeaderTabScene from "@/components/leader/leaderTabScene";
-import Button from "@/components/themed/button";
+// import Button from "@/components/themed/button";
 import { useDegenStore } from "@/stores/degenStore";
 // import { combineClass } from "@/utils/combineClass";
-import { useRef } from "react";
+// import { useRef } from "react";
 
 export default function LeaderboardPage() {
-  const achievementsRef = useRef<HTMLDivElement>(null);
+  // const achievementsRef = useRef<HTMLDivElement>(null);
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
 
-  const scrollToAchievments = () => {
-    achievementsRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
+  // const scrollToAchievments = () => {
+  //   achievementsRef.current?.scrollIntoView({
+  //     behavior: "smooth",
+  //     block: "start",
+  //   });
+  // };
   return (
     <div className="flex flex-1 flex-col gap-5">
       <div className="flex items-center justify-between">
         <h2 className="font-chicago text-2xl">Leaderboard</h2>
-        <Button
+        {/* <Button
           intent={"default"}
           onClick={scrollToAchievments}
           className={"md:hidden"}
           title="Achievments"
-        />
+        /> */}
       </div>
       <LeaderTabScene isDegenModeEnabled={isDegenModeEnabled} />
       {/* <div
