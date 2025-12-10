@@ -71,6 +71,7 @@ export default function AddLiquidityDialog({
   const fromToken = watch("fromToken");
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
   const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
+  const pointMultiplier = 0.0000006;
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
       t.token_address.toLowerCase() === fromToken.toLowerCase() ||
@@ -230,6 +231,10 @@ export default function AddLiquidityDialog({
         {errors.fromChain && <ErrorInfo text={errors.fromChain.message} />}
         {errors.fromToken && <ErrorInfo text={errors.fromToken.message} />}
       </div>
+      <span className="mx-auto bg-9green px-2 py-1 font-chicago text-xs uppercase">
+        WIN {(usdValue * pointMultiplier * 3600 * 24).toFixed(2)} 9lives POINTS
+        per day you staked
+      </span>
       <Button
         intent={"yes"}
         title={isFunding ? "Loading..." : "Add Liquidity"}
