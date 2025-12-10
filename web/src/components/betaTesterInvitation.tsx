@@ -34,7 +34,7 @@ export default function BetaTesterInvitation() {
           <br />
           Join the discord channel to learn more.
         </p>
-        <Link href="https://discord.gg/m6DrTTXD" target="_blank">
+        <Link href="https://discord.gg/CBZz7k7gT2" target="_blank">
           <Button title="Join" intent={"cta"} className={"w-full"} />
         </Link>
       </RetroCard>
