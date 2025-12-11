@@ -799,12 +799,12 @@ export const request9LivesPoints = (address?: string) =>
   });
 
 export const createAccount = ({
-  address,
+  eoaAddr,
   r,
   s,
   v,
 }: {
-  address: string;
+  eoaAddr: string;
   r: string;
   s: string;
   v: number;
@@ -812,10 +812,68 @@ export const createAccount = ({
   graphAccounts.mutation.createAccountExec({
     $: {
       createAccount: {
-        eoa_addr: address,
+        eoa_addr: eoaAddr,
         sigR: r,
         sigS: s,
         sigV: v,
+      },
+    },
+  });
+export const requestSecret = ({
+  eoaAddr,
+  r,
+  s,
+  v,
+}: {
+  eoaAddr: string;
+  r: string;
+  s: string;
+  v: number;
+}) =>
+  graphAccounts.mutation.requestSecret({
+    $: {
+      eoa_addr: eoaAddr,
+      sigR: r,
+      sigS: s,
+      sigV: v,
+    },
+  });
+export const hasCreated = (address: string) =>
+  graphAccounts.query.hasCreated({ $: { address } });
+export const requestPublicKey = () => graphAccounts.query.publickey();
+export const requestEoaForAddress = (address: string) =>
+  graphAccounts.query.eoaForAddress({
+    $: {
+      address,
+    },
+  });
+export const ninelivesMint = ({
+  amount,
+  outcome,
+  poolAddress,
+  referrer,
+  permit,
+}: {
+  amount: string;
+  outcome: string;
+  poolAddress: string;
+  referrer: string;
+  permit?: {
+    permitR: string;
+    permitS: string;
+    permitV: number;
+    deadline: number;
+  };
+}) =>
+  graphAccounts.mutation.ninelivesMint({
+    $: {
+      mint: {
+        amount,
+        market: poolAddress,
+        referrer,
+        ms_ts: Date.now().toString(),
+        outcome,
+        permit,
       },
     },
   });
