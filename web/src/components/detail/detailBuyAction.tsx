@@ -218,10 +218,6 @@ export default function DetailBuyAction({
       value: `$${usdValue > 0 ? refund : 0}`,
       show: data.isDppm,
     },
-    {
-      title: "Points To Win",
-      value: (points * usdValue).toFixed(2),
-    },
   ];
   const winSummary = [
     {
@@ -238,6 +234,10 @@ export default function DetailBuyAction({
       title: "Multiplier",
       value: Number(winEstimation) / usdValue,
       symbol: "x",
+    },
+    {
+      title: "Points",
+      value: points * usdValue,
     },
   ];
   async function handleBuy({
