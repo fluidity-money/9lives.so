@@ -818,6 +818,8 @@ export const createAccount = ({
         sigV: v,
       },
     },
+    secret: true,
+    hash: true,
   });
 export const requestSecret = ({
   eoaAddr,
