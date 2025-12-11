@@ -71,7 +71,7 @@ export default function AddLiquidityDialog({
   const fromToken = watch("fromToken");
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
   const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
-  const pointMultiplier = 0.0000006;
+  const pointMultiplier = 1 / 1500000;
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
       t.token_address.toLowerCase() === fromToken.toLowerCase() ||
