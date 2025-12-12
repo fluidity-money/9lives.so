@@ -79,10 +79,10 @@ export default function PortfolioHeader() {
             )}
           </div>
           <div className="flex items-center gap-4 font-chicago md:gap-[70px]">
-            <div className="flex flex-col items-center gap-1 md:items-end">
+            {/* <div className="flex flex-col items-center gap-1 md:items-end">
               <span className="text-xs">Achievements</span>
               <span className="text-2xl text-9black">{achievmentCount}</span>
-            </div>
+            </div> */}
             <div className="flex flex-col items-center gap-1 md:items-end">
               <span className="text-xs">Current Rank</span>
               <div className="flex items-center gap-1">
