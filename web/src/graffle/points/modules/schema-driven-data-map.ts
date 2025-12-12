@@ -133,6 +133,7 @@ const NineLivesPoints: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     wallet: {},
     amount: {},
+    rank: {},
   },
 };
 

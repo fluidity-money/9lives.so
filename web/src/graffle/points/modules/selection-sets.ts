@@ -1863,6 +1863,14 @@ export interface NineLivesPoints<
   amount?:
     | NineLivesPoints.amount$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<NineLivesPoints.amount<_$Scalars>>;
+  /**
+   *
+   * Select the `rank` field on the `NineLivesPoints` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  rank?:
+    | NineLivesPoints.rank$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<NineLivesPoints.rank<_$Scalars>>;
 
   /**
    *
@@ -1955,6 +1963,35 @@ export namespace NineLivesPoints {
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type rank<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | rank$SelectionSet<_$Scalars>;
+
+  export interface rank$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `rank` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type rank$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | rank$SelectionSet<_$Scalars>
   >;
 }
 

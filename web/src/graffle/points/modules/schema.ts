@@ -782,6 +782,7 @@ export namespace Schema {
       __typename: NineLivesPoints.__typename;
       wallet: NineLivesPoints.wallet;
       amount: NineLivesPoints.amount;
+      rank: NineLivesPoints.rank;
     };
   }
 
@@ -811,6 +812,16 @@ export namespace Schema {
      */
     export interface amount extends $.OutputField {
       name: "amount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Rank of the row ordered by amounts in the table
+     */
+    export interface rank extends $.OutputField {
+      name: "rank";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
