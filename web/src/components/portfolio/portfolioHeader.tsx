@@ -19,6 +19,7 @@ import { useState } from "react";
 import useBalance from "@/hooks/useBalance";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
+import use9LivesPoints from "@/hooks/use9LivesPoints";
 
 function Badge({ address }: { address: string }) {
   const { data: domainOrAddress } = useMeowDomains(address);
@@ -45,6 +46,10 @@ export default function PortfolioHeader() {
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
   const enableWithdraw = useFeatureFlag("enable paymaster withdraw");
   const totalPnL = unrealizedPnL + realizedPnL;
+  const { data } = use9LivesPoints({
+    address: account?.address,
+    enabled: !!account,
+  });
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -82,7 +87,9 @@ export default function PortfolioHeader() {
               <span className="text-xs">Current Rank</span>
               <div className="flex items-center gap-1">
                 <Image src={AchYellow} width={22} alt="Achievement" />
-                <span className="text-2xl text-9black">#0</span>
+                <span className="text-2xl text-9black">
+                  #{data?.[0].rank ?? 0}
+                </span>
               </div>
             </div>
           </div>
