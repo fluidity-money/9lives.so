@@ -14,7 +14,12 @@ export default function useAccount() {
     const publicKey = await requestPublicKey();
     const signature = await account?.signMessage({ message: `0x${publicKey}` });
     const { r, s, v } = Signature.from(signature);
-    return await createAccount({ eoaAddr, r, s, v });
+    return await createAccount({
+      eoaAddr: eoaAddr.slice(2),
+      r: r.slice(2),
+      s: s.slice(2),
+      v,
+    });
   };
 
   return { create };
