@@ -5,11 +5,9 @@ import Button from "../themed/button";
 
 export default function LeaderRow({
   data,
-  ranking,
   highlightUser,
 }: {
   data?: Leader;
-  ranking?: number;
   highlightUser?: boolean;
 }) {
   const cellStyle =
@@ -38,14 +36,14 @@ export default function LeaderRow({
         "hover:bg-9blueLight/50",
       )}
     >
-      <td className={combineClass(cellStyle)}>{ranking}</td>
+      <td className={combineClass(cellStyle)}>{data.rank}</td>
       <td className={combineClass(cellStyle)}>
         <span className="block w-[100px] truncate sm:w-[160px] lg:w-full">
           {data.wallet}
         </span>
         {highlightUser && (
           <span className="font-arial text-[#808080]">
-            🎉 You placed #{ranking} 🎉
+            🎉 You placed #{data.rank} 🎉
           </span>
         )}
       </td>

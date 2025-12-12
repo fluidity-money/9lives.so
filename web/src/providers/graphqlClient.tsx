@@ -796,6 +796,7 @@ export const request9LivesPoints = (address?: string) =>
     $: { wallet: address },
     amount: true,
     wallet: true,
+    rank: true,
   });
 
 export const createAccount = ({

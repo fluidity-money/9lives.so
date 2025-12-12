@@ -15,7 +15,7 @@ export default function use9LivesPoints({
     },
     select(data) {
       return data.map((i) => {
-        if (!i) return { wallet: "0x", amount: 0 };
+        if (!i) return { wallet: "0x", amount: 0, rank: 0 };
         return i;
       });
     },

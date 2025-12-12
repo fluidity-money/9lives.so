@@ -40,23 +40,34 @@ export default function PointMenuButton() {
             <p className="text-center font-geneva uppercase">
               My Accumulated Points
             </p>
-            <span
-              className={combineClass(
-                isLoading ? "bg-[#ccc]" : "bg-9green",
-                "mx-auto p-2 font-chicago text-2xl",
-              )}
-            >
-              {isLoading ? (
-                <Image
-                  src={LoadingImage}
-                  className="animate-spin"
-                  alt="Loading"
-                  width={24}
-                />
-              ) : (
-                (data?.[0]?.amount ?? 0)
-              )}
-            </span>
+            {account ? (
+              <>
+                <span
+                  className={combineClass(
+                    isLoading ? "bg-[#ccc]" : "bg-9green",
+                    "mx-auto p-2 font-chicago text-2xl",
+                  )}
+                >
+                  {isLoading ? (
+                    <Image
+                      src={LoadingImage}
+                      className="animate-spin"
+                      alt="Loading"
+                      width={24}
+                    />
+                  ) : (
+                    (data?.[0]?.amount ?? 0)
+                  )}
+                </span>
+                {data?.[0].rank ? (
+                  <span className="text-center font-arial text-xs text-[#808080]">
+                    You placed #{data[0].rank}
+                  </span>
+                ) : null}
+              </>
+            ) : (
+              <Button title="Connect Wallet" />
+            )}
             <Link
               target="_blank"
               href="https://medium.com/@Superpositionso"
