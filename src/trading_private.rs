@@ -9,6 +9,7 @@ use crate::{
     maths,
     storage_trading::*,
     utils::{block_timestamp, msg_sender},
+    vault_call,
 };
 
 use alloc::vec::Vec;
@@ -82,6 +83,7 @@ impl StorageTrading {
         self.fee_minter.set(U256::from(fee_minter));
         self.fee_lp.set(U256::from(fee_lp));
         self.fee_referrer.set(U256::from(fee_referrer));
+        self.using_vault.set(true);
         #[cfg(feature = "trading-backend-dppm")]
         return self.internal_dppm_ctor(outcomes);
         #[cfg(not(feature = "trading-backend-dppm"))]
@@ -89,10 +91,19 @@ impl StorageTrading {
     }
 
     pub fn internal_shutdown(&mut self) -> R<U256> {
-        // Notify Longtail to pause trading on every outcome pool.
         assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
-        // This was previously used for hooks, specifically shutting Longtail trading:
-        // ... But now that's not the case. It's still there for posterity reasons.
+        // If we're using the vault, we ask the vault for funds at the end, not
+        // assuming the factory funded it for us:
+        if self.using_vault.get() {
+            let fees = self.fees_owed_addresses.get(DAO_EARN_ADDR);
+            self.fees_owed_addresses
+                .setter(DAO_EARN_ADDR)
+                .set(U256::ZERO);
+            if fees > U256::ZERO {
+                fusdc_call::approve(VAULT_ADDR, fees)?;
+            }
+            vault_call::repay(VAULT_ADDR, fees)?;
+        }
         self.is_shutdown.set(true);
         Ok(U256::ZERO)
     }

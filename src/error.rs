@@ -582,7 +582,13 @@ pub enum Error {
     BadMulDiv,
 
     /// The market has to be concluded for a clawback to happen!
-    MarketNotOverForClawback
+    MarketNotOverForClawback,
+
+    /// The vault experienced an issue and reverted (maybe no liquidity?)
+    VaultError(Vec<u8>),
+
+    /// The caller is not the dppm creator
+    NotDppmCreator,
 }
 
 #[cfg(any(

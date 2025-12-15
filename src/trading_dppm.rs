@@ -21,6 +21,8 @@ impl StorageTrading {
         // us, and we set them as the factory.
         let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;
         self.dppm_global_invested.set(seed_liquidity);
+        // We enable the liquidity vault for the DPPM:
+        self.using_vault.set(true);
         // Start to go through each outcome, and seed it with its initial amount.
         // And set each slot in the storage with the outcome id for Longtail
         // later.

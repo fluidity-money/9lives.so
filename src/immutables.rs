@@ -66,6 +66,29 @@ env_addr!(
     CLAWBACK_RECIPIENT
 );
 
+// Liquidity and fees management middleware.
+env_addr!(
+    VAULT_ADDR,
+    "SPN_VAULT_ADDR",
+    VAULT
+);
+
+// Address that's allowed to create new campaigns using the dppm (the one
+// hour creator):
+env_addr!(
+    DPPM_HOUR_CREATOR_ADDR,
+    "SPN_HOUR_DPPM_CREATOR",
+    DPPM_HOUR_CREATOR
+);
+
+// Address that's allowed to create new campaigns using the dppm (the 15
+// minute creator):
+env_addr!(
+    DPPM_15_MIN_CREATOR_ADDR,
+    "SPN_15_MIN_DPPM_CREATOR",
+    DPPM_15_MIN_CREATOR
+);
+
 // Scaling amount for checking if a bad predictor went above 50% in their
 // incorrect bets relative ot the winning outcome.
 pub const FIFTY_PCT_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);

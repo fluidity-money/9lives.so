@@ -58,6 +58,10 @@ for(a in $vars) if(~ $$a '') usage_envs $a
 if(~ $SPN_STARTED_BY '') SPN_STARTED_BY=`{date +%s}
 if(~ $SPN_DEADLINE '') SPN_DEADLINE=`{echo $SPN_STARTED_BY' + 3600' | bc}
 
+if(test `{date +%s} -gt $SPN_STARTED_BY) {
+	SPN_STARTED_BY=`{echo `{date +%s}' + 15' | bc}
+}
+
 echo SPN_OUTCOME_0_SEED=$SPN_OUTCOME_0_SEED >[1=2]
 echo SPN_OUTCOME_1_SEED=$SPN_OUTCOME_1_SEED >[1=2]
 echo SPN_STARTED_BY=$SPN_STARTED_BY >[1=2]

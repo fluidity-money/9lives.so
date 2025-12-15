@@ -236,4 +236,18 @@ interface IEvents {
     /// @notice A request from a submitter was appropriate and resulted in a
     /// non-indeterminate state. Refund the investor.
     event Concluded(uint256 indexed ticket, bytes32 indexed justification);
+
+    /* VAULT FOR 9lives DPPM STARTING LIQUIDITY */
+
+    event DebtTaken(
+        address indexed supplier,
+        address indexed forAddr,
+        uint256 indexed amount
+    );
+
+    event DebtRepaid(
+        address indexed repayer,
+        uint256 indexed surplus,
+        uint256 indexed deficit
+    );
 }

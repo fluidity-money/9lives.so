@@ -142,6 +142,9 @@ pub struct StorageTrading {
     /// Can the designated clawback worker receive back the initial deposit if noone
     /// used this money?
     pub dppm_clawback_impossible: StorageBool,
+
+    /// Does this contract use the new vault system for refunding its claimed amount?
+    pub using_vault: StorageBool,
 }
 
 // Storage accessors to simplify lookup.

@@ -42,6 +42,7 @@ pub mod erc20_call;
 pub mod host_erc20_call;
 pub mod wasm_erc20_call;
 
+pub mod vault_call;
 pub mod fusdc_call;
 
 pub mod host_lockup_call;
