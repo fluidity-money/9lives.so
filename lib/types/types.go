@@ -182,6 +182,11 @@ type (
 		TradingAddr     string `json:"trading_addr"`
 	}
 
+	Asset struct {
+		TotalSpent int    `json:"totalSpent"`
+		Name       string `json:"name"`
+	}
+
 	Activity struct {
 		// Transaction hash of the activity.
 		TxHash string `json:"txHash"`

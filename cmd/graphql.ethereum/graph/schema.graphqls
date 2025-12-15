@@ -117,6 +117,16 @@ type Query {
   Returns the campaigns havent been claimed yet by the user
   """
   unclaimedCampaigns(address:String!,token:String): [UnclaimedCampaign]!
+
+  """
+  Returns assets ordered by volume invested 
+  """
+  assets: [Asset!]!
+}
+
+type Asset {
+  totalSpent: Int!
+  name: String!
 }
 
 type UnclaimedCampaign {

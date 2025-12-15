@@ -2008,6 +2008,23 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string, 
 	return campaigns, nil
 }
 
+// Assets is the resolver for the assets field.
+func (r *queryResolver) Assets(ctx context.Context) ([]types.Asset, error) {
+	var assets []types.Asset
+	err := r.DB.Raw(`
+	select sum(nbas.from_amount) as total_spent,
+	nbas.campaign_content->'priceMetadata'->>'baseAsset' as name
+	from ninelives_buys_and_sells_1 nbas 
+	where nbas.campaign_content->'priceMetadata'->>'baseAsset' is not null
+	group by nbas.campaign_content->'priceMetadata'->>'baseAsset'
+	order by total_spent desc
+	`).Scan(assets).Error
+	if err != nil {
+		return nil, fmt.Errorf("error getting assets: %w", err)
+	}
+	return assets, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {
