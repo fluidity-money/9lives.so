@@ -136,6 +136,7 @@ The error table lives in ERRORS.md.
 | Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |
 | Price resolver oracle         | `0xa2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab` |
 | Trading beacon                | `0xfA433744C5C496c7caD243c61A17167DD39AE8ee` |
+| Vault                         | `0xe7569919F3088B09aC07aE239295F209522a99B3` |
 
 ### Superposition testnet
 
