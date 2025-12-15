@@ -45,7 +45,7 @@
     "graphql": "^16.12.0",
     "graphql-ws": "^5.16.2",
     "keccak": "^3.0.4",
-    "next": "15.5.7",
+    "next": "15.5.9",
     "posthog-js": "^1.302.2",
     "react": "19.1.1",
     "react-dom": "19.1.1",
