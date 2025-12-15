@@ -245,6 +245,14 @@ export interface Query<
   unclaimedCampaigns?:
     | Query.unclaimedCampaigns<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.unclaimedCampaigns<_$Scalars>>;
+  /**
+   *
+   * Select the `assets` field on the `Query` object. Its type is `Asset` (a `OutputObject` kind of type).
+   *
+   */
+  assets?:
+    | Query.assets$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.assets<_$Scalars>>;
 
   /**
    *
@@ -1200,6 +1208,33 @@ export namespace Query {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<unclaimedCampaigns$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type assets<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = assets$SelectionSet<_$Scalars>;
+
+  export interface assets$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$Asset<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `assets` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type assets$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<assets$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -2041,6 +2076,124 @@ export interface PriceMetadataInput<
 //
 //
 //
+
+//                                               Asset
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface Asset<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `totalSpent` field on the `Asset` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  totalSpent?:
+    | Asset.totalSpent$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Asset.totalSpent<_$Scalars>>;
+  /**
+   *
+   * Select the `name` field on the `Asset` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  name?:
+    | Asset.name$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Asset.name<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?: Asset$FragmentInline<_$Scalars> | Asset$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface Asset$FragmentInline<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends Asset<_$Scalars>, $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace Asset {
+  export type totalSpent<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | totalSpent$SelectionSet<_$Scalars>;
+
+  export interface totalSpent$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `totalSpent` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type totalSpent$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | totalSpent$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type name<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>;
+
+  export interface name$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `name` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type name$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>
+  >;
+}
 
 //                                         UnclaimedCampaign
 // --------------------------------------------------------------------------------------------------
@@ -6619,6 +6772,10 @@ export namespace $NamedTypes {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = PriceMetadataInput<_$Scalars>;
+  export type $Asset<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = Asset<_$Scalars>;
   export type $UnclaimedCampaign<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,

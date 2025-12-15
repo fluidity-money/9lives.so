@@ -20,6 +20,7 @@ import type * as $$Utilities from "graffle/utilities-for-generated";
 export interface $MethodsSelect {
   Query: Query;
   Mutation: Mutation;
+  Asset: Asset;
   UnclaimedCampaign: UnclaimedCampaign;
   PriceEvent: PriceEvent;
   CommentInvestment: CommentInvestment;
@@ -86,6 +87,12 @@ export interface Mutation {
 //
 //
 //
+
+export interface Asset {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Asset>,
+  ): $SelectionSet;
+}
 
 export interface UnclaimedCampaign {
   <$SelectionSet>(

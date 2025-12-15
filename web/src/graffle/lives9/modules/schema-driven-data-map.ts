@@ -128,6 +128,13 @@ const PriceMetadataInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 
+const Asset: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    totalSpent: {},
+    name: {},
+  },
+};
+
 const UnclaimedCampaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     totalSpent: {},
@@ -683,6 +690,9 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: UnclaimedCampaign, <-- Assigned later to avoid potential circular dependency.
     },
+    assets: {
+      // nt: Asset, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -1066,6 +1076,7 @@ Query.f[`campaignPriceEvents`]!.nt = PriceEvent;
 Query.f[`campaignBySymbol`]!.nt = Campaign;
 Query.f[`timebasedCampaigns`]!.nt = Campaign;
 Query.f[`unclaimedCampaigns`]!.nt = UnclaimedCampaign;
+Query.f[`assets`]!.nt = Asset;
 
 //
 //
@@ -1100,6 +1111,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     ActivityType,
     OutcomeInput,
     PriceMetadataInput,
+    Asset,
     UnclaimedCampaign,
     PriceEvent,
     CommentInvestment,
