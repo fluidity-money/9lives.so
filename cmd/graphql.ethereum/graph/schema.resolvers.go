@@ -2018,7 +2018,7 @@ func (r *queryResolver) Assets(ctx context.Context) ([]types.Asset, error) {
 	where nbas.campaign_content->'priceMetadata'->>'baseAsset' is not null
 	group by nbas.campaign_content->'priceMetadata'->>'baseAsset'
 	order by total_spent desc
-	`).Scan(assets).Error
+	`).Scan(&assets).Error
 	if err != nil {
 		return nil, fmt.Errorf("error getting assets: %w", err)
 	}
