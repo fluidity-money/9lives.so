@@ -10,12 +10,11 @@ export default function useAccount() {
   const account = useActiveAccount();
   const create = async () => {
     if (!account) throw new Error("No wallet is connected");
-    const eoaAddr = await requestEoaForAddress(account?.address);
     const publicKey = await requestPublicKey();
-    const signature = await account?.signMessage({ message: `0x${publicKey}` });
+    const signature = await account?.signMessage({ message: publicKey });
     const { r, s, v } = Signature.from(signature);
     return await createAccount({
-      eoaAddr: eoaAddr.slice(2),
+      eoaAddr: account.address.slice(2),
       r: r.slice(2),
       s: s.slice(2),
       v,
