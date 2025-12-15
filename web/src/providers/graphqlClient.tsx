@@ -824,11 +824,13 @@ export const createAccount = ({
   });
 export const requestSecret = ({
   eoaAddr,
+  nonce,
   r,
   s,
   v,
 }: {
   eoaAddr: string;
+  nonce: number;
   r: string;
   s: string;
   v: number;
@@ -836,6 +838,7 @@ export const requestSecret = ({
   graphAccounts.mutation.requestSecret({
     $: {
       eoa_addr: eoaAddr,
+      nonce,
       sigR: r,
       sigS: s,
       sigV: v,
@@ -879,4 +882,10 @@ export const ninelivesMint = ({
         permit,
       },
     },
+  });
+
+export const requestAssets = async () =>
+  graph9Lives.query.assets({
+    totalSpent: true,
+    name: true,
   });

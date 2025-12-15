@@ -2,9 +2,17 @@ import {
   requestEoaForAddress,
   createAccount,
   requestPublicKey,
+  requestSecret,
 } from "@/providers/graphqlClient";
 import { Signature } from "ethers";
 import { useActiveAccount } from "thirdweb/react";
+
+function encodeNonceBE(nonce: number): string {
+  const buf = new Uint8Array(4);
+  const view = new DataView(buf.buffer);
+  view.setUint32(0, nonce, false);
+  return Buffer.from(buf).toString("hex");
+}
 
 export default function useAccount() {
   const account = useActiveAccount();
@@ -20,6 +28,23 @@ export default function useAccount() {
       v,
     });
   };
+  const getSecret = async () => {
+    if (!account) throw new Error("No wallet is connected");
+    const eoaAddr = await requestEoaForAddress(account.address);
+    const publicKey = await requestPublicKey();
+    const nonce = Math.floor(Math.random() * 0x7fffffff);
+    const nonceHex = encodeNonceBE(nonce);
+    const message = publicKey + nonceHex;
+    const signature = await account?.signMessage({ message });
+    const { r, s, v } = Signature.from(signature);
+    return await requestSecret({
+      eoaAddr: eoaAddr.slice(2),
+      nonce,
+      s: s.slice(2),
+      r: r.slice(2),
+      v,
+    });
+  };
 
-  return { create };
+  return { create, getSecret };
 }
