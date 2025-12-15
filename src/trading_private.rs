@@ -83,7 +83,6 @@ impl StorageTrading {
         self.fee_minter.set(U256::from(fee_minter));
         self.fee_lp.set(U256::from(fee_lp));
         self.fee_referrer.set(U256::from(fee_referrer));
-        self.using_vault.set(true);
         #[cfg(feature = "trading-backend-dppm")]
         return self.internal_dppm_ctor(outcomes);
         #[cfg(not(feature = "trading-backend-dppm"))]
@@ -102,6 +101,10 @@ impl StorageTrading {
             if fees > U256::ZERO {
                 fusdc_call::approve(VAULT_ADDR, fees)?;
             }
+            // We ask the vault to consume the amount of our fees earned, so that it
+            // might send us some USDC so we can repay the users. This will revert
+            // if we don't have enough in the vault. If we made enough in DAO-owned
+            // fees here, then we actually take money from this contract to use it properly:
             vault_call::repay(VAULT_ADDR, fees)?;
         }
         self.is_shutdown.set(true);
