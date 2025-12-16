@@ -93,7 +93,7 @@ impl StorageTrading {
         assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
         // If we're using the vault, we ask the vault for funds at the end, not
         // assuming the factory funded it for us:
-        if self.using_vault.get() {
+        if self.feature_using_vault.get() {
             let fees = self.fees_owed_addresses.get(DAO_EARN_ADDR);
             self.fees_owed_addresses
                 .setter(DAO_EARN_ADDR)

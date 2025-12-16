@@ -144,7 +144,7 @@ pub struct StorageTrading {
     pub dppm_clawback_impossible: StorageBool,
 
     /// Does this contract use the new vault system for refunding its claimed amount?
-    pub using_vault: StorageBool,
+    pub feature_using_vault: StorageBool,
 }
 
 // Storage accessors to simplify lookup.
