@@ -43,6 +43,7 @@ export default function useAccount(
   const account = useActiveAccount();
   const { signForPermit } = useSignForPermit();
   const queryClient = useQueryClient();
+
   const create = async () => {
     if (!account) throw new Error("No wallet is connected");
     const publicKey = await requestPublicKey();
@@ -58,7 +59,9 @@ export default function useAccount(
       throw new Error("Account creation failed");
     }
     storeSecret(response.secret);
+    return response.secret;
   };
+
   const getSecret = async () => {
     if (!account) throw new Error("No wallet is connected");
     const publicKey = await requestPublicKey();
@@ -78,32 +81,38 @@ export default function useAccount(
       throw new Error("Account secret is not retreived");
     }
     storeSecret(secret);
+    return secret;
   };
+
   const isCreated = async () => {
     if (!account) throw new Error("No wallet is connected");
     return await hasCreated(account.address);
   };
+
   const checkAndSetSecret = async () => {
     const secretObj = window.localStorage.getItem(SECRET_KEY);
+    let secret: null | string = null;
     if (!secretObj) {
       const isAccountCreated = await isCreated();
       if (isAccountCreated) {
-        await getSecret();
+        secret = await getSecret();
       } else {
-        await create();
+        secret = await create();
       }
     } else {
-      const secret = JSON.parse(secretObj) as {
+      const secretParsed = JSON.parse(secretObj) as {
         secret: string;
         expireAt: string;
       };
-      if (new Date() > new Date(secret.expireAt)) {
-        await getSecret();
+      if (new Date() > new Date(secretParsed.expireAt)) {
+        secret = await getSecret();
       } else {
-        // Do nothing use existing one
+        secret = secretParsed.secret;
       }
     }
+    return secret;
   };
+
   const buy = async (
     fusdc: number,
     referrer: string,
@@ -114,9 +123,8 @@ export default function useAccount(
       new Promise(async (res, rej) => {
         try {
           if (!account) throw new Error("No wallet is connected");
-          await checkAndSetSecret();
-          const secretObj = window.localStorage.getItem(SECRET_KEY);
-          if (!secretObj) throw new Error("No secret is set");
+          const secret = await checkAndSetSecret();
+          if (!secret) throw new Error("No secret is set");
           const amount = toUnits(
             fusdc.toString(),
             config.contracts.decimals.fusdc,
@@ -163,6 +171,7 @@ export default function useAccount(
             outcome: outcomeId,
             poolAddress: data.poolAddress,
             referrer,
+            secret,
             permit: {
               deadline,
               permitR,

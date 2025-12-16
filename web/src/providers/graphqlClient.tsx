@@ -859,11 +859,13 @@ export const ninelivesMint = ({
   poolAddress,
   referrer,
   permit,
+  secret,
 }: {
   amount: string;
   outcome: string;
   poolAddress: string;
   referrer: string;
+  secret: string;
   permit?: {
     permitR: string;
     permitS: string;
@@ -871,18 +873,33 @@ export const ninelivesMint = ({
     deadline: number;
   };
 }) =>
-  graphAccounts.mutation.ninelivesMint({
-    $: {
-      mint: {
-        amount,
-        market: poolAddress,
-        referrer,
-        ms_ts: Date.now().toString(),
-        outcome,
-        permit,
+  graphAccounts
+    .anyware(({ exchange }) =>
+      exchange({
+        using: {
+          fetch: async (req) => {
+            return fetch(req, {
+              headers: {
+                ...req.headers,
+                Authorization: secret,
+              },
+            });
+          },
+        },
+      }),
+    )
+    .mutation.ninelivesMint({
+      $: {
+        mint: {
+          amount,
+          market: poolAddress,
+          referrer,
+          ms_ts: Date.now().toString(),
+          outcome,
+          permit,
+        },
       },
-    },
-  });
+    });
 
 export const requestAssets = async () =>
   graph9Lives.query.assets({
