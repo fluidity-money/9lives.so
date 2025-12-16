@@ -26,6 +26,7 @@ import { Chain } from "thirdweb";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
 import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
+import useAccount from "@/hooks/useAccount";
 
 export default function SimpleBuyDialog({
   data,
@@ -43,7 +44,8 @@ export default function SimpleBuyDialog({
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const selectedOutcome = data.outcomes[outcomeIdx];
-  const enabledPaymaster = useFeatureFlag("enable paymaster dppm buy");
+  // const enabledPaymaster = useFeatureFlag("enable paymaster dppm buy");
+  const enabledASBuy = useFeatureFlag("enable account system buy");
   const { data: profile } = useProfile();
   const account = useActiveAccount();
   const { buy } = useBuy({
@@ -52,7 +54,13 @@ export default function SimpleBuyDialog({
     outcomeId: selectedOutcome.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
-  const { buy: buyWithPaymaster } = useBuyWithPaymaster({
+  // const { buy: buyWithPaymaster } = useBuyWithPaymaster({
+  //   shareAddr: selectedOutcome.share.address,
+  //   outcomeId: selectedOutcome.identifier,
+  //   data,
+  //   openFundModal: () => setFundModalOpen(true),
+  // });
+  const { buy: buyWithAS } = useAccount({
     shareAddr: selectedOutcome.share.address,
     outcomeId: selectedOutcome.identifier,
     data,
@@ -207,7 +215,7 @@ export default function SimpleBuyDialog({
           },
         );
       } else {
-        let action = enabledPaymaster ? buyWithPaymaster : buy;
+        let action = enabledASBuy ? buyWithAS : buy;
         await action(Number(supply), profile?.settings?.refererr ?? "", {
           baseAsset: data.priceMetadata.baseAsset,
           priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
