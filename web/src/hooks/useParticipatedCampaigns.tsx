@@ -19,14 +19,13 @@ export default function useParticipatedCampaigns({
     ],
     queryFn: async ({ pageParam }) => {
       if (!account?.address) return [];
-      return await requestUserParticipated(account?.address, pageParam, 10);
+      const data = await requestUserParticipated(
+        account?.address,
+        pageParam,
+        10,
+      );
+      return data.map((i) => formatParticipatedCampaign(i));
     },
-    select: (data) => ({
-      pages: data.pages.map((page) =>
-        page.map((i) => formatParticipatedCampaign(i)),
-      ),
-      pageParams: data.pageParams,
-    }),
     initialPageParam: 0,
     enabled: !campaignDetail,
     initialData: campaignDetail
