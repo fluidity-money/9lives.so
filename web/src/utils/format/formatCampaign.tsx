@@ -129,6 +129,7 @@ export function formatParticipatedContent(
           end: ro.ending * 1000,
         })
       : ro.name,
+    starting: ro.starting * 1000,
     ending: ro.ending * 1000,
     priceMetadata: formatPriceMetadata(ro.priceMetadata),
     poolAddress: ro.poolAddress as `0x${string}`,
