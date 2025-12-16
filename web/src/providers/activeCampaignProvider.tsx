@@ -82,6 +82,8 @@ export default function ActiveCampaignProvider({
                   ["campaign", previousData.identifier],
                   {
                     ...previousData,
+                    totalVolume: nextData.totalVolume,
+                    investmentAmounts: nextData.investmentAmounts,
                     winner: nextData.winner,
                   } as CampaignDetail,
                 );
