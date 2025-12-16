@@ -9,7 +9,7 @@ import { MaxUint256, Signature } from "ethers";
 import { useActiveAccount } from "thirdweb/react";
 import { hasCreated } from "../providers/graphqlClient";
 import useSignForPermit from "./useSignForPermit";
-import { DppmMetadata, SimpleCampaignDetail } from "@/types";
+import { CampaignDetail, DppmMetadata, SimpleCampaignDetail } from "@/types";
 import config from "@/config";
 import { prepareContractCall, simulateTransaction, toUnits } from "thirdweb";
 import toast from "react-hot-toast";
@@ -35,11 +35,17 @@ function storeSecret(secret: string) {
   );
 }
 
-export default function useAccount(
-  data: SimpleCampaignDetail,
-  shareAddr: string,
-  outcomeId: string,
-) {
+export default function useAccount({
+  data,
+  shareAddr,
+  outcomeId,
+  openFundModal,
+}: {
+  data: CampaignDetail | SimpleCampaignDetail;
+  shareAddr: string;
+  outcomeId: string;
+  openFundModal: () => void;
+}) {
   const account = useActiveAccount();
   const { signForPermit } = useSignForPermit();
   const queryClient = useQueryClient();
@@ -116,7 +122,6 @@ export default function useAccount(
   const buy = async (
     fusdc: number,
     referrer: string,
-    openFundModal: () => void,
     dppmMetadata?: DppmMetadata,
   ) =>
     toast.promise(

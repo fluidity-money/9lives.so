@@ -28,5 +28,6 @@
 	"enable newsletter subscription": false,
 	"paymaster should wipe emergency on repeated errors": true,
 	"enable simple mode alert": false,
-	"enable exact input style buy with relay": true
+	"enable exact input style buy with relay": true,
+	"enable account system buy": true
 }

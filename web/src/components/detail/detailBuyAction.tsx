@@ -29,7 +29,7 @@ import useFeatureFlag from "@/hooks/useFeatureFlag";
 import USDCImg from "#/images/usdc.svg";
 import useTokens from "@/hooks/useTokens";
 import useProfile from "@/hooks/useProfile";
-import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
+// import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
 import { useUserStore } from "@/stores/userStore";
 import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
@@ -38,6 +38,7 @@ import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "../../hooks/useFinalPrice";
 import isMarketOpen from "@/utils/isMarketOpen";
 import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
+import useAccount from "@/hooks/useAccount";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -58,7 +59,7 @@ export default function DetailBuyAction({
   const enabledRelay =
     useFeatureFlag("enable relay buy") &&
     config.NEXT_PUBLIC_CHAIN !== "testnet";
-  const enabledPaymaster = useFeatureFlag("enable paymaster buy");
+  const enabledASBuy = useFeatureFlag("enable account system buy");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const account = useActiveAccount();
@@ -152,7 +153,13 @@ export default function DetailBuyAction({
     outcomeId: outcome.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
-  const { buy: buyWithPaymaster } = useBuyWithPaymaster({
+  // const { buy: buyWithPaymaster } = useBuyWithPaymaster({
+  //   shareAddr: outcome.share.address,
+  //   outcomeId: outcome.identifier,
+  //   data,
+  //   openFundModal: () => setFundModalOpen(true),
+  // });
+  const { buy: buyWithAS } = useAccount({
     shareAddr: outcome.share.address,
     outcomeId: outcome.identifier,
     data,
@@ -276,7 +283,7 @@ export default function DetailBuyAction({
             : undefined,
         );
       } else {
-        let action = enabledPaymaster ? buyWithPaymaster : buy;
+        let action = enabledASBuy ? buyWithAS : buy;
         await action(
           supply,
           profile?.settings?.refererr ?? "",
