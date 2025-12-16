@@ -1,13 +1,22 @@
 import {
+  ninelivesMint,
   requestEoaForAddress,
   createAccount,
   requestPublicKey,
   requestSecret,
 } from "@/providers/graphqlClient";
-import { Signature } from "ethers";
+import { MaxUint256, Signature } from "ethers";
 import { useActiveAccount } from "thirdweb/react";
 import { hasCreated } from "../providers/graphqlClient";
-
+import useSignForPermit from "./useSignForPermit";
+import { DppmMetadata, SimpleCampaignDetail } from "@/types";
+import config from "@/config";
+import { prepareContractCall, simulateTransaction, toUnits } from "thirdweb";
+import toast from "react-hot-toast";
+import { EVENTS, track } from "@/utils/analytics";
+import { useQueryClient } from "@tanstack/react-query";
+import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+const SECRET_KEY = "9lives-account-secret";
 function encodeNonceBE(nonce: number): string {
   const buf = new Uint8Array(4);
   const view = new DataView(buf.buffer);
@@ -18,7 +27,7 @@ function storeSecret(secret: string) {
   const ONE_MONTH = 1000 * 60 * 60 * 24 * 30;
   const FIVE_MINS = 1000 * 60 * 5;
   window.localStorage.setItem(
-    "9lives-account-secret",
+    SECRET_KEY,
     JSON.stringify({
       secret,
       expireAt: new Date(Date.now() + ONE_MONTH - FIVE_MINS).toUTCString(),
@@ -26,8 +35,14 @@ function storeSecret(secret: string) {
   );
 }
 
-export default function useAccount() {
+export default function useAccount(
+  data: SimpleCampaignDetail,
+  shareAddr: string,
+  outcomeId: string,
+) {
   const account = useActiveAccount();
+  const { signForPermit } = useSignForPermit();
+  const queryClient = useQueryClient();
   const create = async () => {
     if (!account) throw new Error("No wallet is connected");
     const publicKey = await requestPublicKey();
@@ -68,6 +83,151 @@ export default function useAccount() {
     if (!account) throw new Error("No wallet is connected");
     return await hasCreated(account.address);
   };
+  const checkAndSetSecret = async () => {
+    const secretObj = window.localStorage.getItem(SECRET_KEY);
+    if (!secretObj) {
+      const isAccountCreated = await isCreated();
+      if (isAccountCreated) {
+        await getSecret();
+      } else {
+        await create();
+      }
+    } else {
+      const secret = JSON.parse(secretObj) as {
+        secret: string;
+        expireAt: string;
+      };
+      if (new Date() > new Date(secret.expireAt)) {
+        await getSecret();
+      } else {
+        // Do nothing use existing one
+      }
+    }
+  };
+  const buy = async (
+    fusdc: number,
+    referrer: string,
+    openFundModal: () => void,
+    dppmMetadata?: DppmMetadata,
+  ) =>
+    toast.promise(
+      new Promise(async (res, rej) => {
+        try {
+          if (!account) throw new Error("No wallet is connected");
+          await checkAndSetSecret();
+          const secretObj = window.localStorage.getItem(SECRET_KEY);
+          if (!secretObj) throw new Error("No secret is set");
+          const amount = toUnits(
+            fusdc.toString(),
+            config.contracts.decimals.fusdc,
+          ).toString();
+          const userBalanceTx = prepareContractCall({
+            contract: config.contracts.fusdc,
+            method: "balanceOf",
+            params: [account?.address],
+          });
+          const userBalance = await simulateTransaction({
+            transaction: userBalanceTx,
+            account,
+          });
+          if (amount > userBalance) {
+            openFundModal();
+            throw new Error("You dont have enough USDC.");
+          }
+          let permitR = "";
+          let permitS = "";
+          let permitV = 0;
+          const deadline = Math.floor(Date.now() / 1000) + 3600;
+          const allowanceTx = prepareContractCall({
+            contract: config.contracts.fusdc,
+            method: "allowance",
+            params: [account.address, config.contracts.paymaster.address],
+          });
+          const allowance = (await simulateTransaction({
+            transaction: allowanceTx,
+            account,
+          })) as bigint;
+          if (BigInt(amount) > allowance) {
+            const spender = await requestEoaForAddress(account.address);
+            const { r, s, v } = await signForPermit({
+              spender,
+              amountToSpend: MaxUint256,
+              deadline,
+            });
+            permitR = r;
+            permitS = s;
+            permitV = v;
+          }
+          const result = await ninelivesMint({
+            amount,
+            outcome: outcomeId,
+            poolAddress: data.poolAddress,
+            referrer,
+            permit: {
+              deadline,
+              permitR,
+              permitS,
+              permitV,
+            },
+          });
+          res(result);
+          track(EVENTS.MINT, {
+            amount,
+            outcomeId,
+            shareAddr,
+            tradingAddr: data.poolAddress,
+            type: "buyWithAccount",
+            ...(dppmMetadata ?? {}),
+          });
+          const outcomeIds = data.outcomes.map((o) => o.identifier);
+          queryClient.invalidateQueries({
+            queryKey: [
+              "positions",
+              data.poolAddress,
+              data.outcomes,
+              account,
+              data.isDpm,
+            ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["sharePrices", data.poolAddress, outcomeIds],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "returnValue",
+              shareAddr,
+              data.poolAddress,
+              outcomeId,
+              amount,
+            ],
+          });
+          if (data.priceMetadata) {
+            const period = getPeriodOfCampaign(data as SimpleCampaignDetail);
+            queryClient.invalidateQueries({
+              queryKey: [
+                "simpleCampaign",
+                data.priceMetadata.baseAsset,
+                period,
+              ],
+            });
+          } else {
+            queryClient.invalidateQueries({
+              queryKey: ["campaign", data.identifier],
+            });
+          }
+          queryClient.invalidateQueries({
+            queryKey: ["positionHistory", account.address, outcomeIds],
+          });
+        } catch (e) {
+          rej(e);
+        }
+      }),
+      {
+        loading: "Buying shares...",
+        success: "Shares bought successfully!",
+        error: (e) => `${e?.shortMessage ?? e?.message ?? "Unknown error"}`,
+      },
+    );
 
-  return { create, getSecret, isCreated };
+  return { buy };
 }
