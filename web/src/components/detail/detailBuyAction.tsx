@@ -273,6 +273,7 @@ export default function DetailBuyAction({
                 baseAsset: data.priceMetadata.baseAsset,
                 priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
                 priceOnBuy: currentPrice?.price,
+                volumeOnBuy: data.totalVolume,
                 minuteOnBuy: Number(
                   new Date().toLocaleString("en-US", {
                     timeZone: "UTC",
@@ -292,6 +293,7 @@ export default function DetailBuyAction({
                 baseAsset: data.priceMetadata.baseAsset,
                 priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
                 priceOnBuy: currentPrice?.price,
+                volumeOnBuy: data.totalVolume,
                 minuteOnBuy: Number(
                   new Date().toLocaleString("en-US", {
                     timeZone: "UTC",

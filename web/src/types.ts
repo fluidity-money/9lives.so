@@ -277,6 +277,7 @@ export type DppmMetadata = {
   priceTargetForUp: number;
   priceOnBuy?: number;
   minuteOnBuy: number;
+  volumeOnBuy: number;
 };
 
 export type RawUnclaimedCampaign = Awaited<
