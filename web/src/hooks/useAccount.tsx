@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
 
 const SECRET_KEY = "9lives-account-secret";
 
@@ -52,6 +53,7 @@ export default function useAccount({
   const account = useActiveAccount();
   const { signForPermit } = useSignForPermit(config.destinationChain, account);
   const queryClient = useQueryClient();
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
 
   const create = async () => {
     if (!account) throw new Error("No wallet is connected");
@@ -133,6 +135,7 @@ export default function useAccount({
           if (!account) throw new Error("No wallet is connected");
           const secret = await checkAndSetSecret();
           if (!secret) throw new Error("No secret is set");
+          await checkAndSwitchChain();
           const amount = toUnits(
             fusdc.toString(),
             config.contracts.decimals.fusdc,
