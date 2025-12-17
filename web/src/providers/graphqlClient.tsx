@@ -874,20 +874,9 @@ export const ninelivesMint = ({
   };
 }) =>
   graphAccounts
-    .anyware(({ exchange }) =>
-      exchange({
-        using: {
-          fetch: async (req) => {
-            return fetch(req, {
-              headers: {
-                ...req.headers,
-                Authorization: secret,
-              },
-            });
-          },
-        },
-      }),
-    )
+    .transport({
+      headers: { Authorization: secret },
+    })
     .mutation.ninelivesMint({
       $: {
         mint: {
