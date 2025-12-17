@@ -50,7 +50,7 @@ export default function useAccount({
   openFundModal: () => void;
 }) {
   const account = useActiveAccount();
-  const { signForPermit } = useSignForPermit();
+  const { signForPermit } = useSignForPermit(config.destinationChain, account);
   const queryClient = useQueryClient();
 
   const create = async () => {
