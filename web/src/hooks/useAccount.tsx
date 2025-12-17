@@ -16,13 +16,16 @@ import toast from "react-hot-toast";
 import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+
 const SECRET_KEY = "9lives-account-secret";
+
 function encodeNonceBE(nonce: number): string {
   const buf = new Uint8Array(4);
   const view = new DataView(buf.buffer);
   view.setUint32(0, nonce, false);
   return Buffer.from(buf).toString("hex");
 }
+
 function storeSecret(secret: string) {
   const ONE_MONTH = 1000 * 60 * 60 * 24 * 30;
   const FIVE_MINS = 1000 * 60 * 5;
@@ -147,10 +150,7 @@ export default function useAccount({
             openFundModal();
             throw new Error("You dont have enough USDC.");
           }
-          let permitR = "";
-          let permitS = "";
-          let permitV = 0;
-          const deadline = Math.floor(Date.now() / 1000) + 3600;
+
           const allowanceTx = prepareContractCall({
             contract: config.contracts.fusdc,
             method: "allowance",
@@ -160,16 +160,27 @@ export default function useAccount({
             transaction: allowanceTx,
             account,
           })) as bigint;
+          type Permit = {
+            permitR: string;
+            permitS: string;
+            permitV: number;
+            deadline: number;
+          };
+          let permit: undefined | Permit = undefined;
           if (BigInt(amount) > allowance) {
             const spender = await requestEoaForAddress(account.address);
+            const deadline = Math.floor(Date.now() / 1000) + 3600;
             const { r, s, v } = await signForPermit({
               spender,
               amountToSpend: MaxUint256,
               deadline,
             });
-            permitR = r;
-            permitS = s;
-            permitV = v;
+            permit = {
+              permitR: r,
+              permitS: s,
+              permitV: v,
+              deadline,
+            };
           }
           const result = await ninelivesMint({
             amount,
@@ -177,12 +188,7 @@ export default function useAccount({
             poolAddress: data.poolAddress,
             referrer,
             secret,
-            permit: {
-              deadline,
-              permitR,
-              permitS,
-              permitV,
-            },
+            permit,
           });
           res(result);
           track(EVENTS.MINT, {
