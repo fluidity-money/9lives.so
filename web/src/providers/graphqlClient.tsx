@@ -860,12 +860,14 @@ export const ninelivesMint = ({
   referrer,
   permit,
   secret,
+  eoaAddress,
 }: {
   amount: string;
   outcome: string;
   poolAddress: string;
   referrer: string;
   secret: string;
+  eoaAddress: string;
   permit?: {
     permitR: string;
     permitS: string;
@@ -875,7 +877,7 @@ export const ninelivesMint = ({
 }) =>
   graphAccounts
     .transport({
-      headers: { Authorization: secret },
+      headers: { Authorization: `${eoaAddress}:${secret}` },
     })
     .mutation.ninelivesMint({
       $: {

@@ -188,6 +188,7 @@ export default function useAccount({
             poolAddress: data.poolAddress,
             referrer,
             secret,
+            eoaAddress: account.address,
             permit,
           });
           res(result);
