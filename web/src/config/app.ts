@@ -67,6 +67,7 @@ const infraMarketStateFees: Record<InfraMarketState, bigint> = {
 } as const;
 const categories = [
   "All",
+  "15mins",
   "Hourly",
   "Daily",
   "Crypto",
@@ -96,7 +97,7 @@ const simpleMarkets = {
     title: "BTC",
     tabTitle: "BTC",
     decimals: 2,
-    periods: ["hourly", "daily"],
+    periods: ["hourly", "daily", "15mins"],
     openDays: [0, 1, 2, 3, 4, 5, 6],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
@@ -194,7 +195,9 @@ const simpleMarketSchema = z.object({
   title: z.string(),
   decimals: z.number(),
   tabTitle: z.string(),
-  periods: z.array(z.union([z.literal("hourly"), z.literal("daily")])),
+  periods: z.array(
+    z.union([z.literal("hourly"), z.literal("daily"), z.literal("15mins")]),
+  ),
   openDays: z.array(z.number()),
   closeDays: z.optional(z.array(z.string())),
   openHours: z.array(z.string()),
@@ -230,6 +233,7 @@ const appSchema = z.object({
   categories: z.array(
     z.enum([
       "All",
+      "15mins",
       "Hourly",
       "Daily",
       "Crypto",
