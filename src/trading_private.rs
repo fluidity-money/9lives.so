@@ -105,6 +105,10 @@ impl StorageTrading {
             // might send us some USDC so we can repay the users. This will revert
             // if we don't have enough in the vault. If we made enough in DAO-owned
             // fees here, then we actually take money from this contract to use it properly:
+            evm::log(events::AddressFeesClaimed {
+                recipient: DAO_EARN_ADDR,
+                amount: fees,
+            });
             vault_call::repay(VAULT_ADDR, fees)?;
         }
         self.is_shutdown.set(true);

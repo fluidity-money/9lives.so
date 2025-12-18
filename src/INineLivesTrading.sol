@@ -198,6 +198,4 @@ interface INineLivesTrading {
          SimulatedPayoff memory outcome1,
          SimulatedPayoff memory outcome2
     );
-
-    function dppmClawbackBFC64995() external returns (uint256);
 }

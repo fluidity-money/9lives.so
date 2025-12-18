@@ -82,11 +82,10 @@ impl StorageFactory {
         // We don't need setup liquidity for the AMM!
 
         if backend_is_dppm {
-            // We fund newly created trading contracts using money from the Vault, a
+            // We fund newly created DPPM trading contracts using money from the Vault, a
             // contract which can be spent from and only takes money during
             // resolution. It lets us accumulate DAO-earned fees to the address to
-            // also pay off the initial liquidity, reducing the ongoing time for
-            // management.
+            // also pay off the initial liquidity, reducing time spent on management.
             match msg_sender() {
                 DPPM_HOUR_CREATOR_ADDR | DPPM_15_MIN_CREATOR_ADDR => {}
                 _ => return Err(Error::NotDppmCreator),

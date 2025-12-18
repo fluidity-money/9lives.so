@@ -245,8 +245,4 @@ contract MockTrading is INineLivesTrading {
          SimulatedPayoff memory outcome2
     ) {
     }
-
-    function dppmClawbackBFC64995() external returns (uint256) {
-        return 0;
-    }
 }

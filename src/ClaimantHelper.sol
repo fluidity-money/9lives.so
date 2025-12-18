@@ -4,10 +4,31 @@ pragma solidity 0.8.20;
 import { INineLivesTrading } from "./INineLivesTrading.sol";
 
 contract ClaimantHelper {
-    function claim(address[] calldata _pools) external returns (uint256[] memory results) {
+    uint256 version;
+    address public paymaster;
+
+    function initialise(address _paymaster) external {
+        require(version == 0, "not version 0");
+        paymaster = _paymaster;
+        version = 1;
+    }
+
+    function _claim(
+        address[] calldata _pools,
+        address _recipient
+     ) internal returns (uint256[] memory results) {
         results = new uint256[](_pools.length);
         for (uint i = 0; i < _pools.length; ++i) results[i] =
-            INineLivesTrading(_pools[i]).claimAllFees332D7968(msg.sender);
+            INineLivesTrading(_pools[i]).claimAllFees332D7968(_recipient);
+    }
+
+    function paymasterClaim(address[] calldata _pools, address _recipient) external {
+        require(msg.sender == paymaster, "not paymaster");
+        _claim(_pools, _recipient);
+    }
+
+    function claim(address[] calldata _pools) external returns (uint256[] memory results) {
+        return _claim(_pools, msg.sender);
     }
 
     function payoff(address[] calldata _pools) external returns (uint256[] memory results) {

@@ -102,14 +102,14 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address              |
 |-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0xfe47a19e045821362f27d709a899abfdadd310ce` |
+| Factory 1 implementation      | `0x4ad079fe04f1f59a8f6702db66ae524eb2e52591` |
 | Factory 2 implementation      | `0x40ad64826b745f30d3cac75c60b5dc725b719cd0` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPPM mint impl        | `0xed8eab59d39e34f50cc25b97eadb7b8618fb6579` |
-| Trading DPPM extras impl      | `0xaa3a821172a53c556f80e768cb3e215ea8366612` |
-| Trading DPPM price impl       | `0x2a54e3774e604a22c23c7e516c4dd8c2b54d3ee9` |
-| Trading DPPM quotes impl      | `0x832c7fd7c816285b631bd83f37c4698975cd2200` |
+| Trading DPPM mint impl        | `0x3c321cfd454c80cac745f2cebf57db69d2ea04a6` |
+| Trading DPPM extras impl      | `0x18bc1475dad29599c808795bc6626440bb955190` |
+| Trading DPPM price impl       | `0x695015a14ad3cfe142bbc0e5e6b12b7a867f0c8d` |
+| Trading DPPM quotes impl      | `0x110204b0a3e77edfec5571e838b4c92d493a4a1c` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
 | Trading AMM price impl        | `0x3fcae4ee12564f606c2dd34759f32a884f28a516` |

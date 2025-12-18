@@ -63,33 +63,6 @@ impl StorageTrading {
         };
     }
 
-    #[allow(non_snake_case)]
-    pub fn dppm_clawback_B_F_C_64995(&mut self) -> R<U256> {
-        #[cfg(not(feature = "trading-backend-dppm"))]
-        unimplemented!();
-        #[cfg(feature = "trading-backend-dppm")]
-        {
-            assert_or!(
-                !self.dppm_clawback_impossible.get(),
-                Error::ClawbackAlreadyHappened
-            );
-            assert_or!(
-                U64::from(block_timestamp()) > self.time_ending.get(),
-                Error::MarketNotOverForClawback
-            );
-            self.dppm_clawback_impossible.set(true);
-            let amt = fusdc_call::balance_of(contract_address())?;
-            fusdc_call::transfer(CLAWBACK_RECIPIENT_ADDR, amt)?;
-            evm::log(events::DppmClawback {
-                recipient: CLAWBACK_RECIPIENT_ADDR,
-                fusdcClawedback: amt,
-            });
-            // We can ignore if this failed, since this might not be necessary.
-            let shutdown = self.internal_shutdown().unwrap_or(U256::ZERO);
-            Ok(amt + shutdown)
-        }
-    }
-
     #[allow(clippy::too_many_arguments)]
     #[allow(non_snake_case)]
     pub fn remove_liquidity_3_C_857_A_15(
