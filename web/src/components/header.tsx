@@ -19,9 +19,9 @@ export default function Header({ simple = false }: { simple?: boolean }) {
       >
         <HeaderLogo />
       </Link>
-      <div className="hidden md:flex">
+      {/* <div className="hidden md:flex">
         <DisclaimerButton />
-      </div>
+      </div> */}
       <div className="hidden h-10 flex-1 border-x-2 border-x-black md:flex">
         <NavigationMenu simple={simple} />
       </div>
