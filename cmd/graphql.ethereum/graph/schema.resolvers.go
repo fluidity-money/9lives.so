@@ -2014,8 +2014,9 @@ func (r *queryResolver) Assets(ctx context.Context) ([]types.Asset, error) {
 	err := r.DB.Raw(`
 	select sum(nbas.from_amount) as total_spent,
 	nbas.campaign_content->'priceMetadata'->>'baseAsset' as name
-	from ninelives_buys_and_sells_1 nbas 
+	from ninelives_buys_and_sells_1 nbas
 	where nbas.campaign_content->'priceMetadata'->>'baseAsset' is not null
+	and nbas.created_by >= NOW() - INTERVAL '24 hours'
 	group by nbas.campaign_content->'priceMetadata'->>'baseAsset'
 	order by total_spent desc
 	`).Scan(&assets).Error
