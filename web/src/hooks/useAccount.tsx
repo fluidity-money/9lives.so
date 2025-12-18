@@ -27,11 +27,11 @@ function encodeNonceBE(nonce: number): string {
   return Buffer.from(buf).toString("hex");
 }
 
-function storeSecret(secret: string) {
+function storeSecret(secret: string, wallet: string) {
   const ONE_MONTH = 1000 * 60 * 60 * 24 * 30;
   const FIVE_MINS = 1000 * 60 * 5;
   window.localStorage.setItem(
-    SECRET_KEY,
+    `${SECRET_KEY}-${wallet.toLowerCase()}`,
     JSON.stringify({
       secret,
       expireAt: new Date(Date.now() + ONE_MONTH - FIVE_MINS).toUTCString(),
@@ -69,7 +69,7 @@ export default function useAccount({
     if (!response) {
       throw new Error("Account creation failed");
     }
-    storeSecret(response.secret);
+    storeSecret(response.secret, account.address);
     return response.secret;
   };
 
@@ -91,7 +91,7 @@ export default function useAccount({
     if (!secret) {
       throw new Error("Account secret is not retreived");
     }
-    storeSecret(secret);
+    storeSecret(secret, account.address);
     return secret;
   };
 
@@ -100,8 +100,10 @@ export default function useAccount({
     return await hasCreated(account.address);
   };
 
-  const checkAndSetSecret = async () => {
-    const secretObj = window.localStorage.getItem(SECRET_KEY);
+  const checkAndSetSecret = async (wallet: string) => {
+    const secretObj = window.localStorage.getItem(
+      `${SECRET_KEY}-${wallet.toLowerCase()}`,
+    );
     let secret: null | string = null;
     if (!secretObj) {
       const isAccountCreated = await isCreated();
@@ -133,7 +135,7 @@ export default function useAccount({
       new Promise(async (res, rej) => {
         try {
           if (!account) throw new Error("No wallet is connected");
-          const secret = await checkAndSetSecret();
+          const secret = await checkAndSetSecret(account.address);
           if (!secret) throw new Error("No secret is set");
           await checkAndSwitchChain();
           const amount = toUnits(
