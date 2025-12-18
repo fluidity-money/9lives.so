@@ -17,7 +17,7 @@ import {
 
 import { IWETH10 } from "./IWETH10.sol";
 
-bytes32 constant PAYMASTER_TYPEHASH = keccak256("NineLivesPaymaster(bytes data)");
+bytes32 constant PAYMASTER_TYPEHASH = keccak256("NineLivesPaymaster(uint8 typ,address owner,uint256 nonce,uint256 deadline,bytes data)");
 
 enum PaymasterType {
     MINT,
@@ -33,13 +33,13 @@ struct Operation {
     address owner;
     uint256 nonce;
     uint256 deadline;
+    bytes data;
     uint8 v;
     bytes32 r;
     bytes32 s;
     /// @dev originatingChainId is used to avoid asking users to change their
     ///      wallet for a native experience regardless where they are.
     uint256 originatingChainId;
-    bytes data;
 }
 
 struct OperationUsual {
@@ -171,7 +171,7 @@ contract NineLivesPaymaster {
                 abi.encodePacked(
                     "\x19\x01",
                     domain,
-                    keccak256(abi.encode(PAYMASTER_TYPEHASH, op.data))
+                    keccak256(abi.encode(PAYMASTER_TYPEHASH, op.typ, op.owner, op.nonce, op.deadline, op.data))
                 )
             ),
             op.v,
