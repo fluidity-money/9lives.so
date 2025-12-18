@@ -155,11 +155,11 @@ export default function useAccount({
             openFundModal();
             throw new Error("You dont have enough USDC.");
           }
-
+          const spender = await requestEoaForAddress(account.address);
           const allowanceTx = prepareContractCall({
             contract: config.contracts.fusdc,
             method: "allowance",
-            params: [account.address, config.contracts.paymaster.address],
+            params: [account.address, spender],
           });
           const allowance = (await simulateTransaction({
             transaction: allowanceTx,
@@ -173,7 +173,6 @@ export default function useAccount({
           };
           let permit: undefined | Permit = undefined;
           if (BigInt(amount) > allowance) {
-            const spender = await requestEoaForAddress(account.address);
             const deadline = Math.floor(Date.now() / 1000) + 3600;
             const { r, s, v } = await signForPermit({
               spender,
