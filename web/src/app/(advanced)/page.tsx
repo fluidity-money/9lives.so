@@ -14,7 +14,7 @@ export default async function AdvancedModeHomepage({
   const referral = (await searchParams)?.referral;
   if (!mode || mode === "false") {
     return redirect(
-      `/simple/campaign/btc/hourly${referral ? `?referral=${referral}` : ""}`,
+      `/simple/campaign/btc/15mins${referral ? `?referral=${referral}` : ""}`,
     );
   }
 
