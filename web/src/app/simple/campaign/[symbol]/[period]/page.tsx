@@ -48,11 +48,7 @@ function isSimpleMarketKey(k: string): k is SimpleMarketKey {
   return k.toLowerCase() in config.simpleMarkets;
 }
 function isSimpleMarketPeriod(p: string): p is SimpleMarketPeriod {
-  return (
-    p.toLowerCase() === "hourly" ||
-    p.toLowerCase() === "daily" ||
-    p.toLowerCase() === "15mins"
-  );
+  return p.toLowerCase() === "hourly" || p.toLowerCase() === "15mins";
 }
 export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { symbol, period } = await params;

@@ -40,9 +40,6 @@ export default function SimpleNavMenu({
   const hourlyMarkets = Object.values(config.simpleMarkets)
     .filter((i) => i.periods.includes("hourly"))
     .map((i) => i.slug);
-  // const dailyMarkets = Object.values(config.simpleMarkets)
-  //   .filter((i) => i.periods.includes("daily"))
-  //   .map((i) => i.slug);
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,15 +62,6 @@ export default function SimpleNavMenu({
             title="Hourly Markets"
           />
         </Link>
-        {/* <Link
-          href={`/simple/campaign/${dailyMarkets[0]}/daily`}
-          className="flex flex-1"
-        >
-          <TabRadioButton
-            selected={period.toLowerCase() === "daily"}
-            title="Daily"
-          />
-        </Link> */}
       </div>
       <div className="flex items-center overflow-x-auto border-b border-b-9black">
         {Object.values(config.simpleMarkets)
