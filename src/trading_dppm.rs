@@ -15,14 +15,14 @@ use stylus_sdk::{
 use alloc::vec::Vec;
 
 impl StorageTrading {
-    pub fn internal_dppm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>) -> R<()> {
+    pub fn internal_dppm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>, seed_liq: U256) -> R<()> {
         assert_or!(outcomes.len() == 2, Error::BadTradingCtor);
         // We assume that the caller already supplied the liquidity to
         // us, and we set them as the factory.
-        let seed_liquidity = U256::from(outcomes.len()) * FUSDC_DECIMALS_EXP;
-        self.dppm_global_invested.set(seed_liquidity);
+        self.dppm_global_invested.set(seed_liq);
         // We enable the liquidity vault for the DPPM:
         self.feature_using_vault.set(true);
+        self.feature_using_custom_seed_liq.set(true);
         // Start to go through each outcome, and seed it with its initial amount.
         // And set each slot in the storage with the outcome id for Longtail
         // later.

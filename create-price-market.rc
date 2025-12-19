@@ -51,7 +51,6 @@ vars=(\
 	SPN_ORACLE_ADDR \
 	SPN_BUY_HELPER \
 	SPN_FACTORY_ADDR \
-	SPN_STARTING_LIQ \
 )
 
 for(a in $vars) if(~ $$a '') usage_envs $a
@@ -125,8 +124,7 @@ while(~ $SPN_TRADING_ADDR '') {
 			$fee_lp \
 			$fee_minter \
 			$fee_referrer \
-			true \
-			$SPN_STARTING_LIQ
+			true
 	}
 	sleep 1
 }
