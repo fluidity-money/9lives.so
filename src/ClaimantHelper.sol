@@ -4,15 +4,6 @@ pragma solidity 0.8.20;
 import { INineLivesTrading } from "./INineLivesTrading.sol";
 
 contract ClaimantHelper {
-    uint256 version;
-    address public paymaster;
-
-    function initialise(address _paymaster) external {
-        require(version == 0, "not version 0");
-        paymaster = _paymaster;
-        version = 1;
-    }
-
     function _claim(
         address[] calldata _pools,
         address _recipient
@@ -22,8 +13,12 @@ contract ClaimantHelper {
             INineLivesTrading(_pools[i]).claimAllFees332D7968(_recipient);
     }
 
-    function paymasterClaim(address[] calldata _pools, address _recipient) external {
-        require(msg.sender == paymaster, "not paymaster");
+    function claimForOther(address[] calldata _pools, address _recipient) external {
+        // This is safe to allow anyone to call, since the liquidity this
+        // contract will claim will go to the recipient. We don't have any direct
+        // custody of funds earned or any special middleware for this. Just to be careful,
+        // this will only work for EOAs.
+        require(_recipient.code.size == 0, "recipient has code");
         _claim(_pools, _recipient);
     }
 
