@@ -18,6 +18,7 @@ pub fn ctor(
     _fee_lp: u64,
     _fee_minter: u64,
     _fee_referrer: u64,
+    _starting_liq: U256
 ) -> Result<(), Error> {
     Ok(())
 }

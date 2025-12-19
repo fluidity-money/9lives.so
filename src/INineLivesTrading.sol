@@ -13,6 +13,7 @@ pragma solidity ^0.8.20;
 /// @param feeMinter to take as the fee that we give to minters.
 /// @param feeLp to take as a fee for the market makers who used the add/remove features.
 /// @param feeReferrer to take and distribute to a referrer for a allocation.
+/// @param startingLiq is cut up evenly by the number of outcomes. DPPM only.
 struct CtorArgs {
     bytes8[] outcomes;
     address oracle;
@@ -25,6 +26,7 @@ struct CtorArgs {
     uint64 feeMinter;
     uint64 feeLp;
     uint64 feeReferrer;
+    uint256 startingLiq;
 }
 
 interface INineLivesTrading {

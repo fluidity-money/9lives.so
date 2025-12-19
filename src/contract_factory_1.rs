@@ -42,6 +42,7 @@ impl StorageFactory {
         fee_minter: u64,
         fee_referrer: u64,
         backend_is_dppm: bool,
+        starting_liq: U256
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
@@ -148,6 +149,7 @@ impl StorageFactory {
             fee_lp,
             fee_minter,
             fee_referrer,
+            starting_liq
         ));
 
         // If the infra market wasn't chosen, then we assume that the caller has done

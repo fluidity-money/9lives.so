@@ -55,7 +55,8 @@ contract MockFactory is INineLivesFactory {
             feeCreator: 0,
             feeMinter: 0,
             feeLp: 0,
-            feeReferrer: 0
+            feeReferrer: 0,
+            startingLiq: 2e6
         }));
         return address(t);
     }

@@ -28,6 +28,7 @@ pub fn ctor(
     fee_lp: u64,
     fee_minter: u64,
     fee_referrer: u64,
+    starting_liq: U256
 ) -> Result<(), Error> {
     let a = ctorCall {
         ctorArgs: CtorArgs {
@@ -42,6 +43,7 @@ pub fn ctor(
             feeLp: fee_lp,
             feeMinter: fee_minter,
             feeReferrer: fee_referrer,
+            startingLiq: starting_liq
         },
     }
     .abi_encode();
