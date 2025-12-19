@@ -22,6 +22,7 @@ impl StorageTrading {
         self.dppm_global_invested.set(seed_liq);
         // We enable the liquidity vault for the DPPM:
         self.feature_using_vault.set(true);
+        // We take a different amount than 2e6 at the beginning:
         self.feature_using_custom_seed_liq.set(true);
         // Start to go through each outcome, and seed it with its initial amount.
         // And set each slot in the storage with the outcome id for Longtail

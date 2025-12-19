@@ -27,6 +27,7 @@ pub type CtorArgs = (
     u64,                // [8] Fee for LP
     u64,                // [9] Fee for minter
     u64,                // [10] Fee for referrer
+    U256,               // [11] Starting liquidity for this market
 );
 
 #[cfg_attr(feature = "contract-trading-extras", stylus_sdk::prelude::public)]
@@ -41,7 +42,7 @@ impl StorageTrading {
     // here to circumvent that, which alters the signature.
     #[allow(clippy::too_many_arguments)]
     pub fn ctor(&mut self, a: CtorArgs) -> R<()> {
-        self.internal_ctor(a.0, a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8, a.9, a.10)
+        self.internal_ctor(a.0, a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8, a.9, a.10, a.11)
     }
 
     pub fn is_shutdown(&self) -> R<bool> {
@@ -244,6 +245,7 @@ fn default_ctor_args() -> CtorArgs {
         0,
         0,
         0,
+        U256::ZERO,
     )
 }
 

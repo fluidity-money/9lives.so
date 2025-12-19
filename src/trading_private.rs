@@ -37,6 +37,7 @@ impl StorageTrading {
         fee_lp: u64,
         fee_minter: u64,
         fee_referrer: u64,
+        seed_liq: U256
     ) -> R<()> {
         {
             // Prevent someone from constructing this with reused shares.
@@ -84,7 +85,7 @@ impl StorageTrading {
         self.fee_lp.set(U256::from(fee_lp));
         self.fee_referrer.set(U256::from(fee_referrer));
         #[cfg(feature = "trading-backend-dppm")]
-        return self.internal_dppm_ctor(outcomes);
+        return self.internal_dppm_ctor(outcomes, seed_liq);
         #[cfg(not(feature = "trading-backend-dppm"))]
         return self.internal_amm_ctor(outcomes);
     }
