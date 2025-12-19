@@ -37,7 +37,8 @@ contract MockFactory is INineLivesFactory {
         uint64 /* feeLp */,
         uint64 /* feeMinter */,
         uint64 /* feeReferrer */,
-        bool /* backendIsDpm */
+        bool /* backendIsDpm */,
+        uint256 /* startingLiq */
     ) external returns (address) {
         MockTrading t = new MockTrading(ADDR_FUSDC, address(0));
         bytes8[] memory outcomes = new bytes8[](_outcomes.length);

@@ -17,32 +17,25 @@ import {
 
 import { IWETH10 } from "./IWETH10.sol";
 
-bytes32 constant PAYMASTER_TYPEHASH = keccak256("NineLivesPaymaster(uint8 typ,address owner,uint256 nonce,uint256 deadline,bytes data)");
+bytes32 constant PAYMASTER_TYPEHASH =
+    keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome,uint256 maxOutgoing)");
 
 enum PaymasterType {
     MINT,
     BURN,
     ADD_LIQUIDITY,
     REMOVE_LIQUIDITY,
-    WITHDRAW_USDC,
-    CLAIM_ALL
+    WITHDRAW_USDC
 }
 
 struct Operation {
-    PaymasterType typ;
     address owner;
-    uint256 nonce;
-    uint256 deadline;
-    bytes data;
-    uint8 v;
-    bytes32 r;
-    bytes32 s;
     /// @dev originatingChainId is used to avoid asking users to change their
     ///      wallet for a native experience regardless where they are.
     uint256 originatingChainId;
-}
-
-struct OperationUsual {
+    uint256 nonce;
+    uint256 deadline;
+    PaymasterType typ;
     uint256 permitAmount;
     bytes32 permitR;
     bytes32 permitS;
@@ -53,12 +46,11 @@ struct OperationUsual {
     uint256 minimumBack;
     address referrer;
     bytes8 outcome;
-    uint256 maxOutgoing;
+    uint8 v;
+    bytes32 r;
+    bytes32 s;
     uint32 outgoingChainEid;
-}
-
-struct OperationClaimAll {
-    address[] markets;
+    uint256 maxOutgoing;
 }
 
 interface IERC20 {
@@ -86,6 +78,15 @@ interface DPMOld {
 }
 
 contract NineLivesPaymaster {
+    event PaymasterPaidFor(
+        address indexed owner,
+        uint256 indexed maximumFee,
+        uint256 indexed amountToSpend,
+        uint256 feeTaken,
+        address referrer,
+        bytes8 outcome
+    );
+
     event StargateBridged(
         bytes32 indexed guid,
         address indexed spender,
@@ -171,7 +172,22 @@ contract NineLivesPaymaster {
                 abi.encodePacked(
                     "\x19\x01",
                     domain,
-                    keccak256(abi.encode(PAYMASTER_TYPEHASH, op.typ, op.owner, op.nonce, op.deadline, op.data))
+                    keccak256(
+                        abi.encode(
+                            PAYMASTER_TYPEHASH,
+                            op.owner,
+                            nonces[domain][op.owner],
+                            op.deadline,
+                            uint8(op.typ),
+                            op.market,
+                            op.maximumFee,
+                            op.amountToSpend,
+                            op.minimumBack,
+                            op.referrer,
+                            op.outcome,
+                            op.maxOutgoing
+                        )
+                    )
                 )
             ),
             op.v,
@@ -188,21 +204,20 @@ contract NineLivesPaymaster {
     }
 
     function stargateSendAmount(
-        address _owner,
         SendParam memory _sendParam,
         MessagingFee memory _messagingFee,
-        OperationUsual memory _op
+        Operation memory _op
     ) internal returns (uint256, bool) {
         (MessagingReceipt memory msgReceipt, OFTReceipt memory oftReceipt,) =
             STARGATE.sendToken{value: _messagingFee.nativeFee}(
                 _sendParam,
                 _messagingFee,
-                _owner
+                _op.owner
             );
         if (_op.minimumBack > oftReceipt.amountReceivedLD) return (0, false);
         emit StargateBridged(
             msgReceipt.guid,
-            _owner,
+            _op.owner,
             oftReceipt.amountReceivedLD,
             _messagingFee.nativeFee,
             _sendParam.dstEid
@@ -210,32 +225,31 @@ contract NineLivesPaymaster {
         return (_op.maximumFee, true);
     }
 
-    function executeUsual(
-        PaymasterType typ,
-        address _owner,
-        uint256 _deadline,
-        OperationUsual memory op
-    ) internal returns (uint256, bool) {
+    function execute(Operation calldata op) internal returns (uint256, bool) {
+        if (op.deadline < block.timestamp) revert("past deadline");
+        (bytes32 domain, address recovered) = recoverAddressNewChain(op);
+        if (op.owner != recovered) revert("bad address recovery");
+        nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
         if (op.permitR != bytes32(0))
                 USDC.permit(
-                    _owner,
+                    op.owner,
                     address(this),
                     op.permitAmount,
-                    _deadline,
+                    op.deadline,
                     op.permitV,
                     op.permitR,
                     op.permitS
                 );
-        if (typ == PaymasterType.MINT) {
-            USDC.transferFrom(_owner, address(this), amountInclusiveOfFee);
+        if (op.typ == PaymasterType.MINT) {
+            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(op.market), op.amountToSpend);
             try op.market.isDpm() returns (bool isDpm) {
                 if (isDpm)
                     DPMOld(address(op.market)).mintPermitE90275AB(
                         op.outcome,
                         op.amountToSpend,
-                        _owner,
+                        op.owner,
                         0,
                         0,
                         bytes32(0),
@@ -246,21 +260,21 @@ contract NineLivesPaymaster {
                         op.outcome,
                         op.amountToSpend,
                         op.referrer,
-                        _owner
+                        op.owner
                     );
                 return (op.maximumFee, true);
             } catch {
                 DPMOld(address(op.market)).mintPermitE90275AB(
                     op.outcome,
                     op.amountToSpend,
-                    _owner,
+                    op.owner,
                     0,
                     0,
                     bytes32(0),
                     bytes32(0)
                 );
             }
-        } else if (typ == PaymasterType.BURN) {
+        } else if (op.typ == PaymasterType.BURN) {
             // For selling, we don't take a fee.
             op.market.burn854CC96E(
                 op.outcome,
@@ -268,20 +282,20 @@ contract NineLivesPaymaster {
                 true,
                 op.minimumBack,
                 op.referrer,
-                _owner
+                op.owner
             );
             return (0, true);
-        } else if (typ == PaymasterType.ADD_LIQUIDITY) {
+        } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
             return (0, false);
-        } else if (typ == PaymasterType.REMOVE_LIQUIDITY) {
+        } else if (op.typ == PaymasterType.REMOVE_LIQUIDITY) {
             return (0, false);
-        } else if (typ == PaymasterType.WITHDRAW_USDC) {
+        } else if (op.typ == PaymasterType.WITHDRAW_USDC) {
             // For withdrawing, we take a fee.
-            USDC.transferFrom(_owner, address(this), amountInclusiveOfFee);
+            USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(STARGATE), op.amountToSpend);
             SendParam memory sendParam = SendParam({
                 dstEid: op.outgoingChainEid,
-                to: bytes32(uint256(uint160(_owner))),
+                to: bytes32(uint256(uint160(op.owner))),
                 amountLD: op.amountToSpend,
                 minAmountLD: op.minimumBack,
                 extraOptions: new bytes(0),
@@ -305,27 +319,10 @@ contract NineLivesPaymaster {
             (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
             sendParam.minAmountLD = receipt.amountReceivedLD;
             USDC.approve(address(STARGATE), sendParam.amountLD);
-            return stargateSendAmount(_owner, sendParam, messagingFee, op);
+            return stargateSendAmount(sendParam, messagingFee, op);
         }
         return (0, false);
-    }
-
-    function transformToUsual(Operation calldata op) internal returns (OperationUsual memory r) {
-        r = abi.decode(op.data, (OperationUsual));
-    }
-
-    function executeClaimAll(bytes memory op) internal returns (uint256, bool) {
-       require(false);
-    }
-
-    function execute(Operation calldata op) internal returns (uint256, bool) {
-        if (op.deadline < block.timestamp) revert("past deadline");
-        (bytes32 domain, address recovered) = recoverAddressNewChain(op);
-        if (op.owner != recovered) revert("bad address recovery");
-        nonces[domain][op.owner]++;
-        if (op.typ == PaymasterType.CLAIM_ALL) return executeClaimAll(op.data);
-        else return executeUsual(op.typ, op.owner, op.deadline, transformToUsual(op));
-    }
+}
 
     error MulticallFailure(uint256);
 
@@ -339,6 +336,14 @@ contract NineLivesPaymaster {
             (uint256 amt, bool rd) = execute(operations[i]);
             if (!rd) revert MulticallFailure(i);
             statuses[i] = true;
+            emit PaymasterPaidFor(
+                operations[i].owner,
+                operations[i].maximumFee,
+                operations[i].amountToSpend,
+                operations[i].maximumFee,
+                operations[i].referrer,
+                operations[i].outcome
+            );
             acc += amt;
         }
         if (acc > 0) USDC.transfer(msg.sender, acc);

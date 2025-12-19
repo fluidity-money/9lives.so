@@ -40,7 +40,8 @@ interface INineLivesFactory {
         uint64 feeLp,
         uint64 feeMinter,
         uint64 feeReferrer,
-        bool backendIsDppm
+        bool backendIsDppm,
+        uint256 startingLiq
     ) external returns (address tradingAddr);
 
     /**
