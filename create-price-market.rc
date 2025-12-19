@@ -50,7 +50,7 @@ vars=(\
 	SPN_QUOTE_ASSET \
 	SPN_ORACLE_ADDR \
 	SPN_BUY_HELPER \
-	SPN_FACTORY_ADDR
+	SPN_FACTORY_ADDR \
 )
 
 for(a in $vars) if(~ $$a '') usage_envs $a
