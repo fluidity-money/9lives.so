@@ -106,12 +106,12 @@ The error table lives in ERRORS.md.
 | Factory 2 implementation      | `0x40ad64826b745f30d3cac75c60b5dc725b719cd0` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPPM mint impl        | `0x3c321cfd454c80cac745f2cebf57db69d2ea04a6` |
-| Trading DPPM extras impl      | `0x18bc1475dad29599c808795bc6626440bb955190` |
+| Trading DPPM mint impl        | `0xd4f227042d083a358edb90e07fb7da4bdda059f3` |
+| Trading DPPM extras impl      | `0xe55909530a792a1432022e5588053e3f81581fc0` |
 | Trading DPPM price impl       | `0x521973519911f649b4cf31e7991d64840b3badf0` |
 | Trading DPPM quotes impl      | `0x439085c2290c91eef72163c3ae60bda97917d3ea` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
-| Trading AMM extras impl       | `0x3ffdb4f0a9ed693bdcb6678f14988d754514186c` |
+| Trading AMM extras impl       | `0x63d853d45ed81ddc62558a77b8c3d00f0690e36b` |
 | Trading AMM price impl        | `0x3fcae4ee12564f606c2dd34759f32a884f28a516` |
 | Trading AMM quotes impl       | `0x801b8544a3bb8a7729b7810178805fbf0411b82b` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
@@ -121,7 +121,7 @@ The error table lives in ERRORS.md.
 | Lockup proxy                  | `0x20d2360706086ec9814d15a52ad2d2aec2c43caa` |
 | Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
 | Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
-| Helper factory                | `0xC555D6819C9293ec0A703dF4A5CcDAF0BdEdD1Cd` |
+| Helper factory                | `0x5Da3fC34FFF02faaDDf71eD6C0Bc9928C747f8fE` |
 | LensesV1                      | `0x8036d656D2E0c36d90DF47b7Da625fDC16375f87` |
 | Beauty contest implementation | `0xb7f978f707dc03b392d7215426cf98dc812d9454` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
@@ -130,7 +130,6 @@ The error table lives in ERRORS.md.
 | BuyHelper2                    | `0x7aD7eDd9A72512335e2A7A980047Ec2eD233D21c` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
-| Claimant helper for payoff    | `0x1f460E37b3A78Dc366402692BBAbF82697C8763D` |
 | Claimant helper for claim     | `0x48EEDBf72231d24AAf10CE0859ce6C0795d8E9c9` |
 | Paymaster implementation      | `0x552BbaEc8D75c010435C810fA890B3E03e9C6445` |
 | Paymaster proxy               | `0xE990f05e2264f56435Fd7589FA2F70A879B0cE9f` |
@@ -138,34 +137,3 @@ The error table lives in ERRORS.md.
 | Price resolver oracle         | `0xa2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab` |
 | Trading beacon                | `0xfA433744C5C496c7caD243c61A17167DD39AE8ee` |
 | Vault                         | `0xe7569919F3088B09aC07aE239295F209522a99B3` |
-
-### Superposition testnet
-
-|        Deployment name        |              Deployment address            |
-|-------------------------------|--------------------------------------------|
-| Proxy admin                   | `0xfeb6034fc7df27df18a3a6bad5fb94c0d3dcb6d5` |
-| Factory 1 implementation      | `0xfe2abd224b193d7e71603648be18d86494090ce6` |
-| Factory 2 implementation      | `0x1b819633bf6a86abfe0a36a827d1a21e48136988` |
-| Lockup implementation         | `0xaf1d785c71749390fda7fae7ac94db8b5783075e` |
-| Optimistic infra predict impl | `0xad425edab6c94e2f9f0d1b2bba59bb5d18673c52` |
-| Trading DPPM mint impl        | `0x0000000000000000000000000000000000000000` |
-| Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
-| Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
-| Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
-| Trading AMM mint impl         | `0xf79fc540aa17e71f2d475de7a6962b5e5e5f54dc` |
-| Trading AMM extras impl       | `0xaabe32254d850521ee0511aee6b165e6bea2b838` |
-| Trading AMM quotes impl       | `0x628875b043b2863f7e90f10eb80dd2b74c2e9250` |
-| Trading AMM price impl        | `0x2216a510742221cbf2078612f773eca4434af141` |
-| Share implementation          | `0x57Dbe6699441636Ed0730e07ac3c8A3e9fF5879b` |
-| Lockup token implementation   | `0x2bDd60d3bf40762D214655E876d8D9BE576EaD3D` |
-| Infrastructure market proxy   | `0xfbab524c5afdc95bc5c61ced8555875bfc76c96e` |
-| Lockup proxy                  | `0x09cfac6adafba8612c5813ca6091bc3a5b2df638` |
-| Lockup token proxy            | `0x1e9a5f8a0aab7051e31bdcf109cecd31154bcaac` |
-| Factory proxy                 | `0x23ff36d696e7ddcf1ad4041c1c3a26a9e39eb107` |
-| Helper factory                | `0x7981902295474DD10F323A0BFeaF0b54Eb77a7Ef` |
-| LensesV1                      | `0xb5f6B68b9E8E8a5eBa1288291AAfbe026DE5ce67` |
-| Beauty contest implementation | `0x8030b6db88b33f875e4a2cc19208844e3f5f897d` |
-| Beauty contest proxy          | `0xfa120236026e35eb9bdea6c38ad3b571ca1d01c2` |
-| Sarp AI Resolver              | `0x0000000000000000000000000000000000000000` |
-| Claimant helper               | `0x8910D0975DC2FF98a462C507531AA3Ee00C4603B` |
-| Paymaster                     | `0x64dAf14239A980969ACe1900A34C8a098AD21A8d` |

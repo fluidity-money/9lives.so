@@ -78,9 +78,10 @@ contract HelperFactory {
             _a.feeMinter,
             _a.feeReferrer,
             _a.isDppm,
-            _a.seedLiquidity
+            // TODO: hardcoded since we don't use this to create DPPM markets.
+            0
         ));
-        if (_a.seedLiquidity > 0 && !_a.isDppm) {
+        if (_a.seedLiquidity > 0) {
             FUSDC.transferFrom(msg.sender, address(this), _a.seedLiquidity);
             FUSDC.approve(address(t), _a.seedLiquidity);
             t.addLiquidityB9DDA952(_a.seedLiquidity, msg.sender, 0, type(uint256).max);
