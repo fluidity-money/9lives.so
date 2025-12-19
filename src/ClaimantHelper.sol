@@ -18,7 +18,7 @@ contract ClaimantHelper {
         // contract will claim will go to the recipient. We don't have any direct
         // custody of funds earned or any special middleware for this. Just to be careful,
         // this will only work for EOAs.
-        require(_recipient.code.size == 0, "recipient has code");
+        require(_recipient.code.length == 0, "recipient has code");
         _claim(_pools, _recipient);
     }
 

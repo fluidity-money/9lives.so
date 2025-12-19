@@ -91,8 +91,7 @@ impl StorageFactory {
                 DPPM_HOUR_CREATOR_ADDR | DPPM_15_MIN_CREATOR_ADDR => {}
                 _ => return Err(Error::NotDppmCreator),
             };
-            let seed_liq = U256::from(outcome_ids.len()) * SHARE_DECIMALS_EXP;
-            vault_call::borrow(VAULT_ADDR, trading_addr, seed_liq)?;
+            vault_call::borrow(VAULT_ADDR, trading_addr, starting_liq)?;
         }
 
         // This code is in a weird place, the UX no longer supports doing setup
