@@ -145,9 +145,6 @@ pub struct StorageTrading {
 
     /// Does this contract use the new vault system for refunding its claimed amount?
     pub feature_using_vault: StorageBool,
-
-    /// Does this contract use custom seed liquidity (instead of 2e6)?
-    pub feature_using_custom_seed_liq: StorageBool
 }
 
 // Storage accessors to simplify lookup.
