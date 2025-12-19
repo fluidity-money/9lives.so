@@ -29,7 +29,7 @@ impl StorageFactory {
     // as much as the amount that the pool was made for. For now, we take the
     // default winner as the first outcome that was supplied to this function.
     #[allow(non_snake_case, clippy::too_many_arguments)]
-    pub fn new_trading_9_A_8_7_E_788(
+    pub fn new_trading_37_E_9_F_4_B_E(
         &mut self,
         outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
@@ -42,7 +42,7 @@ impl StorageFactory {
         fee_minter: u64,
         fee_referrer: u64,
         backend_is_dppm: bool,
-        starting_liq: U256
+        seed_liq: U256
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
@@ -91,7 +91,7 @@ impl StorageFactory {
                 DPPM_HOUR_CREATOR_ADDR | DPPM_15_MIN_CREATOR_ADDR => {}
                 _ => return Err(Error::NotDppmCreator),
             };
-            vault_call::borrow(VAULT_ADDR, trading_addr, starting_liq)?;
+            vault_call::borrow(VAULT_ADDR, trading_addr, seed_liq)?;
         }
 
         // This code is in a weird place, the UX no longer supports doing setup
@@ -148,7 +148,7 @@ impl StorageFactory {
             fee_lp,
             fee_minter,
             fee_referrer,
-            starting_liq
+            seed_liq
         ));
 
         // If the infra market wasn't chosen, then we assume that the caller has done

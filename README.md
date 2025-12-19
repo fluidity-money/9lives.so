@@ -102,7 +102,7 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address              |
 |-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x4a69c2e9a66abdb23b63ea52514bf81d32c2b37f` |
+| Factory 1 implementation      | `0x8169766aed832cf6427c3b09ab4bd9b7607d81cb` |
 | Factory 2 implementation      | `0x40ad64826b745f30d3cac75c60b5dc725b719cd0` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
@@ -126,7 +126,7 @@ The error table lives in ERRORS.md.
 | Beauty contest implementation | `0xb7f978f707dc03b392d7215426cf98dc812d9454` |
 | Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
 | Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
-| Helper factory                | `0x25F4506E82fac0021C17a3595452B0D03D0c742D` |
+| Helper factory                | `0x937AB18278f8a11D1E7129f58A3Cdb026A16aD5a` |
 | BuyHelper2                    | `0x7aD7eDd9A72512335e2A7A980047Ec2eD233D21c` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |

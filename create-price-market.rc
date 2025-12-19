@@ -114,7 +114,7 @@ while(~ $SPN_TRADING_ADDR '') {
 	SPN_TRADING_ADDR=`{
 		call_and_send \
 			$SPN_FACTORY_ADDR \
-			'newTrading9A87E788((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool,uint256)(address)' \
+			'newTrading37E9F4BE((bytes8,uint256,string)[],address,uint64,uint64,bytes32,address,uint64,uint64,uint64,uint64,bool,uint256)(address)' \
 			$outcome_args \
 			$SPN_ORACLE_ADDR \
 			$SPN_STARTED_BY \

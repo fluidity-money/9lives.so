@@ -36,7 +36,7 @@ contract MockImpl1_2 {
     function swagC82F43C4() external pure returns (uint256) {
         return 2;
     }
-    function newTrading9A87E788(
+    function newTrading37E9F4BE(
         FactoryOutcome[] memory /* _outcomes */,
         address /* _oracle */,
         uint64 /* _timeStart */,
@@ -95,7 +95,7 @@ contract TestUpgradeableTwoProxy is Test {
             abi.encodeWithSelector(MockImpl2_2.migration.selector, 123)
         );
         FactoryOutcome[] memory o;
-        assertEq(MockImpl1_2(address(factoryProxy)).newTrading9A87E788(
+        assertEq(MockImpl1_2(address(factoryProxy)).newTrading37E9F4BE(
             o,
             address(0),
             0,
