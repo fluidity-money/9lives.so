@@ -249,7 +249,20 @@ export default function SimpleBuyDialog({
     posthog.getFeatureFlag("quick-add-buttons-as-percentages") === "test";
 
   const points = usePointsForDppmMint(data.starting, data.ending);
+  const handleSupplyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let v = e.target.value;
 
+    v = v.replace(",", ".");
+
+    v = v.replace(/[^0-9.]/g, "");
+
+    const parts = v.split(".");
+    if (parts.length > 2) {
+      v = parts[0] + "." + parts.slice(1).join("");
+    }
+
+    setValue("supply", v, { shouldDirty: true });
+  };
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between bg-9layer font-chicago">
       <div className="w-full space-y-4">
@@ -310,18 +323,16 @@ export default function SimpleBuyDialog({
           </p>
           <div className="hidden items-center md:flex">
             <input
-              {...register("supply")}
-              type="number"
-              min={0}
-              max={Number.MAX_SAFE_INTEGER}
+              type="text"
+              inputMode="decimal"
               value={supply}
+              onChange={handleSupplyChange}
               placeholder="0"
-              step="any"
               className={combineClass(
-                "w-full flex-1 bg-9layer text-right text-4xl font-bold",
+                "mr-2 w-full flex-1 bg-9layer text-right text-4xl font-bold",
                 (errors.supply || errors.usdValue) && "border-2 border-red-500",
               )}
-            ></input>
+            />
             <p
               className={combineClass(
                 "w-full flex-1 border-0 bg-9layer text-left text-4xl font-bold",
