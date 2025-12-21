@@ -145,19 +145,10 @@ export default function SimpleBuyDialog({
       (fromToken === ZeroAddress &&
         t.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   )?.symbol;
-  const experimentHigherMints = posthog.getFeatureFlag(
-    "increase-amount-by-suggesting-higher-mints",
-  );
-  const experimentMaxBalance = posthog.getFeatureFlag(
-    "first-balance-is-the-max-amount",
-  );
-  const experimentLimitQuickAddBtn = posthog.getFeatureFlag(
-    "limit-quick-add-amount-button-for-max-balance",
-  );
-  const setToMaxShare = async () => {
+  const setToShare = async (percentage: number) => {
     if (!selectedTokenBalance) return;
     const maxBalance = formatUnits(selectedTokenBalance, fromDecimals);
-    setValue("supply", maxBalance);
+    setValue("supply", ((Number(maxBalance) * percentage) / 1).toString());
     if (Number(maxBalance) > 0) clearErrors();
   };
   const {
@@ -253,57 +244,10 @@ export default function SimpleBuyDialog({
       handleNetworkChange(activeChain);
     }
   }, [activeChain, handleNetworkChange]);
-  const [featureIncreasedMintAmt, setFeatureIncreasedMintAmt] = useState(1);
-  useEffect(() => {
-    switch (experimentHigherMints) {
-      case "test-5":
-        setFeatureIncreasedMintAmt(5);
-        break;
-      case "test-10":
-        setFeatureIncreasedMintAmt(10);
-        break;
-      default:
-        setFeatureIncreasedMintAmt(1);
-        break;
-    }
-  }, [experimentHigherMints]);
-  useEffect(() => {
-    if (
-      experimentMaxBalance === "test" &&
-      selectedTokenBalance &&
-      Number(selectedTokenBalance) > 0
-    ) {
-      setValue(
-        "supply",
-        formatUnits(BigInt(selectedTokenBalance), fromDecimals),
-      );
-    }
-  }, [setValue, experimentMaxBalance, selectedTokenBalance, fromDecimals]);
 
-  const handleReturn = useCallback(
-    (num: number) => {
-      const b = num * featureIncreasedMintAmt;
-      return ["+" + b, b] as const;
-    },
-    [featureIncreasedMintAmt],
-  );
-  const maxBalOrAdd = useCallback(
-    (amt: number) => {
-      const sum = amt + Number(supply);
-      if (selectedTokenBalance && sum > Number(selectedTokenBalance))
-        return selectedTokenBalance;
-      return sum.toString();
-    },
-    [selectedTokenBalance, supply],
-  );
-  const plainAdd = (amt: number) => (amt + Number(supply)).toString();
-  const quickAdd = (amt: number) =>
-    experimentLimitQuickAddBtn === "test" ? maxBalOrAdd(amt) : plainAdd(amt);
-  const [firstMintTitle, firstMintAmt] = handleReturn(1);
+  const quickAddAsPercentage =
+    posthog.getFeatureFlag("quick-add-buttons-as-percentages") === "test";
 
-  const [secondMintTitle, secondMintAmt] = handleReturn(10);
-
-  const [thirdMintTitle, thirdMintAmt] = handleReturn(100);
   const points = usePointsForDppmMint(data.starting, data.ending);
 
   return (
@@ -449,25 +393,37 @@ export default function SimpleBuyDialog({
 
         <div className="flex text-sm">
           <Button
-            title={firstMintTitle}
+            title={quickAddAsPercentage ? "10%" : "10"}
             className={"flex-auto"}
-            onClick={() => setValue("supply", quickAdd(firstMintAmt))}
+            onClick={() =>
+              quickAddAsPercentage
+                ? setToShare(0.1)
+                : setValue("supply", supply + 10)
+            }
           />
           <Button
-            title={secondMintTitle}
+            title={quickAddAsPercentage ? "25%" : "100"}
             className={"flex-auto"}
-            onClick={() => setValue("supply", quickAdd(secondMintAmt))}
+            onClick={() =>
+              quickAddAsPercentage
+                ? setToShare(0.25)
+                : setValue("supply", supply + 100)
+            }
           />
           <Button
-            title={thirdMintTitle}
+            title={quickAddAsPercentage ? "50%" : "10"}
             className={"flex-auto"}
-            onClick={() => setValue("supply", quickAdd(thirdMintAmt))}
+            onClick={() =>
+              quickAddAsPercentage
+                ? setToShare(0.5)
+                : setValue("supply", supply + 1000)
+            }
           />
           <Button
             disabled={!account}
             title="MAX"
             className={"flex-auto"}
-            onClick={setToMaxShare}
+            onClick={() => setToShare(1)}
           />
         </div>
 
