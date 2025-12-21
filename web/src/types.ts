@@ -12,6 +12,7 @@ import {
   requestUserParticipated,
   requestUnclaimedCampaigns,
   request9LivesPoints,
+  requestAssets,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -298,3 +299,5 @@ export type UnclaimedCampaign = Omit<
 export type SimpleMarketKey = keyof typeof config.simpleMarkets;
 export type SimpleMarketPeriod =
   (typeof config.simpleMarkets)[keyof typeof config.simpleMarkets]["periods"][number];
+
+export type RawAsset = Awaited<ReturnType<typeof requestAssets>>[number];

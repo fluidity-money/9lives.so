@@ -1,5 +1,5 @@
 import config from "@/config";
-import { requestSimpleMarket } from "@/providers/graphqlClient";
+import { requestAssets, requestSimpleMarket } from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import SimpleNavMenu from "@/components/simple/simpleNavMenu";
@@ -64,12 +64,14 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
     ending: campaignData.ending,
   });
 
+  const assets = await requestAssets();
+
   if (!isSimpleMarketKey(symbol)) notFound();
   if (!isSimpleMarketPeriod(period)) notFound();
 
   return (
     <div className="flex flex-col gap-4">
-      <SimpleNavMenu symbol={symbol} period={period} />
+      <SimpleNavMenu symbol={symbol} period={period} assets={assets} />
       <div className="flex items-center gap-2">
         <Image
           src={config.simpleMarkets[symbol].logo}

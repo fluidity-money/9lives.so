@@ -3,9 +3,9 @@ import config from "@/config";
 import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import {
   requestCampaignById,
+  requestCampaignList,
   requestPriceChanges,
 } from "@/providers/graphqlClient";
-import { getCampaignsForSSG } from "@/serverData/getCampaigns";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -14,7 +14,7 @@ type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
 export const revalidate = 60;
 export async function generateStaticParams() {
-  const campaigns = await getCampaignsForSSG();
+  const campaigns = await requestCampaignList({ page: -1 });
   return campaigns.map((campaign) => ({
     id: campaign.identifier,
   }));

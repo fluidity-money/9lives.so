@@ -2,9 +2,10 @@
 import config from "@/config";
 import TabButton from "../tabButton";
 import Link from "next/link";
-import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
+import { RawAsset, SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 import isMarketOpen from "../../utils/isMarketOpen";
 import TabRadioButton from "../tabRadioButton";
+import useAssets from "@/hooks/useAssets";
 
 function SimpleTabMenuButton({
   market,
@@ -30,10 +31,13 @@ function SimpleTabMenuButton({
 export default function SimpleNavMenu({
   symbol,
   period,
+  assets: initialAssets,
 }: {
   symbol: SimpleMarketKey;
   period: SimpleMarketPeriod;
+  assets: RawAsset[];
 }) {
+  const { data: assets } = useAssets(initialAssets);
   const mins15Markets = Object.values(config.simpleMarkets)
     .filter((i) => i.periods.includes("15mins"))
     .map((i) => i.slug);
@@ -68,6 +72,17 @@ export default function SimpleNavMenu({
           .filter((m) =>
             m.periods.includes(period.toLowerCase() as SimpleMarketPeriod),
           )
+          .sort((a, b) => {
+            const aSpent =
+              assets?.find(
+                (as) => as.name.toLowerCase() === a.slug.toLowerCase(),
+              )?.totalSpent ?? 0;
+            const bSpent =
+              assets?.find(
+                (as) => as.name.toLowerCase() === b.slug.toLocaleLowerCase(),
+              )?.totalSpent ?? 0;
+            return bSpent - aSpent;
+          })
           .map((m) => (
             <SimpleTabMenuButton
               key={m.slug}
