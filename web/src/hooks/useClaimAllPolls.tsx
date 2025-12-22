@@ -14,7 +14,7 @@ import { UnclaimedCampaign } from "@/types";
 
 export default function useClaimAllPools(
   data: UnclaimedCampaign[],
-  closeModal: () => void,
+  closeModal?: () => void,
   token?: string,
 ) {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
@@ -46,7 +46,7 @@ export default function useClaimAllPools(
       toast.error(`Claim error: ${e.message}`, { id: addresses.join("") });
     },
     onSuccess: (d, { account, addresses }) => {
-      closeModal();
+      closeModal?.();
       toast.success(
         `Claimed successfuly. ${d.transactionHash.slice(0, 4)}...${d.transactionHash.slice(-4)}`,
         { id: addresses.join("") },

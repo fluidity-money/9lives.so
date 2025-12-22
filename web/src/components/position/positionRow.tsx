@@ -16,7 +16,7 @@ import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
 import useDppmRewards from "@/hooks/useDppmRewards";
-import useDppmClaimAll from "@/hooks/useDppmClaimAll";
+import useClaimAllPools from "@/hooks/useClaimAllPolls";
 export default function PositionRow({
   data,
   price,
@@ -51,17 +51,32 @@ export default function PositionRow({
     outcomes: campaignContent.outcomes as Outcome[],
     isDpm: campaignContent.isDpm,
   });
-  const { claimAll } = useDppmClaimAll({
-    tradingAddr: campaignContent.poolAddress,
-    outcomes: campaignContent.outcomes,
-    campaignId: campaignContent.identifier,
-  });
+  // const { claimAll } = useDppmClaimAll({
+  //   tradingAddr: campaignContent.poolAddress,
+  //   outcomes: campaignContent.outcomes,
+  //   campaignId: campaignContent.identifier,
+  // });
   const { connect } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const historicalValue = Math.trunc(
     history?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0,
   );
+  const { mutate: claimAllPools } = useClaimAllPools([
+    {
+      ...data,
+      priceMetadata: campaignContent.priceMetadata ?? {
+        baseAsset: "btc",
+        priceTargetForUp: "0",
+      },
+      outcomes: campaignContent.outcomes,
+      identifier: campaignContent.identifier,
+      poolAddress: campaignContent.poolAddress,
+      starting: campaignContent.starting,
+      ending: campaignContent.ending,
+      totalSpent: historicalValue,
+    },
+  ]);
   const averageShareCost = +formatFusdc(historicalValue, 6) / +data.balance;
   const addPosition = usePortfolioStore((s) => s.addPositionValue);
   const { data: estimationOfBurn } = useEstimateBurn({
@@ -127,7 +142,10 @@ export default function PositionRow({
     try {
       setIsClaiming(true);
       if (campaignContent.isDppm) {
-        await claimAll(account);
+        await claimAllPools({
+          addresses: [campaignContent.poolAddress],
+          account,
+        });
       } else {
         await claim(account, data.balanceRaw);
       }
