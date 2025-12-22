@@ -21,7 +21,6 @@ pub type CtorArgs = (
     u64,                // [2] Time start
     u64,                // [3] Time ending
     Address,            // [4] Fee recipient
-    Address,            // [5] Share implementation
     bool,               // [6] Should buffer time?
     u64,                // [7] Fee for creator
     u64,                // [8] Fee for LP
@@ -42,7 +41,7 @@ impl StorageTrading {
     // here to circumvent that, which alters the signature.
     #[allow(clippy::too_many_arguments)]
     pub fn ctor(&mut self, a: CtorArgs) -> R<()> {
-        self.internal_ctor(a.0, a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8, a.9, a.10, a.11)
+        self.internal_ctor(a.0, a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8, a.9, a.10)
     }
 
     pub fn is_shutdown(&self) -> R<bool> {
@@ -153,6 +152,10 @@ impl StorageTrading {
         Ok(self.outcome_ids_iter().collect::<Vec<_>>())
     }
 
+    pub fn feature_internal_tokens(&self) -> R<bool> {
+        Ok(self.feature_internal_tokens.get())
+    }
+
     pub fn extend_time(&mut self, new_ts: u64) -> R<()> {
         assert_or!(msg_sender() == DAO_OP_ADDR, Error::NotOperator);
         assert_or!(new_ts > block_timestamp(), Error::EndingInPast);
@@ -172,15 +175,19 @@ impl StorageTrading {
         unimplemented!();
         #[cfg(feature = "trading-backend-dppm")]
         {
-            let user_share_amt = share_call::balance_of(
-                proxy::get_share_addr(
-                    self.factory_addr.get(),
-                    contract_address(),
-                    self.share_impl.get(),
-                    outcome_id,
-                ),
-                spender,
-            )?;
+            let user_share_amt = if self.feature_internal_tokens.get() {
+                todo!()
+            } else {
+                share_call::balance_of(
+                    proxy::get_share_addr(
+                        self.factory_addr.get(),
+                        contract_address(),
+                        self.share_impl.get(),
+                        outcome_id,
+                    ),
+                    spender,
+                )?
+            };
             let user_boosted_shares = self
                 .ninetails_user_boosted_shares
                 .getter(spender)

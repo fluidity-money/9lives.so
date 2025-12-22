@@ -132,16 +132,20 @@ impl StorageTrading {
                         self.amm_shares.get(outcome_id)
                     )));
                 if !outcome_shares_received.is_zero() {
-                    share_call::mint(
-                        proxy::get_share_addr(
-                            self.factory_addr.get(),
-                            contract_address(),
-                            self.share_impl.get(),
-                            outcome_id,
-                        ),
-                        recipient,
-                        outcome_shares_received,
-                    )?;
+                    if self.feature_internal_tokens.get() {
+                        todo!()
+                    } else {
+                        share_call::mint(
+                            proxy::get_share_addr(
+                                self.factory_addr.get(),
+                                contract_address(),
+                                self.share_impl.get(),
+                                outcome_id,
+                            ),
+                            recipient,
+                            outcome_shares_received,
+                        )?;
+                    }
                     evm::log(events::SharesMinted {
                         identifier: outcome_id,
                         shareAmount: outcome_shares_received,
@@ -269,16 +273,20 @@ impl StorageTrading {
                         self.amm_shares.get(outcome_id),
                     )));
                 if !outcome_shares_received.is_zero() {
-                    share_call::mint(
-                        proxy::get_share_addr(
-                            self.factory_addr.get(),
-                            contract_address(),
-                            self.share_impl.get(),
-                            outcome_id,
-                        ),
-                        recipient,
-                        outcome_shares_received,
-                    )?;
+                    if self.feature_internal_tokens.get() {
+                        todo!()
+                    } else {
+                        share_call::mint(
+                            proxy::get_share_addr(
+                                self.factory_addr.get(),
+                                contract_address(),
+                                self.share_impl.get(),
+                                outcome_id,
+                            ),
+                            recipient,
+                            outcome_shares_received,
+                        )?;
+                    }
                     evm::log(events::SharesMinted {
                         identifier: outcome_id,
                         shareAmount: outcome_shares_received,
@@ -307,7 +315,7 @@ impl StorageTrading {
         outcome_id: FixedBytes<8>,
         usd_amt: U256,
         min_shares: U256,
-        referrer: Address
+        referrer: Address,
     ) -> R<(U256, U256)> {
         assert_or!(
             !self.amm_liquidity.get().is_zero(),
@@ -374,16 +382,20 @@ impl StorageTrading {
                 })
                 .collect::<Vec<_>>(),
         });
-        c!(share_call::burn(
-            proxy::get_share_addr(
-                self.factory_addr.get(),
-                contract_address(),
-                self.share_impl.get(),
-                outcome_id,
-            ),
-            sender,
-            burned_shares
-        ));
+        if self.feature_internal_tokens.get() {
+            todo!()
+        } else {
+            c!(share_call::burn(
+                proxy::get_share_addr(
+                    self.factory_addr.get(),
+                    contract_address(),
+                    self.share_impl.get(),
+                    outcome_id,
+                ),
+                sender,
+                burned_shares
+            ));
+        }
         let fees = self.calculate_and_set_fees(usd_amt, false, referrer)?;
         let usd_amt = c!(usd_amt
             .checked_sub(fees)
@@ -529,11 +541,19 @@ impl StorageTrading {
         // If the user gave us a U256::MAX, we claim everything they have.
         assert_or!(share_amt > U256::ZERO, Error::ZeroShares);
         let share_amt = if share_amt == U256::MAX {
-            share_call::balance_of(share_addr, spender)?
+            if self.feature_internal_tokens.get() {
+                todo!()
+            } else {
+                share_call::balance_of(share_addr, spender)?
+            }
         } else {
             share_amt
         };
-        share_call::burn(share_addr, spender, share_amt)?;
+        if self.feature_internal_tokens.get() {
+            todo!()
+        } else {
+            share_call::burn(share_addr, spender, share_amt)?;
+        }
         fusdc_call::transfer(recipient, share_amt)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
@@ -608,16 +628,20 @@ impl StorageTrading {
                 })
                 .collect::<Vec<_>>(),
         });
-        share_call::mint(
-            proxy::get_share_addr(
-                self.factory_addr.get(),
-                contract_address(),
-                self.share_impl.get(),
-                outcome_id,
-            ),
-            recipient,
-            shares,
-        )?;
+        if self.feature_internal_tokens.get() {
+            todo!()
+        } else {
+            share_call::mint(
+                proxy::get_share_addr(
+                    self.factory_addr.get(),
+                    contract_address(),
+                    self.share_impl.get(),
+                    outcome_id,
+                ),
+                recipient,
+                shares,
+            )?;
+        }
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,

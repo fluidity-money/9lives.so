@@ -145,6 +145,9 @@ pub struct StorageTrading {
 
     /// Does this contract use the new vault system for refunding its claimed amount?
     pub feature_using_vault: StorageBool,
+
+    /// Use local accounting for tokens instead of erc20.
+    pub feature_internal_tokens: StorageBool,
 }
 
 // Storage accessors to simplify lookup.

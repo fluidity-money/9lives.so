@@ -51,7 +51,6 @@ contract MockFactory is INineLivesFactory {
             timeStart: _timeStart,
             timeEnding: _timeEnding,
             feeRecipient: _feeRecipient,
-            shareImpl: address(0),
             shouldBufferTime: false,
             feeCreator: 0,
             feeMinter: 0,

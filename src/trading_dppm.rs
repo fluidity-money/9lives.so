@@ -72,7 +72,7 @@ impl StorageTrading {
             Error::NonexistentOutcome
         );
         if value.is_zero() {
-            return Ok(U256::ZERO)
+            return Ok(U256::ZERO);
         }
         self.dppm_clawback_impossible.set(true);
         let outcome_a = self.outcome_list.get(0).unwrap();
@@ -150,7 +150,11 @@ impl StorageTrading {
                 .setter(outcome_id)
                 .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
         }
-        share_call::mint(share_addr, recipient, shares)?;
+        if self.feature_internal_tokens.get() {
+            todo!()
+        } else {
+            share_call::mint(share_addr, recipient, shares)?;
+        }
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,
@@ -221,14 +225,22 @@ impl StorageTrading {
         // Start to burn their share of the supply to convert to a payoff amount.
         // Take the max of what they asked.
         if amt.is_zero() {
-            return Ok(U256::ZERO)
+            return Ok(U256::ZERO);
         }
         let amt = if amt == U256::MAX {
-            share_call::balance_of(share_addr, spender)?
+            if self.feature_internal_tokens.get() {
+                todo!()
+            } else {
+                share_call::balance_of(share_addr, spender)?
+            }
         } else {
             amt
         };
-        share_call::burn(share_addr, spender, amt)?;
+        if self.feature_internal_tokens.get() {
+            todo!()
+        } else {
+            share_call::burn(share_addr, spender, amt)?;
+        }
         let user_boosted_shares = self
             .ninetails_user_boosted_shares
             .get(spender)
@@ -398,7 +410,7 @@ impl StorageTrading {
         extra_boosted_shares: U256,
     ) -> R<U256> {
         if user_boosted_shares.is_zero() {
-            return Ok(U256::ZERO)
+            return Ok(U256::ZERO);
         }
         let all_boosted_shares = self
             .ninetails_global_boosted_shares

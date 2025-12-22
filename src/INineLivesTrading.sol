@@ -20,7 +20,6 @@ struct CtorArgs {
     uint64 timeStart;
     uint64 timeEnding;
     address feeRecipient;
-    address shareImpl;
     bool shouldBufferTime;
     uint64 feeCreator;
     uint64 feeMinter;

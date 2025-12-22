@@ -53,7 +53,6 @@ contract TestNineLivesPaymaster is Test {
             timeStart: 0,
             timeEnding: type(uint64).max,
             feeRecipient: address(0),
-            shareImpl: address(0),
             shouldBufferTime: false,
             feeCreator: 0,
             feeMinter: 0,

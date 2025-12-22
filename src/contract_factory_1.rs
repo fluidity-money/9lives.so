@@ -15,7 +15,7 @@ use crate::{
     fees::*,
     fusdc_call,
     immutables::*,
-    infra_market_call, proxy, share_call, trading_call,
+    infra_market_call, proxy, trading_call,
     utils::{block_timestamp, msg_sender},
     vault_call,
 };
@@ -123,18 +123,12 @@ impl StorageFactory {
         }
 
         for (outcome_identifier, _sqrt_price, outcome_name) in outcomes.iter() {
-            let erc20_identifier =
-                proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
-            let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
-                .map_err(Error::DeployError)?;
-            // Set up the share ERC20 asset, with the description.
-            share_call::ctor(erc20_addr, outcome_name.clone(), trading_addr)?;
-            evm::log(events::OutcomeCreated {
+            // We used to do deployment of tokens here. Now we don't:
+            evm::log(events::OutcomeCreated2 {
                 tradingIdentifier: trading_id,
-                erc20Identifier: erc20_identifier,
-                erc20Addr: erc20_addr,
             });
         }
+
         c!(trading_call::ctor(
             trading_addr,
             outcome_ids.clone(),
@@ -142,7 +136,6 @@ impl StorageFactory {
             time_start,
             time_ending,
             fee_recipient,
-            self.share_impl.get(),
             false,
             fee_creator,
             fee_lp,

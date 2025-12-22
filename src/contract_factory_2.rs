@@ -22,13 +22,11 @@ impl StorageFactory {
     #[mutants::skip]
     pub fn ctor(
         &mut self,
-        share_impl: Address,
         oracle_addr: Address,
         operator_addr: Address,
     ) -> R<()> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);
-        self.share_impl.set(share_impl);
         self.infra_market.set(oracle_addr);
         self.version.set(U8::from(1));
         self.operator.set(operator_addr);

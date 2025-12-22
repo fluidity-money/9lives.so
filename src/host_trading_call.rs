@@ -12,7 +12,6 @@ pub fn ctor(
     _time_start: u64,
     _time_ending: u64,
     _fee_recipient: Address,
-    _share_impl: Address,
     _should_buffer_time: bool,
     _fee_creator: u64,
     _fee_lp: u64,

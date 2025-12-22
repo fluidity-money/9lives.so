@@ -31,7 +31,6 @@ impl StorageTrading {
         time_start: u64,
         time_ending: u64,
         fee_recipient: Address,
-        share_impl: Address,
         should_buffer_time: bool,
         fee_creator: u64,
         fee_lp: u64,
@@ -51,7 +50,6 @@ impl StorageTrading {
         // date isn't in the past, in places that don't make sense!
         assert_or!(
             time_ending >= block_timestamp()
-                && !share_impl.is_zero()
                 && time_ending > time_start
                 && outcomes.len() >= 2,
             Error::BadTradingCtor
@@ -69,7 +67,6 @@ impl StorageTrading {
         // We assume that the sender is the factory.
         self.created.set(true);
         self.factory_addr.set(msg_sender());
-        self.share_impl.set(share_impl);
         // If the fee recipient is zero, then we set it to the DAO address.
         self.fee_recipient.set(if fee_recipient.is_zero() {
             DAO_EARN_ADDR

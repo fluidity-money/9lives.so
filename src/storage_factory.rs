@@ -43,7 +43,8 @@ pub struct StorageFactory {
     /// Infrastructure market address.
     pub infra_market: StorageAddress,
 
-    /// Implementation of ERC20 for the Shares that we give out
+    /// Implementation of ERC20 for the Shares that we give out. Not set any
+    /// more.
     pub share_impl: StorageAddress,
 
     pub __unused_1: StorageAddress,
