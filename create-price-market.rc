@@ -40,10 +40,11 @@ if(test `{echo $* | wc -w} -lt 2) \
 
 sum=`{{ for(n) echo $n } | awk '{ sum += $1 } END { print sum }' }
 
+SPN_SENDER_ADDR=0x12F23D2001A86e600369E6a6ABE1E6B932D0d70C
+
 vars=(\
 	SPN_SUPERPOSITION_URL \
 	SPN_SUPERPOSITION_KEY \
-	SPN_SENDER_ADDR \
 	SPN_ADMIN_SECRET \
 	SPN_FUSDC_ADDR \
 	SPN_BASE_ASSET \
