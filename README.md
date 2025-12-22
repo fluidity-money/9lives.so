@@ -102,7 +102,7 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address              |
 |-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x8169766aed832cf6427c3b09ab4bd9b7607d81cb` |
+| Factory 1 implementation      | `0x7b6bfdc06d37935f3946b8690cf9d14244dbfd52` |
 | Factory 2 implementation      | `0x40ad64826b745f30d3cac75c60b5dc725b719cd0` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |

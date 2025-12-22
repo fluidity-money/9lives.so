@@ -42,7 +42,7 @@ impl StorageFactory {
         fee_minter: u64,
         fee_referrer: u64,
         backend_is_dppm: bool,
-        seed_liq: U256
+        seed_liq: U256,
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
 
@@ -88,7 +88,7 @@ impl StorageFactory {
             // resolution. It lets us accumulate DAO-earned fees to the address to
             // also pay off the initial liquidity, reducing time spent on management.
             match msg_sender() {
-                DPPM_HOUR_CREATOR_ADDR | DPPM_15_MIN_CREATOR_ADDR => {}
+                DPPM_HOUR_CREATOR_ADDR | DPPM_15_MIN_CREATOR_ADDR | DPPM_5_MIN_CREATOR_ADDR => {}
                 _ => return Err(Error::NotDppmCreator),
             };
             vault_call::borrow(VAULT_ADDR, trading_addr, seed_liq)?;
