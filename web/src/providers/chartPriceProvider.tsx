@@ -12,8 +12,15 @@ export const wsClient = createClient({
 });
 
 const subPricesForDuration = `
-subscription($symbol: String!, $starting: timestamp!, $ending: timestamp!) {
-  oracles_ninelives_prices_2(order_by: {created_by: desc}, where: {created_by: {_gte: $starting, _lte: $ending}, base: {_eq: $symbol}}, limit: 1) {
+subscription ($symbol: String!, $starting: timestamp!, $ending: timestamp!) {
+  oracles_ninelives_prices_2(
+    order_by: { created_by: desc }
+    where: {
+      created_by: { _gte: $starting, _lte: $ending }
+      base: { _eq: $symbol }
+    }
+    limit: 5
+  ) {
     id
     amount
     created_by
@@ -38,7 +45,7 @@ export default function ChartPriceProvider({
         query: subPricesForDuration,
         variables: {
           symbol: symbol.toUpperCase(),
-          starting: new Date().toISOString(),
+          starting: new Date(starting).toISOString(),
           ending: new Date(ending).toISOString(),
         },
       },
