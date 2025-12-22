@@ -1992,7 +1992,7 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string, 
 	where
     py.spender = ?
     and py.was_spent = false
-	and (bs_sum.campaign_content->>'ending')::numeric < EXTRACT(EPOCH FROM NOW())
+	and bs_sum.campaign_content->>'winner' is not null
 	`
 	if token != nil {
 		query += ` and bs_sum.campaign_content->'priceMetadata'->>'baseAsset' = ?`
