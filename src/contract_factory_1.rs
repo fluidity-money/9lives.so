@@ -122,7 +122,7 @@ impl StorageFactory {
                 .set(self.dao_claimable.get() + INCENTIVE_AMT_MODERATION);
         }
 
-        for (outcome_identifier, _sqrt_price, outcome_name) in outcomes.iter() {
+        for (_, _sqrt_price, outcome_name) in outcomes.iter() {
             // We used to do deployment of tokens here. Now we don't:
             evm::log(events::OutcomeCreated2 {
                 tradingIdentifier: trading_id,

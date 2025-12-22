@@ -131,32 +131,35 @@ impl StorageTrading {
                         prev_shares[i],
                         self.amm_shares.get(outcome_id)
                     )));
-                if !outcome_shares_received.is_zero() {
-                    if self.feature_internal_tokens.get() {
-                        todo!()
-                    } else {
-                        share_call::mint(
-                            proxy::get_share_addr(
-                                self.factory_addr.get(),
-                                contract_address(),
-                                self.share_impl.get(),
-                                outcome_id,
-                            ),
-                            recipient,
-                            outcome_shares_received,
-                        )?;
-                    }
-                    evm::log(events::SharesMinted {
-                        identifier: outcome_id,
-                        shareAmount: outcome_shares_received,
-                        spender: msg_sender(),
-                        recipient,
-                        fusdcSpent: U256::ZERO,
-                    });
-                }
                 Ok((outcome_id, outcome_shares_received))
             })
             .collect::<R<Vec<_>>>()?;
+        for (outcome_id, outcome_shares_received) in shares_received.iter() {
+            if !outcome_shares_received.is_zero() {
+                if self.feature_internal_tokens.get() {
+                    self.give_shares(*outcome_id, recipient, *outcome_shares_received)?;
+                } else {
+                    #[allow(deprecated)]
+                    share_call::mint(
+                        proxy::get_share_addr(
+                            self.factory_addr.get(),
+                            contract_address(),
+                            self.share_impl.get(),
+                            *outcome_id,
+                        ),
+                        recipient,
+                        *outcome_shares_received,
+                    )?;
+                }
+                evm::log(events::SharesMinted {
+                    identifier: *outcome_id,
+                    shareAmount: *outcome_shares_received,
+                    spender: msg_sender(),
+                    recipient,
+                    fusdcSpent: U256::ZERO,
+                });
+            }
+        }
         assert_or!(
             add_user_liq >= min_liquidity,
             Error::NotEnoughLiquidityReturned
@@ -272,32 +275,35 @@ impl StorageTrading {
                         prev_shares[i],
                         self.amm_shares.get(outcome_id),
                     )));
-                if !outcome_shares_received.is_zero() {
-                    if self.feature_internal_tokens.get() {
-                        todo!()
-                    } else {
-                        share_call::mint(
-                            proxy::get_share_addr(
-                                self.factory_addr.get(),
-                                contract_address(),
-                                self.share_impl.get(),
-                                outcome_id,
-                            ),
-                            recipient,
-                            outcome_shares_received,
-                        )?;
-                    }
-                    evm::log(events::SharesMinted {
-                        identifier: outcome_id,
-                        shareAmount: outcome_shares_received,
-                        spender: msg_sender(),
-                        recipient,
-                        fusdcSpent: U256::ZERO,
-                    });
-                }
                 Ok((outcome_id, outcome_shares_received))
             })
             .collect::<R<Vec<_>>>()?;
+        for (outcome_id, outcome_shares_received) in shares_received.iter() {
+            if !outcome_shares_received.is_zero() {
+                if self.feature_internal_tokens.get() {
+                    self.give_shares(*outcome_id, recipient, *outcome_shares_received)?
+                } else {
+                    #[allow(deprecated)]
+                    share_call::mint(
+                        proxy::get_share_addr(
+                            self.factory_addr.get(),
+                            contract_address(),
+                            self.share_impl.get(),
+                            *outcome_id,
+                        ),
+                        recipient,
+                        *outcome_shares_received,
+                    )?;
+                }
+                evm::log(events::SharesMinted {
+                    identifier: *outcome_id,
+                    shareAmount: *outcome_shares_received,
+                    spender: msg_sender(),
+                    recipient,
+                    fusdcSpent: U256::ZERO,
+                });
+            }
+        }
         evm::log(events::LiquidityRemoved {
             fusdcAmt: amount,
             recipient,
@@ -383,9 +389,10 @@ impl StorageTrading {
                 .collect::<Vec<_>>(),
         });
         if self.feature_internal_tokens.get() {
-            todo!()
+            self.burn_shares(outcome_id, sender, burned_shares)?
         } else {
-            c!(share_call::burn(
+            #[allow(deprecated)]
+            share_call::burn(
                 proxy::get_share_addr(
                     self.factory_addr.get(),
                     contract_address(),
@@ -393,8 +400,8 @@ impl StorageTrading {
                     outcome_id,
                 ),
                 sender,
-                burned_shares
-            ));
+                burned_shares,
+            )?;
         }
         let fees = self.calculate_and_set_fees(usd_amt, false, referrer)?;
         let usd_amt = c!(usd_amt
@@ -542,16 +549,18 @@ impl StorageTrading {
         assert_or!(share_amt > U256::ZERO, Error::ZeroShares);
         let share_amt = if share_amt == U256::MAX {
             if self.feature_internal_tokens.get() {
-                todo!()
+                self.erc20_balance_of.getter(outcome_id).get(spender)
             } else {
+                #[allow(deprecated)]
                 share_call::balance_of(share_addr, spender)?
             }
         } else {
             share_amt
         };
         if self.feature_internal_tokens.get() {
-            todo!()
+            self.burn_shares(outcome_id, spender, share_amt)?
         } else {
+            #[allow(deprecated)]
             share_call::burn(share_addr, spender, share_amt)?;
         }
         fusdc_call::transfer(recipient, share_amt)?;
@@ -629,8 +638,9 @@ impl StorageTrading {
                 .collect::<Vec<_>>(),
         });
         if self.feature_internal_tokens.get() {
-            todo!()
+            self.give_shares(outcome_id, recipient, shares)?
         } else {
+            #[allow(deprecated)]
             share_call::mint(
                 proxy::get_share_addr(
                     self.factory_addr.get(),

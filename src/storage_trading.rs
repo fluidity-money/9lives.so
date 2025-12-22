@@ -1,5 +1,7 @@
 use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
+use crate::error::Error;
+
 #[cfg(not(target_arch = "wasm32"))]
 use crate::utils::msg_sender;
 
@@ -148,12 +150,43 @@ pub struct StorageTrading {
 
     /// Use local accounting for tokens instead of erc20.
     pub feature_internal_tokens: StorageBool,
+
+    /// Internal accounting of token balances.
+    pub erc20_balance_of: StorageMap<FixedBytes<8>, StorageMap<Address, StorageU256>>,
 }
 
 // Storage accessors to simplify lookup.
 impl StorageTrading {
     pub fn outcome_ids_iter(&self) -> impl Iterator<Item = FixedBytes<8>> + '_ {
         (0..self.outcome_list.len()).map(|x| self.outcome_list.get(x).unwrap())
+    }
+
+    pub fn give_shares(
+        &mut self,
+        id: FixedBytes<8>,
+        spender: Address,
+        amt: U256,
+    ) -> Result<(), Error> {
+        let bal = self.erc20_balance_of.getter(id).get(spender);
+        self.erc20_balance_of
+            .setter(id)
+            .setter(spender)
+            .set(bal.checked_add(amt).ok_or(Error::CheckedAddOverflow)?);
+        Ok(())
+    }
+
+    pub fn burn_shares(
+        &mut self,
+        id: FixedBytes<8>,
+        spender: Address,
+        amt: U256,
+    ) -> Result<(), Error> {
+        let bal = self.erc20_balance_of.getter(id).get(spender);
+        self.erc20_balance_of
+            .setter(id)
+            .setter(spender)
+            .set(bal.checked_sub(amt).ok_or(Error::CheckedSubOverflow(bal, amt))?);
+        Ok(())
     }
 }
 

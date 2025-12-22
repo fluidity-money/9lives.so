@@ -176,7 +176,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dppm")]
         {
             let user_share_amt = if self.feature_internal_tokens.get() {
-                todo!()
+                self.erc20_balance_of.getter(outcome_id).get(spender)
             } else {
                 share_call::balance_of(
                     proxy::get_share_addr(
