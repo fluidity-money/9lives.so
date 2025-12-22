@@ -27,7 +27,7 @@ export default async function CreateCampaign() {
             Earn fees and points by creating markets
           </span>
           <br />
-          Collect 1% of all buy volume as the creator, 1% as a LP and win 2
+          Collect 1% of all buy volume as the creator, 1% as a LP and earn 2
           9lives points. 1% goes to the DAO.
         </p>
       </div>

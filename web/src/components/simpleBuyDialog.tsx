@@ -385,7 +385,7 @@ export default function SimpleBuyDialog({
         {usdValue ? (
           <div className="flex items-center">
             <span className="mx-auto bg-9green px-2 py-1 font-chicago text-sm uppercase">
-              WIN {(usdValue * points).toFixed(2)} 9lives POINTS
+              EARN {(usdValue * points).toFixed(2)} 9lives POINTS
             </span>
           </div>
         ) : null}

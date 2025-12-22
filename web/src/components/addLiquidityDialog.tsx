@@ -232,7 +232,7 @@ export default function AddLiquidityDialog({
         {errors.fromToken && <ErrorInfo text={errors.fromToken.message} />}
       </div>
       <span className="mx-auto bg-9green px-2 py-1 font-chicago text-xs uppercase">
-        WIN {(usdValue * pointMultiplier * 3600 * 24).toFixed(2)} 9lives POINTS
+        EARN {(usdValue * pointMultiplier * 3600 * 24).toFixed(2)} 9lives POINTS
         per day you staked
       </span>
       <Button
