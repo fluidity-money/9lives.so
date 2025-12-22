@@ -108,7 +108,7 @@ const simpleMarkets = {
     tabTitle: "GOLD",
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 2,
-    periods: ["hourly"],
+    periods: ["hourly", "15mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
   },
