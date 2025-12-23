@@ -239,6 +239,10 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: Mint,
           it: [0],
         },
+        dryrun: {
+          nt: Boolean,
+          it: [0],
+        },
       },
       // nt: CreateAccountExec, <-- Assigned later to avoid potential circular dependency.
     },
@@ -264,6 +268,10 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
+        dryrun: {
+          nt: Boolean,
+          it: [0],
+        },
       },
     },
     ninelivesMint: {
@@ -271,6 +279,26 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         mint: {
           nt: Mint,
           it: [1],
+        },
+        dryrun: {
+          nt: Boolean,
+          it: [0],
+        },
+      },
+    },
+    claimRewards: {
+      a: {
+        markets: {
+          nt: String,
+          it: [1, [1]],
+        },
+        msTs: {
+          nt: String,
+          it: [1],
+        },
+        dryrun: {
+          nt: Boolean,
+          it: [0],
         },
       },
     },

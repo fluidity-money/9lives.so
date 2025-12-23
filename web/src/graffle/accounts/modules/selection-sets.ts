@@ -249,6 +249,14 @@ export interface Mutation<
   ninelivesMint?:
     | Mutation.ninelivesMint<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.ninelivesMint<_$Scalars>>;
+  /**
+   *
+   * Select the `claimRewards` field on the `Mutation` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  claimRewards?:
+    | Mutation.claimRewards<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.claimRewards<_$Scalars>>;
 
   /**
    *
@@ -298,7 +306,7 @@ export namespace Mutation {
   >
     extends $Select.Bases.Base, $NamedTypes.$CreateAccountExec<_$Scalars> {
     /**
-     * Arguments for `createAccountExec` field. Some (1/2) arguments are required so you must include this.
+     * Arguments for `createAccountExec` field. Some (1/3) arguments are required so you must include this.
      */
     $: createAccountExec$Arguments<_$Scalars>;
   }
@@ -309,6 +317,7 @@ export namespace Mutation {
   > {
     createAccount: $NamedTypes.$CreateAccount<_$Scalars>;
     mint?: $NamedTypes.$Mint<_$Scalars> | undefined | null;
+    dryrun?: boolean | undefined | null;
   }
 
   // --- expanded ---
@@ -338,7 +347,7 @@ export namespace Mutation {
   >
     extends $Select.Bases.Base {
     /**
-     * Arguments for `requestSecret` field. All arguments are required so you must include this.
+     * Arguments for `requestSecret` field. Some (5/6) arguments are required so you must include this.
      */
     $: requestSecret$Arguments<_$Scalars>;
   }
@@ -352,6 +361,7 @@ export namespace Mutation {
     sigV: number;
     sigR: string;
     sigS: string;
+    dryrun?: boolean | undefined | null;
   }
 
   // --- expanded ---
@@ -381,7 +391,7 @@ export namespace Mutation {
   >
     extends $Select.Bases.Base {
     /**
-     * Arguments for `ninelivesMint` field. All arguments are required so you must include this.
+     * Arguments for `ninelivesMint` field. Some (1/2) arguments are required so you must include this.
      */
     $: ninelivesMint$Arguments<_$Scalars>;
   }
@@ -391,6 +401,7 @@ export namespace Mutation {
       $$Utilities.Schema.Scalar.Registry.Empty,
   > {
     mint: $NamedTypes.$Mint<_$Scalars>;
+    dryrun?: boolean | undefined | null;
   }
 
   // --- expanded ---
@@ -406,6 +417,47 @@ export namespace Mutation {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<ninelivesMint$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type claimRewards<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = claimRewards$SelectionSet<_$Scalars>;
+
+  export interface claimRewards$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
+    /**
+     * Arguments for `claimRewards` field. Some (2/3) arguments are required so you must include this.
+     */
+    $: claimRewards$Arguments<_$Scalars>;
+  }
+
+  export interface claimRewards$Arguments<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    markets: Array<string | undefined | null>;
+    msTs: string;
+    dryrun?: boolean | undefined | null;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `claimRewards` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type claimRewards$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<claimRewards$SelectionSet<_$Scalars>>;
 }
 
 //

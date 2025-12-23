@@ -201,6 +201,28 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Claim rewards for the markets given, using the eoa in the header.
+   */
+  claimRewards: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.claimRewards<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { claimRewards: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "claimRewards"
+        >
+    >
+  >;
 }
 
 export interface BuilderMethodsRoot<$Context extends $$Utilities.Context> {

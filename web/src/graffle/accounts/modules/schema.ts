@@ -99,6 +99,7 @@ export namespace Schema {
       createAccountExec: Mutation.createAccountExec;
       requestSecret: Mutation.requestSecret;
       ninelivesMint: Mutation.ninelivesMint;
+      claimRewards: Mutation.claimRewards;
     };
   }
 
@@ -131,6 +132,12 @@ export namespace Schema {
           name: "mint";
           inlineType: [0];
           namedType: $$NamedTypes.$$Mint;
+        };
+        dryrun: {
+          kind: "InputField";
+          name: "dryrun";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Boolean;
         };
       };
       inlineType: [0];
@@ -175,6 +182,12 @@ export namespace Schema {
           inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
+        dryrun: {
+          kind: "InputField";
+          name: "dryrun";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Boolean;
+        };
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
@@ -193,6 +206,41 @@ export namespace Schema {
           name: "mint";
           inlineType: [1];
           namedType: $$NamedTypes.$$Mint;
+        };
+        dryrun: {
+          kind: "InputField";
+          name: "dryrun";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Boolean;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Claim rewards for the markets given, using the eoa in the header.
+     */
+    export interface claimRewards extends $.OutputField {
+      name: "claimRewards";
+      arguments: {
+        markets: {
+          kind: "InputField";
+          name: "markets";
+          inlineType: [1, [1]];
+          namedType: $$NamedTypes.$$String;
+        };
+        msTs: {
+          kind: "InputField";
+          name: "msTs";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        dryrun: {
+          kind: "InputField";
+          name: "dryrun";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Boolean;
         };
       };
       inlineType: [1];
