@@ -302,12 +302,12 @@ mod proptesting {
             0,
             0,
             Address::ZERO,
-            Address::ZERO,
             false,
             0,
             0,
             0,
             0,
+            U256::ZERO
         )
     }
 

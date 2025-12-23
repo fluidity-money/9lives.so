@@ -1,4 +1,4 @@
-use stylus_sdk::{evm, alloy_primitives::{aliases::*, *}};
+use stylus_sdk::alloy_primitives::{aliases::*, *};
 
 use crate::error::*;
 
@@ -6,10 +6,9 @@ use crate::error::*;
 use alloc::vec::Vec;
 
 pub use crate::{
-    fusdc_call, immutables,
+    events, fusdc_call, immutables,
     immutables::{CLAWBACK_RECIPIENT_ADDR, DAO_EARN_ADDR},
     storage_trading::*,
-    events,
     utils::{block_timestamp, contract_address, msg_sender},
 };
 

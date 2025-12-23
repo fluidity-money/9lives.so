@@ -7,6 +7,8 @@ use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
+use bobcat_events::emit;
+
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
     evm,
@@ -156,6 +158,7 @@ impl StorageTrading {
             #[allow(deprecated)]
             share_call::mint(share_addr, recipient, shares)?;
         }
+
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,

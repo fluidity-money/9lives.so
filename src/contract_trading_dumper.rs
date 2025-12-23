@@ -56,6 +56,7 @@ impl StorageTrading {
                 share_impl,
                 outcome_id,
             );
+            #[allow(deprecated)]
             let bal = share_call::balance_of(share_addr, sender)?;
             if bal.is_zero() {
                 continue;

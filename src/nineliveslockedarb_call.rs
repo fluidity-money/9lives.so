@@ -1,3 +1,4 @@
+#[allow(deprecated)]
 pub use crate::{
     erc20_call::{balance_of, transfer},
     share_call::{burn, mint},
