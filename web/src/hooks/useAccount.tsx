@@ -135,7 +135,7 @@ export default function useAccount({
       new Promise(async (res, rej) => {
         try {
           if (!account) throw new Error("No wallet is connected");
-          const secret = await checkAndSetSecret(account.address);
+          let secret = await checkAndSetSecret(account.address);
           if (!secret) throw new Error("No secret is set");
           await checkAndSwitchChain();
           const amount = toUnits(
@@ -186,7 +186,7 @@ export default function useAccount({
               deadline,
             };
           }
-          const result = await ninelivesMint({
+          const result = (await ninelivesMint({
             amount,
             outcome: outcomeId,
             poolAddress: data.poolAddress,
@@ -194,8 +194,20 @@ export default function useAccount({
             secret,
             eoaAddress: account.address,
             permit,
-          });
-          res(result);
+          })) as any;
+          if (result?.response?.status === 401) {
+            const newSecret = await getSecret();
+            await ninelivesMint({
+              amount,
+              outcome: outcomeId,
+              poolAddress: data.poolAddress,
+              referrer,
+              secret: newSecret,
+              eoaAddress: account.address,
+              permit,
+            });
+          }
+          res(true);
           track(EVENTS.MINT, {
             amount,
             outcomeId,

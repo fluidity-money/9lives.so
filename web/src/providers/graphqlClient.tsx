@@ -19,6 +19,18 @@ const graphPoints = Points.create().transport({
 const graphAccounts = Accounts.create().transport({
   url: appConfig.NEXT_PUBLIC_ACCOUNTS_URL,
 });
+const graphAccountsWithStatus = Accounts.create({
+  output: {
+    envelope: {
+      errors: {
+        execution: true,
+        other: true,
+      },
+    },
+  },
+}).transport({
+  url: appConfig.NEXT_PUBLIC_ACCOUNTS_URL,
+});
 export const requestCampaignList = (filterParams: CampaignFilters) =>
   graph9Lives.query.campaigns({
     $: { ...filterParams },
@@ -164,60 +176,50 @@ export const requestCreations = (limit?: number) =>
     )
     .send();
 
-export const requestCampaignById = (id: string, init?: RequestInit) =>
-  graph9Lives
-    .anyware(({ exchange }) =>
-      exchange({
-        using: {
-          fetch: async (r) => {
-            return fetch(r, init);
-          },
-        },
-      }),
-    )
-    .query.campaignById({
-      $: { id },
-      name: true,
+export const requestCampaignById = (id: string) =>
+  graph9Lives.query.campaignById({
+    $: { id },
+    name: true,
+    identifier: true,
+    description: true,
+    picture: true,
+    oracleDescription: true,
+    categories: true,
+    oracleUrls: true,
+    settlement: true,
+    poolAddress: true,
+    isDpm: true,
+    creator: {
+      address: true,
+    },
+    shares: {
       identifier: true,
-      description: true,
+      shares: true,
+    },
+    outcomes: {
+      identifier: true,
+      name: true,
       picture: true,
-      oracleDescription: true,
-      categories: true,
-      oracleUrls: true,
-      settlement: true,
-      poolAddress: true,
-      isDpm: true,
-      creator: {
+      share: {
         address: true,
       },
-      shares: {
-        identifier: true,
-        shares: true,
-      },
-      outcomes: {
-        identifier: true,
-        name: true,
-        picture: true,
-        share: {
-          address: true,
-        },
-      },
-      liquidityVested: true,
-      ending: true,
-      starting: true,
-      winner: true,
-      totalVolume: true,
-      investmentAmounts: {
-        id: true,
-        share: true,
-        usdc: true,
-      },
-      isDppm: true,
-      priceMetadata: {
-        baseAsset: true,
-        priceTargetForUp: true,
-      },
-    });
+    },
+    liquidityVested: true,
+    ending: true,
+    starting: true,
+    winner: true,
+    totalVolume: true,
+    investmentAmounts: {
+      id: true,
+      share: true,
+      usdc: true,
+    },
+    isDppm: true,
+    priceMetadata: {
+      baseAsset: true,
+      priceTargetForUp: true,
+    },
+  });
 
 export const requestUserParticipated = (
   address: string,
@@ -875,7 +877,7 @@ export const ninelivesMint = ({
     deadline: number;
   };
 }) =>
-  graphAccounts
+  graphAccountsWithStatus
     .transport({
       headers: { Authorization: `${eoaAddress}:${secret}` },
     })
