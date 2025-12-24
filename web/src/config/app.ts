@@ -3,7 +3,6 @@ import { farcasterChains } from "./chains";
 import BTC from "#/images/tokens/btc.webp";
 import PAXG from "#/images/tokens/paxg.svg";
 import NVIDIA from "#/images/tokens/nvidia.svg";
-import MONAD from "#/images/tokens/mon.svg";
 import GOOGLE from "#/images/tokens/google.svg";
 import QQQ from "#/images/tokens/qqq.svg";
 import { StaticImageData } from "next/image";
@@ -109,17 +108,6 @@ const simpleMarkets = {
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 2,
     periods: ["hourly", "15mins"],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
-  },
-  mon: {
-    slug: "mon",
-    logo: MONAD,
-    title: "MONAD",
-    tabTitle: "MONAD",
-    openDays: [0, 1, 2, 3, 4, 5, 6],
-    decimals: 6,
-    periods: ["hourly"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
   },
