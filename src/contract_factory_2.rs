@@ -20,11 +20,7 @@ use stylus_sdk::call::RawCall;
 impl StorageFactory {
     #[allow(clippy::too_many_arguments)]
     #[mutants::skip]
-    pub fn ctor(
-        &mut self,
-        oracle_addr: Address,
-        operator_addr: Address,
-    ) -> R<()> {
+    pub fn ctor(&mut self, oracle_addr: Address, operator_addr: Address) -> R<()> {
         assert_or!(self.version.get().is_zero(), Error::AlreadyConstructed);
         self.enabled.set(true);
         self.infra_market.set(oracle_addr);
@@ -60,9 +56,7 @@ impl StorageFactory {
     }
 
     pub fn erc20_hash(&self) -> R<FixedBytes<32>> {
-        Ok(FixedBytes::from_slice(&erc20_proxy_hash(
-            self.share_impl.get(),
-        )))
+        Ok(FixedBytes::from_slice(&erc20_proxy_hash(self.share_impl.get())))
     }
 
     pub fn share_impl(&self) -> R<Address> {

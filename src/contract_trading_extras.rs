@@ -9,7 +9,7 @@ use crate::{
 };
 
 #[cfg(feature = "trading-backend-dppm")]
-use crate::proxy::share_call;
+use crate::share_call;
 
 use alloc::{borrow::ToOwned, string::String, vec::Vec};
 

@@ -422,7 +422,7 @@ export default function SimpleBuyDialog({
             }
           />
           <Button
-            title={quickAddAsPercentage ? "50%" : "10"}
+            title={quickAddAsPercentage ? "50%" : "1000"}
             className={"flex-auto"}
             onClick={() =>
               quickAddAsPercentage

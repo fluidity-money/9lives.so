@@ -76,6 +76,7 @@ impl StorageTrading {
         self.time_start.set(U64::from(time_start));
         self.time_ending.set(U64::from(time_ending));
         self.oracle.set(oracle);
+        self.share_impl.set(SHARE_IMPL_ADDR);
         self.should_buffer_time.set(should_buffer_time);
         self.fee_creator.set(U256::from(fee_creator));
         self.fee_minter.set(U256::from(fee_minter));

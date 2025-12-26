@@ -7,8 +7,6 @@ use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
-use bobcat_events::emit;
-
 use stylus_sdk::{
     alloy_primitives::{aliases::*, *},
     evm,
@@ -24,17 +22,15 @@ impl StorageTrading {
         self.dppm_global_invested.set(seed_liq);
         // We enable the liquidity vault for the DPPM:
         self.feature_using_vault.set(true);
-        // Start to go through each outcome, and seed it with its initial amount.
-        // And set each slot in the storage with the outcome id for Longtail
-        // later.
+        //self.feature_internal_erc20.set(true);
+        let per_market_seed = seed_liq / U256::from(outcomes.len());
         for outcome_id in outcomes {
             // This isn't a precaution that we actually need, but there may be weird
             // behaviour with this being possible (ie, payoff before the end date).
             assert_or!(!outcome_id.is_zero(), Error::OutcomeIsZero);
-            // We always set this to 1 now.
             self.dppm_outcome_invested
                 .setter(outcome_id)
-                .set(SHARE_DECIMALS_EXP);
+                .set(per_market_seed);
             self.outcome_list.push(outcome_id);
         }
         Ok(())

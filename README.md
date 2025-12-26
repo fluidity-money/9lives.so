@@ -107,11 +107,11 @@ The error table lives in ERRORS.md.
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
 | Trading DPPM mint impl        | `0xd4f227042d083a358edb90e07fb7da4bdda059f3` |
-| Trading DPPM extras impl      | `0xee104e046c49d7b466d3f9cd3d81fa0f03020134` |
+| Trading DPPM extras impl      | `0x93f79a894f19b1168033d41204ccd335c982fcc0` |
 | Trading DPPM price impl       | `0x521973519911f649b4cf31e7991d64840b3badf0` |
 | Trading DPPM quotes impl      | `0x439085c2290c91eef72163c3ae60bda97917d3ea` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
-| Trading AMM extras impl       | `0x0e14361787af3e2480a72561be23a0400885864d` |
+| Trading AMM extras impl       | `0xb3127f0083eb4c03a21b917656575ac766d46369` |
 | Trading AMM price impl        | `0x3fcae4ee12564f606c2dd34759f32a884f28a516` |
 | Trading AMM quotes impl       | `0x801b8544a3bb8a7729b7810178805fbf0411b82b` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |

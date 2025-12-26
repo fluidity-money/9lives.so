@@ -10,6 +10,7 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
+share_call,
     error::*,
     events,
     fees::*,
@@ -122,10 +123,18 @@ impl StorageFactory {
                 .set(self.dao_claimable.get() + INCENTIVE_AMT_MODERATION);
         }
 
-        for (_, _sqrt_price, outcome_name) in outcomes.iter() {
+        for (outcome_identifier, _sqrt_price, outcome_name) in outcomes.iter() {
             // We used to do deployment of tokens here. Now we don't:
-            evm::log(events::OutcomeCreated2 {
+            let erc20_identifier =
+                proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
+            let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
+                .map_err(Error::DeployError)?;
+            // Set up the share ERC20 asset, with the description.
+            share_call::ctor(erc20_addr, outcome_name.clone(), trading_addr)?;
+            evm::log(events::OutcomeCreated {
                 tradingIdentifier: trading_id,
+                erc20Identifier: erc20_identifier,
+                erc20Addr: erc20_addr,
             });
         }
 

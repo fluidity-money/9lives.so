@@ -97,6 +97,15 @@ env_addr!(
     DPPM_5_MIN_CREATOR
 );
 
+// Hardcoded share implementation address for the gradual release of the
+// internal erc20.
+env_addr!(
+    SHARE_IMPL_ADDR,
+    "SPN_SHARE_IMPL_ADDR",
+    SHARE_IMPL
+);
+
+
 // Scaling amount for checking if a bad predictor went above 50% in their
 // incorrect bets relative ot the winning outcome.
 pub const FIFTY_PCT_SCALING: U256 = U256::from_limbs([100, 0, 0, 0]);
