@@ -93,9 +93,11 @@ export default function ContextInjector() {
   // add margin for fixed action component on campaign details
   useEffect(() => {
     const footer = document.getElementsByTagName("footer")[0];
-    if (pathname.startsWith("/campaign/"))
-      footer.classList.add("mint-box-margin");
-    else footer.classList.remove("mint-box-margin");
+    if (footer) {
+      if (pathname.startsWith("/campaign/"))
+        footer.classList.add("mint-box-margin");
+      else footer.classList.remove("mint-box-margin");
+    }
   }, [pathname]);
 
   // pop up connect modal if user navigates any campaign page
