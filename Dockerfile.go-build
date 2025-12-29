@@ -3,6 +3,7 @@ FROM golang:1.26rc1-alpine3.23 AS build
 WORKDIR /usr/local/src/superposition
 
 COPY lib/ lib/
+COPY CHANGELOG.md .
 COPY cmd/ cmd/
 
 COPY go.mod go.sum .
