@@ -14,6 +14,11 @@ use stylus_sdk::{
 
 use alloc::vec::Vec;
 
+use bobcat_features::bobcat_feature;
+
+// Should this contract use internal tokens instead of erc20?
+bobcat_feature!(internal_tokens);
+
 impl StorageTrading {
     pub fn internal_dppm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>, seed_liq: U256) -> R<()> {
         assert_or!(outcomes.len() == 2, Error::BadTradingCtor);
@@ -22,7 +27,6 @@ impl StorageTrading {
         self.dppm_global_invested.set(seed_liq);
         // We enable the liquidity vault for the DPPM:
         self.feature_using_vault.set(true);
-        //self.feature_internal_erc20.set(true);
         let per_market_seed = seed_liq / U256::from(outcomes.len());
         for outcome_id in outcomes {
             // This isn't a precaution that we actually need, but there may be weird
@@ -148,13 +152,12 @@ impl StorageTrading {
                 .setter(outcome_id)
                 .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
         }
-        if self.feature_internal_tokens.get() {
+        IF_FEATURE_INTERNAL_TOKENS!({
             self.give_shares(outcome_id, recipient, shares)?;
         } else {
             #[allow(deprecated)]
             share_call::mint(share_addr, recipient, shares)?;
-        }
-
+        });
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,
@@ -228,21 +231,21 @@ impl StorageTrading {
             return Ok(U256::ZERO);
         }
         let amt = if amt == U256::MAX {
-            if self.feature_internal_tokens.get() {
+            IF_FEATURE_INTERNAL_TOKENS!({
                 self.erc20_balance_of.getter(outcome_id).get(spender)
             } else {
                 #[allow(deprecated)]
                 share_call::balance_of(share_addr, spender)?
-            }
+            })
         } else {
             amt
         };
-        if self.feature_internal_tokens.get() {
+        IF_FEATURE_INTERNAL_TOKENS!({
             self.burn_shares(outcome_id, spender, amt)?
         } else {
             #[allow(deprecated)]
             share_call::burn(share_addr, spender, amt)?;
-        }
+        });
         let user_boosted_shares = self
             .ninetails_user_boosted_shares
             .get(spender)

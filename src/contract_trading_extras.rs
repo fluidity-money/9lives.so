@@ -16,6 +16,11 @@ use alloc::{borrow::ToOwned, string::String, vec::Vec};
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
+use bobcat_features::bobcat_feature;
+
+// Should this contract use internal tokens instead of erc20?
+bobcat_feature!(internal_tokens);
+
 // Arguments for the ctor function. In a tuple form for Solidity
 // calldata, and for a Default trait impl later.
 pub type CtorArgs = (
@@ -156,7 +161,7 @@ impl StorageTrading {
     }
 
     pub fn feature_internal_tokens(&self) -> R<bool> {
-        Ok(self.feature_internal_tokens.get())
+        Ok(false)
     }
 
     pub fn extend_time(&mut self, new_ts: u64) -> R<()> {
@@ -178,7 +183,7 @@ impl StorageTrading {
         unimplemented!();
         #[cfg(feature = "trading-backend-dppm")]
         {
-            let user_share_amt = if self.feature_internal_tokens.get() {
+            let user_share_amt = IF_FEATURE_INTERNAL_TOKENS!({
                 self.erc20_balance_of.getter(outcome_id).get(spender)
             } else {
                 share_call::balance_of(
@@ -190,7 +195,7 @@ impl StorageTrading {
                     ),
                     spender,
                 )?
-            };
+            });
             let user_boosted_shares = self
                 .ninetails_user_boosted_shares
                 .getter(spender)

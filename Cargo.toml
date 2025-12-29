@@ -59,9 +59,10 @@ alloy-sol-macro-input = "=0.7.6"
 strum = { version = "0.26.3", default-features = false, features = ["derive"] }
 mutants = "0.0.3"
 ruint = { version = "1.14.0", default-features = false }
-bobcat-proxy = "0.7.8"
-bobcat-maths = { version = "0.7.8", features = ["ruint-enabled"] }
-bobcat-panic = { version = "0.7.8", features = ["panic"] }
+bobcat-proxy = "0.7.12"
+bobcat-maths = { version = "0.7.12", features = ["ruint-enabled"] }
+bobcat-panic = { version = "0.7.12", features = ["panic"] }
+bobcat-features = { version = "0.7.12"}
 
 [dependencies.stylus-sdk]
 # With the reentrant flag, Stylus SDK will be fully reentrant in our
@@ -80,7 +81,7 @@ arrayvec = "0.7.6"
 map-macro = "0.3.0"
 serde_json = { version = "1.0.133", default-features = false, features = ["alloc"] }
 serde = { version = "1.0.215", default-features = false, features = ["derive"] }
-bobcat-maths = { version = "0.6.2", features = ["ruint-enabled", "alloy-enabled"] }
+bobcat-maths = { version = "0.7.11", features = ["ruint-enabled", "alloy-enabled"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 proptest = "1.5.0"
@@ -88,6 +89,9 @@ getrandom = "0.2.15"
 arbitrary = { version = "1.4.1", features = ["derive"] }
 proptest-derive = "0.5.1"
 alloy-primitives = { version = "=0.8.14", default-features = false, features = ["arbitrary"] }
+bobcat-maths = { version = "0.7.12", features = ["ruint-enabled", "alloy-enabled"] }
+bobcat-panic = { version = "0.7.12" }
+bobcat-features = { version = "0.7.12", features = ["std"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 alloy-primitives = { version = "=0.8.14", features = ["getrandom", "arbitrary"] }

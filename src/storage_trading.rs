@@ -149,7 +149,7 @@ pub struct StorageTrading {
     pub feature_using_vault: StorageBool,
 
     /// Use local accounting for tokens instead of erc20.
-    pub feature_internal_tokens: StorageBool,
+    pub __unused_3: StorageBool,
 
     /// Internal accounting of token balances.
     pub erc20_balance_of: StorageMap<FixedBytes<8>, StorageMap<Address, StorageU256>>,
