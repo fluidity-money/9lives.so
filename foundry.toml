@@ -6,6 +6,22 @@ test = "tests"
 via_ir = true
 optimizer = true
 optimizer_runs = 10
+fs_permissions = [
+	{ access = "read", path = "contract-beauty-contest.wasm"},
+	{ access = "read", path = "contract-factory-1.wasm"},
+	{ access = "read", path = "contract-factory-2.wasm"},
+	{ access = "read", path = "contract-infra-market-testing.wasm"},
+	{ access = "read", path = "contract-infra-market.wasm"},
+	{ access = "read", path = "contract-lockup.wasm"},
+	{ access = "read", path = "contract-trading-amm-extras.wasm"},
+	{ access = "read", path = "contract-trading-amm-mint.wasm"},
+	{ access = "read", path = "contract-trading-amm-price.wasm"},
+	{ access = "read", path = "contract-trading-amm-quotes.wasm"},
+	{ access = "read", path = "contract-trading-dppm-extras.wasm"},
+	{ access = "read", path = "contract-trading-dppm-mint.wasm"},
+	{ access = "read", path = "contract-trading-dppm-price.wasm"},
+	{ access = "read", path = "contract-trading-dppm-quotes.wasm"}
+]
 
 [lint]
 exclude_lints = [

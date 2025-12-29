@@ -21,6 +21,6 @@ if ! [ -z "$SPN_TEST_NO_JS" ]; then
 	exit 0
 fi
 
-forge test
+arbos-forge test -vv --stylus-debug
 
 pnpm run test
