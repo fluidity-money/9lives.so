@@ -55,11 +55,52 @@ export default function useClaimAllPools(
         ["unclaimedCampaigns", account.address, token],
         [],
       );
-      data.forEach((i) => {
+      data.forEach((c) => {
         queryClient.invalidateQueries({
-          queryKey: ["positions", i.poolAddress, i.outcomes, account, false],
+          queryKey: [
+            "dppmShareEstimationForAll",
+            c.poolAddress,
+            account?.address,
+            true,
+          ],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            "dppmShareEstimationForAll",
+            c.poolAddress,
+            account?.address,
+            false,
+          ],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["positions", c.poolAddress, c.outcomes, account, false],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["participatedCampaigns", account?.address, c.identifier],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: [
+            "positionHistory",
+            account.address,
+            c.outcomes.map((o) => o.identifier),
+          ],
         });
       });
+
+      data.forEach((c) =>
+        c.outcomes.forEach((o) => {
+          queryClient.invalidateQueries({
+            queryKey: [
+              "dppmShareEstimation",
+              c.poolAddress,
+              account?.address,
+              o.identifier,
+            ],
+          });
+        }),
+      );
     },
   });
 }
