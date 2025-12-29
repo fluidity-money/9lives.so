@@ -32,6 +32,7 @@ export default function PositionBody({
         <Placeholder
           title="Error"
           subtitle={error?.message ?? "Unknown Error"}
+          colSpan={colSpan}
         />
       ) : isLoading ? (
         <Placeholder title="Loading.." colSpan={colSpan} />
