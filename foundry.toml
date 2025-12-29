@@ -6,6 +6,7 @@ test = "tests"
 via_ir = true
 optimizer = true
 optimizer_runs = 10
+solc_version = "0.8.20"
 fs_permissions = [
 	{ access = "read", path = "contract-beauty-contest.wasm"},
 	{ access = "read", path = "contract-factory-1.wasm"},

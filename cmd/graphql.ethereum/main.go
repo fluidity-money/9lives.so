@@ -148,6 +148,14 @@ func main() {
 			PriceResolverAddr: ethCommon.HexToAddress(config.PriceResolverAddress),
 		},
 	}))
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
+	srv.Use(extension.Introspection{})
+	srv.Use(extension.AutomaticPersistedQuery{
+		Cache: lru.New[string](100),
+	})
 	http.Handle("/", corsMiddleware{srv})
 	http.Handle("/playground", playground.Handler("9lives.so playground", "/"))
 	switch typ := os.Getenv(EnvBackendType); typ {
