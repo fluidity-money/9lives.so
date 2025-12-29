@@ -6,5 +6,3 @@ COPY lib/ lib/
 COPY cmd/ cmd/
 
 COPY go.mod go.sum .
-
-RUN cd cmd/ingestor.ethereum && go build
