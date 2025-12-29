@@ -1,5 +1,7 @@
 FROM golang:1.26rc1-alpine3.23 AS build
 
+RUN apk add --no-cache make
+
 WORKDIR /usr/local/src/superposition
 
 COPY lib/ lib/

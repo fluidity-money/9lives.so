@@ -1,7 +1,7 @@
 FROM superposition/go-build:latest AS build
 
 RUN cd /usr/local/src/superposition/cmd/graphql.ethereum && \
-	go build
+	make
 
 FROM golang:1.26rc1-alpine3.23 AS runtime
 
