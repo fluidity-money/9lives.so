@@ -12,7 +12,7 @@ export default function formatActivity(ro: RawActivity): Activity {
       campaignName: formatDppmTitle({
         symbol: priceMetadata.baseAsset,
         price: priceMetadata.priceTargetForUp,
-        end: ro.campaignContent.ending,
+        end: ro.campaignContent.ending * 1000,
       }),
       outcomeName: formatDppmOutcomeName(ro.outcomeName),
     };
