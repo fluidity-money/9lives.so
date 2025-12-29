@@ -1,0 +1,10 @@
+FROM golang:1.26rc1-alpine3.23 AS build
+
+WORKDIR /usr/local/src/superposition
+
+COPY lib/ lib/
+COPY cmd/ cmd/
+
+COPY go.mod go.sum .
+
+RUN cd cmd/ingestor.ethereum && go build

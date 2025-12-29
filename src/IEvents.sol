@@ -21,11 +21,6 @@ interface IEvents {
         address indexed erc20Addr
     );
 
-    /// @notice OutcomeCreated2 without ERC20 tokens.
-    event OutcomeCreated2(
-        bytes32 indexed tradingIdentifier
-    );
-
     event ClaimedDAOFunds(address indexed recipient, uint256 indexed amount);
 
     /* TRADING CONTRACTS */

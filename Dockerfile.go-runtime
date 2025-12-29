@@ -1,0 +1,5 @@
+FROM superposition/go-build AS build
+
+FROM alpine:3.23 AS runtime
+
+COPY --from=build /usr/local/src/superposition /usr/local/src/superposition
