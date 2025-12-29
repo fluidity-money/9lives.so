@@ -17,11 +17,13 @@ export const revalidate = 60;
 export async function generateStaticParams() {
   return Object.values(config.simpleMarkets).reduce(
     (acc, v) => {
-      for (let period of v.periods) {
-        acc.push({
-          symbol: v.slug,
-          period,
-        });
+      if (v.listed) {
+        for (let period of v.periods) {
+          acc.push({
+            symbol: v.slug,
+            period,
+          });
+        }
       }
       return acc;
     },
@@ -50,6 +52,9 @@ function isSimpleMarketKey(k: string): k is SimpleMarketKey {
 function isSimpleMarketPeriod(p: string): p is SimpleMarketPeriod {
   return p.toLowerCase() === "hourly" || p.toLowerCase() === "15mins";
 }
+function isSimpleMarketListed(k: SimpleMarketKey): boolean {
+  return config.simpleMarkets[k.toLowerCase() as SimpleMarketKey].listed;
+}
 export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { symbol, period } = await params;
 
@@ -68,6 +73,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
 
   if (!isSimpleMarketKey(symbol)) notFound();
   if (!isSimpleMarketPeriod(period)) notFound();
+  if (!isSimpleMarketListed(symbol)) notFound();
 
   return (
     <div className="flex flex-col gap-4">

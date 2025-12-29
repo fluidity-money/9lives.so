@@ -5,6 +5,7 @@ import PAXG from "#/images/tokens/paxg.svg";
 import NVIDIA from "#/images/tokens/nvidia.svg";
 import GOOGLE from "#/images/tokens/google.svg";
 import QQQ from "#/images/tokens/qqq.svg";
+import MONAD from "#/images/tokens/mon.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -99,6 +100,7 @@ const simpleMarkets = {
     openDays: [0, 1, 2, 3, 4, 5, 6],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
+    listed: true,
   },
   paxg: {
     slug: "paxg",
@@ -110,6 +112,7 @@ const simpleMarkets = {
     periods: ["hourly", "15mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
+    listed: true,
   },
   nvidia: {
     slug: "nvidia",
@@ -122,6 +125,7 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
+    listed: true,
   },
   goog: {
     slug: "goog",
@@ -134,6 +138,7 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
+    listed: true,
   },
   qqq: {
     slug: "qqq",
@@ -146,6 +151,19 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
+    listed: false,
+  },
+  mon: {
+    slug: "mon",
+    logo: MONAD,
+    title: "MONAD",
+    tabTitle: "MONAD",
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    decimals: 6,
+    periods: ["hourly"],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
+    listed: false,
   },
 } as const;
 const betaTesterWallets = [
@@ -189,6 +207,7 @@ const simpleMarketSchema = z.object({
   closeDays: z.optional(z.array(z.string())),
   openHours: z.array(z.string()),
   tz: z.string(),
+  listed: z.boolean(),
 });
 
 const simpleMarketSchemas = (

@@ -39,10 +39,10 @@ export default function SimpleNavMenu({
 }) {
   const { data: assets } = useAssets(initialAssets);
   const mins15Markets = Object.values(config.simpleMarkets)
-    .filter((i) => i.periods.includes("15mins"))
+    .filter((i) => i.periods.includes("15mins") && i.listed)
     .map((i) => i.slug);
   const hourlyMarkets = Object.values(config.simpleMarkets)
-    .filter((i) => i.periods.includes("hourly"))
+    .filter((i) => i.periods.includes("hourly") && i.listed)
     .map((i) => i.slug);
 
   return (
@@ -69,8 +69,10 @@ export default function SimpleNavMenu({
       </div>
       <div className="flex items-center overflow-x-auto border-b border-b-9black">
         {Object.values(config.simpleMarkets)
-          .filter((m) =>
-            m.periods.includes(period.toLowerCase() as SimpleMarketPeriod),
+          .filter(
+            (m) =>
+              m.periods.includes(period.toLowerCase() as SimpleMarketPeriod) &&
+              m.listed,
           )
           .sort((a, b) => {
             const aSpent =
