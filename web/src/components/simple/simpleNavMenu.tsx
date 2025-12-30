@@ -68,7 +68,7 @@ export default function SimpleNavMenu({
         >
           <TabRadioButton
             selected={is15Min}
-            title={is15Min ? "5 Min Markets" : "15 Mins"}
+            title={is15Min ? "15 Min Markets" : "15 Mins"}
           />
         </Link>
         <Link
