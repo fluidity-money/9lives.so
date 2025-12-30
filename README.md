@@ -108,12 +108,12 @@ The error table lives in ERRORS.md.
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
 | Trading DPPM mint impl        | `0xd4f227042d083a358edb90e07fb7da4bdda059f3` |
 | Trading DPPM extras impl      | `0x93f79a894f19b1168033d41204ccd335c982fcc0` |
-| Trading DPPM price impl       | `0x521973519911f649b4cf31e7991d64840b3badf0` |
-| Trading DPPM quotes impl      | `0x374EB7f25104D1ACCDe75d0F02cb86A3d47236BA` |
+| Trading DPPM price impl       | `0xeee77d61f2a8d6a9eac127f2d31ee1d55648451b` |
+| Trading DPPM quotes impl      | `0xe6257d33b241ab40b1c095c77580f426a5269466` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0xb3127f0083eb4c03a21b917656575ac766d46369` |
 | Trading AMM price impl        | `0x3fcae4ee12564f606c2dd34759f32a884f28a516` |
-| Trading AMM quotes impl       | `0x801b8544a3bb8a7729b7810178805fbf0411b82b` |
+| Trading AMM quotes impl       | `0xe25f8210f710ca3582214239d32aeb42841117cf` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
 | Infrastructure market impl    | `0x863642e21a45e824c4f6347a5757e5dcacae11c1` |
@@ -130,7 +130,7 @@ The error table lives in ERRORS.md.
 | BuyHelper2                    | `0x7aD7eDd9A72512335e2A7A980047Ec2eD233D21c` |
 | SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
 | Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
-| Claimant helper for claim     | `0x48EEDBf72231d24AAf10CE0859ce6C0795d8E9c9` |
+| Claimant helper for claim     | `0xD77ae359A5A12F04c4ABFE7D5B511E0990CE6F6C` |
 | Paymaster implementation      | `0x552BbaEc8D75c010435C810fA890B3E03e9C6445` |
 | Paymaster proxy               | `0xE990f05e2264f56435Fd7589FA2F70A879B0cE9f` |
 | Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |

@@ -179,6 +179,10 @@ impl StorageTrading {
         ))
     }
 
+    pub fn calculate_fees_v2(&self, value: U256, _is_buy: bool) -> R<(U256, CalcFees)> {
+        todo!()
+    }
+
     /// Calculate and set fees where possible, including the AMM fee weight
     /// if we're a AMM. Returns the cumulative fee, inclusive of the different
     /// kinds. If the is buy flag is true, then the code will return a normal

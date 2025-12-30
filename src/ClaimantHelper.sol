@@ -26,25 +26,35 @@ contract ClaimantHelper {
         return _claim(_pools, msg.sender);
     }
 
-    function payoff(address[] calldata _pools) external returns (uint256[] memory results) {
+    function _payoff(address[] calldata _pools, address _recipient) internal returns (uint256[] memory results) {
         results = new uint256[](_pools.length);
         for (uint i = 0; i < _pools.length; ++i) {
             INineLivesTrading p = INineLivesTrading(_pools[i]);
             try p.isDppm() returns (bool d) {
                 if (d) {
                     (uint256 o1, uint256 o2) =
-                        p.dppmPayoffForAll58633B6E(msg.sender);
+                        p.dppmPayoffForAll58633B6E(_recipient);
                     results[i] = o1 + o2;
                     continue;
                 }
             } catch {}
             bytes8[] memory outcomes = p.outcomeList();
             for (uint x = 0; x < outcomes.length; ++x) {
-                try p.payoffCB6F2565(outcomes[x], type(uint256).max, msg.sender)
+                try p.payoffCB6F2565(outcomes[x], type(uint256).max, _recipient)
                 returns (uint256 amt) {
                     results[i] += amt;
                 } catch {}
             }
         }
+    }
+
+    function payoff(address[] calldata _pools) external returns (uint256[] memory results) {
+        return _payoff(_pools, msg.sender);
+    }
+
+    function payoffForOther(address[] calldata _pools, address _recipient) external {
+        // Read claimForOther for context here.
+        require(_recipient.code.length == 0, "recipient has code");
+        _payoff(_pools, _recipient);
     }
 }
