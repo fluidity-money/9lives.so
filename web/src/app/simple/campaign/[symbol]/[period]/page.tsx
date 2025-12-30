@@ -50,7 +50,11 @@ function isSimpleMarketKey(k: string): k is SimpleMarketKey {
   return k.toLowerCase() in config.simpleMarkets;
 }
 function isSimpleMarketPeriod(p: string): p is SimpleMarketPeriod {
-  return p.toLowerCase() === "hourly" || p.toLowerCase() === "15mins";
+  return (
+    p.toLowerCase() === "hourly" ||
+    p.toLowerCase() === "15mins" ||
+    p.toLowerCase() === "5mins"
+  );
 }
 function isSimpleMarketListed(k: SimpleMarketKey): boolean {
   return config.simpleMarkets[k.toLowerCase() as SimpleMarketKey].listed;

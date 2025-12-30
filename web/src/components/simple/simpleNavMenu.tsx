@@ -38,6 +38,9 @@ export default function SimpleNavMenu({
   assets: RawAsset[];
 }) {
   const { data: assets } = useAssets(initialAssets);
+  const mins5Markets = Object.values(config.simpleMarkets)
+    .filter((i) => i.periods.includes("5mins") && i.listed)
+    .map((i) => i.slug);
   const mins15Markets = Object.values(config.simpleMarkets)
     .filter((i) => i.periods.includes("15mins") && i.listed)
     .map((i) => i.slug);
@@ -48,6 +51,15 @@ export default function SimpleNavMenu({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-full gap-2">
+        <Link
+          href={`/simple/campaign/${mins5Markets[0]}/5mins`}
+          className="flex flex-1"
+        >
+          <TabRadioButton
+            selected={period.toLowerCase() === "5mins"}
+            title="5 Min Markets"
+          />
+        </Link>
         <Link
           href={`/simple/campaign/${mins15Markets[0]}/15mins`}
           className="flex flex-1"

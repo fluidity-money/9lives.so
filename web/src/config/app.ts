@@ -6,6 +6,7 @@ import NVIDIA from "#/images/tokens/nvidia.svg";
 import GOOGLE from "#/images/tokens/google.svg";
 import QQQ from "#/images/tokens/qqq.svg";
 import MONAD from "#/images/tokens/mon.svg";
+import KAG from "#/images/tokens/kag.png";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -67,6 +68,7 @@ const infraMarketStateFees: Record<InfraMarketState, bigint> = {
 } as const;
 const categories = [
   "All",
+  "5mins",
   "15mins",
   "Hourly",
   "Crypto",
@@ -165,6 +167,18 @@ const simpleMarkets = {
     tz: "UTC",
     listed: false,
   },
+  kag: {
+    slug: "kag",
+    logo: KAG,
+    title: "Silver (KAG)",
+    tabTitle: "SILVER",
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    decimals: 2,
+    periods: ["5mins"],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
+    listed: true,
+  },
 } as const;
 const betaTesterWallets = [
   "0x77d55ee17071f2081edadcd7173adc876f3a602b",
@@ -201,7 +215,12 @@ const simpleMarketSchema = z.object({
   decimals: z.number(),
   tabTitle: z.string(),
   periods: z.array(
-    z.union([z.literal("hourly"), z.literal("15mins"), z.literal("daily")]),
+    z.union([
+      z.literal("hourly"),
+      z.literal("5mins"),
+      z.literal("15mins"),
+      z.literal("daily"),
+    ]),
   ),
   openDays: z.array(z.number()),
   closeDays: z.optional(z.array(z.string())),
@@ -239,6 +258,7 @@ const appSchema = z.object({
   categories: z.array(
     z.enum([
       "All",
+      "5mins",
       "15mins",
       "Hourly",
       "Crypto",

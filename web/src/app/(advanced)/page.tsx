@@ -21,11 +21,11 @@ export default async function AdvancedModeHomepage({
   const referral = (await searchParams)?.referral;
   if (!mode || mode === "false") {
     const assets = await requestAssets();
-    const hottestSlug = assets
-      .sort((a, b) => b.totalSpent - a.totalSpent)[0]
-      .name.toLowerCase();
+    // const hottestSlug = assets
+    //   .sort((a, b) => b.totalSpent - a.totalSpent)[0]
+    //   .name.toLowerCase();
     return redirect(
-      `/simple/campaign/${hottestSlug}/15mins${referral ? `?referral=${referral}` : ""}`,
+      `/simple/campaign/kag/5mins${referral ? `?referral=${referral}` : ""}`,
     );
   }
 
