@@ -195,7 +195,6 @@ type ComplexityRoot struct {
 	Position struct {
 		CampaignId func(childComplexity int) int
 		Content    func(childComplexity int) int
-		OutcomeIds func(childComplexity int) int
 	}
 
 	PriceEvent struct {
@@ -325,7 +324,6 @@ type MutationResolver interface {
 	AssociateReferral(ctx context.Context, sender string, code string, rr string, s string, v int) (*bool, error)
 }
 type PositionResolver interface {
-	OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error)
 	Content(ctx context.Context, obj *types.Position) (*types.Campaign, error)
 }
 type PriceEventResolver interface {
@@ -1070,13 +1068,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Position.Content(childComplexity), true
-
-	case "Position.outcomeIds":
-		if e.complexity.Position.OutcomeIds == nil {
-			break
-		}
-
-		return e.complexity.Position.OutcomeIds(childComplexity), true
 
 	case "PriceEvent.createdAt":
 		if e.complexity.PriceEvent.CreatedAt == nil {
@@ -7080,50 +7071,6 @@ func (ec *executionContext) fieldContext_Position_campaignId(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Position_outcomeIds(ctx context.Context, field graphql.CollectedField, obj *types.Position) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Position_outcomeIds(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Position().OutcomeIds(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Position_outcomeIds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Position",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Position_content(ctx context.Context, field graphql.CollectedField, obj *types.Position) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Position_content(ctx, field)
 	if err != nil {
@@ -8026,8 +7973,6 @@ func (ec *executionContext) fieldContext_Query_userParticipatedCampaigns(ctx con
 			switch field.Name {
 			case "campaignId":
 				return ec.fieldContext_Position_campaignId(ctx, field)
-			case "outcomeIds":
-				return ec.fieldContext_Position_outcomeIds(ctx, field)
 			case "content":
 				return ec.fieldContext_Position_content(ctx, field)
 			}
@@ -13718,42 +13663,6 @@ func (ec *executionContext) _Position(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "outcomeIds":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Position_outcomeIds(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "content":
 			field := field
 

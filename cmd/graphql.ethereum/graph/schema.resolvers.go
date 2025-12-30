@@ -1182,14 +1182,6 @@ func (r *mutationResolver) AssociateReferral(ctx context.Context, sender string,
 	return &t, nil
 }
 
-// OutcomeIds is the resolver for the outcomeIds field.
-func (r *positionResolver) OutcomeIds(ctx context.Context, obj *types.Position) ([]string, error) {
-	if obj == nil {
-		return nil, fmt.Errorf("Position is nil")
-	}
-	return obj.OutcomeIds, nil
-}
-
 // Content is the resolver for the content field.
 func (r *positionResolver) Content(ctx context.Context, obj *types.Position) (*types.Campaign, error) {
 	var campaign types.Campaign
@@ -1430,25 +1422,13 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 		pageSizeNum = *pageSize
 	}
 	err := r.DB.Raw(`
-	SELECT
-    nc.id AS campaign_id,
-    json_agg(DISTINCT nbs.outcome_id) AS outcome_ids,
-    MAX(nbs.created_by) AS created_by,
-    nc."content"
-	FROM ninelives_buys_and_sells_1 AS nbs
-	JOIN ninelives_campaigns_1 AS nc
-    ON nc.id = nbs.campaign_id
-	LEFT JOIN ninelives_payoff_unused_1 AS py
-	ON py.pool_address = nbs.emitter_addr
-	WHERE
-    nbs.recipient = ?
-    AND nbs.campaign_id IS NOT NULL
-	AND py.was_spent = false
-	GROUP BY
-    nc.id
-	ORDER BY
-    created_by DESC
-	OFFSET ? LIMIT ?;
+	select nc.id as campaign_id, nc."content" 
+	from ninelives_payoff_unused_1 npu 
+	join ninelives_campaigns_1 nc 
+	on nc."content" ->>'poolAddress' = npu.pool_address
+	where npu.spender  = ?
+	and npu.was_spent = false
+	offset ? limit ?;
 	`, address, pageNum*pageSizeNum, pageSizeNum).Scan(&positions).Error
 	if err != nil {
 		slog.Error("Error getting positions from database",

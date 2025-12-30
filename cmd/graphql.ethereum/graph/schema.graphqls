@@ -208,8 +208,6 @@ Participated pool address of the campaign and bought and sought outcome ids
 type Position {
   campaignId: String!
 
-  outcomeIds: [String!]!
-
   content: Campaign!
 }
 

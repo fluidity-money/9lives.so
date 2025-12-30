@@ -223,8 +223,6 @@ type (
 	Position struct {
 		CampaignId string `json:"campaignId"`
 
-		OutcomeIds OutcomeIds `json:"outcomeIds" gorm:"type:jsonb"`
-
 		Content CampaignContent `json:"content"`
 	}
 
