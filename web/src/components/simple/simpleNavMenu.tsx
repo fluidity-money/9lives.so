@@ -47,35 +47,37 @@ export default function SimpleNavMenu({
   const hourlyMarkets = Object.values(config.simpleMarkets)
     .filter((i) => i.periods.includes("hourly") && i.listed)
     .map((i) => i.slug);
-
+  const is5Min = period.toLowerCase() === "5mins";
+  const is15Min = period.toLowerCase() === "15mins";
+  const isHourly = period.toLowerCase() === "hourly";
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-full gap-2">
         <Link
           href={`/simple/campaign/${mins5Markets[0]}/5mins`}
-          className="flex flex-1"
+          className="flex flex-auto"
         >
           <TabRadioButton
-            selected={period.toLowerCase() === "5mins"}
-            title="5 Min Markets"
+            selected={is5Min}
+            title={is5Min ? "5 Min Markets" : "5 Mins"}
           />
         </Link>
         <Link
           href={`/simple/campaign/${mins15Markets[0]}/15mins`}
-          className="flex flex-1"
+          className="flex flex-auto"
         >
           <TabRadioButton
-            selected={period.toLowerCase() === "15mins"}
-            title="15 Min Markets"
+            selected={is15Min}
+            title={is15Min ? "5 Min Markets" : "15 Mins"}
           />
         </Link>
         <Link
           href={`/simple/campaign/${hourlyMarkets[0]}/hourly`}
-          className="flex flex-1"
+          className="flex flex-auto"
         >
           <TabRadioButton
-            selected={period.toLowerCase() === "hourly"}
-            title="Hourly Markets"
+            selected={isHourly}
+            title={isHourly ? "Hourly Markets" : "Hourly"}
           />
         </Link>
       </div>
