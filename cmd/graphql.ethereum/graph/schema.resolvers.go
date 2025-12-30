@@ -1993,13 +1993,21 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string, 
 func (r *queryResolver) Assets(ctx context.Context) ([]types.Asset, error) {
 	var assets []types.Asset
 	err := r.DB.Raw(`
-	select sum(nbas.from_amount) as total_spent,
-	nbas.campaign_content->'priceMetadata'->>'baseAsset' as name
-	from ninelives_buys_and_sells_1 nbas
-	where nbas.campaign_content->'priceMetadata'->>'baseAsset' is not null
-	and nbas.created_by >= NOW() - INTERVAL '24 hours'
-	group by nbas.campaign_content->'priceMetadata'->>'baseAsset'
-	order by total_spent desc
+	WITH assets AS (
+    SELECT DISTINCT
+        campaign_content->'priceMetadata'->>'baseAsset' AS name
+    FROM ninelives_buys_and_sells_1
+    WHERE campaign_content->'priceMetadata'->>'baseAsset' IS NOT NULL
+	)
+	SELECT
+    a.name,
+    COALESCE(SUM(nbas.from_amount), 0) AS total_spent
+	FROM assets a
+	LEFT JOIN ninelives_buys_and_sells_1 nbas
+    ON nbas.campaign_content->'priceMetadata'->>'baseAsset' = a.name
+    AND nbas.created_by >= NOW() - INTERVAL '24 hours'
+	GROUP BY a.name
+	ORDER BY total_spent DESC;
 	`).Scan(&assets).Error
 	if err != nil {
 		return nil, fmt.Errorf("error getting assets: %w", err)
