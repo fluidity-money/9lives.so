@@ -1428,6 +1428,7 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 	on nc."content" ->>'poolAddress' = npu.pool_address
 	where npu.spender  = ?
 	and npu.was_spent = false
+	order by npu.created_at desc
 	offset ? limit ?;
 	`, address, pageNum*pageSizeNum, pageSizeNum).Scan(&positions).Error
 	if err != nil {
