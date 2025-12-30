@@ -1842,7 +1842,6 @@ export namespace Schema {
     fields: {
       __typename: Position.__typename;
       campaignId: Position.campaignId;
-      outcomeIds: Position.outcomeIds;
       content: Position.content;
     };
   }
@@ -1862,13 +1861,6 @@ export namespace Schema {
       name: "campaignId";
       arguments: {};
       inlineType: [1];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    export interface outcomeIds extends $.OutputField {
-      name: "outcomeIds";
-      arguments: {};
-      inlineType: [1, [1]];
       namedType: $$NamedTypes.$$String;
     }
 

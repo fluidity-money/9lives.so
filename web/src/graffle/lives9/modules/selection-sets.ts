@@ -3662,14 +3662,6 @@ export interface Position<
     | $Select.SelectAlias.SelectAlias<Position.campaignId<_$Scalars>>;
   /**
    *
-   * Select the `outcomeIds` field on the `Position` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  outcomeIds?:
-    | Position.outcomeIds$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Position.outcomeIds<_$Scalars>>;
-  /**
-   *
    * Select the `content` field on the `Position` object. Its type is `Campaign` (a `OutputObject` kind of type).
    *
    */
@@ -3739,35 +3731,6 @@ export namespace Position {
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | campaignId$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type outcomeIds<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | outcomeIds$SelectionSet<_$Scalars>;
-
-  export interface outcomeIds$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `outcomeIds` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type outcomeIds$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | outcomeIds$SelectionSet<_$Scalars>
   >;
 
   // --------------------------------------------------------------------------------------------------

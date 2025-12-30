@@ -223,7 +223,6 @@ const Claim: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 const Position: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     campaignId: {},
-    outcomeIds: {},
     content: {
       // nt: Campaign, <-- Assigned later to avoid potential circular dependency.
     },
