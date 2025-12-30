@@ -34,9 +34,6 @@ export default function useParticipatedCampaigns({
             [
               {
                 campaignId: campaignDetail.identifier as `0x${string}`,
-                outcomeIds: campaignDetail.outcomes.map(
-                  (o) => o.identifier,
-                ) as `0x${string}`[],
                 content: { ...campaignDetail },
               } as ParticipatedCampaign,
             ],

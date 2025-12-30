@@ -47,7 +47,6 @@ export default function PositionBody({
           <PositionsGroup
             colSpan={colSpan}
             content={group.content}
-            outcomeIds={group.outcomeIds}
             hideSmallBalances={hideSmallBalances}
             detailPage={!!campaignDetail}
             key={group.content.poolAddress}

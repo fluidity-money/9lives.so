@@ -178,7 +178,6 @@ export type RawParticipatedCampaign = Awaited<
 >[number];
 export type ParticipatedCampaign = RawParticipatedCampaign & {
   campaignId: `0x${string}`;
-  outcomeIds: `0x${string}`[];
   content: ReturnType<typeof formatParticipatedContent>;
 };
 

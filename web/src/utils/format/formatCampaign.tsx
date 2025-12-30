@@ -144,7 +144,6 @@ export function formatParticipatedCampaign(
   if (!ro) throw new Error("Campaign data is null");
   return {
     campaignId: ro.campaignId as `0x${string}`,
-    outcomeIds: ro.outcomeIds.map((o) => `0x${o}` as `0x${string}`), // add hex prefix
     content: formatParticipatedContent(ro.content),
   };
 }

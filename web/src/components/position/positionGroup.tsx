@@ -10,7 +10,6 @@ import { Outcome, ParticipatedCampaign } from "@/types";
 
 export default function PositionsGroup({
   content,
-  outcomeIds,
   detailPage,
   colSpan,
   hideSmallBalances,
@@ -34,7 +33,7 @@ export default function PositionsGroup({
   });
   const { data: sharePrices } = useSharePrices({
     tradingAddr: content.poolAddress as `0x${string}`,
-    outcomeIds: outcomeIds as `0x${string}`[],
+    outcomeIds: content.outcomes.map((o) => o.identifier) as `0x${string}`[],
   });
   const { data: positionsHistory } = usePositionHistory(
     account?.address,

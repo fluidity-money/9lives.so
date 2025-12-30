@@ -229,7 +229,6 @@ export const requestUserParticipated = (
   graph9Lives.query.userParticipatedCampaigns({
     $: { address, page, pageSize },
     campaignId: true,
-    outcomeIds: true,
     content: {
       isDpm: true,
       isDppm: true,
