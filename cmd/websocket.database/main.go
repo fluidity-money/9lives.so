@@ -115,7 +115,12 @@ func main() {
 			broadcast.Unsubscribe(cookie)
 			shutdown <- err
 		})
-		setup.Exitf("bind: %v", http.ListenAndServe(os.Getenv(EnvListenAddr), nil))
+		setup.Exitf("bind: %v", http.ListenAndServeTLS(
+			os.Getenv(EnvListenAddr),
+			"/etc/ssl/ssl-cert-snakeoil.pem",
+			"/etc/ssl/private/ssl-cert-snakeoil.key",
+			nil,
+		))
 	}()
 	defer connector.Close()
 	connector.Start(ctx)
