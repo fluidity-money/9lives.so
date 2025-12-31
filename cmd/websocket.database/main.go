@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
-	"strings"
 	"net/url"
-	"fmt"
 	"os"
+	"strings"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
 	"github.com/fluidity-money/9lives.so/lib/setup"
@@ -81,7 +81,10 @@ func main() {
 				o[k] = msg.Decoded[k]
 			}
 		}
-		broadcast.BroadcastJson(o)
+		broadcast.BroadcastJson(struct {
+			Table   string         `json:"table"`
+			Content map[string]any `json:"content"`
+		}{msg.TableName, o})
 	})
 	if err != nil {
 		setup.Exitf("error opening connector: %v", err)
