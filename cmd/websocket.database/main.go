@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"net/url"
 	"os"
 	"strings"
@@ -12,6 +14,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/config"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/websocket"
+	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 
 	cdc "github.com/Trendyol/go-pq-cdc"
 	cdcConfig "github.com/Trendyol/go-pq-cdc/config"
@@ -37,11 +40,22 @@ func main() {
 	ctx := context.Background()
 	tables := getTables()
 	timescalePassword, _ := u.User.Password()
+	port, err := strconv.Atoi(strings.TrimPrefix(u.Port(), ":"))
+	if err != nil {
+		setup.Exitf("bad port: %v", u.Port())
+	}
+	go func() {
+		t := time.NewTimer(1 * time.Minute)
+		for range t.C {
+			heartbeat.Pulse()
+		}
+	}()
 	cfg := cdcConfig.Config{
-		Host:     u.Host,
+		Host:     u.Hostname(),
 		Username: u.User.Username(),
 		Password: timescalePassword,
 		Database: strings.TrimPrefix(u.Path, "/"),
+		Port:     port,
 		Publication: cdcPublication.Config{
 			CreateIfNotExists: true,
 			Name:              "websocket_publication",
@@ -117,7 +131,7 @@ func main() {
 		})
 		setup.Exitf("bind: %v", http.ListenAndServeTLS(
 			os.Getenv(EnvListenAddr),
-			"/etc/ssl/ssl-cert-snakeoil.pem",
+			"/etc/ssl/certs/ssl-cert-snakeoil.pem",
 			"/etc/ssl/private/ssl-cert-snakeoil.key",
 			nil,
 		))
