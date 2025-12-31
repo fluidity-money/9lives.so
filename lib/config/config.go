@@ -44,7 +44,7 @@ func Get() C {
 	}
 	timescaleUrl := os.Getenv("SPN_TIMESCALE")
 	if timescaleUrl == "" {
-		setup.Exitf("SPN_TIMESCALE_URL not set")
+		setup.Exitf("SPN_TIMESCALE not set")
 	}
 	gethUrls := strings.Split(gethUrl, ",")
 	timescaleUrls := strings.Split(timescaleUrl, ",")
