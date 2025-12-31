@@ -8,8 +8,10 @@ import { combineClass } from "@/utils/combineClass";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import RightCaretIcon from "#/icons/right-caret.svg";
-import useClaimAllPools from "@/hooks/useClaimAllPolls";
+import useClaimAllPools from "@/hooks/useClaimAllPools";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import useClaimAllPoolsWithAS from "@/hooks/useClaimAllPoolsAS";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 function SimpleRewardItem({
   data,
@@ -79,7 +81,9 @@ export default function SimpleRewardsDialog({
 }) {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
-  const { mutate: claimAllPools, isPending: claiming } = useClaimAllPools(
+  const enableASClaim = useFeatureFlag("enable account system claim");
+  const useAction = enableASClaim ? useClaimAllPoolsWithAS : useClaimAllPools;
+  const { mutate: claimAllPools, isPending: claiming } = useAction(
     data,
     closeModal,
     token,

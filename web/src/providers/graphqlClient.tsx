@@ -898,3 +898,18 @@ export const requestAssets = async () =>
     totalSpent: true,
     name: true,
   });
+
+export const ninelivesClaimAll = async ({
+  eoaAddress,
+  secret,
+  markets,
+}: {
+  eoaAddress: string;
+  secret: string;
+  markets: string[];
+}) =>
+  graphAccountsWithStatus
+    .transport({
+      headers: { Authorization: `${eoaAddress}:${secret}` },
+    })
+    .mutation.claimRewards({ $: { msTs: Date.now().toString(), markets } });

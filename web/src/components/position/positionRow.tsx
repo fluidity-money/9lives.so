@@ -16,7 +16,9 @@ import NoOutcomeImg from "#/images/no-outcome.svg";
 import UsdIcon from "#/icons/usd.svg";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
 import useDppmRewards from "@/hooks/useDppmRewards";
-import useClaimAllPools from "@/hooks/useClaimAllPolls";
+import useClaimAllPools from "@/hooks/useClaimAllPools";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
+import useClaimAllPoolsWithAS from "@/hooks/useClaimAllPoolsAS";
 export default function PositionRow({
   data,
   price,
@@ -62,7 +64,9 @@ export default function PositionRow({
   const historicalValue = Math.trunc(
     history?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0,
   );
-  const { mutate: claimAllPools } = useClaimAllPools([
+  const enableASClaim = useFeatureFlag("enable account system claim");
+  const useAction = enableASClaim ? useClaimAllPoolsWithAS : useClaimAllPools;
+  const { mutate: claimAllPools } = useAction([
     {
       ...data,
       priceMetadata: campaignContent.priceMetadata ?? {
@@ -77,6 +81,7 @@ export default function PositionRow({
       totalSpent: historicalValue,
     },
   ]);
+
   const averageShareCost = +formatFusdc(historicalValue, 6) / +data.balance;
   const addPosition = usePortfolioStore((s) => s.addPositionValue);
   const { data: estimationOfBurn } = useEstimateBurn({

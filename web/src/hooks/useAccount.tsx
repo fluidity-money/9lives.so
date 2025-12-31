@@ -17,6 +17,7 @@ import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
+import { Account } from "thirdweb/wallets";
 
 const SECRET_KEY = "9lives-account-secret";
 
@@ -39,6 +40,74 @@ function storeSecret(secret: string, wallet: string) {
   );
 }
 
+export const create = async (account: Account) => {
+  const publicKey = await requestPublicKey();
+  const signature = await account?.signMessage({ message: publicKey });
+  const { r, s, v } = Signature.from(signature);
+  const response = await createAccount({
+    eoaAddr: account.address.slice(2),
+    r: r.slice(2),
+    s: s.slice(2),
+    v,
+  });
+  if (!response) {
+    throw new Error("Account creation failed");
+  }
+  storeSecret(response.secret, account.address);
+  return response.secret;
+};
+
+export const isCreated = async (account: Account) => {
+  return await hasCreated(account.address);
+};
+
+export const getSecret = async (account: Account) => {
+  const publicKey = await requestPublicKey();
+  const nonce = Math.floor(Math.random() * 0x7fffffff);
+  const nonceHex = encodeNonceBE(nonce);
+  const message = publicKey + nonceHex;
+  const signature = await account?.signMessage({ message });
+  const { r, s, v } = Signature.from(signature);
+  const secret = await requestSecret({
+    eoaAddr: account.address.slice(2),
+    nonce,
+    s: s.slice(2),
+    r: r.slice(2),
+    v,
+  });
+  if (!secret) {
+    throw new Error("Account secret is not retreived");
+  }
+  storeSecret(secret, account.address);
+  return secret;
+};
+
+export const checkAndSetSecret = async (account: Account) => {
+  const secretObj = window.localStorage.getItem(
+    `${SECRET_KEY}-${account.address.toLowerCase()}`,
+  );
+  let secret: null | string = null;
+  if (!secretObj) {
+    const isAccountCreated = await isCreated(account);
+    if (isAccountCreated) {
+      secret = await getSecret(account);
+    } else {
+      secret = await create(account);
+    }
+  } else {
+    const secretParsed = JSON.parse(secretObj) as {
+      secret: string;
+      expireAt: string;
+    };
+    if (new Date() > new Date(secretParsed.expireAt)) {
+      secret = await getSecret(account);
+    } else {
+      secret = secretParsed.secret;
+    }
+  }
+  return secret;
+};
+
 export default function useAccount({
   data,
   shareAddr,
@@ -55,77 +124,6 @@ export default function useAccount({
   const queryClient = useQueryClient();
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
 
-  const create = async () => {
-    if (!account) throw new Error("No wallet is connected");
-    const publicKey = await requestPublicKey();
-    const signature = await account?.signMessage({ message: publicKey });
-    const { r, s, v } = Signature.from(signature);
-    const response = await createAccount({
-      eoaAddr: account.address.slice(2),
-      r: r.slice(2),
-      s: s.slice(2),
-      v,
-    });
-    if (!response) {
-      throw new Error("Account creation failed");
-    }
-    storeSecret(response.secret, account.address);
-    return response.secret;
-  };
-
-  const getSecret = async () => {
-    if (!account) throw new Error("No wallet is connected");
-    const publicKey = await requestPublicKey();
-    const nonce = Math.floor(Math.random() * 0x7fffffff);
-    const nonceHex = encodeNonceBE(nonce);
-    const message = publicKey + nonceHex;
-    const signature = await account?.signMessage({ message });
-    const { r, s, v } = Signature.from(signature);
-    const secret = await requestSecret({
-      eoaAddr: account.address.slice(2),
-      nonce,
-      s: s.slice(2),
-      r: r.slice(2),
-      v,
-    });
-    if (!secret) {
-      throw new Error("Account secret is not retreived");
-    }
-    storeSecret(secret, account.address);
-    return secret;
-  };
-
-  const isCreated = async () => {
-    if (!account) throw new Error("No wallet is connected");
-    return await hasCreated(account.address);
-  };
-
-  const checkAndSetSecret = async (wallet: string) => {
-    const secretObj = window.localStorage.getItem(
-      `${SECRET_KEY}-${wallet.toLowerCase()}`,
-    );
-    let secret: null | string = null;
-    if (!secretObj) {
-      const isAccountCreated = await isCreated();
-      if (isAccountCreated) {
-        secret = await getSecret();
-      } else {
-        secret = await create();
-      }
-    } else {
-      const secretParsed = JSON.parse(secretObj) as {
-        secret: string;
-        expireAt: string;
-      };
-      if (new Date() > new Date(secretParsed.expireAt)) {
-        secret = await getSecret();
-      } else {
-        secret = secretParsed.secret;
-      }
-    }
-    return secret;
-  };
-
   const buy = async (
     fusdc: number,
     referrer: string,
@@ -135,7 +133,7 @@ export default function useAccount({
       new Promise(async (res, rej) => {
         try {
           if (!account) throw new Error("No wallet is connected");
-          let secret = await checkAndSetSecret(account.address);
+          let secret = await checkAndSetSecret(account);
           if (!secret) throw new Error("No secret is set");
           await checkAndSwitchChain();
           const amount = toUnits(
@@ -196,7 +194,7 @@ export default function useAccount({
             permit,
           })) as any;
           if (result?.response?.status === 401) {
-            const newSecret = await getSecret();
+            const newSecret = await getSecret(account);
             await ninelivesMint({
               amount,
               outcome: outcomeId,
@@ -266,5 +264,5 @@ export default function useAccount({
       },
     );
 
-  return { buy };
+  return { buy, checkAndSetSecret, getSecret };
 }
