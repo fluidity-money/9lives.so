@@ -98,7 +98,7 @@ const simpleMarkets = {
     title: "BTC",
     tabTitle: "BTC",
     decimals: 2,
-    periods: ["hourly", "15mins"],
+    periods: ["5mins", "hourly", "15mins"],
     openDays: [0, 1, 2, 3, 4, 5, 6],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
@@ -177,7 +177,7 @@ const simpleMarkets = {
     periods: ["5mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: true,
+    listed: false,
   },
 } as const;
 const betaTesterWallets = [
