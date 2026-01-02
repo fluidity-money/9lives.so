@@ -176,8 +176,6 @@ const simpleMarkets = {
     decimals: 2,
     periods: ["5mins"],
     openHours: ["00:00", "23:59"],
-    openDays: stockMarketOpenDaysUS,
-    closeDays: stockMarketCloseDaysUS,
     tz: "UTC",
     listed: false,
   },
