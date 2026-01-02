@@ -13,6 +13,8 @@ import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+import { EVENTS, track } from "@/utils/analytics";
+import Button from "../themed/button";
 
 export default function SimpleBody({
   campaignData,
@@ -29,11 +31,38 @@ export default function SimpleBody({
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);
   const enabledSimpleModeAlert = useFeatureFlag("enable simple mode alert");
+  const [simpleChart, setSimpleChart] = useState(true);
+  const handleZoomBtnClick = () => {
+    setSimpleChart(!simpleChart);
+    track(EVENTS.ZOOM_CHART, {
+      direction: simpleChart ? "in" : "out",
+      asset: data.priceMetadata?.baseAsset,
+      targetPrice: data.priceMetadata?.priceTargetForUp,
+      moment: Number(
+        new Date().toLocaleString("en-US", {
+          timeZone: "UTC",
+          minute: "numeric",
+        }),
+      ),
+    });
+  };
   return (
     <>
       {enabledSimpleModeAlert ? <SimpleModeAlert /> : <></>}
       <SimpleSubHeader campaignData={data} pointsData={pointsData} />
-      <PriceChartWrapper simple campaignData={data} pointsData={pointsData} />
+      <div className="relative">
+        <Button
+          onClick={handleZoomBtnClick}
+          title={simpleChart ? "Zoom In" : "Zoom Out"}
+          className={"absolute left-0 top-0 z-[99]"}
+          size={"small"}
+        />
+        <PriceChartWrapper
+          simple={simpleChart}
+          campaignData={data}
+          pointsData={pointsData}
+        />
+      </div>
       <div className="sticky inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-9layer pb-2 md:static md:flex-row md:bg-transparent md:p-0">
         <SimpleClaimAllButton />
         <SimpleButtons
