@@ -2,7 +2,7 @@
 
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { useRef, useSyncExternalStore } from "react";
-import { PricePoint, RawPricePoint } from "@/types";
+import { PricePoint, RawPricePoint, SimpleMarketKey } from "@/types";
 import config from "@/config";
 type WSMessage = {
   table: "oracles_ninelives_prices_2";
@@ -14,7 +14,7 @@ export function useWSForPrices({
   starting,
   ending,
 }: {
-  asset: string;
+  asset: SimpleMarketKey;
   starting: number;
   ending: number;
 }) {
@@ -29,7 +29,7 @@ export function useWSForPrices({
     ending,
   }: {
     queryClient: QueryClient;
-    asset: string;
+    asset: SimpleMarketKey;
     starting: number;
     ending: number;
   }) {
@@ -59,8 +59,10 @@ export function useWSForPrices({
           ending >= new Date(msg.content.created_by).getTime()
         ) {
           const newPoint = {
+            price: Number(
+              msg.content.amount.toFixed(config.simpleMarkets[asset].decimals),
+            ),
             id: msg.content.id,
-            price: msg.content.amount,
             timestamp: new Date(msg.content.created_by).getTime(),
           } as PricePoint;
 
@@ -120,7 +122,7 @@ export function useWSForPrices({
   }: {
     listener: () => void;
     queryClient: QueryClient;
-    asset: string;
+    asset: SimpleMarketKey;
     starting: number;
     ending: number;
   }) {
