@@ -54,7 +54,7 @@ export default function SimpleBody({
         <Button
           onClick={handleZoomBtnClick}
           title={simpleChart ? "Zoom In" : "Zoom Out"}
-          className={"absolute left-0 top-0 z-[99]"}
+          className={"absolute left-0 top-0 z-[9]"}
           size={"small"}
         />
         <PriceChartWrapper
