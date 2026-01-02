@@ -207,7 +207,7 @@ const betaTesterWallets = [
   "0xf52a30397151c77e732fa5defb9347359c52a141",
   "0x078c44d92ab34a0fe8896631c6ab558b666cc2a3",
   "0x0559ea2bc93be2664c574d78ec1f49433d0d25a3",
-  "0xebc45d9ca05b8f298a0a8c1ed1ed0c7e8c4f5eaf"
+  "0xebc45d9ca05b8f298a0a8c1ed1ed0c7e8c4f5eaf",
 ];
 const simpleMarketSchema = z.object({
   slug: z.string(),
