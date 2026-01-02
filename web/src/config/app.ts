@@ -172,7 +172,7 @@ const simpleMarkets = {
     logo: KAG,
     title: "Silver (KAG)",
     tabTitle: "SILVER",
-    openDays: [0, 1, 2, 3, 4],
+    openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 2,
     periods: ["5mins"],
     openHours: ["00:00", "23:59"],
