@@ -177,7 +177,7 @@ const simpleMarkets = {
     periods: ["5mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: false,
+    listed: true,
   },
 } as const;
 const betaTesterWallets = [
