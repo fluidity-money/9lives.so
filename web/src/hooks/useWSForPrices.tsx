@@ -1,9 +1,10 @@
 "use client";
 
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
-import { useRef, useSyncExternalStore } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { PricePoint, RawPricePoint, SimpleMarketKey } from "@/types";
 import config from "@/config";
+
 type WSMessage = {
   table: "oracles_ninelives_prices_2";
   content: RawPricePoint & { base: string };
@@ -18,40 +19,26 @@ export function useWSForPrices({
   starting: number;
   ending: number;
 }) {
+  const queryClient = useQueryClient();
+
   const wsRef = useRef<WebSocket | null>(null);
-  const listenersRef = useRef<Set<() => void>>(new Set());
-  const lastMessageRef = useRef<WSMessage | null>(null);
 
-  function initWebSocket({
-    queryClient,
-    asset,
-    starting,
-    ending,
-  }: {
-    queryClient: QueryClient;
-    asset: SimpleMarketKey;
-    starting: number;
-    ending: number;
-  }) {
-    if (wsRef.current) return;
+  useEffect(() => {
+    const ws = new WebSocket("wss://websocket.9lives.so");
+    wsRef.current = ws;
 
-    const initialWs = new WebSocket("wss://websocket.9lives.so");
-    wsRef.current = initialWs;
-
-    initialWs.onopen = () => {
+    ws.onopen = () => {
       console.log(`${asset} websocket is opened.`);
-      initialWs.send(
+      ws.send(
         JSON.stringify({
           table: "oracles_ninelives_prices_2",
         }),
       );
     };
 
-    initialWs.onmessage = (event) => {
+    ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data) as WSMessage;
-        lastMessageRef.current = msg;
-        listenersRef.current.forEach((l) => l());
 
         if (
           msg.content.base === asset.toUpperCase() &&
@@ -70,23 +57,21 @@ export function useWSForPrices({
             { pages: PricePoint[][]; pageParams: number[] } | undefined
           >(["assetPrices", asset, starting, ending], (previousData) => {
             if (previousData) {
-              if (
-                previousData.pages[previousData.pages.length - 1].length ===
-                config.hasuraMaxQueryItem
-              ) {
+              const lastPageIdx = previousData.pages.length - 1;
+              const lastPage = previousData.pages[lastPageIdx];
+
+              if (lastPage.length === config.hasuraMaxQueryItem) {
                 return {
                   pages: [...previousData.pages, [newPoint]],
                   pageParams: [
                     ...previousData.pageParams,
-                    previousData.pageParams[
-                      previousData.pageParams.length - 1
-                    ] + 1,
+                    previousData.pageParams[lastPageIdx] + 1,
                   ],
                 };
               } else {
                 return {
                   pages: previousData.pages.map((p, idx) => {
-                    if (idx === previousData.pages.length - 1) {
+                    if (idx === lastPageIdx) {
                       return [...p, newPoint];
                     } else return p;
                   }),
@@ -103,47 +88,28 @@ export function useWSForPrices({
       }
     };
 
-    initialWs.onerror = (err) => {
+    ws.onerror = (err) => {
+      // Ignore intentional closing errors
+      if (
+        ws.readyState === WebSocket.CLOSING ||
+        ws.readyState === WebSocket.CLOSED
+      )
+        return;
       console.error("ws error", err);
     };
 
-    initialWs.onclose = () => {
+    ws.onclose = () => {
       console.log(`${asset} websocket is closed.`);
-      wsRef.current = null;
     };
-  }
-
-  function subscribe({
-    listener,
-    queryClient,
-    asset,
-    starting,
-    ending,
-  }: {
-    listener: () => void;
-    queryClient: QueryClient;
-    asset: SimpleMarketKey;
-    starting: number;
-    ending: number;
-  }) {
-    initWebSocket({ queryClient, asset, starting, ending });
-
-    listenersRef.current.add(listener);
 
     return () => {
-      listenersRef.current.delete(listener);
+      if (
+        ws.readyState === WebSocket.OPEN ||
+        ws.readyState === WebSocket.CONNECTING
+      ) {
+        ws.close();
+      }
+      wsRef.current = null;
     };
-  }
-
-  function getSnapshot() {
-    return lastMessageRef.current;
-  }
-
-  const queryClient = useQueryClient();
-
-  return useSyncExternalStore(
-    (l) => subscribe({ listener: l, queryClient, asset, starting, ending }),
-    getSnapshot,
-    () => null, // Get Server Snapshot
-  );
+  }, [asset, starting, ending, queryClient]);
 }
