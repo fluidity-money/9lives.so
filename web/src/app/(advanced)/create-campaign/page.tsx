@@ -20,7 +20,8 @@ export default async function CreateCampaign() {
           <h2 className="font-chicago text-2xl">Create Campaign</h2>
         </div>
         <p className="text-center text-sm">
-          Create a campaign for other people to participate in! Note that nonsensical markets may be delisted.
+          Create a campaign for other people to participate in! Note that
+          nonsensical markets may be delisted.
           <br />
           <br />
           <span className="bg-9green px-1 py-0.5 font-bold">
