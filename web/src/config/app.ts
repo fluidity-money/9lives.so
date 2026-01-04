@@ -7,6 +7,7 @@ import GOOGLE from "#/images/tokens/google.svg";
 import QQQ from "#/images/tokens/qqq.svg";
 import MONAD from "#/images/tokens/mon.svg";
 import KAG from "#/images/tokens/kag.png";
+import ETH from "#/images/tokens/eth.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -178,6 +179,18 @@ const simpleMarkets = {
     openHours: ["00:00", "23:59"],
     tz: "UTC",
     listed: false,
+  },
+  eth: {
+    slug: "eth",
+    logo: ETH,
+    title: "ETH",
+    tabTitle: "ETH",
+    decimals: 2,
+    periods: ["5mins"],
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
+    listed: true,
   },
 } as const;
 const betaTesterWallets = [
