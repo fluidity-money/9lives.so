@@ -35,7 +35,7 @@ export function useWSForNextMarket(
         if (
           msg.table !== "ninelives_campaigns_1" ||
           identifier === previousData.identifier ||
-          previousData.ending === content.ending ||
+          previousData.ending === content.ending * 1000 ||
           !content.priceMetadata ||
           content.priceMetadata.baseAsset.toLowerCase() !== symbol
         ) {
