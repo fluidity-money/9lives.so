@@ -43,6 +43,12 @@ var tables = map[string][]string{
 		"amount",
 		"created_by",
 	},
+	"ninelives_events_outcome_decided": {
+		"created_by",
+		"transaction_hash",
+		"emitter_addr",
+		"identifier",
+	},
 }
 
 func getTables() (t cdcPublication.Tables) {
