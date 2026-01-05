@@ -8,6 +8,8 @@ import QQQ from "#/images/tokens/qqq.svg";
 import MONAD from "#/images/tokens/mon.svg";
 import KAG from "#/images/tokens/kag.png";
 import ETH from "#/images/tokens/eth.svg";
+import SOL from "#/images/tokens/sol.svg";
+import CVX from "#/images/tokens/cvx.png";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
