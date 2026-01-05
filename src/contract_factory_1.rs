@@ -10,13 +10,12 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-share_call,
     error::*,
     events,
     fees::*,
     fusdc_call,
     immutables::*,
-    infra_market_call, proxy, trading_call,
+    infra_market_call, proxy, share_call, trading_call,
     utils::{block_timestamp, msg_sender},
     vault_call,
 };
@@ -32,7 +31,7 @@ impl StorageFactory {
     #[allow(non_snake_case, clippy::too_many_arguments)]
     pub fn new_trading_37_E_9_F_4_B_E(
         &mut self,
-        outcomes: Vec<(FixedBytes<8>, U256, String)>,
+        mut outcomes: Vec<(FixedBytes<8>, U256, String)>,
         oracle: Address,
         time_start: u64,
         time_ending: u64,
@@ -46,9 +45,11 @@ impl StorageFactory {
         seed_liq: U256,
     ) -> R<Address> {
         assert_or!(!outcomes.is_empty(), Error::MustContainOutcomes);
-
+        let outcome_before_len = outcomes.len();
+        outcomes.sort();
+        outcomes.dedup();
+        assert_or!(outcomes.len() == outcome_before_len, Error::BadTradingCtor);
         let outcome_ids = outcomes.iter().map(|(c, _, _)| *c).collect::<Vec<_>>();
-
         // Create the trading identifier to derive the outcome addresses from.
         let trading_id =
             proxy::create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());

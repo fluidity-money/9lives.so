@@ -199,4 +199,8 @@ interface INineLivesTrading {
          SimulatedPayoff memory outcome1,
          SimulatedPayoff memory outcome2
     );
+
+    /// @notice features to support copying enabled feature flags from one contract (if they
+    /// support the features function)
+    function features() external view returns (uint256 word);
 }

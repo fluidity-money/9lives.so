@@ -7,10 +7,10 @@ use stylus_sdk::{alloy_primitives::*, evm};
 
 use alloc::vec::Vec;
 
-use bobcat_features::bobcat_feature;
+use bobcat_features::bobcat_features;
 
 // Should this contract use internal tokens instead of erc20?
-bobcat_feature!(internal_tokens);
+bobcat_features!(internal_tokens);
 
 impl StorageTrading {
     pub fn internal_amm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>) -> R<()> {
@@ -141,7 +141,7 @@ impl StorageTrading {
             .collect::<R<Vec<_>>>()?;
         for (outcome_id, outcome_shares_received) in shares_received.iter() {
             if !outcome_shares_received.is_zero() {
-                IF_FEATURE_INTERNAL_TOKENS!({
+                FEATURE_IF_INTERNAL_TOKENS!({
                     self.give_shares(*outcome_id, recipient, *outcome_shares_received)?;
                 } else {
                     #[allow(deprecated)]
@@ -285,7 +285,7 @@ impl StorageTrading {
             .collect::<R<Vec<_>>>()?;
         for (outcome_id, outcome_shares_received) in shares_received.iter() {
             if !outcome_shares_received.is_zero() {
-                IF_FEATURE_INTERNAL_TOKENS!({
+                FEATURE_IF_INTERNAL_TOKENS!({
                     self.give_shares(*outcome_id, recipient, *outcome_shares_received)?
                 } else {
                     #[allow(deprecated)]
@@ -393,7 +393,7 @@ impl StorageTrading {
                 })
                 .collect::<Vec<_>>(),
         });
-        IF_FEATURE_INTERNAL_TOKENS!({
+        FEATURE_IF_INTERNAL_TOKENS!({
             self.burn_shares(outcome_id, sender, burned_shares)?
         } else {
             #[allow(deprecated)]
@@ -553,7 +553,7 @@ impl StorageTrading {
         // If the user gave us a U256::MAX, we claim everything they have.
         assert_or!(share_amt > U256::ZERO, Error::ZeroShares);
         let share_amt = if share_amt == U256::MAX {
-            IF_FEATURE_INTERNAL_TOKENS!({
+            FEATURE_IF_INTERNAL_TOKENS!({
                 self.erc20_balance_of.getter(outcome_id).get(spender)
             } else {
                 #[allow(deprecated)]
@@ -562,7 +562,7 @@ impl StorageTrading {
         } else {
             share_amt
         };
-        IF_FEATURE_INTERNAL_TOKENS!({
+        FEATURE_IF_INTERNAL_TOKENS!({
             self.burn_shares(outcome_id, spender, share_amt)?
         } else {
             #[allow(deprecated)]
@@ -642,7 +642,7 @@ impl StorageTrading {
                 })
                 .collect::<Vec<_>>(),
         });
-        IF_FEATURE_INTERNAL_TOKENS!({
+        FEATURE_IF_INTERNAL_TOKENS!({
             self.give_shares(outcome_id, recipient, shares)?
         } else {
             #[allow(deprecated)]

@@ -14,10 +14,10 @@ use stylus_sdk::{
 
 use alloc::vec::Vec;
 
-use bobcat_features::bobcat_feature;
+use bobcat_features::bobcat_features;
 
 // Should this contract use internal tokens instead of erc20?
-bobcat_feature!(internal_tokens);
+bobcat_features!(internal_tokens);
 
 impl StorageTrading {
     pub fn internal_dppm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>, seed_liq: U256) -> R<()> {
@@ -152,7 +152,7 @@ impl StorageTrading {
                 .setter(outcome_id)
                 .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
         }
-        IF_FEATURE_INTERNAL_TOKENS!({
+        FEATURE_IF_INTERNAL_TOKENS!({
             self.give_shares(outcome_id, recipient, shares)?;
         } else {
             #[allow(deprecated)]
@@ -231,7 +231,7 @@ impl StorageTrading {
             return Ok(U256::ZERO);
         }
         let amt = if amt == U256::MAX {
-            IF_FEATURE_INTERNAL_TOKENS!({
+            FEATURE_IF_INTERNAL_TOKENS!({
                 self.erc20_balance_of.getter(outcome_id).get(spender)
             } else {
                 #[allow(deprecated)]
@@ -240,7 +240,7 @@ impl StorageTrading {
         } else {
             amt
         };
-        IF_FEATURE_INTERNAL_TOKENS!({
+        FEATURE_IF_INTERNAL_TOKENS!({
             self.burn_shares(outcome_id, spender, amt)?
         } else {
             #[allow(deprecated)]

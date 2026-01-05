@@ -245,4 +245,8 @@ contract MockTrading is INineLivesTrading {
          SimulatedPayoff memory outcome2
     ) {
     }
+
+    function features() external view returns (uint256 word) {
+        return 0;
+    }
 }

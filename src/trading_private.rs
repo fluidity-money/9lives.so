@@ -12,6 +12,8 @@ use crate::{
     vault_call,
 };
 
+use bobcat_features::FEATURE_COPY;
+
 use alloc::vec::Vec;
 
 // CalcFees, determined by the contract state.
@@ -26,7 +28,7 @@ pub struct CalcFees {
 impl StorageTrading {
     pub fn internal_ctor(
         &mut self,
-        mut outcomes: Vec<FixedBytes<8>>,
+        outcomes: Vec<FixedBytes<8>>,
         oracle: Address,
         time_start: u64,
         time_ending: u64,
@@ -38,13 +40,7 @@ impl StorageTrading {
         fee_referrer: u64,
         seed_liq: U256
     ) -> R<()> {
-        {
-            // Prevent someone from constructing this with reused shares.
-            let outcome_before_len = outcomes.len();
-            outcomes.sort();
-            outcomes.dedup();
-            assert_or!(outcomes.len() == outcome_before_len, Error::BadTradingCtor);
-        }
+        // Assume that the factory will prevent a user from making a contract here that reuses its identifiers (for codesize reasons).
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // Make sure that the user hasn't given us any zero values, or the end
         // date isn't in the past, in places that don't make sense!
@@ -67,6 +63,8 @@ impl StorageTrading {
         // We assume that the sender is the factory.
         self.created.set(true);
         self.factory_addr.set(msg_sender());
+        // Copy from the factory our feature configuration:
+        FEATURE_COPY!(msg_sender().0.0, internal_tokens);
         // If the fee recipient is zero, then we set it to the DAO address.
         self.fee_recipient.set(if fee_recipient.is_zero() {
             DAO_EARN_ADDR
