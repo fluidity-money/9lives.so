@@ -207,10 +207,10 @@ const simpleMarkets = {
     listed: false,
   },
   cvx: {
-    slug: "CVX",
+    slug: "cvx",
     logo: CVX,
-    title: "CHEVRON",
-    tabTitle: "CHEVRON",
+    title: "CVX",
+    tabTitle: "CVX",
     decimals: 2,
     periods: ["15mins"],
     openDays: stockMarketOpenDaysUS,
