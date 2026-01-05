@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import LiFiProvider from "./lifi";
 import FarcasterProvider from "./farcaster";
 import RelayProvider from "./relay";
-
+import { WebSocketProvider as WS9Lives } from "./websocket9lives";
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThirdwebProvider>
@@ -22,7 +22,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <ReferralHandler />
         </Suspense>
         <PostHogProvider>
-          <LiFiProvider>{children}</LiFiProvider>
+          <LiFiProvider>
+            <WS9Lives>{children}</WS9Lives>
+          </LiFiProvider>
         </PostHogProvider>
       </ReactQueryProvider>
     </ThirdwebProvider>
