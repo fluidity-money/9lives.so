@@ -26,12 +26,6 @@ export function useWSForPrices({
   useEffect(() => {
     if (!ws) return;
 
-    const offOpen = ws.onOpen(() => {
-      ws.send({
-        table: "oracles_ninelives_prices_2",
-      });
-    });
-
     const offMessage = ws.subscribe((raw) => {
       try {
         const msg = raw as WSMessage;
@@ -88,7 +82,6 @@ export function useWSForPrices({
     });
 
     return () => {
-      offOpen();
       offMessage();
     };
   }, [ws, asset, starting, ending, queryClient]);

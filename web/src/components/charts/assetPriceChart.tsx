@@ -2,6 +2,7 @@
 import config from "@/config";
 import { useWSForPrices } from "@/hooks/useWSForPrices";
 import { PricePoint, SimpleMarketKey } from "@/types";
+import { LoaderIcon } from "react-hot-toast";
 import {
   LineChart,
   ResponsiveContainer,
@@ -29,9 +30,17 @@ export default function AssetPriceChart({
   simple?: boolean;
   assetPrices: PricePoint[];
 }) {
+  const chartHeight = simple ? 300 : 320;
   useWSForPrices({ asset: symbol, ending, starting });
-  if (assetPrices.length < 2) {
-    return null;
+  if (assetPrices.length < 1) {
+    return (
+      <div
+        className="flex w-full items-center justify-center bg-9gray"
+        style={{ height: chartHeight }}
+      >
+        <LoaderIcon />
+      </div>
+    );
   }
   const latestPoint = assetPrices[assetPrices.length - 1];
   const latestPrice = latestPoint.price;
@@ -51,7 +60,6 @@ export default function AssetPriceChart({
     Math.abs(basePrice - minPrice),
     Math.abs(basePrice - maxPrice),
   );
-  const chartHeight = simple ? 300 : 320;
   const pricePerPixel = simpleDiff / chartHeight;
   const marginInPrice = 16 * pricePerPixel;
   const minY = simple ? basePrice - simpleDiff : minPrice - marginInPrice;
