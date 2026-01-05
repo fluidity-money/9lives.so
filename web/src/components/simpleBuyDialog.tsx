@@ -98,6 +98,15 @@ export default function SimpleBuyDialog({
           message: "usd value > 2$",
           path: ["usdValue"],
         });
+      } else if (
+        data.fromChain === config.destinationChain.id &&
+        1 > Number(supply)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "usd value >= 1$",
+          path: ["usdValue"],
+        });
       }
     });
   type FormData = z.infer<typeof formSchema>;

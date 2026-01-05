@@ -77,12 +77,7 @@ export default function DetailBuyAction({
     : data.outcomes[0];
   const ctaTitle = selectedOutcome?.state === "sell" ? "Sell" : "Buy";
   const [isMinting, setIsMinting] = useState(false);
-  const formSchema = z.object({
-    supply: z.coerce
-      .number()
-      .gte(0.1, { message: "Invalid usdc to spend, min 0.1$ necessary" }),
-  });
-  const formSchemaWithRelay = z
+  const formSchema = z
     .object({
       supply: z.coerce.number().gt(0, { message: "Invalid amount to spend" }),
       toChain: z.number().min(0),
@@ -102,6 +97,15 @@ export default function DetailBuyAction({
           message: "Investment must be at least 2$",
           path: ["usdValue"],
         });
+      } else if (
+        data.fromChain === config.destinationChain.id &&
+        1 > Number(supply)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Investment must be at least 1$",
+          path: ["usdValue"],
+        });
       }
     });
   const chanceAmm = Number(price) * 100;
@@ -112,7 +116,7 @@ export default function DetailBuyAction({
   })?.[0]?.chance;
   const chance = data.isDpm ? dpmChance : chanceAmm;
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
-  type FormData = z.infer<typeof formSchemaWithRelay>;
+  type FormData = z.infer<typeof formSchema>;
   const {
     register,
     watch,
@@ -122,7 +126,7 @@ export default function DetailBuyAction({
     formState: { errors },
   } = useForm<FormData>({
     disabled: shouldStopAction,
-    resolver: zodResolver(enabledRelay ? formSchemaWithRelay : formSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       supply: 0,
       toChain: config.chains.superposition.id,
