@@ -7,10 +7,10 @@ use stylus_sdk::{alloy_primitives::*, evm};
 
 use alloc::vec::Vec;
 
-use bobcat_features::bobcat_features;
+use bobcat_features::BOBCAT_FEATURES;
 
 // Should this contract use internal tokens instead of erc20?
-bobcat_features!(internal_tokens);
+BOBCAT_FEATURES!(internal_tokens);
 
 impl StorageTrading {
     pub fn internal_amm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>) -> R<()> {

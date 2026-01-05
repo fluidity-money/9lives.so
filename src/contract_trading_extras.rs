@@ -16,10 +16,10 @@ use alloc::{borrow::ToOwned, string::String, vec::Vec};
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
-use bobcat_features::bobcat_features;
+use bobcat_features::BOBCAT_FEATURES;
 
 // Should this contract use internal tokens instead of erc20?
-bobcat_features!(internal_tokens);
+BOBCAT_FEATURES!(internal_tokens);
 
 // Arguments for the ctor function. In a tuple form for Solidity
 // calldata, and for a Default trait impl later.
@@ -243,8 +243,8 @@ impl StorageTrading {
         unimplemented!()
     }
 
-    pub fn features() -> R<[u8; 32]> {
-        Ok(feature_pack().0)
+    pub fn features() -> R<FixedBytes<32>> {
+        Ok(FixedBytes::<32>(feature_pack().0))
     }
 }
 

@@ -14,10 +14,10 @@ use stylus_sdk::{
 
 use alloc::vec::Vec;
 
-use bobcat_features::bobcat_features;
+use bobcat_features::BOBCAT_FEATURES;
 
 // Should this contract use internal tokens instead of erc20?
-bobcat_features!(internal_tokens);
+BOBCAT_FEATURES!(internal_tokens);
 
 impl StorageTrading {
     pub fn internal_dppm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>, seed_liq: U256) -> R<()> {

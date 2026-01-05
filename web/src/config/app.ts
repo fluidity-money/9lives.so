@@ -207,7 +207,7 @@ const simpleMarkets = {
     listed: false,
   },
   cvx: {
-    slug: "chevron",
+    slug: "CVX",
     logo: CVX,
     title: "CHEVRON",
     tabTitle: "CHEVRON",
