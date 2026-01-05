@@ -180,7 +180,7 @@ const simpleMarkets = {
     periods: ["5mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: true,
+    listed: false,
   },
   eth: {
     slug: "eth",
@@ -205,6 +205,19 @@ const simpleMarkets = {
     openHours: ["00:00", "23:59"],
     tz: "UTC",
     listed: false,
+  },
+  cvx: {
+    slug: "chevron",
+    logo: CVX,
+    title: "CHEVRON",
+    tabTitle: "CHEVRON",
+    decimals: 2,
+    periods: ["15mins"],
+    openDays: stockMarketOpenDaysUS,
+    openHours: stockMarketOpenHoursUS,
+    closeDays: stockMarketCloseDaysUS,
+    tz: "America/New_York",
+    listed: true,
   },
 } as const;
 const betaTesterWallets = [
