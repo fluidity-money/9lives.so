@@ -253,6 +253,13 @@ export default function useAccount({
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", account.address, outcomeIds],
           });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "tokensWithBalances",
+              account?.address,
+              config.destinationChain.id,
+            ],
+          });
         } catch (e) {
           rej(e);
         }

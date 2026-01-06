@@ -264,6 +264,9 @@ const useBuyWithRelay = ({
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", account.address, outcomeIds],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["tokensWithBalances", account?.address, fromChain],
+          });
         } catch (e) {
           if (
             !(

@@ -147,6 +147,13 @@ const useBuy = ({
           queryClient.invalidateQueries({
             queryKey: ["positionHistory", account.address, outcomeIds],
           });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "tokensWithBalances",
+              account?.address,
+              config.destinationChain.id,
+            ],
+          });
           track(EVENTS.MINT, {
             amount: fusdc,
             outcomeId,
