@@ -44,10 +44,14 @@ var tables = map[string][]string{
 		"created_by",
 	},
 	"ninelives_events_outcome_decided": {
+		"id",
 		"created_by",
+		"block_hash",
 		"transaction_hash",
+		"block_number",
 		"emitter_addr",
 		"identifier",
+		"oracle",
 	},
 }
 
