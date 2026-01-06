@@ -17,7 +17,7 @@ export default function SimpleHeader({
     queryKey: ["simpleCampaign", initialData.priceMetadata.baseAsset, period],
     initialData,
   });
-  const isDailyMarket = data.ending - data.starting >= 1000 * 60 * 60 * 24;
+  const isHourlyMarket = data.ending - data.starting >= 1000 * 60 * 59;
   const isOpen = isMarketOpen(
     config.simpleMarkets[initialData.priceMetadata.baseAsset],
   );
@@ -29,15 +29,13 @@ export default function SimpleHeader({
         <span className="font-geneva uppercase text-[#808080]">
           {new Date(data.starting).toLocaleString("default", {
             hour: "numeric",
-            day: isDailyMarket ? "numeric" : undefined,
-            month: isDailyMarket ? "short" : undefined,
+            minute: isHourlyMarket ? undefined : "2-digit",
             timeZone: "UTC",
           })}{" "}
           -{" "}
           {new Date(data.ending).toLocaleString("default", {
             hour: "numeric",
-            day: isDailyMarket ? "numeric" : undefined,
-            month: isDailyMarket ? "short" : undefined,
+            minute: isHourlyMarket ? undefined : "2-digit",
             timeZone: "UTC",
           })}
           {" UTC"}
