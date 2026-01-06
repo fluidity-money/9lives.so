@@ -25,6 +25,7 @@ import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";
 import Button from "../themed/button";
 import { EVENTS, track } from "@/utils/analytics";
+import { useWSForWinner } from "@/hooks/useWSForWinner";
 
 export default function DetailWrapper({
   initialData,
@@ -45,6 +46,7 @@ export default function DetailWrapper({
     },
     initialData,
   });
+  useWSForWinner(data.identifier, data.poolAddress);
   const [selectedOutcome, setSelectedOutcome] = useState<SelectedOutcome>({
     id:
       data.outcomes.find((o) => o.identifier === outcomeId)?.identifier ??
