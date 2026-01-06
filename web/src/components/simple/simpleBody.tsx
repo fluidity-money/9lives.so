@@ -27,6 +27,9 @@ export default function SimpleBody({
   const { data } = useQuery<SimpleCampaignDetail>({
     queryKey: ["simpleCampaign", campaignData.priceMetadata.baseAsset, period],
     initialData: campaignData,
+    initialDataUpdatedAt: Date.now() - 1000 * 10,
+    staleTime: 0,
+    refetchOnMount: true,
   });
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);

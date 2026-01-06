@@ -12,7 +12,7 @@ import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 
 type Params = Promise<{ symbol: string; period: string }>;
 export const dynamicParams = true;
-export const revalidate = 60;
+export const revalidate = 10;
 
 export async function generateStaticParams() {
   return Object.values(config.simpleMarkets).reduce(

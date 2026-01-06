@@ -33,14 +33,7 @@ export default function AssetPriceChart({
   const chartHeight = simple ? 300 : 320;
   useWSForPrices({ asset: symbol, ending, starting });
   if (assetPrices.length < 1) {
-    return (
-      <div
-        className="flex w-full items-center justify-center bg-9gray"
-        style={{ height: chartHeight }}
-      >
-        <LoaderIcon />
-      </div>
-    );
+    return <div className="skeleton w-full" style={{ height: chartHeight }} />;
   }
   const latestPoint = assetPrices[assetPrices.length - 1];
   const latestPrice = latestPoint.price;
