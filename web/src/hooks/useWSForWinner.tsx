@@ -36,7 +36,10 @@ export function useWSForWinner(id: string, poolAddress: string) {
         queryClient.setQueryData<CampaignDetail>(
           ["campaign", id],
           (data) =>
-            ({ ...data, winner: msg.content.identifier }) as CampaignDetail,
+            ({
+              ...data,
+              winner: `0x${msg.content.identifier}`,
+            }) as CampaignDetail,
         );
       } catch (e) {
         console.error("invalid ws payload", e);
