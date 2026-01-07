@@ -3,18 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"time"
 	"log/slog"
 	"net/http"
-	"strconv"
 	"net/url"
 	"os"
+	"encoding/json"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
+	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/websocket"
-	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 
 	cdc "github.com/Trendyol/go-pq-cdc"
 	cdcConfig "github.com/Trendyol/go-pq-cdc/config"
@@ -26,6 +27,12 @@ import (
 
 // EnvListenAddr to listen the HTTP server on.
 const EnvListenAddr = "SPN_LISTEN_ADDR"
+
+type TableContent struct {
+	Table    string           `json:"table"`
+	Content  map[string]any   `json:"content,omitempty"`
+	Snapshot []map[string]any `json:"snapshot,omitempty"`
+}
 
 func main() {
 	defer setup.Flush()
@@ -40,9 +47,13 @@ func main() {
 	ctx := context.Background()
 	tables := getTables()
 	timescalePassword, _ := u.User.Password()
-	port, err := strconv.Atoi(strings.TrimPrefix(u.Port(), ":"))
-	if err != nil {
-		setup.Exitf("bad port: %v", u.Port())
+	var port int
+	if p := u.Port(); p != "" {
+		if port, err = strconv.Atoi(strings.TrimPrefix(u.Port(), ":")); err != nil {
+			setup.Exitf("bad port: %v", u.Port())
+		}
+	} else {
+		port = 5432
 	}
 	go func() {
 		t := time.NewTimer(1 * time.Minute)
@@ -58,14 +69,14 @@ func main() {
 		Port:     port,
 		Publication: cdcPublication.Config{
 			CreateIfNotExists: true,
-			Name:              "websocket_publication",
+			Name:              "websocket_publication2",
 			Operations: cdcPublication.Operations{
 				cdcPublication.OperationInsert,
 			},
 			Tables: tables,
 		},
 		Slot: cdcSlot.Config{
-			Name:                        "websocket_slot",
+			Name:                        "websocket_slot2",
 			CreateIfNotExists:           true,
 			SlotActivityCheckerInterval: 1000,
 		},
@@ -74,6 +85,41 @@ func main() {
 		},
 	}
 	broadcast := websocket.NewBroadcast()
+	var (
+		bufferMsgsChan = make(chan TableContent)
+		dumpChan       = make(chan chan []TableContent, 1)
+	)
+	go func() {
+		buffer := make(map[string]struct {
+			i     int
+			items [10]map[string]any
+		})
+		for {
+			select {
+			case v := <-bufferMsgsChan:
+				x := buffer[v.Table]
+				if x.i == 10 {
+					x.i = 0
+				}
+				x.items[x.i] = v.Content
+				x.i++
+				buffer[v.Table] = x
+			case c := <-dumpChan:
+				content := make([]TableContent, len(buffer))
+				i := 0
+				for k, b := range buffer {
+					// This is a copy:
+					x := b.items
+					content[i] = TableContent{
+						Table:    k,
+						Snapshot: x[:b.i],
+					}
+					i++
+				}
+				c <- content
+			}
+		}
+	}()
 	tableFilter := makeTableFilter()
 	connector, err := cdc.NewConnector(ctx, cfg, func(ctx *cdcReplication.ListenerContext) {
 		msg, isInsert := ctx.Message.(*cdcFormat.Insert)
@@ -95,10 +141,10 @@ func main() {
 				o[k] = msg.Decoded[k]
 			}
 		}
-		broadcast.BroadcastJson(struct {
-			Table   string         `json:"table"`
-			Content map[string]any `json:"content"`
-		}{msg.TableName, o})
+		t := TableContent{msg.TableName, o, nil}
+		broadcast.BroadcastJson(t)
+		bufferMsgsChan <- t
+
 	})
 	if err != nil {
 		setup.Exitf("error opening connector: %v", err)
@@ -110,6 +156,17 @@ func main() {
 			shutdown chan<- error, requestShutdown <-chan bool,
 		) {
 			sink := make(chan []byte)
+			go func() {
+				snapshotChan := make(chan []TableContent)
+				dumpChan <- snapshotChan
+				snapshot, err := json.Marshal(struct {
+					Snapshot []TableContent `json:"snapshot"`
+				}{<-snapshotChan})
+				if err != nil {
+					slog.Error("failed to marshal snapshot", "err", err)
+				}
+				sink <- snapshot
+			}()
 			cookie := broadcast.Subscribe(sink)
 			var err error
 		L:
