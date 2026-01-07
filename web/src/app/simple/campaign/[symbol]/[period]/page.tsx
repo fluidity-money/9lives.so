@@ -6,7 +6,6 @@ import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import { Suspense } from "react";
 import SimpleHeader from "@/components/simple/simpleHeader";
-import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 
@@ -67,12 +66,6 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
 
   const campaignData = formatSimpleCampaignDetail(data);
 
-  const pointsData = await getAndFormatAssetPrices({
-    symbol: campaignData.priceMetadata!.baseAsset,
-    starting: campaignData.starting,
-    ending: campaignData.ending,
-  });
-
   const assets = await requestAssets();
 
   if (!isSimpleMarketKey(symbol)) notFound();
@@ -125,7 +118,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
           <SimpleHeader initialData={campaignData} />
         </Suspense>
       </div>
-      <SimpleBody pointsData={pointsData} campaignData={campaignData} />
+      <SimpleBody campaignData={campaignData} />
     </div>
   );
 }

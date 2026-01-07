@@ -62,21 +62,6 @@ export default function DetailWrapper({
   const notStarted = data.starting > Date.now();
   const isConcluded = Boolean(data.winner);
   const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
-  const [simpleChart, setSimpleChart] = useState(false);
-  const handleZoomBtnClick = () => {
-    setSimpleChart(!simpleChart);
-    track(EVENTS.ZOOM_CHART, {
-      direction: simpleChart ? "in" : "out",
-      asset: initialData.priceMetadata?.baseAsset,
-      targetPrice: initialData.priceMetadata?.priceTargetForUp,
-      moment: Number(
-        new Date().toLocaleString("en-US", {
-          timeZone: "UTC",
-          minute: "numeric",
-        }),
-      ),
-    });
-  };
   return (
     <section
       className={combineClass(
@@ -93,18 +78,10 @@ export default function DetailWrapper({
           isConcluded={isConcluded}
         />
         {data.isDppm && data.priceMetadata ? (
-          <div>
-            <Button
-              onClick={handleZoomBtnClick}
-              title={simpleChart ? "Zoom In" : "Zoom Out"}
-              size={"small"}
-            />
-            <PriceChartWrapper
-              campaignData={data as SimpleCampaignDetail}
-              pointsData={pricePoints}
-              simple={simpleChart}
-            />
-          </div>
+          <PriceChartWrapper
+            campaignData={data as SimpleCampaignDetail}
+            simple={false}
+          />
         ) : (
           <PriceChart
             poolAddress={data.poolAddress}

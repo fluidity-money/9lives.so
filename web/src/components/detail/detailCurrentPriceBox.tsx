@@ -9,17 +9,14 @@ export default function DetailCurrentPriceBox({
   starting,
   ending,
   isEnded,
-  initialData,
 }: {
   symbol: string;
   ending: number;
   starting: number;
   isEnded: boolean;
-  initialData: PricePoint[];
 }) {
-  const { data } = useInfiniteQuery<PricePoint[]>({
+  const { data, isLoading } = useInfiniteQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
-    initialData: { pages: [initialData], pageParams: [0] },
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) => {
       if (lastPage.length < config.hasuraMaxQueryItem) return undefined;
@@ -27,8 +24,11 @@ export default function DetailCurrentPriceBox({
       return lastPageParam + 1;
     },
   });
-  const assetPrices = data.pages.flatMap((c) => c);
-  const latestPrice = assetPrices[assetPrices.length - 1]?.price;
+  const assetPrices = data?.pages.flatMap((c) => c);
+  const latestPrice = assetPrices?.[assetPrices.length - 1]?.price;
+
+  if (isLoading || !latestPrice)
+    return <div className="skeleton flex-1" style={{ height: 66 }} />;
 
   return (
     <HeaderBox
