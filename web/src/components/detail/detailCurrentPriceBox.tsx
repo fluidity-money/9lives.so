@@ -28,7 +28,7 @@ export default function DetailCurrentPriceBox({
   const latestPrice = assetPrices?.[assetPrices.length - 1]?.price;
 
   if (isLoading || !latestPrice)
-    return <div className="skeleton flex-1" style={{ height: 66 }} />;
+    return <div className="skeleton h-[47px] flex-1 md:h-[66px]" />;
 
   return (
     <HeaderBox
