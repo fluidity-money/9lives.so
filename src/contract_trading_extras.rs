@@ -270,7 +270,6 @@ fn default_ctor_args() -> CtorArgs {
 #[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn test_cant_recreate() {
-    /*
     use stylus_sdk::alloy_primitives::fixed_bytes;
     crate::host::with_contract::<_, StorageTrading, _>(|c| {
         c.ctor((
@@ -282,12 +281,12 @@ fn test_cant_recreate() {
             0,
             u64::MAX,
             Address::ZERO,
-            crate::testing_addrs::SHARE,
             false,
             0,
             0,
             0,
             0,
+            U256::ZERO
         ))
         .unwrap();
         assert_eq!(
@@ -306,13 +305,11 @@ fn test_cant_recreate() {
                 0,
                 0,
                 0,
-                0,
                 U256::ZERO
             ))
             .unwrap_err()
         )
-    }); */
-    todo!()
+    });
 }
 
 // Property testing that takes advantage of the tuple type to simplify
@@ -335,14 +332,12 @@ mod proptesting {
             fee_for_referrer in 100u64..,
             mut c in strat_storage_trading(false)
         ) {
-            todo!()
-             /*
              c.created.set(false);
             let mut a = default_ctor_args();
             a.3 = 100;
             a.0 = outcomes;
             // Let's hope that's enough to be passing!
-            a.5 = fee_for_creator;
+            a.6 = fee_for_creator;
             panic_guard(||
                 assert_eq!(Error::ExcessiveFee, c.ctor(a.clone()).unwrap_err())
             );
@@ -359,7 +354,7 @@ mod proptesting {
             );
             a.10 = U256::ZERO;
             // Make sure that we can actually construct under normal circumstances!
-            c.ctor(a).unwrap() */
+            c.ctor(a).unwrap()
         }
     }
 }

@@ -12,7 +12,7 @@ use crate::{
     vault_call,
 };
 
-use bobcat_features::FEATURE_COPY;
+use bobcat_features::FEATURE_COPY_NON_ZEROES;
 
 use alloc::vec::Vec;
 
@@ -62,9 +62,10 @@ impl StorageTrading {
         }
         // We assume that the sender is the factory.
         self.created.set(true);
-        self.factory_addr.set(msg_sender());
+        let factory_addr = msg_sender();
+        self.factory_addr.set(factory_addr);
         // Copy from the factory our feature configuration:
-        FEATURE_COPY!(msg_sender().0.0, internal_tokens);
+        FEATURE_COPY_NON_ZEROES!(factory_addr.0.0, internal_tokens);
         // If the fee recipient is zero, then we set it to the DAO address.
         self.fee_recipient.set(if fee_recipient.is_zero() {
             DAO_EARN_ADDR
@@ -175,10 +176,6 @@ impl StorageTrading {
                 fee_for_protocol,
             },
         ))
-    }
-
-    pub fn calculate_fees_v2(&self, value: U256, _is_buy: bool) -> R<(U256, CalcFees)> {
-        todo!()
     }
 
     /// Calculate and set fees where possible, including the AMM fee weight

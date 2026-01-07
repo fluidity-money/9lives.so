@@ -4,7 +4,7 @@
     not(target_arch = "wasm32")
 ))]
 
-use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{FixedBytes, U256};
 
 use lib9lives::{
     host,
@@ -86,12 +86,12 @@ proptest! {
                 block_timestamp() + 1,
                 block_timestamp() + 2,
                 msg_sender(),
-                Address::ZERO,
                 false,
                 fee_creator,
                 fee_minter,
                 fee_lp,
-                0
+                0,
+                U256::ZERO,
             ))
                 .unwrap();
             let mut fusdc_vested = U256::ZERO;

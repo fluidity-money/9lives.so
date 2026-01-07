@@ -32,12 +32,12 @@ macro_rules! setup_contract {
             block_timestamp() + 1,
             block_timestamp() + 10,
             msg_sender(),
-            SHARE,
             false,
             0,
             0,
             0,
             0,
+            U256::ZERO
         ))
         .unwrap();
         c.amm_liquidity.set(U256::ZERO);

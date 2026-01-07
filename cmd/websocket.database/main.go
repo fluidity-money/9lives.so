@@ -29,9 +29,10 @@ import (
 const EnvListenAddr = "SPN_LISTEN_ADDR"
 
 type TableContent struct {
-	Table    string           `json:"table"`
-	Content  map[string]any   `json:"content,omitempty"`
-	Snapshot []map[string]any `json:"snapshot,omitempty"`
+	Table            string           `json:"table"`
+	Content          map[string]any   `json:"content,omitempty"`
+	Snapshot         []map[string]any `json:"snapshot,omitempty"`
+	SnapshotToplevel []TableContent   `json:"snapshot_toplevel"`
 }
 
 func main() {
@@ -141,7 +142,7 @@ func main() {
 				o[k] = msg.Decoded[k]
 			}
 		}
-		t := TableContent{msg.TableName, o, nil}
+		t := TableContent{msg.TableName, o, nil, nil}
 		broadcast.BroadcastJson(t)
 		bufferMsgsChan <- t
 
@@ -159,9 +160,9 @@ func main() {
 			go func() {
 				snapshotChan := make(chan []TableContent)
 				dumpChan <- snapshotChan
-				snapshot, err := json.Marshal(struct {
-					Snapshot []TableContent `json:"snapshot"`
-				}{<-snapshotChan})
+				snapshot, err := json.Marshal(TableContent{
+					SnapshotToplevel: <-snapshotChan,
+				})
 				if err != nil {
 					slog.Error("failed to marshal snapshot", "err", err)
 				}

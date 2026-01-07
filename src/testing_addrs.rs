@@ -33,6 +33,7 @@ defaults! {
     DPPM_HOUR_CREATOR,
     DPPM_5_MIN_CREATOR,
     DPPM_15_MIN_CREATOR,
+    SHARE_IMPL,
 
     IVAN,
     ERIK,
