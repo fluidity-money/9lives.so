@@ -258,7 +258,6 @@ export default function DetailHeader({
               value={`$${data.priceMetadata?.priceTargetForUp}`}
             />
             <DetailCurrentPriceBox
-              initialData={pointsData}
               isEnded={isEnded}
               starting={data.starting}
               ending={data.ending}
