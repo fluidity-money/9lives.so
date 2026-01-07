@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
-	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
@@ -112,7 +112,7 @@ func main() {
 					x := b.items
 					content[i] = TableContent{
 						Table:    k,
-						Snapshot: x[:b.i],
+						Snapshot: x[:],
 					}
 					i++
 				}
