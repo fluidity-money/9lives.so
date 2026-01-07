@@ -70,14 +70,14 @@ func main() {
 		Port:     port,
 		Publication: cdcPublication.Config{
 			CreateIfNotExists: true,
-			Name:              "websocket_publication2",
+			Name:              "websocket_publication",
 			Operations: cdcPublication.Operations{
 				cdcPublication.OperationInsert,
 			},
 			Tables: tables,
 		},
 		Slot: cdcSlot.Config{
-			Name:                        "websocket_slot2",
+			Name:                        "websocket_slot",
 			CreateIfNotExists:           true,
 			SlotActivityCheckerInterval: 1000,
 		},
