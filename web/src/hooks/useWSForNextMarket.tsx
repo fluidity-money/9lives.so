@@ -29,18 +29,18 @@ export function useWSForNextMarket(
     const offMessage = ws.subscribe((raw) => {
       try {
         const msg = raw as WSMessage;
-        const content = msg.content.content;
-        const identifier = msg.content.id as `0x${string}`;
 
         if (
           msg.table !== "ninelives_campaigns_1" ||
-          identifier === previousData.identifier ||
-          previousData.ending === content.ending * 1000 ||
-          !content.priceMetadata ||
-          content.priceMetadata.baseAsset.toLowerCase() !== symbol
+          msg.content.id === previousData.identifier ||
+          previousData.ending === msg.content.content.ending * 1000 ||
+          !msg.content.content.priceMetadata ||
+          msg.content.content.priceMetadata.baseAsset.toLowerCase() !== symbol
         ) {
           return;
         }
+        const content = msg.content.content;
+        const identifier = msg.content.id as `0x${string}`;
 
         const nextData = formatSimpleCampaignDetail({
           ...content,
