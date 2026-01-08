@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import isMarketOpen from "@/utils/isMarketOpen";
 import config from "@/config";
+import PointsIndicator from "../pointsIndicator";
 
 export default function SimpleHeader({
   initialData,
@@ -45,6 +46,11 @@ export default function SimpleHeader({
         ) : (
           <span className="bg-9red px-0.5 py-px text-9black">Closed</span>
         )}
+        <PointsIndicator
+          variant="only_multiplier"
+          starting={data.starting}
+          ending={data.ending}
+        />
       </div>
     </div>
   );

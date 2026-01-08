@@ -18,7 +18,6 @@ import useProfile from "@/hooks/useProfile";
 import Modal from "./themed/modal";
 import Funding from "./fundingBalanceDialog";
 import useBuy from "@/hooks/useBuy";
-import useBuyWithPaymaster from "@/hooks/useBuyWithPaymaster";
 import useBuyWithRelay from "@/hooks/useBuyWithRelay";
 import { SimpleCampaignDetail } from "@/types";
 import ChainSelectorDropdown from "./chainSelectorDD";
@@ -27,6 +26,7 @@ import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
 import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
 import useAccount from "@/hooks/useAccount";
+import PointsIndicator from "./pointsIndicator";
 
 export default function SimpleBuyDialog({
   data,
@@ -391,13 +391,11 @@ export default function SimpleBuyDialog({
           </div>
         </div>
 
-        {usdValue ? (
-          <div className="flex items-center">
-            <span className="mx-auto bg-9green px-2 py-1 font-chicago text-sm uppercase">
-              EARN {(usdValue * points).toFixed(2)} 9lives POINTS
-            </span>
-          </div>
-        ) : null}
+        <PointsIndicator
+          starting={data.starting}
+          ending={data.ending}
+          usdValue={usdValue}
+        />
 
         <Button
           size={"xlarge"}

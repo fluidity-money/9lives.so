@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 const minuteUnit = 60 * 1000;
 const fiveMinUnit = 5 * minuteUnit;
 const fifteenMinUnit = 15 * minuteUnit;
@@ -12,31 +14,43 @@ const fiveMinMltplr = 2;
 const minDecay = 0.1;
 
 export default function usePointsForDppmMint(starting: number, ending: number) {
-  const duration = ending - starting;
+  const [multiplier, setMultiplier] = useState<number>();
+  function calc(starting: number, ending: number) {
+    const duration = ending - starting;
+    const isFiveMinMarket = duration <= fiveMinUnit;
+    const isFifteenMinMarket =
+      duration > fiveMinUnit && duration <= fifteenMinUnit;
+    const isDailyMarket = duration >= dayUnit;
 
-  const isFiveMinMarket = duration <= fiveMinUnit;
-  const isFifteenMinMarket =
-    duration > fiveMinUnit && duration <= fifteenMinUnit;
-  const isDailyMarket = duration >= dayUnit;
+    const unit = isFiveMinMarket
+      ? fiveMinUnit
+      : isFifteenMinMarket
+        ? fifteenMinUnit
+        : isDailyMarket
+          ? dayUnit
+          : hourUnit;
 
-  const unit = isFiveMinMarket
-    ? fiveMinUnit
-    : isFifteenMinMarket
-      ? fifteenMinUnit
-      : isDailyMarket
-        ? dayUnit
-        : hourUnit;
+    const mltplr = isFiveMinMarket
+      ? fiveMinMltplr
+      : isFifteenMinMarket
+        ? fifteenMinMltplr
+        : isDailyMarket
+          ? dayMltplr
+          : hourMltplr;
 
-  const mltplr = isFiveMinMarket
-    ? fiveMinMltplr
-    : isFifteenMinMarket
-      ? fifteenMinMltplr
-      : isDailyMarket
-        ? dayMltplr
-        : hourMltplr;
+    const diffMs = Date.now() - new Date(starting).getTime();
+    const fractionOfTime = diffMs / unit;
+    return Math.max(mltplr - fractionOfTime * (mltplr - minDecay), minDecay);
+  }
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMultiplier(calc(starting, ending));
+    }, 1000);
 
-  const diffMs = Date.now() - new Date(starting).getTime();
-  const fractionOfTime = diffMs / unit;
+    return () => {
+      clearInterval(timer);
+    };
+  }, [starting, ending]);
 
-  return Math.max(mltplr - fractionOfTime * (mltplr - minDecay), minDecay);
+  return multiplier;
 }
