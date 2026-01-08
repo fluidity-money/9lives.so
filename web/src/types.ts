@@ -300,3 +300,10 @@ export type SimpleMarketPeriod =
   (typeof config.simpleMarkets)[keyof typeof config.simpleMarkets]["periods"][number];
 
 export type RawAsset = Awaited<ReturnType<typeof requestAssets>>[number];
+
+export type Trade = {
+  amount: string;
+  txHash: string;
+  outcomeId: `0x${string}`;
+  createdAt: string;
+};

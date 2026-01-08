@@ -28,7 +28,7 @@ export default function PointsIndicator({
   if (!points || (variant === "default" && !usdValue)) return null;
 
   return (
-    <div className="flex items-center">
+    <div className="flex shrink-0 items-center">
       <span
         className={combineClass(
           "bg-9green",

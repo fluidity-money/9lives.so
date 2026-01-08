@@ -7,6 +7,7 @@ import config from "@/config";
 import { useWSForNextMarket } from "@/hooks/useWSForNextMarket";
 import { EVENTS, track } from "@/utils/analytics";
 import Button from "../themed/button";
+import LiveTrades from "../trades";
 
 export default function PriceChartWrapper({
   campaignData,
@@ -75,6 +76,12 @@ export default function PriceChartWrapper({
         basePrice={+campaignData.priceMetadata.priceTargetForUp}
         id={campaignData.identifier}
       />
+      <div className="absolute bottom-4 left-[1px] z-[9] md:left-[-51px]">
+        <LiveTrades
+          campaignId={campaignData.identifier}
+          poolAddress={campaignData.poolAddress}
+        />
+      </div>
     </div>
   );
 }
