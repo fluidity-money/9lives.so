@@ -58,7 +58,7 @@ export default function DetailWrapper({
   const notStarted = data.starting > Date.now();
   const isConcluded = Boolean(data.winner);
   return (
-    <section className={"flex h-full flex-col gap-8"}>
+    <section className="flex h-full flex-col gap-8 md:flex-row md:gap-4">
       <div className="flex flex-[2] flex-col gap-8">
         <DetailHeader
           pointsData={pricePoints}
