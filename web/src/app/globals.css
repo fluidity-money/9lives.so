@@ -178,14 +178,6 @@ div[id^="radix"][role="dialog"][data-state="open"] div[data-error] {
   margin-bottom: 150px;
 }
 
-body:not(.degen-mode) main {
-  @apply justify-center;
-}
-
-body:not(.degen-mode) main > div:first-child {
-  @apply max-w-full md:max-w-screen-xl;
-}
-
 .changelog {
   display: flex;
   flex-direction: column;

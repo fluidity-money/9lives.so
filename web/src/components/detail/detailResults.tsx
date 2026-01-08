@@ -131,17 +131,6 @@ export default function DetailResults({ data }: DetailResultsProps) {
     }
   }
 
-  useEffect(() => {
-    const floatingBtn = document.getElementById("degen-floating-button");
-    if (floatingBtn) {
-      floatingBtn.style.marginBottom = "156px";
-
-      return () => {
-        floatingBtn.style.marginBottom = "0px";
-      };
-    }
-  }, []);
-
   return (
     <ShadowCard className="fixed inset-x-0 bottom-0 z-10 flex flex-col gap-4 p-4 md:relative">
       <div

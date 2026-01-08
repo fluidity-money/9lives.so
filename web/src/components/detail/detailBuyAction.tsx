@@ -335,15 +335,6 @@ export default function DetailBuyAction({
   };
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
   useEffect(() => {
-    const floatingBtn = document.getElementById("degen-floating-button");
-    if (floatingBtn) {
-      floatingBtn.style.marginBottom = "150px";
-      return () => {
-        floatingBtn.style.marginBottom = "0px";
-      };
-    }
-  }, []);
-  useEffect(() => {
     if (usdValue) {
       setValue("usdValue", usdValue);
     }

@@ -7,7 +7,6 @@ import {
 } from "thirdweb/react";
 import { useEffect, useState } from "react";
 import { setTag, setUser, setContext } from "@sentry/nextjs";
-import { useDegenStore } from "@/stores/degenStore";
 import { usePathname } from "next/navigation";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import posthog from "posthog-js";
@@ -21,7 +20,6 @@ export default function ContextInjector() {
   const account = useActiveAccount();
   const { connect } = useConnectWallet();
   const chain = useActiveWalletChain();
-  const degenModeEnabled = useDegenStore((state) => state.degenModeEnabled);
   const pathname = usePathname();
   const wallet = useActiveWallet();
   const [tagSnitch, setTagSnitch] = useState<string>();
@@ -83,12 +81,6 @@ export default function ContextInjector() {
   useEffect(() => {
     setTag("chainId", chain?.id);
   }, [chain?.id]);
-
-  useEffect(() => {
-    const body = document.getElementsByTagName("body")[0];
-    if (degenModeEnabled) body.classList.add("degen-mode");
-    else body.classList.remove("degen-mode");
-  }, [degenModeEnabled]);
 
   // add margin for fixed action component on campaign details
   useEffect(() => {

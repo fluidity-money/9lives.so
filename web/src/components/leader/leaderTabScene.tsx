@@ -6,11 +6,7 @@ import LeaderTable from "./leaderTable";
 import { combineClass } from "@/utils/combineClass";
 import use9LivesPoints from "@/hooks/use9LivesPoints";
 
-export default function LeaderTabScene({
-  isDegenModeEnabled,
-}: {
-  isDegenModeEnabled: boolean;
-}) {
+export default function LeaderTabScene() {
   const { data: generalData } = use9LivesPoints({});
   // const { data: categoriesData } = useLeaderBoardCategories();
   return (

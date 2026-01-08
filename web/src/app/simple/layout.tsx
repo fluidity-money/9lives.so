@@ -10,7 +10,7 @@ export default function SimpleLayout({
   return (
     <>
       <Header simple />
-      <main className="mx-auto flex max-w-[600px] flex-1 gap-2">
+      <main className="mx-auto flex max-w-[600px] flex-1 justify-center">
         <div className="flex-1 p-4">{children}</div>
       </main>
       <Footer simple />

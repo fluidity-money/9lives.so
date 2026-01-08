@@ -17,14 +17,10 @@ import AssetScene from "../user/assetScene";
 import DetailResults from "./detailResults";
 import { useQuery } from "@tanstack/react-query";
 import { requestCampaignById } from "@/providers/graphqlClient";
-import { useDegenStore } from "@/stores/degenStore";
-import { combineClass } from "@/utils/combineClass";
 import DetailComments from "./detailComments";
 import PriceChart from "../charts/priceChart";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";
-import Button from "../themed/button";
-import { EVENTS, track } from "@/utils/analytics";
 import { useWSForWinner } from "@/hooks/useWSForWinner";
 
 export default function DetailWrapper({
@@ -61,14 +57,8 @@ export default function DetailWrapper({
   const isEnded = data.ending < Date.now();
   const notStarted = data.starting > Date.now();
   const isConcluded = Boolean(data.winner);
-  const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   return (
-    <section
-      className={combineClass(
-        isDegenModeEnabled ? "xl:flex-row xl:gap-4" : "md:flex-row md:gap-4",
-        "flex h-full flex-col gap-8",
-      )}
-    >
+    <section className={"flex h-full flex-col gap-8"}>
       <div className="flex flex-[2] flex-col gap-8">
         <DetailHeader
           pointsData={pricePoints}

@@ -3,13 +3,11 @@
 // import AchievementSuggestion from "@/components/achievement/achievementSuggestion";
 import LeaderTabScene from "@/components/leader/leaderTabScene";
 // import Button from "@/components/themed/button";
-import { useDegenStore } from "@/stores/degenStore";
 // import { combineClass } from "@/utils/combineClass";
 // import { useRef } from "react";
 
 export default function LeaderboardPage() {
   // const achievementsRef = useRef<HTMLDivElement>(null);
-  const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
 
   // const scrollToAchievments = () => {
   //   achievementsRef.current?.scrollIntoView({
@@ -28,7 +26,7 @@ export default function LeaderboardPage() {
           title="Achievments"
         /> */}
       </div>
-      <LeaderTabScene isDegenModeEnabled={isDegenModeEnabled} />
+      <LeaderTabScene />
       {/* <div
         className={combineClass(
           "flex flex-col gap-10",

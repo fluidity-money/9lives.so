@@ -1,8 +1,6 @@
 "use client";
 import { CampaignFilters } from "@/types";
 import CampaignItem from "./campaignItem";
-import { combineClass } from "@/utils/combineClass";
-import { useDegenStore } from "@/stores/degenStore";
 import { Dispatch, useEffect, useState } from "react";
 import { Select } from "@headlessui/react";
 import Image from "next/image";
@@ -38,7 +36,6 @@ export default function CampaignList({
     isFetchingNextPage,
   } = useCampaigns({ category, orderBy, searchTerm: searcTermFilter, address });
   const campaigns = data?.pages.flatMap((c) => c);
-  const isDegenModeEnabled = useDegenStore((s) => s.degenModeEnabled);
   const orderByFilters: Array<[Required<CampaignFilters["orderBy"]>, string]> =
     [
       ["trending", "Trending"],
@@ -110,10 +107,9 @@ export default function CampaignList({
       ) : (
         <>
           <div
-            className={combineClass(
-              "grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-4",
-              !isDegenModeEnabled && "sm:grid-cols-2",
-            )}
+            className={
+              "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            }
           >
             {campaigns?.map((campaign) => (
               <CampaignItem key={campaign.identifier} data={campaign} />
