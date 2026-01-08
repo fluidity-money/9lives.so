@@ -248,7 +248,8 @@ export default function DetailBuyAction({
     },
     {
       title: "Points",
-      value: points * usdValue,
+      value: points! * usdValue,
+      show: !!points,
     },
   ];
   async function handleBuy({
@@ -538,7 +539,7 @@ export default function DetailBuyAction({
             <span className="font-chicago uppercase">Order Summary</span>
             <ul className="flex flex-col gap-1 text-gray-500">
               {orderSummary
-                .filter((i) => !(i.show === false))
+                .filter((i) => i.show === true)
                 .map((item) => (
                   <li
                     className="flex items-center justify-between"
@@ -564,23 +565,25 @@ export default function DetailBuyAction({
                 </span>
               </div>
               <ul className="flex flex-col gap-1 text-gray-500">
-                {winSummary.map((i) => (
-                  <li
-                    key={"winSum_" + i.title}
-                    className="flex items-center justify-between"
-                  >
-                    <strong>{i.title}</strong>
-                    <span
-                      className={combineClass(
-                        0 > i.value ? "bg-9red" : "bg-9green",
-                        "px-1 py-0.5 font-geneva",
-                      )}
+                {winSummary
+                  .filter((i) => !(i.show === false))
+                  .map((i) => (
+                    <li
+                      key={"winSum_" + i.title}
+                      className="flex items-center justify-between"
                     >
-                      {i.symbol}
-                      {i.value.toFixed(2)}
-                    </span>
-                  </li>
-                ))}
+                      <strong>{i.title}</strong>
+                      <span
+                        className={combineClass(
+                          0 > i.value ? "bg-9red" : "bg-9green",
+                          "px-1 py-0.5 font-geneva",
+                        )}
+                      >
+                        {i.symbol}
+                        {i.value.toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
               </ul>
             </div>
           ) : null}
