@@ -1,4 +1,5 @@
 const minuteUnit = 60 * 1000;
+const fiveMinUnit = 5 * minuteUnit;
 const fifteenMinUnit = 15 * minuteUnit;
 const hourUnit = 60 * minuteUnit;
 const dayUnit = hourUnit * 24;
@@ -6,26 +7,33 @@ const dayUnit = hourUnit * 24;
 const fifteenMinMltplr = 2;
 const hourMltplr = 2;
 const dayMltplr = 4;
+const fiveMinMltplr = 2;
 
 const minDecay = 0.1;
 
 export default function usePointsForDppmMint(starting: number, ending: number) {
   const duration = ending - starting;
 
-  const isFifteenMinMarket = duration <= fifteenMinUnit;
+  const isFiveMinMarket = duration <= fiveMinUnit;
+  const isFifteenMinMarket =
+    duration > fiveMinUnit && duration <= fifteenMinUnit;
   const isDailyMarket = duration >= dayUnit;
 
-  const unit = isFifteenMinMarket
-    ? fifteenMinUnit
-    : isDailyMarket
-      ? dayUnit
-      : hourUnit;
+  const unit = isFiveMinMarket
+    ? fiveMinUnit
+    : isFifteenMinMarket
+      ? fifteenMinUnit
+      : isDailyMarket
+        ? dayUnit
+        : hourUnit;
 
-  const mltplr = isFifteenMinMarket
-    ? fifteenMinMltplr
-    : isDailyMarket
-      ? dayMltplr
-      : hourMltplr;
+  const mltplr = isFiveMinMarket
+    ? fiveMinMltplr
+    : isFifteenMinMarket
+      ? fifteenMinMltplr
+      : isDailyMarket
+        ? dayMltplr
+        : hourMltplr;
 
   const diffMs = Date.now() - new Date(starting).getTime();
   const fractionOfTime = diffMs / unit;
