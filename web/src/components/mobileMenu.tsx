@@ -5,11 +5,9 @@ import Modal from "./themed/modal";
 import { useEffect, useState } from "react";
 import NavigationMenu from "./navMenu";
 import DisclaimerButton from "./disclaimerButton";
-import DegenModeMobileWrapper from "./degenMode/degenModeMobileWrapper";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import ReferralButton from "./referral/referralButton";
-import SimpleModeButton from "./simple/simpleModeButton";
 
 export default function MobileMenu({ simple = false }: { simple?: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
