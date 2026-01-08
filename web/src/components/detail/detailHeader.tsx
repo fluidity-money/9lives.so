@@ -22,6 +22,7 @@ import useLiquidity from "@/hooks/useLiquidity";
 import { HeaderBox } from "./detailHeaderBox";
 import DetailCurrentPriceBox from "./detailCurrentPriceBox";
 import config from "@/config";
+import PointsIndicator from "../pointsIndicator";
 
 export default function DetailHeader({
   data,
@@ -236,6 +237,15 @@ export default function DetailHeader({
                     minute: data.isDppm ? "2-digit" : undefined,
                   })}
                 </span>
+              )}
+              {isEnded ? null : (
+                <div className="font-geneva text-xs">
+                  <PointsIndicator
+                    starting={data.starting}
+                    ending={data.ending}
+                    variant="only_multiplier"
+                  />
+                </div>
               )}
             </>
           )}
