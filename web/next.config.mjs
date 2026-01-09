@@ -16,7 +16,6 @@ const nextConfig = {
     NEXT_PUBLIC_GIT_HASH: gitHash,
   },
   turbopack: {
-    treeShaking: !process.env.NODE_V8_COVERAGE
   },
   outputFileTracingRoot: __dirname,
   async redirects() {
