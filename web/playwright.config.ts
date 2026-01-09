@@ -1,43 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-import { CoverageReportOptions } from "monocart-reporter";
-
-const coverageReportOptions: CoverageReportOptions = {
-  // logging: 'debug',
-  name: "Next.js V8 Coverage Report",
-
-  entryFilter: (entry) => {
-    // both client side and server side
-    return (
-      (entry.url.includes("next/static/chunks") &&
-        // add localhost condition to exclude walletconnect injected scripts from client chunks
-        entry.url.includes("localhost")) ||
-      entry.url.includes("next/server/app")
-    );
-  },
-  outputDir: "./playwright-coverage",
-
-  sourceFilter: (sourcePath) => {
-    if (sourcePath.includes("node_modules")) return false;
-    return (
-      sourcePath.includes("src/app") || sourcePath.includes("src/components")
-    );
-  },
-  assetsPath: "../test-results/assets",
-  sourcePath: (fileSource) => {
-    //_N_E is used by Next.js to identify the Webpack runtime.
-    // web here is referred for the next.js app package.json name
-    const list = ["_N_E/", "web/"];
-    for (const pre of list) {
-      if (fileSource.startsWith(pre)) {
-        return fileSource.slice(pre.length);
-      }
-    }
-    return fileSource;
-  },
-
-  reports: ["v8", "codecov", "console-details"],
-};
+import coverageReportOptions from "./mcr.config";
 
 // Use process.env.PORT by default and fallback to port 3000
 const PORT = process.env.PORT || 3000;

@@ -15,18 +15,8 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_GIT_HASH: gitHash,
   },
-  webpack(config) {
-    if (process.env.NODE_V8_COVERAGE) {
-      Object.defineProperty(config, "devtool", {
-        get() {
-          return "source-map";
-        },
-        set() { },
-      });
-    }
-    // fixes wallet connect dependency issue https://docs.walletconnect.com/web3modal/nextjs/about#extra-configuration
-    config.externals.push("pino-pretty", "lokijs", "encoding");
-    return config;
+  turbopack: {
+    treeShaking: !process.env.NODE_V8_COVERAGE
   },
   outputFileTracingRoot: __dirname,
   async redirects() {
