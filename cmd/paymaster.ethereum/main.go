@@ -42,7 +42,6 @@ const (
 )
 
 func main() {
-	defer setup.Flush()
 	config := config.Get()
 	privateKey, err := ethCrypto.HexToECDSA(os.Getenv(EnvPrivateKey))
 	if err != nil {

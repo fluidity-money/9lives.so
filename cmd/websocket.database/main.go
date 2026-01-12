@@ -36,7 +36,6 @@ type TableContent struct {
 }
 
 func main() {
-	defer setup.Flush()
 	config := config.Get()
 	u, err := url.Parse(config.PickTimescaleUrl())
 	if err != nil {

@@ -28,6 +28,7 @@ impl StorageTrading {
         // We enable the liquidity vault for the DPPM:
         self.feature_using_vault.set(true);
         let per_market_seed = seed_liq / U256::from(outcomes.len());
+        evm::log(events::SeedLiquidityAdded { fusdcAmt: seed_liq });
         for outcome_id in outcomes {
             // This isn't a precaution that we actually need, but there may be weird
             // behaviour with this being possible (ie, payoff before the end date).

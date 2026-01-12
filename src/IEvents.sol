@@ -138,6 +138,8 @@ interface IEvents {
         uint256 indexed fusdcClawedback
     );
 
+    event SeedLiquidityAdded(uint256 indexed fusdcAmt);
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

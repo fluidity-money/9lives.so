@@ -53,6 +53,11 @@ var tables = map[string][]string{
 		"identifier",
 		"oracle",
 	},
+	"ninelives_market_odds_snapshot_1": {
+		"created_by",
+		"pool_address",
+		"odds",
+	},
 }
 
 func getTables() (t cdcPublication.Tables) {
