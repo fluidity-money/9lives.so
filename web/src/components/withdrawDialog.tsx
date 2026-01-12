@@ -7,18 +7,17 @@ import { Field } from "@headlessui/react";
 import Input from "./themed/input";
 import { combineClass } from "@/utils/combineClass";
 import { FormEvent, useRef, useState } from "react";
-import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import formatFusdc from "@/utils/format/formatUsdc";
 import chains from "@/config/chains";
 import ChainSelector from "./chainSelector";
 import { useUserStore } from "@/stores/userStore";
-import { Chain } from "thirdweb";
 import useBalance from "@/hooks/useBalance";
 import useWithdraw from "@/hooks/useWithdraw";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function WithdrawDialog() {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const sliderRef = useRef<HTMLInputElement>(null);
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);

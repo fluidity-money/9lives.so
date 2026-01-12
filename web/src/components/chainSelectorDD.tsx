@@ -10,7 +10,7 @@ import Image from "next/image";
 import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
 import config from "@/config";
-import { Chain } from "thirdweb";
+import { Chain } from "@/types";
 export default function ChainSelectorDropdown({
   selectedChainId,
   handleNetworkChange,
@@ -25,10 +25,10 @@ export default function ChainSelectorDropdown({
   variant?: "default" | "small";
 }) {
   let chains = isInMiniApp
-    ? (JSON.parse(JSON.stringify(config.farcasterChains)) as Record<
-        string,
-        Chain
-      >)
+    ? (JSON.parse(JSON.stringify(config.chains)) as Record<
+      string,
+      Chain
+    >)
     : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
   if (removeSPN) {
     delete chains.superposition;

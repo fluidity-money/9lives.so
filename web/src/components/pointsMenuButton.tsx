@@ -8,13 +8,13 @@ import Button from "./themed/button";
 import Link from "next/link";
 import LoadingImage from "#/icons/loading.svg";
 import { combineClass } from "@/utils/combineClass";
-import { useActiveAccount } from "thirdweb/react";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function PointMenuButton() {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { data, isLoading } = use9LivesPoints({
-    address: account?.address,
-    enabled: !!account,
+    address: account.address,
+    enabled: account.isConnected,
   });
   return (
     <Menu>
@@ -40,7 +40,7 @@ export default function PointMenuButton() {
             <p className="text-center font-geneva uppercase">
               My Accumulated Points
             </p>
-            {account ? (
+            {account.isConnected ? (
               <>
                 <span
                   className={combineClass(

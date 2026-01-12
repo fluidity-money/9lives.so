@@ -1,8 +1,8 @@
 import useClaimAllFees from "@/hooks/useClaimAllFees";
 import { useState } from "react";
-import { useActiveAccount } from "thirdweb/react";
 import Button from "./themed/button";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function ClaimFeesButton({
   addresses,
@@ -12,15 +12,15 @@ export default function ClaimFeesButton({
   multiple?: boolean;
 }) {
   const [isClaiming, setIsClaiming] = useState(false);
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { claim } = useClaimAllFees();
   const { connect } = useConnectWallet();
 
   const handleClick = async () => {
     try {
-      if (!account) return connect();
+      if (!account.isConnected) return connect();
       setIsClaiming(true);
-      await claim(addresses, account);
+      await claim(addresses);
     } finally {
       setIsClaiming(false);
     }

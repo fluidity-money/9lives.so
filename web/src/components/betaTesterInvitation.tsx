@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 import RetroCard from "./cardRetro";
 import Button from "./themed/button";
 import Link from "next/link";
-import { useActiveAccount } from "thirdweb/react";
 import config from "@/config";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function BetaTesterInvitation() {
   const [isClosed, setIsClosed] = useState(true);
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   useEffect(() => {
     if (
-      account &&
+      account.address &&
       config.betaTesterWallets.includes(account.address.toLowerCase())
     ) {
       setIsClosed(false);

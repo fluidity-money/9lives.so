@@ -1,16 +1,16 @@
 "use client";
-import { useActiveAccount } from "thirdweb/react";
 import Placeholder from "@/components/tablePlaceholder";
 import useAcitivies from "@/hooks/useActivities";
 import ActivityRow from "./activityRow";
 import Button from "../themed/button";
+import { useAppKitAccount } from "@reown/appkit/react";
 interface ActivityBodyProps {
   campaignId?: string;
 }
 const bodyStyles = "min-h-24 bg-9gray";
 
 export default function ActivityBody({ campaignId }: ActivityBodyProps) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const {
     data: activities,
     isLoading,

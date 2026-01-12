@@ -1,18 +1,23 @@
 "use client";
-import { ThirdwebProvider } from "thirdweb/react";
+import WalletProvider from "./wallet";
 import ReactQueryProvider from "./reactQuery";
 import ContextInjector from "./contextInjector";
 import PostHogProvider from "./postHog";
 import WebSocketProvider from "./websocket";
 import ReferralHandler from "./referralHandler";
 import { Suspense } from "react";
-import LiFiProvider from "./lifi";
 import FarcasterProvider from "./farcaster";
 import RelayProvider from "./relay";
 import { WebSocketProvider as WS9Lives } from "./websocket9lives";
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({
+  children,
+  cookies,
+}: {
+  children: React.ReactNode;
+  cookies: string | null;
+}) {
   return (
-    <ThirdwebProvider>
+    <WalletProvider cookies={cookies}>
       <ReactQueryProvider>
         <ContextInjector />
         <WebSocketProvider />
@@ -22,11 +27,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <ReferralHandler />
         </Suspense>
         <PostHogProvider>
-          <LiFiProvider>
-            <WS9Lives>{children}</WS9Lives>
-          </LiFiProvider>
+          <WS9Lives>{children}</WS9Lives>
         </PostHogProvider>
       </ReactQueryProvider>
-    </ThirdwebProvider>
+    </WalletProvider>
   );
 }

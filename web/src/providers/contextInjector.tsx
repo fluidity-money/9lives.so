@@ -1,27 +1,27 @@
 "use client";
 
-import {
-  useActiveAccount,
-  useActiveWalletChain,
-  useActiveWallet,
-} from "thirdweb/react";
 import { useEffect, useState } from "react";
 import { setTag, setUser, setContext } from "@sentry/nextjs";
 import { usePathname } from "next/navigation";
-import useConnectWallet from "@/hooks/useConnectWallet";
 import posthog from "posthog-js";
 import config from "@/config";
 import { hitUser, tagUser } from "@fluidity-money/snitch-client";
 import Bowser from "bowser";
 import { useUserStore } from "@/stores/userStore";
 import { grantedConsent } from "@/components/googleAnalytics";
+import {
+  useAppKitAccount,
+  useWalletInfo,
+  useAppKitNetwork,
+} from "@reown/appkit/react";
 
 export default function ContextInjector() {
-  const account = useActiveAccount();
-  const { connect } = useConnectWallet();
-  const chain = useActiveWalletChain();
   const pathname = usePathname();
-  const wallet = useActiveWallet();
+
+  const account = useAppKitAccount();
+  const { chainId } = useAppKitNetwork();
+  const { walletInfo } = useWalletInfo();
+
   const [tagSnitch, setTagSnitch] = useState<string>();
   const trackingConsent = useUserStore((s) => s.trackingConsent);
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
@@ -47,16 +47,17 @@ export default function ContextInjector() {
       // wallet address stored to local storage for GTM to use it
       window.localStorage.setItem(
         "walletAddress",
-        account.address.toLowerCase(),
+        account.address?.toLowerCase(),
       );
       setUser({
-        id: account.address.toLowerCase(),
-        walletId: wallet?.id ?? "unknown",
+        id: account.address?.toLowerCase(),
+        walletId: walletInfo?.name ?? "unknown",
       });
-      posthog.identify(account.address.toLowerCase());
+      posthog.identify(account.address?.toLowerCase());
       const ctx = {
-        walletId: wallet?.id ?? "unknown",
+        walletId: walletInfo?.name ?? "unknown",
         walletAddress: account.address.toLowerCase(),
+        chainId,
         farcaster: isInMiniApp,
       } as any;
       if (farcasterCtx) {
@@ -71,16 +72,19 @@ export default function ContextInjector() {
       posthog.reset();
     }
   }, [
-    account?.address,
-    wallet?.id,
     trackingConsent,
     isInMiniApp,
     farcasterCtx,
+    account?.address,
+    chainId,
+    walletInfo?.name,
   ]);
 
   useEffect(() => {
-    setTag("chainId", chain?.id);
-  }, [chain?.id]);
+    if (chainId) {
+      setTag("chainId", chainId);
+    }
+  }, [chainId]);
 
   // add margin for fixed action component on campaign details
   useEffect(() => {
@@ -92,16 +96,6 @@ export default function ContextInjector() {
     }
   }, [pathname]);
 
-  // pop up connect modal if user navigates any campaign page
-  useEffect(() => {
-    const previouslyConnected = window.localStorage.getItem(
-      "thirdweb:active-wallet-id",
-    );
-    if (pathname.startsWith("/campaign/") && !account && !previouslyConnected) {
-      connect();
-    }
-  }, [pathname, account, connect]);
-
   useEffect(() => {
     if (trackingConsent && config.NEXT_PUBLIC_CHAIN !== "testnet") {
       const browser = Bowser.getParser(window.navigator.userAgent);
@@ -111,7 +105,7 @@ export default function ContextInjector() {
       (async () => {
         try {
           const context = {
-            address: account?.address.toLowerCase(),
+            address: account?.address?.toLowerCase(),
             property: "9lives",
             facts: [
               { key: "languages", value: [...navigator.languages] },
@@ -158,7 +152,7 @@ export default function ContextInjector() {
         }
       })();
     }
-  }, [account?.address, trackingConsent, isInMiniApp, farcasterCtx]);
+  }, [trackingConsent, isInMiniApp, farcasterCtx, account?.address, chainId]);
 
   useEffect(() => {
     if (tagSnitch && trackingConsent && config.NEXT_PUBLIC_CHAIN !== "testnet")

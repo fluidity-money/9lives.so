@@ -2,16 +2,16 @@
 
 import LoadingIndicator from "../loadingIndicator";
 import { Fragment, useState } from "react";
-import { useActiveAccount } from "thirdweb/react";
 import Button from "../themed/button";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import TabButton from "../tabButton";
 import toast from "react-hot-toast";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useSenderByCode from "@/hooks/useSenderByCode";
-import { signMessage } from "thirdweb/utils";
 import { associateReferral } from "@/providers/graphqlClient";
 import { Signature } from "ethers";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { useSignMessage } from "wagmi";
 
 export default function RefereeDialog({
   code,
@@ -20,7 +20,8 @@ export default function RefereeDialog({
   code: string;
   close: () => void;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
+  const { mutateAsync: signMessage } = useSignMessage();
   const { connect } = useConnectWallet();
   const {
     data: referrer,
@@ -31,15 +32,14 @@ export default function RefereeDialog({
   } = useSenderByCode(code);
   const [inProgress, setInProgress] = useState(false);
   async function signAndConfim() {
-    if (!account) return connect();
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          if (!account.address) return connect();
           if (!referrer) throw new Error("Referrer not found");
           setInProgress(true);
           const signature = await signMessage({
             message: referrer.toLowerCase(),
-            account,
           });
           if (!signature) throw new Error("Signature not found");
           const { r: rr, s, v } = Signature.from(signature);

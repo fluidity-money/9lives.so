@@ -3,9 +3,7 @@ import Button from "./themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { FormEvent, useCallback, useState } from "react";
-import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { Account } from "thirdweb/wallets";
 import useLiquidity from "@/hooks/useLiquidity";
 import useLiquidityWithPaymaster from "@/hooks/useLiquidityWithPaymaster";
 import { CampaignDetail } from "@/types";
@@ -21,8 +19,8 @@ import Image from "next/image";
 import Input from "./themed/input";
 import ErrorInfo from "./themed/errorInfo";
 import ChainSelector from "./chainSelector";
-import { Chain, prepareContractCall, simulateTransaction } from "thirdweb";
 import USDCImg from "#/images/usdc.svg";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function AddLiquidityDialog({
   close,
@@ -31,7 +29,7 @@ export default function AddLiquidityDialog({
   close?: () => void;
   data: CampaignDetail;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { connect } = useConnectWallet();
   const [isFunding, setIsFunding] = useState(false);
   const enabledPaymaster = useFeatureFlag("enable paymaster add liquidity");
@@ -90,14 +88,14 @@ export default function AddLiquidityDialog({
   const { add: addWithPaymaster } = useLiquidityWithPaymaster({
     data,
   });
-  const onSubmit = async (input: FormData, account: Account) => {
+  const onSubmit = async (input: FormData, address: string) => {
     try {
       setIsFunding(true);
       if (enabledRelay && input.fromChain !== config.chains.superposition.id) {
-        await addWithRelay(account!, { ...input }, fromDecimals);
+        await addWithRelay({ ...input }, fromDecimals);
       } else {
         let action = enabledPaymaster ? addWithPaymaster : add;
-        await action(account, input.amount.toString());
+        await action(input.amount.toString());
       }
       close?.();
     } finally {

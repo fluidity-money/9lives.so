@@ -7,15 +7,14 @@ import CountdownTimer from "../countdownTimer";
 import ClaimFeesButton from "../claimFeesButton";
 import { useEffect, useState } from "react";
 import useClaimAllFees from "@/hooks/useClaimAllFees";
-import { Account } from "thirdweb/wallets";
 import config from "@/config";
 
 export default function CampaignTableItem({
   data,
-  account,
+  address,
 }: {
   data: Campaign;
-  account?: Account;
+  address?: string;
 }) {
   const left = data.ending - Date.now();
   const inThisWeek = config.weekDuration >= left && left > 0;
@@ -24,15 +23,15 @@ export default function CampaignTableItem({
   const displayClaimButton = unclaimedFees > BigInt(0);
 
   useEffect(() => {
-    if (account) {
+    if (address) {
       (async () => {
-        const unclaimedFees = await checkClaimFees(data.poolAddress, account);
+        const unclaimedFees = await checkClaimFees(data.poolAddress);
         if (unclaimedFees > BigInt(0)) {
           setUnclaimedFees(unclaimedFees);
         }
       })();
     }
-  }, [account, checkClaimFees, data.poolAddress]);
+  }, [address, checkClaimFees, data.poolAddress]);
 
   return (
     <tr>

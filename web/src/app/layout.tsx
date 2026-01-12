@@ -7,6 +7,7 @@ import appConfig from "@/config";
 import CustomToaster from "@/components/customToaster";
 import CookieBanner from "@/components/cookieBanner";
 import Providers from "@/providers";
+import { headers } from "next/headers";
 
 const chicago = localFont({
   src: [
@@ -62,6 +63,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersObj = await headers();
+  const cookies = headersObj.get("cookie");
   return (
     <html
       lang="en"
@@ -73,7 +76,7 @@ export default async function RootLayout({
       ])}
     >
       <body className="flex min-h-screen flex-col bg-9layer">
-        <Providers>{children}</Providers>
+        <Providers cookies={cookies}>{children}</Providers>
         <CookieBanner />
         <CustomToaster />
       </body>

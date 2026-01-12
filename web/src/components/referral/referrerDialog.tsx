@@ -5,16 +5,16 @@ import LoadingIndicator from "../loadingIndicator";
 import { Fragment, useEffect, useState } from "react";
 import { genReferrer } from "@/providers/graphqlClient";
 import { generateReferralCode } from "@/utils/generateReferralCode";
-import { useActiveAccount } from "thirdweb/react";
 import Button from "../themed/button";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import TabButton from "../tabButton";
 import Input from "../themed/input";
 import toast from "react-hot-toast";
 import useCountReferees from "@/hooks/useCountReferees";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function ReferrerDialog() {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const {
     data: code,
     isSuccess,

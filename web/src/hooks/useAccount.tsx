@@ -6,21 +6,24 @@ import {
   requestSecret,
 } from "@/providers/graphqlClient";
 import { MaxUint256, Signature } from "ethers";
-import { useActiveAccount } from "thirdweb/react";
+// import { useActiveAccount } from "thirdweb/react";
 import { hasCreated } from "../providers/graphqlClient";
 import useSignForPermit from "./useSignForPermit";
 import { CampaignDetail, DppmMetadata, SimpleCampaignDetail } from "@/types";
 import config from "@/config";
-import { prepareContractCall, simulateTransaction, toUnits } from "thirdweb";
+// import { prepareContractCall, simulateTransaction, toUnits } from "thirdweb";
 import toast from "react-hot-toast";
 import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
-import { Account } from "thirdweb/wallets";
-
+import { useAppKitAccount } from "@reown/appkit/react";
+import { usePublicClient, useSignMessage } from "wagmi";
+import { parseUnits } from "viem";
+// import { Account } from "thirdweb/wallets";
+import { useReadContract } from "wagmi";
 const SECRET_KEY = "9lives-account-secret";
-
+type SignMessage = ({ message }: { message: string }) => Promise<string>;
 function encodeNonceBE(nonce: number): string {
   const buf = new Uint8Array(4);
   const view = new DataView(buf.buffer);
@@ -40,12 +43,12 @@ function storeSecret(secret: string, wallet: string) {
   );
 }
 
-export const create = async (account: Account) => {
+export const create = async (address: string, signMessage: SignMessage) => {
   const publicKey = await requestPublicKey();
-  const signature = await account?.signMessage({ message: publicKey });
+  const signature = await signMessage({ message: publicKey });
   const { r, s, v } = Signature.from(signature);
   const response = await createAccount({
-    eoaAddr: account.address.slice(2),
+    eoaAddr: address.slice(2),
     r: r.slice(2),
     s: s.slice(2),
     v,
@@ -53,23 +56,23 @@ export const create = async (account: Account) => {
   if (!response) {
     throw new Error("Account creation failed");
   }
-  storeSecret(response.secret, account.address);
+  storeSecret(response.secret, address);
   return response.secret;
 };
 
-export const isCreated = async (account: Account) => {
-  return await hasCreated(account.address);
+export const isCreated = async (address: string) => {
+  return await hasCreated(address);
 };
 
-export const getSecret = async (account: Account) => {
+export const getSecret = async (address: string, signMessage: SignMessage) => {
   const publicKey = await requestPublicKey();
   const nonce = Math.floor(Math.random() * 0x7fffffff);
   const nonceHex = encodeNonceBE(nonce);
   const message = publicKey + nonceHex;
-  const signature = await account?.signMessage({ message });
+  const signature = await signMessage({ message });
   const { r, s, v } = Signature.from(signature);
   const secret = await requestSecret({
-    eoaAddr: account.address.slice(2),
+    eoaAddr: address.slice(2),
     nonce,
     s: s.slice(2),
     r: r.slice(2),
@@ -78,21 +81,24 @@ export const getSecret = async (account: Account) => {
   if (!secret) {
     throw new Error("Account secret is not retreived");
   }
-  storeSecret(secret, account.address);
+  storeSecret(secret, address);
   return secret;
 };
 
-export const checkAndSetSecret = async (account: Account) => {
+export const checkAndSetSecret = async (
+  address: string,
+  signMessage: SignMessage,
+) => {
   const secretObj = window.localStorage.getItem(
-    `${SECRET_KEY}-${account.address.toLowerCase()}`,
+    `${SECRET_KEY}-${address.toLowerCase()}`,
   );
   let secret: null | string = null;
   if (!secretObj) {
-    const isAccountCreated = await isCreated(account);
+    const isAccountCreated = await isCreated(address);
     if (isAccountCreated) {
-      secret = await getSecret(account);
+      secret = await getSecret(address, signMessage);
     } else {
-      secret = await create(account);
+      secret = await create(address, signMessage);
     }
   } else {
     const secretParsed = JSON.parse(secretObj) as {
@@ -100,7 +106,7 @@ export const checkAndSetSecret = async (account: Account) => {
       expireAt: string;
     };
     if (new Date() > new Date(secretParsed.expireAt)) {
-      secret = await getSecret(account);
+      secret = await getSecret(address, signMessage);
     } else {
       secret = secretParsed.secret;
     }
@@ -119,11 +125,12 @@ export default function useAccount({
   outcomeId: string;
   openFundModal: () => void;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
+  const { mutateAsync: signMessage } = useSignMessage();
   const { signForPermit } = useSignForPermit(config.destinationChain, account);
   const queryClient = useQueryClient();
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
-
+  const publicClient = usePublicClient();
   const buy = async (
     fusdc: number,
     referrer: string,
@@ -132,37 +139,31 @@ export default function useAccount({
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account) throw new Error("No wallet is connected");
-          let secret = await checkAndSetSecret(account);
+          if (!account.address) throw new Error("No wallet is connected");
+          if (!publicClient) throw new Error("No public client is set");
+          let secret = await checkAndSetSecret(account.address, signMessage);
           if (!secret) throw new Error("No secret is set");
           await checkAndSwitchChain();
-          const amount = toUnits(
+          const amount = parseUnits(
             fusdc.toString(),
             config.contracts.decimals.fusdc,
-          ).toString();
-          const userBalanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "balanceOf",
-            params: [account?.address],
+          );
+          const userBalance = await publicClient.readContract({
+            ...config.contracts.fusdc,
+            functionName: "balanceOf",
+            args: [account.address as `0x${string}`],
           });
-          const userBalance = await simulateTransaction({
-            transaction: userBalanceTx,
-            account,
-          });
+
           if (amount > userBalance) {
             openFundModal();
             throw new Error("You dont have enough USDC.");
           }
           const spender = await requestEoaForAddress(account.address);
-          const allowanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "allowance",
-            params: [account.address, spender],
+          const allowance = await publicClient.readContract({
+            ...config.contracts.fusdc,
+            functionName: "allowance",
+            args: [account.address as `0x${string}`, spender as `0x${string}`],
           });
-          const allowance = (await simulateTransaction({
-            transaction: allowanceTx,
-            account,
-          })) as bigint;
           type Permit = {
             permitR: string;
             permitS: string;
@@ -185,7 +186,7 @@ export default function useAccount({
             };
           }
           const result = (await ninelivesMint({
-            amount,
+            amount: amount.toString(),
             outcome: outcomeId,
             poolAddress: data.poolAddress,
             referrer,
@@ -194,9 +195,9 @@ export default function useAccount({
             permit,
           })) as any;
           if (result?.response?.status === 401) {
-            const newSecret = await getSecret(account);
+            const newSecret = await getSecret(account.address, signMessage);
             await ninelivesMint({
-              amount,
+              amount: amount.toString(),
               outcome: outcomeId,
               poolAddress: data.poolAddress,
               referrer,

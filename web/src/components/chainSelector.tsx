@@ -1,7 +1,7 @@
 import config from "@/config";
 import { combineClass } from "@/utils/combineClass";
 import Image from "next/image";
-import { Chain } from "thirdweb";
+import { Chain } from "@/types";
 
 export default function ChainSelector({
   selectedChainId,
@@ -12,15 +12,15 @@ export default function ChainSelector({
 }: {
   selectedChainId: number;
   isInMiniApp: boolean;
-  handleNetworkChange: (chain: Chain) => void;
+  handleNetworkChange: (chain: Chain & { icon: string }) => void;
   title?: string;
   removeSPN?: boolean;
 }) {
   let chains = isInMiniApp
-    ? (JSON.parse(JSON.stringify(config.farcasterChains)) as Record<
-        string,
-        Chain
-      >)
+    ? (JSON.parse(JSON.stringify(config.chains)) as Record<
+      string,
+      Chain
+    >)
     : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
   if (removeSPN) {
     delete chains.superposition;

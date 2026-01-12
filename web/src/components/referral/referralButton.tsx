@@ -2,9 +2,9 @@
 import { useState } from "react";
 import Modal from "../themed/modal";
 import ReferrerlDialog from "./referrerDialog";
-import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { combineClass } from "@/utils/combineClass";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function ReferralButton({
   hideOnMobile = true,
@@ -12,10 +12,10 @@ export default function ReferralButton({
   hideOnMobile?: boolean;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const account = useActiveAccount();
   const { connect } = useConnectWallet();
+  const account = useAppKitAccount();
   function handleClick() {
-    if (!account) return connect();
+    if (!account.isConnected) return connect();
     setIsModalOpen(true);
   }
   return (

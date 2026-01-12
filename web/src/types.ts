@@ -16,8 +16,8 @@ import {
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
-import { Account } from "thirdweb/wallets";
 import { formatParticipatedContent } from "./utils/format/formatCampaign";
+import { type Chain as ViemChain } from 'viem'
 export type RawCampaign = Awaited<
   ReturnType<typeof requestCampaignList>
 >[number];
@@ -230,7 +230,7 @@ export type PaymasterOp = PaymasterParams["opType"];
 export type Ticket = {
   id: string;
   amount: string;
-  account: Account;
+  account: string;
   outcomeId?: string;
   data?: CampaignDetail | SimpleCampaignDetail;
   opType: PaymasterOp;
@@ -307,3 +307,5 @@ export type Trade = {
   outcomeId: `0x${string}`;
   createdAt: string;
 };
+
+export type Chain = ViemChain & { icon: any }

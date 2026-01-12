@@ -1,28 +1,18 @@
 import config from "@/config";
-import tradingAbi from "@/config/abi/trading";
 import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import {
-  encode,
-  getContract,
-  prepareContractCall,
-  sendTransaction,
-  simulateTransaction,
-  toUnits,
-} from "thirdweb";
-import { Account } from "thirdweb/wallets";
 import { useAllowanceCheck } from "./useAllowanceCheck";
 import { MaxUint256 } from "ethers";
-import {
-  useActiveWallet,
-  useActiveWalletChain,
-  useSwitchActiveWalletChain,
-} from "thirdweb/react";
+
 import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
-import { viemAdapter } from "thirdweb/adapters/viem";
 import RelayTxToaster from "@/components/relayTxToaster";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
+import { createWalletClient, custom, encodeFunctionData, parseUnits } from "viem";
+import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
+import useConnectWallet from "./useConnectWallet";
+import { usePublicClient, useWriteContract } from "wagmi";
+import tradingAbi from "@/config/abi/trading";
 
 interface AddInput {
   amount: number;
@@ -41,61 +31,60 @@ export default function useLiquidity({
   tradingAddr: `0x${string}`;
   campaignId: `0x${string}`;
 }) {
-  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
-  const tradingContract = getContract({
-    abi: tradingAbi,
-    address: tradingAddr,
-    client: config.thirdweb.client,
-    chain: config.destinationChain,
-  });
+  const account = useAppKitAccount();
+  const { connect } = useConnectWallet();
+  const { walletProvider } = useAppKitProvider("eip155");
   const { checkAndAprove } = useAllowanceCheck();
-  const chain = useActiveWalletChain();
-  const wallet = useActiveWallet();
-  const switchChain = useSwitchActiveWalletChain();
-  const add = async (account: Account, fusdc: string) =>
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
+  const publicClient = usePublicClient();
+  const { mutateAsync: writeContract } = useWriteContract()
+  const tradingContract = {
+    address: tradingAddr as `0x${string}`,
+    abi: tradingAbi
+  } as const
+  const addLiquidityTx = (amount: bigint, simulatedShare?: bigint) => {
+    const minShares = simulatedShare
+      ? (simulatedShare * BigInt(95)) / BigInt(100)
+      : BigInt(0);
+    const maxShares = simulatedShare
+      ? (simulatedShare * BigInt(105)) / BigInt(100)
+      : MaxUint256;
+    return {
+      ...config.contracts.buyHelper2,
+      functionName: "addLiquidity",
+      args: [
+        tradingAddr,
+        config.NEXT_PUBLIC_FUSDC_ADDR as `0x${string}`,
+        amount,
+        account.address as `0x${string}`,
+        minShares,
+        maxShares,
+        BigInt(0),
+        [],
+        BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
+      ],
+    } as const;
+  };
+  const add = async (fusdc: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const amount = toUnits(fusdc, config.contracts.decimals.shares);
+          if (!account.address) return connect();
+          if (!publicClient) throw new Error("Public client is not set");
+          const amount = parseUnits(fusdc, config.contracts.decimals.shares);
           await checkAndAprove({
             contractAddress: config.contracts.fusdc.address,
             spenderAddress: config.contracts.buyHelper2.address,
-            account,
+            address: account.address,
             amount,
           });
-          const addLiquidityTx = (simulatedShare?: bigint) => {
-            const minShares = simulatedShare
-              ? (simulatedShare * BigInt(95)) / BigInt(100)
-              : BigInt(0);
-            const maxShares = simulatedShare
-              ? (simulatedShare * BigInt(105)) / BigInt(100)
-              : MaxUint256;
-            return prepareContractCall({
-              contract: config.contracts.buyHelper2,
-              method: "addLiquidity",
-              params: [
-                tradingAddr,
-                config.NEXT_PUBLIC_FUSDC_ADDR,
-                amount,
-                account.address,
-                minShares,
-                maxShares,
-                BigInt(0),
-                [],
-                BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
-              ],
-            });
-          };
-          const { liq: simulatedShare } = await simulateTransaction({
-            transaction: addLiquidityTx(),
-            account,
-          });
           await checkAndSwitchChain();
-          await sendTransaction({
-            transaction: addLiquidityTx(simulatedShare),
-            account,
-          });
+
+          const simulation = await publicClient.simulateContract(addLiquidityTx(amount));
+
+          await writeContract(addLiquidityTx(amount, simulation.result.liq));
+
           queryClient.invalidateQueries({
             queryKey: ["campaign", campaignId],
           });
@@ -120,17 +109,15 @@ export default function useLiquidity({
       },
     );
   const addWithRelay = async (
-    account: Account,
     input: AddInput,
     fromDecimals?: number,
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          if (!account.address) return connect();
           if (!fromDecimals) throw new Error("fromDecimals is undefined");
-          if (!wallet) throw new Error("No wallet is detected");
-          if (!chain) throw new Error("No chain is detected");
-          const fromAmountBigInt = toUnits(
+          const fromAmountBigInt = parseUnits(
             input.amount.toString(),
             fromDecimals,
           );
@@ -157,30 +144,7 @@ export default function useLiquidity({
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.details.currencyOut.amount as string;
 
-          const addLiquidityTx = (simulatedShare?: bigint) => {
-            const minShares = simulatedShare
-              ? (simulatedShare * BigInt(95)) / BigInt(100)
-              : BigInt(0);
-            const maxShares = simulatedShare
-              ? (simulatedShare * BigInt(105)) / BigInt(100)
-              : MaxUint256;
-            return prepareContractCall({
-              contract: config.contracts.buyHelper2,
-              method: "addLiquidity",
-              params: [
-                tradingAddr,
-                input.toToken,
-                BigInt(toAmount),
-                account.address,
-                minShares,
-                maxShares,
-                BigInt(0),
-                [],
-                BigInt(Math.floor(Date.now() / 1000) + 60 * 60),
-              ],
-            });
-          };
-          const calldata = await encode(addLiquidityTx());
+          const calldata = await encodeFunctionData(addLiquidityTx(BigInt(toAmount)))
 
           const options = {
             user: account.address,
@@ -205,24 +169,18 @@ export default function useLiquidity({
 
           const quote = await relayClient.actions.getQuote(options);
 
-          let targetChain = chain;
+          await checkAndSwitchChain();
 
-          if (input.fromChain !== chain.id) {
-            targetChain = Object.values(config.chains).find(
-              (c) => c.id === input.fromChain,
-            )!;
-            await switchChain(targetChain);
-          }
-
-          const walletClient = viemAdapter.wallet.toViem({
-            client: config.thirdweb.client,
-            chain: targetChain,
-            wallet,
+          const viemWalletClient = createWalletClient({
+            account: account.address as `0x${string}`,
+            chain: Object.values(config.chains).find((i) => i.id === input.fromChain),
+            transport: custom(walletProvider as any),
           });
+
           let requestId: string | undefined;
           await relayClient.actions.execute({
             quote,
-            wallet: adaptViemWallet(walletClient as any),
+            wallet: adaptViemWallet(viemWalletClient as any),
             onProgress: ({ currentStep, currentStepItem }) => {
               if (currentStep && currentStepItem) {
                 requestId = currentStep?.requestId;
@@ -286,27 +244,23 @@ export default function useLiquidity({
       },
     );
   const remove = async (
-    account: Account,
     fusdc: string,
     totalLiquidity: number,
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const _fusdc = toUnits(fusdc, config.contracts.decimals.shares);
+          if (!account.address) return connect()
+          const _fusdc = parseUnits(fusdc, config.contracts.decimals.shares);
           const diff = BigInt(totalLiquidity) - _fusdc;
           const amount =
             BigInt(1e6) > diff ? BigInt(totalLiquidity) - BigInt(1e6) : _fusdc; // always 1 usdc should be secured in liquidity pool
-          const removeLiquidityTx = prepareContractCall({
-            contract: tradingContract,
-            method: "removeLiquidity3C857A15",
-            params: [amount, account.address],
-          });
           await checkAndSwitchChain();
-          await sendTransaction({
-            transaction: removeLiquidityTx,
-            account,
-          });
+          await writeContract({
+            ...tradingContract,
+            functionName: "removeLiquidity3C857A15",
+            args: [amount, account.address as `0x${string}`]
+          })
           queryClient.invalidateQueries({
             queryKey: ["userLiquidity", account.address, tradingAddr],
           });
@@ -327,29 +281,31 @@ export default function useLiquidity({
         error: "Failed to remove.",
       },
     );
-  const claim = async (account: Account) =>
+  const claim = async () =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const claimLiquidityTx = prepareContractCall({
-            contract: tradingContract,
-            method: "removeLiquidity3C857A15",
-            params: [BigInt(0), account.address],
-          });
-          const [lpedAmount, lpRewards] = await simulateTransaction({
-            transaction: claimLiquidityTx,
-            account,
-          });
+          if (!account.address) return connect()
+          if (!publicClient) throw new Error("Public client is not set")
+
+          const simulation = await publicClient.simulateContract({
+            ...tradingContract,
+            functionName: "removeLiquidity3C857A15",
+            args: [BigInt(0), account.address as `0x${string}`]
+          })
+          const [lpedAmount, lpRewards] = simulation.result
+
           if (
-            BigInt(lpRewards) === BigInt(0) &&
-            BigInt(lpedAmount) === BigInt(0)
+            lpedAmount === BigInt(0) &&
+            lpRewards === BigInt(0)
           ) {
             throw new Error("You don't have anything to claim.");
           }
           await checkAndSwitchChain();
-          await sendTransaction({
-            transaction: claimLiquidityTx,
-            account,
+          await writeContract({
+            ...tradingContract,
+            functionName: "removeLiquidity3C857A15",
+            args: [BigInt(0), account.address as `0x${string}`]
           });
           queryClient.invalidateQueries({
             queryKey: ["userLiquidity", account.address, tradingAddr],
@@ -372,16 +328,17 @@ export default function useLiquidity({
       },
     );
 
-  const checkLpRewards = async (account: Account) => {
-    const claimLiquidityTx = prepareContractCall({
-      contract: tradingContract,
-      method: "removeLiquidity3C857A15",
-      params: [BigInt(0), account.address],
-    });
-    const [lpedAmount, lpRewards] = await simulateTransaction({
-      transaction: claimLiquidityTx,
-      account,
-    });
+  const checkLpRewards = async () => {
+    if (!account.address) return
+    if (!publicClient) return
+
+    const simulation = await publicClient.simulateContract({
+      ...tradingContract,
+      functionName: "removeLiquidity3C857A15",
+      args: [BigInt(0), account.address as `0x${string}`]
+    })
+
+    const [lpedAmount, lpRewards] = simulation.result
 
     return BigInt(lpRewards ?? 0);
   };

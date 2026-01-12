@@ -2,11 +2,6 @@ import { useEffect, useState } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import { useUserStore } from "@/stores/userStore";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { EIP1193 } from "thirdweb/wallets";
-
-export const farcasterWallet = EIP1193.fromProvider({
-  provider: sdk.wallet.ethProvider,
-});
 
 export default function FarcasterProvider() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -21,9 +16,7 @@ export default function FarcasterProvider() {
         setIsInMiniApp(true);
         await sdk.actions.ready();
         setFarcasterCtx(await sdk.context);
-        if (sdk.wallet) {
-          connect(isInMiniApp);
-        }
+        await sdk.back.enableWebNavigation();
         setIsSDKLoaded(true);
       }
     };

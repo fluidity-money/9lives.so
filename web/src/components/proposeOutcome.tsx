@@ -5,8 +5,6 @@ import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
 import Button from "./themed/button";
 import { useCountdownDiff } from "@/hooks/useCountdown";
-import { useActiveAccount } from "thirdweb/react";
-import useConnectWallet from "@/hooks/useConnectWallet";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import LinkIcon from "#/icons/link.svg";
@@ -45,15 +43,12 @@ export default function ProposeOutcome({
       infraState,
       outcomes,
     });
-  const account = useActiveAccount();
-  const { connect } = useConnectWallet();
   const zeroByte8 = "0x0000000000000000";
   async function handleAction() {
-    if (!account) return connect();
     if (!action) return;
     try {
       setInAction(true);
-      const txHash = await action(selectedOutcome, account);
+      const txHash = await action(selectedOutcome);
       setTxHash(txHash);
       setIsProposed(true);
     } finally {
@@ -102,7 +97,7 @@ export default function ProposeOutcome({
         <div className="flex items-center gap-1 bg-9green px-1 py-0.5">
           <Image src={LinkIcon} alt="" width={14} />
           <Link
-            href={`${config.destinationChain.blockExplorers![0].url}/tx/${txHash}`}
+            href={`${config.destinationChain.blockExplorers.default.url}/tx/${txHash}`}
             className="font-geneva text-xs uppercase text-9black underline"
           >
             Tx Hash:{txHash!.slice(0, 6)}...{txHash!.slice(-6)}

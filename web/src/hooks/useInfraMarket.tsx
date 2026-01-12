@@ -1,44 +1,34 @@
-import {
-  prepareContractCall,
-  sendTransaction,
-  simulateTransaction,
-} from "thirdweb";
+
 import appConfig from "@/config";
-import { Account } from "thirdweb/wallets";
 import { InfraMarketState, Outcome } from "@/types";
 import toast from "react-hot-toast";
 import config from "@/config";
 import { generateCommit } from "@/utils/generateCommit";
 import { randomValue4Uint8 } from "@/utils/generateId";
 import { storeCommitment } from "@/providers/graphqlClient";
-import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { usePublicClient, useWriteContract } from "wagmi";
+import { useAllowanceCheck } from "./useAllowanceCheck";
+import useConnectWallet from "./useConnectWallet";
 interface InfraMarketProps {
   tradingAddr: `0x${string}`;
   infraState?: InfraMarketState;
   outcomes: Outcome[];
 }
 export default function useInfraMarket(props: InfraMarketProps) {
-  const { checkAndSwitchChain } = useCheckAndSwitchChain();
-  const statusTx = prepareContractCall({
-    contract: appConfig.contracts.infra,
-    method: "status",
-    params: [props.tradingAddr],
-  });
-  const proposedOutcomeTx = prepareContractCall({
-    contract: appConfig.contracts.infra,
-    method: "callerPreferredOutcome",
-    params: [props.tradingAddr],
-  });
-  const disputedOutcomeTx = prepareContractCall({
-    contract: appConfig.contracts.infra,
-    method: "whingerPreferredWinner",
-    params: [props.tradingAddr],
-  });
+  const account = useAppKitAccount()
+  const publicClient = usePublicClient()
+  const { mutateAsync: writeContract } = useWriteContract()
+  const { checkAndAprove } = useAllowanceCheck()
+  const { connect } = useConnectWallet()
   const getStatus = async () => {
     try {
-      const [status, timeRemained] = (await simulateTransaction({
-        transaction: statusTx,
-      })) as [InfraMarketState, bigint];
+      if (!publicClient) return
+      const [status, timeRemained] = await publicClient.readContract({
+        ...appConfig.contracts.infra,
+        functionName: "status",
+        args: [props.tradingAddr],
+      });
       return {
         status,
         timeRemained: Number(timeRemained), //time remained returns in seconds
@@ -49,9 +39,11 @@ export default function useInfraMarket(props: InfraMarketProps) {
   };
   const getProposedOutcome = async () => {
     try {
-      const outcome = (await simulateTransaction({
-        transaction: proposedOutcomeTx,
-      })) as string;
+      const outcome = await publicClient?.readContract({
+        ...appConfig.contracts.infra,
+        functionName: "callerPreferredOutcome",
+        args: [props.tradingAddr],
+      });
       return outcome;
     } catch (error) {
       console.error(error);
@@ -59,28 +51,26 @@ export default function useInfraMarket(props: InfraMarketProps) {
   };
   const getDisputedOutcome = async () => {
     try {
-      const outcome = (await simulateTransaction({
-        transaction: disputedOutcomeTx,
-      })) as string;
+      const outcome = await publicClient?.readContract({
+        ...appConfig.contracts.infra,
+        functionName: "whingerPreferredWinner",
+        args: [props.tradingAddr],
+      });
       return outcome;
     } catch (error) {
       console.error(error);
     }
   };
-  const call = (outcomeId: `0x${string}`, account: Account) =>
+  const call = (outcomeId: `0x${string}`) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
-          const proposeTx = prepareContractCall({
-            contract: appConfig.contracts.infra,
-            method: "call",
-            params: [props.tradingAddr, outcomeId, account.address],
+          const receipt = await writeContract({
+            ...appConfig.contracts.infra,
+            functionName: "call",
+            args: [props.tradingAddr, outcomeId, account.address as `0x${string}`],
           });
-          const receipt = await sendTransaction({
-            transaction: proposeTx,
-            account,
-          });
-          res(receipt.transactionHash);
+          res(receipt);
         } catch (error) {
           rej(error);
         }
@@ -91,20 +81,16 @@ export default function useInfraMarket(props: InfraMarketProps) {
         error: "Failed to propose outcome.",
       },
     );
-  const whinge = (outcomeId: `0x${string}`, account: Account) =>
+  const whinge = (outcomeId: `0x${string}`) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
-          const whingeTx = prepareContractCall({
-            contract: appConfig.contracts.infra,
-            method: "whinge",
-            params: [props.tradingAddr, outcomeId, account.address],
+          const receipt = await writeContract({
+            ...appConfig.contracts.infra,
+            functionName: "whinge",
+            args: [props.tradingAddr, outcomeId, account.address as `0x${string}`],
           });
-          const receipt = await sendTransaction({
-            transaction: whingeTx,
-            account,
-          });
-          res(receipt.transactionHash);
+          res(receipt);
         } catch (error) {
           rej(error);
         }
@@ -115,10 +101,11 @@ export default function useInfraMarket(props: InfraMarketProps) {
         error: "Failed to whinge.",
       },
     );
-  const predict = (outcomeId: `0x${string}`, account: Account) =>
+  const predict = (outcomeId: `0x${string}`) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
+          if (!account.address) return connect()
           const seed = randomValue4Uint8();
           await storeCommitment({
             tradingAddr: props.tradingAddr,
@@ -127,16 +114,13 @@ export default function useInfraMarket(props: InfraMarketProps) {
             sender: account.address,
           });
           const commitHash = generateCommit(props.tradingAddr, outcomeId, seed);
-          const predictTx = prepareContractCall({
-            contract: appConfig.contracts.infra,
-            method: "predict",
-            params: [props.tradingAddr, commitHash],
+
+          const receipt = await writeContract({
+            ...appConfig.contracts.infra,
+            functionName: "predict",
+            args: [props.tradingAddr, commitHash]
           });
-          const receipt = await sendTransaction({
-            transaction: predictTx,
-            account,
-          });
-          res(receipt.transactionHash);
+          res(receipt);
         } catch (error) {
           rej(error);
         }
@@ -147,20 +131,16 @@ export default function useInfraMarket(props: InfraMarketProps) {
         error: "Failed to predict outcome.",
       },
     );
-  const close = (_: any, account: Account) =>
+  const close = (_: any) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
-          const revealTx = prepareContractCall({
-            contract: appConfig.contracts.infra,
-            method: "close",
-            params: [props.tradingAddr, account.address],
+          const receipt = await writeContract({
+            ...appConfig.contracts.infra,
+            functionName: "close",
+            args: [props.tradingAddr, account.address as `0x${string}`]
           });
-          const receipt = await sendTransaction({
-            transaction: revealTx,
-            account,
-          });
-          res(receipt.transactionHash);
+          res(receipt);
         } catch (error) {
           rej(error);
         }
@@ -171,21 +151,17 @@ export default function useInfraMarket(props: InfraMarketProps) {
         error: "Failed to reveal outcome.",
       },
     );
-  const declare = (_: any, account: Account) =>
+  const declare = (_: any) =>
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
           const outcomeIds = props.outcomes.map((o) => o.identifier);
-          const revealTx = prepareContractCall({
-            contract: appConfig.contracts.infra,
-            method: "declare",
-            params: [props.tradingAddr, outcomeIds, account.address],
+          const receipt = await writeContract({
+            ...appConfig.contracts.infra,
+            functionName: "declare",
+            args: [props.tradingAddr, outcomeIds, account.address as `0x${string}`]
           });
-          const receipt = await sendTransaction({
-            transaction: revealTx,
-            account,
-          });
-          res(receipt.transactionHash);
+          res(receipt);
         } catch (error) {
           rej(error);
         }
@@ -198,7 +174,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
     );
   const actionMap: Record<
     InfraMarketState,
-    ((outcomeId: `0x${string}`, account: Account) => Promise<string>) | null
+    ((outcomeId: `0x${string}`) => Promise<string>) | null
   > = {
     [InfraMarketState.Callable]: call,
     [InfraMarketState.Closable]: close,
@@ -210,35 +186,18 @@ export default function useInfraMarket(props: InfraMarketProps) {
     [InfraMarketState.Closed]: null,
     [InfraMarketState.Loading]: null,
   } as const;
-  const currentAction = async (outcomeId: `0x${string}`, account: Account) => {
+  const currentAction = async (outcomeId: `0x${string}`) => {
     const amount =
       config.infraMarket.fees[props.infraState ?? InfraMarketState.Loading];
-    if (amount > BigInt(0)) {
-      const allowanceTx = prepareContractCall({
-        contract: config.contracts.fusdc,
-        method: "allowance",
-        params: [account.address, config.contracts.infra.address],
-      });
-      const allowance = (await simulateTransaction({
-        transaction: allowanceTx,
-        account,
-      })) as bigint;
-      await checkAndSwitchChain();
-      if (amount > allowance) {
-        const approveTx = prepareContractCall({
-          contract: config.contracts.fusdc,
-          method: "approve",
-          params: [config.contracts.infra.address, amount],
-        });
-        await sendTransaction({
-          transaction: approveTx,
-          account,
-        });
-      }
-    }
+    await checkAndAprove({
+      contractAddress: config.contracts.fusdc.address,
+      spenderAddress: config.contracts.infra.address,
+      address: account.address as `0x${string}`,
+      amount
+    })
     const action = actionMap[props.infraState ?? InfraMarketState.Loading];
     if (action) {
-      return action(outcomeId, account);
+      return action(outcomeId);
     }
     throw new Error("No valid action available for the current state.");
   };

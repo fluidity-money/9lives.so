@@ -1,7 +1,7 @@
 import useSarpSignaller from "@/hooks/useSarpSignaller";
 import Button from "./themed/button";
-import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function AIResolveButton({
   tradingAddr,
@@ -9,10 +9,10 @@ export default function AIResolveButton({
   tradingAddr: `0x${string}`;
 }) {
   const { isLoading, isSuccess, request } = useSarpSignaller(tradingAddr);
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { connect } = useConnectWallet();
   function handleRequest() {
-    if (!account) return connect();
+    if (!account.isConnected) return connect();
     request(account);
   }
   return (

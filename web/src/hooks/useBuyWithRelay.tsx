@@ -1,7 +1,4 @@
 import config from "@/config";
-import { encode, prepareContractCall } from "thirdweb";
-import { toUnits } from "thirdweb/utils";
-import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
@@ -12,16 +9,15 @@ import {
 } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { getClient, adaptViemWallet } from "@reservoir0x/relay-sdk";
-import { viemAdapter } from "thirdweb/adapters/viem";
-import {
-  useActiveWallet,
-  useActiveWalletChain,
-  useSwitchActiveWalletChain,
-} from "thirdweb/react";
+import { encodeFunctionData } from "viem";
 import RelayTxToaster from "@/components/relayTxToaster";
 import { MaxUint256 } from "ethers";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import useFeatureFlag from "./useFeatureFlag";
+import { parseUnits } from "viem";
+import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
+import { createWalletClient, custom } from "viem";
+import { useAppKitProvider } from "@reown/appkit/react";
 
 type TradeType = "EXACT_INPUT" | "EXACT_OUTPUT" | "EXPECTED_OUTPUT";
 const useBuyWithRelay = ({
@@ -34,14 +30,13 @@ const useBuyWithRelay = ({
   data: CampaignDetail | SimpleCampaignDetail;
 }) => {
   const queryClient = useQueryClient();
-  const wallet = useActiveWallet();
-  const chain = useActiveWalletChain();
-  const switchChain = useSwitchActiveWalletChain();
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const enableExactInputBuyWithRelay = useFeatureFlag(
     "enable exact input style buy with relay",
   );
+  const { walletProvider } = useAppKitProvider("eip155");
   const buyWithRelay = async (
-    account: Account,
+    address: string,
     fromAmount: number,
     usdValue: number,
     fromChain: number,
@@ -58,20 +53,21 @@ const useBuyWithRelay = ({
         const operationStart = performance.now();
         try {
           if (!fromDecimals) throw new Error("fromDecimals is undefined");
-          if (!wallet) throw new Error("No wallet is detected");
-          if (!chain) throw new Error("No chain is detected");
-          const fromAmountBigInt = toUnits(fromAmount.toString(), fromDecimals);
+          const fromAmountBigInt = parseUnits(
+            fromAmount.toString(),
+            fromDecimals,
+          );
           const options = (
             amount: string,
             tradeType: TradeType,
             txs?: { to: `0x${string}`; value: string; data: `0x${string}` }[],
           ) => ({
-            user: account.address,
+            user: address,
             chainId: fromChain,
             toChainId: toChain,
             currency: fromToken,
             toCurrency: toToken,
-            recipient: account.address,
+            recipient: address,
             referrer: "9lives.so",
             amount, // Total value of all txs
             tradeType,
@@ -92,32 +88,33 @@ const useBuyWithRelay = ({
             const maxSharesOut = simulatedShare
               ? (simulatedShare * BigInt(105)) / BigInt(100)
               : MaxUint256;
-            return prepareContractCall({
-              contract: config.contracts.buyHelper2,
-              method: "mint",
-              params: [
-                data.poolAddress,
-                toToken,
-                outcomeId,
+            return {
+              ...(config.contracts
+                .buyHelper2 as typeof config.contracts.buyHelper2),
+              functionName: "mint",
+              args: [
+                data.poolAddress as `0x${string}`,
+                config.contracts.fusdc.address,
+                outcomeId as `0x${string}`,
                 minSharesOut,
                 maxSharesOut,
                 BigInt(amount),
-                referrer,
+                referrer as `0x${string}`,
                 BigInt(0), //rebate
                 BigInt(Math.floor(Date.now() / 1000) + 60 * 30), // deadline
-                account.address,
+                address as `0x${string}`,
               ],
-            });
+            } as const;
           };
-          // const return9lives = await simulateTransaction({
-          //   transaction: mintWith9LivesTx(),
-          // });
-          // sets minimum share to %90 of expected return shares
-          // const minShareOut = (return9lives * BigInt(9)) / BigInt(10);
+          // We can do a simulation before to use simulated share as a slippage guard
+          // But Relay have failed to simulate it on target chain, because user only have balance on from chain.
 
-          const transaction = mintWith9LivesTx(toAmount);
-
-          const calldata = await encode(transaction);
+          const calldata = await encodeFunctionData(
+            mintWith9LivesTx(
+              toAmount,
+              // we can use simulated share here as second arg
+            ),
+          );
 
           let quote = await relayClient.actions.getQuote(
             options(toAmount, "EXACT_OUTPUT", [
@@ -144,8 +141,9 @@ const useBuyWithRelay = ({
               resNetCurrencyInAmount.details?.currencyOut?.amount ?? "0";
             const amountWithCutdown =
               (BigInt(netCurrencyOutAmount) * BigInt(99)) / BigInt(100);
-            const transaction2 = mintWith9LivesTx(amountWithCutdown.toString());
-            const calldata2 = await encode(transaction2);
+            const calldata2 = await encodeFunctionData(
+              mintWith9LivesTx(amountWithCutdown.toString()),
+            );
             quote = await relayClient.actions.getQuote(
               options(netCurrencyOutAmount, "EXACT_OUTPUT", [
                 {
@@ -157,24 +155,18 @@ const useBuyWithRelay = ({
             );
           }
 
-          let targetChain = chain;
+          await checkAndSwitchChain();
 
-          if (fromChain !== chain.id) {
-            targetChain = Object.values(config.chains).find(
-              (c) => c.id === fromChain,
-            )!;
-            await switchChain(targetChain);
-          }
-
-          const walletClient = viemAdapter.wallet.toViem({
-            client: config.thirdweb.client,
-            chain: targetChain,
-            wallet,
+          const viemWalletClient = createWalletClient({
+            account: address as `0x${string}`,
+            chain: Object.values(config.chains).find((i) => i.id === fromChain),
+            transport: custom(walletProvider as any),
           });
+
           let requestId: string | undefined;
           await relayClient.actions.execute({
             quote,
-            wallet: adaptViemWallet(walletClient as any),
+            wallet: adaptViemWallet(viemWalletClient),
             onProgress: ({ currentStep, currentStepItem }) => {
               if (currentStep && currentStepItem) {
                 requestId = currentStep?.requestId;
@@ -231,7 +223,7 @@ const useBuyWithRelay = ({
               "positions",
               data.poolAddress,
               data.outcomes,
-              account,
+              address,
               data.isDpm,
             ],
           });
@@ -262,10 +254,10 @@ const useBuyWithRelay = ({
             });
           }
           queryClient.invalidateQueries({
-            queryKey: ["positionHistory", account.address, outcomeIds],
+            queryKey: ["positionHistory", address, outcomeIds],
           });
           queryClient.invalidateQueries({
-            queryKey: ["tokensWithBalances", account?.address, fromChain],
+            queryKey: ["tokensWithBalances", address, fromChain],
           });
         } catch (e) {
           if (

@@ -1,20 +1,22 @@
 import config from "@/config";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
-import { toUnits } from "thirdweb/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { CampaignDetail } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
-import { useActiveAccount } from "thirdweb/react";
 import { usePaymasterStore } from "@/stores/paymasterStore";
-import { Account } from "thirdweb/wallets";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { parseUnits } from "viem";
+import { usePublicClient } from "wagmi";
+import useConnectWallet from "./useConnectWallet";
 
 const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
   const idempotentOutcome = "0x0000000000000000";
   const queryClient = useQueryClient();
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { requestPaymaster } = useRequestPaymaster();
+  const publicClient = usePublicClient();
+  const { connect } = useConnectWallet();
   const createTicket = usePaymasterStore((s) => s.createTicket);
   const { mutateAsync: requestPaymasterOptimisticallyForAdd } = useMutation({
     mutationFn: ({
@@ -174,23 +176,20 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
       // invalidate queries not here but, after reading paymaster tickets
     },
   });
-  const add = async (account: Account, fusdc: string) =>
+  const add = async (fusdc: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account) throw new Error("No active account");
-          const amount = toUnits(
+          if (!account.address) return connect();
+          if (!publicClient) throw new Error("Public client is not set");
+          const amount = parseUnits(
             fusdc.toString(),
             config.contracts.decimals.fusdc,
           );
-          const userBalanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "balanceOf",
-            params: [account?.address],
-          });
-          const userBalance = await simulateTransaction({
-            transaction: userBalanceTx,
-            account,
+          const userBalance = await publicClient.readContract({
+            ...config.contracts.fusdc,
+            functionName: "balanceOf",
+            args: [account.address as `0x${string}`],
           });
           if (amount > userBalance) {
             // openFundModal(); funding dialog can be added later
@@ -209,7 +208,7 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
               amount: result.amount,
               data,
               opType: "ADD_LIQUIDITY",
-              account,
+              account: account.address,
             });
             res(result.ticketId);
           } else {
@@ -225,15 +224,12 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
         error: (e) => `${e?.shortMessage ?? e?.message ?? "Unknown error"}`,
       },
     );
-  const remove = async (
-    account: Account,
-    fusdc: string,
-    totalLiquidity: number,
-  ) =>
+  const remove = async (fusdc: string, totalLiquidity: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const _fusdc = toUnits(fusdc, config.contracts.decimals.shares);
+          if (!account.address) return connect();
+          const _fusdc = parseUnits(fusdc, config.contracts.decimals.shares);
           const diff = BigInt(totalLiquidity) - _fusdc;
           const amount =
             BigInt(1e6) > diff ? BigInt(totalLiquidity) - BigInt(1e6) : _fusdc; // always 1 usdc should be secured in liquidity pool
@@ -251,7 +247,7 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
               amount: result.amount,
               data,
               opType: "REMOVE_LIQUIDITY",
-              account,
+              account: account.address,
             });
             res(result.ticketId);
           } else {
@@ -267,10 +263,11 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
         error: (e) => `${e?.shortMessage ?? e?.message ?? "Unknown error"}`,
       },
     );
-  const claim = async (account: Account) =>
+  const claim = async () =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          if (!account?.address) return connect();
           const result = await requestPaymasterOptimisticallyForRemove({
             amountToSpend: "0",
             outcome: idempotentOutcome,
@@ -284,7 +281,7 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
               amount: result.amount,
               data,
               opType: "REMOVE_LIQUIDITY",
-              account,
+              account: account.address,
             });
             track(EVENTS.REMOVE_LIQUIDITY, {
               amount: result.amount,

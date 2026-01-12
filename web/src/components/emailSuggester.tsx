@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Modal from "./themed/modal";
-import { useActiveAccount } from "thirdweb/react";
 import useProfile from "@/hooks/useProfile";
 import Input from "./themed/input";
 import Button from "./themed/button";
@@ -16,10 +15,11 @@ import { track } from "@/utils/analytics";
 import posthog from "posthog-js";
 import { useUserStore } from "@/stores/userStore";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function EmailSuggester() {
   const [isOpen, setIsOpen] = useState(false);
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const enableNewsletterSubscription = useFeatureFlag(
     "enable newsletter subscription",

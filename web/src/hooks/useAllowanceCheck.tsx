@@ -1,97 +1,79 @@
-import config from "@/config";
 import ERC20Abi from "@/config/abi/erc20";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
-import {
-  getContract,
-  prepareContractCall,
-  sendTransaction,
-  simulateTransaction,
-} from "thirdweb";
-import { Account } from "thirdweb/wallets";
+import { usePublicClient, useWriteContract } from "wagmi";
+
 interface AllowanceCheckProps {
   contractAddress: string;
   spenderAddress: string;
-  account: Account;
+  address: string;
   amount: bigint;
   checkBalance?: boolean;
 }
 export function useAllowanceCheck() {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
+  const { mutateAsync: writeContract } = useWriteContract();
+  const publicClient = usePublicClient();
   const check = async ({
     contractAddress,
     spenderAddress,
-    account,
+    address,
     amount,
     checkBalance = true,
   }: AllowanceCheckProps) => {
-    const erc20Contract = getContract({
-      address: contractAddress,
+    if (!publicClient) throw new Error("Public client is not set");
+    const erc20Contract = {
+      address: contractAddress as `0x${string}`,
       abi: ERC20Abi,
-      client: config.thirdweb.client,
-      chain: config.destinationChain,
-    });
+    } as const;
     if (checkBalance) {
-      const balanceOfTx = prepareContractCall({
-        contract: erc20Contract,
-        method: "balanceOf",
-        params: [account.address],
+      const balance = await publicClient.readContract({
+        ...erc20Contract,
+        functionName: "balanceOf",
+        args: [address as `0x${string}`],
       });
-      const balance = (await simulateTransaction({
-        transaction: balanceOfTx,
-        account: account,
-      })) as string;
-      if (amount > BigInt(balance)) {
+      if (amount > balance) {
         throw new Error("Insufficient balance");
       }
     }
-    const allowanceTx = prepareContractCall({
-      contract: erc20Contract,
-      method: "allowance",
-      params: [account.address, spenderAddress],
-    });
-    const allowance = await simulateTransaction({
-      transaction: allowanceTx,
-      account: account,
+
+    const allowance = await publicClient.readContract({
+      ...erc20Contract,
+      functionName: "allowance",
+      args: [address as `0x${string}`, spenderAddress as `0x${string}`],
     });
     return amount > allowance;
   };
   const approve = async ({
     contractAddress,
     spenderAddress,
-    account,
     amount,
-  }: AllowanceCheckProps) => {
-    const erc20Contract = getContract({
-      address: contractAddress,
+  }: Omit<AllowanceCheckProps, "address">) => {
+    const erc20Contract = {
+      address: contractAddress as `0x${string}`,
       abi: ERC20Abi,
-      client: config.thirdweb.client,
-      chain: config.destinationChain,
-    });
-    const approveTx = prepareContractCall({
-      contract: erc20Contract,
-      method: "approve",
-      params: [spenderAddress, amount],
-    });
+    } as const;
+
     await checkAndSwitchChain();
-    await sendTransaction({
-      transaction: approveTx,
-      account,
+    await writeContract({
+      ...erc20Contract,
+      functionName: "approve",
+      args: [spenderAddress as `0x${string}`, amount],
     });
   };
   const checkAndAprove = async ({
     contractAddress,
     spenderAddress,
-    account,
+    address,
     amount,
   }: AllowanceCheckProps) => {
     const shouldApprove = await check({
       contractAddress,
       spenderAddress,
-      account,
+      address,
       amount,
     });
     if (shouldApprove) {
-      await approve({ contractAddress, spenderAddress, account, amount });
+      await approve({ contractAddress, spenderAddress, amount });
     }
   };
   return { check, approve, checkAndAprove };

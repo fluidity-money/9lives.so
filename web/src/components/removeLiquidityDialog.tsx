@@ -3,9 +3,7 @@ import Button from "./themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { FormEvent, useRef, useState } from "react";
-import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { Account } from "thirdweb/wallets";
 import useLiquidity from "@/hooks/useLiquidity";
 import { Field } from "@headlessui/react";
 import { fieldClass } from "./createCampaign/createCampaignForm";
@@ -16,6 +14,7 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import useLiquidityWithPaymaster from "@/hooks/useLiquidityWithPaymaster";
 import { CampaignDetail } from "@/types";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function RemoveLiquidityDialog({
   close,
@@ -26,7 +25,7 @@ export default function RemoveLiquidityDialog({
   userLiquidity: string;
   data: CampaignDetail;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const sliderRef = useRef<HTMLInputElement>(null);
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
@@ -63,11 +62,10 @@ export default function RemoveLiquidityDialog({
   const { remove: removeWithPaymaster } = useLiquidityWithPaymaster({
     data,
   });
-  const onSubmit = async (input: FormData, account: Account) => {
+  const onSubmit = async (input: FormData) => {
     try {
       setIsLoading(true);
       await (enabledPaymaster ? removeWithPaymaster : remove)(
-        account!,
         input.liquidity.toString(),
         data.liquidityVested,
       );
@@ -77,12 +75,12 @@ export default function RemoveLiquidityDialog({
     }
   };
   const handleSubmitWithAccount = (e: FormEvent) => {
-    if (!account) {
+    if (!account.isConnected) {
       e.preventDefault();
       connect();
       return;
     }
-    handleSubmit((data) => onSubmit(data, account))(e);
+    handleSubmit((data) => onSubmit(data))(e);
   };
   return (
     <div className="flex flex-col gap-4">

@@ -11,20 +11,19 @@ import config from "@/config";
 import useCampaigns from "@/hooks/useCampaigns";
 import Placeholder from "../tablePlaceholder";
 import CampaignTableItem from "./campaignTableItem";
-import { Account } from "thirdweb/wallets";
 import ClaimFeesButton from "../claimFeesButton";
 
 export default function CampaignTable({
   category,
   orderBy,
   setOrderBy,
-  account,
+  address,
   userList = false,
 }: {
   category?: (typeof config.categories)[number];
   orderBy: CampaignFilters["orderBy"];
   setOrderBy: Dispatch<CampaignFilters["orderBy"]>;
-  account?: Account;
+  address?: string;
   userList?: boolean;
 }) {
   const tableHeaderClasses =
@@ -52,7 +51,7 @@ export default function CampaignTable({
     category,
     orderBy,
     searchTerm: searcTermFilter,
-    address: account?.address,
+    address,
     userList,
   });
   const campaigns = data?.pages.flatMap((c) => c);
@@ -151,7 +150,7 @@ export default function CampaignTable({
                 <CampaignTableItem
                   key={campaign.identifier}
                   data={campaign}
-                  account={account}
+                  address={address}
                 />
               ))}
               <tr>

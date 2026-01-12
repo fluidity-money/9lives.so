@@ -1,13 +1,10 @@
 import z from "zod";
-import { getContract } from "thirdweb";
-import thirdweb from "@/config/thirdweb";
 import ERC20Abi from "./abi/erc20";
 import ammAbi from "./abi/amm";
 import helperFactoryAbi from "./abi/helperFactory";
 import buyHelperAbi from "./abi/buyHelper";
 import clientEnv from "./clientEnv";
 import lensAbi from "./abi/lens";
-import { destinationChain } from "./chains";
 import infraAbi from "./abi/infra";
 import meowDomainsAbi from "./abi/meowDomains";
 import sarpSignallerAbi from "./abi/sarpSignaller";
@@ -17,12 +14,6 @@ import paymasterAbi from "./abi/paymaster";
 const contractSchema = z.object({
   abi: z.array(z.any()).optional(),
   address: z.string(),
-  chain: z.object({
-    rpc: z.string(),
-  }),
-  client: z.object({
-    clientId: z.string(),
-  }),
 });
 
 const allContractSchema = z.object({
@@ -43,73 +34,51 @@ const allContractSchema = z.object({
   paymaster: contractSchema,
 });
 
-const fusdc = getContract({
+const fusdc = {
   abi: ERC20Abi,
-  address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const amm = getContract({
+  address: clientEnv.NEXT_PUBLIC_FUSDC_ADDR as `0x${string}`,
+};
+const amm = {
   abi: ammAbi,
-  address: clientEnv.NEXT_PUBLIC_AMM_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const lens = getContract({
+  address: clientEnv.NEXT_PUBLIC_AMM_ADDR as `0x${string}`,
+};
+const lens = {
   abi: lensAbi,
-  address: clientEnv.NEXT_PUBLIC_LENS_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const helperFactory = getContract({
+  address: clientEnv.NEXT_PUBLIC_LENS_ADDR as `0x${string}`,
+};
+const helperFactory = {
   abi: helperFactoryAbi,
-  address: clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const infra = getContract({
+  address: clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR as `0x${string}`,
+};
+const infra = {
   abi: infraAbi,
-  address: clientEnv.NEXT_PUBLIC_INFRA_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const buyHelper = getContract({
+  address: clientEnv.NEXT_PUBLIC_INFRA_ADDR as `0x${string}`,
+};
+const buyHelper = {
   abi: buyHelperAbi,
-  address: clientEnv.NEXT_PUBLIC_BUY_HELPER_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const buyHelper2 = getContract({
+  address: clientEnv.NEXT_PUBLIC_BUY_HELPER_ADDR as `0x${string}`,
+};
+const buyHelper2 = {
   abi: buyHelper2Abi,
-  address: clientEnv.NEXT_PUBLIC_BUY_HELPER2_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const meowDomains = getContract({
+  address: clientEnv.NEXT_PUBLIC_BUY_HELPER2_ADDR as `0x${string}`,
+};
+const meowDomains = {
   abi: meowDomainsAbi,
-  address: clientEnv.NEXT_PUBLIC_MEOW_DOMAINS_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const sarpSignaller = getContract({
+  address: clientEnv.NEXT_PUBLIC_MEOW_DOMAINS_ADDR as `0x${string}`,
+};
+const sarpSignaller = {
   abi: sarpSignallerAbi,
-  address: clientEnv.NEXT_PUBLIC_SARP_SIGNALLER_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const claimantHelper = getContract({
+  address: clientEnv.NEXT_PUBLIC_SARP_SIGNALLER_ADDR as `0x${string}`,
+};
+const claimantHelper = {
   abi: claimantAbi,
-  address: clientEnv.NEXT_PUBLIC_CLAIMANT_HELPER_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const paymaster = getContract({
+  address: clientEnv.NEXT_PUBLIC_CLAIMANT_HELPER_ADDR as `0x${string}`,
+};
+const paymaster = {
   abi: paymasterAbi,
-  address: clientEnv.NEXT_PUBLIC_PAYMASTER_ADDR,
-  chain: destinationChain,
-  client: thirdweb.client,
-});
-const contractValidation = allContractSchema.safeParse({
+  address: clientEnv.NEXT_PUBLIC_PAYMASTER_ADDR as `0x${string}`,
+};
+const contractsData = {
   decimals: {
     fusdc: 6,
     shares: 6,
@@ -125,26 +94,13 @@ const contractValidation = allContractSchema.safeParse({
   claimantHelper,
   buyHelper2,
   paymaster,
-});
+} as const;
 
-type ContractsType = z.infer<typeof allContractSchema>;
+const contractValidation = allContractSchema.safeParse(contractsData);
 
 if (!contractValidation.success) {
   console.error("Invalid contract: ", contractValidation.error.name);
   throw new Error(contractValidation.error.message);
 }
 
-export default contractValidation.data as {
-  decimals: ContractsType["decimals"];
-  fusdc: typeof fusdc;
-  amm: typeof amm;
-  lens: typeof lens;
-  helperFactory: typeof helperFactory;
-  infra: typeof infra;
-  buyHelper: typeof buyHelper;
-  meowDomains: typeof meowDomains;
-  sarpSignaller: typeof sarpSignaller;
-  claimantHelper: typeof claimantHelper;
-  buyHelper2: typeof buyHelper2;
-  paymaster: typeof paymaster;
-};
+export default contractsData;

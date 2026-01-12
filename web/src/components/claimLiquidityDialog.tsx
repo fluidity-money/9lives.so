@@ -1,7 +1,5 @@
 import useLiquidity from "@/hooks/useLiquidity";
 import Button from "./themed/button";
-import { useActiveAccount } from "thirdweb/react";
-import useConnectWallet from "@/hooks/useConnectWallet";
 import { useState } from "react";
 import formatFusdc from "@/utils/format/formatUsdc";
 
@@ -16,14 +14,11 @@ export default function ClaimLiquidityDialog({
 }) {
   const [isClaiming, setIsClaiming] = useState(false);
   const { claim } = useLiquidity({ tradingAddr, campaignId });
-  const account = useActiveAccount();
-  const { connect } = useConnectWallet();
 
   const handleClick = async () => {
     try {
-      if (!account) return connect();
       setIsClaiming(true);
-      await claim(account);
+      await claim();
     } finally {
       setIsClaiming(false);
     }

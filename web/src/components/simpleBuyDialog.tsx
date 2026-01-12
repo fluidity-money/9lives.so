@@ -12,21 +12,20 @@ import useTokens from "@/hooks/useTokens";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
 import AssetSelector from "./assetSelector";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useProfile from "@/hooks/useProfile";
 import Modal from "./themed/modal";
 import Funding from "./fundingBalanceDialog";
 import useBuy from "@/hooks/useBuy";
 import useBuyWithRelay from "@/hooks/useBuyWithRelay";
-import { SimpleCampaignDetail } from "@/types";
+import { Chain, SimpleCampaignDetail } from "@/types";
 import ChainSelectorDropdown from "./chainSelectorDD";
-import { Chain } from "thirdweb";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
 import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
 import useAccount from "@/hooks/useAccount";
 import PointsIndicator from "./pointsIndicator";
+import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
 
 export default function SimpleBuyDialog({
   data,
@@ -47,7 +46,7 @@ export default function SimpleBuyDialog({
   // const enabledPaymaster = useFeatureFlag("enable paymaster dppm buy");
   const enabledASBuy = useFeatureFlag("enable account system buy");
   const { data: profile } = useProfile();
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { buy } = useBuy({
     data,
     shareAddr: selectedOutcome.share.address,
@@ -140,7 +139,7 @@ export default function SimpleBuyDialog({
   const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const usdValue = tokens
     ? Number(supply) *
-      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+    +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : Number(supply);
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
@@ -191,8 +190,9 @@ export default function SimpleBuyDialog({
     try {
       setIsMinting(true);
       if (fromChain !== config.chains.superposition.id) {
+        if (!account.address) return connect();
         await buyWithRelay(
-          account!,
+          account.address,
           Number(supply),
           usdValue,
           fromChain,
@@ -236,7 +236,7 @@ export default function SimpleBuyDialog({
     }
   }
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
-  const activeChain = useActiveWalletChain();
+  const activeChain = useAppKitNetwork();
   const handleNetworkChange = useCallback(
     async (chain: Chain) => {
       // lifi auto switch handle this for now
@@ -247,10 +247,12 @@ export default function SimpleBuyDialog({
   );
   useEffect(() => {
     if (
-      activeChain &&
-      Object.values(config.chains).find((c) => c.id === activeChain.id)
+      activeChain
     ) {
-      handleNetworkChange(activeChain);
+      const selectedChain = Object.values(config.chains).find((c) => c.id === activeChain.chainId)
+      if (selectedChain) {
+        handleNetworkChange(selectedChain);
+      }
     }
   }, [activeChain, handleNetworkChange]);
 
