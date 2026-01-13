@@ -1,16 +1,16 @@
 "use client";
 
-import { useActiveAccount } from "thirdweb/react";
 import AssetScene from "../user/assetScene";
 import { usePortfolioStore } from "@/stores/portfolioStore";
+import { useAppKitAccount } from "@reown/appkit/react";
 import { useEffect } from "react";
 
 export default function PortfolioBody() {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const reset = usePortfolioStore((s) => s.reset);
   useEffect(() => {
-    if (!account) reset();
-  }, [account, reset]);
+    if (!account.isConnected) reset();
+  }, [account.isConnected, reset]);
 
   return <AssetScene />;
 }

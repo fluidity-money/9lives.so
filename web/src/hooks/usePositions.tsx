@@ -2,51 +2,40 @@ import config from "@/config";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
-import { Account } from "thirdweb/wallets";
+import { PublicClient } from "viem";
+import { usePublicClient } from "wagmi";
 
 async function fetchPositions({
   tradingAddr,
   outcomes,
-  account,
+  address,
   isDpm,
+  publicClient
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
-  account?: Account;
+  address?: string;
   isDpm: boolean | null;
+  publicClient?: PublicClient
 }) {
-  if (!account) return [];
-  const dpmTx = prepareContractCall({
-    contract: config.contracts.lens,
-    method: "balancesForAllDpm",
-    params: [
-      [
-        {
-          trading: tradingAddr,
-          outcomeA: outcomes[0].identifier,
-          outcomeB: outcomes[1].identifier,
-        },
-      ],
-    ],
-  });
-  const ammTx = prepareContractCall({
-    contract: config.contracts.lens,
-    method: "balancesForAll",
-    params: [[tradingAddr]],
-  });
-  let balances: { amount: string; id: `0x${string}`; name: string }[] = [];
+  if (!address) return [];
+  if (!publicClient) throw new Error("Public client is not set")
+
+  let balances: { amount: bigint; id: `0x${string}`; name: string }[] = [];
   if (isDpm) {
-    const res = (await simulateTransaction({
-      transaction: dpmTx,
-      account,
-    })) as {
-      trading: string;
-      outcomeA: string;
-      nameA: string;
-      outcomeB: string;
-      nameB: string;
-    }[];
+    const res = await publicClient.readContract({
+      ...config.contracts.lens,
+      functionName: "balancesForAllDpm",
+      args: [
+        [
+          {
+            trading: tradingAddr,
+            outcomeA: outcomes[0].identifier,
+            outcomeB: outcomes[1].identifier,
+          },
+        ],
+      ],
+    });
     balances = [
       {
         id: outcomes[0].identifier,
@@ -60,9 +49,10 @@ async function fetchPositions({
       },
     ];
   } else {
-    const res = (await simulateTransaction({
-      transaction: ammTx,
-      account,
+    const res = (await publicClient.readContract({
+      ...config.contracts.lens,
+      functionName: "balancesForAll",
+      args: [[tradingAddr]],
     })) as typeof balances;
     balances = res;
   }
@@ -74,8 +64,8 @@ async function fetchPositions({
         id: b.id,
         shareAddress: outcome?.share.address ?? "0x",
         name: outcome?.name ?? b.name,
-        balance: formatFusdc(Number(b.amount), 2),
-        balanceRaw: BigInt(b.amount),
+        balance: formatFusdc(b.amount, 2),
+        balanceRaw: b.amount,
       };
     });
 
@@ -85,14 +75,16 @@ async function fetchPositions({
 export default function usePositions({
   tradingAddr,
   outcomes,
-  account,
+  address,
   isDpm,
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
-  account?: Account;
+  address?: string;
   isDpm: boolean | null;
+
 }) {
+  const publicClient = usePublicClient()
   return useQuery<
     {
       id: `0x${string}`;
@@ -102,7 +94,7 @@ export default function usePositions({
       balanceRaw: bigint;
     }[]
   >({
-    queryKey: ["positions", tradingAddr, outcomes, account, isDpm],
-    queryFn: () => fetchPositions({ tradingAddr, outcomes, account, isDpm }),
+    queryKey: ["positions", tradingAddr, outcomes, address, isDpm],
+    queryFn: () => fetchPositions({ publicClient, tradingAddr, outcomes, address, isDpm }),
   });
 }

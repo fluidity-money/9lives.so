@@ -21,12 +21,10 @@ import CreateCampaignFormEndDate from "./form/formEndDate";
 import CreateCampaignFormSettlmentSource from "./form/formSettlementSource";
 import CreateCampaignFormSocials from "./form/formSocials";
 import useCreate from "@/hooks/useCreate";
-import { useActiveAccount } from "thirdweb/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { randomValue4Uint8 } from "@/utils/generateId";
 import Modal from "../themed/modal";
 import Funding from "../fundingBalanceDialog";
-import { Account } from "thirdweb/wallets";
 import CreateCampaignFormLiquidity from "./form/formLiquidity";
 import config from "@/config";
 import { useUserStore } from "@/stores/userStore";
@@ -34,6 +32,7 @@ import useCreateWithRelay from "@/hooks/useCreateWithRelay";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import CreateCampaignFormLiquidityCrossChain from "./form/formLiquidityCrossChain";
 import useTokens from "@/hooks/useTokens";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export const fieldClass = "flex flex-col gap-2.5";
 export const inputStyle = "shadow-9input border border-9black bg-9gray";
@@ -84,7 +83,7 @@ export default function CreateCampaignForm() {
     openFundModal: () => setFundModalOpen(true),
   });
   const enabledRelay = useFeatureFlag("enable relay create");
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { connect } = useConnectWallet();
   const [outcomeType, setOutcomeType] = useState<OutcomeType>("custom");
   const [pictureBlob, setPictureBlob] = useState<string>();
@@ -153,12 +152,12 @@ export default function CreateCampaignForm() {
           outcomeType === "custom"
             ? z.array(outcomeschema)
             : z.array(
-                z.object({
-                  picture: pictureSchema,
-                  name: z.string().max(300),
-                  seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
-                }),
-              ),
+              z.object({
+                picture: pictureSchema,
+                name: z.string().max(300),
+                seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
+              }),
+            ),
         toChain: z.number().min(0),
         toToken: z.string(),
         fromChain: z
@@ -231,7 +230,7 @@ export default function CreateCampaignForm() {
   const fromDecimals = tokens?.find(
     (t) => t.address === fields.fromToken,
   )?.decimals;
-  const onSubmit = (input: FormData, account: Account) => {
+  const onSubmit = (input: FormData) => {
     if (input.seedLiquidity === defaultSeedLiquidity && !isLPModalDisplayed) {
       setIsLPModalOpen(true);
       setIsLPModalDisplayed(true);
@@ -261,16 +260,16 @@ export default function CreateCampaignForm() {
       delete preparedInput.oracleUrls;
     }
     enabledRelay && fields.fromChain !== config.chains.superposition.id
-      ? createWithRelay({ ...preparedInput, fromDecimals }, account)
-      : create(preparedInput, account);
+      ? createWithRelay({ ...preparedInput, fromDecimals })
+      : create(preparedInput);
   };
   const handleSubmitWithAccount = (e: FormEvent) => {
-    if (!account) {
+    if (!account.isConnected) {
       e.preventDefault();
       connect();
       return;
     }
-    handleSubmit((data) => onSubmit(data, account))(e);
+    handleSubmit((data) => onSubmit(data))(e);
   };
   useEffect(() => {
     if (fields) {
@@ -344,7 +343,7 @@ export default function CreateCampaignForm() {
             errors={errors}
             isTokensSuccess={isTokensSuccess}
             isInMiniApp={isInMiniApp}
-            account={account}
+            address={account.address}
             tokens={tokens}
             fromChain={fields.fromChain}
             fromToken={fields.fromToken}

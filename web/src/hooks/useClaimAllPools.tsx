@@ -1,16 +1,9 @@
 import config from "@/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import {
-  Chain,
-  Hex,
-  prepareContractCall,
-  sendTransaction,
-  ThirdwebClient,
-} from "thirdweb";
 import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
-import { Account } from "thirdweb/wallets";
 import { UnclaimedCampaign } from "@/types";
+import { useWriteContract } from "wagmi";
 
 export default function useClaimAllPools(
   data: UnclaimedCampaign[],
@@ -19,25 +12,21 @@ export default function useClaimAllPools(
 ) {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
+  const { mutateAsync: writeContract } = useWriteContract()
   return useMutation<
-    {
-      readonly transactionHash: Hex;
-      client: ThirdwebClient;
-      chain: Chain;
-      maxBlocksWaitTime?: number | undefined;
-    },
+    `0x${string}`,
     Error,
-    { addresses: string[]; account: Account }
+    { addresses: string[]; walletAddress: string }
   >({
     mutationKey: ["claimAllPools"],
-    mutationFn: async ({ addresses, account }) => {
-      const claimAllPoolsTx = prepareContractCall({
-        contract: config.contracts.claimantHelper,
-        method: "payoff",
-        params: [addresses],
-      });
+    mutationFn: async ({ addresses }) => {
       await checkAndSwitchChain();
-      return await sendTransaction({ transaction: claimAllPoolsTx, account });
+      const reciept = await writeContract({
+        ...config.contracts.claimantHelper,
+        functionName: "payoff",
+        args: [addresses as `0x${string}`[]],
+      });
+      return reciept
     },
     onMutate({ addresses }) {
       toast.loading("Claiming all rewards...", { id: addresses.join("") });
@@ -45,14 +34,14 @@ export default function useClaimAllPools(
     onError: (e, { addresses }) => {
       toast.error(`Claim error: ${e.message}`, { id: addresses.join("") });
     },
-    onSuccess: (d, { account, addresses }) => {
+    onSuccess: (d, { walletAddress, addresses }) => {
       closeModal?.();
       toast.success(
-        `Claimed successfuly. ${d.transactionHash.slice(0, 4)}...${d.transactionHash.slice(-4)}`,
+        `Claimed successfuly. ${d.slice(0, 4)}...${d.slice(-4)}`,
         { id: addresses.join("") },
       );
       queryClient.setQueryData(
-        ["unclaimedCampaigns", account.address, token],
+        ["unclaimedCampaigns", walletAddress, token],
         [],
       );
       data.forEach((c) => {
@@ -60,7 +49,7 @@ export default function useClaimAllPools(
           queryKey: [
             "dppmShareEstimationForAll",
             c.poolAddress,
-            account?.address,
+            walletAddress,
             true,
           ],
         });
@@ -68,22 +57,22 @@ export default function useClaimAllPools(
           queryKey: [
             "dppmShareEstimationForAll",
             c.poolAddress,
-            account?.address,
+            walletAddress,
             false,
           ],
         });
         queryClient.invalidateQueries({
-          queryKey: ["positions", c.poolAddress, c.outcomes, account, false],
+          queryKey: ["positions", c.poolAddress, c.outcomes, walletAddress, false],
         });
 
         queryClient.invalidateQueries({
-          queryKey: ["participatedCampaigns", account?.address, c.identifier],
+          queryKey: ["participatedCampaigns", walletAddress, c.identifier],
         });
 
         queryClient.invalidateQueries({
           queryKey: [
             "positionHistory",
-            account.address,
+            walletAddress,
             c.outcomes.map((o) => o.identifier),
           ],
         });
@@ -95,7 +84,7 @@ export default function useClaimAllPools(
             queryKey: [
               "dppmShareEstimation",
               c.poolAddress,
-              account?.address,
+              walletAddress,
               o.identifier,
             ],
           });

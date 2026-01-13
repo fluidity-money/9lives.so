@@ -2,25 +2,24 @@ import config from "@/config";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { prepareContractCall, sendTransaction } from "thirdweb";
-import { Account } from "thirdweb/wallets";
+import { useWriteContract } from "wagmi";
 
 export default function useSarpSignaller(tradingAddr: `0x${string}`) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
-  const request = async (account: Account) =>
+  const { mutateAsync: writeContract } = useWriteContract()
+  const request = async (address: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
           setIsLoading(true);
-          const requestTx = prepareContractCall({
-            contract: config.contracts.sarpSignaller,
-            method: "request",
-            params: [tradingAddr, account?.address],
-          });
           await checkAndSwitchChain();
-          await sendTransaction({ transaction: requestTx, account });
+          await writeContract({
+            ...config.contracts.sarpSignaller,
+            functionName: "request",
+            args: [tradingAddr, address as `0x${string}`],
+          });
           res(null);
           setIsSuccess(true);
         } catch (e) {

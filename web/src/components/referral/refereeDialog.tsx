@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useSenderByCode from "@/hooks/useSenderByCode";
 import { associateReferral } from "@/providers/graphqlClient";
-import { Signature } from "ethers";
+import { parseSignature } from 'viem';
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useSignMessage } from "wagmi";
 
@@ -42,14 +42,14 @@ export default function RefereeDialog({
             message: referrer.toLowerCase(),
           });
           if (!signature) throw new Error("Signature not found");
-          const { r: rr, s, v } = Signature.from(signature);
+          const { r: rr, s, v } = parseSignature(signature);
           if (!rr || !s || !v) throw new Error("Signature can not be splitted");
           const associated = await associateReferral({
             sender: account.address,
             code,
             rr: rr.slice(2),
             s: s.slice(2),
-            v,
+            v: Number(v),
           });
           res(associated);
           close();

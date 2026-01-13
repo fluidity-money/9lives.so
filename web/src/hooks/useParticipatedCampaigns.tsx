@@ -1,15 +1,15 @@
 import { requestUserParticipated } from "@/providers/graphqlClient";
 import { CampaignDetail, ParticipatedCampaign } from "@/types";
 import { formatParticipatedCampaign } from "@/utils/format/formatCampaign";
+import { useAppKitAccount } from "@reown/appkit/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useActiveAccount } from "thirdweb/react";
 
 export default function useParticipatedCampaigns({
   campaignDetail,
 }: {
   campaignDetail?: CampaignDetail;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
 
   return useInfiniteQuery({
     queryKey: [

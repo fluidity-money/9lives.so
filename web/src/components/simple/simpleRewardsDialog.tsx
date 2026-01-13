@@ -1,7 +1,5 @@
 import useDppmRewards from "@/hooks/useDppmRewards";
 import { UnclaimedCampaign } from "@/types";
-import { useActiveAccount } from "thirdweb/react";
-import { Account } from "thirdweb/wallets";
 import Button from "../themed/button";
 import Link from "next/link";
 import { combineClass } from "@/utils/combineClass";
@@ -12,14 +10,15 @@ import useClaimAllPools from "@/hooks/useClaimAllPools";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useClaimAllPoolsWithAS from "@/hooks/useClaimAllPoolsAS";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 function SimpleRewardItem({
   data,
-  account,
+  address,
   setRewards,
 }: {
   data: UnclaimedCampaign;
-  account?: Account;
+  address?: string;
   setRewards: React.Dispatch<
     React.SetStateAction<{ id: string; reward: number }[]>
   >;
@@ -30,7 +29,7 @@ function SimpleRewardItem({
     starting: data.starting,
     ending: data.ending,
     outcomes: data.outcomes,
-    account,
+    address,
   });
   const bodyClasses = "text-xs font-chicago";
   const PnL = totalRewards - data.totalSpent;
@@ -79,7 +78,7 @@ export default function SimpleRewardsDialog({
   closeModal: () => void;
   token?: string;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { connect } = useConnectWallet();
   const enableASClaim = useFeatureFlag("enable account system claim");
   const useAction = enableASClaim ? useClaimAllPoolsWithAS : useClaimAllPools;
@@ -123,7 +122,7 @@ export default function SimpleRewardsDialog({
             <SimpleRewardItem
               key={i.identifier}
               data={i}
-              account={account}
+              address={account.address}
               setRewards={setRewards}
             />
           ))}

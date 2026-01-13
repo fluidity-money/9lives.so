@@ -230,7 +230,7 @@ export type PaymasterOp = PaymasterParams["opType"];
 export type Ticket = {
   id: string;
   amount: string;
-  account: string;
+  address: string;
   outcomeId?: string;
   data?: CampaignDetail | SimpleCampaignDetail;
   opType: PaymasterOp;

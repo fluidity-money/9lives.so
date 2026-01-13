@@ -1,8 +1,8 @@
 import config from "@/config";
-import { BigNumberish, formatUnits } from "ethers";
+import { formatUnits } from "viem";
 
-export default function formatFusdc(amount: BigNumberish, digits = 0) {
-  return Number(formatUnits(amount, config.contracts.decimals.fusdc)).toFixed(
+export default function formatFusdc(amount: number | string | bigint, digits = 0) {
+  return Number(formatUnits(BigInt(amount), config.contracts.decimals.fusdc)).toFixed(
     digits,
   );
 }

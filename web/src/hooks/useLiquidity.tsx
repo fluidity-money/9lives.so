@@ -3,12 +3,11 @@ import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAllowanceCheck } from "./useAllowanceCheck";
-import { MaxUint256 } from "ethers";
 
 import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
 import RelayTxToaster from "@/components/relayTxToaster";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
-import { createWalletClient, custom, encodeFunctionData, parseUnits } from "viem";
+import { createWalletClient, custom, encodeFunctionData, maxUint256, parseUnits } from "viem";
 import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import useConnectWallet from "./useConnectWallet";
 import { usePublicClient, useWriteContract } from "wagmi";
@@ -49,7 +48,7 @@ export default function useLiquidity({
       : BigInt(0);
     const maxShares = simulatedShare
       ? (simulatedShare * BigInt(105)) / BigInt(100)
-      : MaxUint256;
+      : maxUint256;
     return {
       ...config.contracts.buyHelper2,
       functionName: "addLiquidity",
@@ -328,8 +327,8 @@ export default function useLiquidity({
       },
     );
 
-  const checkLpRewards = async () => {
-    if (!account.address) return
+  const checkLpRewards = async (address?:string) => {
+    if (address) return
     if (!publicClient) return
 
     const simulation = await publicClient.simulateContract({

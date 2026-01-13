@@ -9,9 +9,8 @@ import {
 } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { getClient, adaptViemWallet } from "@reservoir0x/relay-sdk";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, maxUint256 } from "viem";
 import RelayTxToaster from "@/components/relayTxToaster";
-import { MaxUint256 } from "ethers";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import useFeatureFlag from "./useFeatureFlag";
 import { parseUnits } from "viem";
@@ -87,7 +86,7 @@ const useBuyWithRelay = ({
               : BigInt(0);
             const maxSharesOut = simulatedShare
               ? (simulatedShare * BigInt(105)) / BigInt(100)
-              : MaxUint256;
+              : maxUint256;
             return {
               ...(config.contracts
                 .buyHelper2 as typeof config.contracts.buyHelper2),

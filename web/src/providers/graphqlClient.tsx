@@ -4,8 +4,8 @@ import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
 import { Accounts } from "@/graffle/accounts/__";
 import { CampaignFilters, OutcomeInput, RawPricePoint } from "@/types";
-import { MaxUint256 } from "ethers";
 import config from "@/config";
+import { maxUint256 } from "viem";
 
 const graph9Lives = Lives9.create().transport({
   url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
@@ -548,7 +548,7 @@ export const requestPaymaster = ({
       permitR,
       permitS,
       permitV,
-      permitAmount: MaxUint256.toString(),
+      permitAmount: maxUint256.toString(),
       referrer,
       rr: r,
       s,

@@ -1,12 +1,12 @@
 import config from "@/config";
 import { requestPaymaster as requestPaymasterMutation } from "@/providers/graphqlClient";
-import { MaxUint256, ZeroAddress } from "ethers";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
-import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import useSignForPermit from "./useSignForPermit";
 import useSignForPaymaster from "./useSignForPaymaster";
 import useProfile from "./useProfile";
 import { PaymasterType } from "@/types";
+import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
+import { usePublicClient } from "wagmi";
+import { maxUint256, zeroAddress } from "viem";
 export default function useRequestPaymaster() {
   type MutationType = Parameters<typeof requestPaymasterMutation>[0];
   type InputType = Pick<
@@ -19,39 +19,37 @@ export default function useRequestPaymaster() {
     | "outgoingChainEid"
     | "referrer"
   >;
-  const account = useActiveAccount();
-  const chain = useActiveWalletChain();
-  const { signForPermit } = useSignForPermit(chain, account);
-  const { signForPaymaster } = useSignForPaymaster(chain, account);
+  const account = useAppKitAccount();
+  const { chainId } = useAppKitNetwork();
+  const { signForPermit } = useSignForPermit(account.address);
+  const { signForPaymaster } = useSignForPaymaster(chainId, account.address);
+  const publicClient = usePublicClient()
   const { data: profile } = useProfile(account?.address);
   const requestPaymaster = async (params: InputType) => {
     if (!account?.address) throw new Error("No account is connected");
-    if (!chain) throw new Error("No chain id is detected");
+    if (!chainId) throw new Error("No chain id is detected");
+    if (!publicClient) throw new Error("Public client is not set")
     const owner = account.address;
-    const originatingChainId = chain.id.toString();
+    const originatingChainId = chainId.toString();
     let permitR = "";
     let permitS = "";
     let permitV = 0;
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     if (Number(params.amountToSpend) > 0) {
-      const allowanceTx = prepareContractCall({
-        contract: config.contracts.fusdc,
-        method: "allowance",
-        params: [account.address, config.contracts.paymaster.address],
-      });
-      const allowance = (await simulateTransaction({
-        transaction: allowanceTx,
-        account,
-      })) as bigint;
+      const allowance = await publicClient.readContract({
+        ...config.contracts.fusdc,
+        functionName: "allowance",
+        args: [account.address as `0x${string}`, config.contracts.paymaster.address],
+      })
       if (BigInt(params.amountToSpend) > allowance) {
         const { r, s, v } = await signForPermit({
           spender: config.NEXT_PUBLIC_PAYMASTER_ADDR,
-          amountToSpend: MaxUint256,
+          amountToSpend: maxUint256,
           deadline,
         });
         permitR = r;
         permitS = s;
-        permitV = v;
+        permitV = Number(v);
       }
     }
     const convertOpTypeToEnum: Record<InputType["opType"], PaymasterType> = {
@@ -64,7 +62,7 @@ export default function useRequestPaymaster() {
     const { r, s, v, nonce } = await signForPaymaster({
       tradingAddr: params.tradingAddr,
       amountToSpend: BigInt(params.amountToSpend),
-      referrer: profile?.settings?.refererr || ZeroAddress,
+      referrer: profile?.settings?.refererr || zeroAddress,
       outcomeId: params.outcome,
       deadline,
       minimumBack: BigInt(params.minimumBack),
@@ -73,7 +71,7 @@ export default function useRequestPaymaster() {
     const ticketId = await requestPaymasterMutation({
       r: r.slice(2),
       s: s.slice(2),
-      v,
+      v: Number(v),
       permitR: permitR ? permitR.slice(2) : "",
       permitS: permitS ? permitS.slice(2) : "",
       permitV,

@@ -6,10 +6,9 @@ import { FormEvent, useCallback, useState } from "react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useLiquidity from "@/hooks/useLiquidity";
 import useLiquidityWithPaymaster from "@/hooks/useLiquidityWithPaymaster";
-import { CampaignDetail } from "@/types";
+import { CampaignDetail, Chain } from "@/types";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import config from "@/config";
-import { formatUnits, ZeroAddress } from "ethers";
 import { useUserStore } from "@/stores/userStore";
 import useTokens from "@/hooks/useTokens";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
@@ -21,6 +20,7 @@ import ErrorInfo from "./themed/errorInfo";
 import ChainSelector from "./chainSelector";
 import USDCImg from "#/images/usdc.svg";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { formatUnits, zeroAddress } from "viem";
 
 export default function AddLiquidityDialog({
   close,
@@ -57,28 +57,28 @@ export default function AddLiquidityDialog({
     defaultValues: {
       amount: 0,
       toChain: config.chains.superposition.id,
-      toToken: ZeroAddress,
+      toToken: zeroAddress,
       fromChain: isInMiniApp
         ? config.chains.arbitrum.id
         : config.chains.superposition.id,
-      fromToken: ZeroAddress,
+      fromToken: zeroAddress,
     },
   });
   const supply = watch("amount");
   const fromChain = watch("fromChain");
   const fromToken = watch("fromToken");
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
-  const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
+  const { data: tokensWithBalances } = useTokensWithBalances(fromChain, tokens);
   const pointMultiplier = 1 / 1500000;
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
-      t.token_address.toLowerCase() === fromToken.toLowerCase() ||
-      (fromToken === ZeroAddress &&
-        t.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+      t.address.toLowerCase() === fromToken.toLowerCase() ||
+      (fromToken === zeroAddress &&
+        t.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   )?.balance;
   const usdValue = tokens
     ? supply *
-      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+    +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : supply;
   const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const { add, addWithRelay } = useLiquidity({
@@ -88,7 +88,7 @@ export default function AddLiquidityDialog({
   const { add: addWithPaymaster } = useLiquidityWithPaymaster({
     data,
   });
-  const onSubmit = async (input: FormData, address: string) => {
+  const onSubmit = async (input: FormData) => {
     try {
       setIsFunding(true);
       if (enabledRelay && input.fromChain !== config.chains.superposition.id) {
@@ -108,22 +108,16 @@ export default function AddLiquidityDialog({
       connect();
       return;
     }
-    handleSubmit((data) => onSubmit(data, account))(e);
+    handleSubmit((data) => onSubmit(data))(e);
   };
   const setToMaxShare = async () => {
-    const balance = (await simulateTransaction({
-      transaction: prepareContractCall({
-        contract: config.contracts.fusdc,
-        method: "balanceOf",
-        params: [account!.address],
-      }),
-    })) as bigint;
-    const maxfUSDC = +formatUnits(balance, config.contracts.decimals.fusdc);
+    if (!selectedTokenBalance) return;
+    const maxfUSDC = +formatUnits(selectedTokenBalance, config.contracts.decimals.fusdc);
     setValue("amount", maxfUSDC);
     if (maxfUSDC > 0) clearErrors();
   };
   const setToMaxShare2 = async () => {
-    if (!selectedTokenBalance) return;
+    if (!selectedTokenBalance || !fromDecimals) return;
     const maxBalance = +formatUnits(selectedTokenBalance, fromDecimals);
     setValue("amount", maxBalance);
     if (maxBalance > 0) clearErrors();
@@ -153,7 +147,7 @@ export default function AddLiquidityDialog({
           <div className={"flex items-center justify-between"}>
             <div className="flex items-center gap-1">
               <span className="text-xs font-normal text-9black/50">
-                {selectedTokenBalance
+                {selectedTokenBalance && fromDecimals
                   ? formatUnits(selectedTokenBalance, fromDecimals)
                   : 0}
               </span>

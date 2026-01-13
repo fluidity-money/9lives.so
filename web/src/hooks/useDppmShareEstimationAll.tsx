@@ -1,64 +1,49 @@
-import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-} from "thirdweb";
-import { Account } from "thirdweb/wallets";
+import { usePublicClient } from "wagmi";
 export default function useDppmShareEstimationAll({
   tradingAddr,
-  account,
+  address,
   enabled,
   isPriceAbove,
   outcomes,
 }: {
   tradingAddr: `0x${string}`;
-  account?: Account;
+  address?: string;
   enabled: boolean;
   isPriceAbove: boolean;
   outcomes: Outcome[];
 }) {
+  const publicClient = usePublicClient()
   return useQuery({
     queryKey: [
       "dppmShareEstimationForAll",
       tradingAddr,
-      account?.address,
+      address,
       isPriceAbove,
     ],
     queryFn: async () => {
-      if (!account?.address)
-        return outcomes.map((o) => ({
-          identifier: o.identifier,
-          dppmFusdc: BigInt(0),
-          ninetailsLoserFusd: BigInt(0),
-          ninetailsWinnerFusdc: BigInt(0),
-        }));
-
-      const tradingContract = getContract({
-        abi: tradingAbi,
+      const initialData = outcomes.map((o) => ({
+        identifier: o.identifier,
+        dppmFusdc: BigInt(0),
+        ninetailsLoserFusd: BigInt(0),
+        ninetailsWinnerFusdc: BigInt(0),
+      }))
+      if (!address)
+        return initialData;
+      if (!publicClient) {
+        console.error("Public client is not set")
+        return initialData
+      }
+  
+      return await publicClient.readContract({
         address: tradingAddr,
-        client: config.thirdweb.client,
-        chain: config.destinationChain,
-      });
-
-      const estimateTx = prepareContractCall({
-        contract: tradingContract,
-        method: "dppmSimulatePayoffForAddressAll",
-        params: [account.address],
-      });
-
-      return (await simulateTransaction({
-        transaction: estimateTx,
-      })) as {
-        identifier: string;
-        dppmFusdc: bigint;
-        ninetailsLoserFusd: bigint;
-        ninetailsWinnerFusdc: bigint;
-      }[];
+        abi: tradingAbi,
+        functionName: "dppmSimulatePayoffForAddressAll",
+        args: [address as `0x${string}`],
+      })
     },
     select: (data) => {
       const down = data.find((i) => i.identifier === outcomes[0].identifier);

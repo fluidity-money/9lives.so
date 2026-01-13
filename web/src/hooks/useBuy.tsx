@@ -3,11 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { CampaignDetail, DppmMetadata, SimpleCampaignDetail } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
-import { MaxUint256 } from "ethers";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { parseUnits } from "viem";
+import { maxUint256, parseUnits } from "viem";
 import { usePublicClient, useWriteContract } from "wagmi";
 
 const useBuy = ({
@@ -65,7 +64,7 @@ const useBuy = ({
               functionName: "approve",
               args: [
                 config.contracts.buyHelper2.address as `0x${string}`,
-                MaxUint256,
+                maxUint256,
               ],
             });
           }
@@ -76,7 +75,7 @@ const useBuy = ({
               : BigInt(0);
             const maxSharesOut = simulatedShare
               ? (simulatedShare * BigInt(105)) / BigInt(100)
-              : MaxUint256;
+              : maxUint256;
             return {
               ...(config.contracts
                 .buyHelper2 as typeof config.contracts.buyHelper2),

@@ -1,12 +1,12 @@
 import useUnclaimedCampaigns from "@/hooks/useUnclaimedCampaigns";
-import { useActiveAccount } from "thirdweb/react";
 import Button from "../themed/button";
 import Modal from "../themed/modal";
 import { useState } from "react";
 import SimpleRewardsDialog from "./simpleRewardsDialog";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function SimpleClaimAllButton({ token }: { token?: string }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { data } = useUnclaimedCampaigns(account?.address, token);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

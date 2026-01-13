@@ -4,7 +4,6 @@ import { requestCampaignById } from "@/providers/graphqlClient";
 import LogoPaw from "#/images/logo-paw.svg";
 import LogoText from "#/images/logo-text.svg";
 import LogoDot from "#/images/logo-dot.svg";
-import { ethers } from "ethers";
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
@@ -17,31 +16,35 @@ import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 //   path.resolve("./public/fonts/chicago-12.ttf"),
 // );
 // const genevaFont = fs.readFileSync(path.resolve("./public/fonts/geneva-9.ttf"));
+import { createPublicClient, http } from "viem";
 
-async function getPrices(tradingAddr: string, outcomes: Outcome[]) {
-  const provider = new ethers.JsonRpcProvider(config.destinationChain.rpc);
-  const tradingContract = new ethers.Contract(
-    tradingAddr,
-    tradingAbi,
-    provider,
-  );
-  const priceFn = tradingContract.getFunction("priceA827ED27");
+const publicClient = createPublicClient({
+  chain: config.destinationChain,
+  transport: http(config.destinationChain.rpcUrls.default.http[0]),
+});
+
+async function getPrices(tradingAddr: `0x${string}`, outcomes: Outcome[]) {
   const res = await Promise.all(
     outcomes.map(async (o) => {
       try {
-        const price = await priceFn.staticCall(o.identifier);
-        return { ...o, price: BigInt(price) };
+        const simulation = await publicClient.simulateContract({
+          address: tradingAddr,
+          abi: tradingAbi,
+          functionName: "priceA827ED27",
+          args: [o.identifier],
+        });
+
+        return { ...o, price: simulation.result ?? BigInt(0) };
       } catch (err) {
         console.error(`Error fetching price for ${o.name}:`, err);
         return { ...o, price: BigInt(0) };
       }
     }),
   );
-  return res.sort((a, b) => {
-    if (a.price > b.price) return -1;
-    if (a.price < b.price) return 1;
-    return 0;
-  });
+
+  return res.sort((a, b) =>
+    a.price > b.price ? -1 : a.price < b.price ? 1 : 0,
+  );
 }
 export default async function detailImageGenerator(
   id: string,

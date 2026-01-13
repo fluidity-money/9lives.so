@@ -1,22 +1,18 @@
-import { Signature } from "ethers";
 import { destinationChain } from "@/config/chains";
-import {
-  Chain,
-  prepareContractCall,
-  simulateTransaction,
-  ZERO_ADDRESS,
-} from "thirdweb";
 import { PaymasterType } from "@/types";
 import config from "@/config";
 import { hashChainId } from "@/utils/hashChainId";
-import { Account } from "thirdweb/wallets";
+import { parseSignature, zeroAddress } from "viem";
+import { usePublicClient, useSignTypedData } from "wagmi";
 
-export default function useSignForPaymaster(chain?: Chain, account?: Account) {
+export default function useSignForPaymaster(chainId?: number | string, address?: string) {
+  const { mutateAsync: signTypedData } = useSignTypedData()
+  const publicClient = usePublicClient()
   const domain = {
     name: "NineLivesPaymaster",
     version: "1",
-    chainId: chain?.id ?? destinationChain.id,
-    verifyingContract: process.env.NEXT_PUBLIC_PAYMASTER_ADDR,
+    chainId: Number(chainId ?? destinationChain.id),
+    verifyingContract: process.env.NEXT_PUBLIC_PAYMASTER_ADDR as `0x${string}`,
     salt: hashChainId(destinationChain.id),
   };
   const types = {
@@ -38,7 +34,7 @@ export default function useSignForPaymaster(chain?: Chain, account?: Account) {
     tradingAddr,
     amountToSpend,
     deadline,
-    referrer = ZERO_ADDRESS,
+    referrer = zeroAddress,
     minimumBack,
     outcomeId,
     type,
@@ -51,24 +47,24 @@ export default function useSignForPaymaster(chain?: Chain, account?: Account) {
     type: PaymasterType;
     minimumBack: BigInt;
   }) => {
-    if (!chain) throw new Error("No chain is detected");
-    if (!account) throw new Error("No account is connected");
-    const domainTx = prepareContractCall({
-      contract: config.contracts.paymaster,
-      method: "domainSeparators",
-      params: [BigInt(chain.id)],
-    });
-    const domainSeparator = await simulateTransaction({
-      transaction: domainTx,
-    });
-    const nonceTx = prepareContractCall({
-      contract: config.contracts.paymaster,
-      method: "nonces",
-      params: [domainSeparator, account.address],
-    });
-    const nonce = await simulateTransaction({ transaction: nonceTx });
+    if (!chainId) throw new Error("No chain is detected");
+    if (!address) throw new Error("No account is connected");
+    if (!publicClient) throw new Error("Public client is not set")
+
+    const domainSeparator = await publicClient.readContract({
+      ...config.contracts.paymaster,
+      functionName: "domainSeparators",
+      args: [BigInt(chainId)],
+    })
+
+    const nonce = await publicClient.readContract({
+      ...config.contracts.paymaster,
+      functionName: "nonces",
+      args: [domainSeparator, address as `0x${string}`],
+    })
+    
     const message = {
-      owner: account.address,
+      owner: address,
       nonce,
       deadline,
       typ: type,
@@ -81,14 +77,14 @@ export default function useSignForPaymaster(chain?: Chain, account?: Account) {
       maxOutgoing: BigInt(0),
     };
 
-    const signature = await account.signTypedData({
+    const signature = await signTypedData({
       domain,
       types,
       message,
       primaryType: "NineLivesPaymaster",
     });
 
-    const { r, s, v } = Signature.from(signature);
+    const { r, s, v } = parseSignature(signature);
 
     return { r, s, v, nonce };
   };

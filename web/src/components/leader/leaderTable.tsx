@@ -1,8 +1,7 @@
 import { combineClass } from "@/utils/combineClass";
-import React from "react";
 import LeaderRow from "./leaderRow";
-import { useActiveAccount } from "thirdweb/react";
 import { Leader } from "@/types";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function LeaderTable({ data }: { data?: Leader[] }) {
   const titles = [
@@ -11,9 +10,9 @@ export default function LeaderTable({ data }: { data?: Leader[] }) {
     "Points",
     //, "Profit"
   ];
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const accountInTheList = data?.find(
-    (i) => i.wallet.toLowerCase() === account?.address.toLowerCase(),
+    (i) => i.wallet.toLowerCase() === account?.address?.toLowerCase(),
   );
   return (
     <table className="w-full border-separate border-spacing-0 overflow-auto">

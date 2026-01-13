@@ -1,6 +1,5 @@
 "use client";
 
-import { useActiveAccount } from "thirdweb/react";
 import Button from "../themed/button";
 import useMeowDomains from "@/hooks/useMeowDomains";
 import AchYellow from "#/icons/ach-y.svg";
@@ -20,6 +19,7 @@ import useBalance from "@/hooks/useBalance";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
 import use9LivesPoints from "@/hooks/use9LivesPoints";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 function Badge({ address }: { address: string }) {
   const { data: domainOrAddress } = useMeowDomains(address);
@@ -31,8 +31,8 @@ function Badge({ address }: { address: string }) {
 }
 
 export default function PortfolioHeader() {
-  const account = useActiveAccount();
-  const { data: balance } = useBalance(account);
+  const account = useAppKitAccount();
+  const { data: balance } = useBalance(account.address);
   const { connect } = useConnectWallet();
   const { data: achievmentCount } = useAchievmentCount(account?.address);
   const positionsValue = usePortfolioStore((s) => s.positionsValue);

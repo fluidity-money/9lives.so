@@ -1,12 +1,12 @@
 "use client";
 
-import { useActiveAccount } from "thirdweb/react";
 import usePositions from "@/hooks/usePositions";
 import useSharePrices from "@/hooks/useSharePrices";
 import PositionRow from "./positionRow";
 import usePositionHistory from "@/hooks/usePositionsHistory";
 import Placeholder from "../tablePlaceholder";
 import { Outcome, ParticipatedCampaign } from "@/types";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function PositionsGroup({
   content,
@@ -19,7 +19,7 @@ export default function PositionsGroup({
   colSpan: number;
   hideSmallBalances: boolean;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const {
     isLoading,
     isError,
@@ -28,7 +28,7 @@ export default function PositionsGroup({
   } = usePositions({
     tradingAddr: content.poolAddress as `0x${string}`,
     outcomes: content.outcomes as Outcome[],
-    account,
+    address: account.address,
     isDpm: content?.isDpm,
   });
   const { data: sharePrices } = useSharePrices({

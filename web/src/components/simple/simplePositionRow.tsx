@@ -2,13 +2,12 @@ import useDppmShareEstimation from "@/hooks/useDppmShareEstimation";
 import usePositionHistory from "@/hooks/usePositionsHistory";
 import { combineClass } from "@/utils/combineClass";
 import formatFusdc from "@/utils/format/formatUsdc";
-import { Account } from "thirdweb/wallets";
 
 export default function SimplePositionRow({
   isConcluded,
   position,
   tradingAddr,
-  account,
+  address,
   isPriceAbove,
 }: {
   isConcluded: boolean;
@@ -21,18 +20,18 @@ export default function SimplePositionRow({
   };
   isPriceAbove: boolean;
   tradingAddr: `0x${string}`;
-  account?: Account;
+  address?: string;
 }) {
   const isWinning = position.name === "Up" ? isPriceAbove : !isPriceAbove;
   const {
     data: [shares, boost, refund],
   } = useDppmShareEstimation({
     tradingAddr,
-    account,
+    address,
     outcomeId: position.id,
     isWinning,
   });
-  const { data: positionsHistory } = usePositionHistory(account?.address, [
+  const { data: positionsHistory } = usePositionHistory(address, [
     position.id,
   ]);
   const cost = positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0);

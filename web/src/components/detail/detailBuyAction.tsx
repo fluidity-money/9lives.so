@@ -3,16 +3,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
-import { CampaignDetail, SelectedOutcome } from "@/types";
+import { CampaignDetail, Chain, SelectedOutcome } from "@/types";
 import useBuy from "@/hooks/useBuy";
-import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import { Chain, prepareContractCall, simulateTransaction } from "thirdweb";
 import config from "@/config";
-import { formatUnits, ZeroAddress } from "ethers";
 import ShadowCard from "../cardShadow";
 import ErrorInfo from "../themed/errorInfo";
 import usePotentialReturn from "@/hooks/usePotentialReturn";
@@ -39,6 +36,8 @@ import useFinalPrice from "../../hooks/useFinalPrice";
 import isMarketOpen from "@/utils/isMarketOpen";
 import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
 import useAccount from "@/hooks/useAccount";
+import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
+import { formatUnits, zeroAddress } from "viem";
 
 export default function DetailBuyAction({
   shouldStopAction,
@@ -62,7 +61,7 @@ export default function DetailBuyAction({
   const enabledASBuy = useFeatureFlag("enable account system buy");
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { data: profile } = useProfile();
   const { data: currentPrice } = useFinalPrice({
     symbol: data.priceMetadata?.baseAsset,
@@ -130,26 +129,26 @@ export default function DetailBuyAction({
     defaultValues: {
       supply: 0,
       toChain: config.chains.superposition.id,
-      toToken: ZeroAddress,
+      toToken: zeroAddress,
       usdValue: 0,
       fromChain: isInMiniApp
         ? config.chains.base.id
         : config.chains.superposition.id,
       fromToken: isInMiniApp
         ? "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // Base USDC
-        : ZeroAddress,
+        : zeroAddress,
     },
   });
   const supply = watch("supply");
   const fromChain = watch("fromChain");
   const fromToken = watch("fromToken");
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
-  const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
+  const { data: tokensWithBalances } = useTokensWithBalances(fromChain, tokens);
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
-      t.token_address.toLowerCase() === fromToken.toLowerCase() ||
-      (fromToken === ZeroAddress &&
-        t.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+      t.address.toLowerCase() === fromToken.toLowerCase() ||
+      (fromToken === zeroAddress &&
+        t.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   )?.balance;
   const { buy } = useBuy({
     data,
@@ -176,7 +175,7 @@ export default function DetailBuyAction({
   });
   const usdValue = tokens
     ? supply *
-      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+    +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : supply;
   const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const { data: estimatedSharesToGet } = useReturnValue({
@@ -263,7 +262,7 @@ export default function DetailBuyAction({
       setIsMinting(true);
       if (enabledRelay && fromChain !== config.chains.superposition.id) {
         await buyWithRelay(
-          account!,
+          account.address!,
           supply,
           usdValue,
           fromChain,
@@ -275,17 +274,17 @@ export default function DetailBuyAction({
           fromDecimals,
           data.isDppm && data.priceMetadata
             ? {
-                baseAsset: data.priceMetadata.baseAsset,
-                priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
-                priceOnBuy: currentPrice?.price,
-                volumeOnBuy: data.totalVolume,
-                minuteOnBuy: Number(
-                  new Date().toLocaleString("en-US", {
-                    timeZone: "UTC",
-                    minute: "numeric",
-                  }),
-                ),
-              }
+              baseAsset: data.priceMetadata.baseAsset,
+              priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+              priceOnBuy: currentPrice?.price,
+              volumeOnBuy: data.totalVolume,
+              minuteOnBuy: Number(
+                new Date().toLocaleString("en-US", {
+                  timeZone: "UTC",
+                  minute: "numeric",
+                }),
+              ),
+            }
             : undefined,
         );
       } else {
@@ -295,17 +294,17 @@ export default function DetailBuyAction({
           profile?.settings?.refererr ?? "",
           data.isDppm && data.priceMetadata
             ? {
-                baseAsset: data.priceMetadata.baseAsset,
-                priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
-                priceOnBuy: currentPrice?.price,
-                volumeOnBuy: data.totalVolume,
-                minuteOnBuy: Number(
-                  new Date().toLocaleString("en-US", {
-                    timeZone: "UTC",
-                    minute: "numeric",
-                  }),
-                ),
-              }
+              baseAsset: data.priceMetadata.baseAsset,
+              priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+              priceOnBuy: currentPrice?.price,
+              volumeOnBuy: data.totalVolume,
+              minuteOnBuy: Number(
+                new Date().toLocaleString("en-US", {
+                  timeZone: "UTC",
+                  minute: "numeric",
+                }),
+              ),
+            }
             : undefined,
         );
       }
@@ -317,30 +316,24 @@ export default function DetailBuyAction({
     if (!account) connect();
   }
   const setToMaxShare = async () => {
-    const balance = (await simulateTransaction({
-      transaction: prepareContractCall({
-        contract: config.contracts.fusdc,
-        method: "balanceOf",
-        params: [account!.address],
-      }),
-    })) as bigint;
-    const maxfUSDC = +formatUnits(balance, config.contracts.decimals.fusdc);
+    if (!selectedTokenBalance) return;
+    const maxfUSDC = +formatUnits(selectedTokenBalance, config.contracts.decimals.fusdc);
     setValue("supply", maxfUSDC);
     if (maxfUSDC > 0) clearErrors();
   };
   const setToMaxShare2 = async () => {
-    if (!selectedTokenBalance) return;
+    if (!selectedTokenBalance || !fromDecimals) return;
     const maxBalance = +formatUnits(selectedTokenBalance, fromDecimals);
     setValue("supply", maxBalance);
     if (maxBalance > 0) clearErrors();
   };
-  const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
+  const onSubmit = () => (!account.isConnected ? connect() : handleSubmit(handleBuy)());
   useEffect(() => {
     if (usdValue) {
       setValue("usdValue", usdValue);
     }
   }, [usdValue, setValue]);
-  const activeChain = useActiveWalletChain();
+  const { chainId } = useAppKitNetwork();
   const handleNetworkChange = useCallback(
     async (chain: Chain) => {
       // lifi auto switch handle this for now
@@ -354,13 +347,14 @@ export default function DetailBuyAction({
     [setValue],
   );
   useEffect(() => {
+    const selectedNetwork = Object.values(config.chains).find((c) => c.id === chainId)
     if (
-      activeChain &&
-      Object.values(config.chains).find((c) => c.id === activeChain.id)
+      chainId &&
+      selectedNetwork
     ) {
-      handleNetworkChange(activeChain);
+      handleNetworkChange(selectedNetwork);
     }
-  }, [activeChain, handleNetworkChange]);
+  }, [chainId, handleNetworkChange]);
   return (
     <>
       <ShadowCard
@@ -386,11 +380,11 @@ export default function DetailBuyAction({
           )}
         >
           {outcome.picture ||
-          (!outcome.picture && (data.isYesNo || data.isDppm)) ? (
+            (!outcome.picture && (data.isYesNo || data.isDppm)) ? (
             <div
               className={combineClass(
                 !(data.isYesNo || data.isDppm) &&
-                  "size-10 overflow-hidden rounded-full",
+                "size-10 overflow-hidden rounded-full",
               )}
             >
               <Image
@@ -444,7 +438,7 @@ export default function DetailBuyAction({
               >
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-normal text-9black/50">
-                    {selectedTokenBalance
+                    {selectedTokenBalance && fromDecimals
                       ? formatUnits(selectedTokenBalance, fromDecimals)
                       : 0}
                   </span>
@@ -514,7 +508,7 @@ export default function DetailBuyAction({
                 className={combineClass(
                   "w-full flex-1 text-center",
                   (errors.supply || errors.usdValue) &&
-                    "border-2 border-red-500",
+                  "border-2 border-red-500",
                 )}
               />
             </div>

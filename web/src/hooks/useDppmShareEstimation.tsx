@@ -1,44 +1,36 @@
-import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-} from "thirdweb";
-import { Account } from "thirdweb/wallets";
+import { usePublicClient } from "wagmi";
 
 export default function useDppmShareEstimation({
   tradingAddr,
-  account,
+  address,
   outcomeId,
   isWinning,
 }: {
   tradingAddr: `0x${string}`;
-  account?: Account;
+  address?: string;
   outcomeId: `0x${string}`;
   isWinning: boolean;
 }) {
+  const publicClient = usePublicClient()
   return useQuery({
-    queryKey: ["dppmShareEstimation", tradingAddr, account?.address, outcomeId],
+    queryKey: ["dppmShareEstimation", tradingAddr, address, outcomeId],
     queryFn: async () => {
-      if (!account?.address) return [BigInt(0), BigInt(0), BigInt(0)];
-
-      const tradingContract = getContract({
+      const initialData = [BigInt(0), BigInt(0), BigInt(0)];
+      if (!address) return initialData;
+      if (!publicClient) {
+        console.error("Public client is not set")
+        return initialData
+      }
+      const simulation = await publicClient.simulateContract({
         abi: tradingAbi,
         address: tradingAddr,
-        client: config.thirdweb.client,
-        chain: config.destinationChain,
-      });
-      const estimateTx = prepareContractCall({
-        contract: tradingContract,
-        method: "dppmSimulatePayoffForAddress",
-        params: [account.address, outcomeId],
-      });
-      return await simulateTransaction({
-        transaction: estimateTx,
-      });
+        functionName: "dppmSimulatePayoffForAddress",
+        args: [address as `0x${string}`, outcomeId]
+      })
+      return simulation.result
     },
     select: (data) => {
       if (isWinning) {

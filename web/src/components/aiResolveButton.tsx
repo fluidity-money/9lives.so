@@ -12,8 +12,8 @@ export default function AIResolveButton({
   const account = useAppKitAccount();
   const { connect } = useConnectWallet();
   function handleRequest() {
-    if (!account.isConnected) return connect();
-    request(account);
+    if (!account.address) return connect();
+    request(account.address);
   }
   return (
     <Button

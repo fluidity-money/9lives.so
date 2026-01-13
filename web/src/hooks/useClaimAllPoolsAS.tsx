@@ -1,31 +1,34 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Account } from "thirdweb/wallets";
 import { UnclaimedCampaign } from "@/types";
 import { ninelivesClaimAll } from "@/providers/graphqlClient";
 import { checkAndSetSecret, getSecret } from "./useAccount";
+import { useSignMessage } from "wagmi";
+import useConnectWallet from "./useConnectWallet";
 export default function useClaimAllPoolsWithAS(
   data: UnclaimedCampaign[],
   closeModal?: () => void,
   token?: string,
 ) {
   const queryClient = useQueryClient();
-  return useMutation<string, Error, { addresses: string[]; account: Account }>({
+  const { mutateAsync: signMessage } = useSignMessage()
+  const { connect } = useConnectWallet()
+  return useMutation<string, Error, { addresses: string[]; walletAddress: string }>({
     mutationKey: ["claimAllPools"],
-    mutationFn: async ({ addresses, account }) => {
-      if (!account) throw new Error("No wallet is connected");
-      let secret = await checkAndSetSecret(account);
+    mutationFn: async ({ addresses, walletAddress }) => {
+      if (!walletAddress) return connect();
+      let secret = await checkAndSetSecret(walletAddress, signMessage);
       if (!secret) throw new Error("No secret is set");
       let result = (await ninelivesClaimAll({
         secret,
-        eoaAddress: account.address,
+        eoaAddress: walletAddress,
         markets: addresses,
       })) as any;
       if (result?.response?.status === 401) {
-        const newSecret = await getSecret(account);
+        const newSecret = await getSecret(walletAddress, signMessage);
         result = await ninelivesClaimAll({
           secret: newSecret,
-          eoaAddress: account.address,
+          eoaAddress: walletAddress,
           markets: addresses,
         });
       }
@@ -37,11 +40,11 @@ export default function useClaimAllPoolsWithAS(
     onError: (e, { addresses }) => {
       toast.error(`Claim error: ${e.message}`, { id: addresses.join("") });
     },
-    onSuccess: (d, { account, addresses }) => {
+    onSuccess: (d, { walletAddress, addresses }) => {
       closeModal?.();
       toast.success(`Claimed successfuly.`, { id: addresses.join("") });
       queryClient.setQueryData(
-        ["unclaimedCampaigns", account.address, token],
+        ["unclaimedCampaigns", walletAddress, token],
         [],
       );
       data.forEach((c) => {
@@ -49,7 +52,7 @@ export default function useClaimAllPoolsWithAS(
           queryKey: [
             "dppmShareEstimationForAll",
             c.poolAddress,
-            account?.address,
+            walletAddress,
             true,
           ],
         });
@@ -57,22 +60,22 @@ export default function useClaimAllPoolsWithAS(
           queryKey: [
             "dppmShareEstimationForAll",
             c.poolAddress,
-            account?.address,
+            walletAddress,
             false,
           ],
         });
         queryClient.invalidateQueries({
-          queryKey: ["positions", c.poolAddress, c.outcomes, account, false],
+          queryKey: ["positions", c.poolAddress, c.outcomes, walletAddress, false],
         });
 
         queryClient.invalidateQueries({
-          queryKey: ["participatedCampaigns", account?.address, c.identifier],
+          queryKey: ["participatedCampaigns", walletAddress, c.identifier],
         });
 
         queryClient.invalidateQueries({
           queryKey: [
             "positionHistory",
-            account.address,
+            walletAddress,
             c.outcomes.map((o) => o.identifier),
           ],
         });
@@ -84,7 +87,7 @@ export default function useClaimAllPoolsWithAS(
             queryKey: [
               "dppmShareEstimation",
               c.poolAddress,
-              account?.address,
+              walletAddress,
               o.identifier,
             ],
           });

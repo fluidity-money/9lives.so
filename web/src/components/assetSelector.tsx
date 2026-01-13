@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
 import { Token } from "@/types";
-import { formatUnits, ZeroAddress } from "ethers";
+import { formatUnits, zeroAddress } from "viem";
 export default function AssetSelector({
   fromChain,
   fromToken,
@@ -26,7 +26,7 @@ export default function AssetSelector({
   setValue: (addr: string) => void;
   isSuccess: boolean;
   tokens?: Token[];
-  tokensWithBalances?: { balance: string; token_address: string }[];
+  tokensWithBalances?: { balance: bigint; address: string }[];
   variant?: "default" | "small";
 }) {
   useEffect(() => {
@@ -39,9 +39,9 @@ export default function AssetSelector({
     ?.map((t) => {
       const tokenWithBalance = tokensWithBalances?.find(
         (tb) =>
-          tb.token_address.toLowerCase() === t.address.toLowerCase() ||
-          (tb.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" &&
-            t.address === ZeroAddress),
+          tb.address.toLowerCase() === t.address.toLowerCase() ||
+          (tb.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" &&
+            t.address === zeroAddress),
       );
       return {
         ...t,

@@ -1,16 +1,12 @@
-import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import tradingDpmAbi from "@/config/abi/tradingDpm";
-import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
-import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import { useAllowanceCheck } from "./useAllowanceCheck";
-import { setContext } from "@sentry/nextjs";
-import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
+import { useWriteContract } from "wagmi";
 
 const useClaim = ({
   shareAddr,
@@ -25,63 +21,47 @@ const useClaim = ({
   outcomes: Outcome[];
   isDpm: boolean | null;
 }) => {
-  const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);
   const { checkAndAprove } = useAllowanceCheck();
-  const claim = async (account: Account, accountShare?: bigint) =>
+  const { mutateAsync: writeContract } = useWriteContract()
+  const claim = async (address: string, accountShare?: bigint) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
           if (!accountShare || isNaN(Number(accountShare)))
             throw new Error("Invalid winning shares");
-          const tradingDpmContract = getContract({
-            abi: tradingDpmAbi,
-            address: tradingAddr,
-            client: config.thirdweb.client,
-            chain: config.destinationChain,
-          });
-          const tradingContract = getContract({
-            abi: tradingAbi,
-            address: tradingAddr,
-            client: config.thirdweb.client,
-            chain: config.destinationChain,
-          });
-          const claimTx = prepareContractCall({
-            contract: tradingContract,
-            method: "payoffCB6F2565",
-            params: [outcomeId, accountShare, account.address],
-          });
-          const claimDpmTx = prepareContractCall({
-            contract: tradingDpmContract,
-            method: "payoff91FA8C2E",
-            params: [outcomeId, accountShare, account.address],
-          });
-          await checkAndSwitchChain();
+
           await checkAndAprove({
             contractAddress: shareAddr,
             spenderAddress: tradingAddr,
-            account,
+            address,
             amount: accountShare,
           });
-          const transaction = isDpm ? claimDpmTx : claimTx;
-          setContext("claim_tx", {
-            method: transaction.__preparedMethod?.name,
-            callData: transaction.data,
-            to: transaction.to,
-            address: account.address,
-          });
-          await sendTransaction({
-            transaction,
-            account,
-          });
+
+          if (isDpm) {
+            await writeContract({
+              abi: tradingDpmAbi,
+              address: tradingAddr,
+              functionName: "payoff91FA8C2E",
+              args: [outcomeId, accountShare, address as `0x${string}`],
+            });
+          } else {
+            await writeContract({
+              abi: tradingAbi,
+              address: tradingAddr,
+              functionName: "payoffCB6F2565",
+              args: [outcomeId, accountShare, address as `0x${string}`],
+            })
+          }
+
           const outcomeIds = outcomes.map((outcome) => outcome.identifier);
           removePosition(outcomeId);
           queryClient.invalidateQueries({
-            queryKey: ["positions", tradingAddr, outcomes, account, isDpm],
+            queryKey: ["positions", tradingAddr, outcomes, address, isDpm],
           });
           queryClient.invalidateQueries({
-            queryKey: ["positionHistory", account.address, outcomeIds],
+            queryKey: ["positionHistory", address, outcomeIds],
           });
           track(EVENTS.CLAIM_REWARD, {
             amount: accountShare,

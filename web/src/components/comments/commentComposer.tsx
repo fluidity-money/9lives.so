@@ -3,13 +3,13 @@ import Input from "../themed/input";
 import z from "zod";
 import Button from "../themed/button";
 import usePostComment from "@/hooks/usePostComment";
-import { useActiveAccount } from "thirdweb/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { combineClass } from "@/utils/combineClass";
 import ErrorInfo from "../themed/errorInfo";
-import { signMessage } from "thirdweb/utils";
-import { Signature } from "ethers";
+import { parseSignature } from 'viem';
+import { useAppKitAccount } from "@reown/appkit/react";
+import { useSignMessage } from "wagmi";
 
 export default function CommentComposer({
   campaignId,
@@ -17,7 +17,8 @@ export default function CommentComposer({
   campaignId: string;
 }) {
   const { connect } = useConnectWallet();
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
+  const { mutateAsync: signMessage } = useSignMessage()
   const formSchema = z.object({
     content: z
       .string()
@@ -34,24 +35,23 @@ export default function CommentComposer({
   });
   const { mutate: postComment } = usePostComment(campaignId);
   async function handlePost(input: FormData) {
-    if (!account) throw new Error("No wallet is connected.");
+    if (!account.address) throw new Error("No wallet is connected.");
     const message = `Posting a comment on https://9lives.so/campaign/${campaignId}\n${input.content}`;
     const signature = await signMessage({
       message,
-      account,
     });
     if (!signature) throw new Error("Signature not found");
-    const { r: rr, s, v } = Signature.from(signature);
+    const { r: rr, s, v } = parseSignature(signature);
     if (!rr || !s || !v) throw new Error("Signature can not be splitted");
     postComment({
       content: input.content,
       walletAddress: account?.address,
       rr,
       s,
-      v,
+      v: Number(v),
     });
   }
-  const handleClick = () => (!account ? connect() : handleSubmit(handlePost)());
+  const handleClick = () => (!account.isConnected ? connect() : handleSubmit(handlePost)());
   return (
     <div className="mb-4">
       <div className="flex gap-2.5">

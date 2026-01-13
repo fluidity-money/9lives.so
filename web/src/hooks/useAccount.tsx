@@ -5,13 +5,10 @@ import {
   requestPublicKey,
   requestSecret,
 } from "@/providers/graphqlClient";
-import { MaxUint256, Signature } from "ethers";
-// import { useActiveAccount } from "thirdweb/react";
 import { hasCreated } from "../providers/graphqlClient";
 import useSignForPermit from "./useSignForPermit";
 import { CampaignDetail, DppmMetadata, SimpleCampaignDetail } from "@/types";
 import config from "@/config";
-// import { prepareContractCall, simulateTransaction, toUnits } from "thirdweb";
 import toast from "react-hot-toast";
 import { EVENTS, track } from "@/utils/analytics";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,11 +16,11 @@ import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { usePublicClient, useSignMessage } from "wagmi";
-import { parseUnits } from "viem";
-// import { Account } from "thirdweb/wallets";
-import { useReadContract } from "wagmi";
+import { maxUint256, parseUnits } from "viem";
+import { parseSignature } from 'viem';
+
 const SECRET_KEY = "9lives-account-secret";
-type SignMessage = ({ message }: { message: string }) => Promise<string>;
+type SignMessage = ({ message }: { message: string }) => Promise<`0x${string}`>;
 function encodeNonceBE(nonce: number): string {
   const buf = new Uint8Array(4);
   const view = new DataView(buf.buffer);
@@ -46,12 +43,12 @@ function storeSecret(secret: string, wallet: string) {
 export const create = async (address: string, signMessage: SignMessage) => {
   const publicKey = await requestPublicKey();
   const signature = await signMessage({ message: publicKey });
-  const { r, s, v } = Signature.from(signature);
+  const { r, s, v } = parseSignature(signature);
   const response = await createAccount({
     eoaAddr: address.slice(2),
     r: r.slice(2),
     s: s.slice(2),
-    v,
+    v: Number(v),
   });
   if (!response) {
     throw new Error("Account creation failed");
@@ -70,13 +67,13 @@ export const getSecret = async (address: string, signMessage: SignMessage) => {
   const nonceHex = encodeNonceBE(nonce);
   const message = publicKey + nonceHex;
   const signature = await signMessage({ message });
-  const { r, s, v } = Signature.from(signature);
+  const { r, s, v } = parseSignature(signature);
   const secret = await requestSecret({
     eoaAddr: address.slice(2),
     nonce,
     s: s.slice(2),
     r: r.slice(2),
-    v,
+    v: Number(v),
   });
   if (!secret) {
     throw new Error("Account secret is not retreived");
@@ -127,7 +124,7 @@ export default function useAccount({
 }) {
   const account = useAppKitAccount();
   const { mutateAsync: signMessage } = useSignMessage();
-  const { signForPermit } = useSignForPermit(config.destinationChain, account);
+  const { signForPermit } = useSignForPermit(account.address);
   const queryClient = useQueryClient();
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const publicClient = usePublicClient();
@@ -175,13 +172,13 @@ export default function useAccount({
             const deadline = Math.floor(Date.now() / 1000) + 3600;
             const { r, s, v } = await signForPermit({
               spender,
-              amountToSpend: MaxUint256,
+              amountToSpend: maxUint256,
               deadline,
             });
             permit = {
               permitR: r,
               permitS: s,
-              permitV: v,
+              permitV: Number(v),
               deadline,
             };
           }

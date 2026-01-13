@@ -1,22 +1,15 @@
 import Button from "@/components/themed/button";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { combineClass } from "@/utils/combineClass";
 import Input from "../themed/input";
 import { CampaignDetail, SelectedOutcome } from "@/types";
-import { useActiveAccount } from "thirdweb/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-  toUnits,
-} from "thirdweb";
+
 import config from "@/config";
-import { formatUnits } from "ethers";
 import ShadowCard from "../cardShadow";
 import ErrorInfo from "../themed/errorInfo";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
@@ -24,12 +17,14 @@ import NoOutcomeImg from "#/images/no-outcome.svg";
 import DownIcon from "#/icons/down-caret.svg";
 import useSell from "@/hooks/useSell";
 import ERC20Abi from "@/config/abi/erc20";
-import thirdweb from "@/config/thirdweb";
 import usePositions from "@/hooks/usePositions";
 import useEstimateBurn from "@/hooks/useEstimateBurn";
 import formatFusdc from "@/utils/format/formatUsdc";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useSellWithPaymaster from "@/hooks/useSellWithPaymaster";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { formatUnits, parseUnits } from "viem";
+import useBalance from "@/hooks/useBalance";
 
 export default function DetailSellAction({
   shouldStopAction,
@@ -49,7 +44,7 @@ export default function DetailSellAction({
 }) {
   const enabledPaymaster = useFeatureFlag("enable paymaster sell");
   const { connect, isConnecting } = useConnectWallet();
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const outcome = selectedOutcome
     ? data.outcomes.find((o) => o.identifier === selectedOutcome.id)!
     : data.outcomes[0];
@@ -58,6 +53,7 @@ export default function DetailSellAction({
     shareToBurn: z.preprocess((val) => Number(val), z.number().gt(0)),
     minUsdcToGet: z.preprocess((val) => Number(val), z.number().min(0)),
   });
+  const { data: balance } = useBalance(account.address, outcome.share.address)
   const chance = Number(price) * 100;
   type FormData = z.infer<typeof formSchema>;
   const {
@@ -92,14 +88,14 @@ export default function DetailSellAction({
   const { data: ownedShares } = usePositions({
     tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
-    account,
+    address: account.address,
     isDpm: data.isDpm,
   });
   const { data: estimation } = useEstimateBurn({
     outcomeId: selectedOutcome.id as `0x${string}`,
-    share: toUnits(share.toString(), config.contracts.decimals.shares),
+    share: parseUnits(share.toString(), config.contracts.decimals.shares),
     tradingAddr: data.poolAddress,
-    account,
+    address: account.address,
   });
   // const { data: estimationMax } = useEstimateBurn({
   //   outcomeId: selectedOutcome.id as `0x${string}`,
@@ -156,34 +152,22 @@ export default function DetailSellAction({
       if (enabledPaymaster) {
         await sellWithPaymaster(input.shareToBurn, estimation);
       } else {
-        await sell(account!, input.shareToBurn, input.minUsdcToGet);
+        await sell(account.address!, input.shareToBurn, input.minUsdcToGet);
       }
     } finally {
       setIsSelling(false);
     }
   }
   function handleFocus() {
-    if (!account) connect();
+    if (!account.isConnected) connect();
   }
   const setToMaxShare = async () => {
-    const balance = (await simulateTransaction({
-      transaction: prepareContractCall({
-        contract: getContract({
-          abi: ERC20Abi,
-          address: outcome.share.address,
-          chain: config.destinationChain,
-          client: thirdweb.client,
-        }),
-        method: "balanceOf",
-        params: [account!.address],
-      }),
-    })) as bigint;
     const maxShareAmountNum = Number(
       formatUnits(balance, config.contracts.decimals.shares),
     );
     setValue("shareToBurn", maxShareAmountNum);
   };
-  const onSubmit = () => (!account ? connect() : handleSubmit(handleSell)());
+  const onSubmit = () => (!account.isConnected ? connect() : handleSubmit(handleSell)());
 
   return (
     <>

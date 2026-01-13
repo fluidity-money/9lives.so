@@ -1,11 +1,9 @@
-import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import { Outcome } from "@/types";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
-import { Account } from "thirdweb/wallets";
+import { useWriteContract } from "wagmi";
 
 export default function useDppmClaimAll({
   tradingAddr,
@@ -18,32 +16,24 @@ export default function useDppmClaimAll({
 }) {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
-  const tradingContract = getContract({
-    abi: tradingAbi,
-    address: tradingAddr,
-    client: config.thirdweb.client,
-    chain: config.destinationChain,
-  });
+  const { mutateAsync: writeContract } = useWriteContract()
 
-  const claimAll = async (account: Account) =>
+  const claimAll = async (address: string) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const estimateTx = prepareContractCall({
-            contract: tradingContract,
-            method: "dppmPayoffForAll58633B6E",
-            params: [account?.address],
-          });
           await checkAndSwitchChain();
-          const response = await sendTransaction({
-            transaction: estimateTx,
-            account,
+          const response = await writeContract({
+            abi: tradingAbi,
+            address: tradingAddr,
+            functionName: "dppmPayoffForAll58633B6E",
+            args: [address as `0x${string}`],
           });
           queryClient.invalidateQueries({
             queryKey: [
               "dppmShareEstimationForAll",
               tradingAddr,
-              account?.address,
+              address,
               true,
             ],
           });
@@ -51,7 +41,7 @@ export default function useDppmClaimAll({
             queryKey: [
               "dppmShareEstimationForAll",
               tradingAddr,
-              account?.address,
+              address,
               false,
             ],
           });
@@ -60,25 +50,25 @@ export default function useDppmClaimAll({
               queryKey: [
                 "dppmShareEstimation",
                 tradingAddr,
-                account?.address,
+                address,
                 o.identifier,
               ],
             });
           });
           queryClient.invalidateQueries({
-            queryKey: ["positions", tradingAddr, outcomes, account, false],
+            queryKey: ["positions", tradingAddr, outcomes, address, false],
           });
           queryClient.invalidateQueries({
             queryKey: [
               "positionHistory",
-              account.address,
+              address,
               outcomes.map((o) => o.identifier),
             ],
           });
           queryClient.invalidateQueries({
-            queryKey: ["participatedCampaigns", account?.address, campaignId],
+            queryKey: ["participatedCampaigns", address, campaignId],
           });
-          res(response.transactionHash);
+          res(response);
         } catch (e) {
           rej(e);
         }

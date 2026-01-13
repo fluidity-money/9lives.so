@@ -4,11 +4,10 @@ import CrownImg from "#/images/crown.svg";
 import Image from "next/image";
 import Button from "../themed/button";
 import usePositions from "@/hooks/usePositions";
-import { useActiveAccount } from "thirdweb/react";
 import SparkleImg from "#/images/sparkle.svg";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useClaim from "@/hooks/useClaim";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
 import formatFusdc from "@/utils/format/formatUsdc";
@@ -16,19 +15,20 @@ import DownIcon from "#/icons/down-caret.svg";
 import { combineClass } from "@/utils/combineClass";
 import useDppmRewards from "@/hooks/useDppmRewards";
 import useDppmClaimAll from "@/hooks/useDppmClaimAll";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 interface DetailResultsProps {
   data: CampaignDetail;
 }
 export default function DetailResults({ data }: DetailResultsProps) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { connect, isConnecting } = useConnectWallet();
   const [isClaiming, setIsClaiming] = useState(false);
   const [minimized, setMinimized] = useState(true);
   const { data: positionData } = usePositions({
     tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
-    account,
+    address: account.address,
     isDpm: data.isDpm,
   });
   const winner = data.outcomes.find(
@@ -81,42 +81,42 @@ export default function DetailResults({ data }: DetailResultsProps) {
       : userRewardAmm;
   const rewardBreakdown = data.isDppm
     ? [
-        {
-          title: "Base Reward",
-          value: `$${dppmResults.dppmFusdc}`,
-        },
-        {
-          title: "Bonus",
-          value: `$${dppmResults.ninetailsWinnerFusdc}`,
-        },
-        {
-          title: "Refund",
-          value: `$${dppmResults.ninetailsLoserFusd}`,
-        },
-      ]
+      {
+        title: "Base Reward",
+        value: `$${dppmResults.dppmFusdc}`,
+      },
+      {
+        title: "Bonus",
+        value: `$${dppmResults.ninetailsWinnerFusdc}`,
+      },
+      {
+        title: "Refund",
+        value: `$${dppmResults.ninetailsLoserFusd}`,
+      },
+    ]
     : [
-        {
-          title: "Your Shares",
-          value: `${accountShares ?? 0}`,
-        },
-        {
-          title: "Total Investment",
-          value: `$${formatFusdc(data.totalVolume, 2)}`,
-        },
-        {
-          title: "Total Shares of The Winner",
-          value: formatFusdc(totalSharesOfWinner, 2),
-        },
-        {
-          title: "Avg. Price/Share",
-          value: `$${avgPrice.toFixed(2)}`,
-        },
-      ];
+      {
+        title: "Your Shares",
+        value: `${accountShares ?? 0}`,
+      },
+      {
+        title: "Total Investment",
+        value: `$${formatFusdc(data.totalVolume, 2)}`,
+      },
+      {
+        title: "Total Shares of The Winner",
+        value: formatFusdc(totalSharesOfWinner, 2),
+      },
+      {
+        title: "Avg. Price/Share",
+        value: `$${avgPrice.toFixed(2)}`,
+      },
+    ];
   const noClaim = data.isDppm
     ? !(userRewardDppm > 0)
     : account &&
-      ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
-        !accountShares);
+    ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
+      !accountShares);
   async function handleClaim() {
     if (!account) return connect();
     try {
@@ -160,7 +160,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
             <div
               className={combineClass(
                 !(data.isYesNo || data.isDppm) &&
-                  "size-10 overflow-hidden rounded-full",
+                "size-10 overflow-hidden rounded-full",
               )}
             >
               <Image

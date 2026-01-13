@@ -14,7 +14,6 @@ import Modal from "../themed/modal";
 import ManageLiquidityDialog from "../manageLiquidityDialog";
 import Button from "../themed/button";
 import useClaimAllFees from "@/hooks/useClaimAllFees";
-import { useActiveAccount } from "thirdweb/react";
 import ClaimFeesButton from "../claimFeesButton";
 import useAPY from "@/hooks/useAPY";
 import useUserLiquidity from "@/hooks/useUserLiquidity";
@@ -23,6 +22,7 @@ import { HeaderBox } from "./detailHeaderBox";
 import DetailCurrentPriceBox from "./detailCurrentPriceBox";
 import config from "@/config";
 import PointsIndicator from "../pointsIndicator";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function DetailHeader({
   data,
@@ -37,7 +37,7 @@ export default function DetailHeader({
   isConcluded: boolean;
   notStarted: boolean;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const left = data.ending - Date.now();
   const inThisWeek = config.weekDuration >= left && left > 0;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,13 +64,13 @@ export default function DetailHeader({
 
   useEffect(() => {
     (async function () {
-      if (!account || data.isDppm) return;
-      const fees = await checkLpRewards(account);
+      if (data.isDppm) return;
+      const fees = await checkLpRewards(account.address);
       if (fees && BigInt(fees) > BigInt(0)) {
         setUnclaimedRewards(fees);
       }
     })();
-  }, [account, checkLpRewards, data.isDppm]);
+  }, [account.address, checkLpRewards, data.isDppm]);
   const LiquidityComp = () => (
     <div className="flex flex-row gap-1">
       {data.winner ? null : (
@@ -138,13 +138,13 @@ export default function DetailHeader({
       data.creator.address.toLowerCase() === account?.address?.toLowerCase()
     ) {
       (async () => {
-        const unclaimedFees = await checkClaimFees(data.poolAddress, account);
+        const unclaimedFees = await checkClaimFees(data.poolAddress);
         if (unclaimedFees > BigInt(0)) {
           setUnclaimedFees(unclaimedFees);
         }
       })();
     }
-  }, [account, checkClaimFees, data.creator.address, data.poolAddress]);
+  }, [account.address, checkClaimFees, data.creator.address, data.poolAddress]);
 
   return (
     <div className="flex flex-col gap-4">

@@ -1,7 +1,7 @@
-import { useActiveAccount } from "thirdweb/react";
 import Placeholder from "../tablePlaceholder";
 import useUserLPs from "@/hooks/useUserLPs";
 import UserLpedCampaignsListItem from "./lpedCampaignsItem";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function UserLpedCampaignsList() {
   const headerItems = [
@@ -14,7 +14,7 @@ export default function UserLpedCampaignsList() {
   const tableHeaderClasses =
     "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
   const bodyStyles = "min-h-24 bg-9gray";
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const {
     data: campaigns,
     isError,
@@ -50,7 +50,6 @@ export default function UserLpedCampaignsList() {
         ) : (
           campaigns?.map((data) => (
             <UserLpedCampaignsListItem
-              account={account}
               key={data.campaign?.identifier}
               data={data}
             />

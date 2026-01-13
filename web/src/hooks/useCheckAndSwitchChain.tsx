@@ -1,18 +1,17 @@
 import { destinationChain } from "@/config/chains";
-import {
-  useActiveWalletChain,
-  useSwitchActiveWalletChain,
-} from "thirdweb/react";
+import { useAppKitNetwork } from "@reown/appkit/react";
+import { useSwitchChain } from "wagmi";
+
 
 export default function useCheckAndSwitchChain() {
-  const chain = useActiveWalletChain();
-  const switchChain = useSwitchActiveWalletChain();
+  const { chainId } = useAppKitNetwork();
+  const { mutateAsync: switchChain } = useSwitchChain();
 
   async function checkAndSwitchChain() {
-    if (!chain) throw new Error("No chain is detected");
+    if (!chainId) throw new Error("No chain is detected");
 
-    if (destinationChain.id !== chain.id) {
-      await switchChain(destinationChain);
+    if (destinationChain.id !== chainId) {
+      await switchChain({ chainId: destinationChain.id });
     }
   }
 

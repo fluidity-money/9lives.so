@@ -1,12 +1,8 @@
 import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-} from "thirdweb";
-import { toUnits } from "thirdweb/utils";
 import { useQuery } from "@tanstack/react-query";
+import { parseUnits } from "viem";
+import { usePublicClient } from "wagmi";
 
 export default function useReturnValue({
   shareAddr,
@@ -15,29 +11,23 @@ export default function useReturnValue({
   fusdc,
 }: {
   shareAddr: string;
-  tradingAddr: string;
+  tradingAddr: `0x${string}`;
   outcomeId: `0x${string}`;
   fusdc: number;
 }) {
+  const amount = parseUnits(fusdc.toString(), config.contracts.decimals.fusdc);
+  const publicClient = usePublicClient()
+
   return useQuery({
     queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
     queryFn: async () => {
-      const amount = toUnits(fusdc.toString(), config.contracts.decimals.fusdc);
-      const tradingContract = getContract({
-        abi: tradingAbi,
+      const simulation = await publicClient?.simulateContract({
         address: tradingAddr,
-        client: config.thirdweb.client,
-        chain: config.destinationChain,
-      });
-      const returnTx = prepareContractCall({
-        contract: tradingContract,
-        method: "quoteC0E17FC7",
-        params: [outcomeId, amount],
-      });
-      const returnValue = (await simulateTransaction({
-        transaction: returnTx,
-      })) as [bigint, bigint] | undefined;
-      return returnValue?.[0];
+        abi: tradingAbi,
+        functionName: "quoteC0E17FC7",
+        args: [outcomeId, amount],
+      })
+      return simulation?.result[0];
     },
     placeholderData: (prev) => prev ?? BigInt(0),
   });

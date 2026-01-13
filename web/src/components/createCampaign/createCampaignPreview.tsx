@@ -10,12 +10,12 @@ import RetroCard from "@/components/cardRetro";
 import { useFormStore } from "@/stores/formStore";
 import { SettlementType } from "@/types";
 import Image from "next/image";
-import { useActiveAccount } from "thirdweb/react";
 import Button from "../themed/button";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function CreateCampaignPreview() {
   const preview = useFormStore((s) => s.form);
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
 
   const settlementMap: Record<SettlementType, { img: any; title: string }> = {
     POLL: {

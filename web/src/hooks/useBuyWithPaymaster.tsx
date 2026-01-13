@@ -1,6 +1,5 @@
 import config from "@/config";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
-import { toUnits } from "thirdweb/utils";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
@@ -9,11 +8,13 @@ import {
   MintedPosition,
   SimpleCampaignDetail,
 } from "@/types";
-import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
-import { useActiveAccount } from "thirdweb/react";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { usePaymasterStore } from "@/stores/paymasterStore";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { parseUnits } from "viem";
+import useBalance from "./useBalance";
+import useConnectWallet from "./useConnectWallet";
 
 const useBuyWithPaymaster = ({
   shareAddr,
@@ -27,9 +28,11 @@ const useBuyWithPaymaster = ({
   openFundModal: () => void;
 }) => {
   const queryClient = useQueryClient();
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
+  const { connect } = useConnectWallet()
+  const { data: userBalance } = useBalance(account.address)
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
     mutationFn: ({
       referrer,
@@ -51,7 +54,7 @@ const useBuyWithPaymaster = ({
       }),
     onMutate: async (newRequest) => {
       await queryClient.cancelQueries({
-        queryKey: ["positions", data.poolAddress, data.outcomes, account],
+        queryKey: ["positions", data.poolAddress, data.outcomes, account.address],
       });
       let newPosition: MintedPosition;
       let newPositions: MintedPosition[];
@@ -60,7 +63,7 @@ const useBuyWithPaymaster = ({
           "positions",
           data.poolAddress,
           data.outcomes,
-          account,
+          account.address,
         ]) ?? [];
       const alreadyExistedPosition = previousPositions?.find(
         (p) => p.id === newRequest.outcome,
@@ -98,7 +101,7 @@ const useBuyWithPaymaster = ({
 
       // Optimistically update the cache
       queryClient.setQueryData(
-        ["positions", data.poolAddress, data.outcomes, account],
+        ["positions", data.poolAddress, data.outcomes, account.address],
         () => newPositions,
       );
 
@@ -128,7 +131,7 @@ const useBuyWithPaymaster = ({
     onError: (err, newRequest, context) => {
       if (context?.previousPositions) {
         queryClient.setQueryData(
-          ["positions", data.poolAddress, data.outcomes, account],
+          ["positions", data.poolAddress, data.outcomes, account.address],
           context.previousPositions,
         );
       }
@@ -174,26 +177,17 @@ const useBuyWithPaymaster = ({
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account) throw new Error("No active account");
-          const amount = toUnits(
+          if (!account.address) return connect();
+          const amount = parseUnits(
             fusdc.toString(),
             config.contracts.decimals.fusdc,
-          ).toString();
-          const userBalanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "balanceOf",
-            params: [account?.address],
-          });
-          const userBalance = await simulateTransaction({
-            transaction: userBalanceTx,
-            account,
-          });
-          if (amount > userBalance) {
+          )
+          if (userBalance && amount > userBalance) {
             openFundModal();
             throw new Error("You dont have enough USDC.");
           }
           const result = await requestPaymasterOptimistically({
-            amountToSpend: amount,
+            amountToSpend: amount.toString(),
             outcome: outcomeId,
             opType: "MINT",
             tradingAddr: data.poolAddress,
@@ -208,7 +202,7 @@ const useBuyWithPaymaster = ({
               data,
               opType: "MINT",
               outcomeId,
-              account,
+              address: account.address,
               dppmMetadata,
             });
             res(result.ticketId);

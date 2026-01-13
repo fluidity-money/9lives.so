@@ -2,20 +2,20 @@
 
 import usePositions from "@/hooks/usePositions";
 import { Outcome, SimpleCampaignDetail } from "@/types";
-import { useActiveAccount } from "thirdweb/react";
 import SimplePositionRow from "./simplePositionRow";
 import useFinalPrice from "@/hooks/useFinalPrice";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function SimplePositions({
   data,
 }: {
   data: SimpleCampaignDetail;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { data: positions } = usePositions({
     tradingAddr: data.poolAddress,
     outcomes: data.outcomes,
-    account,
+    address: account.address,
     isDpm: false,
   });
   const winnerOutcome = data.outcomes.find(
@@ -36,7 +36,7 @@ export default function SimplePositions({
             isPriceAbove={finalPrice ? finalPrice.price > basePrice : false}
             key={p.id}
             position={p}
-            account={account}
+            address={account.address}
             tradingAddr={data.poolAddress}
           />
         ))}

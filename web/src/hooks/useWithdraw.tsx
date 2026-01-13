@@ -1,20 +1,18 @@
 import config from "@/config";
-import { prepareContractCall, simulateTransaction } from "thirdweb";
-import { toUnits } from "thirdweb/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
-import { useActiveAccount } from "thirdweb/react";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 import { chainIdToEid } from "@/config/chains";
-import { ZeroAddress } from "ethers";
-
+import { useAppKitAccount } from "@reown/appkit/react";
+import { parseUnits, zeroAddress } from "viem";
+import { usePublicClient } from 'wagmi';
 const useWithdraw = () => {
   const queryClient = useQueryClient();
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
+  const publicClient = usePublicClient()
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
     mutationFn: ({
       amountToSpend,
@@ -71,28 +69,28 @@ const useWithdraw = () => {
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account) throw new Error("No active account");
-          const amount = toUnits(
+          if (!account.address) throw new Error("No active account");
+          if (!publicClient) throw new Error("Public client is not set")
+
+          const amount = parseUnits(
             fusdc.toString(),
             config.contracts.decimals.fusdc,
-          ).toString();
-          const userBalanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "balanceOf",
-            params: [account?.address],
-          });
-          const userBalance = await simulateTransaction({
-            transaction: userBalanceTx,
-            account,
-          });
+          );
+          const userBalance = await publicClient.readContract({
+            ...config.contracts.fusdc,
+            functionName: "balanceOf",
+            args: [account.address as `0x${string}`],
+          })
+
           if (amount > userBalance) {
             throw new Error("You dont have enough USDC.");
           }
+
           const result = await requestPaymasterOptimistically({
-            amountToSpend: amount,
+            amountToSpend: amount.toString(),
             opType: "WITHDRAW_USDC",
             outcome: "0x0000000000000000",
-            tradingAddr: ZeroAddress,
+            tradingAddr: zeroAddress,
             outgoingChainEid: chainIdToEid[chainId],
             minimumBack: "0",
           });
@@ -101,7 +99,7 @@ const useWithdraw = () => {
               id: result.ticketId,
               amount: result.amount,
               opType: "WITHDRAW_USDC",
-              account,
+              address: account.address,
               chainId,
             });
             res(result.ticketId);

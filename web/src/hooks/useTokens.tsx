@@ -1,7 +1,7 @@
 import config from "@/config";
 import { Token } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { ZeroAddress } from "ethers";
+import { zeroAddress } from "viem";
 const allowedSymbols = ["usdc", "usdt", "usdc.e", "usdt0", "arb", "op"];
 const isAllowedSymbol = (t: Token) =>
   allowedSymbols.reduce((acc, v) => {
@@ -35,7 +35,7 @@ export default function useTokens(fromChain: number) {
         );
       }
       return items.filter(
-        (t) => isAllowedSymbol(t) || t.address === ZeroAddress,
+        (t) => isAllowedSymbol(t) || t.address === zeroAddress,
       );
     },
     placeholderData: (previousData) => previousData,

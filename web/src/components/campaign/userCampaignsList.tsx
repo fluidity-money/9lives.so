@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { CampaignFilters } from "@/types";
-import { useActiveAccount } from "thirdweb/react";
 import CampaignTable from "./campaignTable";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function UserCampaignsList() {
   const [orderBy, setOrderBy] = useState<CampaignFilters["orderBy"]>("newest");
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   return (
     <CampaignTable
       orderBy={orderBy}
       setOrderBy={setOrderBy}
-      account={account}
+      address={account.address}
       userList
     />
   );

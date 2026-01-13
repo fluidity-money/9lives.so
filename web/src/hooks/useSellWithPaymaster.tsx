@@ -1,19 +1,15 @@
 import config from "@/config";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-} from "thirdweb";
-import { toUnits } from "thirdweb/utils";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { CampaignDetail, MintedPosition, Outcome } from "@/types";
-import { track, EVENTS } from "@/utils/analytics";
 import useRequestPaymaster from "./useRequestPaymaster";
-import { useActiveAccount } from "thirdweb/react";
 import { usePaymasterStore } from "@/stores/paymasterStore";
 import ERC20Abi from "@/config/abi/erc20";
-import { chainIdToEid, destinationChain } from "@/config/chains";
+import { destinationChain } from "@/config/chains";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { parseUnits } from "viem";
+import { usePublicClient } from "wagmi";
 
 const useSellWithPaymaster = ({
   shareAddr,
@@ -29,9 +25,10 @@ const useSellWithPaymaster = ({
   outcomes: Outcome[];
 }) => {
   const queryClient = useQueryClient();
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
+  const publicClient = usePublicClient()
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
     mutationFn: ({
       amountToSpend,
@@ -51,9 +48,9 @@ const useSellWithPaymaster = ({
       }),
     onMutate: async (newRequest) => {
       await queryClient.cancelQueries({
-        queryKey: ["positions", tradingAddr, outcomes, account],
+        queryKey: ["positions", tradingAddr, outcomes, account.address],
       });
-      const amountToSell = toUnits(
+      const amountToSell = parseUnits(
         newRequest.minimumBack,
         config.contracts.decimals.shares,
       );
@@ -63,7 +60,7 @@ const useSellWithPaymaster = ({
           "positions",
           tradingAddr,
           outcomes,
-          account,
+          account.address,
         ]) ?? [];
       const existedPositionAmount =
         previousPositions?.find((p) => p.id === newRequest.outcome)
@@ -77,19 +74,19 @@ const useSellWithPaymaster = ({
         newPositions = previousPositions.map((p) =>
           p.id === newRequest.outcome
             ? {
-                ...p,
-                balance: (
-                  Number(p.balance) - Number(newRequest.minimumBack)
-                ).toString(),
-                balanceRaw: p.balanceRaw - amountToSell,
-              }
+              ...p,
+              balance: (
+                Number(p.balance) - Number(newRequest.minimumBack)
+              ).toString(),
+              balanceRaw: p.balanceRaw - amountToSell,
+            }
             : p,
         );
       }
 
       // Optimistically update the cache
       queryClient.setQueryData(
-        ["positions", tradingAddr, outcomes, account],
+        ["positions", tradingAddr, outcomes, account.address],
         () => newPositions,
       );
       await queryClient.cancelQueries({
@@ -117,7 +114,7 @@ const useSellWithPaymaster = ({
     onError: (err, newRequest, context) => {
       if (context?.previousPositions) {
         queryClient.setQueryData(
-          ["positions", tradingAddr, outcomes, account],
+          ["positions", tradingAddr, outcomes, account.address],
           context.previousPositions,
         );
       }
@@ -153,31 +150,23 @@ const useSellWithPaymaster = ({
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account) throw new Error("No active account");
-          const amount = toUnits(
+          if (!account.address) throw new Error("No active account");
+          if (!publicClient) throw new Error("Public client is not set")
+          const amount = parseUnits(
             rawAmount.toString(),
             config.contracts.decimals.shares,
-          ).toString();
-          const shareContract = getContract({
+          );
+          const userBalance = await publicClient.readContract({
             abi: ERC20Abi,
             address: shareAddr,
-            chain: destinationChain,
-            client: config.thirdweb.client,
-          });
-          const userBalanceTx = prepareContractCall({
-            contract: shareContract,
-            method: "balanceOf",
-            params: [account?.address],
-          });
-          const userBalance = await simulateTransaction({
-            transaction: userBalanceTx,
-            account,
-          });
+            functionName: "balanceOf",
+            args: [account?.address as `0x${string}`],
+          })
           if (amount > userBalance) {
             throw new Error("You dont have enough shares.");
           }
           const result = await requestPaymasterOptimistically({
-            amountToSpend: amount,
+            amountToSpend: amount.toString(),
             outcome: outcomeId,
             opType: "SELL",
             outgoingChainEid: 0,
@@ -192,7 +181,7 @@ const useSellWithPaymaster = ({
               data,
               opType: "SELL",
               outcomeId,
-              account,
+              address: account.address,
             });
             res(result.ticketId);
           } else {

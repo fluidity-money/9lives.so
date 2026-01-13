@@ -1,32 +1,22 @@
 import config from "@/config";
-import {
-  encode,
-  prepareContractCall,
-  sendTransaction,
-  simulateTransaction,
-  toUnits,
-  ZERO_ADDRESS,
-} from "thirdweb";
-import { Account } from "thirdweb/wallets";
+
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { CampaignInput, SettlementType } from "@/types";
 import { useRouter } from "next/navigation";
 import { requestCreateCampaign } from "@/providers/graphqlClient";
 import { useCampaignStore } from "@/stores/campaignStore";
-import clientEnv from "../config/clientEnv";
 import { generateCampaignId, generateOutcomeId } from "@/utils/generateId";
 import helperAbi from "@/config/abi/helperFactory";
 import { EVENTS, track } from "@/utils/analytics";
 import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
-import {
-  useActiveWallet,
-  useActiveWalletChain,
-  useSwitchActiveWalletChain,
-} from "thirdweb/react";
-import { viemAdapter } from "thirdweb/adapters/viem";
 import RelayTxToaster from "@/components/relayTxToaster";
 import formatFusdc from "@/utils/format/formatUsdc";
+import useConnectWallet from "./useConnectWallet";
+import useBalance from "./useBalance";
+import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
+import { createWalletClient, custom, encodeFunctionData, parseUnits, zeroAddress } from "viem";
+import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type Create =
   // | "createWithInfraMarket"
@@ -50,21 +40,22 @@ const useCreateWithRelay = ({
   const router = useRouter();
   const upsertCampaign = useCampaignStore((s) => s.upsertCampaign);
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
-  const chain = useActiveWalletChain();
-  const wallet = useActiveWallet();
-  const switchChain = useSwitchActiveWalletChain();
+  const { connect } = useConnectWallet()
+  const account = useAppKitAccount()
+  const { data: userBalance } = useBalance(account.address)
   const minOracleCreatePrice = BigInt(4e6);
   const minDefaultCreatePrice = BigInt(3e6);
+  const { walletProvider } = useAppKitProvider("eip155");
+  const { checkAndSwitchChain } = useCheckAndSwitchChain()
   const createWithRelay = async (
     { seedLiquidity, fromDecimals, ...input }: CampaignInput,
-    account: Account,
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          if (!account.address) return connect()
           if (!fromDecimals) throw new Error("fromDecimals is undefined");
-          if (!wallet) throw new Error("No wallet is detected");
-          if (!chain) throw new Error("No chain is detected");
+
           let usdValueBigInt = "0";
           await requestCreateCampaign({
             ...input,
@@ -72,15 +63,6 @@ const useCreateWithRelay = ({
             ending: Math.floor(new Date(input.ending).getTime() / 1000),
             creator: account.address,
             isFake: true,
-          });
-          const userBalanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "balanceOf",
-            params: [account?.address],
-          });
-          const userBalance = await simulateTransaction({
-            transaction: userBalanceTx,
-            account,
           });
           switch (input.settlementType) {
             case "ORACLE":
@@ -116,7 +98,7 @@ const useCreateWithRelay = ({
             //   hashedDocumentation = keccak256(descBytes) as `0x${string}`;
             // }
 
-            const fromAmountBigInt = toUnits(
+            const fromAmountBigInt = parseUnits(
               seedLiquidity.toString(),
               fromDecimals,
             );
@@ -142,54 +124,24 @@ const useCreateWithRelay = ({
             }
             const toAmountData = await toAmountRes.json();
             usdValueBigInt = toAmountData.details.currencyOut.amount;
-            const allowanceHelperTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "allowance",
-              params: [
-                account.address,
-                clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-              ],
-            });
-            let targetChain = chain;
 
-            if (input.fromChain !== chain.id) {
-              targetChain = Object.values(config.chains).find(
-                (c) => c.id === input.fromChain,
-              )!;
-              await switchChain(targetChain);
-            }
-            const allowanceOfHelper = (await simulateTransaction({
-              transaction: allowanceHelperTx,
-              account,
-            })) as bigint;
-            if (allowanceOfHelper < BigInt(usdValueBigInt)) {
-              const approveHelperTx = prepareContractCall({
-                contract: config.contracts.fusdc,
-                method: "approve",
-                params: [
-                  clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-                  BigInt(usdValueBigInt),
-                ],
-              });
-              await sendTransaction({
-                transaction: approveHelperTx,
-                account,
-              });
-            }
+            await checkAndSwitchChain();
+
             const defaultFee = BigInt(10);
             const zeroFee = BigInt(0);
-            const createTx = prepareContractCall({
-              contract: config.contracts.helperFactory,
-              method: settlementFunctionMap[input.settlementType],
-              params: [
+
+            const calldata = await encodeFunctionData({
+              ...config.contracts.helperFactory,
+              functionName: settlementFunctionMap[input.settlementType],
+              args: [
                 {
-                  oracle: ZERO_ADDRESS,
+                  oracle: zeroAddress,
                   outcomes: creationList,
                   timeEnding: BigInt(
                     Math.floor(new Date(input.ending).getTime() / 1000),
                   ),
                   documentation: hashedDocumentation,
-                  feeRecipient: account.address,
+                  feeRecipient: account.address as `0x${string}`,
                   feeCreator: defaultFee,
                   feeLp: defaultFee,
                   feeMinter: zeroFee,
@@ -199,8 +151,6 @@ const useCreateWithRelay = ({
                 },
               ],
             });
-
-            const calldata = await encode(createTx);
 
             const options = {
               user: account.address,
@@ -225,15 +175,16 @@ const useCreateWithRelay = ({
 
             const quote = await relayClient.actions.getQuote(options);
 
-            const walletClient = viemAdapter.wallet.toViem({
-              client: config.thirdweb.client,
-              chain: targetChain,
-              wallet,
+            const viemWalletClient = createWalletClient({
+              account: account.address as `0x${string}`,
+              chain: Object.values(config.chains).find((i) => i.id === input.fromChain),
+              transport: custom(walletProvider as any),
             });
+
             let requestId: string | undefined;
             await relayClient.actions.execute({
               quote,
-              wallet: adaptViemWallet(walletClient as any),
+              wallet: adaptViemWallet(viemWalletClient as any),
               onProgress: ({ currentStep, currentStepItem }) => {
                 if (currentStep && currentStepItem) {
                   requestId = currentStep?.requestId;

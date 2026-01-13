@@ -1,46 +1,35 @@
 import tradingAbi from "@/config/abi/trading";
-import { destinationChain } from "@/config/chains";
-import thirdweb from "@/config/thirdweb";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getContract,
-  prepareContractCall,
-  simulateTransaction,
-} from "thirdweb";
-import { Account } from "thirdweb/wallets";
+import { usePublicClient } from "wagmi";
+import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
 
 export default function useEstimateBurn({
   outcomeId,
   tradingAddr,
   share,
-  account,
+  address,
 }: {
   outcomeId: `0x${string}`;
   tradingAddr: `0x${string}`;
   share?: bigint;
-  account?: Account;
+  address?: string;
 }) {
+  const publicClient = usePublicClient()
+  const { checkAndSwitchChain } = useCheckAndSwitchChain()
   return useQuery({
-    queryKey: ["estimateBurn", outcomeId, tradingAddr, Number(share), account],
+    queryKey: ["estimateBurn", outcomeId, tradingAddr, Number(share), address],
     queryFn: async () => {
-      if (!account) return BigInt(0);
+      if (!address) return BigInt(0);
       if (!share || share <= BigInt(0)) return BigInt(0);
-      const tradingContract = getContract({
-        abi: tradingAbi,
+      if (!publicClient) throw new Error("Public client is not set")
+      await checkAndSwitchChain()
+      const usdc = await publicClient.simulateContract({
         address: tradingAddr,
-        chain: destinationChain,
-        client: thirdweb.client,
-      });
-      const estimateTx = prepareContractCall({
-        contract: tradingContract,
-        method: "estimateBurnE9B09A17",
-        params: [outcomeId, share],
-      });
-      const usdc = (await simulateTransaction({
-        transaction: estimateTx,
-        account,
-      })) as bigint;
-      return usdc;
+        abi: tradingAbi,
+        functionName: "estimateBurnE9B09A17",
+        args: [outcomeId, share]
+      })
+      return usdc.result;
     },
   });
 }

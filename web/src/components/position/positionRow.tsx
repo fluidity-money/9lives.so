@@ -8,7 +8,6 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import Button from "../themed/button";
 import DownCaret from "#/icons/down-caret.svg";
 import useClaim from "@/hooks/useClaim";
-import { useActiveAccount } from "thirdweb/react";
 import { Outcome, ParticipatedCampaign } from "@/types";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
@@ -19,6 +18,7 @@ import useDppmRewards from "@/hooks/useDppmRewards";
 import useClaimAllPools from "@/hooks/useClaimAllPools";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import useClaimAllPoolsWithAS from "@/hooks/useClaimAllPoolsAS";
+import { useAppKitAccount } from "@reown/appkit/react";
 export default function PositionRow({
   data,
   price,
@@ -45,7 +45,7 @@ export default function PositionRow({
   }[];
   campaignContent: ParticipatedCampaign["content"];
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const { claim } = useClaim({
     shareAddr: data.shareAddress,
     outcomeId: data.id,
@@ -88,11 +88,11 @@ export default function PositionRow({
     outcomeId: data.id as `0x${string}`,
     share: data.balanceRaw,
     tradingAddr: campaignContent.poolAddress as `0x${string}`,
-    account,
+    address: account.address,
   });
   const { totalRewards, results: dppmRewards } = useDppmRewards({
     tradingAddr: campaignContent.poolAddress,
-    account,
+    address: account.address,
     priceMetadata: campaignContent.priceMetadata,
     starting: campaignContent.starting,
     ending: campaignContent.ending,
@@ -102,8 +102,8 @@ export default function PositionRow({
   const PnL = campaignContent.isDppm
     ? totalRewards - Number(formatFusdc(historicalValue, 6))
     : Number(
-        formatFusdc((estimationOfBurn ?? BigInt(0)) - BigInt(historicalValue)),
-      );
+      formatFusdc((estimationOfBurn ?? BigInt(0)) - BigInt(historicalValue)),
+    );
   const percentageChange = Math.abs(
     (PnL / +formatFusdc(historicalValue, 6)) * 100,
   ).toFixed(2);
@@ -169,9 +169,9 @@ export default function PositionRow({
           <div className="flex items-center justify-between p-2">
             <div className="flex items-center gap-2">
               {!detailPage &&
-              (data.outcomePic ||
-                (!data.outcomePic &&
-                  (data.name === "Yes" || data.name === "No"))) ? (
+                (data.outcomePic ||
+                  (!data.outcomePic &&
+                    (data.name === "Yes" || data.name === "No"))) ? (
                 <Image
                   src={
                     !data.outcomePic
@@ -238,7 +238,7 @@ export default function PositionRow({
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    href={`${config.destinationChain.blockExplorers![0].url}/token/${data.shareAddress}`}
+                    href={`${config.destinationChain.blockExplorers.default.url}/token/${data.shareAddress}`}
                     target="_blank"
                     className="inline self-start"
                   >
@@ -320,7 +320,7 @@ export default function PositionRow({
                 {Math.abs(
                   ((reward - +formatFusdc(historicalValue, 2)) /
                     +formatFusdc(historicalValue, 6)) *
-                    100,
+                  100,
                 ).toFixed(2)}
                 {"%"}
               </span>
@@ -411,9 +411,9 @@ export default function PositionRow({
           const PnL =
             h.type === "buy"
               ? +formatFusdc(h.toAmount, 6) * Number(price ?? 0) -
-                +formatFusdc(h.fromAmount, 6)
+              +formatFusdc(h.fromAmount, 6)
               : +formatFusdc(h.fromAmount, 6) * Number(price ?? 0) -
-                +formatFusdc(h.toAmount, 6);
+              +formatFusdc(h.toAmount, 6);
           const percentageChange =
             h.type === "buy"
               ? Math.abs((PnL / +formatFusdc(h.fromAmount, 6)) * 100).toFixed(2)

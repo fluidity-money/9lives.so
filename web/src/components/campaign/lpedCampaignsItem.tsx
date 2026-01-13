@@ -3,18 +3,17 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Account } from "thirdweb/wallets";
 import ClaimLiquidityButton from "../claimLiquidityButton";
 import { requestUserLPs } from "@/providers/graphqlClient";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function UserLpedCampaignsListItem({
   data: { campaign: data, liquidity },
-  account,
 }: {
   data: NonNullable<Awaited<ReturnType<typeof requestUserLPs>>[number]>;
-  account?: Account;
 }) {
   const [unclaimedRewards, setUnclaimedRewards] = useState(BigInt(0));
+  const account = useAppKitAccount()
   const { checkLpRewards } = useLiquidity({
     tradingAddr: data?.poolAddress as `0x${string}`,
     campaignId: data?.identifier as `0x${string}`,
@@ -23,13 +22,12 @@ export default function UserLpedCampaignsListItem({
 
   useEffect(() => {
     (async function () {
-      if (!account) return;
-      const fees = await checkLpRewards(account);
+      const fees = await checkLpRewards(account.address);
       if (fees && BigInt(fees) > BigInt(0)) {
         setUnclaimedRewards(fees);
       }
     })();
-  }, [account, checkLpRewards]);
+  }, [account.address, checkLpRewards]);
 
   return (
     <tr>

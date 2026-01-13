@@ -1,14 +1,14 @@
 import useTimePassed from "@/hooks/useTimePassed";
 import { Comment, Outcome } from "../../types";
 import Button from "../themed/button";
-import { useActiveAccount } from "thirdweb/react";
 import useDeleteComment from "@/hooks/useDeleteComment";
-import { signMessage } from "thirdweb/utils";
-import { Signature } from "ethers";
 import DetailCreatedBy from "../detail/detailCreatedBy";
 import formatFusdc from "@/utils/format/formatUsdc";
 import Image from "next/image";
 import makeBlockie from "ethereum-blockies-base64";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { useSignMessage } from "wagmi";
+import { parseSignature } from 'viem';
 
 export default function CommentItem({
   outcomes,
@@ -22,17 +22,17 @@ export default function CommentItem({
   outcomes: Outcome[];
 }) {
   const timePassed = useTimePassed(data.createdAt * 1000);
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
+  const { mutateAsync: signMessage } = useSignMessage()
   const { mutate, isPending } = useDeleteComment(campaignId);
   const deleteComment = async () => {
-    if (!account) throw new Error("No wallet is connected.");
+    if (!account.address) throw new Error("No wallet is connected.");
     const message = `Deleting a comment on https://9lives.so/campaign/${campaignId}\n${data.content}`;
     const signature = await signMessage({
       message,
-      account,
     });
     if (!signature) throw new Error("Signature not found");
-    const { r: rr, s, v } = Signature.from(signature);
+    const { r: rr, s, v } = parseSignature(signature);
     if (!rr || !s || !v) throw new Error("Signature can not be splitted");
     mutate({
       id: data.id,
@@ -40,7 +40,7 @@ export default function CommentItem({
       walletAddress: account.address,
       rr,
       s,
-      v,
+      v: Number(v),
     });
   };
   return (
@@ -62,16 +62,16 @@ export default function CommentItem({
             />
             {data.investments.length > 0
               ? data.investments.map((i) => {
-                  const outcome = outcomes?.find((o) => o.identifier === i?.id);
-                  return (
-                    <span
-                      key={i?.id}
-                      className="ml-1 max-w-[150px] truncate bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide"
-                    >
-                      ${+formatFusdc(i?.amount ?? 0, 1)} {outcome?.name}
-                    </span>
-                  );
-                })
+                const outcome = outcomes?.find((o) => o.identifier === i?.id);
+                return (
+                  <span
+                    key={i?.id}
+                    className="ml-1 max-w-[150px] truncate bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide"
+                  >
+                    ${+formatFusdc(i?.amount ?? 0, 1)} {outcome?.name}
+                  </span>
+                );
+              })
               : null}
             <span className="text-xs font-bold text-9black/50">
               {timePassed}

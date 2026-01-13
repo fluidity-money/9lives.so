@@ -1,18 +1,11 @@
 import config from "@/config";
-import {
-  getContract,
-  prepareContractCall,
-  sendTransaction,
-  simulateTransaction,
-  toUnits,
-} from "thirdweb";
-import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Outcome } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
-import ERC20Abi from "@/config/abi/erc20";
-import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
+import { parseUnits } from "viem";
+import { useAllowanceCheck } from "./useAllowanceCheck";
+import { useWriteContract } from "wagmi";
 const useSell = ({
   shareAddr,
   tradingAddr,
@@ -27,70 +20,48 @@ const useSell = ({
   outcomes: Outcome[];
 }) => {
   const queryClient = useQueryClient();
-  const { checkAndSwitchChain } = useCheckAndSwitchChain();
-  const sell = async (account: Account, share: number, fusdc: number) =>
+  const { checkAndAprove } = useAllowanceCheck()
+  const { mutateAsync: writeContract } = useWriteContract()
+  const sell = async (address: string, share: number, fusdc: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          const usdAmount = toUnits(
+          const usdAmount = parseUnits(
             fusdc.toFixed(config.contracts.decimals.fusdc),
             config.contracts.decimals.fusdc,
           );
-          const shareAmount = toUnits(
+          const shareAmount = parseUnits(
             share.toFixed(config.contracts.decimals.shares),
             config.contracts.decimals.shares,
           );
-          const shareContract = getContract({
-            abi: ERC20Abi,
-            address: shareAddr,
-            client: config.thirdweb.client,
-            chain: config.destinationChain,
-          });
 
           const sharesToBurn = shareAmount;
           const minShareOut = BigInt(Math.floor(Number(sharesToBurn) * 0.95));
           const maxShareBurned = sharesToBurn;
-          const allowanceTx = prepareContractCall({
-            contract: shareContract,
-            method: "allowance",
-            params: [account.address, config.contracts.buyHelper2.address],
-          });
-          const allowance = await simulateTransaction({
-            transaction: allowanceTx,
-            account,
-          });
-          await checkAndSwitchChain();
-          if (shareAmount > allowance) {
-            const approveTx = prepareContractCall({
-              contract: shareContract,
-              method: "approve",
-              params: [config.contracts.buyHelper2.address, shareAmount],
-            });
-            await sendTransaction({
-              transaction: approveTx,
-              account,
-            });
-          }
-          const burnTx = prepareContractCall({
-            contract: config.contracts.buyHelper2,
-            method: "burn",
-            params: [
+
+          await checkAndAprove({
+            contractAddress: shareAddr,
+            spenderAddress: config.contracts.buyHelper2.address,
+            amount: shareAmount,
+            address
+          })
+
+          await writeContract({
+            ...config.contracts.buyHelper2,
+            functionName: "burn",
+            args: [
               tradingAddr,
               outcomeId,
               usdAmount,
               sharesToBurn,
               minShareOut,
               maxShareBurned,
-              account.address,
+              address as `0x${string}`,
             ],
-          });
-          await sendTransaction({
-            transaction: burnTx,
-            account,
           });
           const outcomeIds = outcomes.map((o) => o.identifier);
           queryClient.invalidateQueries({
-            queryKey: ["positions", tradingAddr, outcomes, account],
+            queryKey: ["positions", tradingAddr, outcomes, address],
           });
           queryClient.invalidateQueries({
             queryKey: ["sharePrices", tradingAddr, outcomeIds],
@@ -102,7 +73,7 @@ const useSell = ({
             queryKey: ["campaign", campaignId],
           });
           queryClient.invalidateQueries({
-            queryKey: ["positionHistory", account.address, outcomeIds],
+            queryKey: ["positionHistory", address, outcomeIds],
           });
           track(EVENTS.BURN, {
             amount: fusdc,

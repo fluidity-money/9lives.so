@@ -1,11 +1,11 @@
 "use client";
 
-import { useActiveAccount } from "thirdweb/react";
 import ClaimedRewardsRow from "./claimedRewardsRow";
 import useClaimedRewards from "@/hooks/useClaimedRewards";
 import Placeholder from "../tablePlaceholder";
 import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
 import { ClaimedCampaign } from "@/types";
+import { useAppKitAccount } from "@reown/appkit/react";
 const bodyStyles = "min-h-24 bg-9gray";
 
 export default function ClaimedRewardsBody({
@@ -13,7 +13,7 @@ export default function ClaimedRewardsBody({
 }: {
   campaignId?: string;
 }) {
-  const account = useActiveAccount();
+  const account = useAppKitAccount();
   const {
     isLoading,
     isError,

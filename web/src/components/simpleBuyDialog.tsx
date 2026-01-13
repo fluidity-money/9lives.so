@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import Button from "./themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { formatUnits, ZeroAddress } from "ethers";
 import config from "@/config";
 import { useUserStore } from "@/stores/userStore";
 import posthog from "posthog-js";
@@ -26,6 +25,7 @@ import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
 import useAccount from "@/hooks/useAccount";
 import PointsIndicator from "./pointsIndicator";
 import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
+import { formatUnits, zeroAddress } from "viem";
 
 export default function SimpleBuyDialog({
   data,
@@ -121,21 +121,21 @@ export default function SimpleBuyDialog({
     defaultValues: {
       supply: "",
       toChain: config.chains.superposition.id,
-      toToken: ZeroAddress,
+      toToken: zeroAddress,
       usdValue: 0,
       fromChain: isInMiniApp
         ? config.chains.base.id
         : config.chains.superposition.id,
       fromToken: isInMiniApp
         ? "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // Base USDC
-        : ZeroAddress,
+        : zeroAddress,
     },
   });
   const supply = watch("supply");
   const fromChain = watch("fromChain");
   const fromToken = watch("fromToken");
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(fromChain);
-  const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
+  const { data: tokensWithBalances } = useTokensWithBalances(fromChain, tokens);
   const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const usdValue = tokens
     ? Number(supply) *
@@ -143,18 +143,18 @@ export default function SimpleBuyDialog({
     : Number(supply);
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
-      t.token_address.toLowerCase() === fromToken.toLowerCase() ||
-      (fromToken === ZeroAddress &&
-        t.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+      t.address.toLowerCase() === fromToken.toLowerCase() ||
+      (fromToken === zeroAddress &&
+        t.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   )?.balance;
   const selectedTokenSymbol = tokens?.find(
     (t) =>
       t.address.toLowerCase() === fromToken.toLowerCase() ||
-      (fromToken === ZeroAddress &&
+      (fromToken === zeroAddress &&
         t.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   )?.symbol;
   const setToShare = async (percentage: number) => {
-    if (!selectedTokenBalance) return;
+    if (!selectedTokenBalance || !fromDecimals) return;
     const maxBalance = formatUnits(selectedTokenBalance, fromDecimals);
     setValue("supply", ((Number(maxBalance) * percentage) / 1).toString());
     if (Number(maxBalance) > 0) clearErrors();
@@ -352,7 +352,7 @@ export default function SimpleBuyDialog({
               {selectedTokenSymbol ?? "$"}
             </p>
           </div>
-          {selectedTokenBalance ? (
+          {selectedTokenBalance && fromDecimals ? (
             <p className="font-arial text-xs text-[#808080]">{`(You have ${formatUnits(BigInt(selectedTokenBalance), fromDecimals)} ${selectedTokenSymbol ?? "$"})`}</p>
           ) : null}
           <div className="flex items-center justify-center gap-1">

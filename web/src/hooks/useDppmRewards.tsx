@@ -1,11 +1,10 @@
-import { Account } from "thirdweb/wallets";
 import useDppmShareEstimationAll from "./useDppmShareEstimationAll";
 import { CampaignDetail, Outcome, Payoff } from "@/types";
 import useFinalPrice from "./useFinalPrice";
 
 export default function useDppmRewards({
   tradingAddr,
-  account,
+  address,
   priceMetadata,
   starting,
   ending,
@@ -13,7 +12,7 @@ export default function useDppmRewards({
   singleOutcomeId,
 }: {
   tradingAddr: `0x${string}`;
-  account?: Account;
+  address?: string;
   priceMetadata: CampaignDetail["priceMetadata"];
   starting: number;
   ending: number;
@@ -33,7 +32,7 @@ export default function useDppmRewards({
     data: [{ identifier: downId, ...down }, { identifier: upId, ...up }],
   } = useDppmShareEstimationAll({
     tradingAddr,
-    account,
+    address,
     enabled: !!priceMetadata,
     isPriceAbove,
     outcomes,

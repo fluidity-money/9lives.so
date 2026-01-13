@@ -1,12 +1,4 @@
 import config from "@/config";
-import {
-  prepareContractCall,
-  sendTransaction,
-  simulateTransaction,
-  toUnits,
-  ZERO_ADDRESS,
-} from "thirdweb";
-import { Account } from "thirdweb/wallets";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { CampaignInput, SettlementType } from "@/types";
@@ -17,7 +9,11 @@ import clientEnv from "../config/clientEnv";
 import { generateCampaignId, generateOutcomeId } from "@/utils/generateId";
 import helperAbi from "@/config/abi/helperFactory";
 import { EVENTS, track } from "@/utils/analytics";
-import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
+import { useAppKitAccount } from "@reown/appkit/react";
+import useConnectWallet from "./useConnectWallet";
+import { usePublicClient, useWriteContract } from "wagmi";
+import { parseUnits, zeroAddress } from "viem";
+import { useAllowanceCheck } from "./useAllowanceCheck";
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type Create =
   // | "createWithInfraMarket"
@@ -34,18 +30,23 @@ const settlementFunctionMap: Record<
 const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const account = useAppKitAccount()
+  const { connect } = useConnectWallet()
+  const publicClient = usePublicClient()
   const upsertCampaign = useCampaignStore((s) => s.upsertCampaign);
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
   const minOracleCreatePrice = BigInt(4e6);
   const minDefaultCreatePrice = BigInt(3e6);
-  const { checkAndSwitchChain } = useCheckAndSwitchChain();
+  const { checkAndAprove } = useAllowanceCheck()
+  const { mutateAsync: writeContract } = useWriteContract()
   const create = async (
     { seedLiquidity, ...input }: CampaignInput,
-    account: Account,
   ) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
+          if (!account.address) return connect()
+          if (!publicClient) throw new Error("Public client is not set")
           await requestCreateCampaign({
             ...input,
             starting: Math.floor(new Date(input.starting).getTime() / 1000),
@@ -53,15 +54,11 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             creator: account.address,
             isFake: true,
           });
-          const userBalanceTx = prepareContractCall({
-            contract: config.contracts.fusdc,
-            method: "balanceOf",
-            params: [account?.address],
-          });
-          const userBalance = await simulateTransaction({
-            transaction: userBalanceTx,
-            account,
-          });
+          const userBalance = await publicClient.readContract({
+            ...config.contracts.fusdc,
+            functionName: "balanceOf",
+            args: [account.address as `0x${string}`],
+          })
           switch (input.settlementType) {
             case "ORACLE":
               if (minOracleCreatePrice > userBalance) {
@@ -95,52 +92,32 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             //   const descBytes = toUtf8Bytes(input.oracleDescription);
             //   hashedDocumentation = keccak256(descBytes) as `0x${string}`;
             // }
-            const seedLiquidityBigInt = toUnits(
+            const seedLiquidityBigInt = parseUnits(
               seedLiquidity.toString(),
               config.contracts.decimals.fusdc,
             );
-            const allowanceHelperTx = prepareContractCall({
-              contract: config.contracts.fusdc,
-              method: "allowance",
-              params: [
-                account.address,
-                clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-              ],
-            });
-            const allowanceOfHelper = (await simulateTransaction({
-              transaction: allowanceHelperTx,
-              account,
-            })) as bigint;
-            await checkAndSwitchChain();
-            if (allowanceOfHelper < seedLiquidityBigInt) {
-              const approveHelperTx = prepareContractCall({
-                contract: config.contracts.fusdc,
-                method: "approve",
-                params: [
-                  clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
-                  seedLiquidityBigInt,
-                ],
-              });
-              await sendTransaction({
-                transaction: approveHelperTx,
-                account,
-              });
-            }
+            await checkAndAprove({
+              contractAddress: config.contracts.fusdc.address,
+              spenderAddress: clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+              address: account.address,
+              amount: seedLiquidityBigInt
+            })
             const defaultFee = BigInt(10);
             const zeroFee = BigInt(0);
             const feeLp = BigInt(20);
-            const createTx = prepareContractCall({
-              contract: config.contracts.helperFactory,
-              method: settlementFunctionMap[input.settlementType],
-              params: [
+
+            await writeContract({
+              ...config.contracts.helperFactory,
+              functionName: settlementFunctionMap[input.settlementType],
+              args: [
                 {
-                  oracle: ZERO_ADDRESS,
+                  oracle: zeroAddress,
                   outcomes: creationList,
                   timeEnding: BigInt(
                     Math.floor(new Date(input.ending).getTime() / 1000),
                   ),
                   documentation: hashedDocumentation,
-                  feeRecipient: account.address,
+                  feeRecipient: account.address as `0x$${string}`,
                   feeCreator: defaultFee,
                   feeLp,
                   feeMinter: zeroFee,
@@ -149,10 +126,6 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
                   isDppm: false,
                 },
               ],
-            });
-            await sendTransaction({
-              transaction: createTx,
-              account,
             });
             // upsert campaign if on-chain campaign is created
             // so backend creation can be retried again

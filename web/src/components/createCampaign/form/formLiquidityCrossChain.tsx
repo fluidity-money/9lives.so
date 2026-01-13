@@ -4,20 +4,18 @@ import { combineClass } from "@/utils/combineClass";
 import ErrorInfo from "@/components/themed/errorInfo";
 import { UseFormRegister } from "react-hook-form";
 import Input from "@/components/themed/input";
-import { formatUnits, ZeroAddress } from "ethers";
 import Button from "@/components/themed/button";
-import { Account } from "thirdweb/wallets";
 import AssetSelector from "@/components/assetSelector";
 import ChainSelector from "@/components/chainSelector";
 import useTokensWithBalances from "@/hooks/useTokensWithBalances";
-import { Chain } from "thirdweb";
 import { useCallback } from "react";
-import { Token } from "@/types";
+import { Chain, Token } from "@/types";
+import { formatUnits, zeroAddress } from "viem";
 export default function CreateCampaignFormLiquidityCrossChain({
   register,
   errors,
   renderLabel = true,
-  account,
+  address,
   setValue,
   fromToken,
   fromDecimals,
@@ -31,7 +29,7 @@ export default function CreateCampaignFormLiquidityCrossChain({
   register: UseFormRegister<{ seedLiquidity: number } & any>;
   errors: any;
   renderLabel?: boolean;
-  account?: Account;
+  address?: string;
   seedLiquidity: number;
   fromChain: number;
   fromToken: string;
@@ -42,19 +40,19 @@ export default function CreateCampaignFormLiquidityCrossChain({
   fromDecimals?: number;
   isTokensSuccess: boolean;
 }) {
-  const { data: tokensWithBalances } = useTokensWithBalances(fromChain);
+  const { data: tokensWithBalances } = useTokensWithBalances(fromChain, tokens);
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
-      t.token_address.toLowerCase() === fromToken.toLowerCase() ||
-      (fromToken === ZeroAddress &&
-        t.token_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+      t.address.toLowerCase() === fromToken.toLowerCase() ||
+      (fromToken === zeroAddress &&
+        t.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   )?.balance;
   const usdValue = tokens
     ? seedLiquidity *
-      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+    +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : seedLiquidity;
   const setToMaxShare2 = async () => {
-    if (!selectedTokenBalance) return;
+    if (!selectedTokenBalance || !fromDecimals) return;
     const maxBalance = +formatUnits(selectedTokenBalance, fromDecimals);
     setValue("seedLiquidity", maxBalance);
     if (maxBalance > 0) clearErrors();
@@ -74,12 +72,12 @@ export default function CreateCampaignFormLiquidityCrossChain({
       <div className={combineClass("flex items-center justify-between")}>
         <div className="flex items-center gap-1">
           <span className="text-xs font-normal text-9black/50">
-            {selectedTokenBalance
+            {selectedTokenBalance && fromDecimals
               ? formatUnits(selectedTokenBalance, fromDecimals)
               : 0}
           </span>
           <Button
-            disabled={!account || !selectedTokenBalance}
+            disabled={!address || !selectedTokenBalance}
             onClick={setToMaxShare2}
             intent={"default"}
             size={"small"}

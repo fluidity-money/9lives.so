@@ -25,6 +25,9 @@ export function useAllowanceCheck() {
       address: contractAddress as `0x${string}`,
       abi: ERC20Abi,
     } as const;
+    
+    await checkAndSwitchChain();
+
     if (checkBalance) {
       const balance = await publicClient.readContract({
         ...erc20Contract,
