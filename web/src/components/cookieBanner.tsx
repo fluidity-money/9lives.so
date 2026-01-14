@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { deniedConsent, grantedConsent } from "@/components/googleAnalytics";
 import Button from "./themed/button";
 import { useUserStore } from "@/stores/userStore";
@@ -27,23 +27,23 @@ function useConsentMode(
   const shouldShowDialog =
     !isInMiniApp && (!consent || consentMode?.ad_storage === "denied");
 
-  function denyCookies() {
+  const denyCookies = useCallback(() => {
     gtag("consent", "update", deniedConsent);
     window.localStorage.setItem("consentMode", JSON.stringify(deniedConsent));
     setTrackingConsent(false);
-  }
+  }, [setTrackingConsent]);
 
-  function allowCookies() {
+  const allowCookies = useCallback(() => {
     gtag("consent", "update", grantedConsent);
     window.localStorage.setItem("consentMode", JSON.stringify(grantedConsent));
     setTrackingConsent(true);
-  }
+  }, [setTrackingConsent]);
 
   useEffect(() => {
     if (isInMiniApp) {
       allowCookies();
     }
-  }, [isInMiniApp]);
+  }, [isInMiniApp, allowCookies]);
 
   return {
     shouldShowDialog,
