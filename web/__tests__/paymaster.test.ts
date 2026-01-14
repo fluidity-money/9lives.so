@@ -1,23 +1,15 @@
-import { Account, privateKeyToAccount } from "thirdweb/wallets";
-import {
-  Chain,
-  createThirdwebClient,
-  defineChain,
-  getContract,
-  prepareContractCall,
-  sendTransaction,
-  simulateTransaction,
-  ThirdwebClient,
-} from "thirdweb";
 import { renderHook } from "@testing-library/react";
 import { act } from "react";
-import useSignForPermit from "@/hooks/useSignForPermit";
+import { createPublicClient, http, PublicClient } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { defineChain } from "viem";
 import { MaxUint256 } from "ethers";
+import useSignForPermit from "@/hooks/useSignForPermit";
 import ERC20Abi from "@/config/abi/erc20";
 describe("Paymaster", () => {
-  let account: Account;
-  let client: ThirdwebClient;
-  let chain: Chain;
+  let account: ReturnType<typeof privateKeyToAccount>;
+  let chain: ReturnType<typeof defineChain>;
+  let publicClient: PublicClient;
   let snapshotId: `0x${string}`;
   beforeAll(async () => {
     const rpcUrl = process.env.FORKNET_URL;
@@ -43,28 +35,30 @@ describe("Paymaster", () => {
       async (res) => ((await res.json()) as { result: `0x${string}` })?.result,
     );
     if (!snapshotId) throw new Error("Couldnt get latest snapshot id");
-    client = createThirdwebClient({
-      clientId: process.env.NEXT_PUBLIC_THIRDWEB_ID,
-      config: {
-        rpc: {
-          fetch: {
-            headers: {
-              Authorization: auth,
-            },
-          },
+
+    chain = defineChain({
+      id: 55244,
+      name: "Superposition",
+      nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+      rpcUrls: {
+        default: {
+          http: [rpcUrl],
         },
       },
     });
-    account = privateKeyToAccount({
-      client,
-      privateKey,
-    });
-    chain = defineChain({
-      name: "Superposition",
-      id: 55244,
-      nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
-      rpc: rpcUrl,
-    });
+
+    account = privateKeyToAccount(privateKey as `0x${string}`);
+
+    publicClient = createPublicClient({
+      chain,
+      transport: http(rpcUrl, {
+        fetchOptions: {
+          headers: {
+            Authorization: auth,
+          },
+        },
+      }),
+    }) as PublicClient;
   }, 30000);
   afterEach(async () => {
     const rpcUrl = process.env.FORKNET_URL;
@@ -90,7 +84,7 @@ describe("Paymaster", () => {
   }, 30000);
 
   test("Generated erc20 permit signature is valid", async () => {
-    const { result } = renderHook(() => useSignForPermit(chain, account));
+    const { result } = renderHook(() => useSignForPermit(account.address));
     const amountToSpend = MaxUint256;
     const spender = process.env.NEXT_PUBLIC_PAYMASTER_ADDR;
     const deadline = Math.floor(
@@ -98,9 +92,9 @@ describe("Paymaster", () => {
     ); // 30 days later
     let signature:
       | {
-          r: string;
-          s: string;
-          v: number;
+          r: `0x${string}`;
+          s: `0x${string}`;
+          v: bigint | undefined;
         }
       | undefined;
     await act(async () => {
@@ -110,39 +104,28 @@ describe("Paymaster", () => {
         deadline,
       });
     });
-    if (!signature) throw new Error("Signature is undefined");
-    const usdc = getContract({
-      abi: ERC20Abi,
-      address: process.env.NEXT_PUBLIC_FUSDC_ADDR,
-      chain,
-      client,
-    });
+    if (!signature || !signature.v) throw new Error("Signature is undefined");
+    const usdcAddress = process.env.NEXT_PUBLIC_FUSDC_ADDR as `0x${string}`;
     const concatSig = (signature.r +
       signature.s.slice(2) +
       signature.v.toString(16).padStart(2, "0")) as `0x${string}`;
-    const permitTx = prepareContractCall({
-      contract: usdc,
-      method: "permit",
-      params: [
+    await publicClient.simulateContract({
+      address: usdcAddress,
+      abi: ERC20Abi,
+      functionName: "permit",
+      args: [
         account.address,
-        spender,
+        spender as `0x${string}`,
         amountToSpend,
         BigInt(deadline),
         concatSig,
       ],
     });
-    await sendTransaction({
-      account,
-      transaction: permitTx,
-    });
-    const allowanceTx = prepareContractCall({
-      contract: usdc,
-      method: "allowance",
-      params: [account.address, spender],
-    });
-    const approvedAmount = await simulateTransaction({
-      account,
-      transaction: allowanceTx,
+    const approvedAmount = await publicClient.readContract({
+      address: usdcAddress,
+      abi: ERC20Abi,
+      functionName: "allowance",
+      args: [account.address, spender as `0x${string}`],
     });
     expect(approvedAmount).toEqual(amountToSpend);
   }, 30000);
