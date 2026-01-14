@@ -43,6 +43,9 @@ const eslintConfig = defineConfig([
     "test-results",
     "monocart-report",
     "src/gql",
+    "src/graffle/accounts/*/**",
+    "src/graffle/lives9/*/**",
+    "src/graffle/points/*/**"
   ]),
 ])
 

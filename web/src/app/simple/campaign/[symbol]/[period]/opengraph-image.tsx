@@ -6,8 +6,7 @@ export const size = {
   height: 630,
 };
 export const contentType = "image/png";
-type Params = Promise<{ symbol: string; period: string }>;
-export default async function ImageOG({ params }: { params: Params }) {
+export default async function ImageOG() {
   return new ImageResponse(
     <Image
       src={"https://9lives.so/images/dppm-og-image.png"}

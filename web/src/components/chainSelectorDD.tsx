@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { combineClass } from "@/utils/combineClass";
 import {
   Listbox,
@@ -24,11 +23,8 @@ export default function ChainSelectorDropdown({
   removeSPN?: boolean;
   variant?: "default" | "small";
 }) {
-  let chains = isInMiniApp
-    ? (JSON.parse(JSON.stringify(config.chains)) as Record<
-      string,
-      Chain
-    >)
+  const chains = isInMiniApp
+    ? (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>)
     : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
   if (removeSPN) {
     delete chains.superposition;
@@ -50,7 +46,7 @@ export default function ChainSelectorDropdown({
       >
         {selectedChain?.icon ? (
           <Image
-            src={selectedChain.icon as any}
+            src={selectedChain.icon}
             alt={selectedChain.name ?? ""}
             width={20}
             height={20}
@@ -88,7 +84,7 @@ export default function ChainSelectorDropdown({
             <div className="flex items-center gap-2">
               {chain.icon ? (
                 <Image
-                  src={chain.icon as any}
+                  src={chain.icon}
                   alt={chain.name ?? ""}
                   width={20}
                   height={20}

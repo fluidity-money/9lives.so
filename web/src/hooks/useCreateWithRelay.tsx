@@ -15,7 +15,13 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import useConnectWallet from "./useConnectWallet";
 import useBalance from "./useBalance";
 import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
-import { createWalletClient, custom, encodeFunctionData, parseUnits, zeroAddress } from "viem";
+import {
+  createWalletClient,
+  custom,
+  encodeFunctionData,
+  parseUnits,
+  zeroAddress,
+} from "viem";
 import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
 type ExtractNames<T> = T extends { name: infer N } ? N : never;
 type Create =
@@ -40,20 +46,23 @@ const useCreateWithRelay = ({
   const router = useRouter();
   const upsertCampaign = useCampaignStore((s) => s.upsertCampaign);
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
-  const { connect } = useConnectWallet()
-  const account = useAppKitAccount()
-  const { data: userBalance } = useBalance(account.address)
+  const { connect } = useConnectWallet();
+  const account = useAppKitAccount();
+  const { data: userBalance } = useBalance(account.address);
   const minOracleCreatePrice = BigInt(4e6);
   const minDefaultCreatePrice = BigInt(3e6);
-  const { walletProvider } = useAppKitProvider("eip155");
-  const { checkAndSwitchChain } = useCheckAndSwitchChain()
-  const createWithRelay = async (
-    { seedLiquidity, fromDecimals, ...input }: CampaignInput,
-  ) =>
+  const { walletProvider } =
+    useAppKitProvider<Parameters<typeof custom>[0]>("eip155");
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
+  const createWithRelay = async ({
+    seedLiquidity,
+    fromDecimals,
+    ...input
+  }: CampaignInput) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account.address) return connect()
+          if (!account.address) return connect();
           if (!fromDecimals) throw new Error("fromDecimals is undefined");
 
           let usdValueBigInt = "0";
@@ -88,7 +97,7 @@ const useCreateWithRelay = ({
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
               name: input.name.slice(0, 8) + o.name,
             }));
-            let hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
+            const hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
             if (input.settlementType === "CONTRACT")
               throw new Error("Contract settlement is not supported yet");
             if (input.settlementType === "ORACLE")
@@ -177,14 +186,16 @@ const useCreateWithRelay = ({
 
             const viemWalletClient = createWalletClient({
               account: account.address as `0x${string}`,
-              chain: Object.values(config.chains).find((i) => i.id === input.fromChain),
-              transport: custom(walletProvider as any),
+              chain: Object.values(config.chains).find(
+                (i) => i.id === input.fromChain,
+              ),
+              transport: custom(walletProvider),
             });
 
             let requestId: string | undefined;
             await relayClient.actions.execute({
               quote,
-              wallet: adaptViemWallet(viemWalletClient as any),
+              wallet: adaptViemWallet(viemWalletClient),
               onProgress: ({ currentStep, currentStepItem }) => {
                 if (currentStep && currentStepItem) {
                   requestId = currentStep?.requestId;

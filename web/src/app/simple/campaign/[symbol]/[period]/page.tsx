@@ -17,7 +17,7 @@ export async function generateStaticParams() {
   return Object.values(config.simpleMarkets).reduce(
     (acc, v) => {
       if (v.listed) {
-        for (let period of v.periods) {
+        for (const period of v.periods) {
           acc.push({
             symbol: v.slug,
             period,
@@ -85,33 +85,38 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
         <Suspense
           fallback={
             <div>
-              <h1 className="font-chicago text-xl md:text-2xl">
-                {config.simpleMarkets[symbol].title} above $...... on{" "}
-                {new Date().toLocaleString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  hourCycle: "h23",
-                  minute: "2-digit",
-                  timeZone: "UTC",
-                })}{" "}
-                UTC
-              </h1>
-              <span className="font-geneva text-xs uppercase text-[#808080]">
-                {new Date().toLocaleString("default", {
-                  hour: "numeric",
-                  timeZone: "UTC",
-                })}{" "}
-                -{" "}
-                {new Date(Date.now() + 1000 * 60 * 60).toLocaleString(
-                  "default",
-                  {
-                    hour: "numeric",
-                    timeZone: "UTC",
-                  },
-                )}
-                {" UTC"}
-              </span>
+              {(() => {
+                const now = new Date();
+                const nextHour = new Date(now.getTime() + 1000 * 60 * 60);
+                return (
+                  <>
+                    <h1 className="font-chicago text-xl md:text-2xl">
+                      {config.simpleMarkets[symbol].title} above $...... on{" "}
+                      {now.toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        hourCycle: "h23",
+                        minute: "2-digit",
+                        timeZone: "UTC",
+                      })}{" "}
+                      UTC
+                    </h1>
+                    <span className="font-geneva text-xs uppercase text-[#808080]">
+                      {now.toLocaleString("default", {
+                        hour: "numeric",
+                        timeZone: "UTC",
+                      })}{" "}
+                      -{" "}
+                      {nextHour.toLocaleString("default", {
+                        hour: "numeric",
+                        timeZone: "UTC",
+                      })}
+                      {" UTC"}
+                    </span>
+                  </>
+                );
+              })()}
             </div>
           }
         >

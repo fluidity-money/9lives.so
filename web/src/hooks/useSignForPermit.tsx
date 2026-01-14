@@ -1,11 +1,11 @@
 import { destinationChain } from "@/config/chains";
 import config from "@/config";
 import { usePublicClient, useSignTypedData } from "wagmi";
-import { parseSignature } from 'viem';
+import { parseSignature } from "viem";
 
 export default function useSignForPermit(address?: string) {
-  const { mutateAsync: signTypedData } = useSignTypedData()
-  const publicClient = usePublicClient()
+  const { mutateAsync: signTypedData } = useSignTypedData();
+  const publicClient = usePublicClient();
   const types = {
     Permit: [
       { name: "owner", type: "address" },
@@ -21,21 +21,21 @@ export default function useSignForPermit(address?: string) {
     deadline,
   }: {
     spender: string;
-    amountToSpend: BigInt;
+    amountToSpend: bigint;
     deadline: number;
   }) => {
     if (!address) throw new Error("No account is connected");
-    if (!publicClient) throw new Error("Public client is not set")
+    if (!publicClient) throw new Error("Public client is not set");
     const name = await publicClient.readContract({
       ...config.contracts.fusdc,
       functionName: "name",
       args: [],
-    })
+    });
     const nonce = await publicClient.readContract({
       ...config.contracts.fusdc,
       functionName: "nonces",
       args: [address as `0x${string}`],
-    })
+    });
     const domain = {
       name,
       version: "2",

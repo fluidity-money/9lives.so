@@ -5,9 +5,12 @@ import { hashChainId } from "@/utils/hashChainId";
 import { parseSignature, zeroAddress } from "viem";
 import { usePublicClient, useSignTypedData } from "wagmi";
 
-export default function useSignForPaymaster(chainId?: number | string, address?: string) {
-  const { mutateAsync: signTypedData } = useSignTypedData()
-  const publicClient = usePublicClient()
+export default function useSignForPaymaster(
+  chainId?: number | string,
+  address?: string,
+) {
+  const { mutateAsync: signTypedData } = useSignTypedData();
+  const publicClient = usePublicClient();
   const domain = {
     name: "NineLivesPaymaster",
     version: "1",
@@ -41,28 +44,28 @@ export default function useSignForPaymaster(chainId?: number | string, address?:
   }: {
     tradingAddr: string;
     referrer?: string;
-    amountToSpend: BigInt;
+    amountToSpend: bigint;
     deadline: number;
     outcomeId?: string;
     type: PaymasterType;
-    minimumBack: BigInt;
+    minimumBack: bigint;
   }) => {
     if (!chainId) throw new Error("No chain is detected");
     if (!address) throw new Error("No account is connected");
-    if (!publicClient) throw new Error("Public client is not set")
+    if (!publicClient) throw new Error("Public client is not set");
 
     const domainSeparator = await publicClient.readContract({
       ...config.contracts.paymaster,
       functionName: "domainSeparators",
       args: [BigInt(chainId)],
-    })
+    });
 
     const nonce = await publicClient.readContract({
       ...config.contracts.paymaster,
       functionName: "nonces",
       args: [domainSeparator, address as `0x${string}`],
-    })
-    
+    });
+
     const message = {
       owner: address,
       nonce,

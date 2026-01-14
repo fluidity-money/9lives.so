@@ -10,7 +10,7 @@
     "start": "next start",
     "lint:next": "eslint .",
     "lint:tests": "eslint '__tests__/**/*.{ts,tsx}'  && eslint 'e2e/**/*.{ts,tsx}'",
-    "clean": "cross-env NODE_V8_COVERAGE=.v8-coverage node ./scripts/clean.cjs",
+    "clean": "cross-env NODE_V8_COVERAGE=.v8-coverage node ./scripts/clean.mjs",
     "test:start": "cross-env NODE_V8_COVERAGE=.v8-coverage NODE_OPTIONS=--inspect=9229 next dev",
     "test:command": "pnpm clean && pnpm test:start",
     "test:unit": "jest",

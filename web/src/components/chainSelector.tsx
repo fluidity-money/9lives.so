@@ -16,11 +16,8 @@ export default function ChainSelector({
   title?: string;
   removeSPN?: boolean;
 }) {
-  let chains = isInMiniApp
-    ? (JSON.parse(JSON.stringify(config.chains)) as Record<
-      string,
-      Chain
-    >)
+  const chains = isInMiniApp
+    ? (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>)
     : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
   if (removeSPN) {
     delete chains.superposition;
@@ -42,16 +39,18 @@ export default function ChainSelector({
             title={chain.name}
             className="cursor-pointer"
           >
-            <Image
-              alt={chain.name ?? ""}
-              src={chain.icon as any}
-              className={combineClass(
-                chain.id === selectedChainId
-                  ? "border-2 border-9black"
-                  : "border border-9black/50 grayscale",
-                "size-8",
-              )}
-            />
+            {chain.icon ? (
+              <Image
+                alt={chain.name ?? ""}
+                src={chain.icon}
+                className={combineClass(
+                  chain.id === selectedChainId
+                    ? "border-2 border-9black"
+                    : "border border-9black/50 grayscale",
+                  "size-8",
+                )}
+              />
+            ) : null}
           </div>
         ))}
       </div>

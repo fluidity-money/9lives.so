@@ -175,7 +175,7 @@ export default function DetailBuyAction({
   });
   const usdValue = tokens
     ? supply *
-    +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : supply;
   const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const { data: estimatedSharesToGet } = useReturnValue({
@@ -274,37 +274,37 @@ export default function DetailBuyAction({
           fromDecimals,
           data.isDppm && data.priceMetadata
             ? {
-              baseAsset: data.priceMetadata.baseAsset,
-              priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
-              priceOnBuy: currentPrice?.price,
-              volumeOnBuy: data.totalVolume,
-              minuteOnBuy: Number(
-                new Date().toLocaleString("en-US", {
-                  timeZone: "UTC",
-                  minute: "numeric",
-                }),
-              ),
-            }
+                baseAsset: data.priceMetadata.baseAsset,
+                priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+                priceOnBuy: currentPrice?.price,
+                volumeOnBuy: data.totalVolume,
+                minuteOnBuy: Number(
+                  new Date().toLocaleString("en-US", {
+                    timeZone: "UTC",
+                    minute: "numeric",
+                  }),
+                ),
+              }
             : undefined,
         );
       } else {
-        let action = enabledASBuy ? buyWithAS : buy;
+        const action = enabledASBuy ? buyWithAS : buy;
         await action(
           supply,
           profile?.settings?.refererr ?? "",
           data.isDppm && data.priceMetadata
             ? {
-              baseAsset: data.priceMetadata.baseAsset,
-              priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
-              priceOnBuy: currentPrice?.price,
-              volumeOnBuy: data.totalVolume,
-              minuteOnBuy: Number(
-                new Date().toLocaleString("en-US", {
-                  timeZone: "UTC",
-                  minute: "numeric",
-                }),
-              ),
-            }
+                baseAsset: data.priceMetadata.baseAsset,
+                priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+                priceOnBuy: currentPrice?.price,
+                volumeOnBuy: data.totalVolume,
+                minuteOnBuy: Number(
+                  new Date().toLocaleString("en-US", {
+                    timeZone: "UTC",
+                    minute: "numeric",
+                  }),
+                ),
+              }
             : undefined,
         );
       }
@@ -317,7 +317,10 @@ export default function DetailBuyAction({
   }
   const setToMaxShare = async () => {
     if (!selectedTokenBalance) return;
-    const maxfUSDC = +formatUnits(selectedTokenBalance, config.contracts.decimals.fusdc);
+    const maxfUSDC = +formatUnits(
+      selectedTokenBalance,
+      config.contracts.decimals.fusdc,
+    );
     setValue("supply", maxfUSDC);
     if (maxfUSDC > 0) clearErrors();
   };
@@ -327,7 +330,8 @@ export default function DetailBuyAction({
     setValue("supply", maxBalance);
     if (maxBalance > 0) clearErrors();
   };
-  const onSubmit = () => (!account.isConnected ? connect() : handleSubmit(handleBuy)());
+  const onSubmit = () =>
+    !account.isConnected ? connect() : handleSubmit(handleBuy)();
   useEffect(() => {
     if (usdValue) {
       setValue("usdValue", usdValue);
@@ -347,11 +351,10 @@ export default function DetailBuyAction({
     [setValue],
   );
   useEffect(() => {
-    const selectedNetwork = Object.values(config.chains).find((c) => c.id === chainId)
-    if (
-      chainId &&
-      selectedNetwork
-    ) {
+    const selectedNetwork = Object.values(config.chains).find(
+      (c) => c.id === chainId,
+    );
+    if (chainId && selectedNetwork) {
       handleNetworkChange(selectedNetwork);
     }
   }, [chainId, handleNetworkChange]);
@@ -380,11 +383,11 @@ export default function DetailBuyAction({
           )}
         >
           {outcome.picture ||
-            (!outcome.picture && (data.isYesNo || data.isDppm)) ? (
+          (!outcome.picture && (data.isYesNo || data.isDppm)) ? (
             <div
               className={combineClass(
                 !(data.isYesNo || data.isDppm) &&
-                "size-10 overflow-hidden rounded-full",
+                  "size-10 overflow-hidden rounded-full",
               )}
             >
               <Image
@@ -508,7 +511,7 @@ export default function DetailBuyAction({
                 className={combineClass(
                   "w-full flex-1 text-center",
                   (errors.supply || errors.usdValue) &&
-                  "border-2 border-red-500",
+                    "border-2 border-red-500",
                 )}
               />
             </div>

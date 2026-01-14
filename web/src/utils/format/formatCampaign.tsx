@@ -110,9 +110,7 @@ export function formatOutcome(ro: RawOutcome, isDppm?: boolean): Outcome {
     share: { address: ro.share.address as `0x${string}` },
   };
 }
-function isSimpleMarketKey(k: string): k is SimpleMarketKey {
-  return k in config.simpleMarkets;
-}
+
 export function formatParticipatedContent(
   ro: NonNullable<RawParticipatedCampaign>["content"],
 ) {

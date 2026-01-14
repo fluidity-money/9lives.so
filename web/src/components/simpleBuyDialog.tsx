@@ -21,7 +21,6 @@ import { Chain, SimpleCampaignDetail } from "@/types";
 import ChainSelectorDropdown from "./chainSelectorDD";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
-import usePointsForDppmMint from "@/hooks/usePointsForDppmMint";
 import useAccount from "@/hooks/useAccount";
 import PointsIndicator from "./pointsIndicator";
 import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
@@ -43,7 +42,6 @@ export default function SimpleBuyDialog({
   const [isFundModalOpen, setFundModalOpen] = useState<boolean>(false);
   const { connect, isConnecting } = useConnectWallet();
   const selectedOutcome = data.outcomes[outcomeIdx];
-  // const enabledPaymaster = useFeatureFlag("enable paymaster dppm buy");
   const enabledASBuy = useFeatureFlag("enable account system buy");
   const { data: profile } = useProfile();
   const account = useAppKitAccount();
@@ -53,12 +51,6 @@ export default function SimpleBuyDialog({
     outcomeId: selectedOutcome.identifier,
     openFundModal: () => setFundModalOpen(true),
   });
-  // const { buy: buyWithPaymaster } = useBuyWithPaymaster({
-  //   shareAddr: selectedOutcome.share.address,
-  //   outcomeId: selectedOutcome.identifier,
-  //   data,
-  //   openFundModal: () => setFundModalOpen(true),
-  // });
   const { buy: buyWithAS } = useAccount({
     shareAddr: selectedOutcome.share.address,
     outcomeId: selectedOutcome.identifier,
@@ -112,7 +104,6 @@ export default function SimpleBuyDialog({
   const {
     watch,
     handleSubmit,
-    register,
     setValue,
     clearErrors,
     formState: { errors },
@@ -139,7 +130,7 @@ export default function SimpleBuyDialog({
   const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const usdValue = tokens
     ? Number(supply) *
-    +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : Number(supply);
   const selectedTokenBalance = tokensWithBalances?.find(
     (t) =>
@@ -216,7 +207,7 @@ export default function SimpleBuyDialog({
           },
         );
       } else {
-        let action = enabledASBuy ? buyWithAS : buy;
+        const action = enabledASBuy ? buyWithAS : buy;
         await action(Number(supply), profile?.settings?.refererr ?? "", {
           baseAsset: data.priceMetadata.baseAsset,
           priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
@@ -246,10 +237,10 @@ export default function SimpleBuyDialog({
     [setValue],
   );
   useEffect(() => {
-    if (
-      activeChain
-    ) {
-      const selectedChain = Object.values(config.chains).find((c) => c.id === activeChain.chainId)
+    if (activeChain) {
+      const selectedChain = Object.values(config.chains).find(
+        (c) => c.id === activeChain.chainId,
+      );
       if (selectedChain) {
         handleNetworkChange(selectedChain);
       }
@@ -259,7 +250,6 @@ export default function SimpleBuyDialog({
   const quickAddAsPercentage =
     posthog.getFeatureFlag("quick-add-buttons-as-percentages") === "test";
 
-  const points = usePointsForDppmMint(data.starting, data.ending);
   const handleSupplyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let v = e.target.value;
 

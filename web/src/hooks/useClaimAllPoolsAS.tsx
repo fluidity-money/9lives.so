@@ -4,33 +4,40 @@ import { UnclaimedCampaign } from "@/types";
 import { ninelivesClaimAll } from "@/providers/graphqlClient";
 import { checkAndSetSecret, getSecret } from "./useAccount";
 import { useSignMessage } from "wagmi";
-import useConnectWallet from "./useConnectWallet";
+
 export default function useClaimAllPoolsWithAS(
   data: UnclaimedCampaign[],
   closeModal?: () => void,
   token?: string,
 ) {
   const queryClient = useQueryClient();
-  const { mutateAsync: signMessage } = useSignMessage()
-  const { connect } = useConnectWallet()
-  return useMutation<string, Error, { addresses: string[]; walletAddress: string }>({
+  const { mutateAsync: signMessage } = useSignMessage();
+  return useMutation<
+    UnclaimedCampaign[] | void,
+    Error,
+    { addresses: string[]; walletAddress: string }
+  >({
     mutationKey: ["claimAllPools"],
     mutationFn: async ({ addresses, walletAddress }) => {
-      if (!walletAddress) return connect();
-      let secret = await checkAndSetSecret(walletAddress, signMessage);
+      if (!walletAddress) throw new Error("No wallet is connected");
+      const secret = await checkAndSetSecret(walletAddress, signMessage);
       if (!secret) throw new Error("No secret is set");
+      type ResponseType = {
+        response?: { status: number };
+        data?: { claimRewards: UnclaimedCampaign[] };
+      };
       let result = (await ninelivesClaimAll({
         secret,
         eoaAddress: walletAddress,
         markets: addresses,
-      })) as any;
+      })) as ResponseType;
       if (result?.response?.status === 401) {
         const newSecret = await getSecret(walletAddress, signMessage);
-        result = await ninelivesClaimAll({
+        result = (await ninelivesClaimAll({
           secret: newSecret,
           eoaAddress: walletAddress,
           markets: addresses,
-        });
+        })) as ResponseType;
       }
       return result?.data?.claimRewards;
     },
@@ -65,7 +72,13 @@ export default function useClaimAllPoolsWithAS(
           ],
         });
         queryClient.invalidateQueries({
-          queryKey: ["positions", c.poolAddress, c.outcomes, walletAddress, false],
+          queryKey: [
+            "positions",
+            c.poolAddress,
+            c.outcomes,
+            walletAddress,
+            false,
+          ],
         });
 
         queryClient.invalidateQueries({

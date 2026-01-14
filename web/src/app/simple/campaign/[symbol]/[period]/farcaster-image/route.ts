@@ -5,9 +5,7 @@ const size = {
   width: 1200,
   height: 800,
 };
-type Params = Promise<{ symbol: string; period: string }>;
-export async function GET(_: Request, { params }: { params: Params }) {
-  const { symbol, period } = await params;
+export async function GET() {
   return new ImageResponse(
     React.createElement("img", {
       src: "https://9lives.so/images/dppm-og-image.png",

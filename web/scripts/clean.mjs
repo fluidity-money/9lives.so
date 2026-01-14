@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from "node:fs"
 
 const dir = process.env.NODE_V8_COVERAGE;
 

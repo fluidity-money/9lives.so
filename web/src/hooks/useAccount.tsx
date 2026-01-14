@@ -17,7 +17,7 @@ import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { usePublicClient, useSignMessage } from "wagmi";
 import { maxUint256, parseUnits } from "viem";
-import { parseSignature } from 'viem';
+import { parseSignature } from "viem";
 
 const SECRET_KEY = "9lives-account-secret";
 type SignMessage = ({ message }: { message: string }) => Promise<`0x${string}`>;
@@ -138,7 +138,7 @@ export default function useAccount({
         try {
           if (!account.address) throw new Error("No wallet is connected");
           if (!publicClient) throw new Error("No public client is set");
-          let secret = await checkAndSetSecret(account.address, signMessage);
+          const secret = await checkAndSetSecret(account.address, signMessage);
           if (!secret) throw new Error("No secret is set");
           await checkAndSwitchChain();
           const amount = parseUnits(
@@ -190,7 +190,7 @@ export default function useAccount({
             secret,
             eoaAddress: account.address,
             permit,
-          })) as any;
+          })) as { response?: { status: number } };
           if (result?.response?.status === 401) {
             const newSecret = await getSecret(account.address, signMessage);
             await ninelivesMint({

@@ -1,4 +1,4 @@
-export default {
+const mrc = {
   // logging: 'debug',
   name: "Next.js V8 Coverage Report",
 
@@ -26,3 +26,5 @@ export default {
 
   reports: ["v8", "console-details"],
 };
+
+export default mrc;

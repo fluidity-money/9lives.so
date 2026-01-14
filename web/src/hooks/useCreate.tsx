@@ -30,23 +30,21 @@ const settlementFunctionMap: Record<
 const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const account = useAppKitAccount()
-  const { connect } = useConnectWallet()
-  const publicClient = usePublicClient()
+  const account = useAppKitAccount();
+  const { connect } = useConnectWallet();
+  const publicClient = usePublicClient();
   const upsertCampaign = useCampaignStore((s) => s.upsertCampaign);
   const draftCampaigns = useCampaignStore((s) => s.campaigns);
   const minOracleCreatePrice = BigInt(4e6);
   const minDefaultCreatePrice = BigInt(3e6);
-  const { checkAndAprove } = useAllowanceCheck()
-  const { mutateAsync: writeContract } = useWriteContract()
-  const create = async (
-    { seedLiquidity, ...input }: CampaignInput,
-  ) =>
+  const { checkAndAprove } = useAllowanceCheck();
+  const { mutateAsync: writeContract } = useWriteContract();
+  const create = async ({ seedLiquidity, ...input }: CampaignInput) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account.address) return connect()
-          if (!publicClient) throw new Error("Public client is not set")
+          if (!account.address) return connect();
+          if (!publicClient) throw new Error("Public client is not set");
           await requestCreateCampaign({
             ...input,
             starting: Math.floor(new Date(input.starting).getTime() / 1000),
@@ -58,7 +56,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
             ...config.contracts.fusdc,
             functionName: "balanceOf",
             args: [account.address as `0x${string}`],
-          })
+          });
           switch (input.settlementType) {
             case "ORACLE":
               if (minOracleCreatePrice > userBalance) {
@@ -83,7 +81,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
               sqrtPrice: BigInt(79228162514264337593543950336), // with $1 for each outcome
               name: input.name.slice(0, 8) + o.name,
             }));
-            let hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
+            const hashedDocumentation: `0x${string}` = `0x${"0".repeat(64)}`;
             if (input.settlementType === "CONTRACT")
               throw new Error("Contract settlement is not supported yet");
             if (input.settlementType === "ORACLE")
@@ -100,8 +98,8 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
               contractAddress: config.contracts.fusdc.address,
               spenderAddress: clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
               address: account.address,
-              amount: seedLiquidityBigInt
-            })
+              amount: seedLiquidityBigInt,
+            });
             const defaultFee = BigInt(10);
             const zeroFee = BigInt(0);
             const feeLp = BigInt(20);

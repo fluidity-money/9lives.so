@@ -142,7 +142,7 @@ export default function WebSocketProvider() {
 
             const filteredAttempts: PaymasterAttempt[] = [];
 
-            for (const [poll_id, group] of grouped.entries()) {
+            for (const [, group] of grouped.entries()) {
               const successItem = group.find((a) => a.success);
               if (successItem) {
                 filteredAttempts.push(successItem);

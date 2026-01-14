@@ -78,7 +78,7 @@ export default function AddLiquidityDialog({
   )?.balance;
   const usdValue = tokens
     ? supply *
-    +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : supply;
   const fromDecimals = tokens?.find((t) => t.address === fromToken)?.decimals;
   const { add, addWithRelay } = useLiquidity({
@@ -94,7 +94,7 @@ export default function AddLiquidityDialog({
       if (enabledRelay && input.fromChain !== config.chains.superposition.id) {
         await addWithRelay({ ...input }, fromDecimals);
       } else {
-        let action = enabledPaymaster ? addWithPaymaster : add;
+        const action = enabledPaymaster ? addWithPaymaster : add;
         await action(input.amount.toString());
       }
       close?.();
@@ -112,7 +112,10 @@ export default function AddLiquidityDialog({
   };
   const setToMaxShare = async () => {
     if (!selectedTokenBalance) return;
-    const maxfUSDC = +formatUnits(selectedTokenBalance, config.contracts.decimals.fusdc);
+    const maxfUSDC = +formatUnits(
+      selectedTokenBalance,
+      config.contracts.decimals.fusdc,
+    );
     setValue("amount", maxfUSDC);
     if (maxfUSDC > 0) clearErrors();
   };

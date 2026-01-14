@@ -76,7 +76,7 @@ export default function PriceChartWrapper({
         basePrice={+campaignData.priceMetadata.priceTargetForUp}
         id={campaignData.identifier}
       />
-      <div className="absolute bottom-4 left-[1px] z-[9] md:left-[-51px]">
+      <div className="absolute bottom-4 left-px z-[9] md:left-[-51px]">
         <LiveTrades
           campaignId={campaignData.identifier}
           poolAddress={campaignData.poolAddress}
