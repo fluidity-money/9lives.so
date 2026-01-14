@@ -15,6 +15,7 @@ import { useUserStore } from "@/stores/userStore";
 import useBalance from "@/hooks/useBalance";
 import useWithdraw from "@/hooks/useWithdraw";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { Chain } from "@/types";
 
 export default function WithdrawDialog() {
   const account = useAppKitAccount();
@@ -22,7 +23,7 @@ export default function WithdrawDialog() {
   const { connect } = useConnectWallet();
   const [isLoading, setIsLoading] = useState(false);
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
-  const { data: balance } = useBalance(account);
+  const { data: balance } = useBalance(account.address);
   const maxBalance = Number(formatFusdc(balance, 6));
   const formSchema = z.object({
     amount: z.preprocess(

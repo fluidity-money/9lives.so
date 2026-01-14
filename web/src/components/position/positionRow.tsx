@@ -102,8 +102,8 @@ export default function PositionRow({
   const PnL = campaignContent.isDppm
     ? totalRewards - Number(formatFusdc(historicalValue, 6))
     : Number(
-      formatFusdc((estimationOfBurn ?? BigInt(0)) - BigInt(historicalValue)),
-    );
+        formatFusdc((estimationOfBurn ?? BigInt(0)) - BigInt(historicalValue)),
+      );
   const percentageChange = Math.abs(
     (PnL / +formatFusdc(historicalValue, 6)) * 100,
   ).toFixed(2);
@@ -143,16 +143,16 @@ export default function PositionRow({
     }
   }, [reward, data.id, addPosition, isWinner, historicalValue]);
   async function handleClaim() {
-    if (!account) return connect();
+    if (!account.address) return connect();
     try {
       setIsClaiming(true);
       if (campaignContent.isDppm) {
         await claimAllPools({
           addresses: [campaignContent.poolAddress],
-          account,
+          walletAddress: account.address,
         });
       } else {
-        await claim(account, data.balanceRaw);
+        await claim(account.address, data.balanceRaw);
       }
     } finally {
       setIsClaiming(false);
@@ -169,9 +169,9 @@ export default function PositionRow({
           <div className="flex items-center justify-between p-2">
             <div className="flex items-center gap-2">
               {!detailPage &&
-                (data.outcomePic ||
-                  (!data.outcomePic &&
-                    (data.name === "Yes" || data.name === "No"))) ? (
+              (data.outcomePic ||
+                (!data.outcomePic &&
+                  (data.name === "Yes" || data.name === "No"))) ? (
                 <Image
                   src={
                     !data.outcomePic
@@ -320,7 +320,7 @@ export default function PositionRow({
                 {Math.abs(
                   ((reward - +formatFusdc(historicalValue, 2)) /
                     +formatFusdc(historicalValue, 6)) *
-                  100,
+                    100,
                 ).toFixed(2)}
                 {"%"}
               </span>
@@ -411,9 +411,9 @@ export default function PositionRow({
           const PnL =
             h.type === "buy"
               ? +formatFusdc(h.toAmount, 6) * Number(price ?? 0) -
-              +formatFusdc(h.fromAmount, 6)
+                +formatFusdc(h.fromAmount, 6)
               : +formatFusdc(h.fromAmount, 6) * Number(price ?? 0) -
-              +formatFusdc(h.toAmount, 6);
+                +formatFusdc(h.toAmount, 6);
           const percentageChange =
             h.type === "buy"
               ? Math.abs((PnL / +formatFusdc(h.fromAmount, 6)) * 100).toFixed(2)

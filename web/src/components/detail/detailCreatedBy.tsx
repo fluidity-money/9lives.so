@@ -23,7 +23,7 @@ export default function DetailCreatedBy({
         <a
           rel="noopener noreferrer"
           target="_blank"
-          href={`${config.destinationChain.blockExplorers![0].url}/address/${address}`}
+          href={`${config.destinationChain.blockExplorers.default.url}/address/${address}`}
         >
           {prefix && "Created by "}
           {domain?.startsWith("0x")

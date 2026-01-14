@@ -95,8 +95,11 @@ export default function SimpleRewardsDialog({
   ).toFixed(2);
 
   const handleClick = () => {
-    if (!account) return connect();
-    claimAllPools({ addresses: data.map((i) => i.poolAddress), account });
+    if (!account.address) return connect();
+    claimAllPools({
+      addresses: data.map((i) => i.poolAddress),
+      walletAddress: account.address,
+    });
   };
   return (
     <div className="flex flex-col space-y-3">

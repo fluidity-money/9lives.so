@@ -61,7 +61,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
   });
   const { results: dppmResults, totalRewards } = useDppmRewards({
     tradingAddr: data.poolAddress,
-    account,
+    address: account.address,
     priceMetadata: data.priceMetadata,
     starting: data.starting,
     ending: data.ending,
@@ -81,50 +81,50 @@ export default function DetailResults({ data }: DetailResultsProps) {
       : userRewardAmm;
   const rewardBreakdown = data.isDppm
     ? [
-      {
-        title: "Base Reward",
-        value: `$${dppmResults.dppmFusdc}`,
-      },
-      {
-        title: "Bonus",
-        value: `$${dppmResults.ninetailsWinnerFusdc}`,
-      },
-      {
-        title: "Refund",
-        value: `$${dppmResults.ninetailsLoserFusd}`,
-      },
-    ]
+        {
+          title: "Base Reward",
+          value: `$${dppmResults.dppmFusdc}`,
+        },
+        {
+          title: "Bonus",
+          value: `$${dppmResults.ninetailsWinnerFusdc}`,
+        },
+        {
+          title: "Refund",
+          value: `$${dppmResults.ninetailsLoserFusd}`,
+        },
+      ]
     : [
-      {
-        title: "Your Shares",
-        value: `${accountShares ?? 0}`,
-      },
-      {
-        title: "Total Investment",
-        value: `$${formatFusdc(data.totalVolume, 2)}`,
-      },
-      {
-        title: "Total Shares of The Winner",
-        value: formatFusdc(totalSharesOfWinner, 2),
-      },
-      {
-        title: "Avg. Price/Share",
-        value: `$${avgPrice.toFixed(2)}`,
-      },
-    ];
+        {
+          title: "Your Shares",
+          value: `${accountShares ?? 0}`,
+        },
+        {
+          title: "Total Investment",
+          value: `$${formatFusdc(data.totalVolume, 2)}`,
+        },
+        {
+          title: "Total Shares of The Winner",
+          value: formatFusdc(totalSharesOfWinner, 2),
+        },
+        {
+          title: "Avg. Price/Share",
+          value: `$${avgPrice.toFixed(2)}`,
+        },
+      ];
   const noClaim = data.isDppm
     ? !(userRewardDppm > 0)
     : account &&
-    ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
-      !accountShares);
+      ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
+        !accountShares);
   async function handleClaim() {
-    if (!account) return connect();
+    if (!account.address) return connect();
     try {
       setIsClaiming(true);
       if (data.isDppm) {
-        await claimAll(account);
+        await claimAll(account.address);
       } else {
-        await claim(account, accountSharesRaw);
+        await claim(account.address, accountSharesRaw);
       }
     } finally {
       setIsClaiming(false);
@@ -160,7 +160,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
             <div
               className={combineClass(
                 !(data.isYesNo || data.isDppm) &&
-                "size-10 overflow-hidden rounded-full",
+                  "size-10 overflow-hidden rounded-full",
               )}
             >
               <Image

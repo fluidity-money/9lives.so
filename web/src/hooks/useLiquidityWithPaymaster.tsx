@@ -208,7 +208,7 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
               amount: result.amount,
               data,
               opType: "ADD_LIQUIDITY",
-              account: account.address,
+              address: account.address,
             });
             res(result.ticketId);
           } else {
@@ -247,7 +247,7 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
               amount: result.amount,
               data,
               opType: "REMOVE_LIQUIDITY",
-              account: account.address,
+              address: account.address,
             });
             res(result.ticketId);
           } else {
@@ -281,7 +281,7 @@ const useLiquidityWithPaymaster = ({ data }: { data: CampaignDetail }) => {
               amount: result.amount,
               data,
               opType: "REMOVE_LIQUIDITY",
-              account: account.address,
+              address: account.address,
             });
             track(EVENTS.REMOVE_LIQUIDITY, {
               amount: result.amount,

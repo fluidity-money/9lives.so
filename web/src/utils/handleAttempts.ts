@@ -41,7 +41,7 @@ const handleTicketAttempts: Record<
         "positions",
         t.data.poolAddress,
         t.data.outcomes,
-        t.account,
+        t.address,
         t.data.isDpm,
       ],
     });
@@ -68,10 +68,10 @@ const handleTicketAttempts: Record<
       });
     }
     qc.invalidateQueries({
-      queryKey: ["positionHistory", t.account.address, outcomeIds],
+      queryKey: ["positionHistory", t.address, outcomeIds],
     });
     qc.invalidateQueries({
-      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+      queryKey: ["balance", t.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
   },
   SELL: (t, a, qc) => {
@@ -99,7 +99,7 @@ const handleTicketAttempts: Record<
         "positions",
         t.data.poolAddress,
         t.data.outcomes,
-        t.account,
+        t.address,
         t.data.isDpm,
       ],
     });
@@ -119,10 +119,10 @@ const handleTicketAttempts: Record<
       queryKey: ["campaign", t.data.identifier],
     });
     qc.invalidateQueries({
-      queryKey: ["positionHistory", t.account.address, outcomeIds],
+      queryKey: ["positionHistory", t.address, outcomeIds],
     });
     qc.invalidateQueries({
-      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+      queryKey: ["balance", t.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
   },
   ADD_LIQUIDITY: (t, a, qc) => {
@@ -138,10 +138,10 @@ const handleTicketAttempts: Record<
       status,
     });
     qc.invalidateQueries({
-      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+      queryKey: ["balance", t.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
     qc.invalidateQueries({
-      queryKey: ["userLiquidity", t.account.address, t.data?.poolAddress],
+      queryKey: ["userLiquidity", t.address, t.data?.poolAddress],
     });
   },
   REMOVE_LIQUIDITY: (t, a, qc) => {
@@ -157,10 +157,10 @@ const handleTicketAttempts: Record<
       status,
     });
     qc.invalidateQueries({
-      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+      queryKey: ["balance", t.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
     qc.invalidateQueries({
-      queryKey: ["userLiquidity", t.account.address, t.data?.poolAddress],
+      queryKey: ["userLiquidity", t.address, t.data?.poolAddress],
     });
   },
   WITHDRAW_USDC: (t, a, qc) => {
@@ -176,7 +176,7 @@ const handleTicketAttempts: Record<
       status,
     });
     qc.invalidateQueries({
-      queryKey: ["balance", t.account.address, config.NEXT_PUBLIC_FUSDC_ADDR],
+      queryKey: ["balance", t.address, config.NEXT_PUBLIC_FUSDC_ADDR],
     });
   },
 };

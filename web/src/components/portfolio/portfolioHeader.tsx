@@ -8,7 +8,6 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import Link from "next/link";
 import { EVENTS, track } from "@/utils/analytics";
-import useAchievmentCount from "@/hooks/useAchievementCount";
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import useTotalVolume from "@/hooks/useTotalVolume";
 import { combineClass } from "@/utils/combineClass";
@@ -34,7 +33,6 @@ export default function PortfolioHeader() {
   const account = useAppKitAccount();
   const { data: balance } = useBalance(account.address);
   const { connect } = useConnectWallet();
-  const { data: achievmentCount } = useAchievmentCount(account?.address);
   const positionsValue = usePortfolioStore((s) => s.positionsValue);
   const unrealizedPnL = usePortfolioStore((s) => s.totalPnL);
   const { data: realizedPnLs } = usePnLOfWonCampaigns(account?.address);
@@ -79,10 +77,6 @@ export default function PortfolioHeader() {
             )}
           </div>
           <div className="flex items-center gap-4 font-chicago md:gap-[70px]">
-            {/* <div className="flex flex-col items-center gap-1 md:items-end">
-              <span className="text-xs">Achievements</span>
-              <span className="text-2xl text-9black">{achievmentCount}</span>
-            </div> */}
             <div className="flex flex-col items-center gap-1 md:items-end">
               <span className="text-xs">Current Rank</span>
               <div className="flex items-center gap-1">

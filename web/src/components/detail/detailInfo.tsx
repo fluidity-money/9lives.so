@@ -72,7 +72,7 @@ export default function DetailInfo({ data }: { data: Campaign }) {
                 className="text-xs underline"
                 rel="noopener noreferrer"
                 target="_blank"
-                href={`${config.destinationChain.blockExplorers![0].url}/address/${data.poolAddress}`}
+                href={`${config.destinationChain.blockExplorers.default.url}/address/${data.poolAddress}`}
               >
                 {data.poolAddress}
               </Link>
@@ -86,7 +86,7 @@ export default function DetailInfo({ data }: { data: Campaign }) {
                 className="text-xs underline"
                 rel="noopener noreferrer"
                 target="_blank"
-                href={`${config.destinationChain.blockExplorers![0].url}/address/${settlementContractMap[data.settlement] ?? settlementContractMap["ORACLE"]}`}
+                href={`${config.destinationChain.blockExplorers.default.url}/address/${settlementContractMap[data.settlement] ?? settlementContractMap["ORACLE"]}`}
               >
                 {settlementContractMap[data.settlement] ??
                   settlementContractMap["ORACLE"]}
