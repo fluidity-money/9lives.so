@@ -19,7 +19,7 @@ export const EVENTS = {
 
 export const track = (
   event: (typeof EVENTS)[keyof typeof EVENTS],
-  properties?: Record<string, any>,
+  properties?: Record<string, unknown>,
 ) => {
   try {
     return posthog.capture(event, properties);

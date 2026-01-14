@@ -9,11 +9,15 @@ const serverEnvSchema = z.object({
 
 type ServerEnvSchemaType = z.infer<typeof serverEnvSchema>;
 
+/* eslint-disable @typescript-eslint/no-namespace */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 declare global {
   namespace NodeJS {
     interface ProcessEnv extends ServerEnvSchemaType {}
   }
 }
+/* eslint-enable @typescript-eslint/no-empty-object-type */
+/* eslint-enable @typescript-eslint/no-namespace */
 
 const serverEnv = serverEnvSchema.safeParse({
   GRAPHQL_SCHEMA: process.env.GRAPHQL_SCHEMA,

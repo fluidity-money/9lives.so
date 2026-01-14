@@ -1,14 +1,8 @@
 "use client";
 import Button from "@/components/themed/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { useForm } from "react-hook-form";
+import React, { FormEvent, useEffect, useMemo, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import z from "zod";
 import { useFormStore } from "@/stores/formStore";
 import useDebounce from "@/hooks/useDebounce";
@@ -152,12 +146,12 @@ export default function CreateCampaignForm() {
           outcomeType === "custom"
             ? z.array(outcomeschema)
             : z.array(
-              z.object({
-                picture: pictureSchema,
-                name: z.string().max(300),
-                seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
-              }),
-            ),
+                z.object({
+                  picture: pictureSchema,
+                  name: z.string().max(300),
+                  seed: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
+                }),
+              ),
         toChain: z.number().min(0),
         toToken: z.string(),
         fromChain: z
@@ -186,46 +180,51 @@ export default function CreateCampaignForm() {
   );
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   type FormData = z.infer<typeof formSchema>;
+  const defaultValues = {
+    desc: "",
+    seed: randomValue4Uint8(),
+    picture: undefined,
+    starting: new Date().toISOString().split("T")[0],
+    outcomes: [
+      {
+        name: "",
+        seed: randomValue4Uint8(),
+      },
+      {
+        name: "",
+        seed: randomValue4Uint8(),
+      },
+    ],
+    toChain: config.chains.superposition.id,
+    toToken: config.NEXT_PUBLIC_FUSDC_ADDR,
+    fromChain: isInMiniApp
+      ? config.chains.arbitrum.id
+      : config.chains.superposition.id,
+    fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
+    seedLiquidity: defaultSeedLiquidity,
+  };
   const {
     register,
     control,
     handleSubmit,
     setValue,
-    watch,
     trigger,
     clearErrors,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      desc: "",
-      seed: randomValue4Uint8(),
-      picture: undefined,
-      starting: new Date().toISOString().split("T")[0],
-      outcomes: [
-        {
-          name: "",
-          seed: randomValue4Uint8(),
-        },
-        {
-          name: "",
-          seed: randomValue4Uint8(),
-        },
-      ],
-      toChain: config.chains.superposition.id,
-      toToken: config.NEXT_PUBLIC_FUSDC_ADDR,
-      fromChain: isInMiniApp
-        ? config.chains.arbitrum.id
-        : config.chains.superposition.id,
-      fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
-      seedLiquidity: defaultSeedLiquidity,
+    defaultValues,
+  });
+  const fields = useWatch({
+    control,
+    defaultValue: {
+      ...defaultValues,
     },
   });
-  const fields = watch();
   const fillForm = useFormStore((s) => s.fillForm);
   const debouncedFillForm = useDebounce(fillForm, 1); // 1 second delay for debounce
   const { data: tokens, isSuccess: isTokensSuccess } = useTokens(
-    fields.fromChain,
+    fields.fromChain ?? defaultValues.fromChain,
   );
   const fromDecimals = tokens?.find(
     (t) => t.address === fields.fromToken,
@@ -259,9 +258,11 @@ export default function CreateCampaignForm() {
     if (!Boolean(preparedInput.oracleUrls?.length)) {
       delete preparedInput.oracleUrls;
     }
-    enabledRelay && fields.fromChain !== config.chains.superposition.id
-      ? createWithRelay({ ...preparedInput, fromDecimals })
-      : create(preparedInput);
+    if (enabledRelay && fields.fromChain !== config.chains.superposition.id) {
+      createWithRelay({ ...preparedInput, fromDecimals });
+    } else {
+      create(preparedInput);
+    }
   };
   const handleSubmitWithAccount = (e: FormEvent) => {
     if (!account.isConnected) {
@@ -279,13 +280,15 @@ export default function CreateCampaignForm() {
         seed: 0,
         outcomeType,
         settlementType,
-        outcomes: fields.outcomes.map((outcome, index) => {
-          return {
-            name: outcome.name,
-            picture: outcomeImageBlobs[index],
-            seed: 0,
-          };
-        }),
+        outcomes: (fields.outcomes ?? defaultValues.outcomes).map(
+          (outcome, index) => {
+            return {
+              name: outcome.name ?? "",
+              picture: outcomeImageBlobs[index],
+              seed: 0,
+            };
+          },
+        ),
       });
     }
   }, [
@@ -345,10 +348,10 @@ export default function CreateCampaignForm() {
             isInMiniApp={isInMiniApp}
             address={account.address}
             tokens={tokens}
-            fromChain={fields.fromChain}
-            fromToken={fields.fromToken}
+            fromChain={fields.fromChain ?? defaultValues.fromChain}
+            fromToken={fields.fromToken ?? defaultValues.fromToken}
             setValue={setValue}
-            seedLiquidity={fields.seedLiquidity}
+            seedLiquidity={fields.seedLiquidity ?? defaultValues.seedLiquidity}
             clearErrors={clearErrors}
           />
         ) : (
@@ -366,7 +369,7 @@ export default function CreateCampaignForm() {
       >
         <Funding
           closeModal={() => setFundModalOpen(false)}
-          title={fields.name}
+          title={fields.name ?? ""}
           type="create"
           fundToBuy={settlementType === "ORACLE" ? 4.2 : 3}
         />

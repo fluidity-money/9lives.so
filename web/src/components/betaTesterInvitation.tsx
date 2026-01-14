@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import RetroCard from "./cardRetro";
 import Button from "./themed/button";
 import Link from "next/link";
@@ -7,16 +7,12 @@ import config from "@/config";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function BetaTesterInvitation() {
-  const [isClosed, setIsClosed] = useState(true);
   const account = useAppKitAccount();
-  useEffect(() => {
-    if (
-      account.address &&
-      config.betaTesterWallets.includes(account.address.toLowerCase())
-    ) {
-      setIsClosed(false);
-    }
-  }, [account]);
+  const isBetaTester =
+    !!account.address &&
+    config.betaTesterWallets.includes(account.address.toLowerCase());
+  const [dismissed, setDismissed] = useState(false);
+  const isClosed = dismissed || isBetaTester;
 
   if (isClosed) return null;
 
@@ -24,7 +20,7 @@ export default function BetaTesterInvitation() {
     <div className="fixed bottom-4 right-4">
       <RetroCard
         title="Join to the future of 9lives.so"
-        onClose={() => setIsClosed(true)}
+        onClose={() => setDismissed(true)}
         className="max-w-[300px]"
       >
         <p className="mb-4 text-center font-chicago text-xs">

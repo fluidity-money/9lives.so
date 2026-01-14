@@ -1,5 +1,4 @@
 import { useUserStore } from "@/stores/userStore";
-import { combineClass } from "@/utils/combineClass";
 import CampaignItem from "./campaignItem";
 
 export default function WatchList() {

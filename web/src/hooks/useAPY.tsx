@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import useWeeklyVolume from "./useWeeklyVolume";
 
 const lpRewardPerc = 0.02; // LP fee
@@ -10,12 +9,11 @@ const computeAPY = (weeklyVolume: number, totalLiquidity: number) => {
 };
 
 export default function useAPY(poolAddress: string, totalLiquidity: number) {
-  const [APY, setAPY] = useState(0);
   const { data: weeklyVolume, isSuccess } = useWeeklyVolume(poolAddress);
-  useEffect(() => {
-    if (isSuccess && weeklyVolume) {
-      setAPY(computeAPY(weeklyVolume, totalLiquidity));
-    }
-  }, [isSuccess, totalLiquidity, weeklyVolume]);
+  const APY =
+    isSuccess && weeklyVolume && totalLiquidity
+      ? computeAPY(weeklyVolume, totalLiquidity)
+      : 0;
+
   return APY;
 }

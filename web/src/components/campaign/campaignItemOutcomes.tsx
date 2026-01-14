@@ -1,14 +1,13 @@
 import Button from "../themed/button";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
-import { Outcome, SelectedOutcome } from "@/types";
+import { Outcome } from "@/types";
 import { useRouter } from "next/navigation";
 import getAmmPrices from "@/utils/getAmmPrices";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 interface CampaignItemOutcomesProps {
   campaignId: string;
   outcomes: Outcome[];
-  setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   isYesNo: boolean;
   isDppm: boolean;
   isConcluded: boolean;
@@ -20,7 +19,6 @@ interface CampaignItemOutcomesProps {
 export default function CampaignItemOutcomes({
   campaignId,
   outcomes,
-  setSelectedOutcome,
   shares,
   isYesNo,
   isConcluded,

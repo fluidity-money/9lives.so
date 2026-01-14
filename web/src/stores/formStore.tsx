@@ -2,11 +2,13 @@ import { CampaignInput, OutcomeInput } from "@/types";
 import { create } from "zustand";
 
 interface FormStore {
-  form?: CampaignInput;
+  form?: Partial<CampaignInput>;
   fillForm: (
-    input: Omit<CampaignInput, "id"> & {
-      outcomes: Omit<OutcomeInput, "id">[];
-    },
+    input: Partial<
+      Omit<CampaignInput, "id"> & {
+        outcomes: Omit<OutcomeInput, "id">[];
+      }
+    >,
   ) => void;
 }
 export const useFormStore = create<FormStore>()((set) => ({

@@ -12,7 +12,7 @@ export default function ChainSelector({
 }: {
   selectedChainId: number;
   isInMiniApp: boolean;
-  handleNetworkChange: (chain: Chain & { icon: string }) => void;
+  handleNetworkChange: (chain: Chain) => void;
   title?: string;
   removeSPN?: boolean;
 }) {

@@ -7,7 +7,7 @@ import BSC from "#/images/chains/bsc.svg";
 import POL from "#/images/chains/polygon.svg";
 import BASE from "#/images/chains/base.svg";
 import AVAX from "#/images/chains/avalanche.svg";
-import { AppKitNetwork, defineChain } from "@reown/appkit/networks";
+import { defineChain } from "@reown/appkit/networks";
 import {
   mainnet,
   arbitrum,

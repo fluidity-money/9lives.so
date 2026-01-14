@@ -1,6 +1,5 @@
 import {
   requestCampaignList,
-  requestLeaderboard,
   requestAchievments,
   requestCampaignById,
   requestUserClaims,
@@ -17,7 +16,8 @@ import {
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
 import { formatParticipatedContent } from "./utils/format/formatCampaign";
-import { type Chain as ViemChain } from 'viem'
+import { type Chain as ViemChain } from "viem";
+import { StaticImageData } from "next/image";
 export type RawCampaign = Awaited<
   ReturnType<typeof requestCampaignList>
 >[number];
@@ -308,4 +308,4 @@ export type Trade = {
   createdAt: string;
 };
 
-export type Chain = ViemChain & { icon: any }
+export type Chain = ViemChain & { icon: StaticImageData };

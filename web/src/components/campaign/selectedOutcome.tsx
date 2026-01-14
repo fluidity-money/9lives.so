@@ -13,12 +13,10 @@ import { track, EVENTS } from "@/utils/analytics";
 export default function SelectedOutcome({
   campaignId,
   data,
-  selectedState,
   setSelectedOutcome,
 }: {
   campaignId: string;
   data: Outcome;
-  selectedState: SelectedOutcomeType["state"];
   setSelectedOutcome: React.Dispatch<SelectedOutcomeType | undefined>;
 }) {
   const [deposit, setDeposit] = useState(0);

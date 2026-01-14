@@ -2,7 +2,6 @@
 import config from "@/config";
 import { useWSForPrices } from "@/hooks/useWSForPrices";
 import { PricePoint, SimpleMarketKey } from "@/types";
-import { LoaderIcon } from "react-hot-toast";
 import {
   LineChart,
   ResponsiveContainer,
@@ -282,7 +281,7 @@ export default function AssetPriceChart({
         />
         <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PriceInd} />
         <Tooltip
-          labelFormatter={(ts: any) => {
+          labelFormatter={(ts: number) => {
             const date = new Date(ts);
             return date.toLocaleString("default", {
               day: "numeric",

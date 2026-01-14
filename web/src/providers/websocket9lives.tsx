@@ -1,12 +1,12 @@
-import { createContext, useEffect, useRef, useCallback } from "react";
+import { createContext, useEffect, useRef } from "react";
 
 export const WSContext = createContext<{
-  subscribe: (fn: (msg: any) => void) => () => void;
+  subscribe: (fn: (msg: unknown) => void) => () => void;
 } | null>(null);
 
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const wsRef = useRef<WebSocket | null>(null);
-  const listeners = useRef(new Set<(msg: any) => void>());
+  const listeners = useRef(new Set<(msg: unknown) => void>());
 
   useEffect(() => {
     const ws = new WebSocket("wss://websocket.9lives.so");
@@ -34,7 +34,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const subscribe = (fn: (msg: any) => void) => {
+  const subscribe = (fn: (msg: unknown) => void) => {
     listeners.current.add(fn);
     return () => listeners.current.delete(fn);
   };

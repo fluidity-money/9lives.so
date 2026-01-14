@@ -1,54 +1,67 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { deniedConsent, grantedConsent } from "@/components/googleAnalytics";
 import Button from "./themed/button";
 import { useUserStore } from "@/stores/userStore";
 
-function gtag(...args: any[]) {
+function gtag(...args: (string | Record<string, string>)[]) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(...args);
 }
 
-export default function CookieBanner() {
-  const [showConsentDialog, setShowConsentDialog] = useState(false);
-  const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
-  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
+function useConsentMode(
+  isInMiniApp: boolean,
+  setTrackingConsent: (value: boolean) => void,
+) {
+  const consent =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("consentMode")
+      : null;
+
+  const consentMode = consent
+    ? (JSON.parse(consent) as typeof grantedConsent | typeof deniedConsent)
+    : null;
+
+  const shouldShowDialog =
+    !isInMiniApp && (!consent || consentMode?.ad_storage === "denied");
 
   function denyCookies() {
     gtag("consent", "update", deniedConsent);
     window.localStorage.setItem("consentMode", JSON.stringify(deniedConsent));
-    setShowConsentDialog(false);
     setTrackingConsent(false);
   }
 
-  const allowCookies = useCallback(() => {
+  function allowCookies() {
     gtag("consent", "update", grantedConsent);
     window.localStorage.setItem("consentMode", JSON.stringify(grantedConsent));
-    setShowConsentDialog(false);
     setTrackingConsent(true);
-  }, [setTrackingConsent]);
+  }
 
   useEffect(() => {
-    const consent = window.localStorage.getItem("consentMode");
-    if (!consent) {
-      setShowConsentDialog(true);
-      return;
+    if (isInMiniApp) {
+      allowCookies();
     }
-    const consentMode = JSON.parse(consent) as
-      | typeof grantedConsent
-      | typeof deniedConsent;
-    if (consentMode.ad_storage === "denied") {
-      setShowConsentDialog(true);
-    }
-  }, []);
+  }, [isInMiniApp]);
 
-  useEffect(() => {
-    if (isInMiniApp) allowCookies();
-  }, [isInMiniApp, allowCookies]);
+  return {
+    shouldShowDialog,
+    allowCookies,
+    denyCookies,
+  };
+}
 
-  if (!showConsentDialog || isInMiniApp) return null;
+export default function CookieBanner() {
+  const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
+
+  const { shouldShowDialog, allowCookies, denyCookies } = useConsentMode(
+    isInMiniApp,
+    setTrackingConsent,
+  );
+
+  if (!shouldShowDialog) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 mx-auto my-10 flex max-w-max flex-col items-center justify-between gap-4 border border-9black bg-9yellow p-3 text-xs text-9black shadow-9cookieCard sm:flex-row md:max-w-[480px] md:px-4">
