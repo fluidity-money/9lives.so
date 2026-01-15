@@ -127,7 +127,7 @@ func main() {
 	}()
 	tableFilter := makeTableFilter()
 	encodingChan := make(chan TableContent)
-	for i := 0; i < runtime.NumCPU()/3; i++ {
+	for i := 0; i < runtime.NumCPU(); i++ {
 		go func() {
 			for t := range encodingChan {
 				e, err := json.Marshal(t)
