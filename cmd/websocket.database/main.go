@@ -184,7 +184,6 @@ func main() {
 			}()
 			cookie := broadcast.Subscribe(sink)
 			filterRules := make(map[string]map[string]*FilterConstraint)
-			var err error
 		L:
 			for {
 				select {
@@ -193,14 +192,11 @@ func main() {
 						if filterRules[m.Table] == nil {
 							continue L
 						}
-						for k, v := range m.Content {
-							c := filterRules[m.Table][k]
-							if c == nil {
-								continue L
-							}
-							if v != c.Et {
-								continue L
-							}
+						for k, c := range filterRules[m.Table] {
+						    v, exists := m.Content[k]
+						    if !exists || v != c.Et {
+						        continue L
+						    }
 						}
 					}
 					outgoing <- m.encoded
