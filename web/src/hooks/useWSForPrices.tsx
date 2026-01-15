@@ -24,7 +24,7 @@ export function useWSForPrices({
   const ws = useContext(WSContext);
 
   useEffect(() => {
-    if (!ws) return;
+    if (!ws || !queryClient) return;
 
     const offMessage = ws.subscribe((raw) => {
       try {

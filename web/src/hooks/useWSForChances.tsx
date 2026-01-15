@@ -19,7 +19,7 @@ export function useWSForChances(id: string, poolAddress: string) {
   const ws = useContext(WSContext);
 
   useEffect(() => {
-    if (!ws) return;
+    if (!ws || !queryClient) return;
 
     const offMessage = ws.subscribe((raw) => {
       try {
