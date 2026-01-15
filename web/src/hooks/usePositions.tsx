@@ -52,6 +52,7 @@ async function fetchPositions({
   } else {
     const res = (await publicClient.readContract({
       ...config.contracts.lens,
+      account: address as `0x${string}`,
       functionName: "balancesForAll",
       args: [[tradingAddr]],
     })) as typeof balances;
