@@ -1,7 +1,8 @@
+import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
-import { usePublicClient } from "wagmi";
+import { createPublicClient, http } from "viem";
 
 export default function useDppmShareEstimation({
   tradingAddr,
@@ -14,23 +15,26 @@ export default function useDppmShareEstimation({
   outcomeId: `0x${string}`;
   isWinning: boolean;
 }) {
-  const publicClient = usePublicClient()
   return useQuery({
     queryKey: ["dppmShareEstimation", tradingAddr, address, outcomeId],
     queryFn: async () => {
       const initialData = [BigInt(0), BigInt(0), BigInt(0)];
+      const publicClient = createPublicClient({
+        chain: config.destinationChain,
+        transport: http(),
+      });
       if (!address) return initialData;
       if (!publicClient) {
-        console.error("Public client is not set")
-        return initialData
+        console.error("Public client is not set");
+        return initialData;
       }
       const simulation = await publicClient.simulateContract({
         abi: tradingAbi,
         address: tradingAddr,
         functionName: "dppmSimulatePayoffForAddress",
-        args: [address as `0x${string}`, outcomeId]
-      })
-      return simulation.result
+        args: [address as `0x${string}`, outcomeId],
+      });
+      return simulation.result;
     },
     select: (data) => {
       if (isWinning) {

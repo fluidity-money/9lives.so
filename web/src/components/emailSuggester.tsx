@@ -18,7 +18,7 @@ import useFeatureFlag from "@/hooks/useFeatureFlag";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function EmailSuggester() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
   const account = useAppKitAccount();
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const enableNewsletterSubscription = useFeatureFlag(
@@ -50,28 +50,22 @@ export default function EmailSuggester() {
     },
   });
   useEffect(() => {
-    if (isSuccess) {
-      setIsOpen(false);
-      refetch();
-      track("email_sub");
-    }
-  }, [isSuccess, refetch]);
-  useEffect(() => {
     if (account?.address) setValue("address", account?.address);
   }, [account?.address, setValue]);
-  useEffect(() => {
-    if (
-      account?.address &&
-      isProfileLoaded &&
-      !profile?.email &&
-      !isInMiniApp
-    ) {
-      setIsOpen(true);
-    }
-  }, [account?.address, profile, isProfileLoaded, isInMiniApp]);
+  const isOpen =
+    !!enableNewsletterSubscription &&
+    !!account?.address &&
+    isProfileLoaded &&
+    !profile?.email &&
+    !isInMiniApp &&
+    !isDismissed;
   if (!enableNewsletterSubscription) return null;
   return (
-    <Modal isOpen={isOpen} setIsOpen={setIsOpen} title="Never Miss an Update!">
+    <Modal
+      isOpen={isOpen}
+      setIsOpen={() => setIsDismissed(true)}
+      title="Never Miss an Update!"
+    >
       <div className="flex flex-col items-center gap-4">
         <h2 className="font-chicago text-2xl text-9black">
           {posthog.getFeatureFlag("email-subscription-conversion-1") === "test"
@@ -99,7 +93,12 @@ export default function EmailSuggester() {
         {errors.address && <ErrorInfo text={errors.address.message} />}
         <Button
           title={"Submit"}
-          onClick={handleSubmit(synch)}
+          onClick={handleSubmit(async (data) => {
+            await synch(data);
+            setIsDismissed(true);
+            refetch();
+            track("email_sub");
+          })}
           disabled={isLoading}
           intent={"yes"}
           className={"w-full"}

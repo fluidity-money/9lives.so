@@ -7,7 +7,6 @@ import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
 import clientEnv from "../config/clientEnv";
 import config from "@/config";
 import allChains, { destinationChain } from "@/config/chains";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { superposition: _, ...otherChains } = allChains;
 createAppKit({
   adapters: [wagmiAdapter],

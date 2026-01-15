@@ -7,8 +7,6 @@ export default function SimpleSubHeader({
 }: {
   campaignData: SimpleCampaignDetail;
 }) {
-  const isEnded = Date.now() > campaignData.ending;
-
   return (
     <div className="flex flex-wrap items-center gap-2.5">
       <HeaderBox
@@ -16,7 +14,6 @@ export default function SimpleSubHeader({
         value={`$${campaignData.priceMetadata.priceTargetForUp}`}
       />
       <DetailCurrentPriceBox
-        isEnded={isEnded}
         symbol={campaignData.priceMetadata.baseAsset}
         ending={campaignData.ending}
         starting={campaignData.starting}

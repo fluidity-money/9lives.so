@@ -1,10 +1,5 @@
 "use client";
-import {
-  CampaignDetail,
-  PriceEvent,
-  PricePoint,
-  SimpleCampaignDetail,
-} from "@/types";
+import { CampaignDetail, PriceEvent, SimpleCampaignDetail } from "@/types";
 import DetailHeader from "./detailHeader";
 import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
@@ -22,14 +17,13 @@ import PriceChart from "../charts/priceChart";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";
 import { useWSForWinner } from "@/hooks/useWSForWinner";
+import TimingGate from "../timingGate";
 
 export default function DetailWrapper({
   initialData,
   priceEvents,
-  pricePoints,
 }: {
   initialData: CampaignDetail;
-  pricePoints: PricePoint[];
   priceEvents: PriceEvent[];
 }) {
   const outcomeId = useSearchParams()?.get("outcomeId");
@@ -54,19 +48,21 @@ export default function DetailWrapper({
     tradingAddr: data.poolAddress as `0x${string}`,
     outcomeIds,
   });
-  const isEnded = data.ending < Date.now();
-  const notStarted = data.starting > Date.now();
   const isConcluded = Boolean(data.winner);
+
   return (
     <section className="flex h-full flex-col gap-8 md:flex-row md:gap-4">
       <div className="flex flex-[2] flex-col gap-8">
-        <DetailHeader
-          pointsData={pricePoints}
-          data={data}
-          notStarted={notStarted}
-          isEnded={isEnded}
-          isConcluded={isConcluded}
-        />
+        <TimingGate ending={data.ending} starting={data.starting}>
+          {({ isEnded, notStarted }) => (
+            <DetailHeader
+              data={data}
+              isEnded={isEnded}
+              notStarted={notStarted}
+              isConcluded={isConcluded}
+            />
+          )}
+        </TimingGate>
         {data.isDppm && data.priceMetadata ? (
           <PriceChartWrapper
             campaignData={data as SimpleCampaignDetail}
@@ -98,18 +94,20 @@ export default function DetailWrapper({
         {isConcluded ? (
           <DetailResults data={data} />
         ) : (
-          <DetailCall2Action
-            isDppm={data.isDppm}
-            isDpm={data.isDpm}
-            shouldStopAction={isEnded || isConcluded || notStarted}
-            selectedOutcome={selectedOutcome}
-            setSelectedOutcome={setSelectedOutcome}
-            data={data}
-            price={
-              sharePrices?.find((item) => item.id === selectedOutcome.id)
-                ?.price ?? "0"
-            }
-          />
+          <TimingGate ending={data.ending} starting={data.starting}>
+            {({ isEnded, notStarted }) => (
+              <DetailCall2Action
+                shouldStopAction={isEnded || isConcluded || notStarted}
+                selectedOutcome={selectedOutcome}
+                setSelectedOutcome={setSelectedOutcome}
+                data={data}
+                price={
+                  sharePrices?.find((item) => item.id === selectedOutcome.id)
+                    ?.price ?? "0"
+                }
+              />
+            )}
+          </TimingGate>
         )}
         <AssetScene campaignDetail={data} />
       </div>

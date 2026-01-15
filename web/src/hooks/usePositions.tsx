@@ -2,24 +2,25 @@ import config from "@/config";
 import { Outcome } from "@/types";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
-import { PublicClient } from "viem";
-import { usePublicClient } from "wagmi";
+import { createPublicClient, http } from "viem";
 
 async function fetchPositions({
   tradingAddr,
   outcomes,
   address,
   isDpm,
-  publicClient
 }: {
   tradingAddr: `0x${string}`;
   outcomes: Outcome[];
   address?: string;
   isDpm: boolean | null;
-  publicClient?: PublicClient
 }) {
   if (!address) return [];
-  if (!publicClient) throw new Error("Public client is not set")
+  const publicClient = createPublicClient({
+    chain: config.destinationChain,
+    transport: http(),
+  });
+  if (!publicClient) throw new Error("Public client is not set");
 
   let balances: { amount: bigint; id: `0x${string}`; name: string }[] = [];
   if (isDpm) {
@@ -82,9 +83,7 @@ export default function usePositions({
   outcomes: Outcome[];
   address?: string;
   isDpm: boolean | null;
-
 }) {
-  const publicClient = usePublicClient()
   return useQuery<
     {
       id: `0x${string}`;
@@ -95,6 +94,6 @@ export default function usePositions({
     }[]
   >({
     queryKey: ["positions", tradingAddr, outcomes, address, isDpm],
-    queryFn: () => fetchPositions({ publicClient, tradingAddr, outcomes, address, isDpm }),
+    queryFn: () => fetchPositions({ tradingAddr, outcomes, address, isDpm }),
   });
 }

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import MenuIcon from "#/icons/menu.svg";
 import Modal from "./themed/modal";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import NavigationMenu from "./navMenu";
 import DisclaimerButton from "./disclaimerButton";
 import { usePathname } from "next/navigation";
@@ -10,19 +10,21 @@ import Link from "next/link";
 import ReferralButton from "./referral/referralButton";
 
 export default function MobileMenu({ simple = false }: { simple?: boolean }) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [openedAtPath, setOpenedAtPath] = useState<string | null>(null);
+  const isMobileMenuOpen = isOpen && openedAtPath === pathname;
   return (
     <div
       className="flex size-10 items-center justify-center border-l-2 border-l-black md:hidden"
-      onClick={() => setIsMobileMenuOpen(true)}
+      onClick={() => {
+        setOpenedAtPath(pathname);
+        setIsOpen(true);
+      }}
     >
       <Image src={MenuIcon} alt="menu" />
       <Modal
-        setIsOpen={setIsMobileMenuOpen}
+        setIsOpen={() => setIsOpen(false)}
         isOpen={isMobileMenuOpen}
         title="Menu"
       >

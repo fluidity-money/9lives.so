@@ -280,15 +280,13 @@ export default function CreateCampaignForm() {
         seed: 0,
         outcomeType,
         settlementType,
-        outcomes: (fields.outcomes ?? defaultValues.outcomes).map(
-          (outcome, index) => {
-            return {
-              name: outcome.name ?? "",
-              picture: outcomeImageBlobs[index],
-              seed: 0,
-            };
-          },
-        ),
+        outcomes: fields.outcomes?.map((outcome, index) => {
+          return {
+            name: outcome.name ?? "",
+            picture: outcomeImageBlobs[index],
+            seed: 0,
+          };
+        }),
       });
     }
   }, [

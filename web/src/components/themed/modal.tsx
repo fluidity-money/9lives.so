@@ -25,8 +25,10 @@ export default function Modal({
   boxContainerClass,
 }: ModalProps) {
   function closeModal() {
-    !disabled && setIsOpen(false);
-    !disabled && callback && callback();
+    if (!disabled) {
+      setIsOpen(false);
+      callback?.();
+    }
   }
 
   return (

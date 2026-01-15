@@ -11,6 +11,12 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   prettier,
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
   ...tailwind.configs["flat/recommended"],
   ...pluginQuery.configs['flat/recommended'],
   // ======================

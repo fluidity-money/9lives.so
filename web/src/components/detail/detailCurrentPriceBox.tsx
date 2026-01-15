@@ -3,18 +3,23 @@ import { HeaderBox } from "./detailHeaderBox";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { PricePoint } from "@/types";
 import config from "@/config";
+import { useEffect, useState } from "react";
 
 export default function DetailCurrentPriceBox({
   symbol,
   starting,
   ending,
-  isEnded,
 }: {
   symbol: string;
   ending: number;
   starting: number;
-  isEnded: boolean;
 }) {
+  const [isEnded, setIsEnded] = useState(false);
+
+  useEffect(() => {
+    setIsEnded(Date.now() > ending);
+  }, [ending]);
+
   const { data, isLoading } = useInfiniteQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
     initialPageParam: 0,

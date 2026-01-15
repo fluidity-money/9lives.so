@@ -10,7 +10,7 @@ export default function FarcasterProvider() {
   const { connect } = useConnectWallet();
   useEffect(() => {
     const load = async () => {
-      // @ts-expect-error
+      // @ts-expect-error farcaster needs to be updated no exported ts param in the method yet
       const isInMiniApp = await sdk.isInMiniApp(1000);
       if (isInMiniApp) {
         setIsInMiniApp(true);

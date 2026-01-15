@@ -40,22 +40,10 @@ export default async function DetailPage({ params }: { params: Params }) {
   if (!response) notFound();
   const campaign = formatCampaignDetail(response);
   const priceEvents = await requestPriceChanges(response.poolAddress);
-  let pricePoints: PricePoint[] = [];
-  if (campaign.priceMetadata) {
-    pricePoints = await getAndFormatAssetPrices({
-      symbol: campaign.priceMetadata.baseAsset,
-      starting: campaign.starting,
-      ending: campaign.ending,
-    });
-  }
 
   return (
     <Suspense>
-      <DetailWrapper
-        initialData={campaign}
-        priceEvents={priceEvents}
-        pricePoints={pricePoints}
-      />
+      <DetailWrapper initialData={campaign} priceEvents={priceEvents} />
     </Suspense>
   );
 }

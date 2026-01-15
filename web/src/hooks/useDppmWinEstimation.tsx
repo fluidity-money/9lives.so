@@ -2,8 +2,7 @@ import config from "@/config";
 import tradingAbi from "@/config/abi/trading";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useQuery } from "@tanstack/react-query";
-import { parseUnits } from "viem";
-import { usePublicClient } from "wagmi";
+import { createPublicClient, http, parseUnits } from "viem";
 
 export default function useDppmWinEstimation({
   outcomeId,
@@ -16,13 +15,16 @@ export default function useDppmWinEstimation({
   tradingAddr: `0x${string}`;
   enabled?: boolean;
 }) {
-  const publicClient = usePublicClient()
   return useQuery<number[]>({
     queryKey: ["dppmWinEstimation", tradingAddr, outcomeId, usdValue],
     queryFn: async () => {
+      const publicClient = createPublicClient({
+        chain: config.destinationChain,
+        transport: http(),
+      });
       if (!publicClient) {
-        console.error("Public client is not set")
-        return [0, 0, 0]
+        console.error("Public client is not set");
+        return [0, 0, 0];
       }
 
       const decimals = config.contracts.decimals.fusdc;
@@ -32,9 +34,9 @@ export default function useDppmWinEstimation({
         address: tradingAddr,
         functionName: "dppmSimulateEarningsB866B112",
         args: [parseUnits(usdValue.toFixed(decimals), decimals), outcomeId],
-      })
+      });
 
-      return res.result.map((i) => Number(formatFusdc(i, 2)))
+      return res.result.map((i) => Number(formatFusdc(i, 2)));
     },
     enabled,
     initialData: [0, 0, 0],

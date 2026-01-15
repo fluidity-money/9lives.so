@@ -17,13 +17,16 @@ export default function WatchlistButton({
   const watchlist = useUserStore((s) => s.watchlist);
   const addToWatchlist = useUserStore((s) => s.addToWatchlist);
   const removeFromWatchlist = useUserStore((s) => s.removeFromWatchlist);
-
   const isInWatchlist = watchlist.find((c) => c.identifier === data.identifier);
+
   function handleToggle(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     e.stopPropagation();
-    isInWatchlist ? removeFromWatchlist(data.identifier) : addToWatchlist(data);
+    if (isInWatchlist) {
+      removeFromWatchlist(data.identifier);
+    } else addToWatchlist(data);
   }
+
   return (
     <Button
       onClick={handleToggle}

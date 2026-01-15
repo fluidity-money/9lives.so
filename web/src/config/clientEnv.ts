@@ -90,11 +90,15 @@ const clientEnvSchema = z.object({
 
 type ClientEnvSchemaType = z.infer<typeof clientEnvSchema>;
 
+/* eslint-disable @typescript-eslint/no-namespace */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 declare global {
   namespace NodeJS {
     interface ProcessEnv extends ClientEnvSchemaType {}
   }
 }
+/* eslint-enable @typescript-eslint/no-empty-object-type */
+/* eslint-enable @typescript-eslint/no-namespace */
 
 const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_THIRDWEB_ID: process.env.NEXT_PUBLIC_THIRDWEB_ID,

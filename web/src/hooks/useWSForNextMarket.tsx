@@ -71,5 +71,13 @@ export function useWSForNextMarket(
     return () => {
       offMessage();
     };
-  }, [ws, symbol, simple, previousData.identifier, period, queryClient]);
+  }, [
+    ws,
+    symbol,
+    simple,
+    previousData.identifier,
+    previousData.ending,
+    period,
+    queryClient,
+  ]);
 }

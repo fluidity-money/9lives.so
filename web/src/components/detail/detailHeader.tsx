@@ -29,10 +29,8 @@ export default function DetailHeader({
   isEnded,
   isConcluded,
   notStarted,
-  pointsData,
 }: {
   data: CampaignDetail;
-  pointsData: PricePoint[];
   isEnded: boolean;
   isConcluded: boolean;
   notStarted: boolean;

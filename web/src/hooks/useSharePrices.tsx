@@ -1,7 +1,9 @@
 import tradingAbi from "@/config/abi/trading";
 import { useQuery } from "@tanstack/react-query";
 import formatFusdc from "@/utils/format/formatUsdc";
-import { usePublicClient } from "wagmi";
+import { createPublicClient, http } from "viem";
+import config from "@/config";
+
 export default function useSharePrices({
   tradingAddr,
   outcomeIds,
@@ -9,21 +11,28 @@ export default function useSharePrices({
   tradingAddr: string;
   outcomeIds: `0x${string}`[];
 }) {
-  const publicClient = usePublicClient()
   return useQuery<{ id: `0x${string}`; price: string }[]>({
     queryKey: ["sharePrices", tradingAddr, outcomeIds],
     queryFn: async () => {
+      const publicClient = createPublicClient({
+        chain: config.destinationChain,
+        transport: http(),
+      });
       if (!publicClient) {
-        return []
+        return [];
       }
 
       const res = await Promise.all<bigint>(
-        outcomeIds.map(async (outcomeId) => (await publicClient.simulateContract({
-          abi: tradingAbi,
-          address: tradingAddr as `0x${string}`,
-          functionName: "priceA827ED27",
-          args: [outcomeId],
-        })).result
+        outcomeIds.map(
+          async (outcomeId) =>
+            (
+              await publicClient.simulateContract({
+                abi: tradingAbi,
+                address: tradingAddr as `0x${string}`,
+                functionName: "priceA827ED27",
+                args: [outcomeId],
+              })
+            ).result,
         ),
       );
       return res.map((price, idx) => ({

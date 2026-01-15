@@ -64,5 +64,5 @@ export function useWSForTrades(id: string, poolAddress: string) {
     return () => {
       offMessage();
     };
-  }, [ws, poolAddress, id]);
+  }, [ws, poolAddress, id, queryClient]);
 }

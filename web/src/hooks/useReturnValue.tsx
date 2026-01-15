@@ -15,18 +15,22 @@ export default function useReturnValue({
   outcomeId: `0x${string}`;
   fusdc: number;
 }) {
-  const amount = parseUnits(fusdc.toString(), config.contracts.decimals.fusdc);
-  const publicClient = usePublicClient()
+  const publicClient = usePublicClient();
 
   return useQuery({
     queryKey: ["returnValue", shareAddr, tradingAddr, outcomeId, fusdc],
     queryFn: async () => {
+      const amount = parseUnits(
+        fusdc.toString(),
+        config.contracts.decimals.fusdc,
+      );
+
       const simulation = await publicClient?.simulateContract({
         address: tradingAddr,
         abi: tradingAbi,
         functionName: "quoteC0E17FC7",
         args: [outcomeId, amount],
-      })
+      });
       return simulation?.result[0];
     },
     placeholderData: (prev) => prev ?? BigInt(0),

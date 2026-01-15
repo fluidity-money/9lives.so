@@ -28,16 +28,21 @@ export default function CreateCampaignFormName({
   const [aiEnabled, SetAiEnabled] = useState(false);
   const [selectedAITitle, setSelectedAITitle] = useState<string>("");
   const { data: aiTitles, isLoading } = useAiTitles(aiEnabled);
-  useEffect(() => {
-    setSelectedAITitle("");
-    setValue("name", "");
-  }, [aiEnabled, setValue]);
   return (
     <Field className={fieldClass}>
       <div className="flex items-center justify-between">
         <Label text="Campaign Name" required />{" "}
         <div
-          onClick={() => SetAiEnabled(!aiEnabled)}
+          onClick={() => {
+            SetAiEnabled((prev) => {
+              const next = !prev;
+              if (next) {
+                setSelectedAITitle("");
+                setValue("name", "");
+              }
+              return next;
+            });
+          }}
           className={combineClass(
             aiEnabled
               ? "bg-9green shadow-9aiButtonEnabled"

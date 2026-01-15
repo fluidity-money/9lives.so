@@ -7,14 +7,10 @@ import { usePublicClient, useWriteContract } from "wagmi";
 
 export default function useClaimAllFees() {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
-  const publicClient = usePublicClient()
-  const { mutateAsync: writeContract } = useWriteContract()
+  const publicClient = usePublicClient();
+  const { mutateAsync: writeContract } = useWriteContract();
   const claim = useCallback(
-    async (
-      poolAddresses: string[],
-      simulate: boolean = false,
-    ) => {
-
+    async (poolAddresses: string[], simulate: boolean = false) => {
       return toast.promise<string[] | undefined>(
         new Promise(async (res, rej) => {
           try {
@@ -23,14 +19,14 @@ export default function useClaimAllFees() {
               const simulation = await publicClient?.simulateContract({
                 ...config.contracts.claimantHelper,
                 functionName: "claim",
-                args: [poolAddresses as `0x${string}`[]]
-              })
+                args: [poolAddresses as `0x${string}`[]],
+              });
               return simulation?.result;
             }
             await writeContract({
               ...config.contracts.claimantHelper,
               functionName: "claim",
-              args: [poolAddresses as `0x${string}`[]]
+              args: [poolAddresses as `0x${string}`[]],
             });
             track(EVENTS.CLAIM_ALL_FEES, {
               poolAddresses,
@@ -47,7 +43,7 @@ export default function useClaimAllFees() {
         },
       );
     },
-    [checkAndSwitchChain],
+    [checkAndSwitchChain, publicClient, writeContract],
   );
   const checkClaimFees = useCallback(
     async (poolAddress: string) => {
