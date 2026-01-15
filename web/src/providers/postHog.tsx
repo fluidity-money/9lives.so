@@ -10,11 +10,14 @@ export default function PostHogProvider({
 }) {
   const trackingConsent = useUserStore((s) => s.trackingConsent);
   useEffect(() => {
-    if (trackingConsent)
-      posthog.init(`${process.env.NEXT_PUBLIC_POSTHOG_KEY}`, {
+    if (!trackingConsent) return;
+
+    if (!posthog.__loaded) {
+      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
         api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
         person_profiles: "identified_only",
       });
+    }
   }, [trackingConsent]);
 
   return <PostHogProviderBase client={posthog}>{children}</PostHogProviderBase>;
