@@ -17,6 +17,7 @@ export default function SimpleSubHeader({
         symbol={campaignData.priceMetadata.baseAsset}
         ending={campaignData.ending}
         starting={campaignData.starting}
+        isEnded={false}
       />
     </div>
   );

@@ -29,7 +29,6 @@ export default function CampaignItem({ data }: CampaignItemProps) {
       {selectedOutcome ? (
         <SelectedOutcome
           campaignId={data.identifier}
-          selectedState={selectedOutcome.state}
           data={
             data.outcomes.find(
               (o) => o.identifier === selectedOutcome.id,
@@ -38,7 +37,7 @@ export default function CampaignItem({ data }: CampaignItemProps) {
           setSelectedOutcome={setSelectedOutcome}
         />
       ) : (
-        <CampaignBody data={data} setSelectedOutcome={setSelectedOutcome} />
+        <CampaignBody data={data} />
       )}
     </div>
   );

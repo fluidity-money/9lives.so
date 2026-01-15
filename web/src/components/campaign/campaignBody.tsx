@@ -1,15 +1,9 @@
 import CampaignItemHeader from "./campaignItemHeader";
 import CampaignItemOutcomes from "./campaignItemOutcomes";
 import CampaignItemFooter from "./campaignItemFooter";
-import { Campaign, SelectedOutcome } from "@/types";
+import { Campaign } from "@/types";
 
-export default function CampaignBody({
-  data,
-  setSelectedOutcome,
-}: {
-  data: Campaign;
-  setSelectedOutcome: React.Dispatch<SelectedOutcome>;
-}) {
+export default function CampaignBody({ data }: { data: Campaign }) {
   return (
     <>
       <CampaignItemHeader
@@ -27,7 +21,6 @@ export default function CampaignBody({
           campaignId={data.identifier}
           shares={data.shares}
           outcomes={data.outcomes}
-          setSelectedOutcome={setSelectedOutcome}
         />
         <CampaignItemFooter data={data} />
       </div>
