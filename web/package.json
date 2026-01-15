@@ -1,7 +1,7 @@
 {
   "name": "web",
   "version": "0.1.0",
-  "packageManager": "pnpm@10.15.0+sha256.84c19e788d7d7ee248e4a6b7152f8ebba0f4fe7380a5f443ca17d76c030052d2",
+  "packageManager": "pnpm@10.28.0+sha256.9b0b04e6e79945566917f8411bb6f65fd2f3e1590426904e8500e1acc4b33561",
   "type": "module",
   "private": true,
   "scripts": {
@@ -33,7 +33,6 @@
     "@reown/appkit": "^1.8.16",
     "@reown/appkit-adapter-wagmi": "^1.8.16",
     "@reservoir0x/relay-sdk": "^2.4.0",
-    "@sentry/nextjs": "^8.55.0",
     "@tanstack/react-query": "^5.90.12",
     "bowser": "^2.13.1",
     "buffer": "^6.0.3",
@@ -72,7 +71,7 @@
     "@types/node-fetch": "^3.0.2",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "eight-colors": "^1.3.1",
     "eslint": "^9.39.2",
@@ -96,11 +95,5 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "19.2.7",
-      "@types/react-dom": "19.2.3"
-    }
   }
 }
