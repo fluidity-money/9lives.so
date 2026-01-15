@@ -1,5 +1,4 @@
 import * as childProcess from "child_process";
-import { withSentryConfig } from "@sentry/nextjs";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -37,12 +36,4 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
-  org: "fluidity-money",
-  project: "9lives",
-  silent: !process.env.CI,
-  widenClientFileUpload: true,
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  hideSourceMaps: true,
-  disableLogger: true,
-});
+export default nextConfig

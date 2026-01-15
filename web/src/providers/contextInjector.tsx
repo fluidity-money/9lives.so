@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { setTag, setUser, setContext } from "@sentry/nextjs";
 import { usePathname } from "next/navigation";
 import posthog from "posthog-js";
 import config from "@/config";
@@ -33,13 +32,13 @@ export default function ContextInjector() {
     setTrackingConsent(consent === JSON.stringify(grantedConsent));
   }, [setTrackingConsent]);
 
-  // insert contractAddresses to Sentry
+  // insert contractAddresses to Posthog
   useEffect(() => {
     const { decimals, ...contracts } = config.contracts;
     const contractContexts = Object.fromEntries(
       Object.entries(contracts).map(([key, value]) => [key, value.address]),
     );
-    setContext("contracts", contractContexts);
+    posthog.register({ contracts: contractContexts });
   }, []);
 
   useEffect(() => {
@@ -49,10 +48,6 @@ export default function ContextInjector() {
         "walletAddress",
         account.address?.toLowerCase(),
       );
-      setUser({
-        id: account.address?.toLowerCase(),
-        walletId: walletInfo?.name ?? "unknown",
-      });
       posthog.identify(account.address?.toLowerCase());
       const ctx = {
         walletId: walletInfo?.name ?? "unknown",
@@ -67,8 +62,6 @@ export default function ContextInjector() {
       posthog.register(ctx);
     } else {
       window.localStorage.removeItem("walletAddress");
-      setUser(null);
-      posthog.identify(undefined);
       posthog.reset();
     }
   }, [
@@ -79,12 +72,6 @@ export default function ContextInjector() {
     chainId,
     walletInfo?.name,
   ]);
-
-  useEffect(() => {
-    if (chainId) {
-      setTag("chainId", chainId);
-    }
-  }, [chainId]);
 
   // add margin for fixed action component on campaign details
   useEffect(() => {
