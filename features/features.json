@@ -30,5 +30,6 @@
 	"enable simple mode alert": false,
 	"enable exact input style buy with relay": true,
 	"enable account system buy": true,
-	"enable account system claim": true
+	"enable account system claim": true,
+	"websocket should filter tables": false
 }

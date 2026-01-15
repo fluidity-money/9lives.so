@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
+	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/websocket"
@@ -39,12 +40,11 @@ type TableContent struct {
 }
 
 type FilterConstraint struct {
-	Gt float64 `json:"gt"`
-	Lt float64 `json:"lt"`
-	Et float64 `json:"et"`
+	Et any `json:"et"`
 }
 
 func main() {
+	f := features.Get()
 	config := config.Get()
 	u, err := url.Parse(config.PickTimescaleUrl())
 	if err != nil {
@@ -183,12 +183,26 @@ func main() {
 				outgoing <- snapshot
 			}()
 			cookie := broadcast.Subscribe(sink)
-			filterRules := make(map[string]map[string]FilterConstraint)
+			filterRules := make(map[string]map[string]*FilterConstraint)
 			var err error
 		L:
 			for {
 				select {
 				case m := <-sink:
+					if f.Is(features.FeatureFilterTables) {
+						if filterRules[m.Table] == nil {
+							continue L
+						}
+						for k, v := range m.Content {
+							c := filterRules[m.Table][k]
+							if c == nil {
+								continue L
+							}
+							if v != c.Et {
+								continue L
+							}
+						}
+					}
 					outgoing <- m.encoded
 				// We need a sink for all messages here:
 				case msg := <-replies:
@@ -208,9 +222,13 @@ func main() {
 					for _, ch := range filterReq.Add {
 						t := ch.Table
 						if filterRules[t] == nil {
-							filterRules[t] = make(map[string]FilterConstraint)
+							filterRules[t] = make(map[string]*FilterConstraint)
 						}
-
+						for _, field := range ch.Fields {
+							// We copy here to avoid keeping everything allocated:
+							c := field.Constraints
+							filterRules[t][field.Name] = &c
+						}
 					}
 				case done := <-requestShutdown:
 					if done {

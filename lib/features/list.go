@@ -54,4 +54,7 @@ const (
 	// FeaturePaymasterEmergencyWipe should wipe the paymaster poll table of
 	// troublesome requests in a worst case scenario.
 	FeaturePaymasterEmergencyWipe = "paymaster should wipe emergency on repeated errors"
+
+	// FeatureFilterTables should only send tables if they're filtered for in the UI.
+	FeatureFilterTables = "websocket should filter tables"
 )
