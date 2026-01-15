@@ -4,7 +4,7 @@ const clientEnvSchema = z.object({
   /**
    * Thirdweb project id
    */
-  NEXT_PUBLIC_THIRDWEB_ID: z.string(),
+  NEXT_PUBLIC_WC_ID: z.string(),
   /**
    * Graphql server url
    */
@@ -101,7 +101,7 @@ declare global {
 /* eslint-enable @typescript-eslint/no-namespace */
 
 const clientEnv = clientEnvSchema.safeParse({
-  NEXT_PUBLIC_THIRDWEB_ID: process.env.NEXT_PUBLIC_THIRDWEB_ID,
+  NEXT_PUBLIC_WC_ID: process.env.NEXT_PUBLIC_WC_ID,
   NEXT_PUBLIC_GRAPHQL_URL: process.env.NEXT_PUBLIC_GRAPHQL_URL,
   NEXT_PUBLIC_FEATURES_URL: process.env.NEXT_PUBLIC_FEATURES_URL,
   NEXT_PUBLIC_FUSDC_ADDR: process.env.NEXT_PUBLIC_FUSDC_ADDR,

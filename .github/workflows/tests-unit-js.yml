@@ -25,7 +25,7 @@ jobs:
 
       - name: Run Jest tests
         env:
-          NEXT_PUBLIC_THIRDWEB_ID: ${{ vars.NEXT_PUBLIC_THIRDWEB_ID }}
+          NEXT_PUBLIC_WC_ID: ${{ vars.NEXT_PUBLIC_WC_ID }}
           NEXT_PUBLIC_GRAPHQL_URL: "https://graph.9lives.so"
           NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
           NEXT_PUBLIC_POINTS_URL: "https://points-graph.superposition.so"

@@ -10,15 +10,14 @@ import allChains, { destinationChain } from "@/config/chains";
 const { superposition: _, ...otherChains } = allChains;
 createAppKit({
   adapters: [wagmiAdapter],
-  projectId: clientEnv.NEXT_PUBLIC_THIRDWEB_ID,
+  projectId: clientEnv.NEXT_PUBLIC_WC_ID,
   networks: [destinationChain, ...Object.values(otherChains)],
   defaultNetwork: destinationChain,
   metadata: {
     name: config.metadata.title,
     description: config.metadata.description,
-    // url: config.metadata.metadataBase.href,
-    url: "http://localhost:3000",
-    icons: ["https://9lives.so/favicon.ico?favicon.96b1cd7b.ico"],
+    url: config.metadata.metadataBase.href,
+    icons: [destinationChain.icon],
   },
   features: {
     analytics: true,

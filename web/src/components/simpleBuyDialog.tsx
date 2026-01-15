@@ -227,7 +227,7 @@ export default function SimpleBuyDialog({
     }
   }
   const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
-  const activeChain = useAppKitNetwork();
+  const { chainId } = useAppKitNetwork();
   const handleNetworkChange = useCallback(
     async (chain: Chain) => {
       // lifi auto switch handle this for now
@@ -237,15 +237,15 @@ export default function SimpleBuyDialog({
     [setValue],
   );
   useEffect(() => {
-    if (activeChain) {
+    if (chainId) {
       const selectedChain = Object.values(config.chains).find(
-        (c) => c.id === activeChain.chainId,
+        (c) => c.id === chainId,
       );
       if (selectedChain) {
         handleNetworkChange(selectedChain);
       }
     }
-  }, [activeChain, handleNetworkChange]);
+  }, [chainId, handleNetworkChange]);
 
   const quickAddAsPercentage =
     posthog.getFeatureFlag("quick-add-buttons-as-percentages") === "test";
