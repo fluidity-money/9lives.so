@@ -300,6 +300,22 @@ type (
 		Recipient       Address `json:"recipient"`
 		FusdcClawback Number  `json:"fusdc_clawback"`
 	}
+
+	EventDebtTaken struct {
+		Event
+
+		Supplier Address `json:"supplier"`
+		ForAddr Address `json:"for_addr"`
+		Amount Number `json:"amount"`
+	}
+
+	EventDebtRepaid struct {
+		Event
+
+		Repayer Address `json:"repayer"`
+		Surplus Number `json:"surplus"`
+		Deficit Number `json:"deficit"`
+	}
 )
 
 type ShareDetails []ShareDetail

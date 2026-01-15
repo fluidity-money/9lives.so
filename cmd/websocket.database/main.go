@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -32,7 +34,14 @@ type TableContent struct {
 	Table            string           `json:"table"`
 	Content          map[string]any   `json:"content,omitempty"`
 	Snapshot         []map[string]any `json:"snapshot,omitempty"`
-	SnapshotToplevel []TableContent   `json:"snapshot_toplevel"`
+	SnapshotToplevel []TableContent   `json:"snapshot_toplevel,omitempty"`
+	encoded          []byte
+}
+
+type FilterConstraint struct {
+	Gt float64 `json:"gt"`
+	Lt float64 `json:"lt"`
+	Et float64 `json:"et"`
 }
 
 func main() {
@@ -80,16 +89,12 @@ func main() {
 			CreateIfNotExists:           true,
 			SlotActivityCheckerInterval: 1000,
 		},
-		Logger: cdcConfig.LoggerConfig{
-			LogLevel: slog.LevelDebug,
-		},
 	}
-	broadcast := websocket.NewBroadcast()
-	var (
-		bufferMsgsChan = make(chan TableContent)
-		dumpChan       = make(chan chan []TableContent, 1)
-	)
+	broadcast := websocket.NewBroadcast[TableContent]()
+	dumpChan := make(chan chan []TableContent)
 	go func() {
+		bufferMsgsChan := make(chan TableContent)
+		broadcast.Subscribe(bufferMsgsChan)
 		buffer := make(map[string]struct {
 			i     int
 			items [10]map[string]any
@@ -121,6 +126,19 @@ func main() {
 		}
 	}()
 	tableFilter := makeTableFilter()
+	encodingChan := make(chan TableContent)
+	for i := 0; i < runtime.NumCPU()/3; i++ {
+		go func() {
+			for t := range encodingChan {
+				e, err := json.Marshal(t)
+				if err != nil {
+					log.Fatalf("failed to encode: %v", err)
+				}
+				t.encoded = e
+				broadcast.Broadcast(t)
+			}
+		}()
+	}
 	connector, err := cdc.NewConnector(ctx, cfg, func(ctx *cdcReplication.ListenerContext) {
 		msg, isInsert := ctx.Message.(*cdcFormat.Insert)
 		if err := ctx.Ack(); err != nil {
@@ -141,10 +159,7 @@ func main() {
 				o[k] = msg.Decoded[k]
 			}
 		}
-		t := TableContent{msg.TableName, o, nil, nil}
-		broadcast.BroadcastJson(t)
-		bufferMsgsChan <- t
-
+		encodingChan <- TableContent{msg.TableName, o, nil, nil, nil}
 	})
 	if err != nil {
 		setup.Exitf("error opening connector: %v", err)
@@ -155,7 +170,7 @@ func main() {
 			replies <-chan []byte, outgoing chan<- []byte,
 			shutdown chan<- error, requestShutdown <-chan bool,
 		) {
-			sink := make(chan []byte)
+			sink := make(chan TableContent)
 			go func() {
 				snapshotChan := make(chan []TableContent)
 				dumpChan <- snapshotChan
@@ -165,17 +180,38 @@ func main() {
 				if err != nil {
 					slog.Error("failed to marshal snapshot", "err", err)
 				}
-				sink <- snapshot
+				outgoing <- snapshot
 			}()
 			cookie := broadcast.Subscribe(sink)
+			filterRules := make(map[string]map[string]FilterConstraint)
 			var err error
 		L:
 			for {
 				select {
 				case m := <-sink:
-					outgoing <- m
+					outgoing <- m.encoded
 				// We need a sink for all messages here:
-				case <-replies:
+				case msg := <-replies:
+					var filterReq struct {
+						Add []struct {
+							Table  string `json:"table"`
+							Fields []struct {
+								Name        string           `json:"name"`
+								Constraints FilterConstraint `json:"filter_constraints"`
+							} `json:"fields"`
+						} `json:"add"`
+					}
+					if err := json.Unmarshal(msg, &filterReq); err != nil {
+						slog.Error("bad message received", "err", err)
+						break L
+					}
+					for _, ch := range filterReq.Add {
+						t := ch.Table
+						if filterRules[t] == nil {
+							filterRules[t] = make(map[string]FilterConstraint)
+						}
+
+					}
 				case done := <-requestShutdown:
 					if done {
 						slog.Error("shutdown requested", "err", err)

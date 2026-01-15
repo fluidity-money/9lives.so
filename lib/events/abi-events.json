@@ -227,6 +227,56 @@
 	},
 	{
 		"type": "event",
+		"name": "DebtRepaid",
+		"inputs": [
+			{
+				"name": "repayer",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "surplus",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			},
+			{
+				"name": "deficit",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "DebtTaken",
+		"inputs": [
+			{
+				"name": "supplier",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "forAddr",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
 		"name": "Declared",
 		"inputs": [
 			{
@@ -799,6 +849,19 @@
 			},
 			{
 				"name": "ticket",
+				"type": "uint256",
+				"indexed": true,
+				"internalType": "uint256"
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "SeedLiquidityAdded",
+		"inputs": [
+			{
+				"name": "fusdcAmt",
 				"type": "uint256",
 				"indexed": true,
 				"internalType": "uint256"

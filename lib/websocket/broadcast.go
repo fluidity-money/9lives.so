@@ -1,56 +1,47 @@
 package websocket
 
-import (
-	"encoding/json"
-	"log/slog"
-
-	"github.com/fluidity-money/9lives.so/lib/setup"
-)
+import "log/slog"
 
 type (
 	// registration for a broadcast. If replies is nil, then it's assumed
 	// that someone is unsubscribing!
-	registration struct {
+	registration[A any] struct {
 		cookieReply chan uint64
-		replies     chan []byte
+		replies     chan A
 	}
 
 	// Broadcast for sending messages to channels subscribing to events here
-	Broadcast struct {
-		broadcastRequests      chan []byte
-		subscriptionRequests   chan registration
+	Broadcast[A any] struct {
+		broadcastRequests      chan A
+		subscriptionRequests   chan registration[A]
 		unsubscriptionRequests chan uint64
 		shutdownRequests       chan bool
 		subscribedCount        uint64
-		subscribed             map[uint64]chan []byte
+		subscribed             map[uint64]chan A
 	}
 )
 
 // NewBroadcast, creating a new map and new counter for messages and set
 // up the server that handles new subscriptions.
-func NewBroadcast() *Broadcast {
+func NewBroadcast[A any]() *Broadcast[A] {
 	var (
-		broadcastRequests      = make(chan []byte)
-		subscriptionRequests   = make(chan registration)
+		broadcastRequests      = make(chan A)
+		subscriptionRequests   = make(chan registration[A])
 		unsubscriptionRequests = make(chan uint64)
 		shutdownRequests       = make(chan bool)
 	)
-	broadcast := Broadcast{
+	broadcast := Broadcast[A]{
 		broadcastRequests:      broadcastRequests,
 		subscriptionRequests:   subscriptionRequests,
 		unsubscriptionRequests: unsubscriptionRequests,
 		shutdownRequests:       shutdownRequests,
 		subscribedCount:        0,
-		subscribed:             make(map[uint64]chan []byte),
+		subscribed:             make(map[uint64]chan A),
 	}
 	go func() {
 		for {
 			select {
 			case message := <-broadcastRequests:
-				slog.Debug("received a message to broadcast",
-					"len", len(message),
-					"subscribers", len(broadcast.subscribed),
-				)
 				for cookie, ch := range broadcast.subscribed {
 					if ch == nil {
 						delete(broadcast.subscribed, cookie)
@@ -87,18 +78,18 @@ func NewBroadcast() *Broadcast {
 	return &broadcast
 }
 
-func (broadcast *Broadcast) incrementCookie() (previous uint64) {
+func (broadcast *Broadcast[A]) incrementCookie() (previous uint64) {
 	previous = broadcast.subscribedCount
 	broadcast.subscribedCount++
 	return previous
 }
 
 // Subscribe to the broadcast, with a new channel receiving messages being sent.
-func (broadcast Broadcast) Subscribe(messages chan []byte) uint64 {
+func (broadcast Broadcast[A]) Subscribe(messages chan A) uint64 {
 	slog.Debug("subscribe request")
 	cookieChan := make(chan uint64)
 
-	broadcast.subscriptionRequests <- registration{
+	broadcast.subscriptionRequests <- registration[A]{
 		cookieReply: cookieChan,
 		replies:     messages,
 	}
@@ -110,23 +101,15 @@ func (broadcast Broadcast) Subscribe(messages chan []byte) uint64 {
 	return cookie
 }
 
-func (broadcast Broadcast) Unsubscribe(cookie uint64) {
+func (broadcast Broadcast[A]) Unsubscribe(cookie uint64) {
 	broadcast.unsubscriptionRequests <- cookie
 }
 
 // Shutdown the broadcast, closing the inner worker.
-func (broadcast *Broadcast) Shutdown() {
+func (broadcast *Broadcast[A]) Shutdown() {
 	broadcast.shutdownRequests <- true
 }
 
-func (broadcast Broadcast) Broadcast(message []byte) {
+func (broadcast Broadcast[A]) Broadcast(message A) {
 	broadcast.broadcastRequests <- message
-}
-
-func (broadcast Broadcast) BroadcastJson(content any) {
-	blob, err := json.Marshal(content)
-	if err != nil {
-		setup.Exitf("failed to marshal broadcast: %v", err)
-	}
-	broadcast.Broadcast(blob)
 }
