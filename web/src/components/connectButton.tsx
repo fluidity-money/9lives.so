@@ -29,7 +29,7 @@ export default function ConnectButton() {
           />
           <div>
             <span className="font-chicago text-xs font-bold">
-              {account.address.slice(0, 4)}...{account.address.slice(-4)}
+              {account.address.slice(0, 6)}...{account.address.slice(-4)}
             </span>
           </div>
         </div>
