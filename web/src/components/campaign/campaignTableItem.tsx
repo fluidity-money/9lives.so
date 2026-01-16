@@ -5,9 +5,8 @@ import { Campaign } from "@/types";
 import formatFusdc from "@/utils/format/formatUsdc";
 import CountdownTimer from "../countdownTimer";
 import ClaimFeesButton from "../claimFeesButton";
-import { useEffect, useState } from "react";
-import useClaimAllFees from "@/hooks/useClaimAllFees";
 import config from "@/config";
+import useCheckClaims from "@/hooks/useCheckClaims";
 
 export default function CampaignTableItem({
   data,
@@ -18,20 +17,13 @@ export default function CampaignTableItem({
 }) {
   const left = data.ending - Date.now();
   const inThisWeek = config.weekDuration >= left && left > 0;
-  const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
-  const { checkClaimFees } = useClaimAllFees();
-  const displayClaimButton = unclaimedFees > BigInt(0);
-
-  useEffect(() => {
-    if (address) {
-      (async () => {
-        const unclaimedFees = await checkClaimFees(data.poolAddress);
-        if (unclaimedFees > BigInt(0)) {
-          setUnclaimedFees(unclaimedFees);
-        }
-      })();
-    }
-  }, [address, checkClaimFees, data.poolAddress]);
+  const { data: claims, isSuccess } = useCheckClaims(
+    [data.poolAddress],
+    address,
+  );
+  const unclaimedFees = claims?.result?.[0];
+  const displayClaimButton =
+    isSuccess && !!unclaimedFees && unclaimedFees > BigInt(0);
 
   return (
     <tr>

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import WatchlistButton from "../watchlistButton";
-import { CampaignDetail, PricePoint } from "@/types";
+import { CampaignDetail } from "@/types";
 import ActiveIndicator from "#/images/active-indicator.svg";
 import InactiveIndicator from "#/images/inactive-indicator.svg";
 import { combineClass } from "@/utils/combineClass";
@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import Modal from "../themed/modal";
 import ManageLiquidityDialog from "../manageLiquidityDialog";
 import Button from "../themed/button";
-import useClaimAllFees from "@/hooks/useClaimAllFees";
 import ClaimFeesButton from "../claimFeesButton";
 import useAPY from "@/hooks/useAPY";
 import useUserLiquidity from "@/hooks/useUserLiquidity";
@@ -23,6 +22,7 @@ import DetailCurrentPriceBox from "./detailCurrentPriceBox";
 import config from "@/config";
 import PointsIndicator from "../pointsIndicator";
 import { useAppKitAccount } from "@reown/appkit/react";
+import useCheckClaims from "@/hooks/useCheckClaims";
 
 export default function DetailHeader({
   data,
@@ -40,9 +40,16 @@ export default function DetailHeader({
   const inThisWeek = config.weekDuration >= left && left > 0;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
-  const [unclaimedFees, setUnclaimedFees] = useState(BigInt(0));
-  const displayCreatorFees = unclaimedFees > BigInt(0);
-  const { checkClaimFees } = useClaimAllFees();
+  const { data: claims, isSuccess: checkIsSuccess } = useCheckClaims(
+    [data.poolAddress],
+    account.address,
+  );
+  const unclaimedFees = claims?.result?.[0];
+  const displayCreatorFees =
+    data.creator.address.toLowerCase() === account?.address?.toLowerCase() &&
+    checkIsSuccess &&
+    !!unclaimedFees &&
+    unclaimedFees > BigInt(0);
   const APY = useAPY(data.poolAddress, data.liquidityVested);
   const { data: userLiquidity, isSuccess } = useUserLiquidity({
     address: account?.address,
@@ -118,7 +125,7 @@ export default function DetailHeader({
     },
     {
       title: "Creator Fees",
-      value: `$${formatFusdc(unclaimedFees, 2)}`,
+      value: `$${formatFusdc(unclaimedFees ?? 0, 2)}`,
       show: !(data.isDpm || data.isDppm) && displayCreatorFees,
       rightComp: <ClaimFeesButton addresses={[data.poolAddress]} />,
       shrink: true,
@@ -131,18 +138,18 @@ export default function DetailHeader({
     },
   ];
 
-  useEffect(() => {
-    if (
-      data.creator.address.toLowerCase() === account?.address?.toLowerCase()
-    ) {
-      (async () => {
-        const unclaimedFees = await checkClaimFees(data.poolAddress);
-        if (unclaimedFees > BigInt(0)) {
-          setUnclaimedFees(unclaimedFees);
-        }
-      })();
-    }
-  }, [account.address, checkClaimFees, data.creator.address, data.poolAddress]);
+  // useEffect(() => {
+  //   if (
+  //     data.creator.address.toLowerCase() === account?.address?.toLowerCase()
+  //   ) {
+  //     (async () => {
+  //       const unclaimedFees = await checkClaimFees(data.poolAddress);
+  //       if (unclaimedFees > BigInt(0)) {
+  //         setUnclaimedFees(unclaimedFees);
+  //       }
+  //     })();
+  //   }
+  // }, [account.address, checkClaimFees, data.creator.address, data.poolAddress]);
 
   return (
     <div className="flex flex-col gap-4">

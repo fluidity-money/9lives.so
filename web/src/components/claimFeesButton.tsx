@@ -18,9 +18,9 @@ export default function ClaimFeesButton({
 
   const handleClick = async () => {
     try {
-      if (!account.isConnected) return connect();
+      if (!account.address) return connect();
       setIsClaiming(true);
-      await claim(addresses);
+      await claim(addresses, account.address);
     } finally {
       setIsClaiming(false);
     }
