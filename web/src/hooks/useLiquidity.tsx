@@ -7,7 +7,13 @@ import { useAllowanceCheck } from "./useAllowanceCheck";
 import { adaptViemWallet, getClient } from "@reservoir0x/relay-sdk";
 import RelayTxToaster from "@/components/relayTxToaster";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
-import { createWalletClient, custom, encodeFunctionData, maxUint256, parseUnits } from "viem";
+import {
+  createWalletClient,
+  custom,
+  encodeFunctionData,
+  maxUint256,
+  parseUnits,
+} from "viem";
 import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import useConnectWallet from "./useConnectWallet";
 import { usePublicClient, useWriteContract } from "wagmi";
@@ -37,11 +43,11 @@ export default function useLiquidity({
   const { checkAndAprove } = useAllowanceCheck();
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const publicClient = usePublicClient();
-  const { mutateAsync: writeContract } = useWriteContract()
+  const { mutateAsync: writeContract } = useWriteContract();
   const tradingContract = {
     address: tradingAddr as `0x${string}`,
-    abi: tradingAbi
-  } as const
+    abi: tradingAbi,
+  } as const;
   const addLiquidityTx = (amount: bigint, simulatedShare?: bigint) => {
     const minShares = simulatedShare
       ? (simulatedShare * BigInt(95)) / BigInt(100)
@@ -80,7 +86,9 @@ export default function useLiquidity({
           });
           await checkAndSwitchChain();
 
-          const simulation = await publicClient.simulateContract(addLiquidityTx(amount));
+          const simulation = await publicClient.simulateContract(
+            addLiquidityTx(amount),
+          );
 
           await writeContract(addLiquidityTx(amount, simulation.result.liq));
 
@@ -107,10 +115,7 @@ export default function useLiquidity({
         error: "Failed to add.",
       },
     );
-  const addWithRelay = async (
-    input: AddInput,
-    fromDecimals?: number,
-  ) =>
+  const addWithRelay = async (input: AddInput, fromDecimals?: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
@@ -143,7 +148,9 @@ export default function useLiquidity({
           const toAmountData = await toAmountRes.json();
           const toAmount = toAmountData.details.currencyOut.amount as string;
 
-          const calldata = await encodeFunctionData(addLiquidityTx(BigInt(toAmount)))
+          const calldata = await encodeFunctionData(
+            addLiquidityTx(BigInt(toAmount)),
+          );
 
           const options = {
             user: account.address,
@@ -168,11 +175,13 @@ export default function useLiquidity({
 
           const quote = await relayClient.actions.getQuote(options);
 
-          await checkAndSwitchChain();
+          await checkAndSwitchChain(input.fromChain);
 
           const viemWalletClient = createWalletClient({
             account: account.address as `0x${string}`,
-            chain: Object.values(config.chains).find((i) => i.id === input.fromChain),
+            chain: Object.values(config.chains).find(
+              (i) => i.id === input.fromChain,
+            ),
             transport: custom(walletProvider as any),
           });
 
@@ -242,14 +251,11 @@ export default function useLiquidity({
         error: "Failed to add.",
       },
     );
-  const remove = async (
-    fusdc: string,
-    totalLiquidity: number,
-  ) =>
+  const remove = async (fusdc: string, totalLiquidity: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account.address) return connect()
+          if (!account.address) return connect();
           const _fusdc = parseUnits(fusdc, config.contracts.decimals.shares);
           const diff = BigInt(totalLiquidity) - _fusdc;
           const amount =
@@ -258,8 +264,8 @@ export default function useLiquidity({
           await writeContract({
             ...tradingContract,
             functionName: "removeLiquidity3C857A15",
-            args: [amount, account.address as `0x${string}`]
-          })
+            args: [amount, account.address as `0x${string}`],
+          });
           queryClient.invalidateQueries({
             queryKey: ["userLiquidity", account.address, tradingAddr],
           });
@@ -284,27 +290,24 @@ export default function useLiquidity({
     toast.promise(
       new Promise(async (res, rej) => {
         try {
-          if (!account.address) return connect()
-          if (!publicClient) throw new Error("Public client is not set")
+          if (!account.address) return connect();
+          if (!publicClient) throw new Error("Public client is not set");
 
           const simulation = await publicClient.simulateContract({
             ...tradingContract,
             functionName: "removeLiquidity3C857A15",
-            args: [BigInt(0), account.address as `0x${string}`]
-          })
-          const [lpedAmount, lpRewards] = simulation.result
+            args: [BigInt(0), account.address as `0x${string}`],
+          });
+          const [lpedAmount, lpRewards] = simulation.result;
 
-          if (
-            lpedAmount === BigInt(0) &&
-            lpRewards === BigInt(0)
-          ) {
+          if (lpedAmount === BigInt(0) && lpRewards === BigInt(0)) {
             throw new Error("You don't have anything to claim.");
           }
           await checkAndSwitchChain();
           await writeContract({
             ...tradingContract,
             functionName: "removeLiquidity3C857A15",
-            args: [BigInt(0), account.address as `0x${string}`]
+            args: [BigInt(0), account.address as `0x${string}`],
           });
           queryClient.invalidateQueries({
             queryKey: ["userLiquidity", account.address, tradingAddr],
@@ -327,17 +330,17 @@ export default function useLiquidity({
       },
     );
 
-  const checkLpRewards = async (address?:string) => {
-    if (address) return
-    if (!publicClient) return
+  const checkLpRewards = async (address?: string) => {
+    if (address) return;
+    if (!publicClient) return;
 
     const simulation = await publicClient.simulateContract({
       ...tradingContract,
       functionName: "removeLiquidity3C857A15",
-      args: [BigInt(0), account.address as `0x${string}`]
-    })
+      args: [BigInt(0), account.address as `0x${string}`],
+    });
 
-    const [lpedAmount, lpRewards] = simulation.result
+    const [lpedAmount, lpRewards] = simulation.result;
 
     return BigInt(lpRewards ?? 0);
   };

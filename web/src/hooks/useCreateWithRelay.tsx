@@ -134,7 +134,7 @@ const useCreateWithRelay = ({
             const toAmountData = await toAmountRes.json();
             usdValueBigInt = toAmountData.details.currencyOut.amount;
 
-            await checkAndSwitchChain();
+            await checkAndSwitchChain(input.fromChain);
 
             const defaultFee = BigInt(10);
             const zeroFee = BigInt(0);

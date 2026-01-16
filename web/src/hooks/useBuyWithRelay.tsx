@@ -154,7 +154,7 @@ const useBuyWithRelay = ({
             );
           }
 
-          await checkAndSwitchChain();
+          await checkAndSwitchChain(fromChain);
 
           const viemWalletClient = createWalletClient({
             account: address as `0x${string}`,
