@@ -62,6 +62,7 @@ export default function ModeSwitchButton() {
         Advanced Mode
       </span>
       <Switch
+        id="advanced-mode-switch"
         checked={enabled ?? false}
         className="group inline-flex h-6 w-11 items-center bg-9layer transition data-[checked]:bg-9black"
       >
