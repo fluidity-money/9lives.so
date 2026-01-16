@@ -8,7 +8,7 @@ export const wagmiAdapter = new WagmiAdapter({
     storage: cookieStorage,
   }),
   ssr: true,
-  projectId: clientEnv.NEXT_PUBLIC_THIRDWEB_ID,
+  projectId: clientEnv.NEXT_PUBLIC_WC_ID,
   networks: Object.values(ChainList),
 });
 
