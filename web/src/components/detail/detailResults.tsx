@@ -114,7 +114,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
       ];
   const noClaim = data.isDppm
     ? !(userRewardDppm > 0)
-    : account &&
+    : account.isConnected &&
       ((accountShares !== undefined && !(Number(accountShares) > 0)) ||
         !accountShares);
   async function handleClaim() {

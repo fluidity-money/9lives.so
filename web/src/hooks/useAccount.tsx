@@ -218,7 +218,7 @@ export default function useAccount({
               "positions",
               data.poolAddress,
               data.outcomes,
-              account,
+              account.address,
               data.isDpm,
             ],
           });
@@ -254,7 +254,7 @@ export default function useAccount({
           queryClient.invalidateQueries({
             queryKey: [
               "tokensWithBalances",
-              account?.address,
+              account.address,
               config.destinationChain.id,
             ],
           });

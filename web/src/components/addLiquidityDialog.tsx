@@ -155,7 +155,7 @@ export default function AddLiquidityDialog({
                   : 0}
               </span>
               <Button
-                disabled={!account || !selectedTokenBalance}
+                disabled={!account.isConnected || !selectedTokenBalance}
                 onClick={setToMaxShare2}
                 intent={"default"}
                 size={"small"}

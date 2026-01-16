@@ -226,7 +226,8 @@ export default function SimpleBuyDialog({
       setIsMinting(false);
     }
   }
-  const onSubmit = () => (!account ? connect() : handleSubmit(handleBuy)());
+  const onSubmit = () =>
+    !account.isConnected ? connect() : handleSubmit(handleBuy)();
   const { chainId } = useAppKitNetwork();
   const handleNetworkChange = useCallback(
     async (chain: Chain) => {

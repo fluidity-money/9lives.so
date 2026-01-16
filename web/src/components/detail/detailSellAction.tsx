@@ -53,7 +53,7 @@ export default function DetailSellAction({
     shareToBurn: z.preprocess((val) => Number(val), z.number().gt(0)),
     minUsdcToGet: z.preprocess((val) => Number(val), z.number().min(0)),
   });
-  const { data: balance } = useBalance(account.address, outcome.share.address)
+  const { data: balance } = useBalance(account.address, outcome.share.address);
   const chance = Number(price) * 100;
   type FormData = z.infer<typeof formSchema>;
   const {
@@ -97,12 +97,6 @@ export default function DetailSellAction({
     tradingAddr: data.poolAddress,
     address: account.address,
   });
-  // const { data: estimationMax } = useEstimateBurn({
-  //   outcomeId: selectedOutcome.id as `0x${string}`,
-  //   share: ownedShares?.[0]?.balanceRaw,
-  //   tradingAddr: data.poolAddress,
-  //   account,
-  // });
   const usdcToGet = formatFusdc(estimation ?? BigInt(0), 2);
   const orderSummary = [
     {
@@ -167,7 +161,8 @@ export default function DetailSellAction({
     );
     setValue("shareToBurn", maxShareAmountNum);
   };
-  const onSubmit = () => (!account.isConnected ? connect() : handleSubmit(handleSell)());
+  const onSubmit = () =>
+    !account.isConnected ? connect() : handleSubmit(handleSell)();
 
   return (
     <>

@@ -46,7 +46,7 @@ export default function PortfolioHeader() {
   const totalPnL = unrealizedPnL + realizedPnL;
   const { data } = use9LivesPoints({
     address: account?.address,
-    enabled: !!account,
+    enabled: !!account.address,
   });
   return (
     <>

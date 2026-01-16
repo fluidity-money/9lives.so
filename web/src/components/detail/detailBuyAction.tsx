@@ -447,7 +447,9 @@ export default function DetailBuyAction({
                   </span>
                   <Button
                     disabled={
-                      shouldStopAction || !account || !selectedTokenBalance
+                      shouldStopAction ||
+                      !account.isConnected ||
+                      !selectedTokenBalance
                     }
                     onClick={setToMaxShare2}
                     intent={"default"}

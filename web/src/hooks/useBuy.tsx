@@ -94,7 +94,8 @@ const useBuy = ({
               ],
             } as const;
           };
-          const simulatedShares = await publicClient.simulateContract(mintWith9LivesTx());
+          const simulatedShares =
+            await publicClient.simulateContract(mintWith9LivesTx());
 
           await writeContract(mintWith9LivesTx(simulatedShares.result));
 
@@ -104,7 +105,7 @@ const useBuy = ({
               "positions",
               data.poolAddress,
               data.outcomes,
-              account,
+              account.address,
               data.isDpm,
             ],
           });
@@ -140,7 +141,7 @@ const useBuy = ({
           queryClient.invalidateQueries({
             queryKey: [
               "tokensWithBalances",
-              account?.address,
+              account.address,
               config.destinationChain.id,
             ],
           });
