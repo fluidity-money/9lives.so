@@ -7,9 +7,11 @@ import config from "@/config";
 export default function useSharePrices({
   tradingAddr,
   outcomeIds,
+  enabled = true,
 }: {
   tradingAddr: string;
   outcomeIds: `0x${string}`[];
+  enabled?: boolean;
 }) {
   return useQuery<{ id: `0x${string}`; price: string }[]>({
     queryKey: ["sharePrices", tradingAddr, outcomeIds],
@@ -40,5 +42,6 @@ export default function useSharePrices({
         price: price ? formatFusdc(Number(price), 2) : "0.00",
       }));
     },
+    enabled,
   });
 }

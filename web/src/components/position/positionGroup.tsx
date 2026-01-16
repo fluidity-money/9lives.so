@@ -34,6 +34,7 @@ export default function PositionsGroup({
   const { data: sharePrices } = useSharePrices({
     tradingAddr: content.poolAddress as `0x${string}`,
     outcomeIds: content.outcomes.map((o) => o.identifier) as `0x${string}`[],
+    enabled: !content.winner,
   });
   const { data: positionsHistory } = usePositionHistory(
     account?.address,
