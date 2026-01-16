@@ -12,7 +12,7 @@ export default function BetaTesterInvitation() {
     !!account.address &&
     config.betaTesterWallets.includes(account.address.toLowerCase());
   const [dismissed, setDismissed] = useState(false);
-  const isClosed = dismissed || isBetaTester;
+  const isClosed = dismissed || !isBetaTester;
 
   if (isClosed) return null;
 
