@@ -18,7 +18,7 @@ export default function PointMenuButton() {
   });
   return (
     <Menu>
-      <MenuButton className="group flex items-center">
+      <MenuButton className="group flex items-center" id={"points-menu-button"}>
         <span className="font-chicago text-neutral-800 group-hover:underline">
           Points
         </span>
