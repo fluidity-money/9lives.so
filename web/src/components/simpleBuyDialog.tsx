@@ -191,7 +191,7 @@ export default function SimpleBuyDialog({
           toChain,
           toToken,
           data.outcomes,
-          profile?.settings?.refererr ?? "",
+          profile?.settings?.refererr ?? zeroAddress,
           fromDecimals,
           {
             baseAsset: data.priceMetadata.baseAsset,
@@ -208,18 +208,22 @@ export default function SimpleBuyDialog({
         );
       } else {
         const action = enabledASBuy ? buyWithAS : buy;
-        await action(Number(supply), profile?.settings?.refererr ?? "", {
-          baseAsset: data.priceMetadata.baseAsset,
-          priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
-          priceOnBuy: currentPrice?.price,
-          volumeOnBuy: data.totalVolume,
-          minuteOnBuy: Number(
-            new Date().toLocaleString("en-US", {
-              timeZone: "UTC",
-              minute: "numeric",
-            }),
-          ),
-        });
+        await action(
+          Number(supply),
+          profile?.settings?.refererr ?? zeroAddress,
+          {
+            baseAsset: data.priceMetadata.baseAsset,
+            priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
+            priceOnBuy: currentPrice?.price,
+            volumeOnBuy: data.totalVolume,
+            minuteOnBuy: Number(
+              new Date().toLocaleString("en-US", {
+                timeZone: "UTC",
+                minute: "numeric",
+              }),
+            ),
+          },
+        );
       }
       closeDialog();
     } finally {

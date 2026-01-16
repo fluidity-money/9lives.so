@@ -270,7 +270,7 @@ export default function DetailBuyAction({
           toChain,
           toToken,
           data.outcomes,
-          profile?.settings?.refererr ?? "",
+          profile?.settings?.refererr ?? zeroAddress,
           fromDecimals,
           data.isDppm && data.priceMetadata
             ? {
@@ -291,7 +291,7 @@ export default function DetailBuyAction({
         const action = enabledASBuy ? buyWithAS : buy;
         await action(
           supply,
-          profile?.settings?.refererr ?? "",
+          profile?.settings?.refererr ?? zeroAddress,
           data.isDppm && data.priceMetadata
             ? {
                 baseAsset: data.priceMetadata.baseAsset,
