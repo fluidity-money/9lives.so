@@ -13,11 +13,13 @@ function gtag(...args: any[]) {
 
 export default function CookieBanner() {
   const [showConsentDialog, setShowConsentDialog] = useState<boolean | null>(
-    () => {
-      if (typeof window === "undefined") return null;
-      return window.localStorage.getItem("consentMode") === null ? null : false;
-    },
+    null,
   );
+  useEffect(() => {
+    const consent = window.localStorage.getItem("consentMode");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setShowConsentDialog(consent === null);
+  }, []);
   const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
 
