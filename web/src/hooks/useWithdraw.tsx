@@ -6,13 +6,13 @@ import { usePaymasterStore } from "@/stores/paymasterStore";
 import { chainIdToEid } from "@/config/chains";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { parseUnits, zeroAddress } from "viem";
-import { usePublicClient } from 'wagmi';
+import { usePublicClient } from "wagmi";
 const useWithdraw = () => {
   const queryClient = useQueryClient();
   const account = useAppKitAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
-  const publicClient = usePublicClient()
+  const publicClient = usePublicClient();
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
     mutationFn: ({
       amountToSpend,
@@ -70,7 +70,7 @@ const useWithdraw = () => {
       new Promise(async (res, rej) => {
         try {
           if (!account.address) throw new Error("No active account");
-          if (!publicClient) throw new Error("Public client is not set")
+          if (!publicClient) throw new Error("Public client is not set");
 
           const amount = parseUnits(
             fusdc.toString(),
@@ -80,7 +80,7 @@ const useWithdraw = () => {
             ...config.contracts.fusdc,
             functionName: "balanceOf",
             args: [account.address as `0x${string}`],
-          })
+          });
 
           if (amount > userBalance) {
             throw new Error("You dont have enough USDC.");

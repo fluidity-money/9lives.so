@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { combineClass } from "@/utils/combineClass";
 import ErrorInfo from "../themed/errorInfo";
-import { parseSignature } from 'viem';
+import { parseSignature } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useSignMessage } from "wagmi";
 
@@ -18,7 +18,7 @@ export default function CommentComposer({
 }) {
   const { connect } = useConnectWallet();
   const account = useAppKitAccount();
-  const { mutateAsync: signMessage } = useSignMessage()
+  const { mutateAsync: signMessage } = useSignMessage();
   const formSchema = z.object({
     content: z
       .string()
@@ -51,7 +51,8 @@ export default function CommentComposer({
       v: Number(v),
     });
   }
-  const handleClick = () => (!account.isConnected ? connect() : handleSubmit(handlePost)());
+  const handleClick = () =>
+    !account.isConnected ? connect() : handleSubmit(handlePost)();
   return (
     <div className="mb-4">
       <div className="flex gap-2.5">

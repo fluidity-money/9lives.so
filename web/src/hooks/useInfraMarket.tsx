@@ -1,4 +1,3 @@
-
 import appConfig from "@/config";
 import { InfraMarketState, Outcome } from "@/types";
 import toast from "react-hot-toast";
@@ -16,14 +15,14 @@ interface InfraMarketProps {
   outcomes: Outcome[];
 }
 export default function useInfraMarket(props: InfraMarketProps) {
-  const account = useAppKitAccount()
-  const publicClient = usePublicClient()
-  const { mutateAsync: writeContract } = useWriteContract()
-  const { checkAndAprove } = useAllowanceCheck()
-  const { connect } = useConnectWallet()
+  const account = useAppKitAccount();
+  const publicClient = usePublicClient();
+  const { mutateAsync: writeContract } = useWriteContract();
+  const { checkAndAprove } = useAllowanceCheck();
+  const { connect } = useConnectWallet();
   const getStatus = async () => {
     try {
-      if (!publicClient) return
+      if (!publicClient) return;
       const [status, timeRemained] = await publicClient.readContract({
         ...appConfig.contracts.infra,
         functionName: "status",
@@ -68,7 +67,11 @@ export default function useInfraMarket(props: InfraMarketProps) {
           const receipt = await writeContract({
             ...appConfig.contracts.infra,
             functionName: "call",
-            args: [props.tradingAddr, outcomeId, account.address as `0x${string}`],
+            args: [
+              props.tradingAddr,
+              outcomeId,
+              account.address as `0x${string}`,
+            ],
           });
           res(receipt);
         } catch (error) {
@@ -88,7 +91,11 @@ export default function useInfraMarket(props: InfraMarketProps) {
           const receipt = await writeContract({
             ...appConfig.contracts.infra,
             functionName: "whinge",
-            args: [props.tradingAddr, outcomeId, account.address as `0x${string}`],
+            args: [
+              props.tradingAddr,
+              outcomeId,
+              account.address as `0x${string}`,
+            ],
           });
           res(receipt);
         } catch (error) {
@@ -105,7 +112,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
     toast.promise<string>(
       new Promise(async (res, rej) => {
         try {
-          if (!account.address) return connect()
+          if (!account.address) return connect();
           const seed = randomValue4Uint8();
           await storeCommitment({
             tradingAddr: props.tradingAddr,
@@ -118,7 +125,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
           const receipt = await writeContract({
             ...appConfig.contracts.infra,
             functionName: "predict",
-            args: [props.tradingAddr, commitHash]
+            args: [props.tradingAddr, commitHash],
           });
           res(receipt);
         } catch (error) {
@@ -138,7 +145,7 @@ export default function useInfraMarket(props: InfraMarketProps) {
           const receipt = await writeContract({
             ...appConfig.contracts.infra,
             functionName: "close",
-            args: [props.tradingAddr, account.address as `0x${string}`]
+            args: [props.tradingAddr, account.address as `0x${string}`],
           });
           res(receipt);
         } catch (error) {
@@ -159,7 +166,11 @@ export default function useInfraMarket(props: InfraMarketProps) {
           const receipt = await writeContract({
             ...appConfig.contracts.infra,
             functionName: "declare",
-            args: [props.tradingAddr, outcomeIds, account.address as `0x${string}`]
+            args: [
+              props.tradingAddr,
+              outcomeIds,
+              account.address as `0x${string}`,
+            ],
           });
           res(receipt);
         } catch (error) {
@@ -193,8 +204,8 @@ export default function useInfraMarket(props: InfraMarketProps) {
       contractAddress: config.contracts.fusdc.address,
       spenderAddress: config.contracts.infra.address,
       address: account.address as `0x${string}`,
-      amount
-    })
+      amount,
+    });
     const action = actionMap[props.infraState ?? InfraMarketState.Loading];
     if (action) {
       return action(outcomeId);

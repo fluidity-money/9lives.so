@@ -31,9 +31,7 @@ export default function SimplePositionRow({
     outcomeId: position.id,
     isWinning,
   });
-  const { data: positionsHistory } = usePositionHistory(address, [
-    position.id,
-  ]);
+  const { data: positionsHistory } = usePositionHistory(address, [position.id]);
   const cost = positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0);
   const PnL = cost
     ? isWinning

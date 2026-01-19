@@ -23,12 +23,12 @@ export default function useRequestPaymaster() {
   const { chainId } = useAppKitNetwork();
   const { signForPermit } = useSignForPermit(account.address);
   const { signForPaymaster } = useSignForPaymaster(chainId, account.address);
-  const publicClient = usePublicClient()
+  const publicClient = usePublicClient();
   const { data: profile } = useProfile(account?.address);
   const requestPaymaster = async (params: InputType) => {
     if (!account?.address) throw new Error("No account is connected");
     if (!chainId) throw new Error("No chain id is detected");
-    if (!publicClient) throw new Error("Public client is not set")
+    if (!publicClient) throw new Error("Public client is not set");
     const owner = account.address;
     const originatingChainId = chainId.toString();
     let permitR = "";
@@ -39,8 +39,11 @@ export default function useRequestPaymaster() {
       const allowance = await publicClient.readContract({
         ...config.contracts.fusdc,
         functionName: "allowance",
-        args: [account.address as `0x${string}`, config.contracts.paymaster.address],
-      })
+        args: [
+          account.address as `0x${string}`,
+          config.contracts.paymaster.address,
+        ],
+      });
       if (BigInt(params.amountToSpend) > allowance) {
         const { r, s, v } = await signForPermit({
           spender: config.NEXT_PUBLIC_PAYMASTER_ADDR,

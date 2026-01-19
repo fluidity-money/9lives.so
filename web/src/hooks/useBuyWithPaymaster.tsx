@@ -31,8 +31,8 @@ const useBuyWithPaymaster = ({
   const account = useAppKitAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
-  const { connect } = useConnectWallet()
-  const { data: userBalance } = useBalance(account.address)
+  const { connect } = useConnectWallet();
+  const { data: userBalance } = useBalance(account.address);
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
     mutationFn: ({
       referrer,
@@ -54,7 +54,12 @@ const useBuyWithPaymaster = ({
       }),
     onMutate: async (newRequest) => {
       await queryClient.cancelQueries({
-        queryKey: ["positions", data.poolAddress, data.outcomes, account.address],
+        queryKey: [
+          "positions",
+          data.poolAddress,
+          data.outcomes,
+          account.address,
+        ],
       });
       let newPosition: MintedPosition;
       let newPositions: MintedPosition[];
@@ -181,7 +186,7 @@ const useBuyWithPaymaster = ({
           const amount = parseUnits(
             fusdc.toString(),
             config.contracts.decimals.fusdc,
-          )
+          );
           if (userBalance && amount > userBalance) {
             openFundModal();
             throw new Error("You dont have enough USDC.");

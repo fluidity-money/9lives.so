@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useSenderByCode from "@/hooks/useSenderByCode";
 import { associateReferral } from "@/providers/graphqlClient";
-import { parseSignature } from 'viem';
+import { parseSignature } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useSignMessage } from "wagmi";
 

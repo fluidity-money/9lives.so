@@ -49,7 +49,7 @@ export default function CreateCampaignFormLiquidityCrossChain({
   )?.balance;
   const usdValue = tokens
     ? seedLiquidity *
-    +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
+      +(tokens.find((t) => t.address === fromToken) ?? { priceUSD: 0 }).priceUSD
     : seedLiquidity;
   const setToMaxShare2 = async () => {
     if (!selectedTokenBalance || !fromDecimals) return;

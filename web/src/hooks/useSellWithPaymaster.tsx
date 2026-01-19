@@ -28,7 +28,7 @@ const useSellWithPaymaster = ({
   const account = useAppKitAccount();
   const { requestPaymaster } = useRequestPaymaster();
   const createTicket = usePaymasterStore((s) => s.createTicket);
-  const publicClient = usePublicClient()
+  const publicClient = usePublicClient();
   const { mutateAsync: requestPaymasterOptimistically } = useMutation({
     mutationFn: ({
       amountToSpend,
@@ -74,12 +74,12 @@ const useSellWithPaymaster = ({
         newPositions = previousPositions.map((p) =>
           p.id === newRequest.outcome
             ? {
-              ...p,
-              balance: (
-                Number(p.balance) - Number(newRequest.minimumBack)
-              ).toString(),
-              balanceRaw: p.balanceRaw - amountToSell,
-            }
+                ...p,
+                balance: (
+                  Number(p.balance) - Number(newRequest.minimumBack)
+                ).toString(),
+                balanceRaw: p.balanceRaw - amountToSell,
+              }
             : p,
         );
       }
@@ -151,7 +151,7 @@ const useSellWithPaymaster = ({
       new Promise(async (res, rej) => {
         try {
           if (!account.address) throw new Error("No active account");
-          if (!publicClient) throw new Error("Public client is not set")
+          if (!publicClient) throw new Error("Public client is not set");
           const amount = parseUnits(
             rawAmount.toString(),
             config.contracts.decimals.shares,
@@ -161,7 +161,7 @@ const useSellWithPaymaster = ({
             address: shareAddr,
             functionName: "balanceOf",
             args: [account?.address as `0x${string}`],
-          })
+          });
           if (amount > userBalance) {
             throw new Error("You dont have enough shares.");
           }

@@ -8,7 +8,7 @@ import Image from "next/image";
 import makeBlockie from "ethereum-blockies-base64";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useSignMessage } from "wagmi";
-import { parseSignature } from 'viem';
+import { parseSignature } from "viem";
 
 export default function CommentItem({
   outcomes,
@@ -23,7 +23,7 @@ export default function CommentItem({
 }) {
   const timePassed = useTimePassed(data.createdAt * 1000);
   const account = useAppKitAccount();
-  const { mutateAsync: signMessage } = useSignMessage()
+  const { mutateAsync: signMessage } = useSignMessage();
   const { mutate, isPending } = useDeleteComment(campaignId);
   const deleteComment = async () => {
     if (!account.address) throw new Error("No wallet is connected.");
@@ -62,16 +62,16 @@ export default function CommentItem({
             />
             {data.investments.length > 0
               ? data.investments.map((i) => {
-                const outcome = outcomes?.find((o) => o.identifier === i?.id);
-                return (
-                  <span
-                    key={i?.id}
-                    className="ml-1 max-w-[150px] truncate bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide"
-                  >
-                    ${+formatFusdc(i?.amount ?? 0, 1)} {outcome?.name}
-                  </span>
-                );
-              })
+                  const outcome = outcomes?.find((o) => o.identifier === i?.id);
+                  return (
+                    <span
+                      key={i?.id}
+                      className="ml-1 max-w-[150px] truncate bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide"
+                    >
+                      ${+formatFusdc(i?.amount ?? 0, 1)} {outcome?.name}
+                    </span>
+                  );
+                })
               : null}
             <span className="text-xs font-bold text-9black/50">
               {timePassed}

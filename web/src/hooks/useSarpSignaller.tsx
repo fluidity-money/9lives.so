@@ -8,7 +8,7 @@ export default function useSarpSignaller(tradingAddr: `0x${string}`) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
-  const { mutateAsync: writeContract } = useWriteContract()
+  const { mutateAsync: writeContract } = useWriteContract();
   const request = async (address: string) =>
     toast.promise(
       new Promise(async (res, rej) => {

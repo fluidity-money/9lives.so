@@ -16,7 +16,7 @@ export default function useDppmClaimAll({
 }) {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
-  const { mutateAsync: writeContract } = useWriteContract()
+  const { mutateAsync: writeContract } = useWriteContract();
 
   const claimAll = async (address: string) =>
     toast.promise(
@@ -30,12 +30,7 @@ export default function useDppmClaimAll({
             args: [address as `0x${string}`],
           });
           queryClient.invalidateQueries({
-            queryKey: [
-              "dppmShareEstimationForAll",
-              tradingAddr,
-              address,
-              true,
-            ],
+            queryKey: ["dppmShareEstimationForAll", tradingAddr, address, true],
           });
           queryClient.invalidateQueries({
             queryKey: [

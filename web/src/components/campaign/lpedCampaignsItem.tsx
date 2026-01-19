@@ -13,7 +13,7 @@ export default function UserLpedCampaignsListItem({
   data: NonNullable<Awaited<ReturnType<typeof requestUserLPs>>[number]>;
 }) {
   const [unclaimedRewards, setUnclaimedRewards] = useState(BigInt(0));
-  const account = useAppKitAccount()
+  const account = useAppKitAccount();
   const { checkLpRewards } = useLiquidity({
     tradingAddr: data?.poolAddress as `0x${string}`,
     campaignId: data?.identifier as `0x${string}`,

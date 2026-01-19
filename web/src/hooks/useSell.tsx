@@ -20,8 +20,8 @@ const useSell = ({
   outcomes: Outcome[];
 }) => {
   const queryClient = useQueryClient();
-  const { checkAndAprove } = useAllowanceCheck()
-  const { mutateAsync: writeContract } = useWriteContract()
+  const { checkAndAprove } = useAllowanceCheck();
+  const { mutateAsync: writeContract } = useWriteContract();
   const sell = async (address: string, share: number, fusdc: number) =>
     toast.promise(
       new Promise(async (res, rej) => {
@@ -43,8 +43,8 @@ const useSell = ({
             contractAddress: shareAddr,
             spenderAddress: config.contracts.buyHelper2.address,
             amount: shareAmount,
-            address
-          })
+            address,
+          });
 
           await writeContract({
             ...config.contracts.buyHelper2,

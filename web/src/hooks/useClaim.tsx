@@ -24,7 +24,7 @@ const useClaim = ({
   const queryClient = useQueryClient();
   const removePosition = usePortfolioStore((s) => s.removePositionValue);
   const { checkAndAprove } = useAllowanceCheck();
-  const { mutateAsync: writeContract } = useWriteContract()
+  const { mutateAsync: writeContract } = useWriteContract();
   const claim = async (address: string, accountShare?: bigint) =>
     toast.promise(
       new Promise(async (res, rej) => {
@@ -52,7 +52,7 @@ const useClaim = ({
               address: tradingAddr,
               functionName: "payoffCB6F2565",
               args: [outcomeId, accountShare, address as `0x${string}`],
-            })
+            });
           }
 
           const outcomeIds = outcomes.map((outcome) => outcome.identifier);

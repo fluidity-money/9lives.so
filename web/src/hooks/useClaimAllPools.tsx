@@ -12,7 +12,7 @@ export default function useClaimAllPools(
 ) {
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const queryClient = useQueryClient();
-  const { mutateAsync: writeContract } = useWriteContract()
+  const { mutateAsync: writeContract } = useWriteContract();
   return useMutation<
     `0x${string}`,
     Error,
@@ -26,7 +26,7 @@ export default function useClaimAllPools(
         functionName: "payoff",
         args: [addresses as `0x${string}`[]],
       });
-      return reciept
+      return reciept;
     },
     onMutate({ addresses }) {
       toast.loading("Claiming all rewards...", { id: addresses.join("") });
@@ -36,10 +36,9 @@ export default function useClaimAllPools(
     },
     onSuccess: (d, { walletAddress, addresses }) => {
       closeModal?.();
-      toast.success(
-        `Claimed successfuly. ${d.slice(0, 4)}...${d.slice(-4)}`,
-        { id: addresses.join("") },
-      );
+      toast.success(`Claimed successfuly. ${d.slice(0, 4)}...${d.slice(-4)}`, {
+        id: addresses.join(""),
+      });
       queryClient.setQueryData(
         ["unclaimedCampaigns", walletAddress, token],
         [],
@@ -62,7 +61,13 @@ export default function useClaimAllPools(
           ],
         });
         queryClient.invalidateQueries({
-          queryKey: ["positions", c.poolAddress, c.outcomes, walletAddress, false],
+          queryKey: [
+            "positions",
+            c.poolAddress,
+            c.outcomes,
+            walletAddress,
+            false,
+          ],
         });
 
         queryClient.invalidateQueries({
