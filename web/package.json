@@ -24,7 +24,7 @@
     "codegen": "pnpm gen:9lives && pnpm gen:points && pnpm gen:accounts"
   },
   "dependencies": {
-    "@farcaster/miniapp-sdk": "^0.1.10",
+    "@farcaster/miniapp-sdk": "^0.2.1",
     "@fluidity-money/snitch-client": "^0.4.0",
     "@headlessui/react": "^2.2.9",
     "@headlessui/tailwindcss": "^0.2.2",
