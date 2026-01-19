@@ -15,7 +15,7 @@ export default function CookieBanner() {
   const [showConsentDialog, setShowConsentDialog] = useState<boolean | null>(
     () => {
       if (typeof window === "undefined") return null;
-      return window.localStorage.getItem("consentMode") === null ? null : true;
+      return window.localStorage.getItem("consentMode") === null ? null : false;
     },
   );
   const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
