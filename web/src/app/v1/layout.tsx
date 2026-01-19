@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import "./globals-v1.css";
 import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
@@ -12,7 +12,7 @@ import { headers } from "next/headers";
 const chicago = localFont({
   src: [
     {
-      path: "../../public/fonts/chicago-12.ttf",
+      path: "../../../public/fonts/chicago-12.ttf",
       weight: "500",
       style: "normal",
     },
@@ -23,7 +23,7 @@ const chicago = localFont({
 const geneva = localFont({
   src: [
     {
-      path: "../../public/fonts/geneva-9.ttf",
+      path: "../../../public/fonts/geneva-9.ttf",
       weight: "500",
       style: "normal",
     },
@@ -34,12 +34,12 @@ const geneva = localFont({
 const arial = localFont({
   src: [
     {
-      path: "../../public/fonts/arial.ttf",
+      path: "../../../public/fonts/arial.ttf",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../../public/fonts/arial-bold.ttf",
+      path: "../../../public/fonts/arial-bold.ttf",
       weight: "700",
       style: "normal",
     },

@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .skeleton {
+    @apply relative overflow-hidden rounded bg-gray-200;
+  }
+
+  .skeleton::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+section {
+  flex-grow: 1;
+}
+/* Scrollbar Track */
+::-webkit-scrollbar-track {
+  background-color: #cccccc; /* Background color of the track */
+}
+
+/* Scrollbar Thumb */
+::-webkit-scrollbar-thumb {
+  background-color: #999999; /* Background color of the thumb */
+  border-radius: 0px; /* Round the corners of the thumb */
+  border: 2px solid #cccccc;
+}
+
+/* Scrollbar Width */
+::-webkit-scrollbar {
+  width: 7px; /* Set scrollbar width */
+}
+
+/* Firefox */
+/* html {
+  scrollbar-color: #999999 #cccccc;
+  scrollbar-width: thin;
+} */
+
+/********** Range Input Styles **********/
+/*Range Reset*/
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Removes default focus */
+input[type="range"]:focus {
+  outline: none;
+}
+
+/***** Chrome, Safari, Opera and Edge Chromium styles *****/
+/* slider track */
+input[type="range"]::-webkit-slider-runnable-track {
+  background-color: #0c0c0c;
+  height: 9px;
+}
+input[type="range"]:disabled {
+  opacity: 0.5;
+}
+input[type="range"]:disabled::-webkit-slider-runnable-track {
+  background-color: #999999;
+}
+
+/* slider thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  margin-top: -9px; /* Centers thumb on the track */
+
+  /*custom styles*/
+  border: 1px solid #0c0c0c;
+  border-radius: 2px;
+  background:
+    url("/icons/horizontal-arrows.svg") no-repeat center,
+    #dddddd;
+  height: 26px;
+  width: 30px;
+  box-shadow: -2px -2px 0 rgba(68, 68, 68, 0.2) inset;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+  border: 1px solid #0c0c0c;
+  border-radius: 3px;
+}
+
+/******** Firefox styles ********/
+/* slider track */
+input[type="range"]::-moz-range-track {
+  background-color: #0c0c0c;
+  height: 9px;
+}
+
+/* slider thumb */
+input[type="range"]::-moz-range-thumb {
+  border: none; /*Removes extra border that FF applies*/
+  border-radius: 0; /*Removes default border-radius that FF applies*/
+
+  /*custom styles*/
+  border: 1px solid #0c0c0c;
+  border-radius: 2px;
+  background:
+    url("/icons/horizontal-arrows.svg") no-repeat center,
+    #dddddd;
+  height: 26px;
+  width: 30px;
+  box-shadow: -2px -2px 0 rgba(68, 68, 68, 0.2) inset;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+  border: 1px solid #0c0c0c;
+  border-radius: 3px;
+}
+
+.tw-connect-wallet > svg > circle,
+.tw-connect-wallet--switch-network > svg > circle {
+  stroke: #0c0c0c !important;
+}
+
+.tw-connected-wallet > div:first-child {
+  height: 30px !important;
+  width: 30px !important;
+}
+
+.tw-connected-wallet .tw-connected-wallet__balance {
+  @apply font-geneva;
+  font-size: 9px;
+}
+
+div[id^="radix"][role="dialog"][data-state="open"] {
+  background-color: #f5f5f5;
+  border-radius: 3px;
+  border: 2px solid #0c0c0c;
+  box-shadow: 5px 5px 0 rgba(12, 12, 12, 0.2);
+  @apply font-chicago;
+}
+
+div[id^="radix"][role="dialog"][data-state="open"] button {
+  border-color: #0c0c0c;
+  border: 1px solid #0c0c0c;
+  border-radius: 2px !important;
+  margin: 2px 0px;
+  box-shadow:
+    -2px -2px 0 rgba(0, 0, 0, 0.2) inset,
+    2px 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+div[id^="radix"][role="dialog"][data-state="open"] input {
+  border-color: #0c0c0c;
+  border: 1px solid #0c0c0c !important;
+  border-radius: 2px !important;
+  box-shadow:
+    -2px -2px 0 rgba(0, 0, 0, 0.2) inset,
+    2px 2px 0 rgba(0, 0, 0, 0.25);
+  margin-right: 8px;
+}
+
+div[style="pointer-events: auto;"][data-state="open"] {
+  @apply bg-9blueLight/70;
+}
+
+div[id^="radix"][role="dialog"][data-state="open"] div[data-error] {
+  @apply border-none shadow-none focus:outline-none;
+}
+
+.mint-box-margin {
+  margin-bottom: 150px;
+}
+
+.changelog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.changelog h2:not(:first-child) {
+  margin-top: 16px;
+}
+.changelog h2 {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: "chicago", sans-serif;
+}
+
+.changelog ul,
+ol {
+  list-style: square;
+  list-style-position: inside;
+}

@@ -19,6 +19,11 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   async redirects() {
     return [
+       {
+        source: '/',
+        destination: '/campaign/btc/5mins',
+        permanent: true,
+      },
       {
         source: '/simple',
         destination: '/simple/campaign/btc/15mins',

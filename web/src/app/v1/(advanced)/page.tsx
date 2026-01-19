@@ -25,7 +25,7 @@ export default async function AdvancedModeHomepage({
     //   .sort((a, b) => b.totalSpent - a.totalSpent)[0]
     //   .name.toLowerCase();
     return redirect(
-      `/simple/campaign/btc/5mins${referral ? `?referral=${referral}` : ""}`,
+      `/v1/simple/campaign/btc/5mins${referral ? `?referral=${referral}` : ""}`,
     );
   }
 
