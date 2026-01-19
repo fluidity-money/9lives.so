@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "../globals.css";
-import { combineClass } from "@/utils/combineClass";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
 import CustomToaster from "@/components/customToaster";
 import CookieBanner from "@/components/cookieBanner";
 import Providers from "@/providers";
 import { headers } from "next/headers";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+import Header from "@/components/v2/header";
+import Footer from "@/components/v2/footer";
 import BetaTesterInvitation from "@/components/betaTesterInvitation";
 
 export const metadata: Metadata = {
@@ -31,22 +29,14 @@ export default async function RootLayout({
   const headersObj = await headers();
   const cookies = headersObj.get("cookie");
   return (
-    <html
-      lang="en"
-      // className={combineClass([
-      //   chicago.variable,
-      //   geneva.variable,
-      //   arial.className,
-      //   arial.variable,
-      // ])}
-    >
+    <html lang="en">
       <body className="flex min-h-screen flex-col bg-9layer">
         <Providers cookies={cookies}>
-          <Header simple />
+          <Header />
           <main className="mx-auto flex max-w-[600px] flex-1 justify-center">
             <div className="flex-1 p-4">{children}</div>
           </main>
-          <Footer simple />
+          <Footer />
           <BetaTesterInvitation />
         </Providers>
         <CookieBanner />
