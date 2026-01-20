@@ -67,14 +67,14 @@ export default function AssetNav({
       callback: () => router.push(`/campaign/${hourlyMarkets[0]}/hourly`),
     },
   ] as GroupButtonProps[];
-  const order = periodOrder.findIndex((p) => p === period.toLowerCase());
+  const orderIdx = periodOrder.findIndex((p) => p === period.toLowerCase());
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-full gap-2">
         <GroupButton
           buttons={buttons}
           className="w-full"
-          initialIdx={order === -1 ? 0 : order}
+          initialIdx={orderIdx}
         />
       </div>
       <div className="flex items-center overflow-x-auto border-b border-b-9black">
