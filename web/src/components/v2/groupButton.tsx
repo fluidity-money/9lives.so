@@ -16,10 +16,9 @@ export default function GroupButton({
   initialIdx?: number;
 }) {
   const [idx, setIdx] = useState(initialIdx);
+  const [controllerIdx, setControllerIdx] = useState(initialIdx);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const didMount = useRef(false);
-
   const [buttonWidth, setButtonWidth] = useState(0);
 
   useLayoutEffect(() => {
@@ -31,15 +30,14 @@ export default function GroupButton({
 
   const debouncedCallback = useDebouncedCallback((index: number) => {
     buttons[index]?.callback?.();
-  }, 500);
+    setIdx(index);
+  }, 2000);
 
   useEffect(() => {
-    if (!didMount.current) {
-      didMount.current = true;
-      return;
+    if (controllerIdx !== idx) {
+      debouncedCallback(controllerIdx);
     }
-    debouncedCallback(idx);
-  }, [idx]);
+  }, [idx, controllerIdx]);
 
   return (
     <div
@@ -53,19 +51,17 @@ export default function GroupButton({
         className="absolute bottom-1 top-1 rounded-lg bg-2white shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] transition-transform duration-300 ease-in-out"
         style={{
           width: buttonWidth,
-          transform: `translateX(${idx * buttonWidth}px)`,
+          transform: `translateX(${controllerIdx * buttonWidth}px)`,
         }}
       />
       {buttons.map((b, index) => (
         <div
           key={b.title}
           className={combineClass(
-            idx === index ? "text-2black" : "text-neutral-400",
+            controllerIdx === index ? "text-2black" : "text-neutral-400",
             "z-[10] flex-1 cursor-pointer p-2 text-center text-sm",
           )}
-          onClick={() => {
-            setIdx(index);
-          }}
+          onClick={() => setControllerIdx(index)}
         >
           {b.title}
         </div>

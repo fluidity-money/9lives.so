@@ -52,6 +52,7 @@ export default function AssetNav({
   const is5Min = period.toLowerCase() === "5mins";
   const is15Min = period.toLowerCase() === "15mins";
   const isHourly = period.toLowerCase() === "hourly";
+  const periodOrder = ["5mins", "15mins", "hourly"];
   const buttons = [
     {
       title: is5Min ? "5 Min Markets" : "5 Mins",
@@ -63,14 +64,18 @@ export default function AssetNav({
     },
     {
       title: isHourly ? "Hourly Markets" : "Hourly",
-      callback: () =>
-        router.push(`/simple/campaign/${hourlyMarkets[0]}/hourly`),
+      callback: () => router.push(`/campaign/${hourlyMarkets[0]}/hourly`),
     },
   ] as GroupButtonProps[];
+  const order = periodOrder.findIndex((p) => p === period.toLowerCase());
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-full gap-2">
-        <GroupButton buttons={buttons} className="w-full" />
+        <GroupButton
+          buttons={buttons}
+          className="w-full"
+          initialIdx={order === -1 ? 0 : order}
+        />
       </div>
       <div className="flex items-center overflow-x-auto border-b border-b-9black">
         {Object.values(config.simpleMarkets)
