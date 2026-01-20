@@ -1,12 +1,12 @@
 "use client";
 import config from "@/config";
-import TabButton from "../tabButton";
 import Link from "next/link";
 import { RawAsset, SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 import isMarketOpen from "../../utils/isMarketOpen";
 import useAssets from "@/hooks/useAssets";
 import GroupButton, { GroupButtonProps } from "./groupButton";
 import { useRouter } from "next/navigation";
+import AssetButton from "./assetButton";
 
 function SimpleTabMenuButton({
   market,
@@ -19,8 +19,8 @@ function SimpleTabMenuButton({
 }) {
   const isOpen = isMarketOpen(market);
   return (
-    <Link href={`/simple/campaign/${market.slug}/${period}`} className="flex">
-      <TabButton
+    <Link href={`/campaign/${market.slug}/${period}`} className="flex">
+      <AssetButton
         isLive={isOpen}
         title={market.tabTitle}
         selected={symbol === market.slug}
@@ -77,7 +77,7 @@ export default function AssetNav({
           initialIdx={orderIdx}
         />
       </div>
-      <div className="flex items-center overflow-x-auto border-b border-b-9black">
+      <div className="flex items-center gap-1 overflow-x-auto">
         {Object.values(config.simpleMarkets)
           .filter(
             (m) =>
