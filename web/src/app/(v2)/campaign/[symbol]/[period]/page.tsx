@@ -2,12 +2,11 @@ import config from "@/config";
 import { requestAssets, requestSimpleMarket } from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import SimpleBody from "@/components/simple/simpleBody";
-import { Suspense } from "react";
-import SimpleHeader from "@/components/simple/simpleHeader";
+import SimpleBody from "@/components/v2/body";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 import AssetNav from "@/components/v2/assetNav";
+import SimpleSubHeader from "@/components/v2/subheader";
 
 type Params = Promise<{ symbol: string; period: string }>;
 export const dynamicParams = true;
@@ -75,53 +74,21 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   return (
     <div className="flex flex-col gap-4">
       <AssetNav symbol={symbol} period={period} assets={assets} />
-      <div className="flex items-center gap-2">
-        <Image
-          src={config.simpleMarkets[symbol].logo}
-          width={60}
-          height={60}
-          alt={symbol}
-        />
-        <Suspense
-          fallback={
-            <div>
-              {(() => {
-                const now = new Date();
-                const nextHour = new Date(now.getTime() + 1000 * 60 * 60);
-                return (
-                  <>
-                    <h1 className="font-chicago text-xl md:text-2xl">
-                      {config.simpleMarkets[symbol].title} above $...... on{" "}
-                      {now.toLocaleString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        hourCycle: "h23",
-                        minute: "2-digit",
-                        timeZone: "UTC",
-                      })}{" "}
-                      UTC
-                    </h1>
-                    <span className="font-geneva text-xs uppercase text-[#808080]">
-                      {now.toLocaleString("default", {
-                        hour: "numeric",
-                        timeZone: "UTC",
-                      })}{" "}
-                      -{" "}
-                      {nextHour.toLocaleString("default", {
-                        hour: "numeric",
-                        timeZone: "UTC",
-                      })}
-                      {" UTC"}
-                    </span>
-                  </>
-                );
-              })()}
-            </div>
-          }
-        >
-          <SimpleHeader initialData={campaignData} />
-        </Suspense>
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2">
+          <Image
+            src={config.simpleMarkets[symbol].logo}
+            width={43}
+            height={43}
+            alt={symbol}
+            className="rounded-xl"
+          />
+          <h1 className="text-xl text-2black">
+            <span className="text-neutral-400">$</span>
+            {data.priceMetadata?.baseAsset.toUpperCase()}
+          </h1>
+        </div>
+        <SimpleSubHeader campaignData={campaignData} />
       </div>
       <SimpleBody campaignData={campaignData} />
     </div>
