@@ -130,7 +130,7 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
-    listed: false,
+    listed: true,
   },
   goog: {
     slug: "goog",
@@ -143,7 +143,7 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
-    listed: false,
+    listed: true,
   },
   qqq: {
     slug: "qqq",
@@ -217,7 +217,7 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
-    listed: false,
+    listed: true,
   },
 } as const;
 const betaTesterWallets = [
