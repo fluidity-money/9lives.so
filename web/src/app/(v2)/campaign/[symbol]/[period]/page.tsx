@@ -2,12 +2,12 @@ import config from "@/config";
 import { requestAssets, requestSimpleMarket } from "@/providers/graphqlClient";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import SimpleNavMenu from "@/components/simple/simpleNavMenu";
 import SimpleBody from "@/components/simple/simpleBody";
 import { Suspense } from "react";
 import SimpleHeader from "@/components/simple/simpleHeader";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
+import AssetNav from "@/components/v2/assetNav";
 
 type Params = Promise<{ symbol: string; period: string }>;
 export const dynamicParams = true;
@@ -74,7 +74,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <SimpleNavMenu symbol={symbol} period={period} assets={assets} />
+      <AssetNav symbol={symbol} period={period} assets={assets} />
       <div className="flex items-center gap-2">
         <Image
           src={config.simpleMarkets[symbol].logo}
