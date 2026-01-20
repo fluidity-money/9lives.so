@@ -1,24 +1,10 @@
 "use client";
+import useDebouncedCallback from "@/hooks/useDebounceCallback";
 import { combineClass } from "@/utils/combineClass";
 import { Switch } from "@headlessui/react";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
-import { useRef, useCallback } from "react";
-
-function useDebouncedCallback(
-  callback: (...args: any[]) => void,
-  delay: number,
-) {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  return useCallback(
-    (...args: any[]) => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => callback(...args), delay);
-    },
-    [callback, delay],
-  );
-}
 
 export default function ModeSwitchButton() {
   const [enabled, setEnabled] = useState<boolean>();
