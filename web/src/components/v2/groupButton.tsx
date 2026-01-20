@@ -11,12 +11,14 @@ interface GroupButtonComponentProps {
   buttons: GroupButtonProps[];
   className?: string;
   initialIdx?: number;
+  variant?: "default" | "small";
 }
 
 export default function GroupButton({
   buttons,
   className,
   initialIdx = 0,
+  variant = "default",
 }: GroupButtonComponentProps) {
   const [activeIndex, setActiveIndex] = useState(initialIdx);
 
@@ -51,7 +53,8 @@ export default function GroupButton({
           onClick={() => handleCreate(index)}
           style={{ width: `${widthPercentage}%` }}
           className={combineClass(
-            "z-10 cursor-pointer p-2 text-center text-sm transition-colors duration-200",
+            "z-10 cursor-pointer text-center text-sm transition-colors duration-200",
+            variant === "default" ? "p-2" : "px-2 py-1",
             activeIndex === index
               ? "font-medium text-2black"
               : "text-neutral-400",

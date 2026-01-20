@@ -1,7 +1,7 @@
 "use client";
 import { useModalStore } from "@/stores/modalStore";
 import Link from "next/link";
-import DisclaimerButton from "../disclaimerButton";
+import GroupButton from "./groupButton";
 const gitHash = process.env.NEXT_PUBLIC_GIT_HASH;
 const socials = [
   {
@@ -58,11 +58,17 @@ export default function Footer() {
   const { setModal } = useModalStore();
   return (
     <footer className="flex flex-col items-center justify-between gap-4 self-stretch border-t border-t-neutral-300 px-4 py-1 md:mb-0 md:flex-row">
-      <nav className="flex flex-col items-center justify-start gap-4 text-xs md:flex-row">
-        {menu.map((item) => (
-          <MenuItem item={item} key={item.title} />
-        ))}
-      </nav>
+      <div className="flex items-center gap-2">
+        <GroupButton
+          buttons={[{ title: "v1" }, { title: "v2" }]}
+          variant="small"
+        />
+        <nav className="flex flex-col items-center justify-start gap-4 text-xs md:flex-row">
+          {menu.map((item) => (
+            <MenuItem item={item} key={item.title} />
+          ))}
+        </nav>
+      </div>
       <nav className="flex flex-col items-center justify-end gap-4 text-xs md:flex-row">
         <div
           className="cursor-pointer font-chicago text-neutral-800 hover:underline"
