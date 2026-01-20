@@ -3,6 +3,7 @@ import {
   ButtonProps as BasicButtonProps,
 } from "@headlessui/react";
 import { cva, type VariantProps } from "class-variance-authority";
+import React from "react";
 
 const button = cva("text-2black font-metro disabled:opacity-40", {
   variants: {
@@ -27,7 +28,10 @@ const button = cva("text-2black font-metro disabled:opacity-40", {
 });
 
 export interface ButtonProps
-  extends BasicButtonProps, VariantProps<typeof button> {}
+  extends BasicButtonProps, VariantProps<typeof button> {
+  icon?: React.ReactElement;
+  badge?: React.ReactElement;
+}
 
 export default function Button({
   className,
@@ -38,7 +42,13 @@ export default function Button({
 }: ButtonProps) {
   return (
     <BasicButton {...props} className={button({ intent, size, className })}>
-      {children ?? props.title}
+      {children ?? (
+        <div className="flex items-center gap-1">
+          {props.icon}
+          <span>{props.title}</span>
+          {props.badge}
+        </div>
+      )}
     </BasicButton>
   );
 }
