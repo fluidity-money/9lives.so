@@ -59,10 +59,10 @@ alloy-sol-macro-input = "=0.7.6"
 strum = { version = "0.26.3", default-features = false, features = ["derive"] }
 mutants = "0.0.3"
 ruint = { version = "1.14.0", default-features = false }
-bobcat-proxy.path = "/home/user/Documents/fluidity/bobcat-sdk/bobcat-proxy"
-bobcat-maths = { path = "/home/user/Documents/fluidity/bobcat-sdk/bobcat-maths", features = ["ruint-enabled"] }
-bobcat-panic = { path = "/home/user/Documents/fluidity/bobcat-sdk/bobcat-panic", features = ["panic"] }
-bobcat-features = { path = "/home/user/Documents/fluidity/bobcat-sdk/bobcat-features", features = ["dont-define-symbols"] }
+bobcat-proxy = "0.7.14"
+bobcat-maths = { version = "0.7.14", features = ["ruint-enabled"] }
+bobcat-panic = { version = "0.7.14", features = ["panic"] }
+bobcat-features = { version = "0.7.14", features = ["dont-define-symbols"] }
 
 [dependencies.stylus-sdk]
 # With the reentrant flag, Stylus SDK will be fully reentrant in our
@@ -81,7 +81,7 @@ arrayvec = "0.7.6"
 map-macro = "0.3.0"
 serde_json = { version = "1.0.133", default-features = false, features = ["alloc"] }
 serde = { version = "1.0.215", default-features = false, features = ["derive"] }
-bobcat-maths = { path = "/home/user/Documents/fluidity/bobcat-sdk/bobcat-maths", features = ["ruint-enabled", "alloy-enabled"] }
+bobcat-maths = { version = "0.7.14", features = ["ruint-enabled", "alloy-enabled"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 proptest = "1.5.0"
@@ -89,9 +89,9 @@ getrandom = "0.2.15"
 arbitrary = { version = "1.4.1", features = ["derive"] }
 proptest-derive = "0.5.1"
 alloy-primitives = { version = "=0.8.14", default-features = false, features = ["arbitrary"] }
-bobcat-maths = { path = "/home/user/Documents/fluidity/bobcat-sdk/bobcat-maths", features = ["ruint-enabled", "alloy-enabled"] }
-bobcat-panic = { path = "/home/user/Documents/fluidity/bobcat-sdk/bobcat-panic" }
-bobcat-features = { path = "/home/user/Documents/fluidity/bobcat-sdk/bobcat-features", features = ["std"] }
+bobcat-maths = { version = "0.7.14", features = ["ruint-enabled", "alloy-enabled"] }
+bobcat-panic = "0.7.14"
+bobcat-features = { version = "0.7.14", features = ["std"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 alloy-primitives = { version = "=0.8.14", features = ["getrandom", "arbitrary"] }
