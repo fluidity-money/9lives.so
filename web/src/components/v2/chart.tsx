@@ -236,7 +236,7 @@ export default function AssetPriceChart({
               fill: "#A3A3A3",
               position: "insideBottomLeft",
               dx: -4,
-              dy: -230,
+              dy: -223,
             }}
           />
         ) : null}
