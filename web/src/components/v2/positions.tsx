@@ -126,7 +126,7 @@ export default function SimplePositions({
   });
   const basePrice = Number(data.priceMetadata.priceTargetForUp);
   return (
-    <div className="my-4">
+    <div className="mt-4">
       <p className="mb-1 text-xs font-semibold text-neutral-400">
         My Positions
       </p>

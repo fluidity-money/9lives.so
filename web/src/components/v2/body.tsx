@@ -1,21 +1,25 @@
 "use client";
-import { SimpleCampaignDetail } from "@/types";
-import SimpleButtons from "../simple/simpleButtons";
+import { SimpleCampaignDetail, SimpleMarketKey } from "@/types";
+import SimpleButtons from "./buttons";
 import SimpleChance from "./chances";
 import SimplePositions from "./positions";
 import SimpleModeAlert from "../simple/simpleModeAlert";
 import { useQuery } from "@tanstack/react-query";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";
-import SimpleClaimAllButton from "../simple/simpleClaimAllButton";
 import { useState } from "react";
 import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+import Image from "next/image";
+import config from "@/config";
+import SimpleSubHeader from "./subheader";
 
 export default function SimpleBody({
+  symbol,
   campaignData,
 }: {
+  symbol: SimpleMarketKey;
   campaignData: SimpleCampaignDetail;
 }) {
   const period = getPeriodOfCampaign(campaignData);
@@ -30,11 +34,28 @@ export default function SimpleBody({
   const enabledSimpleModeAlert = useFeatureFlag("enable simple mode alert");
   return (
     <>
-      <SimpleChance data={data} />
-      <PriceChartWrapper simple={true} campaignData={data} />
-      <SimplePositions data={data} />
+      <div className="rounded-xl border border-neutral-400 bg-2white p-4">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex gap-2">
+            <Image
+              src={config.simpleMarkets[symbol].logo}
+              width={43}
+              height={43}
+              alt={symbol}
+              className="rounded-xl"
+            />
+            <h1 className="text-2xl font-semibold text-2black">
+              <span className="text-neutral-400">$</span>
+              {data.priceMetadata?.baseAsset.toUpperCase()}
+            </h1>
+          </div>
+          <SimpleSubHeader campaignData={campaignData} />
+        </div>
+        <SimpleChance data={data} />
+        <PriceChartWrapper simple={true} campaignData={data} />
+        <SimplePositions data={data} />
+      </div>
       <div className="sticky inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-9layer pb-2 md:static md:flex-row md:bg-transparent md:p-0">
-        <SimpleClaimAllButton />
         <SimpleButtons
           data={data}
           setIsBuyDialogOpen={setIsBuyDialogOpen}

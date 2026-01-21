@@ -1,12 +1,10 @@
 import config from "@/config";
 import { requestAssets, requestSimpleMarket } from "@/providers/graphqlClient";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import SimpleBody from "@/components/v2/body";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 import AssetNav from "@/components/v2/assetNav";
-import SimpleSubHeader from "@/components/v2/subheader";
 
 type Params = Promise<{ symbol: string; period: string }>;
 export const dynamicParams = true;
@@ -74,25 +72,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   return (
     <div className="flex flex-col gap-4">
       <AssetNav symbol={symbol} period={period} assets={assets} />
-      <div className="rounded-xl border border-neutral-400 bg-2white p-4">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex gap-2">
-            <Image
-              src={config.simpleMarkets[symbol].logo}
-              width={43}
-              height={43}
-              alt={symbol}
-              className="rounded-xl"
-            />
-            <h1 className="text-2xl font-semibold text-2black">
-              <span className="text-neutral-400">$</span>
-              {data.priceMetadata?.baseAsset.toUpperCase()}
-            </h1>
-          </div>
-          <SimpleSubHeader campaignData={campaignData} />
-        </div>
-        <SimpleBody campaignData={campaignData} />
-      </div>
+      <SimpleBody symbol={symbol} campaignData={campaignData} />
     </div>
   );
 }

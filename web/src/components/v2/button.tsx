@@ -8,8 +8,8 @@ import React from "react";
 const button = cva("text-2black disabled:opacity-40", {
   variants: {
     intent: {
-      yes: "bg-green-400",
-      no: "bg-red-400",
+      yes: "bg-green-400 text-green-700",
+      no: "bg-red-400 text-red-700",
       cta: "bg-2black text-2white",
       reward: "bg-yellow-200 border-yellow-400 border",
       inverted: "bg-2white border-2black/70 border",
@@ -43,7 +43,7 @@ export default function Button({
   return (
     <BasicButton {...props} className={button({ intent, size, className })}>
       {children ?? (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-center gap-1">
           {props.icon}
           <span>{props.title}</span>
           {props.badge}
