@@ -46,59 +46,75 @@ function PositionItem({
       : -Number(formatFusdc(cost, 2)) + refund
     : 0;
   return (
-    <div
-      className={combineClass(
-        isWinning ? "bg-green-300 text-green-700" : "bg-red-300 text-red-700",
-        "flex justify-between gap-4 bg-white p-4 text-xs shadow-9orderSummary",
-      )}
-    >
-      <span className="uppercase text-9black">
-        My Position: {position.name}
-        <br />
-        <br />
-        Status:{" "}
+    <div className="flex flex-1 flex-col gap-1 rounded-lg bg-neutral-200 p-1">
+      <div
+        className={combineClass(
+          isWinning ? "bg-green-50" : "bg-red-50",
+          "flex flex-1 items-center justify-center rounded-lg p-1",
+        )}
+      >
         <span
           className={combineClass(
-            isWinning
-              ? "bg-green-300 text-green-700"
-              : "bg-red-300 text-red-700",
-            "px-2 py-1",
+            isWinning ? "text-green-600" : "text-red-600",
+            "text-xs font-semibold",
           )}
-        >
-          {isConcluded
-            ? isWinning
-              ? "Won"
-              : "Lost"
-            : `Currently ${isWinning ? " Winning" : "Losing"}`}
-        </span>
-      </span>
-      <div className="flex flex-col gap-1 text-end text-xs">
-        {isWinning ? (
-          <>
-            <span>To Win: +${shares}</span>
-            <span>Bonus: +${boost}</span>
-          </>
-        ) : (
-          <>
-            <span>To Lose: -${formatFusdc(cost ?? 0, 2)}</span>
-            <span>Refund: +${refund}</span>
-          </>
-        )}
-        {PnL ? (
-          <span>
-            PnL:{" "}
+        >{`Currently ${isWinning ? "Winning" : "Losing"}`}</span>
+      </div>
+      <div className="flex flex-col gap-1 rounded-md bg-2white px-2 py-1">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="text-[9px] font-bold text-neutral-400">
+              Position
+            </span>
+            <span className="text-xs font-semibold text-2black">
+              {position.name}
+            </span>
+          </div>
+          <div className="flex flex-col justify-end">
+            <span className="text-right text-[9px] font-bold text-neutral-400">
+              {isWinning ? "To win" : "To lose"}
+            </span>
             <span
               className={combineClass(
-                PnL > 0
-                  ? "bg-green-300 text-green-700"
-                  : "bg-red-300 text-red-700",
-                "px-1 py-0.5",
+                isWinning ? "text-green-700" : "text-red-700",
+                "text-xs font-semibold",
               )}
             >
-              {PnL > 0 ? "+" : "-"}${PnL.toFixed(2)}
+              {isWinning ? `+ $${shares}` : `- $${formatFusdc(cost ?? 0, 2)}`}
             </span>
-          </span>
-        ) : null}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="text-[9px] font-bold text-neutral-400">
+              {isWinning ? "Bonus" : "Refund"}
+            </span>
+            <span
+              className={combineClass(
+                isWinning ? "text-green-700" : "text-red-700",
+                "text-xs font-semibold",
+              )}
+            >
+              {isWinning ? `+ $${boost}` : `+ ${refund}`}
+            </span>
+          </div>
+          <div className="flex flex-col justify-end">
+            <span className="text-right text-[9px] font-bold text-neutral-400">
+              PnL
+            </span>
+            {PnL ? (
+              <span
+                className={combineClass(
+                  PnL > 0 ? "text-green-700" : "text-red-700",
+                  "text-xs font-semibold",
+                )}
+              >
+                {PnL > 0 ? "+" : "-"}${Math.abs(PnL).toFixed(2)}
+              </span>
+            ) : null}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -144,7 +160,7 @@ export default function SimplePositions({
           ))}
         </div>
       ) : (
-        <div className="rounded-[8px] bg-neutral-200 p-1">
+        <div className="rounded-lg bg-neutral-200 p-1">
           <div className="flex h-[90px] flex-1 flex-col items-center justify-center gap-2 rounded-md bg-2white px-2 py-1">
             <p className="text-sm text-neutral-400">No Positons Yet</p>
             <Button title="Buy a Position" intent="inverted" size="small" />

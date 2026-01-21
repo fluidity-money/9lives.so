@@ -18,7 +18,7 @@ export default function SimpleChance({ data }: { data: SimpleCampaignDetail }) {
         Overview Outcome Projection
       </p>
       {isLoading ? (
-        <div className="skeleton h-5 w-full" />
+        <div className="skeleton h-[30px] w-full" />
       ) : (
         <div className="relative flex flex-row items-center gap-0.5">
           <span className="font-sm absolute left-1.5 top-[3px] font-bold text-green-700">
