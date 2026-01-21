@@ -188,7 +188,7 @@ export default function AssetPriceChart({
         margin={{
           top: 42,
           right: simple ? -60 : 4,
-          bottom: simple ? -10 : 0,
+          bottom: 8,
           left: 0,
         }}
       >
@@ -215,6 +215,7 @@ export default function AssetPriceChart({
             stroke="#0C0C0C"
             strokeDasharray="3 2"
             label={{
+              orientation: "top",
               value: new Date(starting).toLocaleString("default", {
                 day: isDailyMarket ? "numeric" : undefined,
                 month: isDailyMarket ? "short" : undefined,
@@ -225,12 +226,13 @@ export default function AssetPriceChart({
               fill: "#A3A3A3",
               position: "insideBottomLeft",
               dx: -4,
-              dy: 22,
+              dy: -230,
             }}
           />
         ) : null}
         <ReferenceLine
           y={basePrice}
+          zIndex={0}
           label={{
             value: `$${basePrice}`,
             position: "centerBottom",
@@ -244,6 +246,7 @@ export default function AssetPriceChart({
           y={basePrice}
           stroke="#D4D4D4"
           strokeWidth={2}
+          zIndex={0}
           label={{
             value: "BASE",
             position: "centerBottom",
@@ -275,6 +278,7 @@ export default function AssetPriceChart({
             fill: "#A3A3A3",
             transform: simple ? "translate(-6,0)" : undefined,
           }}
+          orientation="top"
           scale={"time"}
           type={simple ? "number" : "category"}
           dataKey="timestamp"
