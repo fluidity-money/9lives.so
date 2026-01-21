@@ -19,7 +19,6 @@ export default function AssetPriceChart({
   basePrice,
   starting,
   ending,
-  simple = false,
   assetPrices,
 }: {
   id: string;
@@ -27,10 +26,9 @@ export default function AssetPriceChart({
   basePrice: number;
   starting: number;
   ending: number;
-  simple?: boolean;
   assetPrices: PricePoint[];
 }) {
-  const chartHeight = simple ? 300 : 320;
+  const chartHeight = 300;
   useWSForPrices({ asset: symbol, ending, starting });
   if (assetPrices.length < 1) {
     return <div className="skeleton w-full" style={{ height: chartHeight }} />;
@@ -53,10 +51,8 @@ export default function AssetPriceChart({
     Math.abs(basePrice - minPrice),
     Math.abs(basePrice - maxPrice),
   );
-  const pricePerPixel = simpleDiff / chartHeight;
-  const marginInPrice = 16 * pricePerPixel;
-  const minY = simple ? basePrice - simpleDiff : minPrice - marginInPrice;
-  const maxY = simple ? basePrice + simpleDiff : maxPrice + marginInPrice;
+  const minY = basePrice - simpleDiff;
+  const maxY = basePrice + simpleDiff;
   const isDailyMarket = DAY >= timeDiff && timeDiff > HOUR;
   const formatFn = (ts: number) => {
     const date = new Date(ts);
@@ -73,9 +69,8 @@ export default function AssetPriceChart({
         });
       case isDailyMarket:
         return date.toLocaleString("default", {
-          hour: simple ? undefined : "numeric",
-          day: simple ? "numeric" : undefined,
-          month: simple ? "short" : undefined,
+          day: "numeric",
+          month: "short",
         });
       default:
         return date.toLocaleString("default", {
@@ -91,30 +86,6 @@ export default function AssetPriceChart({
   const uniquePoints = Array.from(
     new Map(pointsData.map((p) => [p.timestamp, p])).values(),
   );
-  if (!simple) {
-    let divider;
-    switch (true) {
-      case timeDiff > MONTH:
-        divider = MONTH;
-        break;
-      case MONTH >= timeDiff && timeDiff > DAY:
-        divider = 5 * DAY;
-        break;
-      case DAY >= timeDiff && timeDiff > HOUR:
-        divider = HOUR;
-        break;
-      default:
-        divider = 5 * MIN;
-        break;
-    }
-    for (
-      let t = starting + divider;
-      t < Date.now() && t <= ending;
-      t += divider
-    ) {
-      tickValues.push(t);
-    }
-  }
 
   const PulseDot = ({ cx, cy }: { cx: number; cy: number }) => {
     return (
@@ -188,7 +159,7 @@ export default function AssetPriceChart({
         data={uniquePoints}
         margin={{
           top: 42,
-          right: simple ? -60 : 4,
+          right: -60,
           bottom: 8,
           left: 0,
         }}
@@ -218,28 +189,26 @@ export default function AssetPriceChart({
           name={symbol.toUpperCase()}
         />
         <ReferenceLine x={latestTimestamp} strokeWidth={2} stroke="#181818" />
-        {simple ? (
-          <ReferenceLine
-            x={starting}
-            strokeWidth={1}
-            stroke="#0C0C0C"
-            strokeDasharray="3 2"
-            label={{
-              orientation: "top",
-              value: new Date(starting).toLocaleString("default", {
-                day: isDailyMarket ? "numeric" : undefined,
-                month: isDailyMarket ? "short" : undefined,
-                hour: isDailyMarket ? undefined : "numeric",
-                minute: isDailyMarket ? undefined : "2-digit",
-              }),
-              fontSize: 12,
-              fill: "#A3A3A3",
-              position: "insideBottomLeft",
-              dx: -4,
-              dy: -223,
-            }}
-          />
-        ) : null}
+        <ReferenceLine
+          x={starting}
+          strokeWidth={1}
+          stroke="#0C0C0C"
+          strokeDasharray="3 2"
+          label={{
+            orientation: "top",
+            value: new Date(starting).toLocaleString("default", {
+              day: isDailyMarket ? "numeric" : undefined,
+              month: isDailyMarket ? "short" : undefined,
+              hour: isDailyMarket ? undefined : "numeric",
+              minute: isDailyMarket ? undefined : "2-digit",
+            }),
+            fontSize: 12,
+            fill: "#A3A3A3",
+            position: "insideBottomLeft",
+            dx: -4,
+            dy: -223,
+          }}
+        />
         <ReferenceLine
           y={basePrice}
           zIndex={0}
@@ -276,26 +245,45 @@ export default function AssetPriceChart({
           axisLine={{
             stroke: "#0C0C0C",
             strokeWidth: 1,
-            strokeDasharray: simple ? "3 2" : undefined,
+            strokeDasharray: "3 2",
           }}
           orientation="right"
           tickFormatter={(value) => `$${value}`}
-          ticks={simple ? [] : [minY, basePrice, maxY]}
+          ticks={[]}
         />
         <XAxis
           tick={{
             fontSize: 12,
             fill: "#A3A3A3",
-            transform: simple ? "translate(-6,0)" : undefined,
+            transform: "translate(-6,0)",
           }}
           orientation="top"
-          scale={"time"}
-          type={simple ? "number" : "category"}
+          type="number"
+          scale="time"
+          axisLine={false}
+          tickLine={false}
           dataKey="timestamp"
           domain={[starting, ending]}
-          axisLine={{ stroke: "#D4D4D4", strokeWidth: 2 }}
-          ticks={simple ? [starting, ending] : [starting, ...tickValues]}
+          ticks={[starting, ending]}
           tickFormatter={formatFn}
+        />
+        <ReferenceLine
+          segment={[
+            { x: starting, y: maxY },
+            { x: latestTimestamp, y: maxY },
+          ]}
+          stroke="#181818"
+          strokeWidth={2}
+          ifOverflow="extendDomain"
+        />
+        <ReferenceLine
+          segment={[
+            { x: latestTimestamp, y: maxY },
+            { x: ending, y: maxY },
+          ]}
+          stroke="#D4D4D4"
+          strokeWidth={2}
+          ifOverflow="extendDomain"
         />
         <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PriceInd} />
         <Tooltip
