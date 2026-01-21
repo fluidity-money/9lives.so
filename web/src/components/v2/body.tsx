@@ -5,7 +5,7 @@ import SimpleChance from "./chances";
 import SimplePositions from "./positions";
 import SimpleModeAlert from "../simple/simpleModeAlert";
 import { useQuery } from "@tanstack/react-query";
-import PriceChartWrapper from "../charts/assetPriceChartWrapper";
+import PriceChartWrapper from "./chartWrapper";
 import { useState } from "react";
 import Modal from "../themed/modal";
 import SimpleBuyDialog from "../simpleBuyDialog";
