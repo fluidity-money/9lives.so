@@ -37,7 +37,7 @@ export default async function RootLayout({
   const cookies = headersObj.get("cookie");
   return (
     <html lang="en" className={dmSans.className}>
-      <body className="flex min-h-screen flex-col bg-9layer">
+      <body className="flex min-h-screen flex-col bg-2white">
         <Providers cookies={cookies}>
           <Header />
           <main className="mx-auto flex w-full max-w-[600px] flex-1 justify-center">
