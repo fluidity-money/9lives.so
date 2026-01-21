@@ -175,7 +175,6 @@ export default function AssetPriceChart({
         fontSize="12"
         fontWeight="bold"
         fill={priceIsAbove ? "#16A34A" : "#DC2828"}
-        fontFamily="var(--font-chicago)"
       >
         ${latestPrice.toFixed(config.simpleMarkets[symbol].decimals)}
       </text>
@@ -222,9 +221,8 @@ export default function AssetPriceChart({
                 hour: isDailyMarket ? undefined : "numeric",
                 minute: isDailyMarket ? undefined : "2-digit",
               }),
-              fontFamily: "var(--font-chicago)",
               fontSize: 12,
-              fill: "#0C0C0C",
+              fill: "#A3A3A3",
               position: "insideBottomLeft",
               dx: -4,
               dy: 22,
@@ -236,29 +234,27 @@ export default function AssetPriceChart({
           label={{
             value: `$${basePrice}`,
             position: "centerBottom",
-            color: "#000",
-            dy: -10,
+            color: "#737373",
+            dy: 10,
             fontSize: 12,
-            fontWeight: "bold",
-            fontFamily: "var(--font-chicago)",
+            fontWeight: "semibold",
           }}
         />
         <ReferenceLine
           y={basePrice}
-          stroke="#aaa"
-          strokeDasharray="3 3"
+          stroke="#D4D4D4"
+          strokeWidth={2}
           label={{
-            value: "PRICE TO BEAT",
+            value: "BASE",
             position: "centerBottom",
-            fill: "#aaa",
-            dy: 10,
+            fill: "#D4D4D4",
+            dy: -10,
             fontSize: 10,
-            fontFamily: "var(--font-geneva)",
+            fontWeight: "bold",
           }}
         />
         <YAxis
           tick={{
-            fontFamily: "var(--font-chicago)",
             fontSize: 12,
             fill: "#0C0C0C",
           }}
@@ -275,16 +271,15 @@ export default function AssetPriceChart({
         />
         <XAxis
           tick={{
-            fontFamily: "var(--font-chicago)",
             fontSize: 12,
-            fill: "#0C0C0C",
+            fill: "#A3A3A3",
             transform: simple ? "translate(-6,0)" : undefined,
           }}
           scale={"time"}
           type={simple ? "number" : "category"}
           dataKey="timestamp"
           domain={[starting, ending]}
-          axisLine={{ stroke: "#0C0C0C", strokeWidth: simple ? 0 : 1 }}
+          axisLine={{ stroke: "#D4D4D4", strokeWidth: 2 }}
           ticks={simple ? [starting, ending] : [starting, ...tickValues]}
           tickFormatter={formatFn}
         />
@@ -306,8 +301,8 @@ export default function AssetPriceChart({
             borderRadius: 3,
             boxShadow: "5px 5px 0 rgba(12, 12, 12, 0.20)",
           }}
-          labelStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
-          itemStyle={{ fontFamily: "var(--font-chicago)", fontSize: 12 }}
+          labelStyle={{ fontSize: 12 }}
+          itemStyle={{ fontSize: 12 }}
         />
       </LineChart>
     </ResponsiveContainer>
