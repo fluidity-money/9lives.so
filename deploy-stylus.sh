@@ -2,9 +2,9 @@
 
 wasm_file="$1"
 
-cargo stylus deploy \
-	--endpoint $SPN_SUPERPOSITION_URL \
-	--wasm-file "$wasm_file" \
-	--no-verify \
-	--private-key $SPN_SUPERPOSITION_KEY \
-	        | sed -nr 's/.*deployed code at address: +.*(0x.{40}).*$/\1/p'
+if ! which bobcat-deploy >/dev/null; then
+	>&2 echo bobcat-deploy not in PATH
+	exit 2
+fi
+
+bobcat-deploy "$SPN_SUPERPOSITION_URL" "$SPN_SUPERPOSITION_KEY" $1
