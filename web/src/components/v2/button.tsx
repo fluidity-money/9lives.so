@@ -5,7 +5,7 @@ import {
 import { cva, type VariantProps } from "class-variance-authority";
 import React from "react";
 
-const button = cva("text-2black font-metro disabled:opacity-40", {
+const button = cva("text-2black disabled:opacity-40", {
   variants: {
     intent: {
       yes: "bg-green-400",

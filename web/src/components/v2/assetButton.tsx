@@ -12,7 +12,7 @@ export default function AssetButton({
   return (
     <div
       className={combineClass(
-        selected ? "border-neutral-500" : "border-neutral-200",
+        selected ? "border-neutral-400" : "border-neutral-200",
         "flex flex-col gap-1 rounded-lg border p-2",
       )}
     >

@@ -1,8 +1,8 @@
 "use client";
 import { SimpleCampaignDetail } from "@/types";
 import SimpleButtons from "../simple/simpleButtons";
-import SimpleChance from "../simple/simpleChance";
-import SimplePositions from "../simple/simplePositions";
+import SimpleChance from "./chances";
+import SimplePositions from "./positions";
 import SimpleModeAlert from "../simple/simpleModeAlert";
 import { useQuery } from "@tanstack/react-query";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";

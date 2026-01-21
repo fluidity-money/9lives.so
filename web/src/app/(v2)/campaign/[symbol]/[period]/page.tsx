@@ -74,23 +74,25 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
   return (
     <div className="flex flex-col gap-4">
       <AssetNav symbol={symbol} period={period} assets={assets} />
-      <div className="flex items-center justify-between">
-        <div className="flex gap-2">
-          <Image
-            src={config.simpleMarkets[symbol].logo}
-            width={43}
-            height={43}
-            alt={symbol}
-            className="rounded-xl"
-          />
-          <h1 className="text-xl text-2black">
-            <span className="text-neutral-400">$</span>
-            {data.priceMetadata?.baseAsset.toUpperCase()}
-          </h1>
+      <div className="rounded-xl border border-neutral-400 bg-2white p-4">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex gap-2">
+            <Image
+              src={config.simpleMarkets[symbol].logo}
+              width={43}
+              height={43}
+              alt={symbol}
+              className="rounded-xl"
+            />
+            <h1 className="text-2xl font-semibold text-2black">
+              <span className="text-neutral-400">$</span>
+              {data.priceMetadata?.baseAsset.toUpperCase()}
+            </h1>
+          </div>
+          <SimpleSubHeader campaignData={campaignData} />
         </div>
-        <SimpleSubHeader campaignData={campaignData} />
+        <SimpleBody campaignData={campaignData} />
       </div>
-      <SimpleBody campaignData={campaignData} />
     </div>
   );
 }
