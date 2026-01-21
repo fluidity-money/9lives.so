@@ -3,9 +3,10 @@ import config from "@/config";
 import { useWSForPrices } from "@/hooks/useWSForPrices";
 import { PricePoint, SimpleMarketKey } from "@/types";
 import {
-  LineChart,
+  ComposedChart,
   ResponsiveContainer,
   Line,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
@@ -183,7 +184,7 @@ export default function AssetPriceChart({
 
   return (
     <ResponsiveContainer width="100%" height={chartHeight}>
-      <LineChart
+      <ComposedChart
         data={uniquePoints}
         margin={{
           top: 42,
@@ -198,6 +199,14 @@ export default function AssetPriceChart({
           x={latestTimestamp}
           y={latestPrice}
           shape={PulseDot}
+        />
+        <Area
+          type="monotone"
+          dataKey="price"
+          stroke="none"
+          fill={priceIsAbove ? "#16A34A" : "#DC2828"}
+          fillOpacity={0.15}
+          isAnimationActive={false}
         />
         <Line
           dot={false}
@@ -309,7 +318,7 @@ export default function AssetPriceChart({
           labelStyle={{ fontSize: 12 }}
           itemStyle={{ fontSize: 12 }}
         />
-      </LineChart>
+      </ComposedChart>
     </ResponsiveContainer>
   );
 }
