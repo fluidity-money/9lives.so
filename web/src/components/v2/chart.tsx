@@ -208,6 +208,7 @@ export default function AssetPriceChart({
           strokeWidth={2}
           name={symbol.toUpperCase()}
         />
+        <ReferenceLine x={latestTimestamp} strokeWidth={2} stroke="#181818" />
         {simple ? (
           <ReferenceLine
             x={starting}
