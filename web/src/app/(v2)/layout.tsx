@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DM_Sans } from "next/font/google";
 import "../globals.css";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
@@ -21,6 +22,12 @@ export const metadata: Metadata = {
   },
 };
 
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +36,7 @@ export default async function RootLayout({
   const headersObj = await headers();
   const cookies = headersObj.get("cookie");
   return (
-    <html lang="en">
+    <html lang="en" className={dmSans.className}>
       <body className="flex min-h-screen flex-col bg-9layer">
         <Providers cookies={cookies}>
           <Header />

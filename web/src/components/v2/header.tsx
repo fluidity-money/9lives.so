@@ -22,8 +22,10 @@ function Menu() {
     <nav>
       <ul className="flex items-center gap-4">
         {routes.map((r) => (
-          <li className={"text-sm text-2black"} key={r.path}>
-            <Link href={r.path}>{r.name}</Link>
+          <li key={r.path}>
+            <Link className="text-sm text-2black" href={r.path}>
+              {r.name}
+            </Link>
           </li>
         ))}
       </ul>

@@ -18,10 +18,12 @@ export const HeaderBox = ({
     )}
   >
     <div className="flex flex-col gap-1">
-      <span className="text-right text-[10px] text-[#808080] md:text-xs">
+      <span className="text-right text-[10px] font-[600] text-neutral-400 md:text-xs">
         {title}
       </span>
-      <span className="text-xs md:text-sm">{value}</span>
+      <span className="text-xs font-bold text-neutral-500 md:text-sm" font-bold>
+        {value}
+      </span>
     </div>
     {rightComp ? rightComp : null}
   </div>

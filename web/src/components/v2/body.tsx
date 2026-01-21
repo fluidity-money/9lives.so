@@ -1,5 +1,5 @@
 "use client";
-import { PricePoint, SimpleCampaignDetail } from "@/types";
+import { SimpleCampaignDetail } from "@/types";
 import SimpleButtons from "../simple/simpleButtons";
 import SimpleChance from "../simple/simpleChance";
 import SimplePositions from "../simple/simplePositions";
@@ -30,8 +30,9 @@ export default function SimpleBody({
   const enabledSimpleModeAlert = useFeatureFlag("enable simple mode alert");
   return (
     <>
-      {enabledSimpleModeAlert ? <SimpleModeAlert /> : <></>}
+      <SimpleChance data={data} />
       <PriceChartWrapper simple={true} campaignData={data} />
+      <SimplePositions data={data} />
       <div className="sticky inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-9layer pb-2 md:static md:flex-row md:bg-transparent md:p-0">
         <SimpleClaimAllButton />
         <SimpleButtons
@@ -40,8 +41,7 @@ export default function SimpleBody({
           setOutcomeIdx={setOutcomeIdx}
         />
       </div>
-      <SimpleChance data={data} />
-      <SimplePositions data={data} />
+      {enabledSimpleModeAlert ? <SimpleModeAlert /> : <></>}
       <Modal
         isOpen={isBuyDialogOpen}
         setIsOpen={setIsBuyDialogOpen}
