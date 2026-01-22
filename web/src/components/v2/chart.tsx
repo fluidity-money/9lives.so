@@ -282,7 +282,7 @@ export default function AssetPriceChart({
             fill: "#0C0C0C",
           }}
           domain={[minY, maxY]}
-          dataKey={"price"}
+          dataKey="price"
           axisLine={{
             stroke: "#D4D4D4",
             strokeWidth: 2,
@@ -342,12 +342,19 @@ export default function AssetPriceChart({
           }}
           formatter={(c) => `$${c}`}
           contentStyle={{
-            borderColor: "#0C0C0C",
-            borderRadius: 3,
-            boxShadow: "5px 5px 0 rgba(12, 12, 12, 0.20)",
+            borderRadius: 8,
+            backgroundColor: "rgba(24, 24, 24, 0.36)",
+            backdropFilter: "blur(2px)",
           }}
-          labelStyle={{ fontSize: 12 }}
-          itemStyle={{ fontSize: 12 }}
+          labelStyle={{ fontSize: 10, color: "#F5F5F5", fontWeight: "500" }}
+          itemStyle={{
+            fontSize: 12,
+            marginTop: 4,
+            padding: "0px 4px",
+            fontWeight: "bold",
+            backgroundColor: "#F5F5F5",
+            borderRadius: 12,
+          }}
         />
       </ComposedChart>
     </ResponsiveContainer>
