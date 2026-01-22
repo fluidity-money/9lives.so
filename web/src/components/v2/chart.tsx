@@ -197,7 +197,7 @@ export default function AssetPriceChart({
       <ComposedChart
         data={uniquePoints}
         margin={{
-          top: 42,
+          top: 24,
           right: -60,
           bottom: 8,
           left: 0,
@@ -230,9 +230,10 @@ export default function AssetPriceChart({
         <ReferenceLine x={latestTimestamp} strokeWidth={2} stroke="#181818" />
         <ReferenceLine
           x={starting}
-          strokeWidth={1}
-          stroke="#0C0C0C"
-          strokeDasharray="3 2"
+          strokeWidth={2}
+          stroke="#D4D4D4"
+          strokeDasharray="5 5"
+          zIndex={100}
           label={{
             orientation: "top",
             value: new Date(starting).toLocaleString("default", {
@@ -242,10 +243,11 @@ export default function AssetPriceChart({
               minute: isDailyMarket ? undefined : "2-digit",
             }),
             fontSize: 12,
+            fontWeight: "500",
             fill: "#A3A3A3",
             position: "insideBottomLeft",
             dx: -4,
-            dy: -229,
+            dy: -247,
           }}
         />
         <ReferenceLine
@@ -282,9 +284,9 @@ export default function AssetPriceChart({
           domain={[minY, maxY]}
           dataKey={"price"}
           axisLine={{
-            stroke: "#0C0C0C",
-            strokeWidth: 1,
-            strokeDasharray: "3 2",
+            stroke: "#D4D4D4",
+            strokeWidth: 2,
+            strokeDasharray: "5 5",
           }}
           orientation="right"
           tickFormatter={(value) => `$${value}`}
@@ -295,6 +297,7 @@ export default function AssetPriceChart({
             fontSize: 12,
             fill: "#A3A3A3",
             transform: "translate(-6,-6)",
+            fontWeight: "500",
           }}
           orientation="top"
           type="number"
