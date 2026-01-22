@@ -1,0 +1,167 @@
+"use client";
+
+import useReferrerCode from "@/hooks/useReferrerCode";
+import { Fragment, useEffect, useState } from "react";
+import { genReferrer } from "@/providers/graphqlClient";
+import { generateReferralCode } from "@/utils/generateReferralCode";
+import Button from "./button";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import TabButton from "../tabButton";
+import toast from "react-hot-toast";
+import useCountReferees from "@/hooks/useCountReferees";
+import { useAppKitAccount } from "@reown/appkit/react";
+import GroupButton from "./groupButton";
+import Link from "next/link";
+
+export default function ReferrerDialog({
+  closeModal,
+}: {
+  closeModal: () => void;
+}) {
+  const account = useAppKitAccount();
+  const {
+    data: code,
+    isSuccess,
+    error,
+    isLoading,
+    refetch,
+  } = useReferrerCode(account?.address);
+  const [genError, setGenError] = useState<string>();
+  const post1 = `https://twitter.com/intent/tweet?text=Got%20a%20hot%20take%20on%20the%20future%3F%0AOn%209Lives%2C%20you%20can%20create%20your%20own%20market%2C%20trade%20on%20predictions%2C%20and%20earn.%0A%0AIt%E2%80%99s%20open%2C%20permissionless%2C%20and%20built%20on%20Superposition.%0A%0AJoin%20me%20here%3A%20https://9lives.so/?referral=${code}`;
+  const post2 = `https://twitter.com/intent/tweet?text=Think%20you%E2%80%99ve%20got%209Lives%3F%0A%0AExplore%20prediction%20markets%2C%20trade%20on%20outcomes%2C%20and%20earn%20fees%20and%20points%20on%20markets%20you%20create!%0A%0AJoin%20me%20here%3A%20https://9lives.so/?referral=${code}`;
+  function handleCopy() {
+    navigator.clipboard.writeText(`https://9lives.so/?referral=${code}`);
+    toast.success("Referral link copied");
+  }
+  const { data: refereeCount } = useCountReferees(account?.address);
+
+  useEffect(() => {
+    async function generateCode() {
+      try {
+        if (!account?.address)
+          throw new Error("Connect your wallet to generate a referral code");
+        const code = generateReferralCode();
+        await genReferrer({ address: account.address, code });
+        await refetch();
+      } catch (error) {
+        setGenError(error instanceof Error ? error.message : "Unknown error");
+      }
+    }
+    if (isSuccess && !code) {
+      generateCode();
+    }
+  }, [code, isSuccess, account?.address, refetch]);
+
+  if (isLoading || (isSuccess && !code))
+    return <div className="skeleton h-20 w-full rounded-md" />;
+
+  if (code)
+    return (
+      <div className="relative flex max-w-[600px] flex-col space-y-3 rounded-2xl border border-neutral-400 p-4">
+        <div
+          className="absolute right-2 top-2 z-10 flex size-10 cursor-pointer items-center justify-center rounded-full bg-2white/20"
+          onClick={closeModal}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12.5 3.5L3.5 12.5"
+              stroke="#A3A3A3"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M12.5 12.5L3.5 3.5"
+              stroke="#A3A3A3"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+        <div className="flex gap-4">
+          <p className="text-center text-4xl">💎</p>
+          <div className="flex flex-1 flex-col gap-4">
+            <h3 className="text-left text-xl font-semibold">
+              {refereeCount ?? 0} Active Referrals
+            </h3>
+            <p className="text-sm font-medium text-neutral-600">
+              Refer users using your link to earn more rewards!
+            </p>
+            <input
+              disabled
+              value={`https://9lives.so/?referral=${code}`}
+              type="text"
+              className="w-full rounded-xl bg-neutral-100 px-3 py-2 text-center shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.70)]"
+            />
+            <Button
+              size={"medium"}
+              onClick={handleCopy}
+              intent={"cta"}
+              title="COPY LINK"
+              className="w-full"
+            />
+          </div>
+        </div>
+        {/* <p className="border px-4 py-2 font-chicago">{`https://9lives.so/?referral=${code}`}</p> */}
+        <GroupButton
+          buttons={[
+            {
+              title: "How it works",
+            },
+            {
+              title: "Fees Generated",
+            },
+          ]}
+        />
+        <div className="w-full rounded-xl bg-neutral-100 p-3 shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.70)]">
+          <div className="flex flex-col items-center justify-between gap-4">
+            <div className="flex w-full items-center justify-between gap-4">
+              <span className="flex items-center gap-1 text-sm font-bold text-neutral-600">
+                1. Copy your link.
+              </span>
+              <span className="flex items-center gap-1 text-sm font-bold text-neutral-600">
+                2. Share with your friends.
+              </span>
+            </div>
+            <p className="w-full rounded-md bg-green-200 px-1 py-2 text-center text-sm font-medium text-green-700">
+              You get %1 of fees generated by referred user
+            </p>
+          </div>
+        </div>
+
+        {/* <p className="font-chicago text-xs font-normal">
+          <a
+            href={Math.random() > 0.5 ? post1 : post2}
+            rel="noreferrer"
+            target="_blank"
+            className="font-geneva uppercase underline"
+          >
+            Share To:{" "}
+            X
+          </a>
+        </p> */}
+        <Link
+          href={Math.random() > 0.5 ? post1 : post2}
+          rel="noreferrer"
+          target="_blank"
+          className="font-geneva uppercase underline"
+        >
+          <Button title="Share to X" intent={"inverted"} className={"w-full"} />
+        </Link>
+      </div>
+    );
+
+  return (
+    <div className="flex h-20 items-center justify-center">
+      <p className="font-chicago">Ups something went wrong</p>
+      <p className="text-xs">{error?.message ?? genError ?? "Unknown error"}</p>
+    </div>
+  );
+}
