@@ -2,6 +2,7 @@
 import { useModalStore } from "@/stores/modalStore";
 import Link from "next/link";
 import GroupButton from "./groupButton";
+import { usePathname, useRouter } from "next/navigation";
 const gitHash = process.env.NEXT_PUBLIC_GIT_HASH;
 const socials = [
   {
@@ -56,11 +57,17 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
 );
 export default function Footer() {
   const { setModal } = useModalStore();
+  const router = useRouter();
+  const pathname = usePathname();
   return (
     <footer className="flex flex-col items-center justify-between gap-4 self-stretch border-t border-t-neutral-300 px-4 py-1 md:mb-0 md:flex-row">
       <div className="flex items-center gap-2">
         <GroupButton
-          buttons={[{ title: "v1" }, { title: "v2" }]}
+          buttons={[
+            { title: "v1", callback: () => router.push("/v1") },
+            { title: "v2", callback: () => router.push("/") },
+          ]}
+          initialIdx={pathname === "/" ? 1 : 0}
           variant="small"
         />
         <nav className="flex flex-col items-center justify-start gap-4 text-xs md:flex-row">
