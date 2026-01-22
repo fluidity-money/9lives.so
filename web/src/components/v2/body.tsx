@@ -42,7 +42,7 @@ export default function SimpleBody({
               width={43}
               height={43}
               alt={symbol}
-              className="rounded-xl"
+              className="size-10 rounded-xl"
             />
             <h1 className="text-2xl font-semibold text-2black">
               <span className="text-neutral-400">$</span>
