@@ -67,7 +67,7 @@ export default function Footer() {
             { title: "v1", callback: () => router.push("/v1") },
             { title: "v2", callback: () => router.push("/") },
           ]}
-          initialIdx={pathname === "/" ? 1 : 0}
+          initialIdx={pathname.startsWith("/v1") ? 0 : 1}
           variant="small"
         />
         <nav className="flex flex-col items-center justify-start gap-4 text-xs md:flex-row">
