@@ -26,7 +26,7 @@ export default function GroupButton({
 
   const triggerDebouncedCallback = useDebouncedCallback((index: number) => {
     buttons[index]?.callback?.();
-  }, 500);
+  }, 300);
 
   const handleCreate = (index: number) => {
     setActiveIndex(index);
