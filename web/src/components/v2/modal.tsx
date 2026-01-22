@@ -4,14 +4,12 @@ import {
   Transition,
   DialogPanel,
 } from "@headlessui/react";
-import RetroCard from "../cardRetro";
 import { combineClass } from "@/utils/combineClass";
 interface ModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<boolean>;
   callback?: () => void;
   children: React.ReactNode;
-  title: string;
   disabled?: boolean;
   boxContainerClass?: string;
 }
@@ -20,7 +18,6 @@ export default function Modal({
   setIsOpen,
   callback,
   children,
-  title,
   disabled = false,
   boxContainerClass,
 }: ModalProps) {
