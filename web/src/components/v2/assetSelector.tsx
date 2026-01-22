@@ -87,7 +87,7 @@ export default function AssetSelector({
         transition
         className={combineClass(
           variant === "small" && "text-xs",
-          "w-max rounded-[3px] border border-9black bg-9layer p-1 [--anchor-gap:var(--spacing-1)] focus:outline-none",
+          "flex w-max flex-col gap-2 rounded-2xl bg-2white px-2 py-3 shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] [--anchor-gap:var(--spacing-1)] focus:outline-none",
           "z-30 transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0",
         )}
       >
@@ -98,7 +98,7 @@ export default function AssetSelector({
             disabled={!token.balance}
             className={combineClass(
               !token.balance && "opacity-50",
-              "group flex cursor-default select-none items-center justify-between gap-2 px-3 py-1.5 data-[focus]:bg-9blueLight",
+              "group flex cursor-default select-none items-center justify-between gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-2black/10",
             )}
           >
             <div className="flex items-center gap-2">
