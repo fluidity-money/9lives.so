@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import config from "@/config";
 import { useUserStore } from "@/stores/userStore";
-import posthog from "posthog-js";
 import z from "zod";
 import { combineClass } from "@/utils/combineClass";
 import useTokens from "@/hooks/useTokens";
@@ -22,7 +21,7 @@ import ChainSelectorDropdown from "./chainSelector";
 import useDppmWinEstimation from "@/hooks/useDppmWinEstimation";
 import useFinalPrice from "@/hooks/useFinalPrice";
 import useAccount from "@/hooks/useAccount";
-import PointsIndicator from "../pointsIndicator";
+import PointsIndicator from "./pointsIndicator";
 import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
 import { formatUnits, zeroAddress } from "viem";
 import GroupButton from "./groupButton";
@@ -269,7 +268,7 @@ export default function SimpleBuyDialog({
   };
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between bg-2white font-chicago">
-      <div className="w-full space-y-4">
+      <div className="jutify-between flex min-h-[600px] w-full flex-col space-y-4">
         <GroupButton
           initialIdx={outcomeIdx === 0 ? 1 : 0}
           buttons={[
@@ -301,7 +300,7 @@ export default function SimpleBuyDialog({
           />
         </div>
 
-        <div className="flex-1 space-y-1 text-center">
+        <div className="flex flex-1 flex-col justify-center space-y-1 text-center">
           <p
             className={combineClass(
               "w-full flex-1 border-0 bg-2white text-center text-4xl font-bold md:hidden",
@@ -462,6 +461,32 @@ export default function SimpleBuyDialog({
             onClick={() =>
               setValue("supply", supply.slice(0, supply.length - 1))
             }
+          />
+        </div>
+
+        <div className="flex items-center justify-start gap-1">
+          <Button intent={"inverted"} size={"large"} onClick={closeDialog}>
+            <svg
+              width="13"
+              height="24"
+              viewBox="0 0 13 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13 7.8916H2.67429L7.81857 12.7859L6.64857 14L0 7.5122V6.46884L6.64857 0L7.81857 1.21409L2.63714 6.14634H13V7.8916Z"
+                fill="#A3A3A3"
+              />
+            </svg>
+          </Button>
+          <Button
+            size={"large"}
+            disabled={isMinting || isConnecting}
+            title={isMinting ? "Loading.." : "Confirm"}
+            className={combineClass(
+              Number(supply) > 0 ? "visible" : "invisible",
+            )}
+            onClick={onSubmit}
           />
         </div>
       </div>
