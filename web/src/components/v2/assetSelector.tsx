@@ -54,36 +54,33 @@ export default function AssetSelector({
 
   return (
     <Listbox value={fromToken} onChange={(selected) => setValue(selected)}>
-      <ListboxButton
-        className={combineClass(
-          variant === "default" ? "py-2 pl-2.5 pr-8" : "py-1 pl-1 pr-6 text-xs",
-          "relative flex items-center gap-1 rounded-[3px] border border-9black shadow-9btnSecondaryIdle",
-          "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
-        )}
-      >
+      <ListboxButton className="relative flex items-center gap-1">
         {isSuccess && Boolean(tokens?.find((t) => t.address === fromToken)) ? (
           <img
             src={tokens?.find((t) => t.address === fromToken)?.logoURI}
             alt="fusdc"
+            className="rounded-full"
             width={20}
             height={20}
           />
         ) : (
           <div className="size-5 rounded-full bg-9gray" />
         )}
-        <span className="font-chicago">
+        <span className="underline">
           {tokens?.find((t) => t.address === fromToken)?.symbol ?? "ETH"}
         </span>
-        <Image
-          src={DownIcon}
-          alt=""
-          width={variant === "default" ? 16 : 10}
-          className={combineClass(
-            variant === "default" ? "size-4" : "size-2.5",
-            "group pointer-events-none absolute right-2.5 top-2.5 fill-white/60",
-          )}
-          aria-hidden="true"
-        />
+        <svg
+          width="11"
+          height="10"
+          viewBox="0 0 11 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M4.508 0L5.796 5.63014e-08V7.812L9.436 3.906L10.332 4.788L5.558 9.8H4.788L0 4.788L0.896 3.906L4.508 7.784V0Z"
+            fill="#B5B5B5"
+          />
+        </svg>
       </ListboxButton>
       <ListboxOptions
         anchor={{ to: "bottom", gap: 4 }}
