@@ -3,24 +3,22 @@ import useCountdown from "@/hooks/useCountdown";
 import { Outcome, SimpleCampaignDetail, SimpleMarketKey } from "@/types";
 import isMarketOpen, { calcNextMarketOpen } from "@/utils/isMarketOpen";
 import CountdownTimer from "../countdownTimer";
-import RetroCard from "../cardRetro";
-import LoadingIndicator from "../loadingIndicator";
 function NotActiveMask({
-  title,
   desc,
   comp,
 }: {
-  title: string;
   desc?: string;
   comp?: React.ReactNode;
 }) {
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-9layer/60 font-chicago">
-      <div className="mb-36 min-w-[232px]">
-        <RetroCard position="middle" showClose={false} title={title}>
-          {desc ? <span className="block text-center">{desc}</span> : null}
-          {comp}
-        </RetroCard>
+      <div className="mb-36 min-w-[232px] rounded-lg border border-neutral-400 bg-2white/70 p-3 shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)]">
+        {desc ? (
+          <span className="block text-center text-base font-medium leading-5">
+            {desc}
+          </span>
+        ) : null}
+        {comp}
       </div>
     </div>
   );
@@ -52,7 +50,6 @@ export default function AssetPriceChartMask({
   if (isOpen === false)
     return (
       <NotActiveMask
-        title="Market Currently Closed"
         comp={<WillOpenTimer slug={campaignData.priceMetadata.baseAsset} />}
       />
     );
@@ -60,23 +57,20 @@ export default function AssetPriceChartMask({
   if (winnerOutcome)
     return (
       <NotActiveMask
-        title="Winner"
-        desc={winnerOutcome.name === "Up" ? "Price Went Up" : "Price Went Down"}
+        desc={
+          winnerOutcome.name === "Up" ? "Market Went Up" : "Market Went Down"
+        }
         comp={
           simple && (
             <div className="mt-1 flex flex-col items-center text-xs">
-              <span className="font-geneva text-sm">
-                Setting up the next campaign
-              </span>
-              <LoadingIndicator />
+              <span className="text-sm">Setting up the next campaign...</span>
             </div>
           )
         }
       />
     );
 
-  if (isEnded)
-    return <NotActiveMask title="Ended" desc={"Determining winner..."} />;
+  if (isEnded) return <NotActiveMask desc={"Determining winner..."} />;
 
   return null;
 }
