@@ -10,19 +10,14 @@ export default function ConnectButton() {
   return (
     <div onClick={() => open()}>
       {account.isConnected && account.address ? (
-        <div className="flex items-center gap-1">
+        <div className="mx-2 flex cursor-pointer items-center gap-1 rounded-full outline outline-4 outline-offset-2 outline-blue-500 hover:outline-purple-500">
           <Image
             alt={""}
             width={24}
             height={24}
-            className="size-6 overflow-hidden rounded-full outline-4 outline-offset-2 outline-blue-500"
+            className="size-6 overflow-hidden rounded-full"
             src={makeBlockie(account.address)}
           />
-          <div>
-            <span className="font-chicago text-xs font-bold">
-              {account.address.slice(0, 6)}...{account.address.slice(-4)}
-            </span>
-          </div>
         </div>
       ) : (
         <Button className={"flex items-center gap-1"}>
