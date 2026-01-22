@@ -13,6 +13,7 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from "recharts";
+import ChartPointsIndicator from "./chartPointsIndicator";
 
 export default function AssetPriceChart({
   symbol,
@@ -261,6 +262,20 @@ export default function AssetPriceChart({
             fontSize: 12,
             fontWeight: "600",
           }}
+        />
+        <ReferenceLine
+          y={basePrice}
+          stroke="transparent"
+          ifOverflow="extendDomain"
+          shape={({ x1, x2, y1 }) => (
+            <ChartPointsIndicator
+              starting={starting}
+              ending={ending}
+              x1={x1}
+              x2={x2}
+              y1={y1}
+            />
+          )}
         />
         <ReferenceLine
           y={basePrice}
