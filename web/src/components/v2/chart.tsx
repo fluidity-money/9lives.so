@@ -43,7 +43,6 @@ export default function AssetPriceChart({
   const DAY = HOUR * 24;
   const MONTH = DAY * 30;
   const YEAR = MONTH * 12;
-  const tickValues: number[] = [];
   const prices = assetPrices.map((i) => i.price);
   const minPrice = Math.min(...prices, basePrice);
   const maxPrice = Math.max(...prices, basePrice);
@@ -54,6 +53,7 @@ export default function AssetPriceChart({
   const minY = basePrice - simpleDiff;
   const maxY = basePrice + simpleDiff;
   const isDailyMarket = DAY >= timeDiff && timeDiff > HOUR;
+  const timeleft = ending - latestTimestamp;
   const formatFn = (ts: number) => {
     const date = new Date(ts);
     switch (true) {
@@ -128,7 +128,7 @@ export default function AssetPriceChart({
         width={90}
         height={20}
         fill={priceIsAbove ? "#DCFCE7" : "#fecaca"}
-        rx={4}
+        rx={8}
         stroke={priceIsAbove ? "#16A34A" : "#DC2828"}
         strokeWidth={1}
       />
@@ -149,6 +149,45 @@ export default function AssetPriceChart({
         fill={priceIsAbove ? "#16A34A" : "#DC2828"}
       >
         ${latestPrice.toFixed(config.simpleMarkets[symbol].decimals)}
+      </text>
+    </g>
+  );
+
+  const CountdownInd = ({ cx, cy }: { cx: number; cy: number }) => (
+    <g transform="translate(0,-0)">
+      <rect
+        x={cx - 32}
+        y={cy - 10}
+        width={74}
+        height={20}
+        fill="#FDBA72"
+        rx={10}
+        stroke="#181818"
+        strokeWidth={1}
+      />
+      <svg
+        x={cx - 26}
+        y={cy - 6}
+        width="9"
+        height="11"
+        viewBox="0 0 9 11"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4.5 1.5C3.60999 1.5 2.73996 1.76392 1.99994 2.25839C1.25991 2.75285 0.683138 3.45566 0.342544 4.27793C0.00194979 5.10019 -0.0871652 6.00499 0.0864683 6.87791C0.260102 7.75082 0.688685 8.55264 1.31802 9.18198C1.94736 9.81132 2.74918 10.2399 3.6221 10.4135C4.49501 10.5872 5.39981 10.4981 6.22208 10.1575C7.04434 9.81686 7.74715 9.24009 8.24162 8.50007C8.73608 7.76005 9 6.89002 9 6C8.99864 4.80694 8.52409 3.66315 7.68048 2.81953C6.83686 1.97591 5.69306 1.50136 4.5 1.5ZM6.64032 4.39031L4.76532 6.26531C4.73047 6.30015 4.68911 6.32779 4.64359 6.34665C4.59807 6.3655 4.54928 6.37521 4.5 6.37521C4.45073 6.37521 4.40194 6.3655 4.35642 6.34665C4.31089 6.32779 4.26953 6.30015 4.23469 6.26531C4.19985 6.23047 4.17221 6.18911 4.15335 6.14359C4.1345 6.09806 4.12479 6.04927 4.12479 6C4.12479 5.95073 4.1345 5.90194 4.15335 5.85641C4.17221 5.81089 4.19985 5.76953 4.23469 5.73469L6.10969 3.85969C6.14453 3.82485 6.18589 3.79721 6.23142 3.77835C6.27694 3.7595 6.32573 3.74979 6.375 3.74979C6.42428 3.74979 6.47307 3.7595 6.51859 3.77835C6.56411 3.79721 6.60547 3.82485 6.64032 3.85969C6.67516 3.89453 6.70279 3.93589 6.72165 3.98141C6.74051 4.02694 6.75021 4.07573 6.75021 4.125C6.75021 4.17427 6.74051 4.22306 6.72165 4.26859C6.70279 4.31411 6.67516 4.35547 6.64032 4.39031ZM3 0.375C3 0.275544 3.03951 0.180161 3.10984 0.109835C3.18016 0.0395088 3.27555 0 3.375 0H5.625C5.72446 0 5.81984 0.0395088 5.89017 0.109835C5.96049 0.180161 6 0.275544 6 0.375C6 0.474456 5.96049 0.569839 5.89017 0.640165C5.81984 0.710491 5.72446 0.75 5.625 0.75H3.375C3.27555 0.75 3.18016 0.710491 3.10984 0.640165C3.03951 0.569839 3 0.474456 3 0.375Z"
+          fill="#181818"
+        />
+      </svg>
+      <text
+        x={cx + 10}
+        y={cy + 4}
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="bold"
+        fill="#181818"
+      >
+        {`${new Date(timeleft).toLocaleString("default", { minute: "numeric" }).padStart(2, "0")}M:${new Date(timeleft).toLocaleString("default", { second: "2-digit" }).padStart(2, "0")}S`}
       </text>
     </g>
   );
@@ -206,7 +245,7 @@ export default function AssetPriceChart({
             fill: "#A3A3A3",
             position: "insideBottomLeft",
             dx: -4,
-            dy: -223,
+            dy: -229,
           }}
         />
         <ReferenceLine
@@ -218,7 +257,7 @@ export default function AssetPriceChart({
             color: "#737373",
             dy: 10,
             fontSize: 12,
-            fontWeight: "semibold",
+            fontWeight: "600",
           }}
         />
         <ReferenceLine
@@ -255,7 +294,7 @@ export default function AssetPriceChart({
           tick={{
             fontSize: 12,
             fill: "#A3A3A3",
-            transform: "translate(-6,0)",
+            transform: "translate(-6,-6)",
           }}
           orientation="top"
           type="number"
@@ -286,6 +325,7 @@ export default function AssetPriceChart({
           ifOverflow="extendDomain"
         />
         <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PriceInd} />
+        <ReferenceDot x={latestTimestamp} y={maxY} shape={CountdownInd} />
         <Tooltip
           labelFormatter={(ts: number) => {
             const date = new Date(ts);
