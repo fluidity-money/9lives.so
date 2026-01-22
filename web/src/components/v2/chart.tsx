@@ -198,7 +198,7 @@ export default function AssetPriceChart({
       <ComposedChart
         data={uniquePoints}
         margin={{
-          top: 24,
+          top: 14,
           right: -60,
           bottom: 8,
           left: 0,
@@ -249,7 +249,7 @@ export default function AssetPriceChart({
             fill: "#A3A3A3",
             position: "insideBottomLeft",
             dx: -4,
-            dy: -247,
+            dy: -257,
           }}
         />
         <ReferenceLine
