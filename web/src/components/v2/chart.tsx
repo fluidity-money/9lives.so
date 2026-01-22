@@ -218,6 +218,7 @@ export default function AssetPriceChart({
           fill={priceIsAbove ? "#16A34A" : "#DC2828"}
           fillOpacity={0.15}
           isAnimationActive={false}
+          tooltipType="none"
         />
         <Line
           dot={false}
@@ -357,6 +358,7 @@ export default function AssetPriceChart({
           }}
           formatter={(c) => `$${c}`}
           contentStyle={{
+            padding: 4,
             borderRadius: 8,
             backgroundColor: "rgba(24, 24, 24, 0.36)",
             backdropFilter: "blur(2px)",
@@ -365,7 +367,7 @@ export default function AssetPriceChart({
           itemStyle={{
             fontSize: 12,
             marginTop: 4,
-            padding: "0px 4px",
+            padding: "2px 4px",
             fontWeight: "bold",
             backgroundColor: "#F5F5F5",
             borderRadius: 12,
