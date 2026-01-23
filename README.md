@@ -102,8 +102,8 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address              |
 |-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x7b6bfdc06d37935f3946b8690cf9d14244dbfd52` |
-| Factory 2 implementation      | `0xcb5fe404f651cefb41c6e92d42b94ca1d24f55dc` |
+| Factory 1 implementation      | `0x0CB0E51c225e0d43ae0B64B11897c518cC5680e5` |
+| Factory 2 implementation      | `0xe1c56ee5a159fc8262cce2679e917c766573c1a3` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
 | Trading DPPM mint impl        | `0xd4f227042d083a358edb90e07fb7da4bdda059f3` |
