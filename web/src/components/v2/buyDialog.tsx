@@ -306,7 +306,10 @@ export default function SimpleBuyDialog({
               "w-full flex-1 border-0 bg-2white text-center text-4xl font-bold md:hidden",
             )}
           >
-            {`${supply || "0"} ${selectedTokenSymbol ?? "$"}`}
+            {supply || "0"}{" "}
+            <span className="text-lg font-[500] text-neutral-400">
+              {selectedTokenSymbol ?? "$"}
+            </span>
           </p>
           <div className="hidden items-center md:flex">
             <input
