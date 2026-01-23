@@ -12,8 +12,8 @@ export default function AssetButton({
   return (
     <div
       className={combineClass(
-        selected ? "border-neutral-400" : "md:border-neutral-200",
-        "flex flex-col gap-1 border-b p-2 md:rounded-lg md:border",
+        selected ? "border-b border-neutral-400" : "md:border-neutral-200",
+        "flex flex-col gap-1 p-2 md:rounded-lg md:border",
       )}
     >
       <span className="flex items-center justify-start text-sm text-2black">
