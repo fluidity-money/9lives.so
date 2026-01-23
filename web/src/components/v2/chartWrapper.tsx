@@ -44,7 +44,6 @@ export default function PriceChartWrapper({
     <div className="relative">
       <AssetPriceChartMask simple={simple} campaignData={campaignData} />
       <AssetPriceChart
-        simple={true}
         starting={starting}
         ending={ending}
         symbol={symbol}
