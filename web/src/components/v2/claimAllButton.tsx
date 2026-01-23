@@ -5,18 +5,22 @@ import Modal from "./modal";
 import { useState } from "react";
 import SimpleRewardsDialog from "./rewardsDialog";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { combineClass } from "@/utils/combineClass";
 
 export function ClaimButton({
   title,
   onClick,
+  shouldHideOnMobile = false,
 }: {
   title: string;
   onClick: () => void;
+  shouldHideOnMobile?: boolean;
 }) {
   return (
     <Button
       onClick={onClick}
       intent="reward"
+      className={combineClass(shouldHideOnMobile && "hidden md:block")}
       icon={
         <svg
           width="16"
@@ -36,7 +40,13 @@ export function ClaimButton({
   );
 }
 
-export default function SimpleClaimAllButton({ token }: { token?: string }) {
+export default function SimpleClaimAllButton({
+  token,
+  shouldHideOnMobile = false,
+}: {
+  token?: string;
+  shouldHideOnMobile?: boolean;
+}) {
   const account = useAppKitAccount();
   const { data } = useUnclaimedCampaigns(account?.address, token);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,6 +57,7 @@ export default function SimpleClaimAllButton({ token }: { token?: string }) {
         <ClaimButton
           onClick={() => setIsModalOpen(true)}
           title={`${data.length} Rewards Unclaimed`}
+          shouldHideOnMobile={shouldHideOnMobile}
         />
         <Modal
           isOpen={isModalOpen}

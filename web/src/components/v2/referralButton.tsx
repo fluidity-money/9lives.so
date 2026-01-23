@@ -8,10 +8,10 @@ import Button from "./button";
 import { combineClass } from "@/utils/combineClass";
 
 export default function ReferralButton({
-  shouldDisplayed = true,
+  shouldHideOnMobile = false,
   inverted = false,
 }: {
-  shouldDisplayed?: boolean;
+  shouldHideOnMobile?: boolean;
   inverted?: boolean;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,7 +27,7 @@ export default function ReferralButton({
         title="Referral"
         intent={inverted ? "inverted" : "cta"}
         onClick={handleClick}
-        className={combineClass(!shouldDisplayed && "hidden")}
+        className={combineClass(shouldHideOnMobile && "hidden md:block")}
         icon={
           <svg
             width="15"

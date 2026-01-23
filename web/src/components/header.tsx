@@ -3,10 +3,8 @@ import NavigationMenu from "@/components/navMenu";
 import Link from "next/link";
 import HeaderLogo from "./headerLogo";
 import CreateCampaingButton from "./createCampaign/createCampaignHeaderButton";
-import DisclaimerButton from "./disclaimerButton";
 import ReferralButton from "./referral/referralButton";
 import MobileMenu from "./mobileMenu";
-import SimpleModeButton from "./simple/simpleModeButton";
 import ModeSwitchButton from "./modeSwitchButton";
 
 export default function Header({ simple = false }: { simple?: boolean }) {

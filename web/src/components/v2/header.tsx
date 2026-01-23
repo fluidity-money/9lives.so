@@ -49,8 +49,8 @@ export default function Header() {
         <Menu />
       </div>
       <div className="flex items-center gap-2">
-        <SimpleClaimAllButton />
-        <ReferralButton />
+        <SimpleClaimAllButton shouldHideOnMobile />
+        <ReferralButton shouldHideOnMobile />
         <ConnectButton />
       </div>
     </div>
