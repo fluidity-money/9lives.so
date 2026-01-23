@@ -5,8 +5,15 @@ import ReferrerlDialog from "./referrerDialog";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import { useAppKitAccount } from "@reown/appkit/react";
 import Button from "./button";
+import { combineClass } from "@/utils/combineClass";
 
-export default function ReferralButton() {
+export default function ReferralButton({
+  shouldDisplayed = true,
+  inverted = false,
+}: {
+  shouldDisplayed?: boolean;
+  inverted?: boolean;
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { connect } = useConnectWallet();
   const account = useAppKitAccount();
@@ -18,9 +25,9 @@ export default function ReferralButton() {
     <>
       <Button
         title="Referral"
-        intent="inverted"
+        intent={inverted ? "inverted" : "cta"}
         onClick={handleClick}
-        className="hidden md:block"
+        className={combineClass(!shouldDisplayed && "hidden")}
         icon={
           <svg
             width="15"

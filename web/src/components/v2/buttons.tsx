@@ -5,6 +5,7 @@ import React from "react";
 import useCountdown from "@/hooks/useCountdown";
 import isMarketOpen from "@/utils/isMarketOpen";
 import config from "@/config";
+import MobileMenuButton from "./mobileMenuButton";
 
 export default function SimpleButtons({
   data,
@@ -44,6 +45,7 @@ export default function SimpleButtons({
           setIsBuyDialogOpen(true);
         }}
       />
+      <MobileMenuButton />
     </div>
   );
 }

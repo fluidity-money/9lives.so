@@ -46,7 +46,7 @@ export default function Button({
       {children ?? (
         <div className="flex items-center justify-center gap-1">
           {props.icon}
-          <span>{props.title}</span>
+          <span className="text-nowrap">{props.title}</span>
           {props.badge}
         </div>
       )}
