@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 export interface GroupButtonProps {
   callback?: () => void;
   title: string;
+  mobileTitle?: string;
 }
 
 interface GroupButtonComponentProps {
@@ -53,6 +54,7 @@ export default function GroupButton({
           onClick={() => handleCreate(index)}
           style={{ width: `${widthPercentage}%` }}
           className={combineClass(
+            activeIndex !== index && "hidden md:block",
             "z-10 cursor-pointer text-center text-sm transition-colors duration-200",
             variant === "default" ? "p-2" : "px-2 py-1",
             activeIndex === index
@@ -60,7 +62,12 @@ export default function GroupButton({
               : "text-neutral-400",
           )}
         >
-          {b.title}
+          <span className={combineClass(b.mobileTitle && "hidden md:block")}>
+            {b.title}
+          </span>
+          {b.mobileTitle ? (
+            <span className="md:hidden">{b.mobileTitle}</span>
+          ) : null}
         </div>
       ))}
     </div>

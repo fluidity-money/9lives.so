@@ -56,53 +56,57 @@ export default function AssetNav({
   const buttons = [
     {
       title: is5Min ? "5 Min Markets" : "5 Mins",
+      mobileTitle: "5 Min",
       callback: () => router.push(`/campaign/${mins5Markets[0]}/5mins`),
     },
     {
       title: is15Min ? "15 Min Markets" : "15 Mins",
+      mobileTitle: "15 Min",
       callback: () => router.push(`/campaign/${mins15Markets[0]}/15mins`),
     },
     {
       title: isHourly ? "Hourly Markets" : "Hourly",
+      mobileTitle: "1 Hr",
       callback: () => router.push(`/campaign/${hourlyMarkets[0]}/hourly`),
     },
   ] as GroupButtonProps[];
   const orderIdx = periodOrder.findIndex((p) => p === period.toLowerCase());
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex w-full gap-2">
-        <GroupButton
-          buttons={buttons}
-          className="w-full"
-          initialIdx={orderIdx}
-        />
-      </div>
-      <div className="flex items-center gap-1 overflow-x-auto">
-        {Object.values(config.simpleMarkets)
-          .filter(
-            (m) =>
-              m.periods.includes(period.toLowerCase() as SimpleMarketPeriod) &&
-              m.listed,
-          )
-          .sort((a, b) => {
-            const aSpent =
-              assets?.find(
-                (as) => as.name.toLowerCase() === a.slug.toLowerCase(),
-              )?.totalSpent ?? 0;
-            const bSpent =
-              assets?.find(
-                (as) => as.name.toLowerCase() === b.slug.toLocaleLowerCase(),
-              )?.totalSpent ?? 0;
-            return bSpent - aSpent;
-          })
-          .map((m) => (
-            <SimpleTabMenuButton
-              key={m.slug}
-              market={m}
-              symbol={symbol}
-              period={period}
-            />
-          ))}
+    <div className="flex flex-row gap-4 md:flex-col">
+      <GroupButton
+        buttons={buttons}
+        className="shrink md:w-full"
+        initialIdx={orderIdx}
+      />
+      <div className="grow overflow-x-scroll">
+        <div className="absolute flex items-center gap-1">
+          {Object.values(config.simpleMarkets)
+            .filter(
+              (m) =>
+                m.periods.includes(
+                  period.toLowerCase() as SimpleMarketPeriod,
+                ) && m.listed,
+            )
+            .sort((a, b) => {
+              const aSpent =
+                assets?.find(
+                  (as) => as.name.toLowerCase() === a.slug.toLowerCase(),
+                )?.totalSpent ?? 0;
+              const bSpent =
+                assets?.find(
+                  (as) => as.name.toLowerCase() === b.slug.toLocaleLowerCase(),
+                )?.totalSpent ?? 0;
+              return bSpent - aSpent;
+            })
+            .map((m) => (
+              <SimpleTabMenuButton
+                key={m.slug}
+                market={m}
+                symbol={symbol}
+                period={period}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );

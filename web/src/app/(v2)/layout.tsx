@@ -41,7 +41,7 @@ export default async function RootLayout({
         <Providers cookies={cookies}>
           <Header />
           <main className="mx-auto flex w-full max-w-[600px] flex-1 justify-center">
-            <div className="flex-1 p-4">{children}</div>
+            <div className="flex-1 p-2 md:p-4">{children}</div>
           </main>
           <Footer />
           <BetaTesterInvitation />
