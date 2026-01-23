@@ -6,7 +6,7 @@ import Providers from "@/providers";
 import { headers } from "next/headers";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import CustomToaster from "@/components/v2/customToaster";
-import CookieBanner from "@/components/cookieBanner";
+import CookieBanner from "@/components/v2/cookie";
 import Header from "@/components/v2/header";
 import Footer from "@/components/v2/footer";
 import BetaTesterInvitation from "@/components/v2/betatester";

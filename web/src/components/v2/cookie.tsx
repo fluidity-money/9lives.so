@@ -1,0 +1,61 @@
+"use client";
+
+import Link from "next/link";
+import { useState, useCallback, useEffect } from "react";
+import { deniedConsent, grantedConsent } from "@/components/googleAnalytics";
+import Button from "./button";
+import { useUserStore } from "@/stores/userStore";
+
+function gtag(...args: any[]) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(...args);
+}
+
+export default function CookieBanner() {
+  const [showConsentDialog, setShowConsentDialog] = useState<boolean | null>(
+    null,
+  );
+  useEffect(() => {
+    const consent = window.localStorage.getItem("consentMode");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setShowConsentDialog(consent === null);
+  }, []);
+  const setTrackingConsent = useUserStore((s) => s.setTrackingConsent);
+  const isInMiniApp = useUserStore((s) => s.isInMiniApp);
+
+  function denyCookies() {
+    gtag("consent", "update", deniedConsent);
+    window.localStorage.setItem("consentMode", JSON.stringify(deniedConsent));
+    setTrackingConsent(false);
+    setShowConsentDialog(false);
+  }
+
+  const allowCookies = useCallback(() => {
+    gtag("consent", "update", grantedConsent);
+    window.localStorage.setItem("consentMode", JSON.stringify(grantedConsent));
+    setTrackingConsent(true);
+    setShowConsentDialog(false);
+  }, [setTrackingConsent]);
+
+  if (!showConsentDialog || isInMiniApp) return null;
+
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-50 mx-auto my-10 flex max-w-max flex-col items-center justify-between gap-4 rounded-2xl border border-neutral-400 bg-[#FDBA72] p-3 text-xs text-2black shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] sm:flex-row md:max-w-[480px] md:px-4">
+      <div className="text-center">
+        <Link target="_blank" href="https://static.9lives.so/privacy.pdf">
+          <p className="font-bold tracking-wide">We use cookies on our site.</p>
+        </Link>
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          className="px-5 py-2 font-chicago underline"
+          onClick={denyCookies}
+        >
+          Decline
+        </button>
+        <Button onClick={allowCookies}>Allow Cookies</Button>
+      </div>
+    </div>
+  );
+}
