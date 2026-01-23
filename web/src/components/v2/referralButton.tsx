@@ -20,6 +20,7 @@ export default function ReferralButton() {
         title="Referral"
         intent="inverted"
         onClick={handleClick}
+        className="hidden md:block"
         icon={
           <svg
             width="15"

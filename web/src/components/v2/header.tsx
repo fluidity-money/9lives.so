@@ -21,7 +21,7 @@ function Menu() {
     },
   ];
   return (
-    <nav>
+    <nav className="hidden md:block">
       <ul className="flex items-center gap-4">
         {routes.map((r) => (
           <li key={r.path}>
@@ -37,12 +37,12 @@ function Menu() {
 
 export default function Header() {
   return (
-    <div className="flex items-center justify-between p-4">
+    <div className="flex items-center justify-between p-2 md:p-4">
       <div className="flex items-center">
         <Link
           data-test="header-logo"
           href="/"
-          className="flex h-10 items-center justify-center px-4"
+          className="flex h-10 items-center justify-center px-0 md:px-4"
         >
           <HeaderLogo />
         </Link>
