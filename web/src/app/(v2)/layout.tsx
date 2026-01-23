@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "../globals.css";
-import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
-import CustomToaster from "@/components/v2/customToaster";
-import CookieBanner from "@/components/cookieBanner";
 import Providers from "@/providers";
 import { headers } from "next/headers";
+import GoogleAnalytics from "@/components/googleAnalytics";
+import CustomToaster from "@/components/v2/customToaster";
+import CookieBanner from "@/components/cookieBanner";
 import Header from "@/components/v2/header";
 import Footer from "@/components/v2/footer";
-import BetaTesterInvitation from "@/components/betaTesterInvitation";
+import BetaTesterInvitation from "@/components/v2/betatester";
 
 export const metadata: Metadata = {
   ...appConfig.metadata,
