@@ -3,7 +3,7 @@ import { DM_Sans } from "next/font/google";
 import "../globals.css";
 import GoogleAnalytics from "@/components/googleAnalytics";
 import appConfig from "@/config";
-import CustomToaster from "@/components/customToaster";
+import CustomToaster from "@/components/v2/customToaster";
 import CookieBanner from "@/components/cookieBanner";
 import Providers from "@/providers";
 import { headers } from "next/headers";
