@@ -38,7 +38,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={dmSans.className}>
       <body className="flex min-h-screen flex-col bg-2white">
-        <Providers cookies={cookies}>
+        <Providers cookies={cookies} version="2">
           <Header />
           <main className="mx-auto flex w-full max-w-[600px] flex-1 justify-center">
             <div className="flex-1 p-2 md:p-4">{children}</div>

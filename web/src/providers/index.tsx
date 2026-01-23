@@ -12,14 +12,16 @@ import { WebSocketProvider as WS9Lives } from "./websocket9lives";
 export default function Providers({
   children,
   cookies,
+  version,
 }: {
   children: React.ReactNode;
   cookies: string | null;
+  version: "1" | "2";
 }) {
   return (
     <WalletProvider cookies={cookies}>
       <ReactQueryProvider>
-        <ContextInjector />
+        <ContextInjector version={version} />
         <WebSocketProvider />
         <FarcasterProvider />
         <RelayProvider />

@@ -14,7 +14,7 @@ import {
   useAppKitNetwork,
 } from "@reown/appkit/react";
 
-export default function ContextInjector() {
+export default function ContextInjector({ version }: { version: "1" | "2" }) {
   const pathname = usePathname();
 
   const account = useAppKitAccount();
@@ -50,6 +50,7 @@ export default function ContextInjector() {
       );
       posthog.identify(account.address?.toLowerCase());
       const ctx = {
+        version,
         walletId: walletInfo?.name ?? "unknown",
         walletAddress: account.address.toLowerCase(),
         chainId,
@@ -76,7 +77,7 @@ export default function ContextInjector() {
   // add margin for fixed action component on campaign details
   useEffect(() => {
     const footer = document.getElementsByTagName("footer")[0];
-    if (footer) {
+    if (footer && version === "1") {
       if (pathname.startsWith("/campaign/"))
         footer.classList.add("mint-box-margin");
       else footer.classList.remove("mint-box-margin");
@@ -99,6 +100,7 @@ export default function ContextInjector() {
               { key: "browser", value: [browserName] },
               { key: "os", value: [os] },
               { key: "platform", value: [platform.type?.toString() ?? ""] },
+              { key: "version", value: [version] },
               {
                 key: "screenResolution",
                 value: [`${screen.width}x${screen.height}`],

@@ -76,7 +76,9 @@ export default async function RootLayout({
       ])}
     >
       <body className="flex min-h-screen flex-col bg-9layer">
-        <Providers cookies={cookies}>{children}</Providers>
+        <Providers version="1" cookies={cookies}>
+          {children}
+        </Providers>
         <CookieBanner />
         <CustomToaster />
       </body>
