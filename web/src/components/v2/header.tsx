@@ -13,11 +13,11 @@ function Menu() {
     },
     {
       name: "Portfolio",
-      path: "/portfolio",
+      path: "/v1/portfolio",
     },
     {
       name: "Leaderboard",
-      path: "/leaderboard",
+      path: "/v1/leaderboard",
     },
   ];
   return (
