@@ -267,7 +267,7 @@ export default function SimpleBuyDialog({
     setValue("supply", v, { shouldDirty: true });
   };
   return (
-    <div className="flex min-h-[600px] flex-col items-center justify-between bg-2white font-chicago">
+    <div className="flex min-h-[600px] flex-col items-center justify-between">
       <div className="jutify-between flex min-h-[600px] w-full flex-col space-y-4">
         <GroupButton
           initialIdx={outcomeIdx === 0 ? 1 : 0}
@@ -493,7 +493,7 @@ export default function SimpleBuyDialog({
       <Modal
         isOpen={isFundModalOpen}
         setIsOpen={setFundModalOpen}
-        title="MINT FUNDING"
+        boxContainerClass="max-w-[600]"
       >
         <Funding
           type="buy"

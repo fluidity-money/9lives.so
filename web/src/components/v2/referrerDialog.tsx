@@ -57,34 +57,7 @@ export default function ReferrerDialog({
 
   if (code)
     return (
-      <div className="relative flex max-w-[600px] flex-col space-y-3 rounded-2xl border border-neutral-400 p-4">
-        <div
-          className="absolute right-2 top-2 z-10 flex size-10 cursor-pointer items-center justify-center rounded-full bg-2white/20"
-          onClick={closeModal}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12.5 3.5L3.5 12.5"
-              stroke="#A3A3A3"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M12.5 12.5L3.5 3.5"
-              stroke="#A3A3A3"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
+      <div className="relative flex max-w-[600px] flex-col space-y-3">
         <div className="flex gap-4">
           <p className="text-center text-4xl">💎</p>
           <div className="flex flex-1 flex-col gap-4">

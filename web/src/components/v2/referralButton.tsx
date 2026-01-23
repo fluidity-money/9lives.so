@@ -35,7 +35,11 @@ export default function ReferralButton() {
           </svg>
         }
       />
-      <Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+      <Modal
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        boxContainerClass="max-w-[600px]"
+      >
         <ReferrerlDialog closeModal={() => setIsModalOpen(false)} />
       </Modal>
     </>

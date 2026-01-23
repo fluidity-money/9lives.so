@@ -48,7 +48,11 @@ export default function SimpleClaimAllButton({ token }: { token?: string }) {
           onClick={() => setIsModalOpen(true)}
           title={`${data.length} Rewards Unclaimed`}
         />
-        <Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+        <Modal
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          boxContainerClass="max-w-[600px]"
+        >
           <SimpleRewardsDialog
             data={data}
             token={token}

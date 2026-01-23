@@ -66,7 +66,7 @@ export default function SimpleBody({
       <Modal
         isOpen={isBuyDialogOpen}
         setIsOpen={setIsBuyDialogOpen}
-        title="Predict Price"
+        displayClose={false}
         boxContainerClass="md:max-w-screen max-w-[400px]"
       >
         <SimpleBuyDialog

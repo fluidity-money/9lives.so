@@ -5,12 +5,14 @@ import {
   DialogPanel,
 } from "@headlessui/react";
 import { combineClass } from "@/utils/combineClass";
+import CloseButton from "./closeButton";
 interface ModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<boolean>;
   callback?: () => void;
   children: React.ReactNode;
   disabled?: boolean;
+  displayClose?: boolean;
   boxContainerClass?: string;
 }
 export default function Modal({
@@ -20,6 +22,7 @@ export default function Modal({
   children,
   disabled = false,
   boxContainerClass,
+  displayClose = true,
 }: ModalProps) {
   function closeModal() {
     if (!disabled) {
@@ -52,9 +55,10 @@ export default function Modal({
               <DialogPanel
                 className={combineClass(
                   boxContainerClass ?? "max-w-3xl",
-                  "w-full rounded-xl bg-2white p-4",
+                  "relative w-full rounded-2xl border border-neutral-400 bg-2white p-6 shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)]",
                 )}
               >
+                {displayClose ? <CloseButton close={closeModal} /> : null}
                 {children}
               </DialogPanel>
             </TransitionChild>
