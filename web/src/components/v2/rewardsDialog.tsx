@@ -102,7 +102,7 @@ export default function SimpleRewardsDialog({
   };
   return (
     <div className="flex flex-col space-y-3">
-      <div className="flex gap-4">
+      <div className="flex flex-col gap-4 md:flex-row">
         <p className="text-center text-4xl">🤑</p>
         <div className="flex flex-1 flex-col gap-4">
           <h3 className="text-left text-xl font-semibold">
