@@ -440,6 +440,7 @@ export default function SimpleBuyDialog({
         <div className="grid grid-cols-3 gap-3 text-center text-lg font-medium md:hidden">
           {Array.from(Array(9), (_, i) => i + 1).map((n) => (
             <Button
+              intent={"inverted"}
               key={"btn" + n}
               title={n.toString()}
               onClick={() => setValue("supply", supply + n)}
@@ -447,12 +448,14 @@ export default function SimpleBuyDialog({
           ))}
           <Button
             title="."
+            intent={"inverted"}
             onClick={() =>
               !supply.includes(".") &&
               setValue("supply", supply ? supply + "." : "0.")
             }
           />
           <Button
+            intent={"inverted"}
             title="0"
             onClick={() => supply !== "" && setValue("supply", supply + 0)}
           />
