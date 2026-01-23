@@ -12,19 +12,18 @@ export default function AssetButton({
   return (
     <div
       className={combineClass(
-        selected ? "border-neutral-400" : "border-neutral-200",
-        "flex flex-col gap-1 rounded-lg border p-2",
+        selected ? "border-neutral-400" : "md:border-neutral-200",
+        "flex flex-col gap-1 border-b p-2 md:rounded-lg md:border",
       )}
     >
       <span className="flex items-center justify-start text-sm text-2black">
         <span className="text-neutral-400">$</span>
         {title}
       </span>
-
       <div
         className={combineClass(
           isLive ? "text-green-400" : "text-neutral-400",
-          "inline-flex items-start justify-start gap-0.5 self-stretch",
+          "inline-flex hidden items-start justify-start gap-0.5 self-stretch md:block",
         )}
       >
         <div className="justify-center text-[9px] font-bold tracking-tight">

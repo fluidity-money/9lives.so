@@ -1,12 +1,18 @@
 "use client";
 import config from "@/config";
 import Link from "next/link";
-import { RawAsset, SimpleMarketKey, SimpleMarketPeriod } from "@/types";
+import {
+  GroupButtonProps,
+  RawAsset,
+  SimpleMarketKey,
+  SimpleMarketPeriod,
+} from "@/types";
 import isMarketOpen from "../../utils/isMarketOpen";
 import useAssets from "@/hooks/useAssets";
-import GroupButton, { GroupButtonProps } from "./groupButton";
+import GroupButton from "./groupButton";
 import { useRouter } from "next/navigation";
 import AssetButton from "./assetButton";
+import GroupButtonMobile from "./groupButtonMobile";
 
 function SimpleTabMenuButton({
   market,
@@ -72,40 +78,48 @@ export default function AssetNav({
   ] as GroupButtonProps[];
   const orderIdx = periodOrder.findIndex((p) => p === period.toLowerCase());
   return (
-    <div className="flex flex-row gap-4 md:flex-col">
+    <div className="flex flex-row gap-2 md:flex-col md:gap-4">
       <GroupButton
         buttons={buttons}
-        className="shrink md:w-full"
+        className="hidden md:flex"
         initialIdx={orderIdx}
       />
-      <div className="grow overflow-x-scroll">
-        <div className="absolute flex items-center gap-1">
-          {Object.values(config.simpleMarkets)
-            .filter(
-              (m) =>
-                m.periods.includes(
-                  period.toLowerCase() as SimpleMarketPeriod,
-                ) && m.listed,
-            )
-            .sort((a, b) => {
-              const aSpent =
-                assets?.find(
-                  (as) => as.name.toLowerCase() === a.slug.toLowerCase(),
-                )?.totalSpent ?? 0;
-              const bSpent =
-                assets?.find(
-                  (as) => as.name.toLowerCase() === b.slug.toLocaleLowerCase(),
-                )?.totalSpent ?? 0;
-              return bSpent - aSpent;
-            })
-            .map((m) => (
-              <SimpleTabMenuButton
-                key={m.slug}
-                market={m}
-                symbol={symbol}
-                period={period}
-              />
-            ))}
+      <GroupButtonMobile
+        buttons={buttons}
+        className="md:hidden"
+        initialIdx={orderIdx}
+      />
+      <div className="-full relative h-[37px] grow md:h-[68px]">
+        <div className="absolute inset-0 overflow-x-auto">
+          <div className="flex items-center gap-0.5 md:gap-1">
+            {Object.values(config.simpleMarkets)
+              .filter(
+                (m) =>
+                  m.periods.includes(
+                    period.toLowerCase() as SimpleMarketPeriod,
+                  ) && m.listed,
+              )
+              .sort((a, b) => {
+                const aSpent =
+                  assets?.find(
+                    (as) => as.name.toLowerCase() === a.slug.toLowerCase(),
+                  )?.totalSpent ?? 0;
+                const bSpent =
+                  assets?.find(
+                    (as) =>
+                      as.name.toLowerCase() === b.slug.toLocaleLowerCase(),
+                  )?.totalSpent ?? 0;
+                return bSpent - aSpent;
+              })
+              .map((m) => (
+                <SimpleTabMenuButton
+                  key={m.slug}
+                  market={m}
+                  symbol={symbol}
+                  period={period}
+                />
+              ))}
+          </div>
         </div>
       </div>
     </div>

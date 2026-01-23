@@ -60,8 +60,8 @@ export default function Footer() {
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <footer className="flex flex-col items-center justify-between gap-4 self-stretch border-t border-t-neutral-300 px-4 py-1 md:mb-0 md:flex-row">
-      <div className="flex items-center gap-2">
+    <footer className="flex flex-col items-center justify-between gap-4 self-stretch border-t border-t-neutral-300 px-4 py-4 md:mb-0 md:flex-row md:py-1">
+      <div className="flex flex-col items-center gap-2 md:flex-row">
         <GroupButton
           buttons={[
             { title: "v1", callback: () => router.push("/v1") },

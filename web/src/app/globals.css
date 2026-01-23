@@ -174,10 +174,6 @@ div[id^="radix"][role="dialog"][data-state="open"] div[data-error] {
   @apply border-none shadow-none focus:outline-none;
 }
 
-.mint-box-margin {
-  margin-bottom: 150px;
-}
-
 .changelog {
   display: flex;
   flex-direction: column;

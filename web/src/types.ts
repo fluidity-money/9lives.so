@@ -309,3 +309,15 @@ export type Trade = {
 };
 
 export type Chain = ViemChain & { icon: StaticImageData };
+
+export type GroupButtonProps =
+  | {
+      callback?: () => void;
+      title?: string;
+      mobileTitle: string;
+    }
+  | {
+      callback?: () => void;
+      title: string;
+      mobileTitle?: string;
+    };

@@ -1,12 +1,7 @@
 import useDebouncedCallback from "@/hooks/useDebounceCallback";
+import { GroupButtonProps } from "@/types";
 import { combineClass } from "@/utils/combineClass";
 import { useState, useMemo } from "react";
-
-export interface GroupButtonProps {
-  callback?: () => void;
-  title: string;
-  mobileTitle?: string;
-}
 
 interface GroupButtonComponentProps {
   buttons: GroupButtonProps[];
@@ -37,7 +32,7 @@ export default function GroupButton({
   return (
     <div
       className={combineClass(
-        "relative flex items-center rounded-xl bg-neutral-200 p-1 shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.70)]",
+        "relative flex flex-row items-center rounded-xl bg-neutral-200 p-1 shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.70)]",
         className,
       )}
     >
@@ -54,7 +49,6 @@ export default function GroupButton({
           onClick={() => handleCreate(index)}
           style={{ width: `${widthPercentage}%` }}
           className={combineClass(
-            activeIndex !== index && "hidden md:block",
             "z-10 cursor-pointer text-center text-sm transition-colors duration-200",
             variant === "default" ? "p-2" : "px-2 py-1",
             activeIndex === index
@@ -62,12 +56,7 @@ export default function GroupButton({
               : "text-neutral-400",
           )}
         >
-          <span className={combineClass(b.mobileTitle && "hidden md:block")}>
-            {b.title}
-          </span>
-          {b.mobileTitle ? (
-            <span className="md:hidden">{b.mobileTitle}</span>
-          ) : null}
+          {b.title}
         </div>
       ))}
     </div>
