@@ -1,12 +1,10 @@
 "use client";
 
 import useReferrerCode from "@/hooks/useReferrerCode";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { genReferrer } from "@/providers/graphqlClient";
 import { generateReferralCode } from "@/utils/generateReferralCode";
 import Button from "./button";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import TabButton from "../tabButton";
 import toast from "react-hot-toast";
 import useCountReferees from "@/hooks/useCountReferees";
 import { useAppKitAccount } from "@reown/appkit/react";
@@ -53,7 +51,7 @@ export default function ReferrerDialog({
   }, [code, isSuccess, account?.address, refetch]);
 
   if (isLoading || (isSuccess && !code))
-    return <div className="skeleton h-20 w-full rounded-md" />;
+    return <div className="skeleton h-[400px] w-full" />;
 
   if (code)
     return (
