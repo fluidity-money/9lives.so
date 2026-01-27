@@ -7,7 +7,6 @@ use crate::{
     utils::{contract_address, msg_sender},
 };
 
-#[cfg(feature = "contract-factory-2")]
 use alloc::vec::Vec;
 
 pub use crate::storage_factory::*;
@@ -120,6 +119,8 @@ impl StorageFactory {
         });
         Ok(amt)
     }
+
+    pub fn disable_shares(&self, _: Vec<FixedBytes<8>>) {}
 
     pub fn features() -> R<FixedBytes<32>> {
         Ok(FixedBytes::<32>(feature_pack().0))

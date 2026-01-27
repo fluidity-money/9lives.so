@@ -58,6 +58,11 @@ var tables = map[string][]string{
 		"pool_address",
 		"odds",
 	},
+	"ninelives_payoff_unused_1": {
+		"created_at",
+		"pool_address",
+		"spender",
+	},
 }
 
 func getTables() (t cdcPublication.Tables) {
