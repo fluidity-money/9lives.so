@@ -8,7 +8,7 @@ import AssetNav from "@/components/v2/assetNav";
 
 type Params = Promise<{ symbol: string; period: string }>;
 export const dynamicParams = true;
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   return Object.values(config.simpleMarkets).reduce(

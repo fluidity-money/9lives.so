@@ -1,6 +1,5 @@
 import DetailWrapper from "@/components/detail/detailWrapper";
 import config from "@/config";
-import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import {
   requestCampaignById,
   requestCampaignList,
@@ -9,10 +8,9 @@ import {
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { PricePoint } from "@/types";
 type Params = Promise<{ id: string }>;
 export const dynamicParams = true;
-export const revalidate = 60;
+export const revalidate = 300;
 export async function generateStaticParams() {
   const campaigns = await requestCampaignList({ page: -1 });
   return campaigns.map((campaign) => ({
