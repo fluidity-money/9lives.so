@@ -27,6 +27,7 @@ function SimpleTabMenuButton({
   return (
     <Link href={`/campaign/${market.slug}/${period}`} className="flex">
       <AssetButton
+        period={period}
         isLive={isOpen}
         title={market.tabTitle}
         selected={symbol === market.slug}
@@ -89,7 +90,7 @@ export default function AssetNav({
         className="md:hidden"
         initialIdx={orderIdx}
       />
-      <div className="-full relative h-[37px] grow md:h-[68px]">
+      <div className="relative h-[37px] w-full grow md:h-[68px]">
         <div className="absolute inset-0 overflow-x-auto">
           <div className="flex items-center gap-0.5 md:gap-1">
             {Object.values(config.simpleMarkets)
