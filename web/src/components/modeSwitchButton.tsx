@@ -31,7 +31,7 @@ export default function ModeSwitchButton() {
     } else {
       await window.cookieStore.set("advanced-mode", "true");
     }
-    router.push("/");
+    router.push("/v1");
   }, 500);
 
   return (

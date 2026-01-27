@@ -26,7 +26,7 @@ const nextConfig = {
       },
       {
         source: '/simple',
-        destination: '/simple/campaign/btc/15mins',
+        destination: '/v1/simple/campaign/btc/15mins',
         permanent: true,
       },
     ]

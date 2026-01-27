@@ -9,15 +9,15 @@ export default function NavigationMenu({
   const menu = [
     {
       title: "Markets",
-      page: simple ? "/simple/campaign/btc/hourly" : "/",
+      page: simple ? "/v1/simple/campaign/btc/hourly" : "/v1",
     },
     {
       title: "Leaderboard",
-      page: "/leaderboard",
+      page: "/v1/leaderboard",
     },
     {
       title: "Portfolio",
-      page: "/portfolio",
+      page: "/v1/portfolio",
     },
   ] as { disabled?: boolean; title: string; page: string }[];
 

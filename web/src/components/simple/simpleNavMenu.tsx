@@ -18,7 +18,10 @@ function SimpleTabMenuButton({
 }) {
   const isOpen = isMarketOpen(market);
   return (
-    <Link href={`/simple/campaign/${market.slug}/${period}`} className="flex">
+    <Link
+      href={`/v1/simple/campaign/${market.slug}/${period}`}
+      className="flex"
+    >
       <TabButton
         isLive={isOpen}
         title={market.tabTitle}
@@ -54,7 +57,7 @@ export default function SimpleNavMenu({
     <div className="flex flex-col gap-4">
       <div className="flex w-full gap-2">
         <Link
-          href={`/simple/campaign/${mins5Markets[0]}/5mins`}
+          href={`/v1/simple/campaign/${mins5Markets[0]}/5mins`}
           className="flex flex-auto"
         >
           <TabRadioButton
@@ -63,7 +66,7 @@ export default function SimpleNavMenu({
           />
         </Link>
         <Link
-          href={`/simple/campaign/${mins15Markets[0]}/15mins`}
+          href={`/v1/simple/campaign/${mins15Markets[0]}/15mins`}
           className="flex flex-auto"
         >
           <TabRadioButton
@@ -72,7 +75,7 @@ export default function SimpleNavMenu({
           />
         </Link>
         <Link
-          href={`/simple/campaign/${hourlyMarkets[0]}/hourly`}
+          href={`/v1/simple/campaign/${hourlyMarkets[0]}/hourly`}
           className="flex flex-auto"
         >
           <TabRadioButton
