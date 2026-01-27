@@ -23,7 +23,7 @@ export default function AssetButton({
       <div
         className={combineClass(
           isLive ? "text-green-400" : "text-neutral-400",
-          "inline-flex hidden items-start justify-start gap-0.5 self-stretch md:block",
+          "hidden items-start justify-start gap-0.5 self-stretch md:inline-flex",
         )}
       >
         <div className="justify-center text-[9px] font-bold tracking-tight">
