@@ -29,6 +29,7 @@ export default function CampaignItemHeader({
                 ? config.simpleMarkets[priceMetadata.baseAsset].logo
                 : (picture ?? "")
             }
+            className="size-10"
             width={40}
             height={40}
             alt={name}

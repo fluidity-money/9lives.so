@@ -160,7 +160,7 @@ export default function DetailHeader({
               alt=""
               width={60}
               height={60}
-              className="border border-9black"
+              className="size-[60px] border border-9black"
               src={
                 data.priceMetadata
                   ? config.simpleMarkets[data.priceMetadata.baseAsset].logo
