@@ -2,6 +2,7 @@
 import { useModalStore } from "@/stores/modalStore";
 import Link from "next/link";
 import DisclaimerButton from "./disclaimerButton";
+import VersionSwitchButton from "./v1SwitchButton";
 const gitHash = process.env.NEXT_PUBLIC_GIT_HASH;
 const socials = [
   {
@@ -63,6 +64,7 @@ export default function Footer({ simple = false }: { simple?: boolean }) {
           <MenuItem item={item} key={item.title} />
         ))}
         <DisclaimerButton isInFooter />
+        <VersionSwitchButton />
       </nav>
       <nav className="flex flex-col items-center justify-end gap-4 text-xs md:flex-row">
         <div
