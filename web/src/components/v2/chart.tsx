@@ -54,7 +54,10 @@ export default function AssetPriceChart({
   const minY = basePrice - simpleDiff;
   const maxY = basePrice + simpleDiff;
   const isDailyMarket = DAY >= timeDiff && timeDiff > HOUR;
-  const timeleft = ending - latestTimestamp;
+  const remainingMs = Math.max(0, ending - latestTimestamp);
+  const totalSeconds = Math.floor(remainingMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
   const formatFn = (ts: number) => {
     const date = new Date(ts);
     switch (true) {
@@ -188,7 +191,7 @@ export default function AssetPriceChart({
         fontWeight="bold"
         fill="#181818"
       >
-        {`${new Date(timeleft).toLocaleString("default", { minute: "numeric" }).padStart(2, "0")}M:${new Date(timeleft).toLocaleString("default", { second: "2-digit" }).padStart(2, "0")}S`}
+        {`${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`}
       </text>
     </g>
   );
