@@ -27,7 +27,7 @@ export default function CommentItem({
   const { mutate, isPending } = useDeleteComment(campaignId);
   const deleteComment = async () => {
     if (!account.address) throw new Error("No wallet is connected.");
-    const message = `Deleting a comment on https://9lives.so/campaign/${campaignId}\n${data.content}`;
+    const message = `Deleting a comment on https://9lives.so/v1/campaign/${campaignId}\n${data.content}`;
     const signature = await signMessage({
       message,
     });

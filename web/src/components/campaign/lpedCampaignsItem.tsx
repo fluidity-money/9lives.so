@@ -32,7 +32,7 @@ export default function UserLpedCampaignsListItem({
   return (
     <tr>
       <td className="bg-[#DDDDDD] align-baseline">
-        <Link href={`/campaign/${data?.identifier}`}>
+        <Link href={`/v1/campaign/${data?.identifier}`}>
           <div className="flex items-center justify-between p-2">
             <div className="flex items-center gap-2">
               {data?.picture ? (

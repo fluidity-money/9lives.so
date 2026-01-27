@@ -34,7 +34,7 @@ export default function CampaignItemOutcomes({
         intent={"cta"}
         size={"large"}
         title={"Claim rewards"}
-        onClick={() => router.push(`/campaign/${campaignId}`)}
+        onClick={() => router.push(`/v1/campaign/${campaignId}`)}
         className={"flex-1"}
       />
     );
@@ -50,7 +50,7 @@ export default function CampaignItemOutcomes({
             onClick={(e) => {
               e.stopPropagation();
               router.push(
-                `/campaign/${campaignId}?outcomeId=${isDppm ? outcomes[1].identifier : outcomes[0].identifier}`,
+                `/v1/campaign/${campaignId}?outcomeId=${isDppm ? outcomes[1].identifier : outcomes[0].identifier}`,
               );
             }}
             className={"flex-1 truncate"}
@@ -62,7 +62,7 @@ export default function CampaignItemOutcomes({
             onClick={(e) => {
               e.stopPropagation();
               router.push(
-                `/campaign/${campaignId}?outcomeId=${isDppm ? outcomes[0].identifier : outcomes[1].identifier}`,
+                `/v1/campaign/${campaignId}?outcomeId=${isDppm ? outcomes[0].identifier : outcomes[1].identifier}`,
               );
             }}
             className={"flex-1 truncate"}
@@ -93,7 +93,7 @@ export default function CampaignItemOutcomes({
             key={outcome.identifier}
             className="flex items-center justify-between text-xs"
           >
-            <Link href={`/campaign/${campaignId}`} className="truncate">
+            <Link href={`/v1/campaign/${campaignId}`} className="truncate">
               <span className="truncate text-xs font-normal">
                 {outcome.name}
               </span>
@@ -112,7 +112,7 @@ export default function CampaignItemOutcomes({
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push(
-                    `/campaign/${campaignId}?outcomeId=${outcome.identifier}`,
+                    `/v1/campaign/${campaignId}?outcomeId=${outcome.identifier}`,
                   );
                 }}
               />

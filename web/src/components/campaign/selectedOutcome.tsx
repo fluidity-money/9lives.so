@@ -32,7 +32,7 @@ export default function SelectedOutcome({
             alt={data!.name}
             className="rounded-md"
           />
-          <Link href={`/campaign/${campaignId}`}>
+          <Link href={`/v1/campaign/${campaignId}`}>
             <span className="font-chicago text-sm font-normal text-9black">
               {data!.name}
             </span>

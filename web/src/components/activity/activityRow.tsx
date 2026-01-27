@@ -25,7 +25,7 @@ export default function ActivityRow({
         ) : null}
         <div className="flex flex-col gap-1 p-1">
           {displayCampaignName ? (
-            <Link href={`/campaign/${data.campaignId}`}>
+            <Link href={`/v1/campaign/${data.campaignId}`}>
               <p className="font-chicago text-xs font-bold underline">
                 {data.campaignName}
               </p>

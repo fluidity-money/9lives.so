@@ -38,7 +38,7 @@ export default function CampaignTableItem({
           />
         ) : null}
         <div className="flex flex-col gap-1 p-1">
-          <Link href={`/campaign/${data.identifier}`}>
+          <Link href={`/v1/campaign/${data.identifier}`}>
             <p className="font-chicago text-xs font-bold underline">
               {data.name}
             </p>

@@ -245,7 +245,7 @@ const useCreateWithRelay = ({
           queryClient.invalidateQueries({
             queryKey: ["campaigns"],
           });
-          router.replace(`/campaign/${campaignId}`);
+          router.replace(`/v1/campaign/${campaignId}`);
           track(EVENTS.CAMPAIGN_CREATE, {
             fromAmount: seedLiquidity,
             seedLiquidity: formatFusdc(usdValueBigInt, 6),

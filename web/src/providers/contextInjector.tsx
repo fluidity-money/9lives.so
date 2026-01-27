@@ -77,8 +77,8 @@ export default function ContextInjector({ version }: { version: "1" | "2" }) {
   // add margin for fixed action component on campaign details
   useEffect(() => {
     const footer = document.getElementsByTagName("footer")[0];
-    if (footer && version === "1") {
-      if (pathname.startsWith("/campaign/"))
+    if (footer) {
+      if (pathname.startsWith("/v1/campaign/"))
         footer.classList.add("mint-box-margin");
       else footer.classList.remove("mint-box-margin");
     }

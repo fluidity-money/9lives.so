@@ -28,7 +28,7 @@ export default function ClaimedCampaignRow({
             />
           ) : null}
           <div className="flex flex-col gap-1 p-1">
-            <Link href={`/campaign/${data.content.identifier}`}>
+            <Link href={`/v1/campaign/${data.content.identifier}`}>
               <p className="font-chicago text-xs font-bold underline">
                 {data.content.name}
               </p>

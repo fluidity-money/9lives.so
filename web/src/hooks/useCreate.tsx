@@ -139,7 +139,7 @@ const useCreate = ({ openFundModal }: { openFundModal: () => void }) => {
           queryClient.invalidateQueries({
             queryKey: ["campaigns"],
           });
-          router.replace(`/campaign/${campaignId}`);
+          router.replace(`/v1/campaign/${campaignId}`);
           track(EVENTS.CAMPAIGN_CREATE, {
             seedLiquidity: seedLiquidity,
             name: input.name,

@@ -8,7 +8,7 @@ export default function SimpleModeButton() {
   return (
     <Link
       className="flex h-10 items-center justify-center gap-1 border-9black px-4 md:border-l-2"
-      href={"/simple/campaign/btc/hourly"}
+      href={"/v1/simple/campaign/btc/hourly"}
     >
       <span className="font-chicago text-xs underline md:hidden lg:inline">
         Simple Mode

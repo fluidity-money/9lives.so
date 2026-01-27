@@ -194,7 +194,7 @@ export default function PositionRow({
                         e.stopPropagation();
                       }}
                       className="underline"
-                      href={`/campaign/${campaignContent.identifier}`}
+                      href={`/v1/campaign/${campaignContent.identifier}`}
                     >
                       {campaignContent.name}
                     </Link>{" "}

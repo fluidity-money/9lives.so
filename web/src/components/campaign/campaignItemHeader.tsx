@@ -19,7 +19,7 @@ export default function CampaignItemHeader({
   return (
     <div className="flex items-center justify-between gap-3">
       <Link
-        href={`/campaign/${identifier}`}
+        href={`/v1/campaign/${identifier}`}
         className="flex items-center gap-2"
       >
         {picture || isDppm ? (

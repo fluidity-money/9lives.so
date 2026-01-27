@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: Params }) {
     other: {
       "fc:miniapp": JSON.stringify({
         version: config.frame.version,
-        imageUrl: `${config.metadata.metadataBase.origin}/simple/campaign/${symbol}/${period}/farcaster-image`,
+        imageUrl: `${config.metadata.metadataBase.origin}/v1/simple/campaign/${symbol}/${period}/farcaster-image`,
         button: config.frame.button,
       }),
     },
