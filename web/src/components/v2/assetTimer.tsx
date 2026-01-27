@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SimpleMarketPeriod } from "@/types";
 import { combineClass } from "@/utils/combineClass";
 
@@ -24,25 +24,24 @@ export default function AssetTimer({
     }
   };
 
-  const calculateProgress = () => {
+  const calculateProgress = useCallback(() => {
     const now = Date.now();
     const periodMs = getPeriodMs(period);
     if (!periodMs) return 0;
 
     const elapsedInPeriod = now % periodMs;
     return Math.max(0, Math.min(100, (elapsedInPeriod / periodMs) * 100));
-  };
+  }, [period]);
 
   useEffect(() => {
     if (!isLive) return;
-    // setProgress(calculateProgress());
 
     const interval = setInterval(() => {
       setProgress(calculateProgress());
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [period]);
+  }, [calculateProgress, isLive]);
 
   return (
     <div
