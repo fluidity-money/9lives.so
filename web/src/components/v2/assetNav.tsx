@@ -92,7 +92,7 @@ export default function AssetNav({
         initialIdx={orderIdx}
         initialDelay={0}
       />
-      <div className="relative h-[37px] w-full grow md:h-[68px]">
+      <div className="relative h-[37px] w-full grow md:h-[38px]">
         <div className="absolute inset-0 overflow-x-auto">
           <div className="flex items-center gap-0.5 md:gap-1">
             {Object.values(config.simpleMarkets)
