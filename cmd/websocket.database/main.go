@@ -193,17 +193,27 @@ func main() {
 							continue L
 						}
 						for k, c := range filterRules[m.Table] {
-						    v, exists := m.Content[k]
-						    if !exists || v != c.Et {
-						        continue L
-						    }
+							v, exists := m.Content[k]
+							if !exists || v != c.Et {
+								continue L
+							}
 						}
 					}
 					outgoing <- m.encoded
 				// We need a sink for all messages here:
 				case msg := <-replies:
-					var filterReq struct {
-						Add []struct {
+					var req struct {
+						Lookback []struct {
+							Table       string     `json:"table"`
+							FromDate    *time.Time `json:"from_date"`
+							ToDate      *time.Time `json:"to_date"`
+							Constraints []struct {
+								Name        string
+								Constraints FilterConstraint
+							} `json:"constraints"`
+						} `json:"lookback"`
+
+						FilterReq []struct {
 							Table  string `json:"table"`
 							Fields []struct {
 								Name        string           `json:"name"`
@@ -211,11 +221,11 @@ func main() {
 							} `json:"fields"`
 						} `json:"add"`
 					}
-					if err := json.Unmarshal(msg, &filterReq); err != nil {
+					if err := json.Unmarshal(msg, &req); err != nil {
 						slog.Error("bad message received", "err", err)
 						break L
 					}
-					for _, ch := range filterReq.Add {
+					for _, ch := range req.FilterReq {
 						t := ch.Table
 						if filterRules[t] == nil {
 							filterRules[t] = make(map[string]*FilterConstraint)
