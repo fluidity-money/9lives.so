@@ -57,13 +57,13 @@ function isSimpleMarketListed(k: SimpleMarketKey): boolean {
 }
 export default async function SimpleDetailPage({ params }: { params: Params }) {
   const { symbol, period } = await params;
-
-  const data = await requestSimpleMarket(symbol, period);
+  const [data, assets] = await Promise.all([
+    requestSimpleMarket(symbol, period),
+    requestAssets(),
+  ]);
   if (!data) notFound();
 
   const campaignData = formatSimpleCampaignDetail(data);
-
-  const assets = await requestAssets();
 
   if (!isSimpleMarketKey(symbol)) notFound();
   if (!isSimpleMarketPeriod(period)) notFound();
