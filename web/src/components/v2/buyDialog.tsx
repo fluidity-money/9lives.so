@@ -268,7 +268,7 @@ export default function SimpleBuyDialog({
   };
   return (
     <div className="flex min-h-[600px] flex-col items-center justify-between">
-      <div className="jutify-between flex min-h-[600px] w-full flex-col space-y-4">
+      <div className="flex min-h-[600px] w-full flex-col justify-between space-y-4">
         <GroupButton
           initialIdx={outcomeIdx === 0 ? 1 : 0}
           buttons={[

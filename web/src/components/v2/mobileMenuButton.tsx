@@ -112,7 +112,7 @@ export default function MobileMenuButton() {
   return (
     <div className="relative md:hidden">
       {!isOpen ? null : (
-        <div className="width-40 absolute bottom-[64px] right-0 z-[9999] flex h-[254px] flex-col items-end justify-end gap-2">
+        <div className="absolute bottom-[64px] right-0 z-[9999] flex h-[254px] w-40 flex-col items-end justify-end gap-2">
           <SimpleClaimAllButton />
           <ReferralButton />
           <Link href={"/v1/leaderboard"}>

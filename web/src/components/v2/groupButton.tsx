@@ -39,7 +39,7 @@ export default function GroupButton({
       )}
     >
       <div
-        className="absolute bottom-1 top-1 rounded-lg bg-2white shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] transition-all duration-300 ease-in-out"
+        className="absolute inset-y-1 rounded-lg bg-2white shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] transition-all duration-300 ease-in-out"
         style={{
           width: `calc(${widthPercentage}% - 8px)`,
           left: `calc(${activeIndex * widthPercentage}% + 4px)`,

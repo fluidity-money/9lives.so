@@ -21,7 +21,7 @@ export default function SimpleChance({ data }: { data: SimpleCampaignDetail }) {
         <div className="skeleton h-[30px] w-full" />
       ) : (
         <div className="relative flex flex-row items-center gap-0.5">
-          <span className="font-sm absolute left-1.5 top-[3px] font-bold text-green-700">
+          <span className="absolute left-1.5 top-[3px] text-sm font-bold text-green-700">
             {yes}%
           </span>
           <div
@@ -32,7 +32,7 @@ export default function SimpleChance({ data }: { data: SimpleCampaignDetail }) {
             className="flex h-[30px] rounded-md bg-red-300"
             style={{ flex: no }}
           />
-          <span className="font-sm absolute right-1.5 top-[3px] font-bold text-red-700">
+          <span className="absolute right-1.5 top-[3px] text-sm font-bold text-red-700">
             {no}%
           </span>
         </div>
