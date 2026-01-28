@@ -76,17 +76,6 @@ export default function Footer() {
           ))}
         </nav>
       </div>
-      <nav className="flex flex-col items-center justify-end gap-4 text-xs md:flex-row">
-        <div
-          className="cursor-pointer font-chicago text-neutral-800 hover:underline"
-          onClick={() => setModal(true)}
-        >
-          What’s New?
-        </div>
-        {socials.map((item) => (
-          <MenuItem item={item} key={item.title} />
-        ))}
-      </nav>
     </footer>
   );
 }
