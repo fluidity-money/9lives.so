@@ -12,7 +12,7 @@ export default function Header({ simple = false }: { simple?: boolean }) {
     <header className="flex items-center justify-between self-stretch border-b-2 border-b-black bg-9blueLight text-xs">
       <Link
         data-test="header-logo"
-        href="/"
+        href="/v1"
         className="flex h-10 items-center justify-center px-4"
       >
         <HeaderLogo />
