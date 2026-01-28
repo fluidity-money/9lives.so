@@ -38,7 +38,7 @@ export default function AssetTimer({
 
     const interval = setInterval(() => {
       setProgress(calculateProgress());
-    }, 3000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [calculateProgress, isLive]);
