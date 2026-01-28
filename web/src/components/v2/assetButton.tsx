@@ -16,11 +16,15 @@ export default function AssetButton({
   return (
     <div
       className={combineClass(
+        period === "15mins" &&
+          title.toLowerCase() === "btc" &&
+          "border-yellow-400 bg-yellow-200",
         selected ? "border-b border-neutral-400" : "md:border-neutral-200",
         "flex flex-col gap-1 p-2 md:rounded-lg md:border",
       )}
     >
       <span className="flex items-center justify-start text-sm text-2black">
+        {period === "15mins" && title.toLowerCase() === "btc" && "🔥"}
         <span className="text-neutral-400">$</span>
         {title}
       </span>

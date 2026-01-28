@@ -67,8 +67,8 @@ export default function AssetNav({
       callback: () => router.push(`/campaign/${mins5Markets[0]}/5mins`),
     },
     {
-      title: is15Min ? "15 Min Markets" : "15 Mins",
-      mobileTitle: "15 Min",
+      title: is15Min ? "🔥 15 Min Markets" : "🔥 15 Mins",
+      mobileTitle: "🔥 15 Min",
       callback: () => router.push(`/campaign/${mins15Markets[0]}/15mins`),
     },
     {

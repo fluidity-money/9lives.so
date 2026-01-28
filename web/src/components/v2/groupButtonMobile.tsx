@@ -39,7 +39,7 @@ export default function GroupButtonMobile({
         key={buttons[activeIndex].mobileTitle}
         onClick={handleCreate}
         className={combineClass(
-          "z-10 cursor-pointer rounded-lg bg-2white px-2 py-1 text-center text-sm font-medium text-2black shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] transition-colors duration-200",
+          "z-10 cursor-pointer text-nowrap rounded-lg bg-2white px-2 py-1 text-center text-sm font-medium text-2black shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] transition-colors duration-200",
         )}
       >
         {buttons[activeIndex].mobileTitle}
