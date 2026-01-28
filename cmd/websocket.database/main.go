@@ -31,6 +31,14 @@ import (
 // EnvListenAddr to listen the HTTP server on.
 const EnvListenAddr = "SPN_LISTEN_ADDR"
 
+const (
+	// PrivateSnapshotLookback to drain from the CDC.
+	PrivateSnapshotLookback = 10_000
+
+	// PublicSnapshotLookback to send to every connecting client the moment they join.
+	PublicSnapshotLookback = 1000
+)
+
 type TableContent struct {
 	Table            string           `json:"table"`
 	Content          map[string]any   `json:"content,omitempty"`
@@ -171,17 +179,19 @@ func main() {
 			shutdown chan<- error, requestShutdown <-chan bool,
 		) {
 			sink := make(chan TableContent)
-			go func() {
-				snapshotChan := make(chan []TableContent)
-				dumpChan <- snapshotChan
-				snapshot, err := json.Marshal(TableContent{
-					SnapshotToplevel: <-snapshotChan,
-				})
-				if err != nil {
-					slog.Error("failed to marshal snapshot", "err", err)
-				}
-				outgoing <- snapshot
-			}()
+			if f.Is(features.FeatureIsSnapshotOnRequest) {
+				go func() {
+					snapshotChan := make(chan []TableContent)
+					dumpChan <- snapshotChan
+					snapshot, err := json.Marshal(TableContent{
+						SnapshotToplevel: <-snapshotChan,
+					})
+					if err != nil {
+						slog.Error("failed to marshal snapshot", "err", err)
+					}
+					outgoing <- snapshot
+				}()
+			}
 			cookie := broadcast.Subscribe(sink)
 			filterRules := make(map[string]map[string]*FilterConstraint)
 		L:
@@ -203,15 +213,7 @@ func main() {
 				// We need a sink for all messages here:
 				case msg := <-replies:
 					var req struct {
-						Lookback []struct {
-							Table       string     `json:"table"`
-							FromDate    *time.Time `json:"from_date"`
-							ToDate      *time.Time `json:"to_date"`
-							Constraints []struct {
-								Name        string
-								Constraints FilterConstraint
-							} `json:"constraints"`
-						} `json:"lookback"`
+						AskForSnapshot []string `json:"ask_for_snapshot"`
 
 						FilterReq []struct {
 							Table  string `json:"table"`
@@ -224,6 +226,20 @@ func main() {
 					if err := json.Unmarshal(msg, &req); err != nil {
 						slog.Error("bad message received", "err", err)
 						break L
+					}
+					if f.Is(features.FeatureIsSnapshotOnRequest) && len(req.AskForSnapshot) > 0 {
+						go func() {
+							snapshotChan := make(chan []TableContent)
+							dumpChan <- snapshotChan
+							snapshot, err := json.Marshal(TableContent{
+								SnapshotToplevel: <-snapshotChan,
+							})
+							if err != nil {
+								slog.Error("failed to marshal snapshot", "err", err)
+								return
+							}
+							outgoing <- snapshot
+						}()
 					}
 					for _, ch := range req.FilterReq {
 						t := ch.Table
