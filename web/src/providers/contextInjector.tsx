@@ -66,6 +66,7 @@ export default function ContextInjector({ version }: { version: "1" | "2" }) {
       posthog.reset();
     }
   }, [
+    version,
     trackingConsent,
     isInMiniApp,
     farcasterCtx,
@@ -141,7 +142,14 @@ export default function ContextInjector({ version }: { version: "1" | "2" }) {
         }
       })();
     }
-  }, [trackingConsent, isInMiniApp, farcasterCtx, account?.address, chainId]);
+  }, [
+    trackingConsent,
+    version,
+    isInMiniApp,
+    farcasterCtx,
+    account?.address,
+    chainId,
+  ]);
 
   useEffect(() => {
     if (tagSnitch && trackingConsent && config.NEXT_PUBLIC_CHAIN !== "testnet")
