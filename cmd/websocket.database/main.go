@@ -31,13 +31,8 @@ import (
 // EnvListenAddr to listen the HTTP server on.
 const EnvListenAddr = "SPN_LISTEN_ADDR"
 
-const (
-	// PrivateSnapshotLookback to drain from the CDC.
-	PrivateSnapshotLookback = 10_000
-
-	// PublicSnapshotLookback to send to every connecting client the moment they join.
-	PublicSnapshotLookback = 1000
-)
+// PrivateSnapshotLookback to buffer in the service.
+const PrivateSnapshotLookback = 1000
 
 type TableContent struct {
 	Table            string           `json:"table"`
@@ -111,7 +106,7 @@ func main() {
 			select {
 			case v := <-bufferMsgsChan:
 				x := buffer[v.Table]
-				if x.i == 10 {
+				if x.i == PrivateSnapshotLookback {
 					x.i = 0
 				}
 				x.items[x.i] = v.Content
