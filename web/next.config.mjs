@@ -21,7 +21,7 @@ const nextConfig = {
     return [
        {
         source: '/',
-        destination: '/campaign/btc/5mins',
+        destination: '/campaign/btc/15mins',
         permanent: true,
       },
       {

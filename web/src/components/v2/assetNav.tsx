@@ -59,17 +59,17 @@ export default function AssetNav({
   const is5Min = period.toLowerCase() === "5mins";
   const is15Min = period.toLowerCase() === "15mins";
   const isHourly = period.toLowerCase() === "hourly";
-  const periodOrder = ["5mins", "15mins", "hourly"];
+  const periodOrder = ["15mins", "5mins", "hourly"];
   const buttons = [
-    {
-      title: is5Min ? "5 Min Markets" : "5 Mins",
-      mobileTitle: "5 Min",
-      callback: () => router.push(`/campaign/${mins5Markets[0]}/5mins`),
-    },
     {
       title: is15Min ? "🔥 15 Min Markets" : "🔥 15 Mins",
       mobileTitle: "🔥 15 Min",
       callback: () => router.push(`/campaign/${mins15Markets[0]}/15mins`),
+    },
+    {
+      title: is5Min ? "5 Min Markets" : "5 Mins",
+      mobileTitle: "5 Min",
+      callback: () => router.push(`/campaign/${mins5Markets[0]}/5mins`),
     },
     {
       title: isHourly ? "Hourly Markets" : "Hourly",
