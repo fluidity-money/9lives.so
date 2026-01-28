@@ -7,6 +7,7 @@ interface GroupButtonComponentProps {
   buttons: GroupButtonProps[];
   className?: string;
   initialIdx?: number;
+  initialDelay?: number;
   variant?: "default" | "small";
 }
 
@@ -14,6 +15,7 @@ export default function GroupButton({
   buttons,
   className,
   initialIdx = 0,
+  initialDelay = 300,
   variant = "default",
 }: GroupButtonComponentProps) {
   const [activeIndex, setActiveIndex] = useState(initialIdx);
@@ -22,7 +24,7 @@ export default function GroupButton({
 
   const triggerDebouncedCallback = useDebouncedCallback((index: number) => {
     buttons[index]?.callback?.();
-  }, 300);
+  }, initialDelay);
 
   const handleCreate = (index: number) => {
     setActiveIndex(index);

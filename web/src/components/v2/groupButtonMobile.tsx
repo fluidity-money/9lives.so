@@ -7,18 +7,20 @@ interface GroupButtonComponentProps {
   buttons: GroupButtonProps[];
   className?: string;
   initialIdx?: number;
+  initialDelay?: number;
 }
 
 export default function GroupButtonMobile({
   buttons,
   className,
   initialIdx = 0,
+  initialDelay = 300,
 }: GroupButtonComponentProps) {
   const [activeIndex, setActiveIndex] = useState(initialIdx);
 
   const triggerDebouncedCallback = useDebouncedCallback((index: number) => {
     buttons[index]?.callback?.();
-  }, 300);
+  }, initialDelay);
 
   const handleCreate = () => {
     setActiveIndex((index) => (index + 1 >= buttons.length ? 0 : index + 1));

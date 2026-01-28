@@ -84,11 +84,13 @@ export default function AssetNav({
         buttons={buttons}
         className="hidden md:flex"
         initialIdx={orderIdx}
+        initialDelay={0}
       />
       <GroupButtonMobile
         buttons={buttons}
         className="md:hidden"
         initialIdx={orderIdx}
+        initialDelay={0}
       />
       <div className="relative h-[37px] w-full grow md:h-[68px]">
         <div className="absolute inset-0 overflow-x-auto">
