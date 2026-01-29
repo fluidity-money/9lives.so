@@ -43,6 +43,7 @@ const useBuy = ({
           const userBalance = await publicClient.readContract({
             ...config.contracts.fusdc,
             functionName: "balanceOf",
+            account: account.address as `0x${string}`,
             args: [account.address as `0x${string}`],
           });
           if (amount > userBalance) {
@@ -52,6 +53,7 @@ const useBuy = ({
           const allowance = await publicClient.readContract({
             ...config.contracts.fusdc,
             functionName: "allowance",
+            account: account.address as `0x${string}`,
             args: [
               account.address as `0x${string}`,
               config.contracts.buyHelper2.address as `0x${string}`,
@@ -62,6 +64,7 @@ const useBuy = ({
             await writeContract({
               ...config.contracts.fusdc,
               functionName: "approve",
+              account: account.address as `0x${string}`,
               args: [
                 config.contracts.buyHelper2.address as `0x${string}`,
                 maxUint256,
@@ -80,6 +83,7 @@ const useBuy = ({
               ...(config.contracts
                 .buyHelper2 as typeof config.contracts.buyHelper2),
               functionName: "mint",
+              account: account.address as `0x${string}`,
               args: [
                 data.poolAddress as `0x${string}`,
                 config.contracts.fusdc.address,
