@@ -114,14 +114,10 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn rescue_2_7_6_D_D_9_A_B(&self, recipient: Address) -> R<U256> {
-        // The point of this function is that while we don't have upgrade powers,
-        // we can rescue any funds if something goes wrong during our first batch
-        // of usage.
+    pub fn rescue_55307_4_E_7(&self, amt: U256, recipient: Address) -> R<U256> {
         assert_or!(msg_sender() == DAO_OP_ADDR, Error::NotOperator);
-        let bal = fusdc_call::balance_of(contract_address())?;
-        fusdc_call::transfer(recipient, bal)?;
-        Ok(bal)
+        fusdc_call::transfer(recipient, amt)?;
+        Ok(amt)
     }
 
     #[allow(non_snake_case)]

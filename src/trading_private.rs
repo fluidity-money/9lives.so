@@ -12,7 +12,7 @@ use crate::{
     vault_call,
 };
 
-use bobcat_features::FEATURE_COPY_NON_ZEROES;
+use bobcat_features::{BOBCAT_FEATURES, FEATURE_COPY_NON_ZEROES};
 
 use alloc::vec::Vec;
 
@@ -24,6 +24,8 @@ pub struct CalcFees {
     pub fee_for_referrer: U256,
     pub fee_for_protocol: U256,
 }
+
+BOBCAT_FEATURES!(internal_tokens, new_vault_deploy);
 
 impl StorageTrading {
     pub fn internal_ctor(
@@ -38,16 +40,14 @@ impl StorageTrading {
         fee_lp: u64,
         fee_minter: u64,
         fee_referrer: u64,
-        seed_liq: U256
+        seed_liq: U256,
     ) -> R<()> {
         // Assume that the factory will prevent a user from making a contract here that reuses its identifiers (for codesize reasons).
         assert_or!(!self.created.get(), Error::AlreadyConstructed);
         // Make sure that the user hasn't given us any zero values, or the end
         // date isn't in the past, in places that don't make sense!
         assert_or!(
-            time_ending >= block_timestamp()
-                && time_ending > time_start
-                && outcomes.len() >= 2,
+            time_ending >= block_timestamp() && time_ending > time_start && outcomes.len() >= 2,
             Error::BadTradingCtor
         );
         // We don't allow the fees to exceed 10% (100).
@@ -65,7 +65,8 @@ impl StorageTrading {
         let factory_addr = msg_sender();
         self.factory_addr.set(factory_addr);
         // Copy from the factory our feature configuration:
-        FEATURE_COPY_NON_ZEROES!(factory_addr.0.0, internal_tokens);
+        //FEATURE_COPY_NON_ZEROES!(factory_addr.0 .0, internal_tokens);
+        feature_set_new_vault_deploy(true);
         // If the fee recipient is zero, then we set it to the DAO address.
         self.fee_recipient.set(if fee_recipient.is_zero() {
             DAO_EARN_ADDR
@@ -107,7 +108,12 @@ impl StorageTrading {
                 recipient: DAO_EARN_ADDR,
                 amount: fees,
             });
-            vault_call::repay(VAULT_ADDR, fees)?;
+            // Temporary migration to use the new Vault location:
+            FEATURE_IF_NEW_VAULT_DEPLOY!({
+                vault_call::repay(VAULT_ADDR, fees)?;
+            } else {
+                vault_call::repay(address!("e7569919F3088B09aC07aE239295F209522a99B3"), fees)?;
+            });
         }
         self.is_shutdown.set(true);
         Ok(U256::ZERO)
@@ -307,7 +313,7 @@ mod proptesting {
             0,
             0,
             0,
-            U256::ZERO
+            U256::ZERO,
         )
     }
 

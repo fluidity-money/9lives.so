@@ -7,4 +7,6 @@ if ! which bobcat-deploy >/dev/null; then
 	exit 2
 fi
 
-bobcat-deploy "$SPN_SUPERPOSITION_URL" "$SPN_SUPERPOSITION_KEY" $1
+bobcat-deploy \
+	"$SPN_SUPERPOSITION_URL" \
+	"$SPN_SUPERPOSITION_KEY" $1

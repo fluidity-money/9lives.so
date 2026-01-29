@@ -102,14 +102,14 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address              |
 |-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x0CB0E51c225e0d43ae0B64B11897c518cC5680e5` |
-| Factory 2 implementation      | `0xe1c56ee5a159fc8262cce2679e917c766573c1a3` |
+| Factory 1 implementation      | `0x8b02105f2bf5d8f48540be658e3bccfce70642fe` |
+| Factory 2 implementation      | `0xa7c8c010d32e2316637636265a4d137b9bb1bf03` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPPM mint impl        | `0xd4f227042d083a358edb90e07fb7da4bdda059f3` |
-| Trading DPPM extras impl      | `0x93f79a894f19b1168033d41204ccd335c982fcc0` |
-| Trading DPPM price impl       | `0xeee77d61f2a8d6a9eac127f2d31ee1d55648451b` |
-| Trading DPPM quotes impl      | `0xe6257d33b241ab40b1c095c77580f426a5269466` |
+| Trading DPPM mint impl        | `0x8bc50e1a25978681882c23dd31d02453617f0a52` |
+| Trading DPPM extras impl      | `0x69e398ed4d3a9eb535db4dba07e51a387033d621` |
+| Trading DPPM price impl       | `0xb6c29b66bb663f3cd6a733b77927ba09cefa8d5a` |
+| Trading DPPM quotes impl      | `0xe04b488fa599c9d9e4fc8975d3dad689bbc66559` |
 | Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
 | Trading AMM extras impl       | `0xb3127f0083eb4c03a21b917656575ac766d46369` |
 | Trading AMM price impl        | `0x3fcae4ee12564f606c2dd34759f32a884f28a516` |
@@ -136,4 +136,4 @@ The error table lives in ERRORS.md.
 | Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |
 | Price resolver oracle         | `0xa2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab` |
 | Trading beacon                | `0xfA433744C5C496c7caD243c61A17167DD39AE8ee` |
-| Vault                         | `0xe7569919F3088B09aC07aE239295F209522a99B3` |
+| Vault                         | `0xD890f9BB532C9fcA769483E3758A134d8014298e` |
