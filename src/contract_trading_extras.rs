@@ -8,6 +8,8 @@ use crate::{
     utils::{block_timestamp, contract_address, msg_sender},
 };
 
+use bobcat_features::BOBCAT_FEATURES;
+
 #[cfg(feature = "trading-backend-dppm")]
 use crate::share_call;
 
@@ -16,10 +18,7 @@ use alloc::{borrow::ToOwned, string::String, vec::Vec};
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
-use bobcat_features::BOBCAT_FEATURES;
-
-// Should this contract use internal tokens instead of erc20?
-BOBCAT_FEATURES!(internal_tokens);
+BOBCAT_FEATURES!(internal_tokens, new_vault_deploy);
 
 // Arguments for the ctor function. In a tuple form for Solidity
 // calldata, and for a Default trait impl later.
@@ -160,10 +159,6 @@ impl StorageTrading {
         Ok(self.outcome_ids_iter().collect::<Vec<_>>())
     }
 
-    pub fn feature_internal_tokens(&self) -> R<bool> {
-        Ok(false)
-    }
-
     pub fn extend_time(&mut self, new_ts: u64) -> R<()> {
         assert_or!(msg_sender() == DAO_OP_ADDR, Error::NotOperator);
         assert_or!(new_ts > block_timestamp(), Error::EndingInPast);
@@ -243,8 +238,8 @@ impl StorageTrading {
         unimplemented!()
     }
 
-    pub fn features() -> R<FixedBytes<32>> {
-        Ok(FixedBytes::<32>(feature_pack().0))
+    pub fn features(&self) -> R<FixedBytes<32>> {
+        self.internal_features()
     }
 }
 

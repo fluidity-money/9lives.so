@@ -12,7 +12,7 @@ use crate::{
     vault_call,
 };
 
-use bobcat_features::{BOBCAT_FEATURES, FEATURE_COPY_NON_ZEROES};
+use bobcat_features::BOBCAT_FEATURES;
 
 use alloc::vec::Vec;
 
@@ -271,6 +271,10 @@ impl StorageTrading {
         let lp_fees = U256::ZERO;
         let addr_fees = self.internal_claim_addr_fees(sender, recipient)?;
         Ok(lp_fees + addr_fees)
+    }
+
+    pub fn internal_features(&self) -> R<FixedBytes<32>> {
+        Ok(FixedBytes::<32>(feature_pack().0))
     }
 }
 
