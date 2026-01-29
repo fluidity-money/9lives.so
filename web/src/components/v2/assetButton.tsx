@@ -24,7 +24,7 @@ export default function AssetButton({
       )}
     >
       <span className="flex items-center justify-start text-sm text-2black">
-        {period === "15mins" && title.toLowerCase() === "btc" && "🔥"}
+        {period === "15mins" && title.toLowerCase() === "btc"}
         <span className="text-neutral-400">$</span>
         {title}
       </span>

@@ -45,8 +45,9 @@ contract Vault is IEvents {
             emit DebtRepaid(msg.sender, take, 0);
         } else {
             uint256 shortfall = needs - _feesEarned;
-            ERC20.transferFrom(msg.sender, address(this), _feesEarned);
-            emit DebtRepaid(msg.sender, 0, shortfall);
+            if (_feesEarned > 0) ERC20.transferFrom(msg.sender, address(this), _feesEarned);
+            ERC20.transfer(msg.sender, shortfall);
+            emit DebtRepaid(msg.sender, _feesEarned, shortfall);
         }
     }
 
