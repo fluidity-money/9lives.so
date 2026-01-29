@@ -182,6 +182,10 @@ export default function useAccount({
               deadline,
             };
           }
+          type ResponseType = {
+            response?: { status: number };
+            data?: any;
+          };
           const result = (await ninelivesMint({
             amount: amount.toString(),
             outcome: outcomeId,
@@ -190,10 +194,10 @@ export default function useAccount({
             secret,
             eoaAddress: account.address,
             permit,
-          })) as { response?: { status: number } };
+          })) as ResponseType;
           if (result?.response?.status === 401) {
             const newSecret = await getSecret(account.address, signMessage);
-            await ninelivesMint({
+            const result2 = (await ninelivesMint({
               amount: amount.toString(),
               outcome: outcomeId,
               poolAddress: data.poolAddress,
@@ -201,9 +205,16 @@ export default function useAccount({
               secret: newSecret,
               eoaAddress: account.address,
               permit,
-            });
+            })) as ResponseType;
+            if (result2.response?.status !== 200) {
+              throw new Error(
+                `code ${result2.response?.status}. Contact support`,
+              );
+            }
+          } else if (result.response?.status !== 200) {
+            throw new Error(`code ${result.response?.status}. Contact support`);
           }
-          res(true);
+          res(result.response);
           track(EVENTS.MINT, {
             amount,
             outcomeId,
@@ -265,7 +276,8 @@ export default function useAccount({
       {
         loading: "Buying shares...",
         success: "Shares bought successfully!",
-        error: (e) => `${e?.shortMessage ?? e?.message ?? "Unknown error"}`,
+        error: (e) =>
+          `Buy error: ${e?.shortMessage ?? e?.message ?? "Unknown error"}`,
       },
     );
 

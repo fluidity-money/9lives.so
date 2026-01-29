@@ -38,6 +38,11 @@ export default function useClaimAllPoolsWithAS(
           eoaAddress: walletAddress,
           markets: addresses,
         })) as ResponseType;
+        if (result.response?.status !== 200) {
+          throw new Error(`code ${result.response?.status}. Contact support`);
+        }
+      } else if (result.response?.status !== 200) {
+        throw new Error(`code ${result.response?.status}. Contact support`);
       }
       return result?.data?.claimRewards;
     },
