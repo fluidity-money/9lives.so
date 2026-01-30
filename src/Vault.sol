@@ -14,18 +14,22 @@ interface IERC20 {
 ///         when the market is resolved, subtracting what's needed to earn more
 ///         than the fees.
 contract Vault is IEvents {
-    IERC20 immutable ERC20;
-    address immutable FACTORY;
-    address immutable OPERATOR;
+    uint8 public version;
+
+    IERC20 public ERC20;
+    address public FACTORY;
+    address public OPERATOR;
 
     uint256 public outstandingDebt;
 
     mapping(address => uint256) debt;
 
-    constructor(IERC20 _erc20, address _factory, address _operator) {
+    function init(IERC20 _erc20, address _factory, address _operator) external {
+        require(version == 0, "already created");
         ERC20 = _erc20;
         FACTORY = _factory;
         OPERATOR = _operator;
+        version = 1;
     }
 
     function borrow(address _for, uint256 _amount) external {
@@ -37,6 +41,7 @@ contract Vault is IEvents {
 
     function repay(uint256 _feesEarned) external {
         uint256 needs = debt[msg.sender];
+        require(needs > 0, "no debt");
         debt[msg.sender] = 0;
         outstandingDebt -= needs;
         if (_feesEarned >= needs) {
@@ -45,13 +50,13 @@ contract Vault is IEvents {
             emit DebtRepaid(msg.sender, take, 0);
         } else {
             uint256 shortfall = needs - _feesEarned;
-            if (_feesEarned > 0) ERC20.transferFrom(msg.sender, address(this), _feesEarned);
             ERC20.transfer(msg.sender, shortfall);
             emit DebtRepaid(msg.sender, _feesEarned, shortfall);
         }
     }
 
     function drain() external returns (uint256 amt) {
+        require(msg.sender == OPERATOR, "not operator");
         amt = ERC20.balanceOf(address(this)) - outstandingDebt;
         ERC20.transfer(OPERATOR, amt);
     }

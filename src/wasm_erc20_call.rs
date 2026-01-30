@@ -20,7 +20,7 @@ sol! {
 pub fn transfer(addr: Address, recipient: Address, value: U256) -> Result<(), Error> {
     unpack_bool_safe(
         &unsafe { RawCall::new().call(addr, &transferCall { recipient, value }.abi_encode()) }
-            .map_err(|b| Error::ERC20ErrorTransfer(addr, b))?,
+            .map_err(|b| Error::ERC20ErrorTransfer(value, addr, b))?,
     )
 }
 

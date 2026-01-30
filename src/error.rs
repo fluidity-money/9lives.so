@@ -166,7 +166,7 @@ pub enum Error {
     ShareError(Vec<u8>),
 
     /// ERC20 error on transfer!
-    ERC20ErrorTransfer(Address, Vec<u8>),
+    ERC20ErrorTransfer(U256, Address, Vec<u8>),
 
     /// Trading error during ctor! Probably during construction.
     TradingErrorCtor(Vec<u8>),
@@ -680,8 +680,8 @@ impl core::fmt::Debug for Error {
                 ),
                 Error::CheckedSubOverflow(x, y) => format!("sub overflow: {x} - {y}"),
                 Error::CheckedPowOverflow(x, y) => format!("pow overflow: pow({x}, {y})"),
-                Error::ERC20ErrorTransfer(addr, msg) => format!(
-                    "{}: {:?}",
+                Error::ERC20ErrorTransfer(addr, amt, msg) => format!(
+                    "{} sending {amt}: {:?}",
                     rename_addr(*addr),
                     String::from_utf8(msg.clone())
                 ),
@@ -722,9 +722,10 @@ impl From<Error> for Vec<u8> {
 
         match v {
             Error::LongtailError(b) => ext(&ERR_LONGTAIL_PREAMBLE, &[&b]),
-            Error::ERC20ErrorTransfer(addr, b) => {
-                ext(&ERR_ERC20_TRANSFER_PREAMBLE, &[&b, addr.as_slice()])
-            }
+            Error::ERC20ErrorTransfer(amt, addr, b) => ext(
+                &ERR_ERC20_TRANSFER_PREAMBLE,
+                &[&b, &amt.to_be_bytes::<32>(), addr.as_slice()],
+            ),
             Error::ERC20ErrorTransferFrom(addr, from, to, amt) => ext(
                 &ERR_ERC20_TRANSFER_FROM_PREAMBLE,
                 &[

@@ -18,7 +18,7 @@ use alloc::{borrow::ToOwned, string::String, vec::Vec};
 // This exports user_entrypoint, which we need to have the entrypoint code.
 pub use crate::storage_trading::*;
 
-BOBCAT_FEATURES!(internal_tokens, new_vault_deploy);
+BOBCAT_FEATURES!(internal_tokens);
 
 // Arguments for the ctor function. In a tuple form for Solidity
 // calldata, and for a Default trait impl later.
@@ -240,6 +240,10 @@ impl StorageTrading {
 
     pub fn features(&self) -> R<FixedBytes<32>> {
         self.internal_features()
+    }
+
+    pub fn vault_addr(&self) -> R<Address> {
+        Ok(VAULT_ADDR)
     }
 }
 

@@ -25,7 +25,7 @@ pub struct CalcFees {
     pub fee_for_protocol: U256,
 }
 
-BOBCAT_FEATURES!(internal_tokens, new_vault_deploy);
+BOBCAT_FEATURES!(internal_tokens);
 
 impl StorageTrading {
     pub fn internal_ctor(
@@ -66,7 +66,6 @@ impl StorageTrading {
         self.factory_addr.set(factory_addr);
         // Copy from the factory our feature configuration:
         //FEATURE_COPY_NON_ZEROES!(factory_addr.0 .0, internal_tokens);
-        feature_set_new_vault_deploy(true);
         // If the fee recipient is zero, then we set it to the DAO address.
         self.fee_recipient.set(if fee_recipient.is_zero() {
             DAO_EARN_ADDR
@@ -108,12 +107,9 @@ impl StorageTrading {
                 recipient: DAO_EARN_ADDR,
                 amount: fees,
             });
+            vault_call::repay(VAULT_ADDR, fees)?;
             // Temporary migration to use the new Vault location:
-            FEATURE_IF_NEW_VAULT_DEPLOY!({
-                vault_call::repay(VAULT_ADDR, fees)?;
-            } else {
-                vault_call::repay(address!("e7569919F3088B09aC07aE239295F209522a99B3"), fees)?;
-            });
+
         }
         self.is_shutdown.set(true);
         Ok(U256::ZERO)
