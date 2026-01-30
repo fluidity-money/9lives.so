@@ -1505,6 +1505,7 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	    COALESCE(a.shares_spent, 0) + COALESCE(nelp.shares_spent, 0) AS shares_spent,
 	    a.transaction_hash,
 	    COALESCE(a.fusdc_received, 0) + COALESCE(nelp.fusdc_received, 0) AS fusdc_received,
+		a.created_by as created_at
 	    nc.content,
 	    CONCAT('0x', a.identifier) AS winner
 	FROM aggregated a
