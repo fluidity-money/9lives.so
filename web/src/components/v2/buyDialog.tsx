@@ -315,6 +315,7 @@ export default function SimpleBuyDialog({
             <input
               type="text"
               inputMode="decimal"
+              autoFocus={true}
               value={supply}
               onChange={handleSupplyChange}
               placeholder="0"
@@ -428,18 +429,6 @@ export default function SimpleBuyDialog({
           usdValue={usdValue}
         />
 
-        <Button
-          size={"large"}
-          intent={"yes"}
-          disabled={isMinting || isConnecting}
-          title={isMinting ? "Loading.." : "BUY"}
-          className={combineClass(
-            Number(supply) > 0 ? "visible" : "invisible",
-            "hidden w-full uppercase",
-          )}
-          onClick={onSubmit}
-        />
-
         <div className="grid grid-cols-3 gap-3 text-center text-lg font-medium md:hidden">
           {Array.from(Array(9), (_, i) => i + 1).map((n) => (
             <Button
@@ -491,6 +480,8 @@ export default function SimpleBuyDialog({
             title={isMinting ? "Loading.." : "Confirm"}
             className={combineClass(
               Number(supply) > 0 ? "visible" : "invisible",
+              outcomeIdx === 1 ? "text-green-300" : "text-red-300",
+              "w-full",
             )}
             onClick={onSubmit}
           />
