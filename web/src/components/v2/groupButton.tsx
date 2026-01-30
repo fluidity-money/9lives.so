@@ -54,7 +54,7 @@ export default function GroupButton({
             "z-10 cursor-pointer text-center text-sm transition-colors duration-200",
             variant === "default" ? "p-2" : "px-2 py-1",
             activeIndex === index
-              ? "font-medium text-2black"
+              ? `font-medium ${b.textColor ?? "text-2black"}`
               : "text-neutral-400",
           )}
         >
