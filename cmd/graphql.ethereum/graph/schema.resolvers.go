@@ -1487,24 +1487,39 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	var claims []*types.Claim
 	address = strings.ToLower(address)
 	sql := `
-    SELECT nc.id, 
-	COALESCE(nepa.shares_spent,0) + COALESCE(nelp.shares_spent,0) as shares_spent, 
-	nepa.transaction_hash, 
-	COALESCE(nepa.fusdc_received,0) + COALESCE(nelp.fusdc_received,0) as fusdc_received, 
-	nepa.created_by as created_at, nc.content, concat('0x', nepa.identifier) as winner
-    FROM ninelives_events_payoff_activated nepa
-    LEFT JOIN ninelives_campaigns_1 nc
-    ON nepa.emitter_addr = nc."content"->>'poolAddress'
-    LEFT JOIN ninelives_events_ninetails_loser_payoff nelp
-	ON nepa.recipient = nelp.recipient and nepa.emitter_addr = nelp.emitter_addr 
-    WHERE nepa.recipient = ?
+	WITH aggregated AS (
+    	SELECT
+    	   identifier,
+    	   emitter_addr,
+    	   recipient,
+    	   shares_spent,
+    	   fusdc_received,
+    	   created_by,
+    	   transaction_hash
+    	FROM ninelives_events_payoff_activated
+    	WHERE shares_spent > 0 
+    	AND recipient = ?
+	)
+	SELECT
+	    nc.id,
+	    COALESCE(a.shares_spent, 0) + COALESCE(nelp.shares_spent, 0) AS shares_spent,
+	    a.transaction_hash,
+	    COALESCE(a.fusdc_received, 0) + COALESCE(nelp.fusdc_received, 0) AS fusdc_received,
+	    nc.content,
+	    CONCAT('0x', a.identifier) AS winner
+	FROM aggregated a
+	LEFT JOIN ninelives_campaigns_1 nc
+	    ON a.emitter_addr = nc.content->>'poolAddress'
+	LEFT JOIN ninelives_events_ninetails_loser_payoff nelp
+	    ON a.recipient = nelp.recipient
+	   AND a.emitter_addr = nelp.emitter_addr
 	`
 	args := []interface{}{address}
 	if campaignID != nil {
-		sql += " AND nc.id = ?"
+		sql += " WHERE nc.id = ?"
 		args = append(args, *campaignID)
 	}
-	sql += " ORDER BY created_at DESC;"
+	sql += " ORDER BY a.created_by desc, nelp.created_by desc;"
 	err := r.DB.Raw(sql, args...).Scan(&claims).Error
 	if err != nil {
 		slog.Error("Error getting reward claims from database",
