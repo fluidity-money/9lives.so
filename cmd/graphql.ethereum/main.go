@@ -93,7 +93,6 @@ func (m corsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	defer setup.Flush()
 	config := config.Get()
 	db, err := gorm.Open(postgres.Open(config.PickTimescaleUrl()), &gorm.Config{
 		DisableAutomaticPing: true,
