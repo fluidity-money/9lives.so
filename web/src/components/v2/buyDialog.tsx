@@ -320,7 +320,7 @@ export default function SimpleBuyDialog({
               onChange={handleSupplyChange}
               placeholder="0"
               className={combineClass(
-                "mr-2 w-full flex-1 bg-2white text-right text-4xl font-bold",
+                "mr-2 hidden w-full flex-1 bg-2white text-right text-4xl font-bold outline-none md:block",
                 (errors.supply || errors.usdValue) && "border-2 border-red-500",
               )}
             />
@@ -453,6 +453,8 @@ export default function SimpleBuyDialog({
           />
           <Button
             title="DEL"
+            intent={"inverted"}
+            className={"font-bold"}
             onClick={() =>
               setValue("supply", supply.slice(0, supply.length - 1))
             }
