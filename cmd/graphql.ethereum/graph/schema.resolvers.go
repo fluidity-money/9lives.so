@@ -1497,6 +1497,7 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	sql := `
 	WITH aggregated AS (
     	SELECT
+		   id
     	   identifier,
     	   emitter_addr,
     	   recipient,
@@ -1530,7 +1531,7 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	}
 	sql += ` ORDER BY
   		GREATEST(a.created_by, nelp.created_by) DESC,
-  		a.transaction_hash DESC
+  		a.id DESC,
 	OFFSET ?
 	LIMIT ?;`
 	args = append(args, pageNum*pageSizeNum, pageSizeNum)
