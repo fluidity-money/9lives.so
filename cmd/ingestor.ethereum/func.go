@@ -107,14 +107,78 @@ type IngestorArgs struct {
 // used exclusively to receive logs, polling only for catchup, or
 // exclusively websockets.
 func Entry(f features.F, ingestorPagination int, pollWait int, c *ethclient.Client, db *gorm.DB, ingestorArgs IngestorArgs) {
-	IngestPolling(
-		f,
-		c,
-		db,
-		ingestorPagination,
-		pollWait,
-		ingestorArgs,
+	if f.Is(features.FeatureStreamBlocks) {
+		IngestStreaming(f,c,db, ingestorArgs)
+	} else {
+		IngestPolling(f, c, db, ingestorPagination, pollWait, ingestorArgs)
+	}
+}
+
+func IngestStreaming(f features.F, c *ethclient.Client, db *gorm.DB, ingestorArgs IngestorArgs) {
+	from, err := getLastBlockCheckpointed(db)
+	if err != nil {
+		setup.Exitf("failed to get the last block checkpoint: %v", err)
+	}
+	slog.Info("starting streaming from checkpoint",
+		"from_block", from,
 	)
+	query := ethereum.FilterQuery{
+		FromBlock: new(big.Int).SetUint64(from),
+		Topics:    [][]ethCommon.Hash{FilterTopics},
+	}
+	logs := make(chan ethTypes.Log)
+	sub, err := c.SubscribeFilterLogs(context.Background(), query, logs)
+	if err != nil {
+		setup.Exitf("failed to subscribe to logs: %v", err)
+	}
+	defer sub.Unsubscribe()
+	var highestBlockNo uint64
+	lastCheckpoint := time.Now()
+	checkpointInterval := 10 * time.Second
+	for {
+		select {
+		case err := <-sub.Err():
+			setup.Exitf("subscription connection died: %v", err)
+
+		case log := <-logs:
+			slog.Debug("received log from subscription",
+				"block_number", log.BlockNumber,
+				"tx_hash", log.TxHash.String(),
+				"removed", log.Removed,
+			)
+			if log.Removed {
+				slog.Error("skipping removed log due to reorg. How did this happen?",
+					"tx_hash", log.TxHash.String(),
+					"block_number", log.BlockNumber,
+				)
+				continue
+			}
+			err := db.Transaction(func(db *gorm.DB) error {
+				hasChanged, err := handleLog(f, db, ingestorArgs, log)
+				if err != nil {
+					return fmt.Errorf("failed to handle log: %v", err)
+				}
+				if log.BlockNumber > highestBlockNo {
+					highestBlockNo = log.BlockNumber
+				}
+				if hasChanged && time.Since(lastCheckpoint) > checkpointInterval && highestBlockNo > 0 {
+					if err := updateCheckpoint(db, highestBlockNo); err != nil {
+						return fmt.Errorf("failed to update checkpoint: %v", err)
+					}
+					lastCheckpoint = time.Now()
+					slog.Info("checkpoint updated",
+						"block_number", highestBlockNo,
+					)
+				}
+				return nil
+			})
+			if err != nil {
+				setup.Exitf("failed to process log: %v (tx_hash: %s)",
+					err, log.TxHash.String())
+			}
+			heartbeat.Pulse()
+		}
+	}
 }
 
 // IngestPolling by repeatedly polling the Geth RPC for changes to

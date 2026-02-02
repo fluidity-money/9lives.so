@@ -63,4 +63,7 @@ const (
 
 	// FeatureIsSnapshotOnRequest should only send the snapshot on request.
 	FeatureIsSnapshotOnRequest = "should only send the snapshot on request"
+
+	// FeatureStreamBlocks instead of polling
+	FeatureStreamBlocks = "should stream using websocket instead of polling"
 )
