@@ -208,7 +208,13 @@ func main() {
 				// We need a sink for all messages here:
 				case msg := <-replies:
 					var req struct {
-						AskForSnapshot []string `json:"ask_for_snapshot"`
+						AskForSnapshot []struct {
+							Table  string `json:"table"`
+							Fields []struct {
+								Name        string           `json:"name"`
+								Constraints FilterConstraint `json:"filter_constraints"`
+							} `json:"fields"`
+						} `json:"ask_for_snapshot"`
 
 						FilterReq []struct {
 							Table  string `json:"table"`
@@ -223,11 +229,51 @@ func main() {
 						break L
 					}
 					if f.Is(features.FeatureIsSnapshotOnRequest) && len(req.AskForSnapshot) > 0 {
+						snapshotFilters := make(map[string]map[string]*FilterConstraint)
+						for _, ch := range req.AskForSnapshot {
+							t := ch.Table
+							if snapshotFilters[t] == nil {
+								snapshotFilters[t] = make(map[string]*FilterConstraint)
+							}
+							for _, field := range ch.Fields {
+								c := field.Constraints
+								snapshotFilters[t][field.Name] = &c
+							}
+						}
 						go func() {
 							snapshotChan := make(chan []TableContent)
 							dumpChan <- snapshotChan
+							rawSnapshot := <-snapshotChan
+							var filteredSnapshot []TableContent
+							for _, tableContent := range rawSnapshot {
+								tableFilter, requested := snapshotFilters[tableContent.Table]
+								if !requested {
+									continue
+								}
+								var filteredItems []map[string]any
+								for _, item := range tableContent.Snapshot {
+									if item == nil {
+										continue
+									}
+									include := true
+									for k, c := range tableFilter {
+										v, exists := item[k]
+										if !exists || v != c.Et {
+											include = false
+											break
+										}
+									}
+									if include {
+										filteredItems = append(filteredItems, item)
+									}
+								}
+								filteredSnapshot = append(filteredSnapshot, TableContent{
+									Table:    tableContent.Table,
+									Snapshot: filteredItems,
+								})
+							}
 							snapshot, err := json.Marshal(TableContent{
-								SnapshotToplevel: <-snapshotChan,
+								SnapshotToplevel: filteredSnapshot,
 							})
 							if err != nil {
 								slog.Error("failed to marshal snapshot", "err", err)
@@ -236,6 +282,7 @@ func main() {
 							outgoing <- snapshot
 						}()
 					}
+
 					for _, ch := range req.FilterReq {
 						t := ch.Table
 						if filterRules[t] == nil {
