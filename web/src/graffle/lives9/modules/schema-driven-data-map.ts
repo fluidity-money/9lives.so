@@ -534,6 +534,14 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [0],
         },
+        page: {
+          nt: Int,
+          it: [0],
+        },
+        pageSize: {
+          nt: Int,
+          it: [0],
+        },
       },
       // nt: Claim, <-- Assigned later to avoid potential circular dependency.
     },

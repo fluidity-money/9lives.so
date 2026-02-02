@@ -153,6 +153,18 @@ const CreateAccountExec: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   },
 };
 
+const Statistics: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    action: {},
+    avgGasLimit24Hours: {},
+    avgGasLimitWeek: {},
+    avgGasLimitAllTime: {},
+    tx24Hours: {},
+    txWeek: {},
+    txAllTime: {},
+  },
+};
+
 //
 //
 //
@@ -223,6 +235,9 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           it: [1],
         },
       },
+    },
+    statistics: {
+      // nt: Statistics, <-- Assigned later to avoid potential circular dependency.
     },
   },
 };
@@ -322,6 +337,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 //
 
+Query.f[`statistics`]!.nt = Statistics;
 Mutation.f[`createAccountExec`]!.nt = CreateAccountExec;
 
 //
@@ -358,6 +374,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Permit,
     SolveArgs,
     CreateAccountExec,
+    Statistics,
     Query,
     Mutation,
   },

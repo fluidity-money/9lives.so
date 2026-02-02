@@ -602,7 +602,7 @@ export namespace Query {
   >
     extends $Select.Bases.Base, $NamedTypes.$Claim<_$Scalars> {
     /**
-     * Arguments for `userClaims` field. Some (1/2) arguments are required so you must include this.
+     * Arguments for `userClaims` field. Some (1/4) arguments are required so you must include this.
      */
     $: userClaims$Arguments<_$Scalars>;
   }
@@ -613,6 +613,8 @@ export namespace Query {
   > {
     address: string;
     campaignId?: string | undefined | null;
+    page?: number | undefined | null;
+    pageSize?: number | undefined | null;
   }
 
   // --- expanded ---

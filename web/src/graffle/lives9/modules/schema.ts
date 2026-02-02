@@ -274,6 +274,18 @@ export namespace Schema {
           inlineType: [0];
           namedType: $$NamedTypes.$$String;
         };
+        page: {
+          kind: "InputField";
+          name: "page";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
+        pageSize: {
+          kind: "InputField";
+          name: "pageSize";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
       };
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$Claim;

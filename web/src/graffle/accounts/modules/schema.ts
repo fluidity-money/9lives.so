@@ -31,6 +31,7 @@ export namespace Schema {
       publickey: Query.publickey;
       eoaForAddress: Query.eoaForAddress;
       hasCreated: Query.hasCreated;
+      statistics: Query.statistics;
     };
   }
 
@@ -85,6 +86,16 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$Boolean;
+    }
+
+    /**
+     * Get information about the different functions being serviced by this graph.
+     */
+    export interface statistics extends $.OutputField {
+      name: "statistics";
+      arguments: {};
+      inlineType: [0, [1]];
+      namedType: $$NamedTypes.$$Statistics;
     }
   }
 
@@ -219,7 +230,7 @@ export namespace Schema {
     }
 
     /**
-     * Claim rewards for the markets given, using the eoa in the header.
+     * Claim payoff for the markets given, using the eoa in the header.
      */
     export interface claimRewards extends $.OutputField {
       name: "claimRewards";
@@ -300,6 +311,109 @@ export namespace Schema {
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
+    }
+  }
+
+  //                                             Statistics
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  /**
+   * Statistics for this usage type. Only since 1768801591.
+   */
+  export interface Statistics extends $.OutputObject {
+    name: "Statistics";
+    fields: {
+      __typename: Statistics.__typename;
+      action: Statistics.action;
+      avgGasLimit24Hours: Statistics.avgGasLimit24Hours;
+      avgGasLimitWeek: Statistics.avgGasLimitWeek;
+      avgGasLimitAllTime: Statistics.avgGasLimitAllTime;
+      tx24Hours: Statistics.tx24Hours;
+      txWeek: Statistics.txWeek;
+      txAllTime: Statistics.txAllTime;
+    };
+  }
+
+  export namespace Statistics {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Statistics";
+      };
+    }
+
+    /**
+     * The action that took place during this interaction with the accounts system.
+     */
+    export interface action extends $.OutputField {
+      name: "action";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * The average gas limit that was used in the last 24 hours.
+     */
+    export interface avgGasLimit24Hours extends $.OutputField {
+      name: "avgGasLimit24Hours";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Float;
+    }
+
+    /**
+     * The average gas limit for the last week.
+     */
+    export interface avgGasLimitWeek extends $.OutputField {
+      name: "avgGasLimitWeek";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Float;
+    }
+
+    /**
+     * The average gas limit for all time.
+     */
+    export interface avgGasLimitAllTime extends $.OutputField {
+      name: "avgGasLimitAllTime";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Float;
+    }
+
+    /**
+     * Transactions in the last 24 hours.
+     */
+    export interface tx24Hours extends $.OutputField {
+      name: "tx24Hours";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Transactions from the last 7 days.
+     */
+    export interface txWeek extends $.OutputField {
+      name: "txWeek";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    /**
+     * Transactions count of all time.
+     */
+    export interface txAllTime extends $.OutputField {
+      name: "txAllTime";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
     }
   }
 
@@ -679,6 +793,7 @@ export namespace Schema {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
     export type $$CreateAccountExec = CreateAccountExec;
+    export type $$Statistics = Statistics;
     export type $$CreateAccount = CreateAccount;
     export type $$FromArgs = FromArgs;
     export type $$Mint = Mint;
@@ -723,9 +838,11 @@ export interface Schema<
     Query: Schema.Query;
     Mutation: Schema.Mutation;
     CreateAccountExec: Schema.CreateAccountExec;
+    Statistics: Schema.Statistics;
   };
   objects: {
     CreateAccountExec: Schema.CreateAccountExec;
+    Statistics: Schema.Statistics;
   };
   unions: {};
   interfaces: {};

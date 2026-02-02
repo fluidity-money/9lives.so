@@ -21,6 +21,7 @@ export interface $MethodsSelect {
   Query: Query;
   Mutation: Mutation;
   CreateAccountExec: CreateAccountExec;
+  Statistics: Statistics;
 }
 
 //
@@ -73,6 +74,12 @@ export interface CreateAccountExec {
       $SelectionSet,
       $$SelectionSets.CreateAccountExec
     >,
+  ): $SelectionSet;
+}
+
+export interface Statistics {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Statistics>,
   ): $SelectionSet;
 }
 

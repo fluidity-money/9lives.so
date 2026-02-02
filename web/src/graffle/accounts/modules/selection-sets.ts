@@ -75,6 +75,14 @@ export interface Query<
   hasCreated?:
     | Query.hasCreated<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.hasCreated<_$Scalars>>;
+  /**
+   *
+   * Select the `statistics` field on the `Query` object. Its type is `Statistics` (a `OutputObject` kind of type).
+   *
+   */
+  statistics?:
+    | Query.statistics$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.statistics<_$Scalars>>;
 
   /**
    *
@@ -213,6 +221,33 @@ export namespace Query {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<hasCreated$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type statistics<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = statistics$SelectionSet<_$Scalars>;
+
+  export interface statistics$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$Statistics<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `statistics` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type statistics$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<statistics$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -669,6 +704,324 @@ export namespace CreateAccountExec {
   >;
 }
 
+//                                             Statistics
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+/**
+ * Statistics for this usage type. Only since 1768801591.
+ */
+export interface Statistics<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `action` field on the `Statistics` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  action?:
+    | Statistics.action$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Statistics.action<_$Scalars>>;
+  /**
+   *
+   * Select the `avgGasLimit24Hours` field on the `Statistics` object. Its type is `Float` (a `ScalarStandard` kind of type).
+   *
+   */
+  avgGasLimit24Hours?:
+    | Statistics.avgGasLimit24Hours$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Statistics.avgGasLimit24Hours<_$Scalars>>;
+  /**
+   *
+   * Select the `avgGasLimitWeek` field on the `Statistics` object. Its type is `Float` (a `ScalarStandard` kind of type).
+   *
+   */
+  avgGasLimitWeek?:
+    | Statistics.avgGasLimitWeek$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Statistics.avgGasLimitWeek<_$Scalars>>;
+  /**
+   *
+   * Select the `avgGasLimitAllTime` field on the `Statistics` object. Its type is `Float` (a `ScalarStandard` kind of type).
+   *
+   */
+  avgGasLimitAllTime?:
+    | Statistics.avgGasLimitAllTime$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Statistics.avgGasLimitAllTime<_$Scalars>>;
+  /**
+   *
+   * Select the `tx24Hours` field on the `Statistics` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  tx24Hours?:
+    | Statistics.tx24Hours$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Statistics.tx24Hours<_$Scalars>>;
+  /**
+   *
+   * Select the `txWeek` field on the `Statistics` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  txWeek?:
+    | Statistics.txWeek$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Statistics.txWeek<_$Scalars>>;
+  /**
+   *
+   * Select the `txAllTime` field on the `Statistics` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  txAllTime?:
+    | Statistics.txAllTime$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Statistics.txAllTime<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | Statistics$FragmentInline<_$Scalars>
+    | Statistics$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface Statistics$FragmentInline<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    Statistics<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace Statistics {
+  export type action<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | action$SelectionSet<_$Scalars>;
+
+  export interface action$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `action` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type action$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | action$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type avgGasLimit24Hours<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | avgGasLimit24Hours$SelectionSet<_$Scalars>;
+
+  export interface avgGasLimit24Hours$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `avgGasLimit24Hours` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type avgGasLimit24Hours$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    | $Select.Indicator.NoArgsIndicator
+    | avgGasLimit24Hours$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type avgGasLimitWeek<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | avgGasLimitWeek$SelectionSet<_$Scalars>;
+
+  export interface avgGasLimitWeek$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `avgGasLimitWeek` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type avgGasLimitWeek$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | avgGasLimitWeek$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type avgGasLimitAllTime<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | avgGasLimitAllTime$SelectionSet<_$Scalars>;
+
+  export interface avgGasLimitAllTime$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `avgGasLimitAllTime` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type avgGasLimitAllTime$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    | $Select.Indicator.NoArgsIndicator
+    | avgGasLimitAllTime$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type tx24Hours<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | tx24Hours$SelectionSet<_$Scalars>;
+
+  export interface tx24Hours$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `tx24Hours` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type tx24Hours$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | tx24Hours$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type txWeek<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | txWeek$SelectionSet<_$Scalars>;
+
+  export interface txWeek$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `txWeek` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type txWeek$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | txWeek$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type txAllTime<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | txAllTime$SelectionSet<_$Scalars>;
+
+  export interface txAllTime$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `txAllTime` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type txAllTime$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | txAllTime$SelectionSet<_$Scalars>
+  >;
+}
+
 /**
  * [1] These definitions serve to allow field selection interfaces to extend their respective object type without
  *     name clashing between the field name and the object name.
@@ -709,4 +1062,8 @@ export namespace $NamedTypes {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = CreateAccountExec<_$Scalars>;
+  export type $Statistics<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = Statistics<_$Scalars>;
 }

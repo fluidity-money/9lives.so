@@ -98,6 +98,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Get information about the different functions being serviced by this graph.
+   */
+  statistics: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.statistics<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { statistics: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "statistics"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {
@@ -202,7 +224,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Claim rewards for the markets given, using the eoa in the header.
+   * Claim payoff for the markets given, using the eoa in the header.
    */
   claimRewards: $$Utilities.ClientTransports.PreflightCheck<
     $Context,

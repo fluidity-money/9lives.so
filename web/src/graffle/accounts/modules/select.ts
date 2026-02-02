@@ -64,6 +64,12 @@ export namespace Select {
     $$Schema.Schema,
     $$Schema.Schema["allTypes"]["CreateAccountExec"]
   >;
+  export type Statistics<$SelectionSet extends $$SelectionSets.Statistics> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["Statistics"]
+    >;
   //                                               Union
   // --------------------------------------------------------------------------------------------------
   //
