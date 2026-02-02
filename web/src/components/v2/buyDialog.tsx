@@ -483,10 +483,9 @@ export default function SimpleBuyDialog({
           </Button>
           <Button
             size={"large"}
-            disabled={isMinting || isConnecting}
+            disabled={isMinting || isConnecting || !(Number(supply) > 0)}
             title={isMinting ? "Loading.." : "Confirm"}
             className={combineClass(
-              Number(supply) > 0 ? "visible" : "invisible",
               outcomeIdx === 1 ? "text-green-300" : "text-red-300",
               "w-full",
             )}
