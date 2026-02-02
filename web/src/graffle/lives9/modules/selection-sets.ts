@@ -3435,6 +3435,14 @@ export interface Claim<
   txHash?:
     | Claim.txHash$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Claim.txHash<_$Scalars>>;
+  /**
+   *
+   * Select the `pnl` field on the `Claim` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  pnl?:
+    | Claim.pnl$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Claim.pnl<_$Scalars>>;
 
   /**
    *
@@ -3637,6 +3645,35 @@ export namespace Claim {
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
     $Select.Indicator.NoArgsIndicator | txHash$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type pnl<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | pnl$SelectionSet<_$Scalars>;
+
+  export interface pnl$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `pnl` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type pnl$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | pnl$SelectionSet<_$Scalars>
   >;
 }
 

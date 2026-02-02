@@ -217,6 +217,7 @@ const Claim: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     },
     createdAt: {},
     txHash: {},
+    pnl: {},
   },
 };
 

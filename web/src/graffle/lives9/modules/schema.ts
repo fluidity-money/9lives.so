@@ -1785,6 +1785,7 @@ export namespace Schema {
       content: Claim.content;
       createdAt: Claim.createdAt;
       txHash: Claim.txHash;
+      pnl: Claim.pnl;
     };
   }
 
@@ -1836,6 +1837,13 @@ export namespace Schema {
 
     export interface txHash extends $.OutputField {
       name: "txHash";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface pnl extends $.OutputField {
+      name: "pnl";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
