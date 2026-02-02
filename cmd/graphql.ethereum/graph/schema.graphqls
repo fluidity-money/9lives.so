@@ -200,6 +200,8 @@ type Claim {
   createdAt: Int!
 
   txHash: String!
+
+  pnl: String!
 }
 
 """

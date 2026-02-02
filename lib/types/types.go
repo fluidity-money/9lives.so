@@ -255,6 +255,8 @@ type (
 		CreatedAt time.Time `json:"createdAt"`
 
 		TransactionHash string `json:"txHash"`
+
+		Pnl string `json:"pnl"`
 	}
 
 	PriceEvent struct {

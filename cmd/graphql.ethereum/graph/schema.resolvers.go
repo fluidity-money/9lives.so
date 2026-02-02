@@ -1496,35 +1496,45 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	}
 	sql := `
 	WITH aggregated AS (
-    	SELECT
-		   id,
-    	   identifier,
-    	   emitter_addr,
-    	   recipient,
-    	   shares_spent,
-    	   fusdc_received,
-    	   created_by,
-    	   transaction_hash
-    	FROM ninelives_events_payoff_activated
-    	WHERE shares_spent > 0 
-    	AND recipient = ?
-	)
-	SELECT
-	    nc.id,
-	    COALESCE(a.shares_spent, 0) + COALESCE(nelp.shares_spent, 0) AS shares_spent,
-	    a.transaction_hash,
-	    COALESCE(a.fusdc_received, 0) + COALESCE(nelp.fusdc_received, 0) AS fusdc_received,
-		a.created_by as created_at,
-	    nc.content,
-	    CONCAT('0x', a.identifier) AS winner
-	FROM aggregated a
-	LEFT JOIN ninelives_campaigns_1 nc
-	    ON a.emitter_addr = nc.content->>'poolAddress'
-	LEFT JOIN ninelives_events_ninetails_loser_payoff nelp
-	    ON a.recipient = nelp.recipient
-	   AND a.emitter_addr = nelp.emitter_addr
+    SELECT
+        id,
+        identifier,
+        emitter_addr,
+        recipient,
+        shares_spent,
+        fusdc_received,
+        created_by,
+        transaction_hash
+    FROM ninelives_events_payoff_activated
+    WHERE shares_spent > 0
+      AND recipient = ?
+)
+SELECT
+    nc.id,
+    COALESCE(a.shares_spent, 0) + COALESCE(nelp.shares_spent, 0) AS shares_spent,
+    a.transaction_hash,
+    COALESCE(a.fusdc_received, 0) + COALESCE(nelp.fusdc_received, 0) AS fusdc_received,
+    COALESCE(a.fusdc_received, 0) + COALESCE(nelp.fusdc_received, 0) - fs.fusdc_spent AS pnl,
+    a.created_by AS created_at,
+    nc.content,
+    CONCAT('0x', a.identifier) AS winner
+FROM aggregated a
+LEFT JOIN ninelives_campaigns_1 nc
+    ON a.emitter_addr = nc.content->>'poolAddress'
+LEFT JOIN ninelives_events_ninetails_loser_payoff nelp
+    ON a.recipient = nelp.recipient
+   AND a.emitter_addr = nelp.emitter_addr
+LEFT JOIN (
+    SELECT
+        emitter_addr,
+        SUM(nbas.from_amount) AS fusdc_spent
+    FROM ninelives_buys_and_sells_1 nbas
+    WHERE recipient = ?
+    GROUP BY emitter_addr
+) fs
+    ON fs.emitter_addr = a.emitter_addr
 	`
-	args := []interface{}{address}
+	args := []interface{}{address, address}
 	if campaignID != nil {
 		sql += " WHERE nc.id = ?"
 		args = append(args, *campaignID)
@@ -1795,13 +1805,7 @@ func (r *queryResolver) UserWonCampaignsProfits(ctx context.Context, address str
 	address = strings.ToLower(address)
 	err := r.DB.Raw(`
 	SELECT
- 	nepa.fusdc_received -
-    SUM(
-        CASE
-            WHEN nbas.type = 'buy' THEN nbas.from_amount
-            ELSE -nbas.to_amount
-        END
-    ) AS profit,
+ 	nepa.fusdc_received - SUM(nbas.from_amount) AS profit,
 	nbas.outcome_id as winner,
     nepa.emitter_addr as pool_address
 	FROM ninelives_events_payoff_activated nepa
