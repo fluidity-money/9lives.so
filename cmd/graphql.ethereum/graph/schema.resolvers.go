@@ -1799,37 +1799,6 @@ func (r *queryResolver) CountReferees(ctx context.Context, referrerAddress strin
 	return count, nil
 }
 
-// UserWonCampaignsProfits is the resolver for the userWonCampaignsProfits field.
-func (r *queryResolver) UserWonCampaignsProfits(ctx context.Context, address string) ([]*types.CampaignProfit, error) {
-	var profits []*types.CampaignProfit
-	address = strings.ToLower(address)
-	err := r.DB.Raw(`
-	SELECT
- 	nepa.fusdc_received - SUM(nbas.from_amount) AS profit,
-	nbas.outcome_id as winner,
-    nepa.emitter_addr as pool_address
-	FROM ninelives_events_payoff_activated nepa
-	JOIN ninelives_buys_and_sells_1 nbas
-	    ON nbas.emitter_addr = nepa.emitter_addr
-	    AND nbas.recipient = nepa.recipient
-	    AND nepa.identifier = nbas.outcome_id
-	WHERE nepa.fusdc_received > 0 
-	AND nepa.recipient = ?
-	GROUP BY
-    nbas.recipient,
-	nbas.outcome_id,
-    nepa.emitter_addr,
-    nepa.fusdc_received;
-	`, address).Scan(&profits).Error
-	if err != nil {
-		slog.Error("Error getting market's profits which are won",
-			"error", err,
-		)
-		return nil, fmt.Errorf("Error getting market's profits which are won %w", err)
-	}
-	return profits, nil
-}
-
 // CampaignComments is the resolver for the campaignComments field.
 func (r *queryResolver) CampaignComments(ctx context.Context, campaignID string, onlyHolders *bool, page *int, pageSize *int) ([]*types.Comment, error) {
 	var comments []*types.Comment

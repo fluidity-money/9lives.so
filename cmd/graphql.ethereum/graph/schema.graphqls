@@ -87,11 +87,6 @@ type Query {
   countReferees(referrerAddress: String!): Int!
 
   """
-  Returns won campaigns profit according to share's total cost
-  """
-  userWonCampaignsProfits(address: String!): [CampaignProfit]!
-
-  """
   Gets comments of a campaign
   """
   campaignComments(campaignId: String!, onlyHolders: Boolean, page: Int, pageSize: Int): [Comment]!
@@ -156,12 +151,6 @@ type Comment {
 type LP {
   liquidity: String
   campaign: Campaign
-}
-
-type CampaignProfit {
-  poolAddress: String
-  profit: Int
-  winner: String
 }
 
 type Settings {
