@@ -1497,7 +1497,7 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	sql := `
 	WITH aggregated AS (
     	SELECT
-		   id
+		   id,
     	   identifier,
     	   emitter_addr,
     	   recipient,
