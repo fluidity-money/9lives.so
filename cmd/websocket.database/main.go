@@ -100,7 +100,7 @@ func main() {
 		broadcast.Subscribe(bufferMsgsChan)
 		buffer := make(map[string]struct {
 			i     int
-			items [10]map[string]any
+			items [1000]map[string]any
 		})
 		for {
 			select {
