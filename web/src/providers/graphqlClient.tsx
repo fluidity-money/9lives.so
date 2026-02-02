@@ -306,9 +306,19 @@ export const requestPositionHistory = (address: string, outcomeIds: string[]) =>
     type: true,
   });
 
-export const requestUserClaims = (address: string, campaignId?: string) =>
+export const requestUserClaims = ({
+  address,
+  campaignId,
+  page,
+  pageSize,
+}: {
+  address: string;
+  campaignId?: string;
+  page?: number;
+  pageSize?: number;
+}) =>
   graph9Lives.query.userClaims({
-    $: { address, campaignId },
+    $: { address, campaignId, page, pageSize },
     fusdcReceived: true,
     sharesSpent: true,
     winner: true,
