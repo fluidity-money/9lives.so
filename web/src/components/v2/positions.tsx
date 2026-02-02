@@ -122,8 +122,10 @@ function PositionItem({
 
 export default function SimplePositions({
   data,
+  openModal,
 }: {
   data: SimpleCampaignDetail;
+  openModal: () => void;
 }) {
   const account = useAppKitAccount();
   const { data: positions } = usePositions({
@@ -163,7 +165,12 @@ export default function SimplePositions({
         <div className="rounded-lg bg-neutral-200 p-1">
           <div className="flex h-[90px] flex-1 flex-col items-center justify-center gap-2 rounded-md bg-2white px-2 py-1">
             <p className="text-sm text-neutral-400">No Positons Yet</p>
-            <Button title="Buy a Position" intent="inverted" size="small" />
+            <Button
+              title="Buy a Position"
+              intent="inverted"
+              size="small"
+              onClick={openModal}
+            />
           </div>
         </div>
       )}

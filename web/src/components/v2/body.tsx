@@ -62,7 +62,10 @@ export default function SimpleBody({
         </div>
         <SimpleChance isLoading={pricesLoading} yes={yesChance} no={noChance} />
         <PriceChartWrapper simple={true} campaignData={data} />
-        <SimplePositions data={data} />
+        <SimplePositions
+          openModal={() => setIsBuyDialogOpen(true)}
+          data={data}
+        />
       </div>
       <div className="sticky inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-2white pb-2 md:static md:flex-row md:bg-transparent md:p-0">
         <SimpleButtons
