@@ -1483,9 +1483,17 @@ func (r *queryResolver) PositionsHistory(ctx context.Context, address string, ou
 }
 
 // UserClaims is the resolver for the userClaims field.
-func (r *queryResolver) UserClaims(ctx context.Context, address string, campaignID *string) ([]*types.Claim, error) {
+func (r *queryResolver) UserClaims(ctx context.Context, address string, campaignID *string, page *int, pageSize *int) ([]*types.Claim, error) {
 	var claims []*types.Claim
 	address = strings.ToLower(address)
+	pageNum := 0
+	if page != nil {
+		pageNum = *page
+	}
+	pageSizeNum := 10
+	if pageSize != nil {
+		pageSizeNum = *pageSize
+	}
 	sql := `
 	WITH aggregated AS (
     	SELECT
@@ -1520,7 +1528,10 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 		sql += " WHERE nc.id = ?"
 		args = append(args, *campaignID)
 	}
-	sql += " ORDER BY a.created_by desc, nelp.created_by desc;"
+	sql += ` ORDER BY GREATEST(a.created_by, nelp.created_by) DESC
+	OFFSET ?
+	LIMIT ?;`
+	args = append(args, pageNum*pageSizeNum, pageSizeNum)
 	err := r.DB.Raw(sql, args...).Scan(&claims).Error
 	if err != nil {
 		slog.Error("Error getting reward claims from database",

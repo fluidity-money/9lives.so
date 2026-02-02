@@ -233,7 +233,7 @@ type ComplexityRoot struct {
 		TimebasedCampaigns        func(childComplexity int, categories []string, tokens []string) int
 		UnclaimedCampaigns        func(childComplexity int, address string, token *string) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
-		UserClaims                func(childComplexity int, address string, campaignID *string) int
+		UserClaims                func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
 		UserLPs                   func(childComplexity int, address string) int
 		UserLiquidity             func(childComplexity int, address string, tradingAddr *string) int
 		UserParticipatedCampaigns func(childComplexity int, address string, page *int, pageSize *int) int
@@ -339,7 +339,7 @@ type QueryResolver interface {
 	UserParticipatedCampaigns(ctx context.Context, address string, page *int, pageSize *int) ([]*types.Position, error)
 	UserTotalVolume(ctx context.Context, address string) (int, error)
 	PositionsHistory(ctx context.Context, address string, outcomeIds []string) ([]types.Activity, error)
-	UserClaims(ctx context.Context, address string, campaignID *string) ([]*types.Claim, error)
+	UserClaims(ctx context.Context, address string, campaignID *string, page *int, pageSize *int) ([]*types.Claim, error)
 	UserProfile(ctx context.Context, address string) (*types.Profile, error)
 	UserLiquidity(ctx context.Context, address string, tradingAddr *string) (string, error)
 	ReferrersForAddress(ctx context.Context, address string) ([]string, error)
@@ -1331,7 +1331,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.UserClaims(childComplexity, args["address"].(string), args["campaignId"].(*string)), true
+		return e.complexity.Query.UserClaims(childComplexity, args["address"].(string), args["campaignId"].(*string), args["page"].(*int), args["pageSize"].(*int)), true
 
 	case "Query.userLPs":
 		if e.complexity.Query.UserLPs == nil {
@@ -2656,6 +2656,24 @@ func (ec *executionContext) field_Query_userClaims_args(ctx context.Context, raw
 		}
 	}
 	args["campaignId"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["page"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["page"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["pageSize"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pageSize"] = arg3
 	return args, nil
 }
 
@@ -8151,7 +8169,7 @@ func (ec *executionContext) _Query_userClaims(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().UserClaims(rctx, fc.Args["address"].(string), fc.Args["campaignId"].(*string))
+		return ec.resolvers.Query().UserClaims(rctx, fc.Args["address"].(string), fc.Args["campaignId"].(*string), fc.Args["page"].(*int), fc.Args["pageSize"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

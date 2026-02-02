@@ -44,7 +44,7 @@ type Query {
   """
   Return user's claim rewards details
   """
-  userClaims(address:String!, campaignId:String): [Claim]!
+  userClaims(address:String!, campaignId:String, page: Int, pageSize: Int): [Claim]!
 
   userProfile(address:String!): Profile
 
