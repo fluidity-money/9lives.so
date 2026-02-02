@@ -1,17 +1,14 @@
 "use client";
 
-import useSharePrices from "@/hooks/useSharePrices";
-import { SimpleCampaignDetail } from "@/types";
-
-export default function SimpleChance({ data }: { data: SimpleCampaignDetail }) {
-  const { data: sharePrices, isLoading } = useSharePrices({
-    tradingAddr: data.poolAddress as `0x${string}`,
-    outcomeIds: data.outcomes.map((o) => o.identifier as `0x${string}`),
-  });
-  const chance = (index: number) =>
-    (Number(sharePrices ? sharePrices[index].price : 0.5) * 100).toFixed(0);
-  const yes = chance(1);
-  const no = chance(0);
+export default function SimpleChance({
+  yes,
+  no,
+  isLoading,
+}: {
+  yes: string;
+  no: string;
+  isLoading: boolean;
+}) {
   return (
     <div className="mb-4 flex flex-col gap-1">
       <p className="text-xs font-semibold text-neutral-400">

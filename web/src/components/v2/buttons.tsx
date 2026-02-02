@@ -6,15 +6,20 @@ import useCountdown from "@/hooks/useCountdown";
 import isMarketOpen from "@/utils/isMarketOpen";
 import config from "@/config";
 import MobileMenuButton from "./mobileMenuButton";
+import Badge from "./chanceBadge";
 
 export default function SimpleButtons({
   data,
   setIsBuyDialogOpen,
   setOutcomeIdx,
+  yes,
+  no,
 }: {
   data: SimpleCampaignDetail;
   setIsBuyDialogOpen: React.Dispatch<boolean>;
   setOutcomeIdx: React.Dispatch<number>;
+  yes: string;
+  no: string;
 }) {
   const timeleft = useCountdown(data.ending, "differenceInMs");
   const isEnded = 0 >= Number(timeleft);
@@ -34,6 +39,7 @@ export default function SimpleButtons({
           setOutcomeIdx(1);
           setIsBuyDialogOpen(true);
         }}
+        badge={<Badge intent={"yes"} chance={yes} />}
       />
       <Button
         title="No"
@@ -44,6 +50,7 @@ export default function SimpleButtons({
           setOutcomeIdx(0);
           setIsBuyDialogOpen(true);
         }}
+        badge={<Badge intent={"no"} chance={no} />}
       />
       <MobileMenuButton />
     </div>

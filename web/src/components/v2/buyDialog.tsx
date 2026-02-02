@@ -25,17 +25,20 @@ import PointsIndicator from "./pointsIndicator";
 import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
 import { formatUnits, zeroAddress } from "viem";
 import GroupButton from "./groupButton";
+import Badge from "./chanceBadge";
 
 export default function SimpleBuyDialog({
   data,
   outcomeIdx,
   setOutcomeIdx,
   closeDialog,
+  chance,
 }: {
   data: SimpleCampaignDetail;
   outcomeIdx: number;
   setOutcomeIdx: React.Dispatch<number>;
   closeDialog: () => void;
+  chance: string;
 }) {
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const [isMinting, setIsMinting] = useState(false);
@@ -488,6 +491,12 @@ export default function SimpleBuyDialog({
               "w-full",
             )}
             onClick={onSubmit}
+            badge={
+              <Badge
+                intent={outcomeIdx === 1 ? "invertedYes" : "invertedNo"}
+                chance={chance}
+              />
+            }
           />
         </div>
       </div>

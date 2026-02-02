@@ -2,7 +2,6 @@ import {
   Button as BasicButton,
   ButtonProps as BasicButtonProps,
 } from "@headlessui/react";
-import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const button = cva(
