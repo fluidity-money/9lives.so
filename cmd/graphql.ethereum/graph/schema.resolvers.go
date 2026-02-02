@@ -1528,7 +1528,9 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 		sql += " WHERE nc.id = ?"
 		args = append(args, *campaignID)
 	}
-	sql += ` ORDER BY GREATEST(a.created_by, nelp.created_by) DESC
+	sql += ` ORDER BY
+  		GREATEST(a.created_by, nelp.created_by) DESC,
+  		a.transaction_hash DESC
 	OFFSET ?
 	LIMIT ?;`
 	args = append(args, pageNum*pageSizeNum, pageSizeNum)
