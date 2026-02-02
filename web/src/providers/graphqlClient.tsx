@@ -324,6 +324,7 @@ export const requestUserClaims = ({
     winner: true,
     txHash: true,
     createdAt: true,
+    pnl: true,
     content: {
       identifier: true,
       isDppm: true,
@@ -569,14 +570,6 @@ export const requestPaymaster = ({
 export const requestCountReferees = (referrerAddress: string) =>
   graph9Lives.query.countReferees({
     $: { referrerAddress },
-  });
-
-export const requestPnLOfWonCampaigns = (address: string) =>
-  graph9Lives.query.userWonCampaignsProfits({
-    $: { address },
-    poolAddress: true,
-    profit: true,
-    winner: true,
   });
 
 export const requestComments = ({

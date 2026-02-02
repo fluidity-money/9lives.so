@@ -8,7 +8,7 @@ import { ClaimedCampaign } from "@/types";
 export default function ClaimedCampaignRow({
   data,
 }: {
-  data: (ClaimedCampaign & { PnL?: number }) | null;
+  data: ClaimedCampaign;
 }) {
   if (!data) return null;
   const winnerOutcome = data.content.outcomes.find(
@@ -66,14 +66,14 @@ export default function ClaimedCampaignRow({
           <span className="font-chicago text-sm font-bold">
             ${formatFusdc(+data.fusdcReceived, 2)}
           </span>
-          {data.PnL ? (
+          {data.pnl ? (
             <span
               className={combineClass(
-                data.PnL > 0 ? "bg-9green" : "bg-9red",
+                Number(data.pnl) > 0 ? "bg-9green" : "bg-9red",
                 "px-1 py-0.5 font-geneva text-xs uppercase",
               )}
             >
-              ${formatFusdc(BigInt(data.PnL), 2)}
+              ${formatFusdc(BigInt(data.pnl), 2)}
             </span>
           ) : (
             <span

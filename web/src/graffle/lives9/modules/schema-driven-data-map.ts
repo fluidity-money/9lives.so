@@ -182,14 +182,6 @@ const LP: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   },
 };
 
-const CampaignProfit: $$Utilities.SchemaDrivenDataMap.OutputObject = {
-  f: {
-    poolAddress: {},
-    profit: {},
-    winner: {},
-  },
-};
-
 const Settings: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     notification: {},
@@ -611,15 +603,6 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           it: [1],
         },
       },
-    },
-    userWonCampaignsProfits: {
-      a: {
-        address: {
-          nt: String,
-          it: [1],
-        },
-      },
-      // nt: CampaignProfit, <-- Assigned later to avoid potential circular dependency.
     },
     campaignComments: {
       a: {
@@ -1078,7 +1061,6 @@ Query.f[`userProfile`]!.nt = Profile;
 Query.f[`leaderboards`]!.nt = LeaderboardWeekly;
 Query.f[`featuredCampaign`]!.nt = Campaign;
 Query.f[`userLPs`]!.nt = LP;
-Query.f[`userWonCampaignsProfits`]!.nt = CampaignProfit;
 Query.f[`campaignComments`]!.nt = Comment;
 Query.f[`campaignPriceEvents`]!.nt = PriceEvent;
 Query.f[`campaignBySymbol`]!.nt = Campaign;
@@ -1125,7 +1107,6 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     CommentInvestment,
     Comment,
     LP,
-    CampaignProfit,
     Settings,
     Profile,
     Claim,

@@ -191,14 +191,6 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.countReferees<_$Scalars>>;
   /**
    *
-   * Select the `userWonCampaignsProfits` field on the `Query` object. Its type is `CampaignProfit` (a `OutputObject` kind of type).
-   *
-   */
-  userWonCampaignsProfits?:
-    | Query.userWonCampaignsProfits<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Query.userWonCampaignsProfits<_$Scalars>>;
-  /**
-   *
    * Select the `campaignComments` field on the `Query` object. Its type is `Comment` (a `OutputObject` kind of type).
    *
    */
@@ -931,45 +923,6 @@ export namespace Query {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<countReferees$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type userWonCampaignsProfits<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = userWonCampaignsProfits$SelectionSet<_$Scalars>;
-
-  export interface userWonCampaignsProfits$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base, $NamedTypes.$CampaignProfit<_$Scalars> {
-    /**
-     * Arguments for `userWonCampaignsProfits` field. All arguments are required so you must include this.
-     */
-    $: userWonCampaignsProfits$Arguments<_$Scalars>;
-  }
-
-  export interface userWonCampaignsProfits$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    address: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `userWonCampaignsProfits` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type userWonCampaignsProfits$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<userWonCampaignsProfits$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
@@ -2937,165 +2890,6 @@ export namespace LP {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<campaign$SelectionSet<_$Scalars>>;
-}
-
-//                                           CampaignProfit
-// --------------------------------------------------------------------------------------------------
-//
-
-// ----------------------------------------| Entrypoint Interface |
-
-export interface CampaignProfit<
-  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-    $$Utilities.Schema.Scalar.Registry.Empty,
->
-  extends $Select.Bases.ObjectLike {
-  /**
-   *
-   * Select the `poolAddress` field on the `CampaignProfit` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  poolAddress?:
-    | CampaignProfit.poolAddress$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<CampaignProfit.poolAddress<_$Scalars>>;
-  /**
-   *
-   * Select the `profit` field on the `CampaignProfit` object. Its type is `Int` (a `ScalarStandard` kind of type).
-   *
-   */
-  profit?:
-    | CampaignProfit.profit$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<CampaignProfit.profit<_$Scalars>>;
-  /**
-   *
-   * Select the `winner` field on the `CampaignProfit` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  winner?:
-    | CampaignProfit.winner$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<CampaignProfit.winner<_$Scalars>>;
-
-  /**
-   *
-   * Inline fragments for field groups.
-   *
-   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
-   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
-   *
-   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
-   *
-   */
-  ___?:
-    | CampaignProfit$FragmentInline<_$Scalars>
-    | CampaignProfit$FragmentInline<_$Scalars>[];
-
-  /**
-   *
-   * A meta field. Is the name of the type being selected.
-   *
-   * @see https://graphql.org/learn/queries/#meta-fields
-   *
-   */
-  __typename?:
-    | $Select.Indicator.NoArgsIndicator$Expanded
-    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
-}
-
-export interface CampaignProfit$FragmentInline<
-  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-    $$Utilities.Schema.Scalar.Registry.Empty,
->
-  extends
-    CampaignProfit<_$Scalars>,
-    $Select.Directive.$Groups.InlineFragment.Fields {}
-
-// ----------------------------------------| Fields |
-
-export namespace CampaignProfit {
-  export type poolAddress<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | poolAddress$SelectionSet<_$Scalars>;
-
-  export interface poolAddress$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `poolAddress` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type poolAddress$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | poolAddress$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type profit<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | profit$SelectionSet<_$Scalars>;
-
-  export interface profit$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `profit` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type profit$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | profit$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type winner<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | winner$SelectionSet<_$Scalars>;
-
-  export interface winner$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `winner` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type winner$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | winner$SelectionSet<_$Scalars>
-  >;
 }
 
 //                                              Settings
@@ -6798,10 +6592,6 @@ export namespace $NamedTypes {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = LP<_$Scalars>;
-  export type $CampaignProfit<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = CampaignProfit<_$Scalars>;
   export type $Settings<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,

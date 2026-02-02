@@ -45,7 +45,6 @@ export namespace Schema {
       featuredCampaign: Query.featuredCampaign;
       userLPs: Query.userLPs;
       countReferees: Query.countReferees;
-      userWonCampaignsProfits: Query.userWonCampaignsProfits;
       campaignComments: Query.campaignComments;
       campaignPriceEvents: Query.campaignPriceEvents;
       campaignWeeklyVolume: Query.campaignWeeklyVolume;
@@ -424,23 +423,6 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
-    }
-
-    /**
-     * Returns won campaigns profit according to share's total cost
-     */
-    export interface userWonCampaignsProfits extends $.OutputField {
-      name: "userWonCampaignsProfits";
-      arguments: {
-        address: {
-          kind: "InputField";
-          name: "address";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [1, [0]];
-      namedType: $$NamedTypes.$$CampaignProfit;
     }
 
     /**
@@ -1626,53 +1608,6 @@ export namespace Schema {
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$Campaign;
-    }
-  }
-
-  //                                           CampaignProfit
-  // --------------------------------------------------------------------------------------------------
-  //
-
-  export interface CampaignProfit extends $.OutputObject {
-    name: "CampaignProfit";
-    fields: {
-      __typename: CampaignProfit.__typename;
-      poolAddress: CampaignProfit.poolAddress;
-      profit: CampaignProfit.profit;
-      winner: CampaignProfit.winner;
-    };
-  }
-
-  export namespace CampaignProfit {
-    export interface __typename extends $.OutputField {
-      name: "__typename";
-      arguments: {};
-      inlineType: [1];
-      namedType: {
-        kind: "__typename";
-        value: "CampaignProfit";
-      };
-    }
-
-    export interface poolAddress extends $.OutputField {
-      name: "poolAddress";
-      arguments: {};
-      inlineType: [0];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    export interface profit extends $.OutputField {
-      name: "profit";
-      arguments: {};
-      inlineType: [0];
-      namedType: $$NamedTypes.$$Int;
-    }
-
-    export interface winner extends $.OutputField {
-      name: "winner";
-      arguments: {};
-      inlineType: [0];
-      namedType: $$NamedTypes.$$String;
     }
   }
 
@@ -3205,7 +3140,6 @@ export namespace Schema {
     export type $$CommentInvestment = CommentInvestment;
     export type $$Comment = Comment;
     export type $$LP = LP;
-    export type $$CampaignProfit = CampaignProfit;
     export type $$Settings = Settings;
     export type $$Profile = Profile;
     export type $$Claim = Claim;
@@ -3274,7 +3208,6 @@ export interface Schema<
     CommentInvestment: Schema.CommentInvestment;
     Comment: Schema.Comment;
     LP: Schema.LP;
-    CampaignProfit: Schema.CampaignProfit;
     Settings: Schema.Settings;
     Profile: Schema.Profile;
     Claim: Schema.Claim;
@@ -3298,7 +3231,6 @@ export interface Schema<
     CommentInvestment: Schema.CommentInvestment;
     Comment: Schema.Comment;
     LP: Schema.LP;
-    CampaignProfit: Schema.CampaignProfit;
     Settings: Schema.Settings;
     Profile: Schema.Profile;
     Claim: Schema.Claim;

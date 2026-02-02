@@ -3,8 +3,6 @@
 import ClaimedRewardsRow from "./claimedRewardsRow";
 import useClaimedRewards from "@/hooks/useClaimedRewards";
 import Placeholder from "../tablePlaceholder";
-import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
-import { ClaimedCampaign } from "@/types";
 import { useAppKitAccount } from "@reown/appkit/react";
 import Button from "../themed/button";
 const bodyStyles = "min-h-24 bg-9gray";
@@ -25,11 +23,6 @@ export default function ClaimedRewardsBody({
     fetchNextPage,
   } = useClaimedRewards(account?.address, campaignId);
   const claimedRewards = data?.pages?.flatMap((p) => p);
-  const { data: PnLs } = usePnLOfWonCampaigns(account?.address);
-  const enrichedCampaigns = claimedRewards?.map((i) => ({
-    ...i,
-    PnL: PnLs?.find((pi) => pi?.winner === i?.winner?.slice(2))?.profit,
-  })) as (ClaimedCampaign & { PnL?: number })[] | undefined;
 
   if (isLoading)
     return (
@@ -55,7 +48,7 @@ export default function ClaimedRewardsBody({
 
   return (
     <tbody className={bodyStyles}>
-      {enrichedCampaigns?.map((item) => (
+      {claimedRewards?.map((item) => (
         <ClaimedRewardsRow key={item.txHash + item.winner} data={item} />
       ))}
       <tr>

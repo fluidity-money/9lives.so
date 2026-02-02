@@ -16,7 +16,6 @@ import WithdrawDialog from "../withdrawDialog";
 import { useState } from "react";
 import useBalance from "@/hooks/useBalance";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
-import usePnLOfWonCampaigns from "@/hooks/usePnLOfWonCampaigns";
 import use9LivesPoints from "@/hooks/use9LivesPoints";
 import { useAppKitAccount } from "@reown/appkit/react";
 
@@ -35,11 +34,12 @@ export default function PortfolioHeader() {
   const { connect } = useConnectWallet();
   const positionsValue = usePortfolioStore((s) => s.positionsValue);
   const unrealizedPnL = usePortfolioStore((s) => s.totalPnL);
-  const { data: realizedPnLs } = usePnLOfWonCampaigns(account?.address);
-  const realizedPnL = +formatFusdc(
-    realizedPnLs?.reduce((acc, v) => acc + (v?.profit ?? 0), 0) ?? 0,
-    2,
-  );
+  // const { data: realizedPnLs } = usePnLOfWonCampaigns(account?.address);
+  // const realizedPnL = +formatFusdc(
+  //   realizedPnLs?.reduce((acc, v) => acc + (v?.profit ?? 0), 0) ?? 0,
+  //   2,
+  // );
+  const realizedPnL = 0;
   const { data: totalVolume } = useTotalVolume(account?.address);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
   const enableWithdraw = useFeatureFlag("enable paymaster withdraw");

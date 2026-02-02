@@ -95,13 +95,6 @@ export namespace Select {
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["LP"]
     >;
-  export type CampaignProfit<
-    $SelectionSet extends $$SelectionSets.CampaignProfit,
-  > = InferResult.OutputObjectLike<
-    $SelectionSet,
-    $$Schema.Schema,
-    $$Schema.Schema["allTypes"]["CampaignProfit"]
-  >;
   export type Settings<$SelectionSet extends $$SelectionSets.Settings> =
     InferResult.OutputObjectLike<
       $SelectionSet,
