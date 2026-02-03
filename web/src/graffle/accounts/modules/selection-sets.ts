@@ -519,6 +519,7 @@ export interface CreateAccount<
   sigV: number;
   sigR: string;
   sigS: string;
+  authority?: string | undefined | null;
 }
 
 export interface FromArgs<

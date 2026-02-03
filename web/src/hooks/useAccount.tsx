@@ -50,6 +50,7 @@ export const create = async (address: string, signMessage: SignMessage) => {
     r: r.slice(2),
     s: s.slice(2),
     v: Number(v),
+    authority: config.NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR,
   });
   if (!response) {
     throw new Error("Account creation failed");

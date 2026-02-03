@@ -439,12 +439,13 @@ export namespace Schema {
 
   export interface CreateAccount extends $.InputObject {
     name: "CreateAccount";
-    isAllFieldsNullable: false;
+    isAllFieldsNullable: true;
     fields: {
       eoa_addr: CreateAccount.eoa_addr;
       sigV: CreateAccount.sigV;
       sigR: CreateAccount.sigR;
       sigS: CreateAccount.sigS;
+      authority: CreateAccount.authority;
     };
   }
 
@@ -470,6 +471,12 @@ export namespace Schema {
     export interface sigS extends $.InputField {
       name: "sigS";
       inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface authority extends $.InputField {
+      name: "authority";
+      inlineType: [0];
       namedType: $$NamedTypes.$$String;
     }
   }

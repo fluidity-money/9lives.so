@@ -85,6 +85,7 @@ const CreateAccount: $$Utilities.SchemaDrivenDataMap.InputObject = {
     sigV: {},
     sigR: {},
     sigS: {},
+    authority: {},
   },
 };
 

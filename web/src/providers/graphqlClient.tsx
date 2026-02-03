@@ -794,11 +794,13 @@ export const createAccount = ({
   r,
   s,
   v,
+  authority,
 }: {
   eoaAddr: string;
   r: string;
   s: string;
   v: number;
+  authority: string;
 }) =>
   graphAccounts.mutation.createAccountExec({
     $: {
@@ -807,6 +809,7 @@ export const createAccount = ({
         sigR: r,
         sigS: s,
         sigV: v,
+        authority,
       },
     },
     secret: true,
