@@ -174,19 +174,6 @@ func main() {
 			shutdown chan<- error, requestShutdown <-chan bool,
 		) {
 			sink := make(chan TableContent)
-			if f.Is(features.FeatureIsSnapshotOnRequest) {
-				go func() {
-					snapshotChan := make(chan []TableContent)
-					dumpChan <- snapshotChan
-					snapshot, err := json.Marshal(TableContent{
-						SnapshotToplevel: <-snapshotChan,
-					})
-					if err != nil {
-						slog.Error("failed to marshal snapshot", "err", err)
-					}
-					outgoing <- snapshot
-				}()
-			}
 			cookie := broadcast.Subscribe(sink)
 			filterRules := make(map[string]map[string]*FilterConstraint)
 		L:
@@ -228,7 +215,7 @@ func main() {
 						slog.Error("bad message received", "err", err)
 						break L
 					}
-					if f.Is(features.FeatureIsSnapshotOnRequest) && len(req.AskForSnapshot) > 0 {
+					if len(req.AskForSnapshot) > 0 {
 						snapshotFilters := make(map[string]map[string]*FilterConstraint)
 						for _, ch := range req.AskForSnapshot {
 							t := ch.Table
