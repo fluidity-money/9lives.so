@@ -1497,17 +1497,16 @@ func (r *queryResolver) UserClaims(ctx context.Context, address string, campaign
 	sql := `
 	WITH aggregated AS (
     SELECT
-        id,
         identifier,
         emitter_addr,
         recipient,
-        shares_spent,
-        fusdc_received,
-        created_by,
+        SUM(shares_spent) as shares_spent,
+        SUM(fusdc_received) as fusdc_received,
+        MAX(created_by) as created_by,
         transaction_hash
     FROM ninelives_events_payoff_activated
-    WHERE shares_spent > 0
-      AND recipient = ?
+    WHERE recipient = ?
+    GROUP BY emitter_addr, recipient,identifier, transaction_hash
 )
 SELECT
     nc.id,
@@ -1521,9 +1520,18 @@ SELECT
 FROM aggregated a
 LEFT JOIN ninelives_campaigns_1 nc
     ON a.emitter_addr = nc.content->>'poolAddress'
-LEFT JOIN ninelives_events_ninetails_loser_payoff nelp
-    ON a.recipient = nelp.recipient
-   AND a.emitter_addr = nelp.emitter_addr
+LEFT JOIN (
+    SELECT
+        emitter_addr,
+        recipient,
+        SUM(shares_spent) AS shares_spent,
+        SUM(fusdc_received) AS fusdc_received,
+        MAX(created_by) AS created_by
+    FROM ninelives_events_ninetails_loser_payoff
+    GROUP BY emitter_addr, recipient
+) nelp
+ON a.recipient = nelp.recipient
+AND a.emitter_addr = nelp.emitter_addr
 LEFT JOIN (
     SELECT
         emitter_addr,
@@ -1539,9 +1547,11 @@ LEFT JOIN (
 		sql += " WHERE nc.id = ?"
 		args = append(args, *campaignID)
 	}
-	sql += ` ORDER BY
-  		GREATEST(a.created_by, nelp.created_by) DESC,
-  		a.id DESC
+	sql += ` ORDER BY COALESCE(
+    GREATEST(a.created_by, nelp.created_by),
+    a.created_by,
+    nelp.created_by
+	) DESC
 	OFFSET ?
 	LIMIT ?;`
 	args = append(args, pageNum*pageSizeNum, pageSizeNum)
