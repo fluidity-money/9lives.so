@@ -247,7 +247,7 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.assets<_$Scalars>>;
   /**
    *
-   * Select the `totalPnL` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   * Select the `totalPnL` field on the `Query` object. Its type is `Pnl` (a `OutputObject` kind of type).
    *
    */
   totalPnL?:
@@ -1210,7 +1210,7 @@ export namespace Query {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   >
-    extends $Select.Bases.Base {
+    extends $Select.Bases.Base, $NamedTypes.$Pnl<_$Scalars> {
     /**
      * Arguments for `totalPnL` field. All arguments are required so you must include this.
      */
@@ -2078,6 +2078,124 @@ export interface PriceMetadataInput<
 //
 //
 //
+
+//                                                Pnl
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface Pnl<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `totalPnl` field on the `Pnl` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  totalPnl?:
+    | Pnl.totalPnl$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Pnl.totalPnl<_$Scalars>>;
+  /**
+   *
+   * Select the `volume` field on the `Pnl` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  volume?:
+    | Pnl.volume$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Pnl.volume<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?: Pnl$FragmentInline<_$Scalars> | Pnl$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface Pnl$FragmentInline<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends Pnl<_$Scalars>, $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace Pnl {
+  export type totalPnl<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | totalPnl$SelectionSet<_$Scalars>;
+
+  export interface totalPnl$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `totalPnl` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type totalPnl$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | totalPnl$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type volume<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | volume$SelectionSet<_$Scalars>;
+
+  export interface volume$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `volume` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type volume$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | volume$SelectionSet<_$Scalars>
+  >;
+}
 
 //                                               Asset
 // --------------------------------------------------------------------------------------------------
@@ -6615,6 +6733,10 @@ export namespace $NamedTypes {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = PriceMetadataInput<_$Scalars>;
+  export type $Pnl<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = Pnl<_$Scalars>;
   export type $Asset<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,

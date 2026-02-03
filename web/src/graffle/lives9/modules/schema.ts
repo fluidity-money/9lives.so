@@ -584,8 +584,8 @@ export namespace Schema {
           namedType: $$NamedTypes.$$String;
         };
       };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$String;
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Pnl;
     }
   }
 
@@ -1362,6 +1362,45 @@ export namespace Schema {
   //
   //
   //
+
+  //                                                Pnl
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface Pnl extends $.OutputObject {
+    name: "Pnl";
+    fields: {
+      __typename: Pnl.__typename;
+      totalPnl: Pnl.totalPnl;
+      volume: Pnl.volume;
+    };
+  }
+
+  export namespace Pnl {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Pnl";
+      };
+    }
+
+    export interface totalPnl extends $.OutputField {
+      name: "totalPnl";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface volume extends $.OutputField {
+      name: "volume";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+  }
 
   //                                               Asset
   // --------------------------------------------------------------------------------------------------
@@ -3152,6 +3191,7 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$Pnl = Pnl;
     export type $$Asset = Asset;
     export type $$UnclaimedCampaign = UnclaimedCampaign;
     export type $$PriceEvent = PriceEvent;
@@ -3220,6 +3260,7 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    Pnl: Schema.Pnl;
     Asset: Schema.Asset;
     UnclaimedCampaign: Schema.UnclaimedCampaign;
     PriceEvent: Schema.PriceEvent;
@@ -3243,6 +3284,7 @@ export interface Schema<
     PriceMetadata: Schema.PriceMetadata;
   };
   objects: {
+    Pnl: Schema.Pnl;
     Asset: Schema.Asset;
     UnclaimedCampaign: Schema.UnclaimedCampaign;
     PriceEvent: Schema.PriceEvent;

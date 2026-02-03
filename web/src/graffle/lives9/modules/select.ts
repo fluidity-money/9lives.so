@@ -57,6 +57,12 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
+  export type Pnl<$SelectionSet extends $$SelectionSets.Pnl> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["Pnl"]
+    >;
   export type Asset<$SelectionSet extends $$SelectionSets.Asset> =
     InferResult.OutputObjectLike<
       $SelectionSet,
