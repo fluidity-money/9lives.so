@@ -53,6 +53,11 @@ type (
 		Campaign
 	}
 
+	Pnl struct {
+		TotalPnl string `json:"totalPnl"`
+		Volume   string `json:"volume"`
+	}
+
 	InvestmentAmounts struct {
 		Id    string `json:"id"`
 		USDC  int    `json:"usdc"`

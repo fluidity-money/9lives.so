@@ -187,6 +187,11 @@ type ComplexityRoot struct {
 		Share      func(childComplexity int) int
 	}
 
+	Pnl struct {
+		TotalPnl func(childComplexity int) int
+		Volume   func(childComplexity int) int
+	}
+
 	Position struct {
 		CampaignId func(childComplexity int) int
 		Content    func(childComplexity int) int
@@ -350,7 +355,7 @@ type QueryResolver interface {
 	TimebasedCampaigns(ctx context.Context, categories []string, tokens []string) ([]*types.Campaign, error)
 	UnclaimedCampaigns(ctx context.Context, address string, token *string) ([]*types.UnclaimedCampaign, error)
 	Assets(ctx context.Context) ([]types.Asset, error)
-	TotalPnL(ctx context.Context, address string) (string, error)
+	TotalPnL(ctx context.Context, address string) (*types.Pnl, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -1035,6 +1040,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Outcome.Share(childComplexity), true
+
+	case "Pnl.totalPnl":
+		if e.complexity.Pnl.TotalPnl == nil {
+			break
+		}
+
+		return e.complexity.Pnl.TotalPnl(childComplexity), true
+
+	case "Pnl.volume":
+		if e.complexity.Pnl.Volume == nil {
+			break
+		}
+
+		return e.complexity.Pnl.Volume(childComplexity), true
 
 	case "Position.campaignId":
 		if e.complexity.Position.CampaignId == nil {
@@ -6947,6 +6966,94 @@ func (ec *executionContext) fieldContext_Outcome_share(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Pnl_totalPnl(ctx context.Context, field graphql.CollectedField, obj *types.Pnl) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Pnl_totalPnl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalPnl, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Pnl_totalPnl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Pnl",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Pnl_volume(ctx context.Context, field graphql.CollectedField, obj *types.Pnl) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Pnl_volume(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Volume, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Pnl_volume(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Pnl",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Position_campaignId(ctx context.Context, field graphql.CollectedField, obj *types.Position) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Position_campaignId(ctx, field)
 	if err != nil {
@@ -9162,14 +9269,11 @@ func (ec *executionContext) _Query_totalPnL(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*types.Pnl)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOPnl2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPnl(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_totalPnL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -9179,7 +9283,13 @@ func (ec *executionContext) fieldContext_Query_totalPnL(ctx context.Context, fie
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "totalPnl":
+				return ec.fieldContext_Pnl_totalPnl(ctx, field)
+			case "volume":
+				return ec.fieldContext_Pnl_volume(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Pnl", field.Name)
 		},
 	}
 	defer func() {
@@ -13526,6 +13636,50 @@ func (ec *executionContext) _Outcome(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var pnlImplementors = []string{"Pnl"}
+
+func (ec *executionContext) _Pnl(ctx context.Context, sel ast.SelectionSet, obj *types.Pnl) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, pnlImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Pnl")
+		case "totalPnl":
+			out.Values[i] = ec._Pnl_totalPnl(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "volume":
+			out.Values[i] = ec._Pnl_volume(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var positionImplementors = []string{"Position"}
 
 func (ec *executionContext) _Position(ctx context.Context, sel ast.SelectionSet, obj *types.Position) graphql.Marshaler {
@@ -14343,16 +14497,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "totalPnL":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_totalPnL(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -16177,6 +16328,13 @@ func (ec *executionContext) marshalOInvestmentAmounts2ᚖgithubᚗcomᚋfluidity
 		return graphql.Null
 	}
 	return ec._InvestmentAmounts(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPnl2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPnl(ctx context.Context, sel ast.SelectionSet, v *types.Pnl) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Pnl(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOPosition2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPosition(ctx context.Context, sel ast.SelectionSet, v *types.Position) graphql.Marshaler {
