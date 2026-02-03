@@ -245,6 +245,14 @@ export interface Query<
   assets?:
     | Query.assets$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.assets<_$Scalars>>;
+  /**
+   *
+   * Select the `totalPnL` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  totalPnL?:
+    | Query.totalPnL<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.totalPnL<_$Scalars>>;
 
   /**
    *
@@ -1190,6 +1198,45 @@ export namespace Query {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<assets$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type totalPnL<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = totalPnL$SelectionSet<_$Scalars>;
+
+  export interface totalPnL$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
+    /**
+     * Arguments for `totalPnL` field. All arguments are required so you must include this.
+     */
+    $: totalPnL$Arguments<_$Scalars>;
+  }
+
+  export interface totalPnL$Arguments<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    address: string;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `totalPnL` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type totalPnL$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<totalPnL$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation

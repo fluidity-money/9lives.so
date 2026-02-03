@@ -52,6 +52,7 @@ export namespace Schema {
       timebasedCampaigns: Query.timebasedCampaigns;
       unclaimedCampaigns: Query.unclaimedCampaigns;
       assets: Query.assets;
+      totalPnL: Query.totalPnL;
     };
   }
 
@@ -568,6 +569,23 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$Asset;
+    }
+
+    /**
+     * Returns user's total profit and loss of all time
+     */
+    export interface totalPnL extends $.OutputField {
+      name: "totalPnL";
+      arguments: {
+        address: {
+          kind: "InputField";
+          name: "address";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
   }
 

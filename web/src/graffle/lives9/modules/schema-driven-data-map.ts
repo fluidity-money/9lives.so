@@ -684,6 +684,14 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     assets: {
       // nt: Asset, <-- Assigned later to avoid potential circular dependency.
     },
+    totalPnL: {
+      a: {
+        address: {
+          nt: String,
+          it: [1],
+        },
+      },
+    },
   },
 };
 
