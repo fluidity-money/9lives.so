@@ -4,12 +4,7 @@ import { Leader } from "@/types";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function LeaderTable({ data }: { data?: Leader[] }) {
-  const titles = [
-    "Rank",
-    "User",
-    "Points",
-    //, "Profit"
-  ];
+  const titles = ["Rank", "User", "Points", "PnL"];
   const account = useAppKitAccount();
   const accountInTheList = data?.find(
     (i) => i.wallet.toLowerCase() === account?.address?.toLowerCase(),
