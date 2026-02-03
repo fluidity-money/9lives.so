@@ -86,6 +86,11 @@ const clientEnvSchema = z.object({
    *  Paymaster address
    */
   NEXT_PUBLIC_PAYMASTER_ADDR: z.string().length(42),
+
+  /**
+   *  Account system authority contract address
+   */
+  NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR: z.string().length(42),
 });
 
 type ClientEnvSchemaType = z.infer<typeof clientEnvSchema>;
@@ -123,6 +128,8 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_CLAIMANT_HELPER_ADDR:
     process.env.NEXT_PUBLIC_CLAIMANT_HELPER_ADDR,
   NEXT_PUBLIC_PAYMASTER_ADDR: process.env.NEXT_PUBLIC_PAYMASTER_ADDR,
+  NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR:
+    process.env.NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR,
 });
 
 if (!clientEnv.success) {
