@@ -117,6 +117,11 @@ type Query {
   Returns assets ordered by volume invested 
   """
   assets: [Asset!]!
+
+  """
+  Returns user's total profit and loss of all time
+  """
+  totalPnL(address:String!): String!
 }
 
 type Asset {

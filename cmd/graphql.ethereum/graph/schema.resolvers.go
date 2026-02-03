@@ -2011,6 +2011,52 @@ func (r *queryResolver) Assets(ctx context.Context) ([]types.Asset, error) {
 	return assets, nil
 }
 
+// TotalPnL is the resolver for the totalPnL field.
+func (r *queryResolver) TotalPnL(ctx context.Context, address string) (string, error) {
+	var pnl string
+	address = strings.ToLower(address)
+	err := r.DB.Raw(`
+	WITH payoff AS (
+    SELECT
+        emitter_addr,
+        SUM(fusdc_received) AS fusdc_received
+    FROM ninelives_events_payoff_activated
+    WHERE shares_spent > 0
+      AND recipient = ?
+    GROUP BY emitter_addr
+),
+loser_payoff AS (
+    SELECT
+        emitter_addr,
+        SUM(fusdc_received) AS fusdc_received
+    FROM ninelives_events_ninetails_loser_payoff
+    WHERE recipient = ?
+    GROUP BY emitter_addr
+),
+spent AS (
+    SELECT
+        emitter_addr,
+        SUM(from_amount) AS fusdc_spent
+    FROM ninelives_buys_and_sells_1
+    WHERE recipient = ?
+    GROUP BY emitter_addr
+)
+SELECT
+    SUM(
+        COALESCE(p.fusdc_received, 0)
+      + COALESCE(l.fusdc_received, 0)
+      - COALESCE(s.fusdc_spent, 0)
+    ) AS total_pnl
+FROM payoff p
+LEFT JOIN loser_payoff l ON l.emitter_addr = p.emitter_addr
+LEFT JOIN spent s ON s.emitter_addr = p.emitter_addr;
+	`, address, address, address).Scan(&pnl).Error
+	if err != nil {
+		return "0", fmt.Errorf("error getting pnl: %w", err)
+	}
+	return pnl, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {
