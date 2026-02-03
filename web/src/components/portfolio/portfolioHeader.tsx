@@ -18,6 +18,7 @@ import useBalance from "@/hooks/useBalance";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import use9LivesPoints from "@/hooks/use9LivesPoints";
 import { useAppKitAccount } from "@reown/appkit/react";
+import useTotalPnL from "@/hooks/useTotalPnL";
 
 function Badge({ address }: { address: string }) {
   const { data: domainOrAddress } = useMeowDomains(address);
@@ -34,12 +35,9 @@ export default function PortfolioHeader() {
   const { connect } = useConnectWallet();
   const positionsValue = usePortfolioStore((s) => s.positionsValue);
   const unrealizedPnL = usePortfolioStore((s) => s.totalPnL);
-  // const { data: realizedPnLs } = usePnLOfWonCampaigns(account?.address);
-  // const realizedPnL = +formatFusdc(
-  //   realizedPnLs?.reduce((acc, v) => acc + (v?.profit ?? 0), 0) ?? 0,
-  //   2,
-  // );
-  const realizedPnL = 0;
+  const { data: pnl } = useTotalPnL(account?.address);
+  const realizedPnL = +formatFusdc(pnl, 2);
+
   const { data: totalVolume } = useTotalVolume(account?.address);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
   const enableWithdraw = useFeatureFlag("enable paymaster withdraw");

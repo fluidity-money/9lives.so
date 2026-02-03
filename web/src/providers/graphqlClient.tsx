@@ -902,3 +902,6 @@ export const ninelivesClaimAll = async ({
       headers: { Authorization: `${eoaAddress}:${secret}` },
     })
     .mutation.claimRewards({ $: { msTs: Date.now().toString(), markets } });
+
+export const requestTotalPnL = async (address: string) =>
+  graph9Lives.query.totalPnL({ $: { address } });
