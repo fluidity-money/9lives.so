@@ -22,12 +22,12 @@ const nextConfig = {
        {
         source: '/',
         destination: '/campaign/btc/15mins',
-        permanent: true,
+        permanent: false,
       },
       {
         source: '/simple',
         destination: '/v1/simple/campaign/btc/15mins',
-        permanent: true,
+        permanent: false,
       },
     ]
   },
