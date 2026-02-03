@@ -42,7 +42,7 @@ function storeSecret(secret: string, wallet: string) {
 
 export const create = async (address: string, signMessage: SignMessage) => {
   const publicKey = await requestPublicKey();
-  const message = `New Superposition account: ${publicKey}, authority contract: ${config.NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR.toLowerCase()}`;
+  const message = `New Superposition account: ${publicKey}, authority contract: ${config.NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR.toLowerCase().slice(2)}`;
   const signature = await signMessage({ message });
   const { r, s, v } = parseSignature(signature);
   const response = await createAccount({
