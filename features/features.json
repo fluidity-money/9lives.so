@@ -33,5 +33,6 @@
 	"enable account system claim": true,
 	"websocket should filter tables": true,
 	"should send the snapshot on connection": true,
-	"should only send the snapshot on request": false
+	"should only send the snapshot on request": false,
+	"should stream using websocket instead of polling": true
 }
