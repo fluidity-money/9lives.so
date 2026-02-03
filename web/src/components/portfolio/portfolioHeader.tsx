@@ -36,7 +36,7 @@ export default function PortfolioHeader() {
   const positionsValue = usePortfolioStore((s) => s.positionsValue);
   const unrealizedPnL = usePortfolioStore((s) => s.totalPnL);
   const { data: pnl } = useTotalPnL(account?.address);
-  const realizedPnL = +formatFusdc(pnl, 2);
+  const realizedPnL = +formatFusdc(pnl?.totalPnl ?? "0", 2);
 
   const { data: totalVolume } = useTotalVolume(account?.address);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);

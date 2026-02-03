@@ -5,9 +5,9 @@ export default function useTotalPnL(address?: string) {
   return useQuery({
     queryKey: ["realizedPnL", address],
     queryFn: async () => {
-      if (!address) return "0";
+      if (!address) return { totalPnl: "0", volume: "0" };
       return await requestTotalPnL(address);
     },
-    initialData: "0",
+    initialData: { totalPnl: "0", volume: "0" },
   });
 }

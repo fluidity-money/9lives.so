@@ -907,4 +907,4 @@ export const ninelivesClaimAll = async ({
     .mutation.claimRewards({ $: { msTs: Date.now().toString(), markets } });
 
 export const requestTotalPnL = async (address: string) =>
-  graph9Lives.query.totalPnL({ $: { address } });
+  graph9Lives.query.totalPnL({ $: { address }, totalPnl: true, volume: true });

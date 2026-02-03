@@ -1,10 +1,12 @@
 import { combineClass } from "@/utils/combineClass";
 import LeaderRow from "./leaderRow";
-import { Leader } from "@/types";
 import { useAppKitAccount } from "@reown/appkit/react";
+import use9LivesPoints from "@/hooks/use9LivesPoints";
 
-export default function LeaderTable({ data }: { data?: Leader[] }) {
-  const titles = ["Rank", "User", "Points", "PnL"];
+export default function LeaderTable() {
+  const { data, isLoading } = use9LivesPoints({});
+
+  const titles = ["Rank", "User", "Points", "PnL", "Volume"];
   const account = useAppKitAccount();
   const accountInTheList = data?.find(
     (i) => i.wallet.toLowerCase() === account?.address?.toLowerCase(),
@@ -41,9 +43,15 @@ export default function LeaderTable({ data }: { data?: Leader[] }) {
         ) : (
           <LeaderRow />
         )}
-        {data?.map((item, idx) => (
-          <LeaderRow key={item.wallet} data={item} />
-        ))}
+        {isLoading ? (
+          <tr>
+            <th colSpan={titles.length}>
+              <div className="skeleton h-[400px]" />
+            </th>
+          </tr>
+        ) : (
+          data?.map((item, idx) => <LeaderRow key={item.wallet} data={item} />)
+        )}
       </tbody>
     </table>
   );

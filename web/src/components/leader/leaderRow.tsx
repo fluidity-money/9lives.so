@@ -15,7 +15,7 @@ export default function LeaderRow({
   const cellStyle =
     "border-b border-b-gray-200 font-chicago text-xs text-9black h-16";
   const { connect } = useConnectWallet();
-  const { data: totalPnL } = useTotalPnL(data?.wallet);
+  const { data: history } = useTotalPnL(data?.wallet);
   if (!data)
     return (
       <tr className="cursor-pointer bg-9blueLight/50" onClick={() => connect()}>
@@ -53,9 +53,14 @@ export default function LeaderRow({
       <td
         className={combineClass(
           cellStyle,
-          Number(totalPnL) >= 0 ? "text-green-700" : "text-red-700",
+          history?.totalPnl && Number(history?.totalPnl) >= 0
+            ? "text-green-700"
+            : "text-red-700",
         )}
-      >{`$${formatFusdc(totalPnL, 2)}`}</td>
+      >{`$${formatFusdc(history?.totalPnl ?? "0", 2)}`}</td>
+      <td
+        className={combineClass(cellStyle)}
+      >{`$${formatFusdc(history?.volume ?? "0", 2)}`}</td>
     </tr>
   );
 }

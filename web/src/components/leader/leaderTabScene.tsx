@@ -4,10 +4,8 @@ import { TabGroup, TabList, Tab, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment } from "react";
 import LeaderTable from "./leaderTable";
 import { combineClass } from "@/utils/combineClass";
-import use9LivesPoints from "@/hooks/use9LivesPoints";
 
 export default function LeaderTabScene() {
-  const { data: generalData } = use9LivesPoints({});
   // const { data: categoriesData } = useLeaderBoardCategories();
   return (
     <TabGroup
@@ -32,7 +30,7 @@ export default function LeaderTabScene() {
       </TabList>
       <TabPanels>
         <TabPanel>
-          <LeaderTable data={generalData} />
+          <LeaderTable />
         </TabPanel>
         {/* <TabPanel>
           <LeaderTable data={categoriesData?.referrers} />
