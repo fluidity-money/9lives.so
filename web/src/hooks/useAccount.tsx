@@ -16,7 +16,7 @@ import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { usePublicClient, useSignMessage } from "wagmi";
-import { maxUint256, parseUnits } from "viem";
+import { maxUint256, parseUnits, zeroAddress } from "viem";
 import { parseSignature } from "viem";
 
 const SECRET_KEY = "9lives-account-secret";
@@ -42,7 +42,8 @@ function storeSecret(secret: string, wallet: string) {
 
 export const create = async (address: string, signMessage: SignMessage) => {
   const publicKey = await requestPublicKey();
-  const signature = await signMessage({ message: publicKey });
+  const message = `New Superposition account: ${publicKey}, authority contract: ${zeroAddress}`;
+  const signature = await signMessage({ message });
   const { r, s, v } = parseSignature(signature);
   const response = await createAccount({
     eoaAddr: address.slice(2),
