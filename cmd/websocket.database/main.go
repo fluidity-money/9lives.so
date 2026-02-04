@@ -46,6 +46,13 @@ type FilterConstraint struct {
 	Et any `json:"et"`
 }
 
+func compareFmt(v1, v2 any) bool {
+	if v1 == v2 {
+		return true
+	}
+	return fmt.Sprintf("%v", v1) == fmt.Sprintf("%v", v2)
+}
+
 func main() {
 	f := features.Get()
 	config := config.Get()
@@ -186,7 +193,7 @@ func main() {
 						}
 						for k, c := range filterRules[m.Table] {
 							v, exists := m.Content[k]
-							if !exists || v != c.Et {
+							if !exists || !compareFmt(v, c.Et) {
 								continue L
 							}
 						}
@@ -245,7 +252,7 @@ func main() {
 									include := true
 									for k, c := range tableFilter {
 										v, exists := item[k]
-										if !exists || v != c.Et {
+										if !exists || !compareFmt(v, c.Et) {
 											include = false
 											break
 										}
