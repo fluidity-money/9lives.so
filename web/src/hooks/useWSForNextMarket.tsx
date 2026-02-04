@@ -2,10 +2,10 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useContext } from "react";
-import { WSContext } from "@/providers/websocket9lives";
 import { SimpleCampaignDetail } from "@/types";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+import { useWebSocketStore } from "@/stores/websocket";
 
 type WSMessage = {
   table: "ninelives_campaigns_1";
@@ -20,13 +20,13 @@ export function useWSForNextMarket(
   simple: boolean = false,
 ) {
   const queryClient = useQueryClient();
-  const ws = useContext(WSContext);
+  const subscribe = useWebSocketStore((s) => s.subscribe);
   const symbol = previousData.priceMetadata.baseAsset;
   const period = getPeriodOfCampaign(previousData);
   useEffect(() => {
-    if (!ws || !simple) return;
+    if (!simple) return;
 
-    const offMessage = ws.subscribe((raw) => {
+    const offMessage = subscribe((raw) => {
       try {
         const msg = raw as WSMessage;
 
@@ -72,7 +72,6 @@ export function useWSForNextMarket(
       offMessage();
     };
   }, [
-    ws,
     symbol,
     simple,
     previousData.identifier,

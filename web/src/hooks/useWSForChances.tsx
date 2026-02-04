@@ -2,8 +2,8 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useContext } from "react";
-import { WSContext } from "@/providers/websocket9lives";
 import { CampaignDetail } from "@/types";
+import { useWebSocketStore } from "@/stores/websocket";
 
 type WSMessage = {
   table: "ninelives_market_odds_snapshot_1";
@@ -16,12 +16,12 @@ type WSMessage = {
 
 export function useWSForChances(id: string, poolAddress: string) {
   const queryClient = useQueryClient();
-  const ws = useContext(WSContext);
+  const subscribe = useWebSocketStore((s) => s.subscribe);
 
   useEffect(() => {
-    if (!ws || !queryClient) return;
+    if (!queryClient) return;
 
-    const offMessage = ws.subscribe((raw) => {
+    const offMessage = subscribe((raw) => {
       try {
         const msg = raw as WSMessage;
 
@@ -56,5 +56,5 @@ export function useWSForChances(id: string, poolAddress: string) {
     return () => {
       offMessage();
     };
-  }, [ws, poolAddress, id, queryClient]);
+  }, [poolAddress, id, queryClient]);
 }

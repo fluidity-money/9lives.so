@@ -1,10 +1,10 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useContext } from "react";
-import { WSContext } from "@/providers/websocket9lives";
+import { useEffect } from "react";
 import { PricePoint, RawPricePoint, SimpleMarketKey } from "@/types";
 import config from "@/config";
+import { useWebSocketStore } from "@/stores/websocket";
 
 type WSMessage = {
   table: "oracles_ninelives_prices_2";
@@ -21,12 +21,12 @@ export function useWSForPrices({
   ending: number;
 }) {
   const queryClient = useQueryClient();
-  const ws = useContext(WSContext);
+  const subscribe = useWebSocketStore((s) => s.subscribe);
 
   useEffect(() => {
-    if (!ws || !queryClient) return;
+    if (!queryClient) return;
 
-    const offMessage = ws.subscribe((raw) => {
+    const offMessage = subscribe((raw) => {
       try {
         const msg = raw as WSMessage;
 
@@ -84,5 +84,5 @@ export function useWSForPrices({
     return () => {
       offMessage();
     };
-  }, [ws, asset, starting, ending, queryClient]);
+  }, [asset, starting, ending, queryClient]);
 }
