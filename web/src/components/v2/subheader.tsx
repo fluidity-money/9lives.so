@@ -1,6 +1,7 @@
 import { HeaderBox } from "./headerBox";
 import { SimpleCampaignDetail } from "@/types";
 import DetailCurrentPriceBox from "./currentPriceBox";
+import CountdownTimer from "./countdown";
 
 export default function SimpleSubHeader({
   campaignData,
@@ -8,7 +9,8 @@ export default function SimpleSubHeader({
   campaignData: SimpleCampaignDetail;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2.5">
+    <div className="flex flex-col flex-wrap items-end gap-0.5 md:flex-row md:gap-2.5">
+      <CountdownTimer endTime={campaignData.ending} />
       <HeaderBox
         title="Base"
         value={`$${campaignData.priceMetadata.priceTargetForUp}`}
