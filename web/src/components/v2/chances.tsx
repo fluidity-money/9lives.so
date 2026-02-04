@@ -11,9 +11,6 @@ export default function SimpleChance({
 }) {
   return (
     <div className="mb-4 flex flex-col gap-1">
-      <p className="text-xs font-semibold text-neutral-400">
-        Overview Outcome Projection
-      </p>
       {isLoading ? (
         <div className="skeleton h-[30px] w-full" />
       ) : (

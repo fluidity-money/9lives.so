@@ -44,7 +44,7 @@ export default function SimpleBody({
   return (
     <>
       <div className="rounded-xl border border-neutral-400 bg-2white p-4">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-2 flex items-center justify-between">
           <div className="flex gap-2">
             <Image
               src={config.simpleMarkets[symbol].logo}
