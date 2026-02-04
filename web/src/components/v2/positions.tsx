@@ -9,6 +9,7 @@ import usePositionHistory from "@/hooks/usePositionsHistory";
 import formatFusdc from "@/utils/format/formatUsdc";
 import Button from "./button";
 import { combineClass } from "@/utils/combineClass";
+import ArrowIcon from "../arrowIcon";
 
 function PositionItem({
   isConcluded,
@@ -53,12 +54,20 @@ function PositionItem({
           "flex flex-1 items-center justify-center rounded-lg p-1",
         )}
       >
-        <span
+        <div
           className={combineClass(
             isWinning ? "text-green-600" : "text-red-600",
-            "text-xs font-semibold",
+            "flex items-center gap-1",
           )}
-        >{`Currently ${isWinning ? "Winning" : "Losing"}`}</span>
+        >
+          <span
+            className={combineClass(
+              isWinning ? "text-green-600" : "text-red-600",
+              "text-xs font-semibold",
+            )}
+          >{`Currently ${isWinning ? "Winning" : "Losing"}`}</span>
+          <ArrowIcon variant={isWinning ? "up" : "down"} />
+        </div>
       </div>
       <div className="flex flex-col gap-1 rounded-md bg-2white px-2 py-1">
         <div className="flex items-center justify-between">
