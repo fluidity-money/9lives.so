@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-const badge = cva("rounded-xl px-1.5 py-1 text-xs font-medium", {
+const badge = cva("rounded-xl px-1.5 py-1 text-xs font-bold md:text-sm", {
   variants: {
     intent: {
       yes: "bg-green-700 text-green-100",
