@@ -1,8 +1,8 @@
 import { HeaderBox } from "./headerBox";
 import { SimpleCampaignDetail } from "@/types";
 import DetailCurrentPriceBox from "./currentPriceBox";
-import CountdownTimer from "./countdown";
-
+import dynamic from "next/dynamic";
+const CountdownTimer = dynamic(() => import("./countdown"), { ssr: false });
 export default function SimpleSubHeader({
   campaignData,
 }: {
