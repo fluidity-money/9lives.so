@@ -13,13 +13,13 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from "recharts";
-import ChartPointsIndicator from "./chartPointsIndicator";
 
 export default function AssetPriceChart({
   symbol,
   basePrice,
   starting,
   ending,
+  volume,
   assetPrices,
 }: {
   id: string;
@@ -27,6 +27,7 @@ export default function AssetPriceChart({
   basePrice: number;
   starting: number;
   ending: number;
+  volume: string;
   assetPrices: PricePoint[];
 }) {
   const chartHeight = 300;
@@ -56,8 +57,6 @@ export default function AssetPriceChart({
   const isDailyMarket = DAY >= timeDiff && timeDiff > HOUR;
   const remainingMs = Math.max(0, ending - latestTimestamp);
   const totalSeconds = Math.floor(remainingMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
   const formatFn = (ts: number) => {
     const date = new Date(ts);
     switch (true) {
@@ -305,6 +304,9 @@ export default function AssetPriceChart({
           }}
         />
       </ComposedChart>
+      <span className="absolute -bottom-1 left-0 right-0 block text-center text-xs text-neutral-400">
+        ${volume} Vol.
+      </span>
     </ResponsiveContainer>
   );
 }

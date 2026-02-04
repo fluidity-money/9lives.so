@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import config from "@/config";
 import { useWSForNextMarket } from "@/hooks/useWSForNextMarket";
 import LiveTrades from "./trades";
+import formatFusdc from "@/utils/format/formatUsdc";
 
 export default function PriceChartWrapper({
   campaignData,
@@ -44,6 +45,7 @@ export default function PriceChartWrapper({
     <div className="relative">
       <AssetPriceChartMask simple={simple} campaignData={campaignData} />
       <AssetPriceChart
+        volume={formatFusdc(campaignData.totalVolume, 2)}
         starting={starting}
         ending={ending}
         symbol={symbol}
