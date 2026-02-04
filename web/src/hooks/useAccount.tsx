@@ -187,6 +187,7 @@ export default function useAccount({
           type ResponseType = {
             response?: { status: number };
             data?: any;
+            errors?: null | { message: string; path: string[] }[];
           };
           const result = (await ninelivesMint({
             amount: amount.toString(),
@@ -208,12 +209,12 @@ export default function useAccount({
               eoaAddress: account.address,
               permit,
             })) as ResponseType;
-            if (result2.response?.status !== 200) {
+            if (result2.response?.status !== 200 || result2.errors) {
               throw new Error(
                 `code ${result2.response?.status}. Contact support`,
               );
             }
-          } else if (result.response?.status !== 200) {
+          } else if (result.response?.status !== 200 || result.errors) {
             throw new Error(`code ${result.response?.status}. Contact support`);
           }
           res(result.response);

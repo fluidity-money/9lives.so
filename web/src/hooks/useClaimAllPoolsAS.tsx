@@ -25,6 +25,7 @@ export default function useClaimAllPoolsWithAS(
       type ResponseType = {
         response?: { status: number };
         data?: { claimRewards: UnclaimedCampaign[] };
+        errors?: null | { message: string; path: string[] }[];
       };
       let result = (await ninelivesClaimAll({
         secret,
@@ -38,10 +39,10 @@ export default function useClaimAllPoolsWithAS(
           eoaAddress: walletAddress,
           markets: addresses,
         })) as ResponseType;
-        if (result.response?.status !== 200) {
+        if (result.response?.status !== 200 || result.errors) {
           throw new Error(`code ${result.response?.status}. Contact support`);
         }
-      } else if (result.response?.status !== 200) {
+      } else if (result.response?.status !== 200 || result.errors) {
         throw new Error(`code ${result.response?.status}. Contact support`);
       }
       return result?.data?.claimRewards;
