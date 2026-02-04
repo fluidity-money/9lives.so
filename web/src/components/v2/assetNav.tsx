@@ -72,8 +72,8 @@ export default function AssetNav({
       callback: () => router.push(`/campaign/${mins5Markets[0]}/5mins`),
     },
     {
-      title: isHourly ? "Hourly Markets" : "Hourly",
-      mobileTitle: "1 Hr",
+      title: isHourly ? "🔥 Hourly Markets" : "🔥 Hourly",
+      mobileTitle: "🔥 1 Hr",
       callback: () => router.push(`/campaign/${hourlyMarkets[0]}/hourly`),
     },
   ] as GroupButtonProps[];
