@@ -33,7 +33,7 @@ export default function DetailCurrentPriceBox({
   return (
     <HeaderBox
       title={isEnded ? "Final" : "Current"}
-      value={`$${latestPrice}`}
+      value={`$${Number(latestPrice).toFixed(2)}`}
     />
   );
 }

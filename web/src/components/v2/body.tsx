@@ -15,6 +15,7 @@ import Image from "next/image";
 import config from "@/config";
 import SimpleSubHeader from "./subheader";
 import useSharePrices from "@/hooks/useSharePrices";
+import ChartPointsIndicator from "./chartPointsIndicator";
 
 export default function SimpleBody({
   symbol,
@@ -48,16 +49,23 @@ export default function SimpleBody({
           <div className="flex gap-2">
             <Image
               src={config.simpleMarkets[symbol].logo}
-              width={43}
-              height={43}
+              width={53}
+              height={53}
               alt={symbol}
-              className="size-10 rounded-xl"
+              className="size-[53px] rounded-xl"
             />
-            <h1 className="text-2xl font-semibold text-2black">
-              <span className="text-neutral-400">$</span>
-              {data.priceMetadata?.baseAsset.toUpperCase()}
-            </h1>
+            <div className="flex flex-col gap-0.5">
+              <h1 className="text-2xl font-semibold text-2black">
+                <span className="text-neutral-400">$</span>
+                {data.priceMetadata?.baseAsset.toUpperCase()}
+              </h1>
+              <ChartPointsIndicator
+                starting={campaignData.starting}
+                ending={campaignData.ending}
+              />
+            </div>
           </div>
+
           <SimpleSubHeader campaignData={campaignData} />
         </div>
         <SimpleChance isLoading={pricesLoading} yes={yesChance} no={noChance} />

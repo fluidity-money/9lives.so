@@ -269,20 +269,6 @@ export default function AssetPriceChart({
         />
         <ReferenceLine
           y={basePrice}
-          stroke="transparent"
-          ifOverflow="extendDomain"
-          shape={({ x1, x2, y1 }) => (
-            <ChartPointsIndicator
-              starting={starting}
-              ending={ending}
-              x1={x1}
-              x2={x2}
-              y1={y1}
-            />
-          )}
-        />
-        <ReferenceLine
-          y={basePrice}
           stroke="#D4D4D4"
           strokeWidth={2}
           zIndex={0}

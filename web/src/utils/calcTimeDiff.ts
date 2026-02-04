@@ -12,8 +12,8 @@ export function calcTimeLeft(endTime: number) {
     endTimeInMs = endTime * 1000;
   } else if (endTime === 0) {
     return {
-      full: "Event has ended",
-      short: "Event has ended",
+      full: "Ended",
+      short: "Ended",
       days: 0,
       hours: 0,
       minutes: 0,
@@ -34,8 +34,8 @@ export function calcTimeLeft(endTime: number) {
   const differenceInMs = new Date(endTimeInMs).getTime() - Date.now();
   if (0 >= differenceInMs) {
     return {
-      full: "Event has ended",
-      short: "Event has ended",
+      full: "Ended",
+      short: "Ended",
       days: 0,
       hours: 0,
       minutes: 0,

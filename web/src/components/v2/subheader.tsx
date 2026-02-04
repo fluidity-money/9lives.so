@@ -13,7 +13,7 @@ export default function SimpleSubHeader({
       <CountdownTimer endTime={campaignData.ending} />
       <HeaderBox
         title="Base"
-        value={`$${campaignData.priceMetadata.priceTargetForUp}`}
+        value={`$${Number(campaignData.priceMetadata.priceTargetForUp).toFixed(2)}`}
       />
       <DetailCurrentPriceBox
         symbol={campaignData.priceMetadata.baseAsset}
