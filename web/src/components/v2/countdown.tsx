@@ -5,11 +5,13 @@ export default function CountdownTimer({ endTime }: { endTime: number }) {
   const timeleft = useCountdown(endTime);
 
   return (
-    <HeaderBox
-      shrink
-      title="Time"
-      value={timeleft.toString()}
-      valueColor="text-orange-500"
-    />
+    <div suppressHydrationWarning>
+      <HeaderBox
+        shrink
+        title="Time"
+        value={timeleft.toString()}
+        valueColor="text-orange-500"
+      />
+    </div>
   );
 }
