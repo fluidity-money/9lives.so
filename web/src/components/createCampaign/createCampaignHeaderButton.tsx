@@ -9,7 +9,7 @@ export default function CreateCampaingButton() {
   if (!enableCreate) return null;
   return (
     <div className="h-10">
-      <Link href={"/create-campaign"}>
+      <Link href={"/v1/create-campaign"}>
         <button className="hidden items-center justify-center px-4 font-chicago leading-10 underline md:flex">
           <span className="hidden lg:inline">Create Campaign</span>
           <span className="lg:hidden">Create</span>{" "}
