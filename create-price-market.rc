@@ -16,10 +16,31 @@
 # At each step, environment variables will be printed which can be set
 # to restart from the point after which they were printed.
 
-fee_creator=3
-fee_lp=3
-fee_minter=3
-fee_referrer=3
+if(~ $SPN_FEE_CREATOR '') {
+	fee_creator=3
+}
+if not {
+	fee_creator=$SPN_FEE_CREATOR
+}
+if(~ $SPN_FEE_LP '') {
+	fee_lp=3
+}
+if not {
+	fee_lp=$SPN_FEE_LP
+}
+if(~ $SPN_FEE_MINTER '') {
+	fee_minter=3
+}
+if not {
+	fee_minter=$SPN_FEE_MINTER
+}
+if(~ $SPN_FEE_REFERRER '') {
+	fee_referrer=3
+}
+if not {
+	fee_referrer=$SPN_FEE_REFERRER
+}
+
 backend_is_dppm=true
 
 if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=`{date +%s}
