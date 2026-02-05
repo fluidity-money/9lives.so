@@ -14,6 +14,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types"
 
 	"github.com/fluidity-money/9lives.so/lib/events"
+	"github.com/fluidity-money/9lives.so/lib/events/arb-sys"
 	"github.com/fluidity-money/9lives.so/lib/events/dinero"
 	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
 	"github.com/fluidity-money/9lives.so/lib/events/lifi"
@@ -95,6 +96,8 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	sudoswap.TopicNewERC721Pair,
 	// Punk Domains
 	punk_domains.TopicDefaultDomainChanged,
+	// ArbSys
+	arb_sys.TopicL2ToL1Tx,
 }
 
 type IngestorArgs struct {
@@ -108,7 +111,7 @@ type IngestorArgs struct {
 // exclusively websockets.
 func Entry(f features.F, ingestorPagination int, pollWait int, c *ethclient.Client, db *gorm.DB, ingestorArgs IngestorArgs) {
 	if f.Is(features.FeatureStreamBlocks) {
-		IngestStreaming(f,c,db, ingestorArgs)
+		IngestStreaming(f, c, db, ingestorArgs)
 	} else {
 		IngestPolling(f, c, db, ingestorPagination, pollWait, ingestorArgs)
 	}
@@ -597,6 +600,10 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		a, err = punk_domains.UnpackDefaultDomainChanged(topic1, data)
 		table = "punk_domains_events_default_domain_changed"
 		logEvent("DefaultDomainChanged")
+	case arb_sys.TopicL2ToL1Tx:
+		a, err = arb_sys.UnpackL2ToL1Tx(topic1, topic2, topic3, data)
+		table = "arb_sys_events_l2_to_l1_tx"
+		logEvent("L2ToL1Tx")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
