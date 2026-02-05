@@ -40,7 +40,7 @@ export default async function RootLayout({
       <body className="flex min-h-screen flex-col bg-2white">
         <Providers cookies={cookies} version="2">
           <Header />
-          <main className="mx-auto flex w-full max-w-[610px] flex-1 justify-center">
+          <main className="mx-auto flex w-full max-w-[620px] flex-1 justify-center">
             <div className="flex-1 p-2 md:p-4">{children}</div>
           </main>
           <Footer />
