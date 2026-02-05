@@ -19,4 +19,9 @@ CREATE TABLE arb_sys_events_l2_to_l1_tx(
 	data BYTES NOT NULL
 );
 
+CREATE VIEW arb_sys_outside_challenge_period_1 AS
+	SELECT *
+	FROM arb_sys_events_l2_to_l1_tx
+	WHERE created_by < current_timestamp - interval '26 hours';
+
 -- migrate:down
