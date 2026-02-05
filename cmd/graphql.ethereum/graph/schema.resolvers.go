@@ -1535,7 +1535,12 @@ AND a.emitter_addr = nelp.emitter_addr
 LEFT JOIN (
     SELECT
         emitter_addr,
-        SUM(nbas.from_amount) AS fusdc_spent
+         SUM(
+            CASE
+                WHEN nbas.type = 'buy'  THEN nbas.from_amount
+                WHEN nbas.type = 'sell' THEN -nbas.to_amount
+            END
+        ) AS fusdc_spent
     FROM ninelives_buys_and_sells_1 nbas
     WHERE recipient = ?
     GROUP BY emitter_addr
