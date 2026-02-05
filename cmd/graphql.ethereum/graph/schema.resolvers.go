@@ -2050,7 +2050,12 @@ loser_payoff AS (
 spent AS (
     SELECT
         emitter_addr,
-        SUM(from_amount) AS fusdc_spent
+         SUM(
+            CASE
+                WHEN nbas.type = 'buy'  THEN nbas.from_amount
+                WHEN nbas.type = 'sell' THEN -nbas.to_amount
+            END
+        ) AS fusdc_spent
     FROM ninelives_buys_and_sells_1
     WHERE recipient = ?
     GROUP BY emitter_addr
