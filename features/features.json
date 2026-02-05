@@ -32,7 +32,7 @@
 	"enable account system buy": true,
 	"enable account system claim": true,
 	"websocket should filter tables": true,
-	"should send the snapshot on connection": true,
-	"should only send the snapshot on request": false,
+	"should send the snapshot on connection": false,
+	"should only send the snapshot on request": true,
 	"should stream using websocket instead of polling": false
 }
