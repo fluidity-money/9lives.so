@@ -58,6 +58,7 @@ export default function useLiquidity({
     return {
       ...config.contracts.buyHelper2,
       functionName: "addLiquidity",
+      account: account.address as `0x${string}`,
       args: [
         tradingAddr,
         config.NEXT_PUBLIC_FUSDC_ADDR as `0x${string}`,
@@ -295,6 +296,7 @@ export default function useLiquidity({
 
           const simulation = await publicClient.simulateContract({
             ...tradingContract,
+            account: account.address as `0x${string}`,
             functionName: "removeLiquidity3C857A15",
             args: [BigInt(0), account.address as `0x${string}`],
           });
@@ -336,6 +338,7 @@ export default function useLiquidity({
 
     const simulation = await publicClient.simulateContract({
       ...tradingContract,
+      account: account.address as `0x${string}`,
       functionName: "removeLiquidity3C857A15",
       args: [BigInt(0), account.address as `0x${string}`],
     });

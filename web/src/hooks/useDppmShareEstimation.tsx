@@ -31,6 +31,7 @@ export default function useDppmShareEstimation({
       const simulation = await publicClient.simulateContract({
         abi: tradingAbi,
         address: tradingAddr,
+        account: address as `0x${string}`,
         functionName: "dppmSimulatePayoffForAddress",
         args: [address as `0x${string}`, outcomeId],
       });
