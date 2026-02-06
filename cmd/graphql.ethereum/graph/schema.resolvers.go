@@ -2052,8 +2052,8 @@ spent AS (
         emitter_addr,
          SUM(
             CASE
-                WHEN nbas.type = 'buy'  THEN nbas.from_amount
-                WHEN nbas.type = 'sell' THEN -nbas.to_amount
+                WHEN type = 'buy'  THEN from_amount
+                WHEN type = 'sell' THEN -to_amount
             END
         ) AS fusdc_spent
     FROM ninelives_buys_and_sells_1
