@@ -35,13 +35,14 @@ export default function usePositionHistory(
           }
         }
       }
-      return buys.map((i) => ({
+      const results = buys.map((i) => ({
         fromAmount: i.fromAmount,
         toAmount: i.toAmount,
-        id: `0x${i.outcomeId}`,
+        outcomeId: `0x${i.outcomeId}`,
         type: i.type,
         txHash: i.txHash,
       }));
+      return results;
     },
   });
 }

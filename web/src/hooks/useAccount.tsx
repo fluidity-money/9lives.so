@@ -278,17 +278,18 @@ export default function useAccount({
           // optimistically update position history first
           queryClient.setQueryData<PositionHistory[]>(
             ["positionHistory", account.address, [outcomeId]],
-            (data) => {
-              return [
-                ...(data ?? []),
+            (prevData) => {
+              const updatedData = [
+                ...(prevData ?? []),
                 {
                   outcomeId,
-                  type: "buy",
+                  type: "buy" as const,
                   txHash: "0x",
                   fromAmount: Number(amount),
                   toAmount: 0,
                 },
               ];
+              return updatedData;
             },
           );
           // invalidate 4sec later to allow ingestor track history
