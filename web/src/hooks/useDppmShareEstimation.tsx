@@ -24,7 +24,7 @@ export default function useDppmShareEstimation({
       isWinning,
     ],
     queryFn: async () => {
-      const initialData = [BigInt(0), BigInt(0), BigInt(0)];
+      const initialData = [0, 0, 0];
       const publicClient = createPublicClient({
         chain: config.destinationChain,
         transport: http(),
@@ -52,6 +52,6 @@ export default function useDppmShareEstimation({
         return [0, 0, Number(formatFusdc(data[2], 2))];
       }
     },
-    initialData: [BigInt(0), BigInt(0), BigInt(0)],
+    initialData: [0, 0, 0],
   });
 }
