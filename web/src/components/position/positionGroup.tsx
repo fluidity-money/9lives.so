@@ -74,7 +74,7 @@ export default function PositionsGroup({
         campaignContent={content}
         data={item}
         price={sharePrices?.find((o) => o.id === item.id)?.price}
-        history={positionsHistory?.filter((p) => p.id === item.id)}
+        history={positionsHistory?.filter((p) => p.outcomeId === item.id)}
         detailPage={detailPage}
       />
     ));

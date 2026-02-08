@@ -8,7 +8,7 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import Button from "../themed/button";
 import DownCaret from "#/icons/down-caret.svg";
 import useClaim from "@/hooks/useClaim";
-import { Outcome, ParticipatedCampaign } from "@/types";
+import { Outcome, ParticipatedCampaign, PositionHistory } from "@/types";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import YesOutcomeImg from "#/images/yes-outcome.svg";
 import NoOutcomeImg from "#/images/no-outcome.svg";
@@ -36,13 +36,7 @@ export default function PositionRow({
   };
   detailPage?: boolean;
   price?: string;
-  history?: {
-    fromAmount: number;
-    toAmount: number;
-    id: string;
-    txHash: string;
-    type: "buy" | "sell";
-  }[];
+  history?: PositionHistory[];
   campaignContent: ParticipatedCampaign["content"];
 }) {
   const account = useAppKitAccount();
