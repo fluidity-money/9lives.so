@@ -16,7 +16,13 @@ export default function useDppmShareEstimation({
   isWinning: boolean;
 }) {
   return useQuery({
-    queryKey: ["dppmShareEstimation", tradingAddr, address, outcomeId],
+    queryKey: [
+      "dppmShareEstimation",
+      tradingAddr,
+      address,
+      outcomeId,
+      isWinning,
+    ],
     queryFn: async () => {
       const initialData = [BigInt(0), BigInt(0), BigInt(0)];
       const publicClient = createPublicClient({
@@ -35,9 +41,7 @@ export default function useDppmShareEstimation({
         functionName: "dppmSimulatePayoffForAddress",
         args: [address as `0x${string}`, outcomeId],
       });
-      return simulation.result;
-    },
-    select: (data) => {
+      const data = simulation.result;
       if (isWinning) {
         return [
           Number(formatFusdc(data[0], 2)),
