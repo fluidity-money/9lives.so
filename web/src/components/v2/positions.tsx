@@ -76,8 +76,9 @@ function PositionItem({
             <span className="text-[9px] font-bold text-neutral-400">
               Position
             </span>
-            <span className="text-xs font-semibold text-2black">
-              {position.name}
+            <span className="flex items-center gap-1 text-xs font-semibold text-2black">
+              {position.name}{" "}
+              <ArrowIcon variant={position.name === "Down" ? "down" : "up"} />
             </span>
           </div>
           <div className="flex flex-col justify-end">
