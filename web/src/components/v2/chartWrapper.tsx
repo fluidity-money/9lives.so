@@ -45,7 +45,7 @@ export default function PriceChartWrapper({
     <div className="relative">
       <AssetPriceChartMask simple={simple} campaignData={campaignData} />
       <AssetPriceChart
-        volume={formatFusdc(campaignData.totalVolume, 2)}
+        volume={formatFusdc(campaignData.totalVolume ?? 0, 2)}
         starting={starting}
         ending={ending}
         symbol={symbol}
