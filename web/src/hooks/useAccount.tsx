@@ -257,14 +257,27 @@ export default function useAccount({
                 period,
               ],
             });
+            queryClient.invalidateQueries({
+              queryKey: [
+                "dppmShareEstimation",
+                data.poolAddress,
+                account.address,
+                outcomeId,
+              ],
+            });
           } else {
             queryClient.invalidateQueries({
               queryKey: ["campaign", data.identifier],
             });
           }
-          queryClient.invalidateQueries({
-            queryKey: ["positionHistory", account.address, outcomeIds],
-          });
+          // invalidate 2sec later to allow ingestor track history
+          setTimeout(
+            () =>
+              queryClient.invalidateQueries({
+                queryKey: ["positionHistory", account.address, [outcomeId]],
+              }),
+            2000,
+          );
           queryClient.invalidateQueries({
             queryKey: [
               "tokensWithBalances",

@@ -40,12 +40,13 @@ function PositionItem({
     isWinning,
   });
   const { data: positionsHistory } = usePositionHistory(address, [position.id]);
-  const cost = positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0);
-  const PnL = cost
-    ? isWinning
-      ? shares + boost - Number(formatFusdc(cost, 2))
-      : -Number(formatFusdc(cost, 2)) + refund
-    : 0;
+  const cost = Number(
+    formatFusdc(
+      positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0,
+      2,
+    ),
+  );
+  const PnL = cost ? (isWinning ? shares + boost - cost : -cost + refund) : 0;
   return (
     <div className="flex flex-1 flex-col gap-1 rounded-lg bg-neutral-200 p-1">
       <div
@@ -89,7 +90,7 @@ function PositionItem({
                 "text-xs font-semibold",
               )}
             >
-              {isWinning ? `+ $${shares}` : `- $${formatFusdc(cost ?? 0, 2)}`}
+              {isWinning ? `+ $${shares}` : `- $${cost}`}
             </span>
           </div>
         </div>
@@ -110,7 +111,7 @@ function PositionItem({
           </div>
           <div className="flex flex-col justify-end">
             <span className="text-right text-[9px] font-bold text-neutral-400">
-              PnL
+              PnL / Cost
             </span>
             {PnL ? (
               <span
@@ -120,6 +121,7 @@ function PositionItem({
                 )}
               >
                 {PnL > 0 ? "+" : "-"}${Math.abs(PnL).toFixed(2)}
+                <span className="text-neutral-400"> / ${cost}</span>
               </span>
             ) : null}
           </div>
