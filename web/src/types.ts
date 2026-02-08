@@ -12,6 +12,7 @@ import {
   requestUnclaimedCampaigns,
   request9LivesPoints,
   requestAssets,
+  requestPositionHistory,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -324,3 +325,7 @@ export type GroupButtonProps = GroupButtonBaseProps &
         mobileTitle?: string;
       }
   );
+
+export type PositionHistory = Awaited<
+  ReturnType<typeof requestPositionHistory>
+>[number];

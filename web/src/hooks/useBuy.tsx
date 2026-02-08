@@ -1,7 +1,12 @@
 import config from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { CampaignDetail, DppmMetadata, SimpleCampaignDetail } from "@/types";
+import {
+  CampaignDetail,
+  DppmMetadata,
+  PositionHistory,
+  SimpleCampaignDetail,
+} from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import useCheckAndSwitchChain from "@/hooks/useCheckAndSwitchChain";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
@@ -143,13 +148,29 @@ const useBuy = ({
               queryKey: ["campaign", data.identifier],
             });
           }
-          // invalidate 2sec later to allow ingestor track history
+          // optimistically update position history first
+          queryClient.setQueryData<PositionHistory[]>(
+            ["positionHistory", account.address, [outcomeId]],
+            (data) => {
+              return [
+                ...(data ?? []),
+                {
+                  outcomeId,
+                  type: "buy",
+                  txHash: "0x",
+                  fromAmount: Number(amount),
+                  toAmount: 0,
+                },
+              ];
+            },
+          );
+          // invalidate 4sec later to allow ingestor track history
           setTimeout(
             () =>
               queryClient.invalidateQueries({
                 queryKey: ["positionHistory", account.address, [outcomeId]],
               }),
-            2000,
+            4000,
           );
           queryClient.invalidateQueries({
             queryKey: [
