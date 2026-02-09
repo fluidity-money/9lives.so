@@ -62,8 +62,8 @@ export default function AssetNav({
   const periodOrder = ["hourly", "15mins", "5mins"];
   const buttons = [
     {
-      title: isHourly ? "🔥 Hourly Markets" : "🔥 Hourly",
-      mobileTitle: "🔥 1 Hr",
+      title: isHourly ? "Hourly Markets" : "Hourly",
+      mobileTitle: "1 Hr",
       callback: () => router.push(`/campaign/${hourlyMarkets[0]}/hourly`),
     },
     {
