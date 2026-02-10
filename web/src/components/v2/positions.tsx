@@ -114,17 +114,16 @@ function PositionItem({
             <span className="text-right text-[9px] font-bold text-neutral-400">
               PnL / Cost
             </span>
-            {PnL ? (
+            <div className="text-xs font-semibold">
               <span
                 className={combineClass(
                   PnL > 0 ? "text-green-700" : "text-red-700",
-                  "text-xs font-semibold",
                 )}
               >
                 {PnL > 0 ? "+" : "-"}${Math.abs(PnL).toFixed(2)}
-                <span className="text-neutral-400"> / ${cost}</span>
               </span>
-            ) : null}
+              <span className="text-neutral-400"> / ${cost}</span>
+            </div>
           </div>
         </div>
       </div>
