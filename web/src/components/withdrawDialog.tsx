@@ -118,7 +118,7 @@ export default function WithdrawDialog() {
         isInMiniApp={isInMiniApp}
         handleNetworkChange={handleNetworkChange}
         selectedChainId={selectedChainId}
-        removeSPN={true}
+        exclude={["superposition", "megaeth"]}
       />
       <Button
         intent={"no"}

@@ -10,24 +10,31 @@ import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
 import config from "@/config";
 import { Chain } from "@/types";
+
+interface ChainSelectorProps {
+  selectedChainId: number;
+  handleNetworkChange: (chain: Chain) => void;
+  title?: string;
+  isInMiniApp: boolean;
+  exclude?: (keyof typeof config.chains)[];
+  variant?: "default" | "small";
+}
+
 export default function ChainSelectorDropdown({
   selectedChainId,
   handleNetworkChange,
   isInMiniApp,
-  removeSPN,
+  exclude,
   variant = "default",
-}: {
-  selectedChainId: number;
-  isInMiniApp: boolean;
-  handleNetworkChange: (chain: Chain) => void;
-  removeSPN?: boolean;
-  variant?: "default" | "small";
-}) {
-  const chains = isInMiniApp
-    ? (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>)
-    : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
-  if (removeSPN) {
-    delete chains.superposition;
+}: ChainSelectorProps) {
+  const chains = JSON.parse(JSON.stringify(config.chains)) as Record<
+    string,
+    Chain
+  >;
+  if (exclude && exclude.length > 0) {
+    for (const key in exclude) {
+      delete chains[key];
+    }
   }
   const chainList = Object.values(chains);
   const selectedChain = chainList.find((c) => c.id === selectedChainId);

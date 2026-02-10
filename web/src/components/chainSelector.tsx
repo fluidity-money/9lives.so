@@ -3,24 +3,28 @@ import { combineClass } from "@/utils/combineClass";
 import Image from "next/image";
 import { Chain } from "@/types";
 
+interface ChainSelectorProps {
+  selectedChainId: number;
+  handleNetworkChange: (chain: Chain) => void;
+  title?: string;
+  isInMiniApp: boolean;
+  exclude?: (keyof typeof config.chains)[];
+}
+
 export default function ChainSelector({
   selectedChainId,
   handleNetworkChange,
   title = "From",
-  isInMiniApp,
-  removeSPN,
-}: {
-  selectedChainId: number;
-  isInMiniApp: boolean;
-  handleNetworkChange: (chain: Chain) => void;
-  title?: string;
-  removeSPN?: boolean;
-}) {
-  const chains = isInMiniApp
-    ? (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>)
-    : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
-  if (removeSPN) {
-    delete chains.superposition;
+  exclude,
+}: ChainSelectorProps): React.ReactElement {
+  const chains = JSON.parse(JSON.stringify(config.chains)) as Record<
+    string,
+    Chain
+  >;
+  if (exclude && exclude.length > 0) {
+    for (const key in exclude) {
+      delete chains[key];
+    }
   }
   const chainList = Object.values(chains);
   return (
