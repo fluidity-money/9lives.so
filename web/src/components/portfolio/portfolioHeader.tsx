@@ -19,6 +19,7 @@ import useFeatureFlag from "@/hooks/useFeatureFlag";
 import use9LivesPoints from "@/hooks/use9LivesPoints";
 import { useAppKitAccount } from "@reown/appkit/react";
 import useTotalPnL from "@/hooks/useTotalPnL";
+import SimpleClaimAllButton from "../simple/simpleClaimAllButton";
 
 function Badge({ address }: { address: string }) {
   const { data: domainOrAddress } = useMeowDomains(address);
@@ -104,7 +105,7 @@ export default function PortfolioHeader() {
             <Link
               href={"https://bridge.superposition.so/"}
               target="_blank"
-              className={"flex flex-1"}
+              className={"flex flex-1 text-nowrap"}
             >
               <Button
                 title="+ Deposit"
@@ -116,8 +117,8 @@ export default function PortfolioHeader() {
                 }}
               />
             </Link>
+            <SimpleClaimAllButton variant="inline" />
           </div>
-
           <div className="flex gap-4 md:gap-[70px]">
             <div className="flex flex-col gap-1">
               <span className="text-xs">PnL</span>

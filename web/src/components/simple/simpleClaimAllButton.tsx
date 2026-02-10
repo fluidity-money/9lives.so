@@ -4,8 +4,15 @@ import Modal from "../themed/modal";
 import { useState } from "react";
 import SimpleRewardsDialog from "./simpleRewardsDialog";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { combineClass } from "@/utils/combineClass";
 
-export default function SimpleClaimAllButton({ token }: { token?: string }) {
+export default function SimpleClaimAllButton({
+  token,
+  variant = "fixed",
+}: {
+  token?: string;
+  variant?: "inline" | "fixed";
+}) {
   const account = useAppKitAccount();
   const { data } = useUnclaimedCampaigns(account?.address, token);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,9 +21,11 @@ export default function SimpleClaimAllButton({ token }: { token?: string }) {
     return (
       <>
         <Button
-          size={"xlarge"}
+          size={variant === "fixed" ? "xlarge" : "medium"}
           intent={"reward"}
-          className={"bottom-4 right-4 flex-1 md:fixed"}
+          className={combineClass(
+            variant === "fixed" ? "bottom-4 right-4 md:fixed" : "flex-auto",
+          )}
           onClick={() => setIsModalOpen(true)}
           title={`🔔 ${data.length} Rewards Unclaimed`}
         />
