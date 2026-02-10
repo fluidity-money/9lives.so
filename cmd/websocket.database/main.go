@@ -183,12 +183,13 @@ func main() {
 			sink := make(chan TableContent)
 			cookie := broadcast.Subscribe(sink)
 			filterRules := make(map[string]map[string]*FilterConstraint)
+			filterRulesSet := make(map[string]bool)
 		L:
 			for {
 				select {
 				case m := <-sink:
 					if f.Is(features.FeatureFilterTables) {
-						if filterRules[m.Table] == nil {
+						if !filterRulesSet[m.Table] {
 							continue L
 						}
 						for k, c := range filterRules[m.Table] {
@@ -276,12 +277,12 @@ func main() {
 							outgoing <- snapshot
 						}()
 					}
-
 					for _, ch := range req.FilterReq {
 						t := ch.Table
 						if filterRules[t] == nil {
 							filterRules[t] = make(map[string]*FilterConstraint)
 						}
+						filterRulesSet[t] = true
 						for _, field := range ch.Fields {
 							// We copy here to avoid keeping everything allocated:
 							c := field.Constraints
