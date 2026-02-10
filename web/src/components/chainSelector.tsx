@@ -22,7 +22,7 @@ export default function ChainSelector({
     Chain
   >;
   if (exclude && exclude.length > 0) {
-    for (const key in exclude) {
+    for (const key of exclude) {
       delete chains[key];
     }
   }
