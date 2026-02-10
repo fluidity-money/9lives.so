@@ -114,8 +114,8 @@ impl StorageTrading {
         let payouts_collected =
             u32::from_le_bytes(self.scheduled_payout_processed.get().to_le_bytes()) as usize;
         let payouts_remaining = min(
-            self.scheduled_payouts.len() - payouts_collected,
-            MAXIMUM_SCHEDULED_PAYOUTS_ONE_GO,
+            payouts_collected + MAXIMUM_SCHEDULED_PAYOUTS_ONE_GO,
+            self.scheduled_payouts.len(),
         );
         for i in payouts_collected..payouts_remaining {
             let recipient = self.scheduled_payouts.get(i).unwrap();
@@ -136,7 +136,8 @@ impl StorageTrading {
                 // Not implemented here!
             }
         }
-        self.scheduled_payout_processed.set(U32::from(payouts_remaining));
+        self.scheduled_payout_processed
+            .set(U32::from(payouts_remaining));
         self.is_shutdown.set(true);
         Ok(U256::ZERO)
     }
