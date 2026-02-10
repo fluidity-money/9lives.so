@@ -304,7 +304,7 @@ export default function AssetPriceChart({
           }}
         />
       </ComposedChart>
-      <span className="absolute -bottom-1 left-0 right-0 block text-center text-xs text-neutral-400">
+      <span className="absolute inset-x-0 -bottom-1 block text-center text-xs text-neutral-400">
         ${volume} Vol.
       </span>
     </ResponsiveContainer>

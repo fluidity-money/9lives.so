@@ -84,5 +84,5 @@ export function useWSForPrices({
     return () => {
       offMessage();
     };
-  }, [asset, starting, ending, queryClient]);
+  }, [asset, starting, ending, queryClient, subscribe]);
 }

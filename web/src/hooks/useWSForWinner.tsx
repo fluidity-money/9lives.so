@@ -49,5 +49,5 @@ export function useWSForWinner(id: string, poolAddress: string) {
     return () => {
       offMessage();
     };
-  }, [poolAddress, id, queryClient]);
+  }, [poolAddress, id, queryClient, subscribe]);
 }

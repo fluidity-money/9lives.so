@@ -78,5 +78,6 @@ export function useWSForNextMarket(
     previousData.ending,
     period,
     queryClient,
+    subscribe,
   ]);
 }
